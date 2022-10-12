@@ -1447,6 +1447,23 @@ class CameraBottomBar: UIView {
     let switchCameraButton = CameraChooserButton(backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor))
     let proceedButton = RoundMediaButton(image: UIImage(imageLiteralResourceName: "arrow-right-24"), backgroundStyle: .solid(.ows_accentBlue))
     let controlButtonsLayoutGuide = UILayoutGuide() // area encompassing Photo Library and Switch Camera buttons.
+    private var controlButtonsLayoutGuideConstraints: [NSLayoutConstraint]?
+    func constrainControlButtonsLayoutGuideHorizontallyTo(leadingAnchor: NSLayoutXAxisAnchor?,
+                                                          trailingAnchor: NSLayoutXAxisAnchor?) {
+        if let existingConstraints = controlButtonsLayoutGuideConstraints {
+            NSLayoutConstraint.deactivate(existingConstraints)
+        }
+
+        let referenceLeadingAnchor = leadingAnchor ?? layoutMarginsGuide.leadingAnchor
+        let referenceTrailingAnchor = trailingAnchor ?? layoutMarginsGuide.trailingAnchor
+        let constraints = [
+            controlButtonsLayoutGuide.leadingAnchor.constraint(equalTo: referenceLeadingAnchor),
+            controlButtonsLayoutGuide.trailingAnchor.constraint(equalTo: referenceTrailingAnchor)
+        ]
+        constraints.forEach { $0.priority = .defaultHigh - 10 }
+        NSLayoutConstraint.activate(constraints)
+        self.controlButtonsLayoutGuideConstraints = constraints
+    }
 
     let captureControl = CameraCaptureControl(axis: .horizontal)
     var shutterButtonLayoutGuide: UILayoutGuide {
@@ -1465,9 +1482,8 @@ class CameraBottomBar: UIView {
 
         controlButtonsLayoutGuide.identifier = "ControlButtonsLayoutGuide"
         addLayoutGuide(controlButtonsLayoutGuide)
-        addConstraints([ controlButtonsLayoutGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
-                         controlButtonsLayoutGuide.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),
-                         controlButtonsLayoutGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor) ])
+        addConstraint(controlButtonsLayoutGuide.topAnchor.constraint(greaterThanOrEqualTo: topAnchor))
+        constrainControlButtonsLayoutGuideHorizontallyTo(leadingAnchor: nil, trailingAnchor: nil)
 
         captureControl.translatesAutoresizingMaskIntoConstraints = false
         addSubview(captureControl)

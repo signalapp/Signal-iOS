@@ -218,6 +218,8 @@ public class TextStylingToolbar: UIControl {
 
     public lazy var doneButton = RoundMediaButton(image: UIImage(imageLiteralResourceName: "check-24"), backgroundStyle: .blur)
 
+    public private(set) var contentWidthConstraint: NSLayoutConstraint?
+
     public init(layout: Layout, currentColor: ColorPickerBarColor? = nil) {
         self.layout = layout
         colorPickerView = ColorPickerBarView(currentColor: currentColor ?? TextStylingToolbar.defaultColor(forLayout: layout))
@@ -232,17 +234,19 @@ public class TextStylingToolbar: UIControl {
         // A container with width capped at a predefined size,
         // centered in superview and constrained to layout margins.
         let stackViewLayoutGuide = UILayoutGuide()
+
+        let contentWidthConstraint = stackViewLayoutGuide.widthAnchor.constraint(equalToConstant: ImageEditorViewController.preferredToolbarContentWidth)
+        contentWidthConstraint.priority = .defaultHigh
+        self.contentWidthConstraint = contentWidthConstraint
+
         addLayoutGuide(stackViewLayoutGuide)
         addConstraints([
             stackViewLayoutGuide.centerXAnchor.constraint(equalTo: centerXAnchor),
             stackViewLayoutGuide.leadingAnchor.constraint(greaterThanOrEqualTo: layoutMarginsGuide.leadingAnchor),
             stackViewLayoutGuide.topAnchor.constraint(equalTo: topAnchor),
-            stackViewLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2) ])
-        addConstraint({
-            let constraint = stackViewLayoutGuide.widthAnchor.constraint(equalToConstant: ImageEditorViewController.preferredToolbarContentWidth)
-            constraint.priority = .defaultHigh
-            return constraint
-        }())
+            stackViewLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2),
+            contentWidthConstraint
+        ])
 
         // I had to use a custom layout guide because stack view isn't centered
         // but instead has slight offset towards the trailing edge.

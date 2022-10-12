@@ -599,9 +599,16 @@ class PhotoCaptureViewController: OWSViewController {
             if isIPadUIInRegularMode {
                 view.removeConstraints(textEditoriPhoneConstraints)
                 view.addConstraints(textEditoriPadConstraints)
+
+                bottomBar.constrainControlButtonsLayoutGuideHorizontallyTo(
+                    leadingAnchor: textStoryComposerView.leadingAnchor,
+                    trailingAnchor: textStoryComposerView.trailingAnchor
+                )
             } else {
                 view.removeConstraints(textEditoriPadConstraints)
                 view.addConstraints(textEditoriPhoneConstraints)
+
+                bottomBar.constrainControlButtonsLayoutGuideHorizontallyTo(leadingAnchor: nil, trailingAnchor: nil)
             }
         }
     }
@@ -697,8 +704,9 @@ extension PhotoCaptureViewController {
         // Choose Background and Attach Link buttons.
         // Toolbar is added to VC's view because it might be located outside of the textStoryComposerView.
         view.addSubview(textEditorToolbar)
-        // Align leading edge of Background button to leading edge of the Close button at the top.
-        view.addConstraint(textEditorToolbar.leadingAnchor.constraint(equalTo: topBar.controlsLayoutGuide.leadingAnchor))
+        // Align leading edge of Background button to leading edge of the content area of the `bottomBar`,
+        // which is in turn might constrained to the leading edge of text editor "card".
+        view.addConstraint(textEditorToolbar.leadingAnchor.constraint(equalTo: bottomBar.controlButtonsLayoutGuide.leadingAnchor))
         if bottomBar.isCompactHeightLayout {
             // On devices without top and bottom safe areas buttons are placed above CAMERA | TEXT controls.
             textEditoriPhoneConstraints.append(
@@ -751,6 +759,21 @@ extension PhotoCaptureViewController {
         // Background and Add Link buttons are vertically centered with CAMERA|TEXT switch and Proceed button.
         textEditoriPadConstraints.append(
             textEditorToolbar.centerYAnchor.constraint(equalTo: bottomBar.controlButtonsLayoutGuide.centerYAnchor))
+
+        // Additional constraint that will at least 20 dp between Add Link button and CAMERA|TEXT switch.
+        // This constraint will override
+        textEditoriPadConstraints.append(
+            textEditorToolbar.trailingAnchor.constraint(
+                lessThanOrEqualTo: bottomBar.contentTypeSelectionControl.leadingAnchor,
+                constant: -20
+            )
+        )
+        if isIPadUIInRegularMode {
+            bottomBar.constrainControlButtonsLayoutGuideHorizontallyTo(
+                leadingAnchor: textStoryComposerView.leadingAnchor,
+                trailingAnchor: textStoryComposerView.trailingAnchor
+            )
+        }
 
         view.addConstraints(textEditoriPadConstraints)
     }
@@ -1391,6 +1414,18 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
     // has larger embedded padding above and below the text.
     private static let textViewBackgroundVMargin = LayoutConstants.textBackgroundVMargin - 8
     private static let textViewBackgroundHMargin = LayoutConstants.textBackgroundHMargin
+
+    override public func layoutSubviews() {
+        super.layoutSubviews()
+        let contentWidth = layoutMarginsGuide.layoutFrame.width
+        if
+            let contentWidthConstraint = textViewAccessoryToolbar.contentWidthConstraint,
+            contentWidthConstraint.constant != contentWidth,
+            contentWidth > 0
+        {
+            contentWidthConstraint.constant = contentWidth
+        }
+    }
 
     public override func layoutTextContentAndLinkPreview() {
         super.layoutTextContentAndLinkPreview()

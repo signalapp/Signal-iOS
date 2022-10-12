@@ -88,7 +88,7 @@ open class TextAttachmentView: UIView {
 
     public private(set) var textContentSize: CGSize = .zero
 
-    public override func layoutSubviews() {
+    open override func layoutSubviews() {
         super.layoutSubviews()
 
         // Resize link preview view to its desired size.
