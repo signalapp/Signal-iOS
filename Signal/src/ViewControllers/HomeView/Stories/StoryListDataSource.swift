@@ -503,8 +503,13 @@ class StoryListDataSource: NSObject, Dependencies {
         }
 
         switch (changes.oldModel.hiddenStories.isEmpty, changes.newModel.hiddenStories.isEmpty) {
-        case (false, false), (true, true):
-            // Just reload if we have to.
+
+        case (true, true):
+            // No need to do anything.
+            return
+
+        case (false, false):
+            // Just reload the header row if we have to.
             if changes.oldModel.isHiddenStoriesSectionCollapsed != changes.newModel.isHiddenStoriesSectionCollapsed {
                 // If the cell is visible, reconfigure it directly without reloading.
                 let path = IndexPath(row: 0, section: Section.hiddenStories.rawValue)
@@ -521,6 +526,15 @@ class StoryListDataSource: NSObject, Dependencies {
             tableView.insertRows(at: [IndexPath(row: 0, section: Section.hiddenStories.rawValue)], with: .fade)
         case (false, true):
             tableView.deleteRows(at: [IndexPath(row: 0, section: Section.hiddenStories.rawValue)], with: .fade)
+            applyTableViewBatchUpdates(
+                changes.oldModel.hiddenStories.lazy.enumerated().map {
+                    // Offset by 1 to account for the header cell.
+                    return .init(value: $1.context, updateType: .delete(oldIndex: $0 + 1))
+                },
+                toSection: .hiddenStories,
+                models: changes.oldModel.hiddenStories
+            )
+            return
         }
 
         switch (changes.oldModel.isHiddenStoriesSectionCollapsed, changes.newModel.isHiddenStoriesSectionCollapsed) {
