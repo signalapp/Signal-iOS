@@ -759,6 +759,7 @@ class StoryItemMediaView: UIView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.image = thumbnailImage
+        imageView.clipsToBounds = true
 
         let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         imageView.addSubview(blurView)
