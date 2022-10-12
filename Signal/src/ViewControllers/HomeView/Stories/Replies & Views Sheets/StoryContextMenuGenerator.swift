@@ -828,13 +828,33 @@ private struct GenericContextAction {
 
         let action = UIContextualAction(
             style: style,
-            title: title,
+            title: nil,
             handler: { _, _, completion in
                 handler(completion)
             }
         )
         action.backgroundColor = backgroundColor
-        action.image = image
+        action.image = contextualActionImage(image: image, title: title)
         return action
+    }
+
+    private func contextualActionImage(image: UIImage, title: String) -> UIImage? {
+        AssertIsOnMainThread()
+        // We need to bake the title text into the image because `UIContextualAction`
+        // doesn't let you specify a font for the title.
+        guard
+            let image = image.withTitle(
+                title,
+                font: UIFont.systemFont(ofSize: 13), // Same as conversation swipe actions view font.
+                color: .ows_white,
+                maxTitleWidth: 68,
+                minimumScaleFactor: CGFloat(8) / CGFloat(13),
+                spacing: 4
+            )
+        else {
+            owsFailDebug("Missing image.")
+            return nil
+        }
+        return image.withRenderingMode(.alwaysTemplate)
     }
 }

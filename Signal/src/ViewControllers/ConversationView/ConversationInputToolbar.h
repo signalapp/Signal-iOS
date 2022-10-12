@@ -106,7 +106,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateFontSizes;
 
-- (void)updateLayoutWithSafeAreaInsets:(UIEdgeInsets)safeAreaInsets;
+/// Returns true if changes were applied
+- (BOOL)updateLayoutWithSafeAreaInsets:(UIEdgeInsets)safeAreaInsets;
 - (void)ensureTextViewHeight;
 
 - (void)viewDidAppear;

@@ -342,6 +342,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
             let storyItems = StoryConversationItem.allItems(
                 includeImplicitGroupThreads: true,
+                excludeHiddenContexts: true,
                 transaction: transaction
             )
 
@@ -607,9 +608,19 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             // Show a tooltip the first time this happens, but still let the
             // user select.
             showVideoSegmentingTooltip(on: indexPath)
+        } else {
+            // dismiss the tooltip when selecting.
+            currentTooltip = nil
         }
 
         return indexPath
+    }
+
+    public override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        super.tableView(tableView, didDeselectRowAt: indexPath)
+
+        // dismiss the tooltip when unselecting
+        currentTooltip = nil
     }
 
     private func showUnblockUI(conversation: ConversationItem) {

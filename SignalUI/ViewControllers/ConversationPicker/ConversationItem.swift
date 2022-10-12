@@ -247,7 +247,11 @@ public struct StoryConversationItem {
         }
     }
 
-    public static func allItems(includeImplicitGroupThreads: Bool, transaction: SDSAnyReadTransaction) -> [StoryConversationItem] {
+    public static func allItems(
+        includeImplicitGroupThreads: Bool,
+        excludeHiddenContexts: Bool,
+        transaction: SDSAnyReadTransaction
+    ) -> [StoryConversationItem] {
         func sortTime(
             for associatedData: StoryContextAssociatedData?,
             thread: TSThread
@@ -268,8 +272,12 @@ public struct StoryConversationItem {
                 transaction: transaction
             )
             .lazy
-            .map { (thread: TSThread) -> (TSThread, StoryContextAssociatedData?) in
-                return (thread, StoryFinder.associatedData(for: thread, transaction: transaction))
+            .compactMap { (thread: TSThread) -> (TSThread, StoryContextAssociatedData?)? in
+                let associatedData = StoryFinder.associatedData(for: thread, transaction: transaction)
+                if excludeHiddenContexts, associatedData?.isHidden ?? false {
+                    return nil
+                }
+                return (thread, associatedData)
             }
             .sorted { lhs, rhs in
                 if (lhs.0 as? TSPrivateStoryThread)?.isMyStory == true { return true }

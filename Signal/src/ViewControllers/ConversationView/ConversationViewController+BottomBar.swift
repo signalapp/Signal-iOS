@@ -289,7 +289,13 @@ public extension ConversationViewController {
             return
         }
 
-        inputToolbar.updateLayout(withSafeAreaInsets: view.safeAreaInsets)
+        if inputToolbar.updateLayout(withSafeAreaInsets: view.safeAreaInsets) {
+            // Ensure that if the toolbar has its insets changed, we trigger a re-layout.
+            // Without this, UIKit does a bad job of picking up the final safe area for
+            // constraints on the toolbar on its own.
+            self.view.setNeedsLayout()
+            self.updateContentInsets(animated: false)
+        }
     }
 
     @objc

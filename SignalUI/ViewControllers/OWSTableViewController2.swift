@@ -379,11 +379,15 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             cell.backgroundView?.removeFromSuperview()
             cell.backgroundView = nil
             cell.selectedBackgroundView?.removeFromSuperview()
-            cell.selectedBackgroundView = nil
             cell.backgroundColor = .clear
             cell.contentView.backgroundColor = .clear
 
             guard section.hasBackground else {
+                let selectedBackgroundView = UIView()
+                selectedBackgroundView.backgroundColor = forceDarkMode
+                    ? Theme.darkThemeTableCell2SelectedBackgroundColor
+                    : Theme.tableCell2SelectedBackgroundColor
+                cell.selectedBackgroundView = selectedBackgroundView
                 return
             }
 

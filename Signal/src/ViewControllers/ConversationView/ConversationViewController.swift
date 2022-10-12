@@ -34,6 +34,18 @@ public class ConversationViewController: OWSViewController {
     var selectionToolbar: MessageActionsToolbar?
 
     var otherUsersProfileDidChangeEvent: DebouncedEvent?
+
+    var shouldNextContentInsetsUpdateBeAnimated: Bool?
+    /// See `ConversationViewController+OWS.updateContentInsetsFromEvent`
+    lazy var updateContentInsetsEvent = DebouncedEvents.build(
+        mode: .lastOnly,
+        maxFrequencySeconds: 0.01,
+        onQueue: .asyncOnQueue(queue: .main),
+        notifyBlock: { [weak self] in
+            self?.updateContentInsetsFromEvent(animated: self?.shouldNextContentInsetsUpdateBeAnimated ?? false)
+            self?.shouldNextContentInsetsUpdateBeAnimated = nil
+        })
+
     private var leases = [ModelReadCacheSizeLease]()
 
     // MARK: -

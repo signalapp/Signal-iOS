@@ -82,7 +82,7 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
 
         let storyItems = databaseStorage.read { transaction -> [StoryConversationItem] in
             StoryConversationItem
-                .allItems(includeImplicitGroupThreads: false, transaction: transaction)
+                .allItems(includeImplicitGroupThreads: false, excludeHiddenContexts: false, transaction: transaction)
                 .lazy
                 .map { (item: $0, title: $0.title(transaction: transaction)) }
                 .sorted { lhs, rhs in

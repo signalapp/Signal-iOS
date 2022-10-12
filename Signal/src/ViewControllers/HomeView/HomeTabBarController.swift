@@ -17,16 +17,16 @@ class HomeTabBarController: UITabBarController {
     lazy var chatListNavController = OWSNavigationController(rootViewController: chatListViewController)
     lazy var chatListTabBarItem = UITabBarItem(
         title: NSLocalizedString("CHAT_LIST_TITLE_INBOX", comment: "Title for the chat list's default mode."),
-        image: #imageLiteral(resourceName: "message-solid-24"),
-        selectedImage: #imageLiteral(resourceName: "message-solid-24")
+        image: UIImage(named: "chats-tab-bar"),
+        selectedImage: UIImage(named: "chats-tab-bar")
     )
 
     lazy var storiesViewController = StoriesViewController()
     lazy var storiesNavController = OWSNavigationController(rootViewController: storiesViewController)
     lazy var storiesTabBarItem = UITabBarItem(
         title: NSLocalizedString("STORIES_TITLE", comment: "Title for the stories view."),
-        image: #imageLiteral(resourceName: "stories-solid-24"),
-        selectedImage: #imageLiteral(resourceName: "stories-solid-24")
+        image: UIImage(named: "stories-tab-bar"),
+        selectedImage: UIImage(named: "stories-tab-bar")
     )
 
     var selectedTab: Tabs {
@@ -300,7 +300,7 @@ public class OWSTabBar: UITabBar {
                 tintingView.backgroundColor = tabBarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
                 self.backgroundImage = UIImage()
             } else {
-                if #available(iOS 16, *) { owsFailDebug("Check if this still works on new iOS version.") }
+                if #available(iOS 17, *) { owsFailDebug("Check if this still works on new iOS version.") }
 
                 owsFailDebug("Unexpectedly missing visual effect subview")
                 // If we can't find the tinting subview (e.g. a new iOS version changed the behavior)

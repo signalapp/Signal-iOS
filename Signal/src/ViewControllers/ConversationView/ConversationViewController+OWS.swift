@@ -71,6 +71,14 @@ extension ConversationViewController {
 
     @objc(updateContentInsetsAnimated:)
     public func updateContentInsets(animated: Bool) {
+        self.shouldNextContentInsetsUpdateBeAnimated = (self.shouldNextContentInsetsUpdateBeAnimated ?? false) || animated
+        updateContentInsetsEvent.requestNotify()
+    }
+
+    // When performing an interactive dismiss, safe area updates rapidly in quick succession,
+    // which causes this method to go haywire, recomputing insets a few times and incorrectly determining
+    // that it needs to scroll as a result. To avoid this, apply a debounce to rapid updates.
+    internal func updateContentInsetsFromEvent(animated: Bool) {
         AssertIsOnMainThread()
 
         guard !isMeasuringKeyboardHeight else {
