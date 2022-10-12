@@ -809,7 +809,19 @@ extension PhotoCaptureViewController {
               let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
 
         let iPhoneInset = textEditorToolbar.convert(endFrame, from: nil).minY - textEditorToolbar.bounds.maxY
-        let iPadInset = textStoryComposerView.convert(endFrame, from: nil).minY - textStoryComposerView.bounds.maxY
+        var iPadInset: CGFloat = 0
+
+        if isIPadUIInRegularMode {
+            // Detection of the floating keyboard.
+            let keyboardFrame = textStoryComposerView.convert(endFrame, from: nil)
+            if  keyboardFrame.height > 0 &&
+                keyboardFrame.minX <= textStoryComposerView.bounds.minX &&
+                keyboardFrame.maxX >= textStoryComposerView.bounds.maxX {
+                iPadInset = keyboardFrame.minY - textStoryComposerView.bounds.maxY
+            } else {
+                iPadInset = 0
+            }
+        }
 
         let layoutUpdateBlock = {
             iPhoneConstraint.constant = min(iPhoneInset, 0) - 8
