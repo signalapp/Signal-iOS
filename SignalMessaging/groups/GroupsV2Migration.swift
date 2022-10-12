@@ -419,63 +419,58 @@ fileprivate extension GroupsV2Migration {
 
         Logger.info("migrationMode: \(migrationMode)")
 
-        return firstly(on: .global()) { () -> Promise<TSGroupThread> in
+        // This is only called from attemptMigration, also located in this file.
+        // That method will fetch missing UUIDs and profile key credentials before
+        // calling this one, so we don't need to fetch those as part of this flow.
+
+        return firstly(on: .global()) { () throws -> Promise<String?> in
+            // We should only migrate groups when we're a member.
             let groupThread = unmigratedState.groupThread
             guard groupThread.isLocalUserFullMember else {
                 throw OWSAssertionError("Local user cannot migrate group; is not a full member.")
             }
-            let membersToMigrate = membersToTryToMigrate(groupMembership: groupThread.groupMembership)
 
-            return firstly(on: .global()) { () -> Promise<Void> in
-                GroupManager.tryToEnableGroupsV2(for: Array(membersToMigrate), isBlocking: true, ignoreErrors: true)
-            }.then(on: .global()) { () throws -> Promise<Void> in
-                self.groupsV2Swift.tryToFetchProfileKeyCredentials(
-                    for: membersToMigrate.compactMap { $0.uuid },
-                    ignoreMissingProfiles: true,
-                    forceRefresh: false
-                )
-            }.then(on: .global()) { () throws -> Promise<String?> in
-                guard let avatarData = unmigratedState.groupThread.groupModel.avatarData else {
-                    // No avatar to upload.
-                    return Promise.value(nil)
-                }
-
-                // Upload avatar.
-                return firstly(on: .global()) { () -> Promise<String> in
-                    return self.groupsV2Impl.uploadGroupAvatar(avatarData: avatarData,
-                                                               groupSecretParamsData: unmigratedState.migrationMetadata.v2GroupSecretParams)
-                }.map(on: .global()) { (avatarUrlPath: String) -> String? in
-                    return avatarUrlPath
-                }
-            }.map(on: .global()) { (avatarUrlPath: String?) throws -> TSGroupModelV2 in
-                try databaseStorage.read { transaction in
-                    try Self.deriveMigratedGroupModel(unmigratedState: unmigratedState,
-                                                      avatarUrlPath: avatarUrlPath,
-                                                      migrationMode: migrationMode,
-                                                      transaction: transaction)
-                }
-            }.then(on: .global()) { (proposedGroupModel: TSGroupModelV2) -> Promise<TSGroupModelV2> in
-                Self.migrateGroupOnService(proposedGroupModel: proposedGroupModel,
-                                           disappearingMessageToken: unmigratedState.disappearingMessageToken)
-            }.then(on: .global()) { (groupModelV2: TSGroupModelV2) -> Promise<TSGroupThread> in
-                guard let localAddress = tsAccountManager.localAddress else {
-                    throw OWSAssertionError("Missing localAddress.")
-                }
-                return GroupManager.replaceMigratedGroup(groupIdV1: unmigratedState.groupThread.groupModel.groupId,
-                                                         groupModelV2: groupModelV2,
-                                                         disappearingMessageToken: unmigratedState.disappearingMessageToken,
-                                                         groupUpdateSourceAddress: localAddress,
-                                                         shouldSendMessage: true)
-            }.map(on: .global()) { (groupThread: TSGroupThread) -> TSGroupThread in
-                self.profileManager.addThread(toProfileWhitelist: groupThread)
-
-                Logger.info("Group migrated to service")
-
-                return groupThread
-            }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
-                      description: "Migrate group") {
-                        GroupsV2Error.timeout
+            // If there's an avatar, upload it first; otherwise, just keep going.
+            guard let avatarData = unmigratedState.groupThread.groupModel.avatarData else {
+                // No avatar to upload.
+                return Promise.value(nil)
             }
+
+            // Upload avatar.
+            return firstly(on: .global()) { () -> Promise<String> in
+                return self.groupsV2Impl.uploadGroupAvatar(avatarData: avatarData,
+                                                           groupSecretParamsData: unmigratedState.migrationMetadata.v2GroupSecretParams)
+            }.map(on: .global()) { (avatarUrlPath: String) -> String? in
+                return avatarUrlPath
+            }
+        }.map(on: .global()) { (avatarUrlPath: String?) throws -> TSGroupModelV2 in
+            try databaseStorage.read { transaction in
+                try Self.deriveMigratedGroupModel(unmigratedState: unmigratedState,
+                                                  avatarUrlPath: avatarUrlPath,
+                                                  migrationMode: migrationMode,
+                                                  transaction: transaction)
+            }
+        }.then(on: .global()) { (proposedGroupModel: TSGroupModelV2) -> Promise<TSGroupModelV2> in
+            Self.migrateGroupOnService(proposedGroupModel: proposedGroupModel,
+                                       disappearingMessageToken: unmigratedState.disappearingMessageToken)
+        }.then(on: .global()) { (groupModelV2: TSGroupModelV2) -> Promise<TSGroupThread> in
+            guard let localAddress = tsAccountManager.localAddress else {
+                throw OWSAssertionError("Missing localAddress.")
+            }
+            return GroupManager.replaceMigratedGroup(groupIdV1: unmigratedState.groupThread.groupModel.groupId,
+                                                     groupModelV2: groupModelV2,
+                                                     disappearingMessageToken: unmigratedState.disappearingMessageToken,
+                                                     groupUpdateSourceAddress: localAddress,
+                                                     shouldSendMessage: true)
+        }.map(on: .global()) { (groupThread: TSGroupThread) -> TSGroupThread in
+            self.profileManager.addThread(toProfileWhitelist: groupThread)
+
+            Logger.info("Group migrated to service")
+
+            return groupThread
+        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
+                  description: "Migrate group") {
+            GroupsV2Error.timeout
         }
     }
 
