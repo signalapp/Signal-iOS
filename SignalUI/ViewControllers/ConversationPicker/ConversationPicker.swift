@@ -2,6 +2,7 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
+import AVKit
 import Foundation
 import SignalMessaging
 import UIKit
@@ -30,6 +31,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     public weak var pickerDelegate: ConversationPickerDelegate?
 
     private let kMaxPickerSelection = 5
+    private let attachments: [SignalAttachment]?
+    private let textAttachment: TextAttachment?
     private let maxVideoAttachmentDuration: TimeInterval?
 
     public let selection: ConversationPickerSelection
@@ -65,13 +68,44 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         set { footerView.approvalTextMode = newValue }
     }
 
-    /// If selecting a destination to send a video attachment, set `maxVideoAttachmentDuration` to the longest video duration,
-    /// in order to warn the user if the video is too long and will be automatically segmented.
+    /// Include attachments to display an attachment preview at the top (if configured with the `mediaPreview` section option)
+    public convenience init(
+        selection: ConversationPickerSelection,
+        attachments: [SignalAttachment]
+    ) {
+        self.init(selection: selection, attachments: attachments, textAttachment: nil)
+    }
+
+    /// Include a text attachment to display an attachment preview at the top (if configured with the `mediaPreview` section option)
+    public convenience init(
+        selection: ConversationPickerSelection,
+        textAttacment: TextAttachment
+    ) {
+        self.init(selection: selection, attachments: nil, textAttachment: textAttacment)
+    }
+
     public init(
         selection: ConversationPickerSelection,
-        maxVideoAttachmentDuration: TimeInterval? = nil
+        attachments: [SignalAttachment]? = nil,
+        textAttachment: TextAttachment? = nil
     ) {
         self.selection = selection
+        self.attachments = attachments
+        self.textAttachment = textAttachment
+
+        let maxVideoAttachmentDuration: TimeInterval? = attachments?
+            .lazy
+            .compactMap { attachment in
+                guard
+                    attachment.isVideo,
+                    let url = attachment.dataUrl
+                else {
+                    return nil
+                }
+                return AVURLAsset(url: url).duration.seconds
+            }
+            .max()
+
         self.maxVideoAttachmentDuration = maxVideoAttachmentDuration
 
         super.init()
@@ -105,12 +139,14 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             self.rawValue = rawValue
         }
 
-        public static let stories  = SectionOptions(rawValue: 1 << 0)
-        public static let recents  = SectionOptions(rawValue: 1 << 1)
-        public static let contacts = SectionOptions(rawValue: 1 << 2)
-        public static let groups   = SectionOptions(rawValue: 1 << 3)
+        public static let mediaPreview  = SectionOptions(rawValue: 1 << 0)
+        public static let stories       = SectionOptions(rawValue: 1 << 1)
+        public static let recents       = SectionOptions(rawValue: 1 << 2)
+        public static let contacts      = SectionOptions(rawValue: 1 << 3)
+        public static let groups        = SectionOptions(rawValue: 1 << 4)
 
-        public static let all: SectionOptions = [.stories, .recents, .contacts, .groups]
+        public static let storiesOnly: SectionOptions = [.mediaPreview, .stories]
+        public static let allDestinations: SectionOptions = [.stories, .recents, .contacts, .groups]
     }
 
     public var sectionOptions: SectionOptions = [.recents, .contacts, .groups] {
@@ -414,6 +450,24 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         var hasContents = false
 
+        // Media Preview Section
+        do {
+            let section = OWSTableSection()
+            if
+                sectionOptions.contains(.mediaPreview),
+                let attachments = attachments,
+                !attachments.isEmpty
+            {
+                addMediaPreview(to: section, attachments: attachments)
+            } else if
+                sectionOptions.contains(.mediaPreview),
+                let textAttachment = textAttachment
+            {
+                addMediaPreview(to: section, textAttachment: textAttachment)
+            }
+            contents.addSection(section)
+        }
+
         // Stories Section
         do {
             let section = OWSTableSection()
@@ -505,6 +559,87 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         actionBlock: { [weak self] in
             self?.didToggleSection(conversation: item)
         }))
+    }
+
+    private func addMediaPreview(
+        to section: OWSTableSection,
+        attachments: [SignalAttachment]
+    ) {
+        guard let firstAttachment = attachments.first else {
+            owsFailDebug("Cannot add media preview section without attachments")
+            return
+        }
+
+        guard let mediaPreview = makeMediaPreview(firstAttachment) else {
+            return
+        }
+        let container = addPrimaryMediaPreviewView(mediaPreview, to: section)
+
+        if let secondAttachment = attachments[safe: 1], let secondMediaPreview = makeMediaPreview(secondAttachment) {
+            let mediaPreviewBorder = UIView()
+            mediaPreviewBorder.backgroundColor = self.tableBackgroundColor
+            mediaPreviewBorder.layer.masksToBounds = true
+            mediaPreviewBorder.layer.cornerRadius = mediaPreview.layer.cornerRadius
+            container.insertSubview(mediaPreviewBorder, belowSubview: mediaPreview)
+
+            mediaPreviewBorder.autoPin(toEdgesOf: mediaPreview, with: .init(margin: -3))
+
+            secondMediaPreview.layer.masksToBounds = true
+            secondMediaPreview.layer.cornerRadius = 18
+
+            container.insertSubview(secondMediaPreview, belowSubview: mediaPreviewBorder)
+            secondMediaPreview.autoVCenterInSuperview()
+            secondMediaPreview.autoConstrainAttribute(.vertical, to: .vertical, of: mediaPreview, withOffset: -26)
+            secondMediaPreview.autoSetDimensions(to: mediaPreviewSize.applying(.scale(0.85)))
+
+            secondMediaPreview.transform = .identity.rotated(by: (CurrentAppContext().isRTL ? 15 : -15) * CGFloat.pi / 180)
+        }
+    }
+
+    private func makeMediaPreview(_ attachment: SignalAttachment) -> UIView? {
+        if attachment.isVideo || attachment.isImage || attachment.isAnimatedImage {
+            let mediaPreview = MediaMessageView(attachment: attachment, contentMode: .scaleAspectFill)
+            mediaPreview.layer.masksToBounds = true
+            mediaPreview.layer.cornerRadius = 18
+            return mediaPreview
+        }
+        return nil
+    }
+
+    private func addMediaPreview(
+        to section: OWSTableSection,
+        textAttachment: TextAttachment
+    ) {
+        let previewView = TextAttachmentView(attachment: textAttachment).asThumbnailView()
+        previewView.layer.masksToBounds = true
+        previewView.layer.cornerRadius = 18
+        addPrimaryMediaPreviewView(previewView, to: section)
+    }
+
+    @discardableResult
+    private func addPrimaryMediaPreviewView(
+        _ previewView: UIView,
+        to section: OWSTableSection
+    ) -> UIView {
+        let container = UIView()
+        container.preservesSuperviewLayoutMargins = true
+
+        container.addSubview(previewView)
+        previewView.autoPinEdge(toSuperviewEdge: .top, withInset: 3)
+        previewView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
+        previewView.autoHCenterInSuperview()
+        previewView.autoSetDimensions(to: mediaPreviewSize)
+
+        section.customHeaderView = container
+        return container
+    }
+
+    private var mediaPreviewSize: CGSize {
+        if UIDevice.current.isShorterThaniPhoneX {
+            return .init(width: 90, height: 160)
+        } else {
+            return .init(width: 140, height: 248)
+        }
     }
 
     private func addExpandableConversations(
@@ -1172,7 +1307,7 @@ public class ConversationPickerSelection: Dependencies {
 // MARK: -
 
 private enum ConversationPickerSection: Int, CaseIterable {
-    case stories, recents, signalContacts, groups
+    case mediaPreview, stories, recents, signalContacts, groups
 }
 
 // MARK: -
@@ -1204,6 +1339,9 @@ private struct ConversationCollection {
             return groupConversations
         case .stories:
             return storyConversations
+        case .mediaPreview:
+            owsFailDebug("Should not be fetching conversations for media preview section")
+            return []
         }
     }
 

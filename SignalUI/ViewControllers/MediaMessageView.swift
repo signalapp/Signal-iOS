@@ -14,24 +14,45 @@ class MediaMessageView: AttachmentPrepContentView, OWSAudioPlayerDelegate {
 
     // MARK: Initializers
 
-    required init(attachment: SignalAttachment) {
+    required init(attachment: SignalAttachment, contentMode: UIView.ContentMode = .scaleAspectFit) {
         assert(!attachment.hasError)
         self.attachment = attachment
 
         super.init(frame: CGRect.zero)
 
+        self.contentMode = contentMode
         tintColor = .white
 
-        createViews()
+        recreateViews()
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override var contentMode: UIView.ContentMode {
+        get {
+            return super.contentMode
+        }
+        set {
+            switch newValue {
+            case .scaleAspectFit:
+                super.contentMode = .scaleAspectFit
+            case .scaleAspectFill:
+                super.contentMode = .scaleAspectFill
+            default:
+                owsFailDebug("Invalid content mode, only scale aspect fit and fill are supported")
+                super.contentMode = .scaleAspectFit
+            }
+            recreateViews()
+        }
+    }
+
     // MARK: - Create Views
 
-    private func createViews() {
+    private func recreateViews() {
+        subviews.forEach { $0.removeFromSuperview() }
+
         if attachment.isLoopingVideo {
             createLoopingVideoPreview()
         } else if attachment.isAnimatedImage {
@@ -107,7 +128,11 @@ class MediaMessageView: AttachmentPrepContentView, OWSAudioPlayerDelegate {
 
         let loopingVideoView = LoopingVideoView()
         loopingVideoView.video = video
-        addSubviewWithScaleAspectFitLayout(view: loopingVideoView, aspectRatio: previewImage.size.aspectRatio)
+        if contentMode == .scaleAspectFill {
+            addSubviewWithScaleAspectFillLayout(view: loopingVideoView, aspectRatio: previewImage.size.aspectRatio)
+        } else {
+            addSubviewWithScaleAspectFitLayout(view: loopingVideoView, aspectRatio: previewImage.size.aspectRatio)
+        }
     }
 
     private func createAnimatedPreview() {
@@ -122,7 +147,12 @@ class MediaMessageView: AttachmentPrepContentView, OWSAudioPlayerDelegate {
         let animatedImageView = YYAnimatedImageView()
         animatedImageView.image = image
         let aspectRatio = image.size.width / image.size.height
-        addSubviewWithScaleAspectFitLayout(view: animatedImageView, aspectRatio: aspectRatio)
+
+        if contentMode == .scaleAspectFill {
+            addSubviewWithScaleAspectFillLayout(view: animatedImageView, aspectRatio: aspectRatio)
+        } else {
+            addSubviewWithScaleAspectFitLayout(view: animatedImageView, aspectRatio: aspectRatio)
+        }
     }
 
     private func addSubviewWithScaleAspectFitLayout(view: UIView, aspectRatio: CGFloat) {
@@ -134,6 +164,21 @@ class MediaMessageView: AttachmentPrepContentView, OWSAudioPlayerDelegate {
         view.autoPin(toAspectRatio: aspectRatio)
         view.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual)
         view.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual)
+    }
+
+    private func addSubviewWithScaleAspectFillLayout(view: UIView, aspectRatio: CGFloat) {
+        addSubview(view)
+
+        // This emulates the behavior of contentMode = .scaleAspectFill using iOS auto layout constraints.
+        view.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor).isActive = true
+        view.centerYAnchor.constraint(equalTo: contentLayoutGuide.centerYAnchor).isActive = true
+        view.autoPin(toAspectRatio: aspectRatio)
+        if aspectRatio >= 1 {
+            // width bigger than height, pin height.
+            view.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .equal)
+        } else {
+            view.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .equal)
+        }
     }
 
     private func createImagePreview() {
@@ -148,7 +193,11 @@ class MediaMessageView: AttachmentPrepContentView, OWSAudioPlayerDelegate {
         imageView.layer.minificationFilter = .trilinear
         imageView.layer.magnificationFilter = .trilinear
         let aspectRatio = image.size.width / image.size.height
-        addSubviewWithScaleAspectFitLayout(view: imageView, aspectRatio: aspectRatio)
+        if contentMode == .scaleAspectFill {
+            addSubviewWithScaleAspectFillLayout(view: imageView, aspectRatio: aspectRatio)
+        } else {
+            addSubviewWithScaleAspectFitLayout(view: imageView, aspectRatio: aspectRatio)
+        }
     }
 
     private func createVideoPreview() {
@@ -163,7 +212,12 @@ class MediaMessageView: AttachmentPrepContentView, OWSAudioPlayerDelegate {
         imageView.layer.minificationFilter = .trilinear
         imageView.layer.magnificationFilter = .trilinear
         let aspectRatio = image.size.width / image.size.height
-        addSubviewWithScaleAspectFitLayout(view: imageView, aspectRatio: aspectRatio)
+
+        if contentMode == .scaleAspectFill {
+            addSubviewWithScaleAspectFillLayout(view: imageView, aspectRatio: aspectRatio)
+        } else {
+            addSubviewWithScaleAspectFitLayout(view: imageView, aspectRatio: aspectRatio)
+        }
     }
 
     private func createGenericPreview() {

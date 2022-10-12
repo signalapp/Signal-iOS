@@ -70,28 +70,15 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
         self.approvedAttachments = attachments
         self.approvalMessageBody = messageBody
 
-        let maxVideoAttachmentDuration: TimeInterval? = attachments
-            .lazy
-            .compactMap { attachment in
-                guard
-                    attachment.isVideo,
-                    let url = attachment.dataUrl
-                else {
-                    return nil
-                }
-                return AVURLAsset(url: url).duration.seconds
-            }
-            .max()
-
         let pickerVC = ConversationPickerViewController(
             selection: selection,
-            maxVideoAttachmentDuration: maxVideoAttachmentDuration
+            attachments: attachments
         )
         pickerVC.pickerDelegate = self
         pickerVC.shouldBatchUpdateIdentityKeys = true
         if storiesOnly {
             pickerVC.isStorySectionExpanded = true
-            pickerVC.sectionOptions = .stories
+            pickerVC.sectionOptions = .storiesOnly
         } else if showsStoriesInPicker {
             pickerVC.sectionOptions.insert(.stories)
         }
@@ -101,11 +88,11 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didFinishWithTextAttachment textAttachment: TextAttachment) {
         self.textAttachment = textAttachment
 
-        let pickerVC = ConversationPickerViewController(selection: selection)
+        let pickerVC = ConversationPickerViewController(selection: selection, textAttacment: textAttachment)
         pickerVC.pickerDelegate = self
         if showsStoriesInPicker || storiesOnly {
             pickerVC.isStorySectionExpanded = true
-            pickerVC.sectionOptions = .stories
+            pickerVC.sectionOptions = .storiesOnly
         } else {
             owsFailDebug("Shouldn't ever have stories disabled with text attachments!")
         }

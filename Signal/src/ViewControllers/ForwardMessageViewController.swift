@@ -43,10 +43,11 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         super.init()
 
         if self.content.canSendToStories {
-            if !self.content.canSendToNonStories {
-                self.pickerVC.sectionOptions.remove(.all)
+            if self.content.canSendToNonStories {
+                self.pickerVC.sectionOptions.insert(.stories)
+            } else {
+                self.pickerVC.sectionOptions = .storiesOnly
             }
-            self.pickerVC.sectionOptions.insert(.stories)
         } else {
             self.pickerVC.shouldHideRecentConversationsTitle = true
         }
