@@ -607,9 +607,9 @@ class StoryListDataSource: NSObject, Dependencies {
             case .move(let oldIndex, let newIndex):
                 tableView.deleteRows(at: [IndexPath(row: oldIndex, section: section.rawValue)], with: .fade)
                 tableView.insertRows(at: [IndexPath(row: newIndex, section: section.rawValue)], with: .fade)
-            case .update(_, let newIndex):
+            case .update(let oldIndex, let newIndex):
                 // If the cell is visible, reconfigure it directly without reloading.
-                let path = IndexPath(row: newIndex, section: section.rawValue)
+                let path = IndexPath(row: oldIndex, section: section.rawValue)
                 if
                     (tableView.indexPathsForVisibleRows ?? []).contains(path),
                     let visibleCell = tableView.cellForRow(at: path) as? StoryCell
