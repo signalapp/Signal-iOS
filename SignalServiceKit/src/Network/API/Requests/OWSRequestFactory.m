@@ -947,23 +947,6 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"POST" parameters:@{}];
 }
 
-#pragma mark - Donations
-
-+ (TSRequest *)createPaymentIntentWithAmount:(NSUInteger)amount
-                              inCurrencyCode:(NSString *)currencyCode
-                             withDescription:(nullable NSString *)description
-{
-    NSMutableDictionary *parameters =
-        [@{ @"currency" : currencyCode.lowercaseString, @"amount" : @(amount) } mutableCopy];
-    if (description) {
-        parameters[@"description"] = description;
-    }
-
-    return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/donation/authorize-apple-pay"]
-                              method:@"POST"
-                          parameters:parameters];
-}
-
 #pragma mark - Subscriptions
 
 + (TSRequest *)subscriptionLevelsRequest
