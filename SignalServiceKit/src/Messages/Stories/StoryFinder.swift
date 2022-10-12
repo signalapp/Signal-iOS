@@ -9,16 +9,13 @@ import GRDB
 public class StoryFinder: NSObject {
     public static func unviewedSenderCount(transaction: SDSAnyReadTransaction) -> Int {
         let ownUUIDClause = tsAccountManager.localUuid.map {
-            "AND \(StoryContextAssociatedData.columnName(.contactUuid)) != '\($0)'"
+            "AND \(StoryContextAssociatedData.columnName(.contactUuid)) IS NOT '\($0)'"
         } ?? ""
         let sql = """
             SELECT COUNT(*)
             FROM \(StoryContextAssociatedData.databaseTableName)
             WHERE
-                (
-                    \(StoryContextAssociatedData.columnName(.isHidden)) = 0
-                    OR \(StoryContextAssociatedData.columnName(.isHidden)) is NULL
-                )
+                \(StoryContextAssociatedData.columnName(.isHidden)) IS NOT 1
                 AND \(StoryContextAssociatedData.columnName(.latestUnexpiredTimestamp)) IS NOT NULL
                 AND (
                     \(StoryContextAssociatedData.columnName(.lastViewedTimestamp)) IS NULL
