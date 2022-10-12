@@ -1046,6 +1046,9 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                 )
             """
         }
+        guard !storyFilters.isEmpty else {
+            return false
+        }
 
         let sql = """
             SELECT EXISTS(
