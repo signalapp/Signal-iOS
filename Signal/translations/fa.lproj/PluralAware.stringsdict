@@ -376,7 +376,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>استوری خصوصی · %1$d بازدیدکننده</string>
+			<string>استوری خصوصی · ۱ بازدیدکننده</string>
 			<key>other</key>
 			<string>استوری خصوصی · %1$d بازدید کننده</string>
 		</dict>
@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>تنها با · ۱ بازدیدکننده هم‌رسانی شود</string>
+			<string>همرسانی تنها با · ۱ بازدیدکننده</string>
 			<key>other</key>
-			<string>تنها با . %1$d بازدیدکننده هم‌رسانی شود</string>
+			<string>همرسانی تنها با . %1$d بازدیدکننده</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -440,7 +440,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>استوری گروهی · %1$d بازدید کننده</string>
+			<string>استوری گروهی · ۱ بازدید کننده</string>
 			<key>other</key>
 			<string>استوری گروهی · %1$d بازدید کننده</string>
 		</dict>

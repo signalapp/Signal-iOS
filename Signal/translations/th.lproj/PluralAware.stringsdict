@@ -330,7 +330,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>สตอรี่ส่วนตัว · ผู้ชม %1$d</string>
+			<string>สตอรี่ส่วนตัว · ผู้ชม %1$d คน</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -386,7 +386,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>สตอรี่กลุ่ม · ผู้ชม %1$d</string>
+			<string>สตอรี่กลุ่ม · ผู้ชม %1$d คน</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>

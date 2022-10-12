@@ -372,7 +372,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>只分享給 · %1$d 位瀏覽者</string>
+			<string>只分享給 · %1$d 個瀏覽者</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>

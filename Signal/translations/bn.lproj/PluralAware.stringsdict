@@ -376,7 +376,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>ব্যক্তিগত স্টোরি · %1$d জন দর্শক</string>
+			<string>ব্যক্তিগত স্টোরি · 1 জন দর্শক</string>
 			<key>other</key>
 			<string>ব্যক্তিগত স্টোরি · %1$d জন দর্শক</string>
 		</dict>
@@ -440,7 +440,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>গ্ৰুপ স্টোরি · %1$d জন দর্শক</string>
+			<string>গ্ৰুপ স্টোরি · 1 জন দর্শক</string>
 			<key>other</key>
 			<string>গ্ৰুপ স্টোরি · %1$d জন দর্শক</string>
 		</dict>

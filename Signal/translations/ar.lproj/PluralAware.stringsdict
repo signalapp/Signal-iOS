@@ -560,17 +560,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>قصة خاصة ·  %1$d مشاهدين</string>
+			<string>قصة خاصة · %1$d مشاهدين</string>
 			<key>one</key>
-			<string>قصة خاصة · %1$d مشاهد</string>
+			<string>قصة خاصة · مشاهد واحد</string>
 			<key>two</key>
 			<string>قصة خاصة · %1$d مشاهدين</string>
 			<key>few</key>
 			<string>قصة خاصة · %1$d مشاهدين</string>
 			<key>many</key>
-			<string>قصة خاصة · %1$d مشاهدين</string>
+			<string>قصة خاصة · %1$d مشاهدًا</string>
 			<key>other</key>
-			<string>قِصة خاصة · %1$d مشاهدين</string>
+			<string>قِصة خاصة · %1$d مشاهد</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -584,17 +584,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>جميع جهات اتصال Signal . %1$d مُشاهِد</string>
+			<string>جميع جهات اتصال Signal · %1$d مُشاهِد</string>
 			<key>one</key>
-			<string>جميع جهات اتصال Signal . مُشاهِد واحد</string>
+			<string>جميع جهات اتصال Signal · مُشاهِد واحد</string>
 			<key>two</key>
-			<string>جميع جهات اتصال Signal . %1$d مُشاهِدان</string>
+			<string>جميع جهات اتصال Signal · %1$d مُشاهِدين</string>
 			<key>few</key>
-			<string>جميع جهات اتصال Signal . %1$d مُشاهِدين</string>
+			<string>جميع جهات اتصال Signal · %1$d مُشاهِدين</string>
 			<key>many</key>
-			<string>جميع جهات اتصال Signal . %1$d مُشاهِدًا</string>
+			<string>جميع جهات اتصال Signal · %1$d مُشاهِدًا</string>
 			<key>other</key>
-			<string>جميع جهات اتصال Signal . %1$d مُشاهِد</string>
+			<string>جميع جهات اتصال Signal · %1$d مُشاهِد</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -608,17 +608,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>جميع جهات اتصال Signal . %1$d مُستبعد</string>
+			<string>جميع جهات اتصال Signal · %1$d مُستبعد</string>
 			<key>one</key>
-			<string>جميع جهات اتصال Signal . 1 مُستبعد</string>
+			<string>جميع جهات اتصال Signal · 1 مُستبعد</string>
 			<key>two</key>
-			<string>جميع جهات اتصال Signal . %1$d مُستبعدان</string>
+			<string>جميع جهات اتصال Signal · %1$d مُستبعدين</string>
 			<key>few</key>
-			<string>جميع جهات اتصال Signal . %1$d مُستبعدين</string>
+			<string>جميع جهات اتصال Signal · %1$d مُستبعدين</string>
 			<key>many</key>
-			<string>جميع جهات اتصال Signal . %1$d مُستبعدًا</string>
+			<string>جميع جهات اتصال Signal · %1$d مُستبعدًا</string>
 			<key>other</key>
-			<string>جميع جهات اتصال Signal . %1$d مُستبعدٍ</string>
+			<string>جميع جهات اتصال Signal · %1$d مُستبعدٍ</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -632,17 +632,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>المشاركة فقط مع . %1$d مُشاهِد</string>
+			<string>المشاركة فقط مع · %1$d مُشاهِد</string>
 			<key>one</key>
-			<string>المشاركة فقط مع . مُشاهِد واحد</string>
+			<string>المشاركة فقط مع · مُشاهِد واحد</string>
 			<key>two</key>
-			<string>المشاركة فقط مع . %1$d مُشاهِديْن</string>
+			<string>المشاركة فقط مع · %1$d مُشاهِدين</string>
 			<key>few</key>
-			<string>المشاركة فقط مع . %1$d مُشاهِدين</string>
+			<string>المشاركة فقط مع · %1$d مُشاهِدين</string>
 			<key>many</key>
-			<string>المشاركة فقط مع . %1$d مُشاهِدًا</string>
+			<string>المشاركة فقط مع · %1$d مُشاهِدًا</string>
 			<key>other</key>
-			<string>المشاركة فقط مع . %1$d مُشاهِدٍ</string>
+			<string>المشاركة فقط مع · %1$d مُشاهِدٍ</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -658,15 +658,15 @@
 			<key>zero</key>
 			<string>قصة جماعية · %1$d مشاهدين</string>
 			<key>one</key>
-			<string>قصة جماعية · %1$d مشاهد</string>
+			<string>قصة جماعية · مشاهد واحد</string>
 			<key>two</key>
 			<string>قصة جماعية · %1$d مشاهدين</string>
 			<key>few</key>
 			<string>قصة جماعية · %1$d مشاهدين</string>
 			<key>many</key>
-			<string>قصة جماعية · %1$d مشاهدين</string>
+			<string>قصة جماعية · %1$d مشاهدًا</string>
 			<key>other</key>
-			<string>قِصة جماعية · %1$d مشاهدين</string>
+			<string>قِصة جماعية · %1$d مشاهد</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>

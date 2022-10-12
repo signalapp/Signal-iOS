@@ -358,7 +358,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>所有 Signal 密友 · 排除 %1$d 人</string>
+			<string>所有 Signal 密友 · 排除 %1$d</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>

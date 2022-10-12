@@ -548,13 +548,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>История группы · %1$d зритель</string>
+			<string>История в группе · %1$d зритель</string>
 			<key>few</key>
-			<string>История группы · %1$d зрителя</string>
+			<string>История в группе · %1$d зрителя</string>
 			<key>many</key>
-			<string>История группы · %1$d зрителей</string>
+			<string>История в группе · %1$d зрителей</string>
 			<key>other</key>
-			<string>История группы · %1$d зрителя</string>
+			<string>История в группе · %1$d зрителя</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>

@@ -1472,52 +1472,52 @@
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Datenbankdiagnose durchführen?";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Some of your message history may be corrupted. There has been no impact to the security of your account or messages. Tap “Continue” to recover your data.";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Ein Teil deines Nachrichtenverlaufs könnte fehlerhaft sein. Dies hat keine Auswirkungen auf die Sicherheit deines Kontos oder deiner Nachrichten. Tippe auf »Weiter«, um deine Daten wiederherzustellen.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problem Retrieving Data";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problem beim Abrufen von Daten";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Continue Anyway";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Trotzdem fortfahren";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "In order to complete data recovery, we recommend you have at least %1$@ of storage space free on your device.";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "Um die Datenwiederherstellung abzuschließen, solltest du mindestens %1$@ freien Speicherplatz auf deinem Gerät haben.";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "More Storage Space Needed";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Mehr Speicherplatz erforderlich";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Your message history couldn’t recover. You can continue to use Signal after reinstalling. Submit a debug log so we can better understand what went wrong.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Dein Nachrichtenverlauf konnte nicht wiederhergestellt werden. Du kannst Signal nach der Neuinstallation weiter verwenden. Sende uns ein Fehlerprotokoll, damit wir besser verstehen können, was schiefgelaufen ist.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Signal zurücksetzen";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Zurücksetzen";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Your account info, profile, and all of your messages will be cleared. The app will close after this process is complete.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Deine Kontodaten, dein Profil und all deine Nachrichten werden dabei gelöscht. Die App wird beendet, wenn dieser Vorgang abgeschlossen ist.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Signal zurücksetzen";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Diagnoseprotokoll übermitteln";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Data Not Recovered";
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Daten nicht wiederhergestellt";
 
 /* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Keep the app open during the recovery process. It may take several minutes.";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Die App während des Wiederherstellungsvorgangs geöffnet lassen. Das kann einige Minuten dauern.";
 
 /* On the database recovery screen, this is the title shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Recovering Data";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Daten werden wiederhergestellt";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Recovery was successful, but some messages may not have been recovered.";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Die Wiederherstellung war erfolgreich, aber einige Nachrichten wurden möglicherweise nicht wiederhergestellt.";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Data Successfully Recovered";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Daten erfolgreich wiederhergestellt";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Dies kann einige Minuten dauern.";
@@ -2834,7 +2834,7 @@
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Möchtest du diese Story wirklich löschen?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Mitglieder der Gruppe „%1$@\" können diese Story sehen und darauf antworten. Du kannst die Mitgliedschaft für diese Unterhaltung in der Gruppe aktualisieren.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Mitglieder der Gruppe »%1$@« können diese Story sehen und darauf antworten. Du kannst die Mitgliedschaft für diese Unterhaltung in der Gruppe aktualisieren.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Wer kann diese Story sehen?";
@@ -3881,13 +3881,13 @@
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "Erstellen";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Ein Storyname ist erforderlich";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Ein Story-Name ist erforderlich";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Fehlender Storyname";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Fehlender Story-Name";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Storyname (Erforderlich)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Story-Name (Erforderlich)";
 
 /* The title for the 'new private story' view. */
 "NEW_PRIVATE_STORY_VIEW_TITLE" = "Betrachter auswählen";
@@ -4736,13 +4736,13 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Private Story löschen";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Bist du sicher, dass du »%1$@« löschen willst? Aktualisierungen, die zu dieser Story geteilt werden, werden ebenfalls gelöscht.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Entfernen";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Diese Person wird diese Story nicht länger sehen können.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Diese Person wird diese Story nicht mehr sehen können.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "%1$@ entfernen?";
@@ -4898,40 +4898,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "Alle · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "%1$@ hat auf deine Nachricht reagiert";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Mit %1$@ auf deine Nachricht reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Hat mit %1$@ auf dein Album reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Mit %1$@ auf dein Album reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Hat mit %1$@ auf dein Audio reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Mit %1$@ auf dein Audio reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Hat mit %1$@ auf dein Kontaktteilen reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Mit %1$@ auf dein Kontaktteilen reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Hat mit %1$@ auf deine Datei reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Mit %1$@ auf deine Datei reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Hat mit %1$@ auf dein GIF reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Mit %1$@ auf dein GIF reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Hat mit %1$@ auf dein Foto reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Mit %1$@ auf dein Foto reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Hat mit %1$@ auf deinen Sticker reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Mit %1$@ auf deinen Sticker reagiert";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Hat mit %1$@ reagiert auf: »%2$@«";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Mit %1$@ reagiert auf: »%2$@«";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Hat mit %1$@ auf dein Video reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Mit %1$@ auf dein Video reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Hat mit %1$@ auf deine einmalig anzeigbaren Medieninhalte reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Mit %1$@ auf deine einmalig anzeigbaren Medieninhalte reagiert";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Hat mit %1$@ auf deine Sprachnachricht reagiert";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Mit %1$@ auf deine Sprachnachricht reagiert";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Gelesen";
@@ -6233,7 +6233,7 @@
 "STORIES_GO_TO_CHAT_ACTION" = "Zur Unterhaltung";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Du kannst nicht auf diese Story antworten, weil du nicht mehr Mitglied in dieser Gruppe bist.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Du kannst nicht auf diese Story antworten, weil du nicht mehr Mitglied dieser Gruppe bist.";
 
 /* Header for the hidden stories section of the stories list */
 "STORIES_HIDDEN_SECTION_HEADER" = "Ausgeblendete Storys";
@@ -6293,13 +6293,13 @@
 "STORIES_SETTINGS_TITLE" = "Story-Datenschutz";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Du wirst keine Storys mehr teilen oder betrachten können. Story-Updates, die du kürzlich geteilt hast, werden ebenfalls gelöscht.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Ausschalten und Storys löschen";
 
 /* Footer for the 'turn off' section of the stories settings */
-"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Wenn du dich von Storys abmeldest, kannst du keine Storys mehr teilen oder ansehen.";
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Wenn du dich von Storys abmeldest, kannst du keine Storys mehr teilen oder betrachten.";
 
 /* Button to turn off stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Storys ausschalten";
@@ -6422,10 +6422,10 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Speicherung in den Systemkontakten";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Deine Verbindungen können deinen Namen und dein Foto sowie Beiträge unter »Meine Story« sehen, es sei denn, du verbirgst sie vor ihnen.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal-Verbindungen</bold> sind Personen, denen du vertraust, entweder durch:";
 
 /* Section footer for the 'viewers' section on the 'story settings' view
    Section footer for the 'viewers' section on the 'story settings' view. */
@@ -6435,7 +6435,7 @@
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Wer kann diese Story sehen?";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Lege fest, welche Signal-Verbindungen deine Story sehen können. Du kannst dies jederzeit in den Datenschutzeinstellungen ändern.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "An Storys gesendete Videos werden auf %1$d-Sekunden-Clips gekürzt und als mehrere Storys verschickt.";

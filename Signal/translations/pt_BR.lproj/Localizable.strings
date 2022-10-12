@@ -1472,52 +1472,52 @@
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Executar diagnóstico da base de dados?";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Some of your message history may be corrupted. There has been no impact to the security of your account or messages. Tap “Continue” to recover your data.";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Parte do seu histórico de mensagens pode estar corrompido. Isso não prejudica a segurança da sua conta ou mensagens. Toque em \"Continuar\" para recuperar seus dados.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problem Retrieving Data";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problema ao recuperar dados";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Continue Anyway";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Continuar mesmo assim";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "In order to complete data recovery, we recommend you have at least %1$@ of storage space free on your device.";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "Para concluir a recuperação de dados, recomendamos que você tenha pelo menos %1$@ de espaço livre no seu dispositivo.";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "More Storage Space Needed";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Você precisa de mais espaço de armazenamento";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Your message history couldn’t recover. You can continue to use Signal after reinstalling. Submit a debug log so we can better understand what went wrong.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Não foi possível recuperar seu histórico de mensagens. Continue a usar o Signal depois de reinstalar. Envie um registro de depuração para que a gente possa entender o que aconteceu.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Reiniciar o Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Redefinir";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Your account info, profile, and all of your messages will be cleared. The app will close after this process is complete.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Suas informações de conta, perfil e todas as suas mensagens serão apagadas. O app será encerrado após a conclusão deste processo.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Reiniciar o Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Enviar registro de depuração";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Data Not Recovered";
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Dados não recuperados";
 
 /* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Keep the app open during the recovery process. It may take several minutes.";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Mantenha o app aberto durante o processo de recuperação. Isso pode demorar alguns minutos.";
 
 /* On the database recovery screen, this is the title shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Recovering Data";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Recuperando dados";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Recovery was successful, but some messages may not have been recovered.";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Concluímos a recuperação, mas é possível que algumas mensagens não tenham sido recuperadas.";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Data Successfully Recovered";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Dados recuperados";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Isso pode levar alguns minutos.";
@@ -1640,7 +1640,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Continuar sem transferir sua conta e suas mensagens";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Adicional esse iPad como um novo aparelho vinculado, sem transferir o histórico de mensagens";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Adicione esse iPad como um novo aparelho vinculado, sem transferir o histórico de mensagens";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Adicionar como novo aparelho";
@@ -3773,13 +3773,13 @@
 "MY_STORIES_NO_STORIES" = "Atualizações no seu story aparecerão aqui.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Todos, exceto...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Todos, exceto…";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Todos os contatos do Signal";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Compartilhar apenas com...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Compartilhar apenas com…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Meus Stories";
@@ -3884,7 +3884,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "O story precisa ter um nome.";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Faltando o nome do story";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Story sem nome";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Nome do story (obrigatório)";
@@ -4733,10 +4733,10 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Adicionar espectadores";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Deletar story privado";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Excluir story privado";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Tem certeza que deseja excluir “%1$@”? As atualizações desse story também serão excluídas.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Remover";
@@ -4871,7 +4871,7 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reagiu ao seu story";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reagiu ao Story de %1$@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reagiu ao story de %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Story";
@@ -5150,7 +5150,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Não foi possível obter o código de vinculação.";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Para vincular este aparelho a uma conta diferente, primeiramente você deve redefinir a conta atual neste aparelho. Tem certeza de que você deseja excluir todo o histórico (mensagens, anexos, chamadas, etc)? Essa ação não poderá ser revertida.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Para vincular este aparelho a uma conta diferente, primeiramente você precisa redefinir a conta atual neste aparelho. Tem certeza de que você deseja excluir todo o histórico (mensagens, anexos, chamadas etc)? Essa ação não poderá ser revertida.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Excluir tudo";
@@ -5459,7 +5459,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Apagar todos os dados";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Tem certeza de que deseja apagar todo seu histórico (mensagens, anexos, chamadas, etc.)? Essa ação não pode ser revertida.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Tem certeza de que deseja apagar todo seu histórico (mensagens, anexos, chamadas etc.)? Essa ação não pode ser revertida.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Apagar Tudo";
@@ -6293,10 +6293,10 @@
 "STORIES_SETTINGS_TITLE" = "Privacidade do story";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Você não poderá mais compartilhar ou ver stories. As atualizações de stories que você compartilhou recentemente também serão excluídas.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Desativar e excluir stories";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Se desativar os stories, você não poderá mais compartilhar ou ver stories.";
@@ -6419,13 +6419,13 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Aceitar uma solicitação de conversa";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Tê-los em seus contatos do sistema";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Salvar os contatos no seu telefone";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Seus contatos conseguem ver: seu nome, foto e tudo que você enviar para os stories, exceto o que você ocultar.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Contatos do Signal</bold> são pessoas nas quais você escolheu confiar, seja por:";
 
 /* Section footer for the 'viewers' section on the 'story settings' view
    Section footer for the 'viewers' section on the 'story settings' view. */
@@ -6435,7 +6435,7 @@
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Quem pode ver esse story";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Escolha quais contatos do Signal podem ver o seu story. É possível mudar isso nas configurações de privacidade.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Os vídeos enviados para o Stories serão reduzidos para clipes de %1$d segundos e compartilhados como vários stories.";

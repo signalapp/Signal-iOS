@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "儲存空間不足";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "無法還原從您的舊裝置傳送的資料。請將除錯日誌傳送至 support@signal.org 來讓我們修正問題。如果您重新安裝 Signal，您可能會遺失你的訊息紀錄。";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "無法還原從舊裝置轉移的資料。請將除錯日誌傳送至 support@signal.org 以便我們修正問題。重新安裝 Signal 可能會導致訊息紀錄遺失。";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "無法完成傳送資料";
@@ -1472,52 +1472,52 @@
 "DATABASE_INTEGRITY_CHECK_TITLE" = "要執行資料庫診斷嗎？";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Some of your message history may be corrupted. There has been no impact to the security of your account or messages. Tap “Continue” to recover your data.";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "部分訊息紀錄可能已經損毀。你帳戶或訊息的安全性並無受到影響。點按「繼續」以恢復你的資料。";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problem Retrieving Data";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "擷取資料時出現問題";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Continue Anyway";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "仍要繼續";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "In order to complete data recovery, we recommend you have at least %1$@ of storage space free on your device.";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "為了完成資料恢復，我們建議你的裝置最少要有 %1$@ 的可用儲存空間。";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "More Storage Space Needed";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "需要更多儲存空間";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Your message history couldn’t recover. You can continue to use Signal after reinstalling. Submit a debug log so we can better understand what went wrong.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "無法恢復你的訊息紀錄。重新安裝後，你可以繼續使用 Signal。請提交除錯紀錄，幫助我們更了解問題所在。";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "重設 Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "重設";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Your account info, profile, and all of your messages will be cleared. The app will close after this process is complete.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "你的帳戶資料、個人檔案和所有訊息將會被清除。完成處理後，應用程式將會關閉。";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "重設 Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "傳送錯誤紀錄";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Data Not Recovered";
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "未能恢復資料";
 
 /* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Keep the app open during the recovery process. It may take several minutes.";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "請在恢復過程期間保持應用程式開啟。這可能需時數分鐘。";
 
 /* On the database recovery screen, this is the title shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Recovering Data";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "正在恢復資料";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Recovery was successful, but some messages may not have been recovered.";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "恢復過程順利完成，但某些訊息可能無法恢復。";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Data Successfully Recovered";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "成功恢復資料";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "可能需要數分鐘。";
@@ -1640,7 +1640,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "不轉移帳戶及訊息並繼續";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "將這部 iPad 新增為已連接裝置但不轉移訊息記錄";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "將這部 iPad 新增為已連結裝置但不轉移訊息紀錄";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "新增為新裝置";
@@ -1652,10 +1652,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "轉移帳戶及訊息";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "從你的舊 iOS 裝置轉移你的帳戶和訊息記錄";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "從舊的 iOS 裝置轉移你的帳戶和訊息紀錄";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "從你的舊 iPad 轉移你的帳戶和訊息記錄";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "從舊的 iPad 轉移你的帳戶和訊息紀錄";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "從另一部 iPad 轉移";
@@ -2987,7 +2987,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "當所有群組成員均使用支援新版群組的 Signal 版本時，此群組才會升級。";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "升級前的所有訊息歷程記錄和媒體均會保留。";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "升級前的所有訊息紀錄和媒體均會保留。";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "這是「舊版群組」。群組管理員等功能僅適用於「新群組」。%1$@";
@@ -3011,7 +3011,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "「新版群組」是甚麼？";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "升級前的所有訊息歷程記錄和媒體均已保留。";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "升級前的所有訊息紀錄和媒體均已保留。";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "「新版群組」備有諸如 @提及 和群組管理員功能，日後亦會支援更多功能。";
@@ -3038,7 +3038,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "這些成員無法在升級後自動加入新版群組：";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "升級前的所有訊息歷程記錄和媒體均已保留。";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "升級前的所有訊息紀錄和媒體均已保留。";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "該成員已被移出群組。在升級之前，將無法重新加入群組：";
@@ -3770,7 +3770,7 @@
 "MUTED_BADGE" = "已靜音";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "你的限時動態更新將在此顯示。";
+"MY_STORIES_NO_STORIES" = "你的限時動態更新將在此處顯示。";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "所有人，除了...";
@@ -3788,10 +3788,10 @@
 "MY_STORY_NAME" = "我的限時動態";
 
 /* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
-"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "選擇誰能瀏覽你的限動";
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "選擇誰能瀏覽你的限時動態";
 
 /* Title for the my story settings sheet */
-"MY_STORY_SETTINGS_SHEET_TITLE" = "「我的限時動態」私隱設定";
+"MY_STORY_SETTINGS_SHEET_TITLE" = "「我的限時動態」隱私設定";
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "我的限時動態";
@@ -3860,7 +3860,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "選擇成員";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ 發佈到 %2$@ 的限時動態";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ 發送到 %2$@ 的限時動態";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "選擇群組";
@@ -4736,13 +4736,13 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "刪除私人限時動態";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "你確定要刪除「%1$@」嗎？分享到此限時動態的更新也將會被刪除。";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "移除";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "此人將無法再瀏覽這限時動態。";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "此人將無法再瀏覽這則限時動態。";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "要移除 %1$@ 嗎？";
@@ -4868,7 +4868,7 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "找不到原始訊息";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "對您的限時動態表達了心情";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "對你的限時動態表達了心情";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "對 %1$@ 的限時動態表達了心情";
@@ -5150,7 +5150,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "無法獲得連結碼";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "如要將此裝置連結至其他帳戶，您必須先重設該裝置。您確定要刪除全部歷史記錄（訊息、附件、通話等）？此操作不可還原。";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "如要將此裝置連結至其他帳戶，你必須先重設裝置。你是否確定要刪除所有紀錄（訊息、附件、通話等）？此操作將無法還原。";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "全部刪除";
@@ -5402,7 +5402,7 @@
 "SETTINGS_CHATS" = "聊天";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "清除對話紀錄";
+"SETTINGS_CLEAR_HISTORY" = "清除聊天紀錄";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Signal Messenger 版權所有\n根據 GPLv3 授權";
@@ -5459,7 +5459,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "刪除所有資料";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "你是否確定要清除所有紀錄？這些紀錄包括所有訊息、附件、通話紀錄等。你將無法復原。";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "你是否確定要刪除所有紀錄（訊息、附件、通話等）？此操作將無法還原。";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "全部刪除";
@@ -6224,7 +6224,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "要刪除此限時動態嗎？系統將會在收到此限時動態的人中删除該限時動態。";
 
 /* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "限時動態已儲存";
+"STORIES_DID_SAVE" = "已儲存限時動態";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "轉發";
@@ -6242,7 +6242,7 @@
 "STORIES_HIDE_STORY_ACTION" = "隱藏限時動態";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
-"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "%1$@ 發佈的新限時動態將不會再出現在限時動態清單的頂部。";
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "%1$@ 發送的新限時動態將不會再出現在限時動態清單的頂部。";
 
 /* Title asking the user if they are sure they want to hide stories from another user */
 "STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "要隱藏限時動態嗎？";
@@ -6257,7 +6257,7 @@
 "STORIES_INFO_ACTION" = "資訊";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "目前沒有更新內容顯示。\n點按 + 符號新增您的限時動態。";
+"STORIES_NO_RECENT_MESSAGES" = "目前沒有更新內容顯示。\n 點按 + 符號以新增你的限時動態。";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "未有回覆";
@@ -6290,16 +6290,16 @@
 "STORIES_SETTINGS_MY_STORIES_HEADER" = "我的限時動態";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "限時動態私隱設定";
+"STORIES_SETTINGS_TITLE" = "限時動態隱私設定";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "你將無法再分享或瀏覽限時動態。你最近分享的限時動態更新也將會被刪除。";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "關閉及刪除限時動態";
 
 /* Footer for the 'turn off' section of the stories settings */
-"STORIES_SETTINGS_TURN_OFF_FOOTER" = "如果你選擇關閉限時動態，將無法再分享或瀏覽限時動態。";
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "如果選擇關閉限時動態，你將無法再分享或瀏覽限時動態。";
 
 /* Button to turn off stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "關閉限時動態";
@@ -6383,10 +6383,10 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "回覆群組";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "無法傳送限時動態。請檢查你的網絡連線，然後再試一次";
+"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "無法發送限時動態。請檢查你的網路連線，然後再試一次";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "無法將此限時動態傳送給某些用戶。請檢查您的連線，然後再試一次";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "無法將此限時動態發送給某些用戶。請檢查您的連線，然後再試一次";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "只分享給...";
@@ -6413,32 +6413,32 @@
 "STORY_SENDING" = "正在傳送...";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "展開一個對話";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "展開對話";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "接受一則訊息要求";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "接受訊息請求";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "系統聯絡人中存在對方";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "你的系統聯絡人中有對方的聯絡資料";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "你的人脈可以看到你的名字和相片。除非你對他們隱藏限時動態，否則他們也可以看到你發送的「我的限時動態」。";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal 人脈</bold>是你透過以下方式選擇而值得信任的人：";
 
 /* Section footer for the 'viewers' section on the 'story settings' view
    Section footer for the 'viewers' section on the 'story settings' view. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "選擇哪個 Signal 人脈可以瀏覽你的限時動態。這不會影響你在更改前發送的限時動態。";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "選擇哪些 Signal 人脈可以瀏覽你的限時動態。這不會影響你在更改前發送的限時動態。";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "誰可以瀏覽此限時動態";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "選擇哪些 Signal 人脈可以瀏覽你的限時動態。你可以隨時在隱私設定中進行更改。";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "發布至限時動態的影片將被剪輯成 %1$d 秒的短片，並以多則限時動態發佈。";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "發送至限時動態的影片將被剪輯成 %1$d 秒的短片，並以多則限時動態發送。";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "輕按以繼續操作";

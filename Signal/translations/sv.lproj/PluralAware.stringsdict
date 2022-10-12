@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Privat berättelse · %1$d tittare</string>
+			<string>Privat story · 1 tittare</string>
 			<key>other</key>
-			<string>Privat berättelse · %1$d tittare</string>
+			<string>Privat story · %1$d tittare</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Gruppberättelse · %1$d tittare</string>
+			<string>Gruppstory · 1 tittare</string>
 			<key>other</key>
-			<string>Gruppberättelse · %1$d tittare</string>
+			<string>Gruppstory · %1$d tittare</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>

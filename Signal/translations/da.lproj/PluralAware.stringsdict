@@ -378,7 +378,7 @@
 			<key>one</key>
 			<string>Privat historie · %1$d seer</string>
 			<key>other</key>
-			<string>Privat historie · %1$d læsere</string>
+			<string>Privat historie · %1$d seere</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -442,7 +442,7 @@
 			<key>one</key>
 			<string>Gruppehistorie · %1$d seer</string>
 			<key>other</key>
-			<string>Gruppehistorie · %1$d læsere</string>
+			<string>Gruppehistorie · %1$d seere</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>

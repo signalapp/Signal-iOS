@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ιδιωτική ιστορία · %1$d προβολή</string>
+			<string>Ιδιωτική ιστορία · 1 θεατής</string>
 			<key>other</key>
-			<string>Ιδιωτική ιστορία · %1$d προβολές</string>
+			<string>Ιδιωτική ιστορία · %1$d θεατές</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -392,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Όλες οι επαφές Signal · 1 προβολή</string>
+			<string>Όλες οι επαφές Signal · 1 θεατής</string>
 			<key>other</key>
-			<string>Όλες οι επαφές Signal · %1$d προβολές</string>
+			<string>Όλες οι επαφές Signal · %1$d θεατές</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ομαδική ιστορία · %1$d προβολή</string>
+			<string>Ιστορία ομάδας · 1 θεατής</string>
 			<key>other</key>
-			<string>Ιστορία ομάδας · %1$d προβολές</string>
+			<string>Ιστορία ομάδας · %1$d θεατές</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>

@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>نجی اسٹوری · %1$d ویور</string>
+			<string>پرائیویٹ سٹوری· 1 ناظر</string>
 			<key>other</key>
-			<string>نجی اسٹوری · %1$d ناظرین</string>
+			<string>پرائیویٹ سٹوری· %1$d ناظرین</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>گروپ اسٹوری · %1$d ویور</string>
+			<string>گروپ سٹوری· 1 ناظر</string>
 			<key>other</key>
-			<string>گروپ اسٹوری · %1$d ناظرین</string>
+			<string>گروپ سٹوری· %1$d ناظرین</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>

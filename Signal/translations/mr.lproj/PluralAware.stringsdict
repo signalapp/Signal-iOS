@@ -376,7 +376,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>खाजगी स्टोरी · %1$d दर्शक</string>
+			<string>खाजगी स्टोरी · 1 दर्शक</string>
 			<key>other</key>
 			<string>खाजगी स्टोरी · %1$d दर्शक</string>
 		</dict>
@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>फक्त यांसह शेअर करा · 1 दर्शक</string>
+			<string>फक्त यांसोबत शेअर करा · 1 दर्शक</string>
 			<key>other</key>
-			<string>फक्त यांसह शेअर करा · %1$d दर्शक</string>
+			<string>फक्त यांसोबत शेअर करा · %1$d दर्शक</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>ग्रुप स्टोरी · %1$d दर्शक</string>
+			<string>ग्रुप स्टोरी · 1 दर्शक</string>
 			<key>other</key>
-			<string>गट स्टोरी · %1$d दर्शक</string>
+			<string>ग्रुप स्टोरी · %1$d दर्शक</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>

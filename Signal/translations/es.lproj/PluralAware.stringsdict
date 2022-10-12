@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Historia privada · 1 vista</string>
+			<string>Historia privada · 1 persona</string>
 			<key>other</key>
-			<string>Historia privada · %1$d vistas</string>
+			<string>Historia privada · %1$d personas</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Compartir solo con · 1 vista</string>
+			<string>Compartir solo con · 1 persona</string>
 			<key>other</key>
-			<string>Compartir solo con · %1$d vistas</string>
+			<string>Compartir solo con · %1$d personas</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Historia de grupo · 1 vista</string>
+			<string>Historia de grupo · 1 persona</string>
 			<key>other</key>
-			<string>Historia de grupo · %1$d vistas</string>
+			<string>Historia de grupo · %1$d personas</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>

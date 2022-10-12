@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Немає місця в сховищі";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Не вдалося відновити дані, перенесені з вашого старого пристрою. Будь ласка, надішліть журнал зневадження на support@signal.org, щоб ми змогли виправити цю проблему. Якщо ви перевстановите Signal, історія повідомлень може бути втрачена.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Не вдалося відновити дані, перенесені з вашого старого пристрою. Будь ласка, надішліть журнал налагодження на support@signal.org, щоб ми могли виправити цю проблему. Якщо ви заново встановите Signal, історія повідомлень може бути втрачена.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Не вдається завершити перенесення";
@@ -1472,52 +1472,52 @@
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Запустити діагностику бази даних?";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Some of your message history may be corrupted. There has been no impact to the security of your account or messages. Tap “Continue” to recover your data.";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Частина вашої історії повідомлень могла бути пошкоджена. Це ніяк не вплинуло на безпеку вашого акаунту чи повідомлень. Натисніть «Продовжити», щоб відновити дані.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problem Retrieving Data";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Проблема з отриманням даних";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Continue Anyway";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Усе одно продовжити";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "In order to complete data recovery, we recommend you have at least %1$@ of storage space free on your device.";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "Щоб завершити відновлення даних, рекомендується мати принаймні %1$@ вільного простору зберігання на пристрої.";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "More Storage Space Needed";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Потрібно більше простору зберігання";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Your message history couldn’t recover. You can continue to use Signal after reinstalling. Submit a debug log so we can better understand what went wrong.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Не вдалося відновити історію повідомлень. Ви можете повторно встановити Signal і користуватися застосунком надалі. Надішліть нам журнал налагодження, щоб ми могли розібратися в цій проблемі.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Відновити початковий стан Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Скинути";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Your account info, profile, and all of your messages will be cleared. The app will close after this process is complete.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Дані акаунту, профіль і всі повідомлення буде видалено. Після видалення застосунок закриється.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Відновити початковий стан Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Відіслати журнал відладки";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Data Not Recovered";
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Дані не відновлено";
 
 /* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Keep the app open during the recovery process. It may take several minutes.";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Не закривайте програму поки триває відновлення. Процес може зайняти кілька хвилин.";
 
 /* On the database recovery screen, this is the title shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Recovering Data";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Відновлюємо дані";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Recovery was successful, but some messages may not have been recovered.";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Дані було відновлено, але, можливо, втрачено деякі повідомлення.";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Data Successfully Recovered";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Дані відновлено";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Це може зайняти кілька хвилин.";
@@ -1652,10 +1652,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Перенесення облікового запису та повідомлень";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Перенести обліковий запис і історію повідомлень з вашого старого пристрою на iOS";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Перенести акаунт і історію повідомлень з вашого старого пристрою на iOS";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Перенести обліковий запис і історію повідомлень з вашого старого iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Перенести акаунт і історію повідомлень з вашого старого iPad";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Перенести з іншого iPad";
@@ -2987,7 +2987,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Коли у всіх користувачів буде версія Signal, яка дозволить приєднатись до Нової групи — цю групу буде оновлено.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Уся історія повідомлень та медіа будуть збережені під час оновлення.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Уся історія повідомлень і медіа будуть збережені під час оновлення.";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Це Успадкована група. Такі можливості як адміністратори доступні лише для Нових груп. %1$@";
@@ -3011,7 +3011,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Що таке Нові Групи?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Уся історія повідомлень та медіа були збережені під час оновлення.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Уся історія повідомлень і медіа були збережені під час оновлення.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Нові групи мають такі можливості як @згадування, адміністраторів груп, та підтримуватимуть більше можливостей у майбутньому.";
@@ -3038,7 +3038,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Цих користувачів не вдалось автоматично додати до Нової групи коли групу було оновлено:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Уся історія повідомлень та медіа були збережені під час оновлення.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Уся історія повідомлень і медіа були збережені під час оновлення.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Цього користувача було видалено з групи, та він не зможе приєднатись поки не оновить застосунок:";
@@ -3776,10 +3776,10 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Усі, крім…";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Усі довірені контакти в Signal";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Усі контакти Signal";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Ділитися тільки з...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Ділитися тільки з…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Мої сторіз";
@@ -4736,7 +4736,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Видалити приватну сторі";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Ви дійсно хочете видалити «%1$@»? Оновлення до цієї сторі також будуть видалені.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Видалити";
@@ -4868,10 +4868,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Оригінальне повідомлення не знайдено.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Відреагували на вашу історію";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Реакції на вашу сторі";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Реагує на розповідь %1$@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Реагує на сторі користувача %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Сторі";
@@ -5150,7 +5150,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Не вдалось отримати код прив'язки";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Для зв'язування цього пристрою з іншим обліковим записом спочатку потрібно скинути цей пристрій. Ви впевнені, що бажаєте видалити усю історію (повідомлення, додатки, дзвінки тощо)? Ця дія є незворотною.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Щоб зв'язати цей пристрій з іншим обліковим записом, спочатку потрібно скинути параметри пристрою. Ви дійсно хочете видалити всю історію (повідомлення, вкладення, виклики тощо)? Ця дія є незворотною.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Видалити все";
@@ -5459,7 +5459,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Видалити усі дані";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Ви впевнені, що хочете видалити всю історію (повідомлення, файли, історію дзвінків тощо) ? Ця дія є незворотною.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Ви впевнені, що хочете видалити всю історію (повідомлення, вкладення, виклики тощо)? Ця дія є незворотною.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Видалити все";
@@ -6290,13 +6290,13 @@
 "STORIES_SETTINGS_MY_STORIES_HEADER" = "Мої сторіз";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Приватність сторіз";
+"STORIES_SETTINGS_TITLE" = "Конфіденційність сторіз";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Ви більше не зможете публікувати чи переглядати сторіз. Оновлення сторі, які ви нещодавно публікували, також видаляться.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Вимкнути і видалити сторіз";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Якщо вимкнути цю функцію, ви не зможете публікувати чи переглядати сторіз.";
@@ -6314,7 +6314,7 @@
 "STORIES_SHARE_STORY_ACTION" = "Поділитися";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Історії";
+"STORIES_TITLE" = "Сторіз";
 
 /* Context menu action to unhide the selected story */
 "STORIES_UNHIDE_STORY_ACTION" = "Відобразити сторі";
@@ -6326,7 +6326,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Сторі відображено";
 
 /* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Увімкніть сповіщення про перегляд, аби знати, хто переглянув ваші сторіз.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Увімкніть сповіщення про перегляд, щоб знати, хто переглянув ваші сторіз.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Перегляди";
@@ -6338,7 +6338,7 @@
 "STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Не вдалося завантажити посилання. Перевірте підключення до мережі і спробуйте знову.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Поділитись посиланням з глядачами вашої історії";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Поділитись посиланням з глядачами вашої сторі";
 
 /* Placeholder text in text stories compose UI */
 "STORY_COMPOSER_TAP_ADD_TEXT" = "Торкніться, щоб додати текст";
@@ -6371,7 +6371,7 @@
 "STORY_REPLY_BUTTON" = "Відповісти";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Відреагував на історію";
+"STORY_REPLY_REACTION" = "Реагує на сторі";
 
 /* header text for replying to private story. Embeds {{author name}} */
 "STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
@@ -6416,16 +6416,16 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Почали з ними розмову";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Схвалили запит на листування";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Схвалили запит на повідомлення";
 
 /* Third bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Вони є у ваших контактах";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Ваші контакти можуть бачити ваше ім'я та фото, а також публікації у розділі «Мої сторіз», якщо ви їх не приховали.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Контакти Signal</bold> – це люди, яким ви вирішили довіряти одним із таких способів:";
 
 /* Section footer for the 'viewers' section on the 'story settings' view
    Section footer for the 'viewers' section on the 'story settings' view. */
@@ -6435,10 +6435,10 @@
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Хто може переглядати цю сторі";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Виберіть, які контакти Signal можуть бачити вашу сторі. Змінити дозвіл можна в налаштуваннях конфіденційності.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Відео, надіслані до сторіз, обріжуться до %1$d-секундних кліпів і опублікуються як декілька сторіз.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Відео, надіслані до Сторіз, обріжуться до %1$d-секундних кліпів і опублікуються як декілька сторіз.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "Натисніть, щоб продовжити";

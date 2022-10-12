@@ -83,7 +83,7 @@
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Chcete s týmto používateľom zdieľať svoj profil?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
-"ALERT_ACTION_ACKNOWLEDGE" = "Chápem";
+"ALERT_ACTION_ACKNOWLEDGE" = "Rozumiem";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
 "ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Správu, nálepku, reakciu, potvrdenie o prečítaní, alebo médium vám nebolo možné doručiť od %1$@ v tejto konverzácií.";
@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Nedostatok úložného priestoru";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Údaje prenesené z vášho starého zariadenia sa nepodarilo obnoviť. Pošlite, prosím, denník ladenia na support@signal.org, aby sme mohli tento problém vyriešiť. Ak Signal preinštalujete, môžete prísť o vašu históriu konverzácií.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Údaje prenesené z vášho starého zariadenia sa nepodarilo obnoviť. Odošlite denník ladenia na adresu support@signal.org, aby sme mohli tento problém vyriešiť. Ak Signal preinštalujete, môžete prísť o vašu históriu správ.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Prenos sa nepodarilo dokončiť";
@@ -1472,52 +1472,52 @@
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Spustiť diagnostiku databázy?";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Some of your message history may be corrupted. There has been no impact to the security of your account or messages. Tap “Continue” to recover your data.";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Vaša história správ môže byť sčasti poškodená. Bezpečnosť vášho účtu ani správ to však nijako neovplyvní. Ťuknutím na „Pokračovať“ obnovíte svoje údaje.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problem Retrieving Data";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problém pri získavaní údajov";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Continue Anyway";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Napriek tomu pokračovať";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "In order to complete data recovery, we recommend you have at least %1$@ of storage space free on your device.";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "Ak si želáte dokončiť obnovu údajov, odporúčame vám, aby vo vašom zariadení bolo aspoň %1$@ voľného miesta.";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "More Storage Space Needed";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Vyžaduje sa viac úložného priestoru";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Your message history couldn’t recover. You can continue to use Signal after reinstalling. Submit a debug log so we can better understand what went wrong.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Históriu správ sa nepodarilo obnoviť. Po preinštalovaní môžete Signal naďalej používať. Odošlite záznam s chybou, pomôže nám lepšie pochopiť, kde sa vyskytol problém.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Resetovať Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Resetovať";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Your account info, profile, and all of your messages will be cleared. The app will close after this process is complete.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Informácie o vašom účte, profil a všetky správy budú vymazané. Po dokončení tohto procesu sa aplikácia zatvorí.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Resetovať Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Odoslať denník ladenia";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Data Not Recovered";
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Údaje neboli obnovené";
 
 /* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Keep the app open during the recovery process. It may take several minutes.";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Počas procesu obnovy nechajte aplikáciu otvorenú. Môže to trvať niekoľko minút.";
 
 /* On the database recovery screen, this is the title shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Recovering Data";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Obnova údajov";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Recovery was successful, but some messages may not have been recovered.";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Obnova bola úspešná, je však možné, že sa nepodarilo obnoviť všetky správy.";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Data Successfully Recovered";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Údaje boli úspešne obnovené";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Môže to trvať pár minút.";
@@ -1640,7 +1640,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Pokračovať bez prenosu účtu a správ";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Pridať tento iPad ako nové prepojené zariadenie bez prenosu histórie konverzácií";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Pridať tento iPad ako nové prepojené zariadenie bez prenosu histórie správ";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Pridať ako nové zariadenie";
@@ -1652,10 +1652,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Preniesť účet a správy";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Preneste si  účet a históriu konverzácií z vášho starého iOS zariadenia";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Preneste si účet a históriu správ z vášho starého iOS zariadenia";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Preneste si účet a históriu konverzácií z vášho starého iPadu";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Preneste si účet a históriu správ z vášho starého iPadu";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Preniesť z iného iPadu";
@@ -2987,7 +2987,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Keď budú všetci aktuálni členovia tejto skupiny používať verziu Signalu podporujúcu pridávanie do Nových skupín, táto skupina sa zmodernizuje.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Celá história správ a médií ostane zachovaná tak ako pred modernizáciou.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Celá história správ a všetky médiá zostanú zachované tak, ako pred aktualizáciou.";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Toto je Zastaraná skupina. Funkcie ako administrátori skupín sú dostupné len pre Nové skupiny. %1$@";
@@ -3011,7 +3011,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Čo sú Nové skupiny?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Celá história správ a médií ostala zachovaná tak ako pred modernizáciou.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Celá história správ a všetky médiá boli zachované tak, ako pred aktualizáciou.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Nové skupiny majú funkcie ako @spomenutia, administrátori skupín a v budúcnosti budú podporovať ďalšie nové funkcie.";
@@ -3038,7 +3038,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Títo členovia nemohli byť počas modernizácie automaticky pridaní do Novej skupiny:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Celá história správ a médií ostala zachovaná tak ako pred modernizáciou.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Celá história správ a všetky médiá boli zachované tak, ako pred aktualizáciou.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Tento člen bol odstránený zo skupiny a nebude sa môcť do nej znovu pridať, kým si Signal neaktualizuje:";
@@ -3773,7 +3773,7 @@
 "MY_STORIES_NO_STORIES" = "Tu sa zobrazia aktualizácie vášho príbehu.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Všetci okrem...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Všetci okrem…";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Všetky Signal spojenia";
@@ -3860,7 +3860,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Vyberte členov";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ v %2$@ · príbeh";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ do %2$@ · Príbeh";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Vybrať skupinu";
@@ -4736,7 +4736,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Vymazať súkromný príbeh";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Naozaj chcete odstrániť „%1$@“? Budú tiež odstránené aktualizácie zdieľané s týmto príbehom.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Odstrániť";
@@ -4868,10 +4868,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Pôvodná správa sa nenašla.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reagoval na váš príbeh";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reagoval/a na váš príbeh";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reakcia na príbeh používateľa %1$@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reagoval/a na príbeh používateľa %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Príbeh";
@@ -5150,7 +5150,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Nepodarilo sa získať kód pre prepájanie";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Na prepojenie tohto zariadenia s iným účtom musíte najprv resetovať toto zariadenie. Ste si istý/á, že chcete vymazať celú históriu (správy, prílohy, hovory, atď.)? Túto operáciu nie je možné vrátiť späť.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Na prepojenie tohto zariadenia s iným účtom musíte najprv resetovať toto zariadenie. Naozaj chcete vymazať celú históriu (správy, prílohy, hovory, atď.)? Túto operáciu nie je možné vrátiť späť.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Vymazať všetko";
@@ -5402,7 +5402,7 @@
 "SETTINGS_CHATS" = "Chat";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Vymazať históriu chatov";
+"SETTINGS_CLEAR_HISTORY" = "Vymazať históriu četov";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Autorské práva Signal Messenger \nLicencované pod GPLv3";
@@ -5459,7 +5459,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Vymazať všetky dáta";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Určite chcete vymazať celú históriu (správy, prílohy, hovory atď.)? Túto operáciu nemožno vrátiť späť.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Naozaj chcete vymazať celú históriu (správy, prílohy, hovory atď.)? Túto operáciu nie je možné vrátiť späť.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Vymazať všetko";
@@ -6221,7 +6221,7 @@
 "STORIES_DELETE_STORY_ACTION" = "Odstrániť";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Odstrániť tento príbeh? Bude tiež vymazaný pre každého, kto ho dostal.";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Vymazať tento príbeh? Bude tiež vymazaný pre každého, kto ho dostal.";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "Príbeh bol uložený";
@@ -6242,7 +6242,7 @@
 "STORIES_HIDE_STORY_ACTION" = "Skryť príbeh";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
-"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Nové príbehy od používateľa %1$@ sa už nebudú zobrazovať na začiatku zoznamu príbehov.";
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Nové aktualizácie príbehu od používateľa %1$@ sa už nebudú zobrazovať na začiatku zoznamu príbehov.";
 
 /* Title asking the user if they are sure they want to hide stories from another user */
 "STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Skryť príbeh?";
@@ -6257,7 +6257,7 @@
 "STORIES_INFO_ACTION" = "Info";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "Momentálne nie sú k dispozícii žiadne aktualizácie.\nŤuknutím na + pridáte do svojho príbehu.";
+"STORIES_NO_RECENT_MESSAGES" = "Momentálne nie sú k dispozícii žiadne aktualizácie.\nŤuknutím na + pridáte obsah do svojho príbehu.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Zatiaľ žiadne odpovede";
@@ -6266,7 +6266,7 @@
 "STORIES_NO_VIEWS_YET" = "Zatiaľ žiadne zobrazenia";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Umožnite ľuďom, ktorí si pozrú váš príbeh, reagovať a odpovedať.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Umožnite ľuďom, ktorí vidia váš príbeh, reagovať a odpovedať.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Odpovede a reakcie";
@@ -6284,22 +6284,22 @@
 "STORIES_SAVE_STORY_ACTION" = "Uložiť";
 
 /* Footer for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Príbehy automaticky zmiznú po 24 hodinách. Vyberte, komu sa môže zobraziť váš príbeh, alebo vytvorte nové príbehy s konkrétnymi divákmi či skupinami.";
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Príbehy automaticky zmiznú po 24 hodinách. Vyberte, komu sa môže zobraziť váš príbeh, alebo vytvorte nové príbehy s konkrétnymi sledovateľmi či skupinami.";
 
 /* Header for the 'My Stories' section of the stories settings */
 "STORIES_SETTINGS_MY_STORIES_HEADER" = "Moje príbehy";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Ochrana súkromia príbehu";
+"STORIES_SETTINGS_TITLE" = "Súkromie príbehu";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Už nebudete môcť zdieľať ani prezerať príbehy. Budú tiež odstránené aktualizácie príbehov, ktoré ste nedávno zdieľali.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Vypnúť a odstrániť príbehy";
 
 /* Footer for the 'turn off' section of the stories settings */
-"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Ak vypnete príbehy, už ich nebudete môcť zdieľať ani prezerať.";
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Ak vypnete príbehy, už si ich nebudete môcť prezerať ani ich zdieľať.";
 
 /* Button to turn off stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Vypnúť príbehy";
@@ -6308,7 +6308,7 @@
 "STORIES_SETTINGS_TURN_ON_FOOTER" = "Zdieľajte a prezerajte si príbehy ostatných. Príbehy automaticky zmiznú po 24 hodinách.";
 
 /* Button to turn on stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Zapnite príbehy";
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Zapnúť príbehy";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Zdieľať";
@@ -6326,7 +6326,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Príbeh bol odkrytý";
 
 /* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Povoľte potvrdenia o prečítaní, aby ste videli, kto si prezeral vaše príbehy.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Povoľte potvrdenia o prečítaní a zistite, kto si prezeral vaše príbehy.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Pozretia";
@@ -6338,7 +6338,7 @@
 "STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Odkaz sa nepodarilo načítať. Skontrolujte pripojenie a skúste to znova.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Zdieľajte odkaz s divákmi svojho príbehu";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Zdieľajte odkaz so sledovateľmi vášho príbehu";
 
 /* Placeholder text in text stories compose UI */
 "STORY_COMPOSER_TAP_ADD_TEXT" = "Ťuknutím pridáte text";
@@ -6359,19 +6359,19 @@
 "STORY_PRIVACY_SETTINGS" = "Súkromie";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reagoval %1$@ na váš príbeh";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reagoval/a %1$@ na váš príbeh";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Reagoval %1$@ na príbeh";
+"STORY_REACTION_QUOTE_FORMAT" = "Reagoval/a %1$@ na príbeh";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reagoval %1$@ na príbeh používateľa %2$@";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Poslal/a reakciu %1$@ na príbeh používateľa %2$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Odpovedať";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Reagoval na príbeh";
+"STORY_REPLY_REACTION" = "Reagoval/a na príbeh";
 
 /* header text for replying to private story. Embeds {{author name}} */
 "STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
@@ -6386,13 +6386,13 @@
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Príbeh sa nepodarilo odoslať. Skontrolujte pripojenie a skúste to znova.";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Príbeh sa nepodarilo odoslať niekoľkým ľuďom. Skontrolujte pripojenie a skúste to znova.";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Príbeh sa nepodarilo odoslať niekoľkým ľuďom. Skontrolujte pripojenie a skúste to znova";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Zdieľať iba s…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Všetci okrem...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Všetci okrem…";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Odoslanie zlyhalo";
@@ -6413,29 +6413,29 @@
 "STORY_SENDING" = "Odosiela sa…";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Začatie konverzácie";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Začali ste konverzáciu";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Prijatie žiadosti o správu";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Prijali ste žiadosť o správu";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Mať ich vo svojich systémových kontaktoch";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Pridali ste si ich do svojich kontaktoch";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Vaše spojenia môžu vidieť vaše meno a fotografiu a tiež obsah, ktorý posielate do sekcie „Môj príbeh“, pokiaľ ho pred nimi neskryjete.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal spojenia</bold> sú ľudia, ktorým ste sa rozhodli dôverovať jedným z nasledujúcich spôsobov:";
 
 /* Section footer for the 'viewers' section on the 'story settings' view
    Section footer for the 'viewers' section on the 'story settings' view. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Vyberte, ktoré spojenia Signal si môžu pozrieť váš príbeh. Zmeny neovplyvnia príbehy, ktoré ste už odoslali.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Vyberte, ktoré Signal spojenia si môžu pozrieť váš príbeh. Zmeny neovplyvnia príbehy, ktoré ste už odoslali.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Kto si môže pozrieť tento príbeh";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Vyberte, ktoré Signal spojenia si môžu pozrieť váš príbeh. Výber môžete kedykoľvek zmeniť v nastaveniach súkromia.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videá odoslané do príbehov budú zostrihané na %1$d-sekundové klipy a odoslané vo forme viacerých príbehov.";
@@ -6450,7 +6450,7 @@
 "STORY_VIEWER_ONBOARDING_3" = "Ukončite potiahnutím doprava";
 
 /* Confirmation text shown the first time the user opens the story viewer to dismiss instructions. */
-"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "Chápem";
+"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "Rozumiem";
 
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "Pozretia vypnuté";

@@ -468,13 +468,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Приватна сторі · %1$d глядач</string>
+			<string>Приватна сторі · 1 глядач</string>
 			<key>few</key>
-			<string>Приватна сторіз · %1$d переглядачі</string>
+			<string>Приватна сторі · %1$d глядачі</string>
 			<key>many</key>
-			<string>Приватна сторіз · %1$d переглядачів</string>
+			<string>Приватна сторі · %1$d глядачів</string>
 			<key>other</key>
-			<string>Приватні сторіз · %1$d глядача</string>
+			<string>Приватна сторі · %1$d глядача</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -548,13 +548,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Групова сторі · %1$d глядач</string>
+			<string>Групова сторі · 1 глядач</string>
 			<key>few</key>
-			<string>Групова сторіз · %1$d переглядача</string>
+			<string>Групова сторі · %1$d глядачі</string>
 			<key>many</key>
-			<string>Групова сторіз · %1$d переглядачів</string>
+			<string>Групова сторі · %1$d глядачів</string>
 			<key>other</key>
-			<string>Групові сторіз · %1$d глядача</string>
+			<string>Групова сторі · %1$d глядача</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>

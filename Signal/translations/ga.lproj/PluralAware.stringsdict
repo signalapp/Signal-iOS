@@ -1328,15 +1328,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Member</string>
+			<string>%1$d bhall</string>
 			<key>two</key>
-			<string>%1$d Members</string>
+			<string>%1$d bhall</string>
 			<key>few</key>
-			<string>%1$d Members</string>
+			<string>%1$d bhall</string>
 			<key>many</key>
-			<string>%1$d Members</string>
+			<string>%1$d mball</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d ball</string>
 		</dict>
 	</dict>
 	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>

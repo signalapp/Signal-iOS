@@ -378,7 +378,7 @@
 			<key>one</key>
 			<string>Història privada · %1$d espectador</string>
 			<key>other</key>
-			<string>Història privada · %1$d Visualitzacions</string>
+			<string>Història privada · %1$d espectadors</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -442,7 +442,7 @@
 			<key>one</key>
 			<string>Història de grup · %1$d espectador</string>
 			<key>other</key>
-			<string>Història de grup · %1$d Visualitzacions</string>
+			<string>Història de grup · %1$d espectadors</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>

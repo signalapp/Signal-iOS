@@ -468,11 +468,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Súkromný príbeh · %1$d sledovateľ</string>
+			<string>Súkromný príbeh · 1 sledovateľ</string>
 			<key>few</key>
 			<string>Súkromný príbeh · %1$d sledovatelia</string>
 			<key>many</key>
-			<string>Súkromný príbeh · %1$d sledovateľov</string>
+			<string>Súkromný príbeh · %1$d sledovateľa</string>
 			<key>other</key>
 			<string>Súkromný príbeh · %1$d sledovateľov</string>
 		</dict>
@@ -548,13 +548,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Skupinový príbeh · %1$d sledovateľ</string>
+			<string>Skupinový príbeh · 1 sledovateľ</string>
 			<key>few</key>
-			<string>Príbeh skupiny · %1$d sledovatelia</string>
+			<string>Skupinový príbeh · %1$d sledovatelia</string>
 			<key>many</key>
-			<string>Príbeh skupiny · %1$d sledovateľov</string>
+			<string>Skupinový príbeh · %1$d sledovateľa</string>
 			<key>other</key>
-			<string>Príbeh skupiny · %1$d sledovateľov</string>
+			<string>Supinový príbeh · %1$d sledovateľov</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>

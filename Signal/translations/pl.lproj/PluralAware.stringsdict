@@ -470,11 +470,11 @@
 			<key>one</key>
 			<string>Relacja prywatna · %1$d odbiorca</string>
 			<key>few</key>
-			<string>Prywatna relacja · %1$d widzowie</string>
+			<string>Relacja prywatna · %1$d odbiorców</string>
 			<key>many</key>
-			<string>Prywatna relacja · %1$d widzów</string>
+			<string>Relacja prywatna · %1$d odbiorców</string>
 			<key>other</key>
-			<string>Relacja prywatna · %1$d widzów</string>
+			<string>Relacja prywatna · %1$d odbiorców</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -548,13 +548,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Historia grupowa · %1$d odbiorca</string>
+			<string>Relacja grupowa · %1$d odbiorca</string>
 			<key>few</key>
-			<string>Relacja grupowa · %1$d widzów</string>
+			<string>Relacja grupowa · %1$d odbiorców</string>
 			<key>many</key>
-			<string>Relacja grupowa · %1$d widzów</string>
+			<string>Relacja grupowa · %1$d odbiorców</string>
 			<key>other</key>
-			<string>Relacja grupowa · %1$d widzów</string>
+			<string>Relacja grupowa · %1$d odbiorców</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>

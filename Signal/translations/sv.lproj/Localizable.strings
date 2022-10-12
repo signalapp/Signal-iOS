@@ -1211,7 +1211,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Personer";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "Berättelser";
+"CONVERSATION_PICKER_SECTION_STORIES" = "Stories";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "Välj mottagare";
@@ -1472,52 +1472,52 @@
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Kör databasdiagnostik?";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Some of your message history may be corrupted. There has been no impact to the security of your account or messages. Tap “Continue” to recover your data.";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "En del av din meddelandehistorik kan vara skadad. Säkerheten för ditt konto eller dina meddelanden har inte påverkats. Tryck på Fortsätt för att återställa dina data.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problem Retrieving Data";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problem med att hämta data";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Continue Anyway";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Fortsätt ändå";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "In order to complete data recovery, we recommend you have at least %1$@ of storage space free on your device.";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "För att slutföra återställning av data rekommenderar vi att du har minst %1$@ lagringsutrymme ledigt på din enhet.";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "More Storage Space Needed";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Mer lagringsutrymme behövs";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Your message history couldn’t recover. You can continue to use Signal after reinstalling. Submit a debug log so we can better understand what went wrong.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Det gick inte att återställa meddelandehistoriken. Du kan fortsätta att använda Signal efter ominstallation. Skicka en felsökningslogg så att vi bättre kan förstå vad som gick fel.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Återställ Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Återställ";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Your account info, profile, and all of your messages will be cleared. The app will close after this process is complete.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Din kontoinformation, profil och alla dina meddelanden rensas. Appen stängs när den här processen är klar.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Återställ Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Skicka in felsökningslogg";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Data Not Recovered";
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Data har inte återställts";
 
 /* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Keep the app open during the recovery process. It may take several minutes.";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Håll appen öppen under återställningsprocessen. Det kan ta flera minuter.";
 
 /* On the database recovery screen, this is the title shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Recovering Data";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Återställer data";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Recovery was successful, but some messages may not have been recovered.";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Återställningen lyckades, men vissa meddelanden kanske inte har återställts.";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Data Successfully Recovered";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Data har återställts";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Detta kan ta några minuter.";
@@ -2828,16 +2828,16 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ till %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Ta bort gruppberättelse";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Ta bort gruppstory";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Är du säker på att du vill ta bort din berättelse?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Är du säker på att du vill ta bort den här storyn?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Medlemmar i gruppchatten %1$@ kan se och svara på den här berättelsen. Du kan uppdatera medlemskapet för den här chatten i gruppen.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Medlemmar i gruppchatten %1$@ kan visa och svara på den här storyn. Du kan uppdatera medlemskapet för den här chatten i gruppen.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Vem kan se den här berättelsen";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Vem kan visa den här storyn";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Gruppen uppdaterad.";
@@ -3770,7 +3770,7 @@
 "MUTED_BADGE" = "Tystad";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Uppdateringar av din berättelse kommer att visas här.";
+"MY_STORIES_NO_STORIES" = "Uppdateringar till din story kommer att visas här.";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Alla utom ...";
@@ -3782,22 +3782,22 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Dela endast med ...";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "Mina berättelser";
+"MY_STORIES_TITLE" = "Mina Stories";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "Min berättelse";
+"MY_STORY_NAME" = "Min Story";
 
 /* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
-"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Välj vilka som kan visa din berättelse";
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Välj vilka som kan visa din story";
 
 /* Title for the my story settings sheet */
-"MY_STORY_SETTINGS_SHEET_TITLE" = "Min berättelse-integritet";
+"MY_STORY_SETTINGS_SHEET_TITLE" = "Min Story-integritet";
 
 /* Title for the my story settings view */
-"MY_STORY_SETTINGS_TITLE" = "Min berättelse";
+"MY_STORY_SETTINGS_TITLE" = "Min Story";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tryck för att lägga till en berättelse";
+"MY_STORY_TAP_TO_ADD" = "Tryck för att lägga till en story";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Nyligen ändrat sitt profilnamn från %1$@ till %2$@.";
@@ -3860,7 +3860,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Välj medlemmar";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ till %2$@ · Berättelse";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ till %2$@ · Story";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Välj grupp";
@@ -3875,19 +3875,19 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Hitta användare";
 
 /* Title for the 'new private story' confirmation view */
-"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Namnge berättelse";
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Namnge story";
 
 /* Button to create a new private story */
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "Skapa";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Ett berättelsenamn krävs.";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Ett storynamn krävs.";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Saknar berättelsenamn";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Saknar storynamn";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Berättelsenamn (krävs)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Storynamn (krävs)";
 
 /* The title for the 'new private story' view. */
 "NEW_PRIVATE_STORY_VIEW_TITLE" = "Välj tittare";
@@ -3896,22 +3896,22 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Tittare";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Ny berättelse";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Ny story";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Dela till en befintlig grupp";
 
 /* Title for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Ny gruppberättelse";
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Ny gruppstory";
 
 /* Subtitle for create private story row on the 'new story sheet' */
 "NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "Synlig endast för specifika personer";
 
 /* Title for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "Ny privat berättelse";
+"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "Ny privat story";
 
 /* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "Välj berättelsetyp";
+"NEW_STORY_SHEET_TITLE" = "Välj typ av story";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Hitta kontakter via telefonnummer";
@@ -4733,16 +4733,16 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Lägg till tittare";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Ta bort privat berättelse";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Ta bort privat story";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Är du säker på att du vill ta bort %1$@? Uppdateringar som har delats till den här berättelsen kommer också att raderas.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Ta bort";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Den här personen kommer inte längre att kunna se den här berättelsen.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Den här personen kommer inte längre att kunna se den här storyn.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Ta bort %1$@?";
@@ -4868,13 +4868,13 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Hittade inte originalmeddelandet.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reagerade på din berättelse";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reagerade på din story";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reagerade på %1$@s berättelse";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reagerade på storyn från %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Berättelse";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Story";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Bilaga";
@@ -5459,7 +5459,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Ta bort alla data";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Är du säker på att du vill ta bort all historik (meddelanden, bilagor, samtal, o.s.v.)? Du kan inte ångra dig.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Är du säker på att du vill ta bort all historik (meddelanden, bilagor, samtal o.s.v.)? Du kan inte ångra dig.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Ta bort allt";
@@ -6059,10 +6059,10 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Tillåt iOS åtkomst till Signal-kontakter och chattar för funktioner som delningsförslag och aviseringar.";
 
 /* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "Hantera dina berättelser och vilka som kan se dem.";
+"SETTINGS_STORIES_FOOTER" = "Hantera dina stories och vilka som kan visa dem.";
 
 /* Label for the stories section of the settings view */
-"SETTINGS_STORIES_TITLE" = "Berättelser";
+"SETTINGS_STORIES_TITLE" = "Stories";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registreringslås";
@@ -6221,10 +6221,10 @@
 "STORIES_DELETE_STORY_ACTION" = "Ta bort";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Ta bort den här berättelsen? Den kommer också att tas bort för alla som har mottagit den.";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Ta bort den här storyn? Den kommer också att tas bort för alla som har mottagit den.";
 
 /* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "Berättelse sparad";
+"STORIES_DID_SAVE" = "Story sparad";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Vidarebefordra";
@@ -6233,31 +6233,31 @@
 "STORIES_GO_TO_CHAT_ACTION" = "Gå till chatt";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Du kan inte svara på den här berättelsen eftersom du inte längre är medlem i den här gruppen.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Du kan inte svara på den här storyn eftersom du inte längre är medlem i den här gruppen.";
 
 /* Header for the hidden stories section of the stories list */
-"STORIES_HIDDEN_SECTION_HEADER" = "Dolda berättelser";
+"STORIES_HIDDEN_SECTION_HEADER" = "Dolda stories";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "Dölj berättelse";
+"STORIES_HIDE_STORY_ACTION" = "Dölj story";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
-"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Nya berättelseuppdateringar från %1$@ kommer inte att visas överst på berättelselistan längre.";
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Nya storyuppdateringar från %1$@ kommer inte att visas överst på storylistan längre.";
 
 /* Title asking the user if they are sure they want to hide stories from another user */
-"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Dölj berättelse?";
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Dölj story?";
 
 /* Short context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION_SHORT" = "Dölj";
 
 /* Toast shown when a story is successfuly hidden */
-"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Berättelse dold";
+"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Story dold";
 
 /* Context menu action to view metadata about the story */
 "STORIES_INFO_ACTION" = "Info";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "Inga uppdateringar att visa just nu.\nTryck på + för att lägga till din berättelse.";
+"STORIES_NO_RECENT_MESSAGES" = "Inga uppdateringar att visa just nu.\nTryck på + för att lägga till i din story.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Inga svar ännu";
@@ -6266,7 +6266,7 @@
 "STORIES_NO_VIEWS_YET" = "Inga visningar ännu";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Låt personer som kan se din berättelse reagera och svara.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Låt personer som kan visa din story reagera och svara.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Svar och reaktioner";
@@ -6278,55 +6278,55 @@
 "STORIES_REPLIES_TAB" = "Svar";
 
 /* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "Det gick inte att spara berättelsen";
+"STORIES_SAVE_FAILED" = "Det gick inte att spara storyn";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "Spara";
 
 /* Footer for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Berättelser försvinner automatiskt efter 24 timmar. Välj vilka som kan se din berättelse eller skapa nya berättelser för specifika tittare eller grupper.";
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Stories försvinner automatiskt efter 24 timmar. Välj vilka som kan se din story eller skapa nya stories för specifika tittare eller grupper.";
 
 /* Header for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_HEADER" = "Mina berättelser";
+"STORIES_SETTINGS_MY_STORIES_HEADER" = "Mina Stories";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Berättelseintegritet";
+"STORIES_SETTINGS_TITLE" = "Storyintegritet";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Du kommer inte längre att kunna dela eller visa berättelser. Berättelseuppdateringar som du nyligen har delat kommer också att raderas.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Stäng av och ta bort berättelser";
 
 /* Footer for the 'turn off' section of the stories settings */
-"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Du kommer inte längre kunna dela eller se berättelser om du stänger av dem.";
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Du kommer inte längre kunna dela eller visa stories om du stänger av dem.";
 
 /* Button to turn off stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Stäng av berättelser";
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Stäng av stories";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "Dela berättelser och visa berättelser från andra. Berättelser försvinner automatiskt efter 24 timmar.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Dela stories och visa stories från andra. Stories försvinner automatiskt efter 24 timmar.";
 
 /* Button to turn on stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Aktivera berättelser";
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Aktivera stories";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Dela";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Berättelser";
+"STORIES_TITLE" = "Stories";
 
 /* Context menu action to unhide the selected story */
-"STORIES_UNHIDE_STORY_ACTION" = "Sluta dölja berättelse";
+"STORIES_UNHIDE_STORY_ACTION" = "Sluta dölja story";
 
 /* Short context menu action to unhide the selected story */
 "STORIES_UNHIDE_STORY_ACTION_SHORT" = "Sluta dölja";
 
 /* Toast shown when a story is successfuly unhidden */
-"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Berättelse inte längre dold";
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Story inte längre dold";
 
 /* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Aktivera läskvitton för att se vem som har sett din berättelse.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Aktivera läskvitton för att se vem som har visat din story.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Visningar";
@@ -6338,7 +6338,7 @@
 "STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Det gick inte att ladda länken. Kontrollera anslutningen och försök igen.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Dela en länk med din berättelses tittare";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Dela en länk med din storys tittare";
 
 /* Placeholder text in text stories compose UI */
 "STORY_COMPOSER_TAP_ADD_TEXT" = "Tryck för att lägga till text";
@@ -6359,19 +6359,19 @@
 "STORY_PRIVACY_SETTINGS" = "Integritet";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reagerade %1$@ på din berättelse";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reagerade %1$@ på din story";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Reagerade %1$@ på en berättelse";
+"STORY_REACTION_QUOTE_FORMAT" = "Reagerade %1$@ på en story";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reagerade %1$@ på en berättelse från %2$@";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reagerade %1$@ på en story från %2$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Svara";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Reagerade på berättelsen";
+"STORY_REPLY_REACTION" = "Reagerade på storyn";
 
 /* header text for replying to private story. Embeds {{author name}} */
 "STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
@@ -6383,10 +6383,10 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "Svara gruppen";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Den här berättelsen kunde inte skickas. Kontrollera din anslutning och försök igen";
+"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Den här storyn kunde inte skickas. Kontrollera din anslutning och försök igen";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Den här berättelsen kunde inte skickas till vissa personer. Kontrollera din anslutning och försök igen";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Den här storyn kunde inte skickas till vissa personer. Kontrollera din anslutning och försök igen";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Dela endast med ...";
@@ -6422,23 +6422,23 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Ha dem i dina systemkontakter";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Dina förbindelser kan se ditt namn, foto och vad du skickar till \"Min berättelse\" om du inte döljer det för dem.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal-förbindelser</bold> är personer som du har valt att lita på, antingen genom att:";
 
 /* Section footer for the 'viewers' section on the 'story settings' view
    Section footer for the 'viewers' section on the 'story settings' view. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Välj vilka Signal-förbindelser som kan se din berättelse. Ändringar påverkar inte berättelser som du redan har skickat.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Välj vilka Signal-förbindelser som kan visa din story. Ändringar påverkar inte stories som du redan har skickat.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Vem kan se den här berättelsen";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Vem kan visa den här storyn";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Välj vilka Signal-förbindelser som kan visa din berättelse. Du kan ändra detta när som helst i integritetsinställningarna.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videor som skickas till berättelser kommer att kortas ner till klipp på %1$d sek och skickas som flera berättelser.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videor som skickas till Stories kommer att kortas ner till klipp på %1$d sek och skickas som flera stories.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "Tryck för att gå vidare";
@@ -6882,7 +6882,7 @@
 "VIEW_PHOTO" = "Visa foto";
 
 /* View the story of a group or user */
-"VIEW_STORY" = "Visa berättelse";
+"VIEW_STORY" = "Visa story";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Dra för att avbryta";

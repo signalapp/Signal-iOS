@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Depolama Alanı Düşük";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Eski cihazınızdan aktarılan veri geri yüklenemiyor. Lütfen bu sorunu çözmemiz için support@signal.org adresine hata ayıklama günlüğünüzü gönderin. Eğer Signal'i geri yüklerseniz, ileti geçmişiniz kaybolabilir.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Eski cihazından aktarılan veri geri yüklenemiyor. Lütfen bu sorunu çözmemiz için support@signal.org adresine hata günlüğünü gönder. Eğer Signal'ı geri yüklersen, ileti geçmişin kaybolabilir.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Aktarım Tamamlanamadı";
@@ -1472,52 +1472,52 @@
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Veri tabanı kontrolü başlasın mı?";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Some of your message history may be corrupted. There has been no impact to the security of your account or messages. Tap “Continue” to recover your data.";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Mesaj geçmişinin bir kısmı bozulmuş olabilir. Bu durumun hesabının veya mesajlarının güvenliği konusunda herhangi bir etkisi olmamıştır. Verilerini kurtarmak için “Devam” seçeneğine dokun.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problem Retrieving Data";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Veri Alma Sorunu";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Continue Anyway";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Yine De Devam Et";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "In order to complete data recovery, we recommend you have at least %1$@ of storage space free on your device.";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "Veri kurtarma işlemini tamamlamak için cihazında en az %1$@ boş depolama alanı olmasını öneriyoruz.";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "More Storage Space Needed";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Daha Fazla Depolama Alanı Gerekiyor";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Your message history couldn’t recover. You can continue to use Signal after reinstalling. Submit a debug log so we can better understand what went wrong.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Mesaj geçmişin kurtarılamadı. Yeniden yükleme yaptıktan sonra Signal'ı kullanmaya devam edebilirsin. Problemi daha iyi anlayabilmemiz için bize bir hata günlüğü gönder.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Signal'ı Sıfırla";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Sıfırla";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Your account info, profile, and all of your messages will be cleared. The app will close after this process is complete.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Hesap bilgilerin, profilin ve tüm mesajların silinecek. Bu işlem tamamlandıktan sonra uygulama kapanacaktır.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Signal'ı Sıfırla";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Hata Ayıklama Günlüğünü gönder";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Data Not Recovered";
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Veriler Kurtarılmadı";
 
 /* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Keep the app open during the recovery process. It may take several minutes.";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Kurtarma işlemi sırasında uygulamayı açık tut. Bu işlem bir kaç dakika sürebilir.";
 
 /* On the database recovery screen, this is the title shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Recovering Data";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Veriler Kurtarılıyor";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Recovery was successful, but some messages may not have been recovered.";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Kurtarma başarılı oldu, fakat bazı mesajlar kurtarılamamış olabilir.";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Data Successfully Recovered";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Veriler Başarıyla Kurtarıldı";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Bu birkaç dakika sürebilir.";
@@ -1640,7 +1640,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Hesap ve iletilerinizi aktarmadan devam edin";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Bu iPad'i ileti geçmişini aktarmadan yeni bir cihaz olarak bağlayın";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "iPad'i ileti geçmişini aktarmadan yeni bir cihaz olarak bağla";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Yeni Cihaz Olarak Ekle";
@@ -1652,10 +1652,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Hesap ve İletileri Aktar";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Eski iOS cihazınızdan hesap ve ileti geçmişinizi aktarın";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Eski iOS cihazından hesap ve ileti geçmişini aktar";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Eski iPad'inizden hesap ve ileti geçmişinizi aktarın";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Eski iPad'inden hesap ve ileti geçmişini aktar";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Başka bir iPad'den aktar";
@@ -3770,7 +3770,7 @@
 "MUTED_BADGE" = "Sessize Alındı";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Hikayenizin güncellemeleri burada gösterilecek.";
+"MY_STORIES_NO_STORIES" = "Hikayenin güncellemeleri burada gösterilecek.";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "...Hariç Herkes";
@@ -3779,7 +3779,7 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Tüm Signal Bağlantıları";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Sadece Bu Kişilerle Paylaş:";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Sadece Bu Kişilerle Paylaş...";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Hikayelerim";
@@ -3911,7 +3911,7 @@
 "NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "Yeni Özel Hikaye";
 
 /* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "Hikaye Türü Seçin";
+"NEW_STORY_SHEET_TITLE" = "Hikaye Türü Seç";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Kişileri Telefon Numarası ile Bul";
@@ -4736,7 +4736,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Gizli Hikayeyi Sil";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "“%1$@” hikayesini silmek istediğinden emin misin? Bu hikayede paylaşılan güncellemeler de silinecek.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Kaldır";
@@ -4871,7 +4871,7 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Hikayene tepki verildi";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "%1$@’nin hikayesine tepki verildi";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "%1$@ adlı kişinin hikayesine tepki verildi";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Hikaye";
@@ -5150,7 +5150,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Bağlama Kodu Alınamadı";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Bu cihazı farklı bir hesaba bağlamak için önce bu cihazı sıfırlamanız gerekir. Tüm geçmişi (iletiler, eklentiler, aramalar vb.) silmek istediğinizden emin misiniz?)? Bu eylem geri alınamaz.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Bu cihazı farklı bir hesaba bağlamak için önce bu cihazı sıfırlaman gerekir. Tüm geçmişi (iletiler, eklentiler, aramalar vb.) silmek istediğinden emin misin? Bu işlem geri alınamaz.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Her Şeyi Sil";
@@ -5459,7 +5459,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Tüm Verileri Sil";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Tüm geçmişi silmek istediğinizden emin misiniz (iletiler, eklentiler, aramalar, vb.)? Bu eylem geri alınamaz.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Tüm geçmişi (iletiler, eklentiler, aramalar, vb.) silmek istediğinden emin misin? Bu işlem geri alınamaz.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Her Şeyi Sil";
@@ -6257,7 +6257,7 @@
 "STORIES_INFO_ACTION" = "Bilgi";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "Şu anda gösterilecek güncelleme yok. Hikayenize eklemek için + simgesine dokunun.";
+"STORIES_NO_RECENT_MESSAGES" = "Şu anda gösterilecek güncelleme yok. Hikayene eklemek için + simgesine dokun.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Henüz yanıt yok";
@@ -6293,10 +6293,10 @@
 "STORIES_SETTINGS_TITLE" = "Hikaye Gizliliği";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Artık hikaye paylaşamayacak veya görüntüleyemeyeceksin. Yakın zamanda paylaştığın hikaye güncellemeleri de silinecek.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Hikayeleri Kapat ve Sil";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Hikayeleri devre dışı bırakırsan, artık hikayeleri paylaşamaz veya görüntüleyemezsin.";
@@ -6323,7 +6323,7 @@
 "STORIES_UNHIDE_STORY_ACTION_SHORT" = "Göster";
 
 /* Toast shown when a story is successfuly unhidden */
-"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Hikaye Gösterildi";
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Hikaye Gizlilikten Çıkarıldı";
 
 /* Text explaining that you will not see any views for your story because you have read receipts turned off */
 "STORIES_VIEWS_OFF_DESCRIPTION" = "Hikayelerini kimlerin görüntülediğini görmek için okundu bilgisini etkinleştir.";
@@ -6413,19 +6413,19 @@
 "STORY_SENDING" = "Gönderiliyor...";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Bir konuşma başlatmak";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Bir konuşma başlatmış olman";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Bir mesaj isteğini kabul etmek";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Bir mesaj isteğini kabul etmiş olman";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Bunları sistem bağlantılarınızda bulundurmak";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Bu kişilerin sistemdeki bağlantılarında olması";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Bağlantıların; adını, fotoğrafını ve onlardan gizlemediğin sürece “Hikayem” kısmında ne paylaştığını görebilir.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Bağlantıları</bold> aşağıdaki şekillerde güvenmeyi seçtiğin kişilerdir:";
 
 /* Section footer for the 'viewers' section on the 'story settings' view
    Section footer for the 'viewers' section on the 'story settings' view. */
@@ -6435,7 +6435,7 @@
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Bu Hikayeyi Kimler Görebilir";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Hikayeni hangi Signal bağlantılarının görüntüleyebileceğini seç. Seçimini istediğin zaman gizlilik ayarlarından değiştirebilirsin.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videolar %1$d saniyelik kliplere bölünür ve birden çok hikaye olarak paylaşılır.";

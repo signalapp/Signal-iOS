@@ -468,13 +468,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Soukromí příběh · %1$d sledující</string>
+			<string>Soukromý příběh · 1 sledující</string>
 			<key>few</key>
-			<string>Soukromý příběh · %1$d zobrazení</string>
+			<string>Soukromý příběh · %1$d sledující</string>
 			<key>many</key>
-			<string>Soukromý příběh · %1$d zobrazení</string>
+			<string>Soukromý příběh · %1$d sledujících</string>
 			<key>other</key>
-			<string>Soukromý příběh · %1$d zobrazení</string>
+			<string>Soukromý příběh · %1$d sledujících</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -548,13 +548,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Skupinový příběh · %1$d sledující</string>
+			<string>Skupinový příběh · 1 sledující</string>
 			<key>few</key>
-			<string>Skupinový příběh · %1$d zobrazení</string>
+			<string>Skupinový příběh · %1$d sledující</string>
 			<key>many</key>
-			<string>Skupinový příběh · %1$d zobrazení</string>
+			<string>Skupinový příběh · %1$d sledujících</string>
 			<key>other</key>
-			<string>Skupinový příběh · %1$d zobrazení</string>
+			<string>Skupinový příběh · %1$d sledujících</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>

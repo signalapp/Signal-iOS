@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Dung lượng lưu trữ sắp hết";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Dữ liệu từ thiết bị cũ của bạn không thể được khôi phục. Hãy gửi bản ghi chép lỗi đến support@signal.org để chúng tôi có thể khắc phục vấn đề. Nếu bạn cài đặt lại Signal lịch sử trò chuyện của bạn sẽ không được lưu giữ.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Dữ liệu từ thiết bị cũ của bạn không thể được khôi phục. Hãy gửi bản ghi chép lỗi đến support@signal.org để chúng tôi có thể khắc phục vấn đề. Nếu bạn cài đặt lại Signal, lịch sử trò chuyện của bạn sẽ không được lưu giữ.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Không thể Hoàn tất Quá trình chuyển";
@@ -1472,52 +1472,52 @@
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Bạn muốn chạy kiểm tra cơ sở dữ liệu?";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Some of your message history may be corrupted. There has been no impact to the security of your account or messages. Tap “Continue” to recover your data.";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Một phần lịch sử tin nhắn của bạn có thể đã bị hỏng. Tính bảo mật hay tin nhắn của bạn không bị ảnh hưởng. Nhấn \"Tiếp tục\" để khôi phục dữ liệu.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problem Retrieving Data";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Sự cố Truy xuất Dữ liệu";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Continue Anyway";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Tiếp tục";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "In order to complete data recovery, we recommend you have at least %1$@ of storage space free on your device.";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "Để hoàn tất khôi phục dữ liệu, chúng tôi khuyến nghị thiết bị có ít nhất %1$@ dung lượng lưu trữ trống.";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "More Storage Space Needed";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Cần thêm Dung lượng Lưu trữ";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Your message history couldn’t recover. You can continue to use Signal after reinstalling. Submit a debug log so we can better understand what went wrong.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Không thể khôi phục lịch sử tin nhắn. Bạn có thể tiếp tục sử dụng Signal sau khi cài đặt lại. Gửi nhật ký gỡ lỗi để chúng tôi có thể hiểu hơn vấn đề đã xảy ra.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Không Khôi phục được Dữ liệu";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Đặt lại";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Your account info, profile, and all of your messages will be cleared. The app will close after this process is complete.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Thông tin tài khoản của bạn, hồ sơ, và tất cả tin nhắn của bạn sẽ được xóa. Ứng dụng sẽ đóng sau khi quá trình này hoàn tất.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Thiết lập lại Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Gửi Nhật ký Gỡ lỗi";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Data Not Recovered";
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Không Khôi phục được Dữ liệu";
 
 /* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Keep the app open during the recovery process. It may take several minutes.";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Giữ ứng dụng mở trong quá trình khôi phục. Quá trình có thể mất nhiều phút.";
 
 /* On the database recovery screen, this is the title shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Recovering Data";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Đang Khôi phục Dữ liệu";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Recovery was successful, but some messages may not have been recovered.";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Quá trình khôi phục thành công, nhưng một số tin nhắn có thể đã không được khôi phục.";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Data Successfully Recovered";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Khôi phục Dữ liệu Thành công";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Việc này có thể mất vài phút.";
@@ -3011,7 +3011,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Nhóm Mới là gì?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Tất cả lịch sử tin nhắn và đa phương tiện đã được giữ lại trước khi cập nhật.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Tất cả lịch sử tin nhắn và đa phương tiện đã được giữ lại trước khi nâng cấp.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Nhóm Mới có các tính năng như @nhắc và admin nhóm, và sẽ hỗ trợ nhiều tính năng trong tương lai.";
@@ -3038,7 +3038,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Những thành viên này không thể được thêm tự động vào Nhóm Mới khi nhóm được nâng cấp:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Tất cả lịch sử tin nhắn và đa phương tiện đã được giữ lại trước khi cập nhật.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Tất cả lịch sử tin nhắn và đa phương tiện đã được giữ lại trước khi nâng cấp.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Thành viên này đã bị gỡ bỏ khỏi nhóm và sẽ không thể tham gia lại vào nhóm cho đến khi họ nâng cấp:";
@@ -3776,10 +3776,10 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Tất Cả Trừ…";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Tất cả liên hệ Signal";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Tất cả Liên hệ Signal";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Chỉ chia sẻ với…";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Chỉ Chia Sẻ Với…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Các Story của tôi";
@@ -4736,7 +4736,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Xóa Story Riêng tư";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Bạn có chắc muốn xóa \"%1$@\"? Các cập nhật cho story này cũng sẽ được xóa.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Xóa";
@@ -5150,7 +5150,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Không thể lấy được Mã Liên kết thiết bị";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Để kết nối thiết bị này với một tài khoản khác, bạn phải thiết lập lại thiết bị này trước. Bạn có chắc bạn muốn xoá tất cả lịch sử (tin nhắn, tập đính kèm, cuộc gọi, v.v)? Hành động này không thể được hoàn tác.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Để kết nối thiết bị này với một tài khoản khác, bạn phải thiết lập lại thiết bị này trước. Bạn có chắc bạn muốn xoá tất cả lịch sử (tin nhắn, tập tin đính kèm, cuộc gọi, v.v)? Thao tác này không thể được hoàn lại.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Xóa Tất cả";
@@ -5459,7 +5459,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Xóa Tất cả Dữ liệu";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Bạn có chắc chắn muốn xóa tất cả dữ liệu lịch sử (tin nhắn, tập tin đính kèm, cuộc gọi, v.v.)? Hoạt động này không thể hoàn tác.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Bạn có chắc chắn muốn xóa tất cả dữ liệu lịch sử (tin nhắn, tập tin đính kèm, cuộc gọi, v.v.)? Thao tác này không thể được hoàn lại.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Xóa Tất cả";
@@ -6287,16 +6287,16 @@
 "STORIES_SETTINGS_MY_STORIES_FOOTER" = "Các story tự động biến mất sau 24 giờ. Chọn người có thể xem story của bạn hoặc tạo các story mới cho các nhóm và người xem nhất định.";
 
 /* Header for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_HEADER" = "Các Story Của Tôi";
+"STORIES_SETTINGS_MY_STORIES_HEADER" = "Các Story của tôi";
 
 /* Title for the story privacy settings view */
 "STORIES_SETTINGS_TITLE" = "Sự Riêng tư của Story";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Bạn sẽ không thể tiếp tục chia sẻ hoặc xem story. Các cập nhật story gần đây của bạn cũng sẽ được xóa.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Tắt và Xóa Story";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Nếu bạn tắt tính năng story, bạn sẽ không thể tiếp tục chia sẻ hoặc xem story.";
@@ -6422,10 +6422,10 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Có những người này trong danh bạ trên hệ thống";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Các liên hệ của bạn có thể thấy tên và ảnh của bạn, và nội dung bạn chia sẻ trong \"Story của tôi\" trừ khi bạn ẩn story với các liên hệ.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Liên hệ Signal</bold> là những người bạn chọn để tin tưởng, bằng việc:";
 
 /* Section footer for the 'viewers' section on the 'story settings' view
    Section footer for the 'viewers' section on the 'story settings' view. */
@@ -6435,10 +6435,10 @@
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Ai Có Thể Xem Story Này";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Chọn các Liên hệ Signal có thể xem story của bạn. Bạn có thể thay đổi tùy chọn này bất kỳ lúc nào trong mục cài đặt quyền riêng tư.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Các video dùng cho Story sẽ được cắt thành %1$d đoạn và đăng thành nhiều story.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Các video dùng cho Story sẽ được cắt thành các đoạn dài %1$d và đăng thành nhiều story.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "Nhấn để tiếp tục";

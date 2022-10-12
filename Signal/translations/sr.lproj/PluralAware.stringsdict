@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Private Story · 1 Viewer</string>
+			<string>Приватна прича · Гледалаца: 1</string>
 			<key>other</key>
-			<string>Private Story · %1$d Viewers</string>
+			<string>Приватна прича · Гледалаца: %1$d</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -392,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Viewer</string>
+			<string>Све Signal везе · Гледалаца: 1</string>
 			<key>other</key>
-			<string>All Signal Connections · %1$d Viewers</string>
+			<string>Све Signal везе · Гледалаца: %1$d</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -408,9 +408,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Excluded</string>
+			<string>Све Signal везе · Изузетих особа: 1</string>
 			<key>other</key>
-			<string>All Signal Connections · %1$d Excluded</string>
+			<string>Све Signal везе · Изузетих особа: %1$d</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Only Share With · 1 Viewer</string>
+			<string>Само подели са · Гледалаца: 1</string>
 			<key>other</key>
-			<string>Only Share With · %1$d Viewers</string>
+			<string>Само подели са · Гледалаца: %1$d</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Group Story · 1 Viewer</string>
+			<string>Групна прича · Гледалаца: 1</string>
 			<key>other</key>
-			<string>Group Story · %1$d Viewers</string>
+			<string>Групна прича · Гледалаца: %1$d</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -936,9 +936,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>Изузетих особа: 1</string>
 			<key>other</key>
-			<string>%1$d Excluded</string>
+			<string>Изузетих особа: %1$d</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -952,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>Гледалаца: 1</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>Гледалаца: %1$d</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1160,9 +1160,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>Гледалаца: 1</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>Гледалаца: %1$d</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1192,9 +1192,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sending...</string>
+			<string>Шаље се…</string>
 			<key>other</key>
-			<string>Sending %1$d...</string>
+			<string>Шаље се %1$d…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>

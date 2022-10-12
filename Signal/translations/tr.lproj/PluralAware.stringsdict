@@ -376,7 +376,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Gizli hikaye · %1$d görüntüleyen</string>
+			<string>Gizli Hikaye · 1 Görüntüleyen</string>
 			<key>other</key>
 			<string>Özel Hikaye · %1$d Görüntüleyen</string>
 		</dict>
@@ -440,7 +440,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Grup hikayesi · %1$d görüntüleyen</string>
+			<string>Grup Hikayesi · 1 Görüntüleyen</string>
 			<key>other</key>
 			<string>Grup Hikayesi · %1$d Görüntüleyen</string>
 		</dict>

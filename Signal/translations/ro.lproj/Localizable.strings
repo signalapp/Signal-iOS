@@ -1472,52 +1472,52 @@
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Inițiezi diagnosticul bazelor de date?";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Some of your message history may be corrupted. There has been no impact to the security of your account or messages. Tap “Continue” to recover your data.";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "E posibil ca o parte din istoricul mesajelor să fie corupte. Nu a existat impact asupra securității contului sau mesajelor tale. Atinge „Continuă“ ca să recuperezi datele.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problem Retrieving Data";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problemă la Recuperarea Datelor";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Continue Anyway";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Continuă Oricum";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "In order to complete data recovery, we recommend you have at least %1$@ of storage space free on your device.";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "Ca să finalizezi recuperarea datelor, îți recomandăm să ai cel puțin %1$@ din spațiul de stocare disponibil pe dispozitivul tău.";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "More Storage Space Needed";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Este Necesar mai mult Spațiu de Stocare.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Your message history couldn’t recover. You can continue to use Signal after reinstalling. Submit a debug log so we can better understand what went wrong.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Istoricum mesajelor tale nu a putut fi recuperat. Poți să continui să folosești Signal după reinstalare. Trimite un jurnal de depanare ca să înțelegem mai bine ce nu a funcționat.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Resetare Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Resetare";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Your account info, profile, and all of your messages will be cleared. The app will close after this process is complete.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Informațiile despre cont, profil și toate mesajele tale vor fi șterse. Aplicația se va închide după ce se încheie procesul.";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Resetează Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Trimite Jurnal de Depanare";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Data Not Recovered";
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Datele nu au fost Recuperate";
 
 /* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Keep the app open during the recovery process. It may take several minutes.";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Menține aplicația deschisă în timpul procesului de recuperare. Poate dura mai multe minute.";
 
 /* On the database recovery screen, this is the title shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Recovering Data";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Se Recuperează Datele";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Recovery was successful, but some messages may not have been recovered.";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Recuperarea a avut succes, dar este posibil ca unele dintre mesaje să nu fi fost recuperate.";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Data Successfully Recovered";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Datele au fost Recuperate cu Succes";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Această operațiune poate dura câteva minute.";
@@ -3782,10 +3782,10 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Împărtășește Doar Cu…";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "Poveștile mele";
+"MY_STORIES_TITLE" = "Poveștile Mele";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "Povestea mea";
+"MY_STORY_NAME" = "Povestea Mea";
 
 /* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
 "MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Alege cine poate să-ți vadă povestea";
@@ -3902,16 +3902,16 @@
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Distribuie la un grup existent";
 
 /* Title for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Noua Poveste de grup";
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Noua Poveste de Grup";
 
 /* Subtitle for create private story row on the 'new story sheet' */
 "NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "Vizibil doar la persoane specifice";
 
 /* Title for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "Nouă poveste privată";
+"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "Nouă Poveste Privată";
 
 /* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "Alege Tipul poveștii";
+"NEW_STORY_SHEET_TITLE" = "Alege Tipul Poveștii";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Găsește contacte după numărul de telefon";
@@ -4736,7 +4736,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Șterge Povestea Privată";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Sigur vrei să ștergi „%1$@“? Actualizările trimise către această poveste vor fi și ele șterse.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Elimină";
@@ -6224,7 +6224,7 @@
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Ștergi această poveste? Povestea va fi ștearsă și pentru cei care au primit-o.";
 
 /* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "Povestea a fost Salvată";
+"STORIES_DID_SAVE" = "Poveste Salvată";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Redirecționează";
@@ -6239,7 +6239,7 @@
 "STORIES_HIDDEN_SECTION_HEADER" = "Povești Ascunse";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "Ascunde povestea";
+"STORIES_HIDE_STORY_ACTION" = "Ascunde Povestea";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
 "STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Noile actualizări ale poveștilor de la %1$@ nu vor mai apărea în partea superioară a listei de povești.";
@@ -6278,7 +6278,7 @@
 "STORIES_REPLIES_TAB" = "Răspunsuri";
 
 /* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "Nu am putut să salvăm povestea";
+"STORIES_SAVE_FAILED" = "Nu am putut Salva Povestea";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "Salvează";
@@ -6290,13 +6290,13 @@
 "STORIES_SETTINGS_MY_STORIES_HEADER" = "Poveștile Mele";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Confidențialitatea poveștilor";
+"STORIES_SETTINGS_TITLE" = "Confidențialitatea Poveștilor";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Nu vei mai putea să distribui sau să vezi povești. Actualizările poveștilor pe care le-ai distribuit recent vor fi și ele șterse.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Dezactivează și șterge poveștile";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Dacă dezactivezi poveștile nu vei mai putea să distribui sau să vezi povești.";
@@ -6422,10 +6422,10 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Să îi ai în contactele tale de sistem";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Conexiunile tale poți să-ți vadă numele și fotografia și ceea ce trimiți către „Povestea mea“ decât dacă nu le ascunzi.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Conexiunile Signal</bold> sunt persoane în care ai ales să ai încredere, fie de către:";
 
 /* Section footer for the 'viewers' section on the 'story settings' view
    Section footer for the 'viewers' section on the 'story settings' view. */
@@ -6435,10 +6435,10 @@
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Cine Poate Vedea Această Poveste";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Alege ce conexiuni Signal pot să-ți vadă povestea. Poți să schimbi asta oricând din setările de confidențialitate.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videoclipurile trimise către Povești vor fi scurtate în %1$d clipuri și trimise ca povești multiple.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videoclipurile trimise către povești vor fi scurtate în %1$d clipuri și trimise ca povești multiple.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "Atinge ca să continui";

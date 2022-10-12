@@ -330,7 +330,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>비공개 스토리 · %1$d명 조회</string>
+			<string>비공개 스토리 · 볼 수 있는 사람 %1$d명</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -386,7 +386,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>그룹 스토리 · %1$d명 조회</string>
+			<string>그룹 스토리 · 볼 수 있는 사람 %1$d명</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
