@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "PhoneNumberUtil.h"
@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // country code -> country name
-+ (nullable NSString *)countryNameFromCountryCode:(NSString *)countryCode
++ (NSString *)countryNameFromCountryCode:(NSString *)countryCode
 {
     OWSAssertDebug(countryCode != nil);
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "PhoneNumberUtil.h"
@@ -161,7 +161,7 @@
     // Invalid country code.
     XCTAssertEqualObjects([PhoneNumberUtil countryNameFromCountryCode:@"EK"], @"EK");
     XCTAssertEqualObjects([PhoneNumberUtil countryNameFromCountryCode:@"ZZZ"], @"ZZZ");
-    XCTAssertTrue([PhoneNumberUtil countryNameFromCountryCode:@""].length > 0);
+    XCTAssertNotEqualObjects([PhoneNumberUtil countryNameFromCountryCode:@""], @"");
 }
 
 - (void)testCountryCodesForSearchTerm

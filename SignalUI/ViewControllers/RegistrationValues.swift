@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -35,11 +35,7 @@ public class RegistrationCountryState: NSObject {
 
         let callingCodeNumber: NSNumber = phoneNumberUtil.getCountryCode(forRegion: countryCode)
         let callingCode = "\(COUNTRY_CODE_PREFIX)\(callingCodeNumber)"
-
-        var countryName = OWSLocalizedString("UNKNOWN_COUNTRY_NAME", comment: "Label for unknown countries.")
-        if let countryNameDerived = PhoneNumberUtil.countryName(fromCountryCode: countryCode) {
-            countryName = countryNameDerived
-        }
+        let countryName = PhoneNumberUtil.countryName(fromCountryCode: countryCode)
 
         return RegistrationCountryState(countryName: countryName, callingCode: callingCode, countryCode: countryCode)
     }
@@ -75,7 +71,7 @@ public class RegistrationCountryState: NSObject {
                 owsFailDebug("Invalid callingCode.")
                 return nil
             }
-            guard let countryName = PhoneNumberUtil.countryName(fromCountryCode: countryCode)?.strippedOrNil else {
+            guard let countryName = PhoneNumberUtil.countryName(fromCountryCode: countryCode).strippedOrNil else {
                 owsFailDebug("Invalid countryName.")
                 return nil
             }

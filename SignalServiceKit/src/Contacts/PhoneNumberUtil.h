@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <libPhoneNumber_iOS/NBPhoneNumberUtil.h>
@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString;
 
-+ (nullable NSString *)countryNameFromCountryCode:(NSString *)countryCode;
++ (NSString *)countryNameFromCountryCode:(NSString *)countryCode;
 + (NSArray<NSString *> *)countryCodesForSearchTerm:(nullable NSString *)searchTerm;
 
 // Returns the most likely country code for a calling code based on population.

@@ -380,10 +380,7 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
             owsFailDebug("Could not resume re-registration; unknown countryCode.")
             return nil
         }
-        guard let countryName = PhoneNumberUtil.countryName(fromCountryCode: countryCode) else {
-            owsFailDebug("Could not resume re-registration; unknown countryName.")
-            return nil
-        }
+        let countryName = PhoneNumberUtil.countryName(fromCountryCode: countryCode)
         if !phoneNumberE164.hasPrefix(callingCode) {
             owsFailDebug("Could not resume re-registration; non-matching calling code.")
             return nil
