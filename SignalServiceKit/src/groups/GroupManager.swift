@@ -209,10 +209,6 @@ public class GroupManager: NSObject {
 
         return firstly { () -> Promise<Void> in
             return self.ensureLocalProfileHasCommitmentIfNecessary()
-        }.then(on: .global()) { () -> Promise<Void> in
-            var memberSet = Set(membersParam)
-            memberSet.insert(localAddress)
-            return self.tryToEnableGroupsV2(for: Array(memberSet), isBlocking: true, ignoreErrors: true)
         }.map(on: .global()) { () throws -> GroupMembership in
             // Build member list.
             //

@@ -438,10 +438,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
-        [items addObject:[OWSTableItem itemWithTitle:@"Clone as v1/v2 group"
-                                         actionBlock:^{
-            [DebugUIStress cloneAsV1orV2Group:groupThread];
-        }]];
         [items addObject:[OWSTableItem itemWithTitle:@"Clone as v1 group"
                                          actionBlock:^{
             [DebugUIStress cloneAsV1Group:groupThread];
