@@ -431,7 +431,7 @@ public extension Stripe {
         Currency.infos(for: preferredCurrencyCodes, ignoreMissingNames: true, shouldSort: false)
     }()
 
-    static let zeroDecimalCurrencyCodes: [Currency.Code] = [
+    static let zeroDecimalCurrencyCodes: Set<Currency.Code> = [
         "BIF",
         "CLP",
         "DJF",
