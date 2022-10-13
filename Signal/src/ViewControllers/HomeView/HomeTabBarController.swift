@@ -35,6 +35,10 @@ class HomeTabBarController: UITabBarController {
         set { selectedIndex = newValue.rawValue }
     }
 
+    var owsTabBar: OWSTabBar? {
+        return tabBar as? OWSTabBar
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -46,7 +50,7 @@ class HomeTabBarController: UITabBarController {
         // Don't render the tab bar at all if stories isn't enabled.
         guard RemoteConfig.stories else {
             viewControllers = [chatListNavController]
-            tabBar.isHidden = true
+            self.setTabBarHidden(true, animated: false)
             return
         }
 
@@ -176,12 +180,14 @@ class HomeTabBarController: UITabBarController {
             }
             animator.addCompletion({
                 self.tabBar.isHidden = hidden
+                self.owsTabBar?.applyTheme()
                 completion?($0 == .end)
             })
             animator.startAnimation()
         } else {
             animations()
             self.tabBar.isHidden = hidden
+            owsTabBar?.applyTheme()
             completion?(true)
         }
     }
@@ -245,8 +251,6 @@ public class OWSTabBar: UITabBar {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        applyTheme()
-
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(themeDidChange),
                                                name: .ThemeDidChange,
@@ -259,8 +263,8 @@ public class OWSTabBar: UITabBar {
         Theme.navbarBackgroundColor
     }
 
-    private func applyTheme() {
-        guard respectsTheme else {
+    fileprivate func applyTheme() {
+        guard respectsTheme, !self.isHidden else {
             return
         }
 

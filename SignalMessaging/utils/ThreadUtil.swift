@@ -134,8 +134,13 @@ extension TSThread {
         // suggestions aren't support in previous iOS versions.
         guard #available(iOS 13, *) else { return }
 
-        // Never donate for story sends, we don't want them as share suggestions
-        guard !(outgoingMessage is OutgoingStoryMessage) else { return }
+        // Never donate for story sends or replies, we don't want them as share suggestions
+        guard
+            !(outgoingMessage is OutgoingStoryMessage),
+            !outgoingMessage.isGroupStoryReply
+        else {
+            return
+        }
 
         guard SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return }
         guard let sendMessageIntent = generateSendMessageIntent(context: .outgoingMessage(outgoingMessage), transaction: transaction) else { return }
