@@ -406,17 +406,16 @@ extension StoriesViewController: UITableViewDelegate {
 
     @available(iOS 13, *)
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        guard
-            let model = model(for: indexPath),
-            let cell = tableView.cellForRow(at: indexPath)
-        else {
+        guard let model = model(for: indexPath) else {
             return nil
         }
 
         return .init(identifier: indexPath as NSCopying, previewProvider: nil, actionProvider: { [weak self] _ in
             let actions = self?.contextMenuGenerator.nativeContextMenuActions(
                 for: model,
-                sourceView: cell
+                sourceView: { [weak self] in
+                    return self?.tableView.cellForRow(at: indexPath)
+                }
             ) ?? []
             return .init(children: actions)
         })

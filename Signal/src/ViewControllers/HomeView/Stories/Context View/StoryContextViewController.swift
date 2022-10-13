@@ -1000,7 +1000,7 @@ extension StoryContextViewController: StoryItemMediaViewDelegate {
                         for: item.message,
                         in: self.context.thread(transaction: $0),
                         attachment: attachment,
-                        sourceView: contextMenuButton,
+                        sourceView: { return contextMenuButton },
                         transaction: $0
                     ))
                 }

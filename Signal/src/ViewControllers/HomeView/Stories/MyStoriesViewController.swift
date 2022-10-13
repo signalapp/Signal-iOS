@@ -178,10 +178,7 @@ extension MyStoriesViewController: UITableViewDelegate {
 
     @available(iOS 13, *)
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        guard
-            let item = item(for: indexPath),
-            let cell = tableView.cellForRow(at: indexPath) as? SentStoryCell
-        else {
+        guard let item = item(for: indexPath) else {
             return nil
         }
 
@@ -190,7 +187,10 @@ extension MyStoriesViewController: UITableViewDelegate {
                 for: item.message,
                 in: item.thread,
                 attachment: item.attachment,
-                sourceView: cell,
+                sourceView: { [weak self] in
+                    // refetch the cell in case it changes out from underneath us.
+                    return self?.tableView(tableView, cellForRowAt: indexPath)
+                },
                 transaction: transaction
             )
         }
@@ -265,7 +265,6 @@ extension MyStoriesViewController: ContextMenuButtonDelegate {
     func contextMenuConfiguration(for contextMenuButton: DelegatingContextMenuButton) -> ContextMenuConfiguration? {
         guard
             let indexPath = (contextMenuButton as? IndexPathContextMenuButton)?.indexPath,
-            let cell = tableView.dequeueReusableCell(withIdentifier: SentStoryCell.reuseIdentifier, for: indexPath) as? SentStoryCell,
             let item = self.item(for: indexPath)
         else {
             return nil
@@ -275,7 +274,10 @@ extension MyStoriesViewController: ContextMenuButtonDelegate {
                 for: item.message,
                 in: item.thread,
                 attachment: item.attachment,
-                sourceView: cell,
+                sourceView: { [weak self] in
+                    // refetch the cell in case it changes out from underneath us.
+                    return self?.tableView.dequeueReusableCell(withIdentifier: SentStoryCell.reuseIdentifier, for: indexPath)
+                },
                 transaction: transaction
             )
         }

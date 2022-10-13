@@ -60,7 +60,7 @@ class StoryContextMenuGenerator: Dependencies {
 
     public func contextMenuActions(
         for model: StoryViewModel,
-        sourceView: UIView
+        sourceView: @escaping () -> UIView?
     ) -> [ContextMenuAction] {
         return Self.databaseStorage.read {
             let thread = model.context.thread(transaction: $0)
@@ -78,7 +78,7 @@ class StoryContextMenuGenerator: Dependencies {
         for message: StoryMessage,
         in thread: TSThread?,
         attachment: StoryThumbnailView.Attachment,
-        sourceView: UIView,
+        sourceView: @escaping () -> UIView?,
         transaction: SDSAnyReadTransaction
     ) -> [ContextMenuAction] {
         return [
@@ -95,7 +95,7 @@ class StoryContextMenuGenerator: Dependencies {
     @available(iOS 13, *)
     public func nativeContextMenuActions(
         for model: StoryViewModel,
-        sourceView: UIView
+        sourceView: @escaping () -> UIView?
     ) -> [UIAction] {
         return Self.databaseStorage.read {
             let thread = model.context.thread(transaction: $0)
@@ -114,7 +114,7 @@ class StoryContextMenuGenerator: Dependencies {
         for message: StoryMessage,
         in thread: TSThread?,
         attachment: StoryThumbnailView.Attachment,
-        sourceView: UIView,
+        sourceView: @escaping () -> UIView?,
         transaction: SDSAnyReadTransaction
     ) -> [UIAction] {
         return [
@@ -690,7 +690,7 @@ extension StoryContextMenuGenerator {
     private func shareAction(
         message: StoryMessage,
         attachment: StoryThumbnailView.Attachment,
-        sourceView: UIView
+        sourceView: @escaping () -> UIView?
     ) -> GenericContextAction? {
         guard message.authorAddress.isLocalAddress else {
             // Can only share one's own stories.
@@ -702,8 +702,8 @@ extension StoryContextMenuGenerator {
                 comment: "Context menu action to share the selected story"
             ),
             icon: .messageActionShare20,
-            handler: { [weak sourceView, weak self] completion in
-                guard let sourceView = sourceView else {
+            handler: { [weak self] completion in
+                guard let sourceView = sourceView() else {
                     completion(false)
                     return
                 }
