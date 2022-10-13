@@ -170,7 +170,9 @@ extension AppDelegate {
                 let linkedDeviceMessage = deviceCount > 1 ? "\(deviceCount) devices including the primary" : "no linked devices"
                 Logger.info("localAddress: \(String(describing: localAddress)), deviceId: \(deviceId) (\(linkedDeviceMessage))")
             }
+        }
 
+        if tsAccountManager.isRegisteredAndReady {
             // This should happen at any launch, background or foreground.
             SyncPushTokensJob.run()
         }
