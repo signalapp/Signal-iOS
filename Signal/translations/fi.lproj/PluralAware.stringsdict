@@ -1085,22 +1085,6 @@
 			<string>Peruuta kutsut</string>
 		</dict>
 	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Muistutamme sinua myöhemmin. PIN-koodin luominen tulee pakolliseksi 1 päivän kuluttua.</string>
-			<key>other</key>
-			<string>Muistutamme sinua myöhemmin. PIN-koodin luominen tulee pakolliseksi %1$d päivän kuluttua.</string>
-		</dict>
-	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

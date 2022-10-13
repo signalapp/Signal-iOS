@@ -121,7 +121,7 @@
 /* notification body */
 "APN_Message" = "B'fhéidir go bhfuil teachtaireachtaí nua agat";
 
-/* Message for the 'app launch failed' alert. */
+/* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Theip ar thosú Signal. Seol an logchomhad dífhabhtaithe chuig support@signal.org sa chaoi go mbeimis in ann an fhadhb seo a réiteach.";
 
 /* Title for the 'app launch failed' alert. */
@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Níorbh fhéidir na sonraí ó do sheanghléas a athchóiriú. Seol an logchomhad dífhabhtaithe chuig support@signal.org sa chaoi go mbeimis in ann an fhadhb seo a réiteach. Má athshuiteálann tú Signal, caillfidh tú do chuid seanteachtaireachtaí.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Níorbh fhéidir na sonraí ó do sheanghléas a aischur. Seol an loga dífhabhtaithe chuig support@signal.org sa chaoi go mbeimis in ann an fhadhb seo a réiteach. Má athshuiteálann tú Signal, is féidir go gcaillfidh tú do stair teachtaireachtaí.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Níorbh fhéidir an t-aistriú a chur i gcrích";
@@ -781,6 +781,9 @@
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Úsáideoir Signal";
 
+/* The generic name used for group calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
+
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Glac pictiúr ansin seol é";
 
@@ -1211,7 +1214,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Daoine";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "Stories";
+"CONVERSATION_PICKER_SECTION_STORIES" = "Scéalta";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "Roghnaigh Faighteoirí";
@@ -1471,6 +1474,54 @@
 /* Title for alert before running a database integrity check */
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Rith diagnóis bunachar sonraí?";
 
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "B'fhéidir go bhfuil cuid de stair do theachtaireachtaí truaillithe. Ní raibh aon tionchar aige sin ar shlándáil do chuntais nó teachtaireachtaí. Tapáil \"Ar aghaidh\" chun do shonraí a athshlánú.";
+
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Bhí fadhb le haisghabháil na sonraí";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Lean ar aghaidh ar aon nós";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "Chun athshlánú na sonraí a chur i gcrích, molaimid duit %1$@ de shaorspás stórála ar a laghad a bheith agat ar do ghléas.";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Tá tuilleadh spáis stórála ag teastáil";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Níorbh fhéidir stair do theachtaireachtaí a athshlánú. Is féidir leat leanúint le Signal a úsáid i ndiaidh athshuiteáil a dhéanamh. Cuir isteach loga dífhabhtaithe ionas gur féidir linn tuiscint níos fearr a fháil ar an méid a tharla.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Athshocraigh Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Athshocraigh";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Glanfar d'fhaisnéis chuntais, do phróifíl agus do theachtaireachtaí go léir. Dúnfaidh an app nuair a bheidh an próiseas seo críochnaithe.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Athshocraigh Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Seol an Logchomhad Dífhabhtaithe";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Níor athshlánaíodh na sonraí";
+
+/* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Coinnigh an app ar oscailt agus an próiseas athshlánaithe ar bun. B'fhéidir go dtógfaidh sé roinnt nóiméad.";
+
+/* On the database recovery screen, this is the title shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Sonraí á n-athshlánú";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "D'éirigh le hathshlánú, ach b'fhéidir nár athshlánaíodh teachtaireachtaí áirithe.";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "D'éirigh le hathshlánú na sonraí";
+
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Tógann sé seo nóiméad nó dhó.";
 
@@ -1592,7 +1643,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Lean ar aghaidh gan cuntas ná teachtaireachtaí a aistriú";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Socraigh an iPad seo mar ghléas nasctha gan seanteachtaireachtaí a aistriú";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Cuir an iPad seo leis mar ghléas úrnasctha gan stair teachtaireachtaí a aistriú";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Socraigh mar Ghléas Nua";
@@ -1604,10 +1655,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Aistrigh Cuntas ⁊ Teachtaireachtaí";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Aistrigh do chuntas agus do chuid teachtaireachtaí ó do sheanghléas iOS";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Aistrigh do chuntas agus stair teachtaireachtaí ó do sheanghléas iOS";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Aistrigh do chuntas agus do chuid teachtaireachtaí ó do shean-iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Aistrigh do chuntas agus stair teachtaireachtaí ó do shean-iPad";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Aistrigh ó iPad eile";
@@ -2782,14 +2833,14 @@
 /* Button to delete the story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Bain an Scéal Grúpa";
 
-/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "An bhfuil tú cinnte gur mian leat an scéal seo a scriosadh?";
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Tá baill den ghrúpchomhrá \"%1$@\" in ann féachaint ar an scéal seo agus freagair dó. Is féidir leat baill don chomhrá a nuashonrú sa ghrúpa.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Tá baill den ghrúpchomhrá \"%1$@\" in ann féachaint ar an scéal seo agus freagair dó. Is féidir leat ballraíocht don chomhrá seo a nuashonrú sa ghrúpa.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Na daoine ar féidir leo féachaint ar an scéal seo";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Na Daoine ar Féidir Leo Féachaint ar an Scéal Seo";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Nuashonraíodh an grúpa.";
@@ -2939,7 +2990,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "When all current group members are using a version of Signal capable of joining a New Group, this group will be upgraded.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "All message history and media will be kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Coinneofar stair na dteachtaireachtaí agus na meáin go léir a bhí ann roimh an uasghrádú.";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "This is a Legacy Group. Features like group admins are only available for New Groups. %1$@";
@@ -2963,7 +3014,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Céard iad Baiclí Nua?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Coinníodh stair na dteachtaireachtaí agus na meáin go léir a bhí ann roimh an uasghrádú.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "New Groups have features like @mentions and group admins, and will support more features in the future.";
@@ -2990,7 +3041,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "These members couldn’t be added to the New Group automatically when it was upgraded:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "All message history and media has been kept from before the upgrade.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Coinníodh stair na dteachtaireachtaí agus na meáin go léir a bhí ann roimh an uasghrádú.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "This member was removed from the group and will not be able to rejoin the group until they upgrade:";
@@ -3722,7 +3773,7 @@
 "MUTED_BADGE" = "Balbhaithe";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Updates to your story will show up here.";
+"MY_STORIES_NO_STORIES" = "Taispeánfar nuashonruithe ar do scéal anseo.";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Gach Duine Ach Amháin...";
@@ -3734,13 +3785,13 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Ná Comhroinn Ach Le...";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "My Stories";
+"MY_STORIES_TITLE" = "Mo Scéalta";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "Mo Scéal";
 
 /* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
-"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Roghnaigh cé atá in ann do scéal a fheiceáil";
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Roghnaigh na daoine atá in ann féachaint ar do scéal";
 
 /* Title for the my story settings sheet */
 "MY_STORY_SETTINGS_SHEET_TITLE" = "Príobháideachas maidir le Mo Scéal";
@@ -3827,19 +3878,19 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Aimsigh Úsáideoir";
 
 /* Title for the 'new private story' confirmation view */
-"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Ainm an Scéil";
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Tabhair ainm ar an Scéal";
 
 /* Button to create a new private story */
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "Cruthaigh";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Tá ainm ar an scéal de dhíth";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Tá ainm ar an scéal de dhíth.";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Tá Ainm an Scéil ar Iarraidh";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Tá Ainm ar an Scéal ar Iarraidh";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Ainm an Scéil (Riachtanach)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Ainm ar an Scéal (Riachtanach)";
 
 /* The title for the 'new private story' view. */
 "NEW_PRIVATE_STORY_VIEW_TITLE" = "Roghnaigh Amharcóirí";
@@ -4685,10 +4736,10 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Cuir Amharcóirí Leis";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Scrios Scéal Príobháideach";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Scrios an Scéal Príobháideach";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "An bhfuil tú cinnte go bhfuil fonn ort \"%1$@\" a scriosadh? Chomh maith leis sin, scriosfar na nuashonruithe a comhroinneadh chuig an scéal seo.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Bain é";
@@ -4820,13 +4871,13 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Níor aimsíodh an bhunteachtaireacht.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reacted to your story";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Tugadh freagairt do do scéal";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %1$@’s story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Tugadh freagairt do scéal %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Story";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Scéal";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Ceangaltán";
@@ -5102,7 +5153,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Níorbh fhéidir an cód nasctha a fháil";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "To link this device to a different account, you must first reset this device. Are you sure you want to delete all history (messages, attachments, calls, etc.)? This action cannot be reverted.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Chun an gléas seo a nascadh le cuntas eile, ní mór duit an gléas seo a athshocrú ar dtús. An bhfuil tú cinnte gur mian leat an stair iomlán a scriosadh (teachtaireachtaí, ceangaltáin, glaonna, srl.)? Ní féidir filleadh ar an ngníomh seo.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Scrios Uile";
@@ -5354,7 +5405,7 @@
 "SETTINGS_CHATS" = "Comhráite";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear Chat History";
+"SETTINGS_CLEAR_HISTORY" = "Glan Stair na gComhráite";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
@@ -5411,7 +5462,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Scrios na sonraí go léir";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "An bhfuil tú cinnte gur mhaith leat an stair iomlán a scriosadh (teachtaireachtaí, ceangaltáin, glaonna, srl.)? Ní féidir leat dul siar air seo.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "An bhfuil tú cinnte gur mian leat an stair iomlán a scriosadh (teachtaireachtaí, ceangaltáin, glaonna, srl.)? Ní féidir filleadh ar an ngníomh seo.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Scrios Uile";
@@ -6011,7 +6062,7 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
 
 /* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "Bainistigh do chuid scéalta agus iadsan ar féidir leo féachaint orthu.";
+"SETTINGS_STORIES_FOOTER" = "Bainistigh do scéalta agus an lucht féachana.";
 
 /* Label for the stories section of the settings view */
 "SETTINGS_STORIES_TITLE" = "Scéalta";
@@ -6173,7 +6224,7 @@
 "STORIES_DELETE_STORY_ACTION" = "Scrios";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Scrios an scéal seo? Scriosfar do gach duine a fuair é freisin.";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "An bhfuil fonn ort an scéal seo a scriosadh? Scriosfar do gach duine a fuair é freisin.";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "Scéal Sábháilte";
@@ -6191,7 +6242,7 @@
 "STORIES_HIDDEN_SECTION_HEADER" = "Scéalta Folaithe";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "Hide Story";
+"STORIES_HIDE_STORY_ACTION" = "Folaigh an Scéal";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
 "STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Ní thaispeánfar nuashonruithe nua ar scéalta ó %1$@ ar bharr liosta de na scéalta a thuilleadh.";
@@ -6209,7 +6260,7 @@
 "STORIES_INFO_ACTION" = "Faisnéis";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
+"STORIES_NO_RECENT_MESSAGES" = "Níl aon nuashonruithe ann le taispeáint díreach anois.\nTapáil + chun cur le do scéal.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "No replies yet";
@@ -6218,7 +6269,7 @@
 "STORIES_NO_VIEWS_YET" = "Níl aon amharc ann fós";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Lig dóibh siúd ar féidir leo féachaint ar do scéal freagra agus freagairt a thabhairt air.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Lig don lucht féachana freagra agus freagairt a thabhairt ar do scéal.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Freagraí agus Freagairtí";
@@ -6242,13 +6293,13 @@
 "STORIES_SETTINGS_MY_STORIES_HEADER" = "Mo Scéalta";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "Príobháideachas Scéil";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Ní bheidh tú in ann féachaint ar scéalta ná iad a chomhroinnt a thuilleadh. Chomh maith leis sin, scriosfar na nuashonruithe scéil a chomhroinn tú le déanaí.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Cas as agus scrios Scéalta";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Má roghnaíonn tú gan scéalta a úsáid, ní bheidh tú in ann scéalta a chomhroinnt ná féachaint orthu a thuilleadh.";
@@ -6257,7 +6308,7 @@
 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Cas As Scéalta";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "Comhroinn agus féach ar scéalta daoine eile. Imíonn scéalta as radharc go huathoibríoch tar éis 24 uair an chloig.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Féach ar scéalta daoine eile agus comhroinn iad. Imíonn scéalta as radharc go huathoibríoch tar éis 24 uair an chloig.";
 
 /* Button to turn on stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Cas Air Scéalta";
@@ -6266,10 +6317,10 @@
 "STORIES_SHARE_STORY_ACTION" = "Comhroinn";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Stories";
+"STORIES_TITLE" = "Scéalta";
 
 /* Context menu action to unhide the selected story */
-"STORIES_UNHIDE_STORY_ACTION" = "Dífholaigh Scéal";
+"STORIES_UNHIDE_STORY_ACTION" = "Dífholaigh an Scéal";
 
 /* Short context menu action to unhide the selected story */
 "STORIES_UNHIDE_STORY_ACTION_SHORT" = "Dífholaigh";
@@ -6290,7 +6341,7 @@
 "STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Níorbh fhéidir an nasc a lódáil. Seiceáil do nasc agus triail arís.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Comhroinn nasc le lucht féachana do scéil";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Comhroinn nasc le daoine a d'fhéach ar do scéal";
 
 /* Placeholder text in text stories compose UI */
 "STORY_COMPOSER_TAP_ADD_TEXT" = "Tapáil chun téacs a chur leis";
@@ -6311,19 +6362,22 @@
 "STORY_PRIVACY_SETTINGS" = "Príobháideachas";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Tugadh freagairt %1$@ ar do scéal";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Tugadh freagairt %1$@ do do scéal";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Tugadh freagairt %1$@ ar scéal";
+"STORY_REACTION_QUOTE_FORMAT" = "Tugadh freagairt %1$@ do scéal";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Tugadh freagairt %1$@ ar scéal %2$@";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Tugadh freagairt %1$@ do scéal %2$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Freagair";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Reacted to the story";
+"STORY_REPLY_REACTION" = "Tugadh freagairt don scéal";
+
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Freagair";
@@ -6362,32 +6416,31 @@
 "STORY_SENDING" = "Á sheoladh...";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Trí chomhrá a thosú leo";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Trí iarratas teachtaireachta a ghlacadh";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Trína gcur le do theagmhálaithe córais";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Is féidir le do theagmhálaithe d'ainm, do ghrianghraf agus an méid a sheolann tú chuig \"Mo Scéal\" a fheiceáil, mura gcuireann tú na rudaí sin i bhfolach orthu.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "Is iad <bold>Teagmhálaithe Signal</bold> na daoine a bhfuil muinín agat iontu, rud a léirigh tú ar cheann de na bealaí seo:";
 
-/* Section footer for the 'viewers' section on the 'story settings' view
-   Section footer for the 'viewers' section on the 'story settings' view. */
+/* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Roghnaigh na Teagmhálaithe Signal ar féidir leo féachaint ar do scéal. Ní bheidh tionchar ag athruithe ar scéalta a sheol tú cheana.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Na daoine ar féidir leo féachaint ar an scéal seo";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Na Daoine ar Féidir Leo Féachaint ar an Scéal Seo";
 
-/* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+/* Header for the 'viewers' section on the 'story settings' bottom sheet */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Roghnaigh na Teagmhálaithe Signal ar féidir leo féachaint ar do scéal. Is féidir leat é seo a athrú am ar bith i socruithe príobháideachais.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Gearrfar físeáin a sheoltar chuig Scéalta chuig an líon seo gearrthóga: %1$d agus seolfar iad mar scéalta iolracha.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Gearrfar físeáin a sheoltar chuig Scéalta chuig gearrthóga %1$ds agus seolfar iad mar scéalta iolracha.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "Tapáil chun dul ar aghaidh";
@@ -6658,9 +6711,6 @@
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Teagmhálaí Anaithnid";
-
-/* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Tír Anaithnid";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Seoladh teachtaireacht ó ghléas de do chuid nach féidir próiseáil ná taispeáint anseo toisc go mbaineann sí úsáid as gné nua in Signal.";

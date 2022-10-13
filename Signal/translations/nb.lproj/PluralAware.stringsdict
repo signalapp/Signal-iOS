@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Privat story · Sett av %1$d</string>
+			<string>Privat story · Sett av 1</string>
 			<key>other</key>
-			<string>Privat story · %1$d seere</string>
+			<string>Privat story · Sett av %1$d</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Gruppestory · Sett av %1$d</string>
+			<string>Gruppestory · Sett av 1</string>
 			<key>other</key>
-			<string>Gruppestory · %1$d seere</string>
+			<string>Gruppestory · Sett av %1$d</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -1083,22 +1083,6 @@
 			<string>Trekk tilbake invitasjonen</string>
 			<key>other</key>
 			<string>Trekk tilbake invitasjonene</string>
-		</dict>
-	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Vi sender deg en påminnelse senere. Det blir obligatorisk å lage en PIN-kode om 1 dag.</string>
-			<key>other</key>
-			<string>Vi sender deg en påminnelse senere. Det blir obligatorisk å lage en PIN-kode om %1$d dager.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>

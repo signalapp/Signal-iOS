@@ -121,7 +121,7 @@
 /* notification body */
 "APN_Message" = "Вероватно имате нове поруке";
 
-/* Message for the 'app launch failed' alert. */
+/* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal не може да се покрене. Молимо вас да пошаљете извештај грешака на support@signal.org како бисмо отклонили квар.";
 
 /* Title for the 'app launch failed' alert. */
@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Preostalo je malo prostora za skladištenje";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Није могуће увести податке пренесене са вашег старог уређаја. Молимо вас да пошаљете извештај грешака на support@signal.org како бисмо отклонили квар. Ако реинсталирате Signal, историја ваших преписки може бити изгубљена.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Подаци пренесени са вашег старог уређаја нису опорављени. Пошаљите евиденцију отклањања грешака на support@signal.org како бисмо решили тај проблем. Ако поново инсталирате Signal, ваша историја порука може бити изгубљена.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Неуспешан пренос података";
@@ -780,6 +780,9 @@
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal корисник";
+
+/* The generic name used for group calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Фотографиши и пошаљи";
@@ -1471,6 +1474,54 @@
 /* Title for alert before running a database integrity check */
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Želite li da pokrenete dijagnostiku baze podataka?";
 
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Део ваше историје порука је можда оштећен. То није утицало на безбедност вашег налога и порука. Додирните „Настави“ да бисте опоравили своје податке.";
+
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Проблем при опорављању података";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Свакако настави";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "Да бисте довршили опоравак података, препоручујемо вам да имате најмање %1$@ слободног меморијског простора на уређају.";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Потребно је више меморијског простора";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Опоравак историје порука није успео. Можете наставити да користите Signal након поновне инсталације. Пошаљите евиденцију отклањања грешака да бисмо боље разумели шта је пошло по злу.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Ресетуј Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Ресетуј";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Овим ћете избрисати податке налога, профил и све поруке. Апликација ће се затворити када се тај поступак заврши.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Ресетујте Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Пошаљи извештај грешака";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Подаци нису опорављени";
+
+/* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Не затварајте апликацију током опоравка. Поступак може потрајати неколико минута.";
+
+/* On the database recovery screen, this is the title shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Опорављамо податке";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Опоравак је био успешан, али неке поруке можда нису опорављене.";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Подаци су опорављени";
+
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Ово може потрајати пар минута.";
 
@@ -1592,7 +1643,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Наставите без преношења вашег налога и порука";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Додајте овај iPad као нови повезан уређај без преноса историје преписки";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Додајте овај iPad као нови повезани уређај без преношења историје порука";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Додај као нови уређај";
@@ -1604,10 +1655,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Пренеси налог и поруке";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Пренесите ваш налог и историју преписки са вашег старог iOS уређаја";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Пренесите налог и историју порука са старог iOS уређаја";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Пренесите ваш налог и историју преписки са вашег старог iPad-а";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Пренесите налог и историју порука са старог iPad-а";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Пренеси податке са другог iPad-а";
@@ -1721,7 +1772,7 @@
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Показати значке на прифилу";
 
 /* Title for the proxy confirmation */
-"DO_YOU_WANT_TO_USE_PROXY" = "Да ли желите да користите ову прокси адресу?";
+"DO_YOU_WANT_TO_USE_PROXY" = "Желите ли да користите ову прокси адресу?";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Заобилазак цензуре локације";
@@ -1835,7 +1886,7 @@
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Управљање претплатом";
 
 /* Text describing to the user that they're going to pay a monthly donation to Signal */
-"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Mesečna donacija Signalu";
+"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Месечна донација Signal-у";
 
 /* Title for the 'more' section on the donation screen */
 "DONATION_VIEW_MORE_SECTION_TITLE" = "Више";
@@ -2780,16 +2831,16 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ за %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Уклони групну причу";
 
-/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Želite li sigurno da izbrišete ovu priču?";
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%1$@” can view and reply to this story. You can update the membership for this chat in the group.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Чланови групе „%1$@“ могу да виде ову причу и одговоре на њу. Можете да измените чланове овог ћаскања у групи.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Ко може да види ову причу";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Група ажурирана.";
@@ -2939,7 +2990,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Када сви тренутни чланови групе користе верзију Signal-а која се може придружити новој групи, ова група ће се надоградити.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Сва историја порука и медији ће бити сачувани од пре надоградње.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Целокупна историја порука и медијски садржаји од пре надоградње биће сачувани.";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Ово је застарела група. Функције попут администратора групе доступне су само за нове групе. %1$@";
@@ -2963,7 +3014,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Шта су нове групе?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Сва историја порука и медији су сачувани од пре надоградње.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Целокупна историја порука и медијски садржаји од пре надоградње су сачувани.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Нове групе имају функције попут @помињања и администратора групе и подржаваће више функција у будућности.";
@@ -2990,7 +3041,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Ови чланови нису могли аутоматски да се додају у нову групу када је надограђена:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Сва историја порука и медији су сачувани од пре надоградње.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Целокупна историја порука и медијски садржаји од пре надоградње су сачувани.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Овај члан је уклоњен из групе и неће моћи да се придружи групи док не изврши надоградњу:";
@@ -3188,7 +3239,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Неисправан звучни запис.";
 
 /* The provided proxy host address is not valid */
-"INVALID_PROXY_HOST_ERROR" = "Adresa proksi servera koju ste uneli je nevažeća. Proverite adresu i probajte ponovo.";
+"INVALID_PROXY_HOST_ERROR" = "Адреса прокси сервера коју сте унели је неважећа. Проверите адресу и пробајте поново.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Дозволите приступ вашем именику у iOS апликацији за подешавања како бисте могли позвати пријатеље да се придруже Signal-у.";
@@ -3413,7 +3464,7 @@
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Otvori link";
 
 /* Label for button to open a signal proxy. */
-"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Otvorite proksi server Signala";
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Отворите прокси сервер Signal-а";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Видите пакет налепница";
@@ -3725,13 +3776,13 @@
 "MY_STORIES_NO_STORIES" = "Ажурирања ваше приче ће се појавити овде.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Сви осим…";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Sve Signal veze";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Све Signal везе";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Samo podeli sa…";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Само подели са…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Моје приче";
@@ -4688,7 +4739,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Izbriši privatnu priču";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Желите ли сигурно да избришете причу „%1$@“? Све што сте поделили у овој причи такође ће бити избрисано.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Уклони";
@@ -4778,19 +4829,19 @@
 "PROFILE_VIEW_TITLE" = "Профил";
 
 /* The title for the address of the signal proxy */
-"PROXY_ADDRESS" = "Адреса проксија";
+"PROXY_ADDRESS" = "Адреса прокси сервера";
 
 /* The provided proxy connected successfully */
-"PROXY_CONNECTED_SUCCESSFULLY" = "Повезани сте са проксијом. Прокси можете у било ком тренутку да искључите у Подешавањима.";
+"PROXY_CONNECTED_SUCCESSFULLY" = "Повезани сте са прокси сервером. Можете искључити прокси сервер у било ком тренутку у подешавањима.";
 
 /* The provided proxy couldn't connect */
-"PROXY_FAILED_TO_CONNECT" = "Povezivanje na proksi server nije uspelo. Proverite adresu proksi servera i probajte ponovo.";
+"PROXY_FAILED_TO_CONNECT" = "Повезивање на прокси сервер није успело. Проверите адресу прокси сервера и пробајте поново.";
 
 /* Placeholder text for signal proxy host */
-"PROXY_PLACEHOLDER" = "Унети адресу проксија";
+"PROXY_PLACEHOLDER" = "Унесите адресу прокси сервера";
 
 /* Title for the signal proxy settings */
-"PROXY_SETTINGS_TITLE" = "Прокси";
+"PROXY_SETTINGS_TITLE" = "Прокси сервер";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Означи прочитаним";
@@ -5927,7 +5978,7 @@
 "SETTINGS_PINS_TITLE" = "Signal PIN";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Подешавања заобилазак цензуре, усмерених позивива и запечаћена пошиљатеља.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Подешавања за заобилазак цензуре, прокси сервер, релејне позиве и запечаћене пошиљаоце.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Напредно";
@@ -6206,7 +6257,7 @@
 "STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Priča je skrivena";
 
 /* Context menu action to view metadata about the story */
-"STORIES_INFO_ACTION" = "Инфо";
+"STORIES_INFO_ACTION" = "Информације";
 
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "Trenutno nema ničeg novog ovde.\nDodirnite + da dodate svoju priču.";
@@ -6245,10 +6296,10 @@
 "STORIES_SETTINGS_TITLE" = "Privatnost priča";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Више нећете моћи да делите или видите приче. Све што сте недавно поделили у причама ће такође бити избрисано.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Искључи и избриши приче";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Ako isključite priče, više nećete moći da delite ili vidite priče.";
@@ -6272,7 +6323,7 @@
 "STORIES_UNHIDE_STORY_ACTION" = "Ponovo prikaži priču";
 
 /* Short context menu action to unhide the selected story */
-"STORIES_UNHIDE_STORY_ACTION_SHORT" = "Ponovo prikaži";
+"STORIES_UNHIDE_STORY_ACTION_SHORT" = "Поново прикажи";
 
 /* Toast shown when a story is successfuly unhidden */
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Priča je ponovo prikazana";
@@ -6287,19 +6338,19 @@
 "STORY_COMPOSER_CAMERA" = "Камера";
 
 /* Displayed when failed to fetch link preview in Text Story composer. */
-"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Нисмо успели да учитамо линк. Проверите везу и пробајте поново.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
 "STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Podelite link sa gledaocima vaše priče";
 
 /* Placeholder text in text stories compose UI */
-"STORY_COMPOSER_TAP_ADD_TEXT" = "Пипнути да би додали текст";
+"STORY_COMPOSER_TAP_ADD_TEXT" = "Додирните да додате текст";
 
 /* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
 "STORY_COMPOSER_TEXT" = "Текст";
 
 /* Placeholder text for URL input field in Text Story composer UI. */
-"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "Унети или прилепити УРЛ";
+"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "Унесите или налепите URL";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Posetite link";
@@ -6325,6 +6376,9 @@
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "Реаговано на причу";
 
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Одговори";
 
@@ -6335,74 +6389,73 @@
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Slanje ove priče nije uspelo. Proverite vezu i probajte ponovo";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent to some people. Check your connection and try again";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Ова прича није могла да се пошаље неким људима. Проверите да ли сте повезани и пробајте поново";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Samo podeli sa…";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Само подели са…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Сви осим…";
 
 /* Text indicating that the story send has failed */
-"STORY_SEND_FAILED" = "Slanje nije uspelo";
+"STORY_SEND_FAILED" = "Слање није успело";
 
 /* Text indicating that you can tap to retry sending */
-"STORY_SEND_FAILED_RETRY" = "Dodirnite da ponovite";
+"STORY_SEND_FAILED_RETRY" = "Додирните да поновите";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Slanje nije uspelo Dodirnite da ponovite";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED" = "Delimično poslato";
+"STORY_SEND_PARTIALLY_FAILED" = "Делимично послато";
 
 /* Text indicating that the story send has partially failed */
 "STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Delimično poslato. Dodirnite da vidite detalje";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "Šalje se…";
+"STORY_SENDING" = "Шаље се…";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Започели сте разговор";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Прихватили сте захтев за поруку";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Имали сте те људе у системским контактима";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Ваше везе могу да виде ваше име и фотографију, као и шта сте слали у „Мојој причи“, осим ако је не сакријете од њих.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal везе</bold> су људи којима верујете и које сте одабрали на неки од следећих начина:";
 
-/* Section footer for the 'viewers' section on the 'story settings' view
-   Section footer for the 'viewers' section on the 'story settings' view. */
+/* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
 
-/* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+/* Header for the 'viewers' section on the 'story settings' bottom sheet */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Бирајте које Signal везе могу да виде вашу причу. То увек можете да промените у подешавањима приватности.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videos sent to Stories will be trimmed to %1$ds clips and sent as multiple stories.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Видео снимци објављени у причама биће скраћени на %1$d секунди и послати као више прича.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
-"STORY_VIEWER_ONBOARDING_1" = "Dodirnite da nastavite";
+"STORY_VIEWER_ONBOARDING_1" = "Додирните да наставите";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
-"STORY_VIEWER_ONBOARDING_2" = "Prevucite nagore da preskočite";
+"STORY_VIEWER_ONBOARDING_2" = "Превуците нагоре да прескочите";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
-"STORY_VIEWER_ONBOARDING_3" = "Prevucite nadesno da izađete";
+"STORY_VIEWER_ONBOARDING_3" = "Превуците надесно да изађете";
 
 /* Confirmation text shown the first time the user opens the story viewer to dismiss instructions. */
 "STORY_VIEWER_ONBOARDING_CONFIRMATION" = "У реду";
 
 /* Text indicating that the user has views turned off */
-"STORY_VIEWS_OFF" = "Potvrde o čitanju su isključene";
+"STORY_VIEWS_OFF" = "Потврде о читању су искључене";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "ИД претплатника је копиран у оставу";
@@ -6659,9 +6712,6 @@
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Непознат контакт";
 
-/* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Непозната држава";
-
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Један од ваших уређаја је послао поруку која не може бити обрађена и приказана овде, јер користи нове могућности Signal-а.";
 
@@ -6744,10 +6794,10 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Ажурирање групе није успело. Проверите да ли сте повезани на интернет и покушајте поново.";
 
 /* Button to activate the signal proxy */
-"USE_PROXY_BUTTON" = "Користи проки";
+"USE_PROXY_BUTTON" = "Користи прокси сервер";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "Прокси користите само ако не можете да се повежете са Signal-ом на мобилној или Ви-Фи мрежи.";
+"USE_PROXY_EXPLANATION" = "Користите прокси сервер само ако не можете да се повежете са Signal-ом преко мобилног интернета или Wi-Fi мреже.";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Корисничка имена на Signal-у нису обавезна. Ако додате ваше корисничко име, други корисници Signal-а ће моћи да вас по њему пронађу и контактирају, без да знају ваш број телефона.";

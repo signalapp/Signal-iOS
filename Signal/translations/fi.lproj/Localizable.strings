@@ -121,7 +121,7 @@
 /* notification body */
 "APN_Message" = "Olet saattanut saada uusia viestejä";
 
-/* Message for the 'app launch failed' alert. */
+/* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ei avaudu. Lähetä virheenkorjausloki osoitteeseen support@signal.org, jotta voimme selvittää ongelman.";
 
 /* Title for the 'app launch failed' alert. */
@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Tallennustila vähissä";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Aiemmasta laitteesta siirrettyjä tietoja ei voitu palauttaa. Lähetä virheenkorjausloki osoitteeseen support@signal.org, jotta voimme selvittää ongelman. Jos asennat Signalin uudelleen, viestihistoriasi saattaa pyyhkiytyä.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Aiemmasta laitteesta siirrettyjä tietoja ei voitu palauttaa. Lähetä virheenkorjausloki osoitteeseen support@signal.org, jotta voimme selvittää ongelman. Jos asennat Signalin uudelleen, viestihistoriasi saatetaan menettää.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Siirtoa ei voitu suorittaa loppuun";
@@ -780,6 +780,9 @@
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal-käyttäjä";
+
+/* The generic name used for group calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Ota kuva ja lähetä se";
@@ -1470,6 +1473,54 @@
 
 /* Title for alert before running a database integrity check */
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Suoritetaanko tietokannan diagnostiikka?";
+
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Osa viestihistoriastasi saattaa olla vioittunut. Tällä ei ole ollut vaikutusta tilisi tai viestiesi suojaukseen. Palauta tiedot napauttamalla Jatka.";
+
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Tietojen noutamisessa ilmeni ongelma";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Jatka silti";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "Jotta tietojen palauttaminen voidaan suorittaa loppuun, suosittelemme, että laitteessasi on vähintään %1$@ vapaata tallennustilaa.";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Tallennustila ei riitä";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Viestihistoriaa ei voitu palauttaa. Voit jatkaa Signalin käyttöä asennettuasi sen uudelleen. Lähetä virheenkorjausloki, jotta voimme paremmin ymmärtää, mikä meni vikaan.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Palauta Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Palauta alkuasetuksiin";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Tilin tiedot, profiili ja kaikki viestit poistetaan. Sovellus sulkeutuu, kun prosessi on valmis.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Palauta Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Lähetä virheenkorjausloki";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Tietoja ei palautettu";
+
+/* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Älä sulje sovellusta palautusprosessin aikana. Se voi kestää useita minuutteja.";
+
+/* On the database recovery screen, this is the title shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Tietoja palautetaan";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Palautus onnistui, mutta kaikkia viestejä ei ehkä palautettu.";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Tietojen palauttaminen onnistui";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Tämä saattaa kestää muutaman minuutin.";
@@ -2782,11 +2833,11 @@
 /* Button to delete the story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Poista ryhmätarina";
 
-/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Haluatko varmasti poistaa tämän tarinan?";
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Ryhmäkeskustelun ”%1$@” jäsenet voivat nähdä tarinan ja vastata siihen. Voit päivittää tämän keskustelun jäsenyyden ryhmässä.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Ryhmäkeskustelun %1$@ jäsenet voivat nähdä tarinan ja vastata siihen. Voit päivittää tämän keskustelun jäsenyyden ryhmässä.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Kuka voi nähdä tämän tarinan";
@@ -3737,7 +3788,7 @@
 "MY_STORIES_TITLE" = "Omat tarinat";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "Minun tarinani";
+"MY_STORY_NAME" = "Oma tarina";
 
 /* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
 "MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Valitse, kuka voi nähdä tarinasi";
@@ -3746,7 +3797,7 @@
 "MY_STORY_SETTINGS_SHEET_TITLE" = "Oman tarinan yksityisyys";
 
 /* Title for the my story settings view */
-"MY_STORY_SETTINGS_TITLE" = "Omat tarinat";
+"MY_STORY_SETTINGS_TITLE" = "Oma tarina";
 
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "Lisää tarina napauttamalla";
@@ -4688,7 +4739,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Poista yksityinen tarina";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Haluatko varmasti poistaa tarinan %1$@? Myös tähän tarinaan jaetut päivitykset poistetaan.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Poista";
@@ -4820,10 +4871,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Alkuperäistä viestiä ei löytynyt.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "lähetti reaktion tarinaasi";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Lähetti reaktion tarinaasi";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "lähetti reaktion käyttäjän %1$@ tarinaan.";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Lähetti reaktion käyttäjän %1$@ tarinaan";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Tarina";
@@ -5102,7 +5153,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Yhdistämiseen tarvittavaa koodia ei voitu noutaa";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Laitteen liittäminen toiseen tiliin edellyttää laitteen asetusten palauttamista. Poistetaanko kaikki Signal-historia, kuten viestit, tiedostot ja puhelut? Toimintoa ei voi perua.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Laitteen liittäminen toiseen tiliin edellyttää laitteen asetusten palauttamista. Poistetaanko kaikki historiatiedot, kuten viestit, tiedostot ja puhelut? Tätä toimintoa ei voi perua.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Poista kaikki";
@@ -5411,7 +5462,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Tuhoa kaikki tiedot";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Haluatko varmasti tuhota kaiken Signal-historian, kuten viestit, liitteet ja puhelut? Tätä toimintoa ei voi perua.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Haluatko varmasti poistaa kaikki historiatiedot, kuten viestit, liitteet ja puhelut? Tätä toimintoa ei voi perua.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Poista kaikki";
@@ -6194,10 +6245,10 @@
 "STORIES_HIDE_STORY_ACTION" = "Piilota tarina";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
-"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Käyttäjän %1$@ uusia tarinoiden päivityksiä ei näytetä enää tarinaluettelon ylälaidassa.";
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Uudet tarinapäivitykset käyttäjältä %1$@ eivät enää ilmesty tarinalistan alkupäähän.";
 
 /* Title asking the user if they are sure they want to hide stories from another user */
-"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Haluatko piilottaa tarinan?";
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Piilotetaanko tarina?";
 
 /* Short context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION_SHORT" = "Piilota";
@@ -6245,10 +6296,10 @@
 "STORIES_SETTINGS_TITLE" = "Tarinoiden yksityisyys";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Et voi enää jakaa tai nähdä tarinoita. Myös viimeksi jakamasi tarinoiden päivitykset poistetaan.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Poista käytöstä ja poista tarinat";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Jos poistat tarinat käytöstä, et voi enää jakaa tai nähdä tarinoita.";
@@ -6257,7 +6308,7 @@
 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Poista tarinat käytöstä";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "Jaa tarinoita itse ja katso muiden tarinoita. Tarinat katoavat automaattisesti 24 tunnin kuluttua.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Jaa omia ja katso muiden tarinoita. Tarinat katoavat automaattisesti 24 tunnin kuluttua.";
 
 /* Button to turn on stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Ota tarinat käyttöön";
@@ -6269,16 +6320,16 @@
 "STORIES_TITLE" = "Tarinat";
 
 /* Context menu action to unhide the selected story */
-"STORIES_UNHIDE_STORY_ACTION" = "Tuo tarina esiin";
+"STORIES_UNHIDE_STORY_ACTION" = "Näytä tarina";
 
 /* Short context menu action to unhide the selected story */
 "STORIES_UNHIDE_STORY_ACTION_SHORT" = "Poista piilotus";
 
 /* Toast shown when a story is successfuly unhidden */
-"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Tarina tuotu esiin";
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Tarina näytetään";
 
 /* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Ota lukukuittaukset käyttöön nähdäksesi, kuka on tarkastellut tarinoitasi.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Ota lukukuittaukset käyttöön nähdäksesi, kuka on katsellut tarinoitasi.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Näytöt";
@@ -6311,19 +6362,22 @@
 "STORY_PRIVACY_SETTINGS" = "Yksityisyys";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Lisäsi tarinaasi reaktion %1$@";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Lähetti reaktion %1$@ tarinaasi";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Lisäsi tarinaan reaktion %1$@";
+"STORY_REACTION_QUOTE_FORMAT" = "Lähetti reaktion %1$@ tarinaan";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Lisäsi reaktion %1$@ käyttäjän %2$@ tarinaan";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Lähetti reaktion %1$@ käyttäjän %2$@ tarinaan";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Vastaa";
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "Lähetti reaktion tarinaan";
+
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Vastaa";
@@ -6362,29 +6416,28 @@
 "STORY_SENDING" = "Lähetetään...";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Aloittamalla keskustelun";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Hyväksymällä viestipyynnön";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Lisäämällä heidät puhelimen järjestelmän yhteystietoihin";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Kontaktisi näkevät nimesi ja valokuvasi sekä Omaan tarinaan tekemäsi julkaisut, ellet piilota sitä heiltä.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal-kontaktit</bold> ovat käyttäjiä, jotka olet valinnut luotetuiksi jollakin seuraavista tavoista:";
 
-/* Section footer for the 'viewers' section on the 'story settings' view
-   Section footer for the 'viewers' section on the 'story settings' view. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Valitse, ketkä Signal-kontaktit voivat nähdä tarinasi. Muutokset eivät vaikuta jo lähettämiisi tarinoihin.";
+/* Section footer for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Valitse Signal-kontaktit, jotka voivat nähdä tarinasi. Muutokset eivät vaikuta jo lähettämiisi tarinoihin.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Kuka voi nähdä tämän tarinan";
 
-/* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+/* Header for the 'viewers' section on the 'story settings' bottom sheet */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Valitse Signal-kontaktit, jotka voivat nähdä tarinasi. Voit muuttaa tätä valintaa milloin tahansa yksityisyysasetuksissa.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Tarinoihin lähetetyt videot lyhennetään %1$d sekunnin leikkeiksi ja lähetetään useina tarinoina.";
@@ -6658,9 +6711,6 @@
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Tuntematon yhteystieto";
-
-/* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Tuntematon maa";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Yksi laitteistasi lähetti viestin, jota ei voida käsitellä tai näyttää, koska se käyttää uutta Signal-ominaisuutta.";

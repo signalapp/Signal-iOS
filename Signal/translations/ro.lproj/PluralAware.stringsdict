@@ -422,11 +422,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Poveste privată · %1$d vizualizator</string>
+			<string>Poveste privată · 1 spectator</string>
 			<key>few</key>
-			<string>Poveste privată · %1$d Vizualizatori</string>
+			<string>Poveste privată · %1$d spectatori</string>
 			<key>other</key>
-			<string>Poveste privată · %1$d de Vizualizatori</string>
+			<string>Poveste privată · %1$d de spectatori</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -440,11 +440,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Toate Conexiunile Signal · 1 spectator</string>
+			<string>Toate conexiunile Signal · 1 Spectator</string>
 			<key>few</key>
-			<string>Toate Conexiunile Signal · %1$d spectatori</string>
+			<string>Toate conexiunile Signal · %1$d Spectatori</string>
 			<key>other</key>
-			<string>Toate Conexiunile Signal · %1$d de spectatori</string>
+			<string>Toate conexiunile Signal · %1$d de Spectatori</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -458,11 +458,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Toate conexiunile Signal · 1 exclusă</string>
+			<string>Toate conexiunile Signal · 1 Exclusă</string>
 			<key>few</key>
-			<string>Toate Conexiunile Signal · %1$d excluse</string>
+			<string>Toate conexiunile Signal · %1$d Excluse</string>
 			<key>other</key>
-			<string>Toate Conexiunile Signal · %1$d excluse</string>
+			<string>Toate conexiunile Signal · %1$d Excluse</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -476,11 +476,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Trimite Doar Către · 1 spectator</string>
+			<string>Trimite doar către · 1 Spectator</string>
 			<key>few</key>
-			<string>Trimite Doar Către · %1$d spectatori</string>
+			<string>Trimite doar către · %1$d Spectatori</string>
 			<key>other</key>
-			<string>Trimite Doar Către · %1$d de spectatori</string>
+			<string>Trimite doar către · %1$d de Spectatori</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -494,11 +494,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Poveste de grup · %1$d vizualizator</string>
+			<string>Poveste de grup · 1 spectator</string>
 			<key>few</key>
-			<string>Poveste de grup · %1$d Vizualizatori</string>
+			<string>Poveste de grup · %1$d spectatori</string>
 			<key>other</key>
-			<string>Poveste de grup · %1$d de Vizualizatori</string>
+			<string>Poveste de grup · %1$d de spectatori</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -1219,24 +1219,6 @@
 			<string>Revocare invitații</string>
 			<key>other</key>
 			<string>Revocare invitații</string>
-		</dict>
-	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Îți vom reaminti mai târziu. Crearea unui PIN va deveni obligatorie mâine.</string>
-			<key>few</key>
-			<string>Îți vom reaminti mai târziu. Crearea unui PIN va deveni obligatorie în %1$d zile.</string>
-			<key>other</key>
-			<string>Îți vom reaminti mai târziu. Crearea unui PIN va deveni obligatorie în %1$d de zile.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>

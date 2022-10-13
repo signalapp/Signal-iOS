@@ -376,7 +376,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Privát Történet · %1$d néző</string>
+			<string>Privát Történet · 1 néző</string>
 			<key>other</key>
 			<string>Privát történet · %1$d néző</string>
 		</dict>
@@ -440,7 +440,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Csoport Történet · %1$d néző</string>
+			<string>Csoport Történet · 1 néző</string>
 			<key>other</key>
 			<string>Csoport történet · %1$d néző</string>
 		</dict>
@@ -1083,22 +1083,6 @@
 			<string>Meghívó visszavonása</string>
 			<key>other</key>
 			<string>Meghívók visszavonása</string>
-		</dict>
-	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Később újra emlékeztetünk. PIN-kódod létrehozása egy nap múlva kötelezővé válik.</string>
-			<key>other</key>
-			<string>Később újra emlékeztetünk. PIN-kódod létrehozása %1$d nap múlva kötelezővé válik.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>

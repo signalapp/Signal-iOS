@@ -121,7 +121,7 @@
 /* notification body */
 "APN_Message" = "आपल्यासाठी नवीन संदेश असू शकतात";
 
-/* Message for the 'app launch failed' alert. */
+/* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal लाँच करू शकत नाही. कृपया support@signal.org वर डीबग लॉग पाठवा जेणेकरून आम्ही समस्येचे निराकरण करू शकू.";
 
 /* Title for the 'app launch failed' alert. */
@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "संग्रहण जागा कमी";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "आपल्या जुन्या डिव्हाईस वरून स्थानांतरित केलेला डेटा पुनर्स्थित केला जाऊ शकला नाही. कृपया support@signal.org वर डीबग लॉग पाठवा जेणेकरून आम्ही समस्येचे निराकरण करू शकू. जर आपण Signal पुनः-स्थापना केली तर आपला संदेश इतिहास गहाळ होऊ शकतो.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "आपल्या जुन्या डिव्हाईस वरून स्थानांतरित केलेला डेटा पुनर्स्थित केला जाऊ शकला नाही. कृपया support@signal.org वर डीबग लॉग पाठवा जेणेकरून आम्ही या समस्येचे निराकरण करू शकू. आपण Signal ची पुर्नस्थापना केल्यास आपला संदेश इतिहास गमावला जाऊ शकतो.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "स्थानांतरण पूर्ण करू शकले नाही";
@@ -780,6 +780,9 @@
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal वापरकर्ता";
+
+/* The generic name used for group calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "एक चित्र घ्या आणि नंतर त्यास पाठवा";
@@ -1471,6 +1474,54 @@
 /* Title for alert before running a database integrity check */
 "DATABASE_INTEGRITY_CHECK_TITLE" = "डेटाबेस तपासणी सुरू करायची?";
 
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "आपला काही संदेश इतिहास दूषित झालेला असू शकतो. याचा आपल्या अकाऊंट किंवा संदेशांच्या सुरक्षेवर कोणताही परिणाम झालेला नाही. आपला डेटा पुनर्प्राप्त करण्यासाठी \"सुरू ठेवा\" वर टॅप करा.";
+
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "डेटा काढण्यात समस्या आली";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "तरीही सुरू ठेवा";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "डेटा पुनर्प्राप्त पूर्ण करण्याच्या दृष्टीने, आम्ही आपल्या डिव्हाइसवर कमीत कमी %1$@ संग्रहण जागा असण्याची आवश्यकता असण्याची शिफारस करतो.";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "अधिक संग्रहण जागा आवश्यक आहे";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "आपला संदेश इतिहास पुनर्प्राप्त केला जाऊ शकत नाही. पुन्हा स्थापना केल्यानंतर आपण Signal चा वापर करणे पुढे सुरू ठेवू शकता. डीबग लॉग सादर करा म्हणजे आम्हाला काय चुकीचे झाले ते अधिक चांगल्या प्रकारे समजू शकेल.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Signal रिसेट करा";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "रीसेट करा";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "आपली अकाऊंट माहिती, प्रोफाइल आणि आपले सर्व संदेश साफ केले जातील. ही प्रक्रिया पूर्ण झाल्यानंतर अ‍ॅप बंद होईल.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Signal रिसेट करा";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "डीबग लॉग प्रविष्ट करा";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "डेटा पुनर्प्राप्त झाला नाही";
+
+/* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "पुनर्प्राप्ती प्रक्रियेच्या दरम्यान अ‍ॅप सुरू ठेवा. यासाठी अनेक मिनिटे लागू शकतात.";
+
+/* On the database recovery screen, this is the title shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "डेटा पुनर्प्राप्त करत आहे";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "पुनर्प्राप्ती यशस्वी झाली होती, मात्र काही संदेशांची पुनर्प्राप्ती झालेली नसू शकते.";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "डेटा यशस्वीरित्या पूनर्प्राप्त झाला";
+
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "ह्याला काही मिनिटे लागू शकतात.";
 
@@ -1592,7 +1643,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "आपले खाते आणि संदेश स्थानांतरित न करता सुरू ठेवा";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "संदेश इतिहास स्थानांतरित न करता हा iPad नवीन लिंक केलेला डिव्हाईस म्हणून जोडा";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "संदेश इतिहास ट्रान्सफर न करता हा iPad नवीन लिंक केलेला डिव्हाईस म्हणून जोडा";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "नवीन डिव्हाईस म्हणून जोडा";
@@ -1604,10 +1655,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "खाते आणि संदेश स्थानांतरित करा";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "आपल्या जुन्या iOS डिव्हाईस वरून आपले खाते आणि संदेश इतिहास स्थानांतरित करा";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "आपल्या जुन्या iOS डिव्हाईस वरून आपले अकाऊंट आणि संदेश इतिहास ट्रान्सफर करा";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "आपल्या जुन्या iPad डिव्हाईस वरून आपले खाते आणि संदेश इतिहास स्थानांतरित करा";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "आपल्या जुन्या iPad डिव्हाईस वरून आपले अकाऊंट आणि संदेश इतिहास ट्रान्सफर करा";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "इतर iPad वरून स्थानांतरित करा";
@@ -2780,10 +2831,10 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ पासून %2$@पर्यंत";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "ग्रुप स्टोरीज काढून टाका";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "ग्रुप स्टोरी काढून टाका";
 
-/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "आपण खात्रीने ही स्टोरी हटवू इच्छिता?";
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "ग्रुप चॅट “%1$@” चे सदस्य ही स्टोरी पाहू आणि उत्तर देऊ शकतात. आपण या चॅटसाठी ग्रुपमध्ये सदस्यत्व अद्ययावत करू शकता.";
@@ -2963,7 +3014,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "नवीन गट काय आहेत?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "सर्व संदेश इतिहास आणि मिडिया श्रेणीसुधारणेपूर्वी ठेवले जातात.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "सर्व संदेश इतिहास आणि मिडिया श्रेणीसुधारणेपूर्वी ठेवण्यात आले आहेत.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "नवीन गटांमध्ये @उल्लेख आणि गट अॅडमिन सारखे वैशिष्ट्ये आहेत, आणि भविष्यात आम्ही अधिक वैशिष्ट्यांना समर्थन देऊ.";
@@ -2990,7 +3041,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "श्रेणीसुधारणा झाल्यानंतर हे सदस्य नवीन गटात स्वयंचलितपणे जोडणे शक्य झाले नाही:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "सर्व संदेश इतिहास आणि मिडिया श्रेणीसुधारणेपूर्वी ठेवले जातात.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "सर्व संदेश इतिहास आणि मिडिया श्रेणीसुधारणेपूर्वी ठेवण्यात आले आहेत.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "हा सदस्य गटातून काढला गेला होता आणि श्रेणीसुधारणा करेपर्यंत तो पुन्हा गटात सामील होऊ शकत नाही:";
@@ -3722,7 +3773,7 @@
 "MUTED_BADGE" = "म्यूट केलेले";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "आपल्या स्टोरीचे अपडेट्स येथे दाखवले जातील.";
+"MY_STORIES_NO_STORIES" = "आपल्या स्टोरीची अद्यतने येथे दाखवली जातील.";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "वगळून सर्व जण...";
@@ -3854,7 +3905,7 @@
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "विद्यमान गटामध्ये शेअर करा";
 
 /* Title for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "नवीन गट स्टोरी";
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "नवीन ग्रुप स्टोरी";
 
 /* Subtitle for create private story row on the 'new story sheet' */
 "NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "केवळ विशिष्ट लोकांसाठी दृश्यमान";
@@ -4688,13 +4739,13 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "खाजगी स्टोरी हटवा";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "आपण खात्रीने “%1$@” हटवू इच्छित आहात? या स्टोरी ला शेअर केलेली अद्यतने देखील हटवली जातील.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "काढा";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "ही व्यक्ती या पुढे ही स्टोरी पाहू शकणार नाही.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "ही व्यक्ती यापुढे ही स्टोरी पाहू शकणार नाही.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "%1$@हटवायची?";
@@ -4823,10 +4874,10 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "आपल्या स्टोरीवर प्रतिक्रिया दिली";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "%1$@ च्या स्टोरी ला प्रतिक्रिया दिली";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "%1$@ च्या स्टोरीला प्रतिक्रिया दिली";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ . स्टोरी";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · स्टोरी";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "संलग्न";
@@ -5102,7 +5153,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "लिंकिंग कोड मिळवण्यात अक्षम";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "हा डिव्हाइस दुसऱ्या खात्याशी लिंक करण्यासाठी, आपण हा डिव्हाइस पहिले रीसेट करायला हवा. सर्व इतिहास (संदेश, संलग्न, कॉल इत्यादी.) हटवण्याची आपणास खात्री आहे का? ही क्रिया मागे घेता येणे शक्य नाही.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "हा डिव्हाइस दुसऱ्या अकाऊंटशी लिंक करण्यासाठी, आपण हे डिव्हाइस आधी रीसेट करायला हवे. आपण खात्रीने सर्व इतिहास (संदेश, संलग्न, कॉल इत्यादी.) हटवू इच्छिता? ही क्रिया मागे घेता येणे शक्य नाही.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "सर्व हटवा";
@@ -5411,7 +5462,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "सर्व डेटा हटवा";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "आपणास सर्व इतिहास हटविण्याची खात्री आहे का (संदेश, संलग्न, कॉल इत्यादी.)? ही क्रिया मागे घेता येणे शक्य नाही.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "आपण खात्रीने सर्व इतिहास (संदेश, संलग्न, कॉल इत्यादी.)हटवू इच्छिता? ही क्रिया मागे घेता येणे शक्य नाही.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "सर्व हटवा";
@@ -6209,7 +6260,7 @@
 "STORIES_INFO_ACTION" = "माहिती";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "आत्ता लगेचच दाखवण्यास कोणतेही अद्यतने नाहीत.\nआपली स्टोरी जोडण्यास + टॅप करा.";
+"STORIES_NO_RECENT_MESSAGES" = "आत्ता लगेचच दाखवण्यास कोणतेही अद्यतने नाहीत. आपली स्टोरी जोडण्यास +\n टॅप करा.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "अद्याप कोणतीही प्रत्युत्तरे नाहीत";
@@ -6218,7 +6269,7 @@
 "STORIES_NO_VIEWS_YET" = "अद्याप कोणतीही दृश्ये नाहीत";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "आपली स्टोरी पाहू शकतील अशा लोकांना प्रतिक्रिया आणि प्रत्युत्तर देऊ द्या.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "आपली स्टोरी पाहू शकतील अशा लोकांना प्रतिक्रिया आणि उत्तर देऊ द्या.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "प्रत्युत्तरे आणि प्रतिक्रिया";
@@ -6236,7 +6287,7 @@
 "STORIES_SAVE_STORY_ACTION" = "जतन करा";
 
 /* Footer for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_FOOTER" = "24 तासांनंतर स्टोरीज स्वयंचलितपणे अदृश्य होतात. आपली स्टोरी कोण पाहू शकेल ते निवडा किंवा विशिष्ट दर्शकांच्या किंवा ग्रुप्ससह नवीन स्टोरीज तयार करा.";
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "24 तासांनंतर स्टोरीज स्वयंचलितपणे अदृश्य होतात. आपली स्टोरी कोण पाहू शकेल ते निवडा किंवा विशिष्ट दर्शक किंवा ग्रुप्ससह नवीन स्टोरीज तयार करा.";
 
 /* Header for the 'My Stories' section of the stories settings */
 "STORIES_SETTINGS_MY_STORIES_HEADER" = "माझ्या स्टोरीज";
@@ -6245,10 +6296,10 @@
 "STORIES_SETTINGS_TITLE" = "स्टोरीची गोपनीयता";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "आपण यापुढे स्टोरीज शेअर किंवा पाहू शकणार नाही. आपण अलिकडेच शेअर केलेली स्टोरीज अद्यतने देखील हटवली जातील.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "बंद करा आणि स्टोरीज हटवा";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "आपण स्टोरीज मधून बाहेर पडल्यास आपण यापुढे स्टोरी पाहू किंवा शेअर करु शकणार नाही.";
@@ -6257,7 +6308,7 @@
 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "स्टोरीज बंद करा";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "स्टोरीज शेअर करा आणि इतरांच्या कडील स्टोरीज पहा. स्टोरीज 24 तासानंतर आपोआप अदृश्य होतात.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "इतरांच्या स्टोरीज शेअर करा आणि पहा. स्टोरीज 24 तासानंतर आपोआप अदृश्य होतात.";
 
 /* Button to turn on stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "स्टोरीज चालू करा";
@@ -6266,7 +6317,7 @@
 "STORIES_SHARE_STORY_ACTION" = "सामायिक करा";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "स्टोरीज्";
+"STORIES_TITLE" = "स्टोरीज";
 
 /* Context menu action to unhide the selected story */
 "STORIES_UNHIDE_STORY_ACTION" = "स्टोरी उघड करावयाची";
@@ -6290,7 +6341,7 @@
 "STORY_COMPOSER_LINK_PREVIEW_ERROR" = "लिंक लोड करू शकत नाही. आपले कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "आपल्या स्टोरी दर्शकांसह लिंक शेअर करा";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "आपल्या स्टोरीच्या दर्शकांसह लिंक शेअर करा";
 
 /* Placeholder text in text stories compose UI */
 "STORY_COMPOSER_TAP_ADD_TEXT" = "मजकूर जोडण्यासाठी टॅप करा";
@@ -6325,6 +6376,9 @@
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "स्टोरीला प्रतिक्रिया दिली";
 
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "प्रत्युत्तर द्या";
 
@@ -6332,7 +6386,7 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "गटाला प्रत्त्युत्तर द्या";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "ही स्टोरी पाठवली जाऊ शकत नाही. आपले कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
+"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "ही स्टोरी पाठवली जाऊ शकत नाही. आपले कनेक्शन तपासा आणि पुन्हा प्रयत्न करा";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "ही स्टोरी काही व्यक्तींना पाठवली जाऊ शकत नाही. आपले कनेक्शन तपासा आणि पुन्हा प्रयत्न करा";
@@ -6362,32 +6416,31 @@
 "STORY_SENDING" = "पाठवत आहे...";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "संभाषण सुरू करून";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "संदेश विनंती स्वीकारून";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "ते आपल्या सिस्टम संपर्कांमध्ये असणे";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "आपली कनेक्शन्स आपले नाव आणि फोटो, आणि आपण त्याच्यापासून लपवले नसल्यास \" माझ्या स्टोरी\" ला आपण जे काही पाठवले आहे ते पाहू शकतात.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal कनेक्शन्स</bold> हे लोक आहेत ज्यांच्यावर आपण विश्वास ठेवला आहे, एकतर:";
 
-/* Section footer for the 'viewers' section on the 'story settings' view
-   Section footer for the 'viewers' section on the 'story settings' view. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "आपली स्टोरी कोणते Signal कनेक्शन पाहू शकते ते निवडा. बदलांचा आपण आधीच पाठवलेल्या स्टोरीज वर परिणाम होणार नाही.";
+/* Section footer for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "आपली स्टोरी कोणते Signal कनेक्शन्स पाहू शकतात ते निवडा. बदलांचा आपण आधीच पाठवलेल्या स्टोरीज वर परिणाम होणार नाही.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "ही स्टोरी कोण पाहू शकते";
 
-/* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+/* Header for the 'viewers' section on the 'story settings' bottom sheet */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "आपली स्टोरी कोणती Signal कनेक्शन्स पाहू शकतील ते निवडा. आपण गोपनीयता सेटिंग्ज मध्ये हे कोणत्याही क्षणी बदलू शकता.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "स्टोरीजना पाठवलेले व्हिडीओज %1$ds क्लिप्समध्ये ट्रिम केले जातील आणि एकाधिक स्टोरीज म्हणून पाठविले जातील.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "स्टोरीजना पाठवलेले व्हिडीओज %1$d क्लिप्समध्ये ट्रिम केले जातील आणि एकाधिक स्टोरीज म्हणून पाठविले जातील.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "पुढे जाण्यासाठी टॅप करा";
@@ -6658,9 +6711,6 @@
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "अज्ञात संपर्क";
-
-/* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "अज्ञात देश";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "आपल्या डिव्हाईस पैकी एकाने पाठवलेला संदेश प्रक्रिया केला किंवा प्रदर्शित केला जाऊ शकत नाही कारण तो एक नवीन Signal वैशिष्ट्य वापरतो.";

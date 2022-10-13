@@ -121,7 +121,7 @@
 /* notification body */
 "APN_Message" = "ممکن است پیام‌های جدیدی داشته باشید";
 
-/* Message for the 'app launch failed' alert. */
+/* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "سیگنال قادر به راه‌اندازی نیست. لطفاً گزارش عیب‌یابی خود را به support@signal.org ارسال کنید تا ما بتوانیم این مشکل را رفع کنیم.";
 
 /* Title for the 'app launch failed' alert. */
@@ -780,6 +780,9 @@
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "کاربر سیگنال";
+
+/* The generic name used for group calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "گرفتن یک عکس و ارسال آن";
@@ -1471,6 +1474,54 @@
 /* Title for alert before running a database integrity check */
 "DATABASE_INTEGRITY_CHECK_TITLE" = "عیب‌یابی پایگاه داده اجرا شود؟";
 
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "ممکن است بخشی از تاریخچه پیام شما خراب شده باشد. هیچ تاثیری بر امنیت حساب یا پیام‌های شما نداشته است. برای بازیابی اطلاعات خود روی «ادامه» ضربه بزنید.";
+
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "مشکل در بازیابی داده‌ها";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "به هر حال ادامه بده";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "به منظور تکمیل بازیابی داده‌ها، توصیه می‌کنیم حداقل %1$@ فضای ذخیره‌سازی آزاد در دستگاه خود داشته باشید.";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "فضای ذخیره سازی بیشتری مورد نیاز است";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "سابقه پیام شما بازیابی نشد. پس از نصب مجدد می توانید به استفاده از سیگنال ادامه دهید. یک گزارش عیب‌یابی ارسال کنید تا بهتر بفهمیم چه مشکلی رخ داده است.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "بازنشانی سیگنال";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "بازنشانی";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "اطلاعات حساب، نمایه و تمام پیام‌های شما پاک خواهد شد. پس از اتمام این فرآیند، برنامه بسته خواهد شد.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "بازنشانی سیگنال";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "ارسال گزارش رفع عیب";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "داده‌ها بازیابی نشد";
+
+/* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "برنامه را در طول فرآیند بازیابی باز نگه دارید. ممکن است چند دقیقه طول بکشد.";
+
+/* On the database recovery screen, this is the title shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "در حال بازیابی داده";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "بازیابی با موفقیت انجام شد، اما ممکن است برخی از پیام ها بازیابی نشده باشند.";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "داده‌ها با موفقیت بازیابی شد";
+
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "ممکن است چند دقیقه زمان ببرد.";
 
@@ -1592,7 +1643,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "ادامه بدون انتقال حساب و پیام های شما";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "این آیپد را به عنوان یک دستگاه پیوند داده شده ی جدید، بدون انتقال تاریخچه پیام ها اضافه کن";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "این آیپد را به عنوان یک دستگاه پیوند داده شده جدید، بدون انتقال تاریخچه پیام‌ها اضافه کن";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "افزودن به عنوان دستگاه جدید";
@@ -1604,10 +1655,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "انتقال حساب و پیام ها";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "حساب کاربری و پیام هایتان را از دستگاه iOS قدیمی خود انتقال دهید.";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "حساب کاربری و پیام‌هایتان را از دستگاه iOS قدیمی خود انتقال دهید";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "حساب کاربری و پیام هایتان را از آیپد قدیمی خود انتقال دهید.";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "حساب کاربری و پیام‌هایتان را از آیپد قدیمی خود انتقال دهید";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "انتقال از یک آیپد دیگر";
@@ -2782,8 +2833,8 @@
 /* Button to delete the story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "حذف استوری گروهی";
 
-/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "آیا مطمئن هستید که می‌خواهید این استوری را حذف کنید؟";
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "اعضای گفتگوی گروهی «%1$@» می‌توانند این استوری را مشاهده کنند و به آن پاسخ دهند. می‌توانید عضویت این چت را در گروه به‌روزرسانی کنید.";
@@ -3731,7 +3782,7 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "تمام آشنایان سیگنال";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "فقط با این افراد به اشتراک گذاشته شود:";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "فقط هم‌رسانی شود با...";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "استوری‌های من";
@@ -4688,7 +4739,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "حذف استوری خصوصی";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "آیا مطمئن هستید که می‌خواهید \"%1$@\" را پاک کنید؟ به‌روزرسانی‌های همرسانی شده در این استوری نیز حذف خواهند شد.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "حذف";
@@ -4820,10 +4871,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "پیام اصلی پیدا نشد.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "به استوری شما واکنش نشان داده شد";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "به استوری شما واکنش نشان داد";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "به استوری %1$@ واکنش نشان داده شد";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "به استوری %1$@ واکنش نشان داد";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · استوری";
@@ -5411,7 +5462,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "پاک کردن تمام اطلاعات";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "آیا مطمئنید که می‌خواهید تمام تاریخچه را حذف کنید ( پیام‌ها، پیوست‌ها، تماس‌ها و ...)؟ این عمل قابل بازگشت نیست.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "آیا مطمئن هستید می‌خواهید تمام تاریخچه (پیام‌ها، پیوست‌ها، تماس‌ها و ...) را حذف کنید؟ این عمل بازگشت‌پذیر نیست.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "پاک کردن همه چیز";
@@ -6245,10 +6296,10 @@
 "STORIES_SETTINGS_TITLE" = "حریم شخصی استوری";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "دیگر نمی‌توانید استوری‌ها را هم‌رسانی یا مشاهده کنید. به‌روزرسانی‌های استوری‌هایی که اخیراً همرسانی کرده‌اید نیز حذف خواهند شد.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "خاموش کردن و حذف استوری‌ها";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "اگر از استوری‌ها انصراف دهید، دیگر نمی‌توانید استوری‌ها را هم‌رسانی یا مشاهده کنید.";
@@ -6311,19 +6362,22 @@
 "STORY_PRIVACY_SETTINGS" = "حریم خصوصی";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "با %1$@ به استوری شما واکنش نشان داده شد";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "با %1$@ به استوری شما واکنش نشان داد";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "با %1$@ به یک استوری واکنش نشان داده شد";
+"STORY_REACTION_QUOTE_FORMAT" = "با %1$@ به یک استوری واکنش نشان داد";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "با %1$@ به استوری %2$@ واکنش نشان داده شد";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "با %1$@ به استوری %2$@ واکنش نشان داد";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "پاسخ";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "به استوری واکنش نشان داده شد";
+"STORY_REPLY_REACTION" = "به استوری واکنش نشان داد";
+
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "پاسخ";
@@ -6362,32 +6416,31 @@
 "STORY_SENDING" = "در حال ارسال...";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "شروع یک مکالمه";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "پذیرش درخواست تبادل پیام";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "قرار دادن آن‌ها در مخاطبین سیستم خود";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "آشنایان شما می‌توانند نام و عکس شما را ببینند، و می‌توانند آنچه را به \"استوری من\" ارسال می‌کنید ببینند، مگر اینکه آن را از آن‌ها پنهان کنید.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<strong>آشنایان در سیگنال</strong> افرادی هستند که به طرق مختلف تصمیم گرفته‌اید به آن‌ها اعتماد کنید، یعنی با:";
 
-/* Section footer for the 'viewers' section on the 'story settings' view
-   Section footer for the 'viewers' section on the 'story settings' view. */
+/* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "انتخاب کنید که کدام‌یک از آشنایان در سیگنال بتواند استوری شما را مشاهده کند. تغییرات روی استوری‌هایی که قبلاً ارسال کرده‌اید تأثیر نمی‌گذارد.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "کسانی که می‌توانند این استوری را مشاهده کنند";
 
-/* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+/* Header for the 'viewers' section on the 'story settings' bottom sheet */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "انتخاب کنید که کدام یک از آشنایان در سیگنال می‌تواند استوری شما را مشاهده کنند. هرگاه بخواهید می‌توانید این مورد را در تنظیمات حریم شخصی تغییر دهید.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "ویدیوها به کلیپ‌های %1$d ثانیه‌ای بریده می‌شوند و به صورت استوری‌های متعدد ارسال می‌شوند.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "ویدیوهای ارسالی به استوری‌ها به کلیپ‌های %1$d ثانیه‌ای بریده می‌شوند و به صورت استوری‌های متعدد ارسال می‌شوند.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "برای پیش رفتن ضربه بزنید";
@@ -6399,7 +6452,7 @@
 "STORY_VIEWER_ONBOARDING_3" = "برای خروج به سمت راست بکشید";
 
 /* Confirmation text shown the first time the user opens the story viewer to dismiss instructions. */
-"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "متوجه شدم";
+"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "فهمیدم";
 
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "بازدیدها خاموش است";
@@ -6658,9 +6711,6 @@
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "مخاطب ناشناس";
-
-/* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "کشور ناشناخته";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "یکی از دستگاه های شما یک پیام ارسال کرد که نمی تواند در اینجا پردازش شود یا نمایش داده شود زیرا از یک ویژگی سیگنال جدید استفاده می کند.";

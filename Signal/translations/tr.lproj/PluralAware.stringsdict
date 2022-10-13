@@ -376,7 +376,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Gizli hikaye · %1$d görüntüleyen</string>
+			<string>Gizli Hikaye · 1 Görüntüleyen</string>
 			<key>other</key>
 			<string>Özel Hikaye · %1$d Görüntüleyen</string>
 		</dict>
@@ -440,7 +440,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Grup hikayesi · %1$d görüntüleyen</string>
+			<string>Grup Hikayesi · 1 Görüntüleyen</string>
 			<key>other</key>
 			<string>Grup Hikayesi · %1$d Görüntüleyen</string>
 		</dict>
@@ -1083,22 +1083,6 @@
 			<string>Daveti İptal Et</string>
 			<key>other</key>
 			<string>Davetleri İptal Et</string>
-		</dict>
-	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Sana daha sonra hatırlatacağız. 1 gün sonra PIN oluşturman zorunlu olacaktır.</string>
-			<key>other</key>
-			<string>Sana daha sonra hatırlatacağız. %1$d gün sonra PIN oluşturman zorunlu olacaktır.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>

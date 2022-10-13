@@ -548,13 +548,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>История группы · %1$d зритель</string>
+			<string>История в группе · %1$d зритель</string>
 			<key>few</key>
-			<string>История группы · %1$d зрителя</string>
+			<string>История в группе · %1$d зрителя</string>
 			<key>many</key>
-			<string>История группы · %1$d зрителей</string>
+			<string>История в группе · %1$d зрителей</string>
 			<key>other</key>
-			<string>История группы · %1$d зрителя</string>
+			<string>История в группе · %1$d зрителя</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -1355,26 +1355,6 @@
 			<string>Отозвать приглашений</string>
 			<key>other</key>
 			<string>Отозвать приглашения</string>
-		</dict>
-	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Мы напомним вам позже. Создание PIN-кода станет обязательным через %1$d день.</string>
-			<key>few</key>
-			<string>Мы напомним вам позже. Создание PIN-кода станет обязательным через %1$d дня.</string>
-			<key>many</key>
-			<string>Мы напомним вам позже. Создание PIN-кода станет обязательным через %1$d дней.</string>
-			<key>other</key>
-			<string>Мы напомним вам позже. Создание PIN-кода станет обязательным через %1$d дня.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>

@@ -121,7 +121,7 @@
 /* notification body */
 "APN_Message" = "Du kan ha nye meldinger";
 
-/* Message for the 'app launch failed' alert. */
+/* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal kan ikke starte. Send en feilsøkingslogg til support@signal.org slik at vi kan feilsøke dette problemet.";
 
 /* Title for the 'app launch failed' alert. */
@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Lite lagringsplass";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Dataene som ble overført fra den gamle enheten kunne ikke gjenopprettes. Send en feilsøkingslogg til support@signal.org slik at vi kan feilsøke dette problemet. Du risikerer at meldingshistorikken går tapt hvis du installerer Signal på nytt.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Dataene som ble overført fra den gamle enheten, kunne ikke gjenopprettes. Send en feilsøkingslogg til support@signal.org slik at vi kan feilsøke dette problemet. Du risikerer at meldingsloggen går tapt hvis du installerer Signal på nytt.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Overføringen kunne ikke fullføres";
@@ -781,6 +781,9 @@
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal-bruker";
 
+/* The generic name used for group calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
+
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Ta et bilde og send det";
 
@@ -1211,7 +1214,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Folk";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "Stories";
+"CONVERSATION_PICKER_SECTION_STORIES" = "Storyer";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "Velg Mottakere";
@@ -1471,6 +1474,54 @@
 /* Title for alert before running a database integrity check */
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Vil du kjøre en sjekk av databasen?";
 
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "En del av meldingsloggen din kan være skadet. Kontoen og de andre meldingene dine er fremdeles helt sikre. Trykk på «Fortsett» for å gjenopprette dataene dine.";
+
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Kunne ikke hente data";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Fortsett likevel";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "For å gjenopprette all data anbefaler vi at du har minst %1$@ ledig lagringsplass på enheten.";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "For lite lagringsplass";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Meldingsloggen din kunne ikke gjenopprettes. Du må installere appen på nytt for å fortsette å bruke Signal. Send inn en feilsøkingslogg slik at vi kan forstå hva som gikk galt.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Tilbakestill Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Tilbakestill";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Dette sletter kontoinformasjonen din, profilen din og alle meldingene dine. Appen lukkes når prosessen er fullført.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Tilbakestill Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Send inn feilsøkingslogg";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Kunne ikke gjenopprette dataene";
+
+/* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Husk å holde appen åpen under gjenopprettingen. Dette kan ta flere minutter.";
+
+/* On the database recovery screen, this is the title shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Gjenoppretter dataene";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Gjenopprettingen var vellykket, men enkelte meldinger kunne ikke gjenopprettes.";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Dataene dine er gjenopprettet";
+
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Dette kan ta noen minutter.";
 
@@ -1592,7 +1643,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Fortsett uten å overføre kontoen og meldingene";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Legg til denne iPad-en som en ny, koblet enhet uten å overføre meldingshistorikken";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Legg til denne iPad-en som en ny tilkoblet enhet uten å overføre meldingsloggen";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Legg til som ny enhet";
@@ -1604,10 +1655,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Overfør konto og meldinger";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Overfør kontoen og meldingshistorikken fra den gamle iOS-enheten";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Overfør kontoen og meldingsloggen fra den gamle iOS-enheten";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Overfør kontoen og meldingshistorikken fra den gamle iPad-en";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Overfør kontoen og meldingsloggen fra den gamle iPad-en";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Overfør fra en annen iPad";
@@ -2782,14 +2833,14 @@
 /* Button to delete the story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Fjern gruppestoryen";
 
-/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Er du sikker på at du vil slette denne storyen?";
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Medlemmene av %1$@ kan se og svare på denne storyen. Du kan endre hvem som er med i denne samtalen inne i gruppen.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Medlemmene av «%1$@» kan se og svare på denne storyen. Du kan endre hvem som er med i denne samtalen, inne i gruppen.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Personer som kan se denne storyen";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Disse kan se denne storyen";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Gruppen oppdatert.";
@@ -2939,7 +2990,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Når alle gruppemedlemmer bruker en versjon av Signal som støtter nye grupper blir denne gruppen oppgradert.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "All meldingshistorikk og alle mediefiler fra før oppgraderingen blir tatt vare på.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Alle meldingslogger og mediefiler fra før oppgraderingen, blir tatt vare på.";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Dette er en \"legacy\"-gruppe. Funksjoner som gruppeadministratorer er kun tilgjengelig for \"nye\" grupper. %1$@";
@@ -2963,7 +3014,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Hva er en \"ny\" gruppe?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "All meldingshistorikk og alle mediefiler fra før oppgradering har blitt tatt vare på.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Alle meldingslogger og mediefiler fra før oppgraderingen, blir tatt vare på.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Nye grupper har funksjoner som @-omtaler og gruppeadministratorer, og vil støtte enda flere i fremtiden.";
@@ -2990,7 +3041,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Disse medlemmene kunne ikke automatisk legges til den nye gruppen mens den ble oppgradert:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "All meldingshistorikk og alle mediefiler fra før oppgradering har blitt tatt vare på.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Alle meldingslogger og mediefiler fra før oppgraderingen, blir tatt vare på.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Denne brukeren ble fjernet fra gruppen og kan ikke bli med igjen før de oppgraderer sin Signal-versjon:";
@@ -3722,7 +3773,7 @@
 "MUTED_BADGE" = "Dempet";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Oppdateringer om storyen din vises her.";
+"MY_STORIES_NO_STORIES" = "Oppdateringer av storyen din vises her.";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Alle unntatt ...";
@@ -3734,7 +3785,7 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Del kun med ...";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "Mine stories";
+"MY_STORIES_TITLE" = "Mine storyer";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "Min story";
@@ -3833,7 +3884,7 @@
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "Opprett";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Du må storyen et navn.";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Du må gi storyen et navn.";
 
 /* Title for error alert indicating that a story name is required. */
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Navn på story mangler";
@@ -4688,7 +4739,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Slett privat story";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Er du sikker på at du vil slette alle «%1$@»? Oppdateringene knyttet til denne storyen, slettes også.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Fjern";
@@ -5102,7 +5153,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Kan ikke hente lenkekode";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "For å koble denne enheten til en annen konto må du ført resette enheten. Er du sikker på du vil slette all historikk (meldinger, vedlegg, samtaler, etc.)? Dette valget kan ikke omgjøres.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "For å koble denne enheten til en annen konto må du først tilbakestille enheten. Er du sikker på du vil slette alle logger (meldinger, vedlegg, samtaler osv.)? Dette valget kan ikke angres.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Slett alt";
@@ -5354,7 +5405,7 @@
 "SETTINGS_CHATS" = "Samtaler";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Slett samtalehistorikk";
+"SETTINGS_CLEAR_HISTORY" = "Slett samtalelogg";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLisensiert under GPLv3";
@@ -5411,7 +5462,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Slett alle data";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Er du sikker på at du vil slette all historikk (meldinger, vedlegg, oppringinger, osv.)? Dette kan ikke reverseres.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Er du sikker på at du vil slette alle logger (meldinger, vedlegg, samtaler osv.)? Dette valget kan ikke angres.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Slett alt";
@@ -6173,7 +6224,7 @@
 "STORIES_DELETE_STORY_ACTION" = "Slett";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Slette storyen? Dette vil slette storyen for deg og alle du har delt den med.";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Vil du slette storyen? Dette vil slette storyen for deg og alle du har delt den med.";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "Storyen er lagret";
@@ -6194,10 +6245,10 @@
 "STORIES_HIDE_STORY_ACTION" = "Skjul story";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
-"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Nye oppdateringer fra %1$@ vises ikke øverst på listen over storyer lenger.";
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Nye oppdateringer av storyer fra %1$@ vises ikke øverst på listen over storyer lenger.";
 
 /* Title asking the user if they are sure they want to hide stories from another user */
-"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Skjule storyen?";
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Vil du skjule storyen?";
 
 /* Short context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION_SHORT" = "Skjul";
@@ -6242,13 +6293,13 @@
 "STORIES_SETTINGS_MY_STORIES_HEADER" = "Mine storyer";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Personvern for stories";
+"STORIES_SETTINGS_TITLE" = "Personvern for storyer";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Du vil ikke lenger kunne dele eller se storyer. Oppdateringer av storyer som du nylig har delt, slettes også.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Slå av og slett Storyer";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Hvis du velger å slå av storyer, kan du ikke lenger se eller dele storyer.";
@@ -6266,7 +6317,7 @@
 "STORIES_SHARE_STORY_ACTION" = "Del";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Stories";
+"STORIES_TITLE" = "Storyer";
 
 /* Context menu action to unhide the selected story */
 "STORIES_UNHIDE_STORY_ACTION" = "Vis story";
@@ -6325,6 +6376,9 @@
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "Reagerte på storyen";
 
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Svar";
 
@@ -6362,29 +6416,28 @@
 "STORY_SENDING" = "Sender ...";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "starte en samtale";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "godta en meldingsforespørsel";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "ha dem i kontaktlisten på enheten din";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Kontaktene dine kan se navnet og profilbildet ditt, i tillegg til det du deler på Min story, med mindre du skjuler det for dem.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal-kontaktene dine</bold> er personer som du stoler på, enten ved å:";
 
-/* Section footer for the 'viewers' section on the 'story settings' view
-   Section footer for the 'viewers' section on the 'story settings' view. */
+/* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Velg hvilke Signal-kontakter som kan se storyen din. Storyer som allerede er sendt ut, blir ikke påvirket.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Personer som kan se denne storyen";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Disse kan se denne storyen";
 
-/* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+/* Header for the 'viewers' section on the 'story settings' bottom sheet */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Velg hvilke Signal-kontakter som kan se storyen din. Du kan endre dette når som helst via personverninnstillingene.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videoer sendt til storyer trimmes ned til klipp på %1$d sek og sendes som flere storyer.";
@@ -6658,9 +6711,6 @@
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Ukjent kontakt";
-
-/* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Ukjent land";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "En av enhetene dine sendte en melding som ikke kan behandles eller vises her fordi den bruker en ny Signal-funksjon.";

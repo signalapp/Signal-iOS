@@ -1085,22 +1085,6 @@
 			<string>Uitnodigingen intrekken</string>
 		</dict>
 	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>We zullen je later een reminder sturen. Het aanmaken van een pincode wordt over één dag verplicht.</string>
-			<key>other</key>
-			<string>We zullen je later een reminder sturen. Het aanmaken van een pincode wordt binnen %1$d dagen verplicht.</string>
-		</dict>
-	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

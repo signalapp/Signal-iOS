@@ -83,7 +83,7 @@
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "کیا آپ اس صارف کیساتھ اپنی پروفائل کا تبادلہ کرنا چاہتے ہیں؟";
 
 /* generic button text to acknowledge that the corresponding text was read. */
-"ALERT_ACTION_ACKNOWLEDGE" = "یہ مل گیا";
+"ALERT_ACTION_ACKNOWLEDGE" = "سمجھ گیا";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
 "ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "اس چیٹ میں %1$@ کی طرف سے آپ کو کوئی پیغام، اسٹیکر، ردعمل، پڑھنے کی رسید یا میڈیا نہیں پہنچایا جا سکتا۔";
@@ -121,7 +121,7 @@
 /* notification body */
 "APN_Message" = "آپ کے پاس نئے پیغامات ہو سکتے ہیں";
 
-/* Message for the 'app launch failed' alert. */
+/* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal چل نہیں سکتا۔براہ کرم ڈیبگ لاگ کو support@signal.org پر بھیجیں۔تاکہ ہم اس خرابی کو دور کرسکیں۔";
 
 /* Title for the 'app launch failed' alert. */
@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "اسٹوریج کی جگہ کم ہے";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "آپ کے پرانے device سے منتقل کردہ ڈیٹا کو بحال نہیں کیا جاسکا۔ براہ کرم support@signal.org پر ڈیبگ لاگ ارسال کریں تاکہ ہم اس مسئلے کا ازالہ کرسکیں۔ اگر آپ Signal کو دوبارہ انسٹال کرتے ہیں تو آپ کی مسیج کی تاریخ کھو سکتی ہے۔";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "آپ کی پرانی ڈیوائس سے منتقل کردہ ڈیٹا کو بحال نہیں کیا جا سکا۔ براہ کرم support@signal.org پر ڈیبگ لاگ ارسال کریں تاکہ ہم اس مسئلے کا ازالہ کر سکیں۔ اگر آپ Signal کو دوبارہ انسٹال کرتے ہیں تو آپ کی مسیج ختم ہو سکتی ہے۔";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "مکمل منتقلی نہیں ہوسکی";
@@ -781,6 +781,9 @@
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "سگنل صارف";
 
+/* The generic name used for group calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
+
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "تصویر لیجئے اور بھیج دیجیئے";
 
@@ -1211,7 +1214,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "لوگ";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "اسٹوریز";
+"CONVERSATION_PICKER_SECTION_STORIES" = "سٹوریز";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "وصول کنندگان کا انتخاب کریں";
@@ -1471,6 +1474,54 @@
 /* Title for alert before running a database integrity check */
 "DATABASE_INTEGRITY_CHECK_TITLE" = "ڈیٹا بیس ڈائگناسٹک چلائیں؟";
 
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "آپ کی کچھ میسج ہسٹری خراب ہو سکتی ہے۔ آپ کے اکاؤنٹ یا میسجز کی سکیورٹی پر کوئی اثر نہیں پڑا۔ اپنا ڈیٹا بحال کرنے کے لیے \"جاری رکھیں\" پر ٹیپ کریں۔";
+
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "ڈیٹا واپس حاصل کرنے میں مسئلہ";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "بہر صورت جاری رکھیں";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "ڈیٹا کی بحالی مکمل کرنے کے لیے، ہمارا مشورہ ہے کہ آپ کے پاس اپنی ڈیوائس پر کم از کم %1$@ اسٹوریج اسپیس خالی ہو۔";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "زیادہ سٹوریج اسپیس درکار ہے";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "آپ کی میسج ہسٹری بحال نہیں کی جا سکی۔ آپ دوبارہ انسٹال کرنے کے بعد Signal استعمال کرنا جاری رکھ سکتے ہیں۔ ایک نقص ازالہ کاری کا لاگ جمع کروائیں تاکہ ہم بہتر طور پر سمجھ سکیں کہ کیا غلط ہوا۔";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Signal ری سیٹ کریں";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "دوبارہ بحال کریں";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "آپ کے اکاؤنٹ کی معلومات، پروفائل، اور آپ کے تمام میسجز صاف ہو جائیں گے۔ ایپ اس عمل کے مکمل ہونے کے بعد بند ہو جائے گی۔";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Signal ری سیٹ کریں";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "ڈی بَگ لاگ پیش کریں";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "ڈیٹا بحال نہیں ہوا";
+
+/* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "بحالی کے دوران ایپ کھلی رکھیں۔ اس میں کئی منٹس لگ سکتے ہیں۔";
+
+/* On the database recovery screen, this is the title shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "ڈیٹا کی بحالی";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "بحالی کامیاب رہی، لیکن کچھ میسجز بحال نہیں ہو سکے۔";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "ڈیٹا کامیابی سے بحال ہو گیا";
+
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "اس میں چند منٹ لگ سکتے ہیں";
 
@@ -1592,7 +1643,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "اپنے اکاؤنٹ اور پیغامات کی منتقلی کے بغیر جاری رکھیں";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "پیغام کی تاریخ کو منتقل کیے بغیر اس iPad کو بطور نیا منسلک device شامل کریں";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "میسج کی ہسٹری کو منتقل کیے بغیر اس iPad کو بطور نئی لنک کردہ ڈیوائس شامل کریں";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "بطور نیا device شامل کریں";
@@ -1604,10 +1655,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "اکاؤنٹ اور پیغامات کی منتقلی کریں";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "اپنے پرانے iOS device سے اپنے اکاؤنٹ اور پیغام کی تاریخ کو منتقل کریں";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "اپنی پرانی iOS ڈیوائس سے اپنے اکاؤنٹ اور میسج کی ہسٹری منتقل کریں";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "اپنے پرانے ipad سے اپنا اکاؤنٹ اور پیغام کی تاریخ منتقل کریں";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "اپنے پرانے iPad سے اپنا اکاؤنٹ اور میسج کی ہسٹری منتقل کریں";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "کسی دوسرے iPad سے منتقل کریں";
@@ -2782,8 +2833,8 @@
 /* Button to delete the story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "گروپ سٹوری ہٹائیں";
 
-/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "کیا آپ واقعی یہ سٹوری ڈیلیٹ کرنا چاہتے ہیں؟";
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "گروپ چیٹ \"%1$@\" کے ممبرز اس سٹوری کو دیکھ اور اس کا جواب دے سکتے ہیں۔ آپ گروپ میں اس چیٹ کے لیے ممبر شپ کو اپ ڈیٹ کر سکتے ہیں۔";
@@ -2939,7 +2990,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "جب گروپ کے تمام موجودہ ممبر Signal کا ایک ایسا ورژن استعمال کر رہے ہیں جو کسی نئے گروپ میں شامل ہونے کے قابل ہو تو ، اس گروپ کو اپ گریڈ کیا جائے گا۔";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "اپ گریڈ کرنے سے پہلے ہی پیغام کی تمام تاریخ اور میڈیا کو رکھا جائے گا۔";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "اپ گریڈ کرنے سے پہلے میسج کی تمام ہسٹری اور میڈیا کو محفوظ رکھا جائے گا۔";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "یہ لیگیسی گروپ ہے۔ گروپ منتظمین جیسی خصوصیات صرف نئے گروپس کیلئے دستیاب ہیں۔%1$@";
@@ -2963,7 +3014,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "نئے گروپس کیا ہیں؟";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "اپ ڈیٹ کرنے سے پہلے ہی پیغام کی تمام تاریخ اور میڈیا کو رکھا گیا ہے۔";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "اپ ڈیٹ کرنے سے پہلے میسج کی تمام ہسٹری اور میڈیا کو محفوظ رکھا گیا ہے۔";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "نئے گروپس میں @ ذکر اور گروپ منتظمین کی طرح کی خصوصیات ہیں ، اور آئندہ وہ مزید خصوصیات کی حمایت کریں گی۔";
@@ -2990,7 +3041,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "جب یہ اپ گریڈ کیا گیا تو یہ ممبر خودبخود نئے گروپ میں شامل نہیں ہوسکے:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "اپ ڈیٹ کرنے سے پہلے ہی پیغام کی تمام تاریخ اور میڈیا کو رکھا گیا ہے۔";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "اپ ڈیٹ کرنے سے پہلے میسج کی تمام ہسٹری اور میڈیا کو محفوظ کر لیا گیا ہے۔";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "اس ممبر کو گروپ سے ہٹا دیا گیا تھا اور وہ اس گروپ میں دوبارہ شامل نہیں ہوسکیں گے جب تک کہ وہ اپ گریڈ نہیں کریں گے:";
@@ -3722,7 +3773,7 @@
 "MUTED_BADGE" = "خاموش";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "آپ کی اسٹوری کی اپ ڈیٹس یہاں دکھائی جائیں گی۔";
+"MY_STORIES_NO_STORIES" = "آپ کی سٹوری کی اپ ڈیٹس یہاں دکھائی جائیں گی۔";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "تمام سوائے...";
@@ -3734,19 +3785,19 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "صرف ان کے ساتھ شیئر کریں...";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "میری اسٹوریز";
+"MY_STORIES_TITLE" = "میری سٹوریز";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "میری اسٹوری";
+"MY_STORY_NAME" = "میری سٹوری";
 
 /* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
 "MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "انتخاب کریں کہ کون آپ کی سٹوری دیکھ سکتا ہے";
 
 /* Title for the my story settings sheet */
-"MY_STORY_SETTINGS_SHEET_TITLE" = "میری اسٹوری کی پرائیویسی";
+"MY_STORY_SETTINGS_SHEET_TITLE" = "میری سٹوری کی پرائیویسی";
 
 /* Title for the my story settings view */
-"MY_STORY_SETTINGS_TITLE" = "میری اسٹوری";
+"MY_STORY_SETTINGS_TITLE" = "میری سٹوری";
 
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "سٹوری شامل کرنے کے لیے ٹیپ کریں";
@@ -3827,19 +3878,19 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "صارف تلاش کریں";
 
 /* Title for the 'new private story' confirmation view */
-"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "اسٹوری کو نام دیں";
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "سٹوری کو نام دیں";
 
 /* Button to create a new private story */
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "بنائیں";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "اسٹوری کا نام لازمی ہے۔";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "سٹوری کا نام لازمی ہے۔";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "اسٹوری کا نام موجود نہیں";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "سٹوری کا نام موجود نہیں";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "اسٹوری کا نام (لازمی ہے)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "سٹوری کا نام (لازمی ہے)";
 
 /* The title for the 'new private story' view. */
 "NEW_PRIVATE_STORY_VIEW_TITLE" = "ناظرین منتخب کریں";
@@ -3860,7 +3911,7 @@
 "NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "صرف مخصوص لوگوں کو دکھائی دیتی ہے";
 
 /* Title for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "نئی پرائیویٹ اسٹوری";
+"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "نئی پرائیویٹ سٹوری";
 
 /* Title for the new story sheet */
 "NEW_STORY_SHEET_TITLE" = "سٹوری کی قسم منتخب کریں";
@@ -4688,7 +4739,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "پرائیویٹ سٹوری ڈیلیٹ کریں";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "کیا آپ واقعی \"%1$@\" کو ڈیلیٹ کرنا چاہتے ہیں؟ اس سٹوری پر شیئر کردہ اپ ڈیٹس بھی ڈیلیٹ کر دی جائیں گی۔";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "ہٹا دیں";
@@ -4820,13 +4871,13 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "اصل میسج نہیں ملا۔";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "آپ کی اسٹوری پر ردعمل دیا";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "آپ کی سٹوری پر ردعمل دیا";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "%1$@ کی اسٹوری پر ردعمل دیا";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "%1$@ کی سٹوری پر ردعمل دیا";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · اسٹوری";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · سٹوری";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "منسلک مواد";
@@ -5102,7 +5153,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "لنکنگ کوڈ حاصل کرنے کے قابل نہیں";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "اس آلے کو کسی دوسرے اکاؤنٹ سے منسلک کرنے کے لئے آپ کو پہلے اس آلے کو دوبارہ ترتیب دینا ہوگا۔ کیا آپ واقعی (تمام پیغامات ، منسلکات ، کالز ، وغیرہ) کو حذف کرنا چاہتے ہیں؟ اس کارروائی کو واپس نہیں کیا جاسکتا۔";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "اس ڈیوائس کو کسی دوسرے اکاؤنٹ سے لنک کرنے کے لئے آپ کو پہلے اس ڈیوائس کو ری سیٹ کرنا ہو گا۔ کیا آپ واقعی (تمام میسجز، منسلکات، کالز، وغیرہ) کو ڈیلیٹ کرنا چاہتے ہیں؟ اس کارروائی کو واپس نہیں کیا جا سکتا۔";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "ہر چیز حذف کریں";
@@ -5354,7 +5405,7 @@
 "SETTINGS_CHATS" = "باتیں";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "چیٹ کی تاریخ صاف کریں";
+"SETTINGS_CLEAR_HISTORY" = "چیٹ کی ہسٹری صاف کریں";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "کاپی رائٹ Signal میسنجر\nGPLv3 کے تحت لائسنس یافتہ";
@@ -5411,7 +5462,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "تمام ڈیٹا حذف کریں";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "آپ یقیناۤ تمام ہسٹری حذف کرنا چاہتے ہیں(پیغامات،اٹیچمنٹس،کالیں،etc) یہ ایکشن پلٹا نہیں جا سکتا۔";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "کیا آپ واقعی تمام ہسٹری ڈیلیٹ کرنا چاہتے ہیں (میسجز، اٹیچمنٹس، کالز، وغیرہ) یہ ایکشن واپس نہیں کیا سکتا۔";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "ہر چیز حذف کریں";
@@ -6173,10 +6224,10 @@
 "STORIES_DELETE_STORY_ACTION" = "حذف کریں";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "یہ سٹوری حذف کریں؟ اسے اس کو وصول کرنے والے ہر فرد کے لیے بھی حذف کر دیا جائے گا۔";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "یہ سٹوری ڈیلیٹ کریں؟ اسے اس کو وصول کرنے والے ہر فرد کے لیے بھی ڈیلیٹ کر دیا جائے گا۔";
 
 /* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "اسٹوری محفوظ ہو گئی";
+"STORIES_DID_SAVE" = "سٹوری محفوظ ہو گئی";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "آگے";
@@ -6191,7 +6242,7 @@
 "STORIES_HIDDEN_SECTION_HEADER" = "مخفی سٹوریز";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "اسٹوری مخفی کریں";
+"STORIES_HIDE_STORY_ACTION" = "سٹوری مخفی کریں";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
 "STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "%1$@ کی جانب سے نئی سٹوری اپڈیٹس، سٹوریز کی فہرست کے بالائی حصے میں مزید ظاہر نہیں ہوں گی۔";
@@ -6209,7 +6260,7 @@
 "STORIES_INFO_ACTION" = "معلومات";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "فی الوقت دکھانے کے لیے کوئی اپ ڈیٹس نہیں ہیں۔\nاپنی اسٹوری میں شامل کرنے کے لیے + پر کلک کریں۔";
+"STORIES_NO_RECENT_MESSAGES" = "فی الوقت دکھانے کے لیے کوئی اپ ڈیٹس نہیں ہیں۔\nاپنی سٹوری میں شامل کرنے کے لیے + پر ٹیپ کریں۔";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "ابھی تک کوئی جوابات نہیں";
@@ -6230,7 +6281,7 @@
 "STORIES_REPLIES_TAB" = "جوابات";
 
 /* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "اسٹوری محفوظ نہیں ہو سکی";
+"STORIES_SAVE_FAILED" = "سٹوری محفوظ نہیں ہو سکی";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "محفوظ کریں";
@@ -6242,22 +6293,22 @@
 "STORIES_SETTINGS_MY_STORIES_HEADER" = "میری سٹوریز";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "اسٹوری کی رازداری";
+"STORIES_SETTINGS_TITLE" = "سٹوری کی پرائیویسی";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "آپ مزید سٹوریز شیئر کرنے یا دیکھنے سے قاصر ہوں گے۔ آپ کی طرف سے حالیہ شیئر کردہ سٹوری اپ ڈیٹس بھی ڈیلیٹ ہو جائیں گی۔";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "آف کریں اور سٹوریز ڈیلیٹ کریں";
 
 /* Footer for the 'turn off' section of the stories settings */
-"STORIES_SETTINGS_TURN_OFF_FOOTER" = "اگر آپ سٹوریز غیر منتخب کرتے ہیں تو آپ سٹوریز مزید شیئر کرنے یا دیکھنے سے قاصر ہوں گے۔";
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "اگر آپ سٹوریز غیر منتخب کرتے ہیں تو آپ سٹوریز کو مزید شیئر کرنے یا دیکھنے سے قاصر ہوں گے۔";
 
 /* Button to turn off stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "سٹوریز آف کریں";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "دوسروں کو سٹوریز شیئر اور ان کی سٹوریز دیکھیں۔ سٹوریز خود کار طور پر 24 گھنٹے بعد غائب ہو جاتی ہیں۔";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "دوسروں کو سٹوریز شیئر کریں اور ان کی سٹوریز دیکھیں۔ سٹوریز خود کار طور پر 24 گھنٹے بعد غائب ہو جاتی ہیں۔";
 
 /* Button to turn on stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "سٹوریز آن کریں";
@@ -6266,7 +6317,7 @@
 "STORIES_SHARE_STORY_ACTION" = "اشتراک کریں";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "اسٹوریز";
+"STORIES_TITLE" = "سٹوریز";
 
 /* Context menu action to unhide the selected story */
 "STORIES_UNHIDE_STORY_ACTION" = "سٹوری غیر مخفی کریں";
@@ -6323,7 +6374,10 @@
 "STORY_REPLY_BUTTON" = "جواب دیں";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "اسٹوری پر ردعمل دیا";
+"STORY_REPLY_REACTION" = "سٹوری پر ردعمل دیا";
+
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "جواب دیں";
@@ -6362,29 +6416,28 @@
 "STORY_SENDING" = "بھیج رہا ہے ...";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "گفتگو شروع کرنا";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "پیغام کی درخواست قبول کرنے سے";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "اپنے سسٹم کے روابط میں انہیں رکھنے سے";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "آپ کے کنکشنز آپ کا نام اور تصویر، اور یہ دیکھ سکتے ہیں جو آپ \"میری سٹوری\" پر بھیجتے ہیں تاوقتیکہ آپ اسے ان سے مخفی کریں۔";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal کنکشنز</bold> وہ لوگ ہیں جن پر آپ نے اعتماد کیا ہے، یا تو بذریعہ:";
 
-/* Section footer for the 'viewers' section on the 'story settings' view
-   Section footer for the 'viewers' section on the 'story settings' view. */
+/* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "منتخب کریں کہ کون سے Signal کنکشنز آپ کی سٹوری دیکھ سکتے ہیں۔ تبدیلیاں ان سٹوریز کو متاثر نہیں کریں گی جو آپ پہلے ہی بھیج چکے ہیں۔";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "کون یہ سٹوری دیکھ سکتا ہے";
 
-/* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+/* Header for the 'viewers' section on the 'story settings' bottom sheet */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "منتخب کریں کہ کون سے Signal کنکشنز آپ کی سٹوری دیکھ سکتے ہیں۔ آپ اسے کسی بھی وقت پرائیویسی سیٹنگز میں تبدیل کر سکتے ہیں۔";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "سٹوریز پر بھیجی جانے والی ویڈیوز %1$dسیکنڈ کے کلپس میں کاٹ کر متعدد سٹوریز کے طور پر بھیجی جائیں گی۔";
@@ -6658,9 +6711,6 @@
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "نامعلوم رابطہ";
-
-/* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "انجان ملک";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "آپ کی ڈیوائس میں سے ایک نے ایک پیغام بھیجا جس پر کارروائی یا اس کو ظاہر نہیں کر سکتے کیونکہ یہ ایک نئی Signal کی خصوصیت استعمال کرتی ہے۔";

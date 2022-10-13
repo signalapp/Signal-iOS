@@ -121,7 +121,7 @@
 /* notification body */
 "APN_Message" = "Ίσως έχεις νέα μηνύματα";
 
-/* Message for the 'app launch failed' alert. */
+/* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Το Signal δεν μπορεί να ανοίξει. Παρακαλώ στείλε ένα αρχείο καταγραφής σφαλμάτων στη διεύθυνση support@signal.org για να μπορέσουμε να λύσουμε το πρόβλημα.";
 
 /* Title for the 'app launch failed' alert. */
@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Περιορισμένος αποθηκευτικός χώρος";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Η επαναφορά των δεδομένων που μεταφέρθηκαν από την παλιά σου συσκευή ήταν αδύνατη. Παρακαλώ να στείλεις το αρχείο καταγραφής στο support@signal.org ώστε να επιλύσουμε το πρόβλημα. Εάν επανεγκαταστήσεις το Signal πιθανόν να χαθεί το ιστορικό μηνυμάτων σου.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Η επαναφορά των δεδομένων που μεταφέρθηκαν από την παλιά σου συσκευή ήταν αδύνατη. Στείλε το αρχείο καταγραφής στο support@signal.org, για να επιλύσουμε το πρόβλημα. Εάν επανεγκαταστήσεις το Signal, πιθανόν να χαθεί το ιστορικό μηνυμάτων σου.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Δεν ήταν δυνατή η ολοκλήρωση της μεταφοράς";
@@ -780,6 +780,9 @@
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Χρήστης/τρια Signal";
+
+/* The generic name used for group calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Βγάλε μια φωτογραφία και στείλ' την";
@@ -1471,6 +1474,54 @@
 /* Title for alert before running a database integrity check */
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Εκτέλεση διάγνωσης βάσης δεδομένων;";
 
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Κάποιο τμήμα από το ιστορικό μηνυμάτων σου μπορεί να έχει καταστραφεί. Δεν υπήρξε καμία επίδραση στην ασφάλεια του λογαριασμού ή των μηνυμάτων σου. Πάτα \"Συνέχεια\" για να ανακτήσεις τα δεδομένα σου.";
+
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Πρόβλημα με την ανάκτηση δεδομένων";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Συνέχεια παρ' όλα αυτά";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "Για να ολοκληρώσεις την ανάκτηση δεδομένων, προτείνουμε να έχεις τουλάχιστον %1$@ ελεύθερο χώρο αποθήκευσης στη συσκευή σου.";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Απαιτείται περισσότερος χώρος αποθήκευσης";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Δεν ήταν δυνατή η ανάκτηση του ιστορικού μηνυμάτων σου. Μπορείς να συνεχίσεις να χρησιμοποιείς το Signal μετά την επανεγκατάσταση. Υπόβαλε ένα αρχείο καταγραφής εντοπισμού σφαλμάτων για να κατανοήσουμε καλύτερα τι πήγε στραβά.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Επαναφορά Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Επαναφορά";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Τα στοιχεία του λογαριασμού σου, το προφίλ σου και όλα σου τα μηνύματα θα διαγραφούν. Η εφαρμογή θα κλείσει αφού ολοκληρωθεί αυτή η διαδικασία.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Επαναφορά Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Υποβολή αρχείου αποσφαλμάτωσης";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Τα δεδομένα δεν ανακτήθηκαν";
+
+/* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Κράτα την εφαρμογή ανοιχτή κατά τη διαδικασία ανάκτησης. Μπορεί να πάρει μερικά λεπτά.";
+
+/* On the database recovery screen, this is the title shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Επαναφορά δεδομένων";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Η ανάκτηση ήταν επιτυχής, αλλά ορισμένα μηνύματα ενδέχεται να μην έχουν ανακτηθεί.";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Τα δεδομένα ανακτήθηκαν επιτυχώς";
+
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Αυτό μπορεί να πάρει μερικά λεπτά.";
 
@@ -1604,7 +1655,7 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Μεταφορά λογαριασμού & μηνυμάτων";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Μεταφορά λογαριασμού και ιστορικού μηνυμάτων από την παλιά σου συσκευή  iOS";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Μεταφορά λογαριασμού και ιστορικού μηνυμάτων από την παλιά σου συσκευή iOS";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Μεταφορά του λογαριασμού και του ιστορικού μηνυμάτων σου από το παλιό σου iPad";
@@ -2782,14 +2833,14 @@
 /* Button to delete the story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Αφαίρεση ιστορίας ομάδας";
 
-/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Θέλεις σίγουρα να διαγράψεις αυτήν την ιστορία;";
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Τα μέλη αυτής της ομαδικής συνομιλίας \"%1$@\" μπορούν να δουν και να απαντήσουν σε αυτή την ιστορία. Μπορείς να ενημερώσεις τα μέλη για αυτή τη συνομιλία στην ομάδα.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Τα μέλη αυτής της ομαδικής συνομιλίας \"%1$@\" μπορούν να δουν και να απαντήσουν σε αυτή την ιστορία. Μπορείς να ενημερώσεις τα μέλη για αυτήν τη συνομιλία στην ομάδα.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Ποιοι μπορούν να δουν αυτήν την ιστορία";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Ποια άτομα μπορούν να δουν αυτή την ιστορία";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Η ομάδα ενημερώθηκε.";
@@ -2939,7 +2990,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Όταν όλα τα τωρινά μέλη της ομάδας χρησιμοποιήσουν μια έκδοση του Signal που υποστηρίζει τις Ομάδες νέου τύπου, τότε η ομάδα θα αναβαθμιστεί.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Όλο το ιστορικό των μηνυμάτων και τα πολυμέσα θα διατηρηθούν ως έχουν πριν την αναβάθμιση.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Όλο το ιστορικό των μηνυμάτων και τα πολυμέσα θα διατηρηθούν ως έχουν πριν από την αναβάθμιση.";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Αυτή είναι ομάδα παλαιού τύπου. Δυνατότητες όπως οι διαχειριστές ομάδας είναι διαθέσιμα μόνο στις ομάδες νέου τύπου. %1$@";
@@ -2963,7 +3014,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Τι είναι οι Ομάδες νέου τύπου;";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Όλο το ιστορικό της συζήτησης και τα πολυμέσα διατηρήθηκαν ως είχαν πριν την αναβάθμιση.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Όλο το ιστορικό της συζήτησης και τα πολυμέσα διατηρήθηκαν ως είχαν πριν από την αναβάθμιση.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Οι ομάδες νέου τύπου έχουν δυνατότητες όπως οι @αναφορές και οι διαχειριστές ομάδας, και θα αποκτήσουν παραπάνω δυνατότητες στο μέλλον.";
@@ -2990,7 +3041,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Αυτά τα μέλη δεν μπόρεσαν να προστεθούν αυτόματα στην Ομάδα νέου τύπου αυτόματα κατά την αναβάθμιση:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Όλο το ιστορικό της συζήτησης και τα πολυμέσα διατηρήθηκαν ως είχαν πριν την αναβάθμιση.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Όλο το ιστορικό της συζήτησης και τα πολυμέσα διατηρήθηκαν ως είχαν πριν από την αναβάθμιση.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Αυτό το μέλος αφαιρέθηκε από την ομάδα και δεν θα μπορέσει να ξαναμπεί στην ομάδα μέχρι να αναβαθμίσει:";
@@ -3725,7 +3776,7 @@
 "MY_STORIES_NO_STORIES" = "Εδώ θα εμφανίζονται ενημερώσεις για την ιστορία σου.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Όλοι εκτός από...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Όλα τα άτομα εκτός από...";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Όλες οι επαφές Signal";
@@ -3740,10 +3791,10 @@
 "MY_STORY_NAME" = "Η ιστορία μου";
 
 /* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
-"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Επίλεξε ποιοι μπορούν να δουν αυτήν την ιστορία";
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Επίλεξε ποια άτομα μπορούν να δουν αυτήν την ιστορία";
 
 /* Title for the my story settings sheet */
-"MY_STORY_SETTINGS_SHEET_TITLE" = "Ιδιωτικότητα της ιστορίας σου";
+"MY_STORY_SETTINGS_SHEET_TITLE" = "Απορρητο της ιστορίας σου";
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "Η ιστορία μου";
@@ -3833,7 +3884,7 @@
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "Δημιουργία";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Το όνομά ιστορίας είναι υποχρεωτικό.";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Το όνομα ιστορίας είναι υποχρεωτικό.";
 
 /* Title for error alert indicating that a story name is required. */
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Λείπει το όνομα της ιστορίας";
@@ -4688,7 +4739,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Διαγραφή ιδιωτικής ιστορίας";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Σίγουρα θέλεις να διαγράψεις την ιστορία \"%1$@\"; Οι ενημερώσεις που κοινοποιούνται σε αυτήν την ιστορία θα διαγραφούν επίσης.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Αφαίρεση";
@@ -5102,7 +5153,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Αδυναμία ανάκτησης κωδικού σύνδεσης";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Για τη σύνδεση αυτής της συσκευής σε άλλο λογαριασμό, πρέπει πρώτα να επαναφέρεις αυτή τη συσκευή. Είσαι σίγουρος/η πως θέλεις να διαγράψεις όλο το ιστορικό (μηνύματα, συνημμένα, κλήσεις, κλπ); Αυτή η ενέργεια δεν μπορεί να αντιστραφεί.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Για τη σύνδεση αυτής της συσκευής σε άλλο λογαριασμό, πρέπει πρώτα να επαναφέρεις αυτήν τη συσκευή. Σίγουρα θέλεις να διαγράψεις όλο το ιστορικό (μηνύματα, συνημμένα, κλήσεις, κλπ); Αυτή η ενέργεια είναι μη αναστρέψιμη.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Διαγραφή όλων";
@@ -6173,7 +6224,7 @@
 "STORIES_DELETE_STORY_ACTION" = "Διαγραφή";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Διαγραφή της ιστορίας; Θα διαγραφεί και για όλους όσους την έχουν λάβει.";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Να διαγραφεί η ιστορία; Θα διαγραφεί και για όλα τα άτομα που την έχουν λάβει.";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "Η ιστορία αποθηκεύτηκε";
@@ -6245,10 +6296,10 @@
 "STORIES_SETTINGS_TITLE" = "Απόρρητο ιστορίας";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Δεν θα μπορείς πλέον να μοιράζεσαι ή να βλέπεις ιστορίες. Οι ενημερώσεις ιστορίας που κοινοποίησες πρόσφατα θα διαγραφούν επίσης.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Απενεργοποίηση και διαγραφή ιστοριών";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Αν απενεργοποιήσεις τις ιστορίες, δεν θα μπορείς πλέον να μοιράζεσαι ή να βλέπεις ιστορίες.";
@@ -6257,7 +6308,7 @@
 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Απενεργοποίηση ιστοριών";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "Μοιράσου και δες ιστορίες από άλλους. Οι ιστορίες εξαφανίζονται αυτόματα μετά από 24 ώρες.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Μοιράσου ιστορίες και δες τις ιστορίες άλλων. Οι ιστορίες εξαφανίζονται αυτόματα μετά από 24 ώρες.";
 
 /* Button to turn on stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Ενεργοποίηση ιστοριών";
@@ -6325,6 +6376,9 @@
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "Αντέδρασε στην ιστορία";
 
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Απάντηση";
 
@@ -6341,7 +6395,7 @@
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Κοινοποίηση μόνο σε…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Όλοι εκτός από…";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Όλα τα άτομα εκτός από…";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Αποτυχία αποστολής";
@@ -6362,29 +6416,28 @@
 "STORY_SENDING" = "Αποστολή…";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Έχετε ξεκινήσει μια συνομιλία";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Έχεις αποδεχτεί ένα αίτημα μηνύματος";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Τα έχεις στις επαφές της συσκευής σου";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Οι επαφές σου μπορούν να δουν το όνομα και τη φωτογραφία σου, και μπορούν να δουν δημοσιεύσεις στην Ιστορία σου, εκτός αν την κρύψεις από αυτούς.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "Οι <bold>επαφές Signal</bold> είναι άτομα που έχεις επιλέξει να εμπιστεύεσαι, με τους εξής τρόπους:";
 
-/* Section footer for the 'viewers' section on the 'story settings' view
-   Section footer for the 'viewers' section on the 'story settings' view. */
+/* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Διάλεξε ποιες από τις επαφές Signal μπορούν να δουν την ιστορία σου. Οι αλλαγές δεν επηρεάζουν τις ιστορίες που έχεις στείλει ήδη.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Ποιοι μπορούν να δουν αυτήν την ιστορία";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Ποια άτομα μπορούν να δουν αυτήν την ιστορία";
 
-/* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+/* Header for the 'viewers' section on the 'story settings' bottom sheet */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Επίλεξε ποιες επαφές σου στο Signal μπορούν να δουν την ιστορία σου. Μπορείς να το αλλάξεις αυτό στις ρυθμίσεις απορρήτου ανά πάσα στιγμή.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Τα βίντεο που αποστέλλονται στις Ιστορίες θα κόβονται σε κλιπ των %1$d δευτερολέπτων και θα στέλνονται ως πολλές Ιστορίες.";
@@ -6658,9 +6711,6 @@
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Άγνωστη επαφή";
-
-/* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Άγνωστη χώρα";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Μια από τις συσκευές σου έστειλε μήνυμα που δεν μπορεί να επεξεργαστεί ή προβληθεί εδώ επειδή χρησιμοποιεί μια νέα δυνατότητα του Signal.";

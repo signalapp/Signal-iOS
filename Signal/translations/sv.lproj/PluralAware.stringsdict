@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Privat berättelse · %1$d tittare</string>
+			<string>Privat story · 1 tittare</string>
 			<key>other</key>
-			<string>Privat berättelse · %1$d tittare</string>
+			<string>Privat story · %1$d tittare</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Gruppberättelse · %1$d tittare</string>
+			<string>Gruppstory · 1 tittare</string>
 			<key>other</key>
-			<string>Gruppberättelse · %1$d tittare</string>
+			<string>Gruppstory · %1$d tittare</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -1083,22 +1083,6 @@
 			<string>Återkalla inbjudan</string>
 			<key>other</key>
 			<string>Återkalla inbjudningar</string>
-		</dict>
-	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Vi påminner dig senare. Att skapa en pinkod blir obligatoriskt om 1 dag.</string>
-			<key>other</key>
-			<string>Vi påminner dig senare. Att skapa en pinkod blir obligatoriskt om %1$d dagar.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>

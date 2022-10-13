@@ -83,7 +83,7 @@
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "هل لديك الرغبة في مشاركة حسابك الشخصي مع هذا المستخدم ؟";
 
 /* generic button text to acknowledge that the corresponding text was read. */
-"ALERT_ACTION_ACKNOWLEDGE" = "فهِمت";
+"ALERT_ACTION_ACKNOWLEDGE" = "عُلم";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
 "ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "لم يتمكن %1$@ من توصيل رسالة أو ملصق أو رد فعل أو وصل القراءة إليك في هذه المحادثة.";
@@ -121,7 +121,7 @@
 /* notification body */
 "APN_Message" = "قد تكون لديك رسائل جديدة";
 
-/* Message for the 'app launch failed' alert. */
+/* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "يتعذَّر بدء Signal. لتمكيننا من مساعَفتك حول المشكل، الرجاء إرسال سجلات التصحيح إلى بريد الدعم : support@signal.org";
 
 /* Title for the 'app launch failed' alert. */
@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "مساحة التخزين مُنخفضة";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "تعذَّرت استعادة البيانات المنقولة من جهازك القديم. يُرجى إرسال سِجل التصحيح إلى support@signal.org حتى نتمكن من مُساعَفتك حول هذه المُشكلة. إذا قمت بإعادة تثبيت Signal  قد تُفقًد محفوظات رسائلك.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "تعذَّر استعادة البيانات المنقولة من جهازك القديم. يُرجى إرسال سِجل التصحيح إلى support@signal.org حتى نتمكّن من رصد المُشكلة. إذا قمت بإعادة تثبيت Signal، فقد تفقد محفوظات رسائلك.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "تعذّر إتمام عملية النقل";
@@ -780,6 +780,9 @@
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "مُستخدم Signal";
+
+/* The generic name used for group calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "اِلتَقِط صُّورَةً ثُمَّ أرسِلها";
@@ -1471,6 +1474,54 @@
 /* Title for alert before running a database integrity check */
 "DATABASE_INTEGRITY_CHECK_TITLE" = "تشغيل فحص قاعدة البيانات؟";
 
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "قد يكون حدث تلف لبعض محفوظات رسائلك. لم يحدث أي تأثير على أمان حسابك أو رسائلك. انقر على \"متابعة\" لاستعادة بياناتك.";
+
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "حدث خطأ أثناء استعادة البيانات";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "متابعة على أي حال";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "لاستكمال عملية استعادة البيانات، نوصي أن تكون مساحة تخزين جهازك لا تقل عن %1$@.";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "يُرجى إخلاء مساحة التخزين";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "تعذّر استعادة محفوظات رسائلك. يمكنك الاستمرار في استخدام تطبيق Signal بعد إعادة التثبيت. أرسل سِجل التصحيح حتى نتمكن من فهم الخطأ الذي حدث بشكل أفضل.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "إعادة تعيين Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "إعادة التعيين";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "سيتم مسح معلومات حسابك وحسابك الشخصي وجميع رسائلك. سيتم إغلاق التطبيق بعد اكتمال هذه العملية.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "إعادة تعيين Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "تسليم سجل التصحيح";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "تعذّر استرداد البيانات";
+
+/* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "اترك التطبيق مفتوحًا أثناء عملية الاسترداد. قد يستغرق الأمر بضع دقائق.";
+
+/* On the database recovery screen, this is the title shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "جارٍ استرداد البيانات";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "تم الاسترداد بنجاح، ولكن ربما تعذّر اِسترداد بعض الرسائل.";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "تم استرداد البيانات بنجاح";
+
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "قد يستغرق ذلك بضع دقائق.";
 
@@ -1592,7 +1643,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "الاِستِمر دُونَ نَقل حِسابَك وَرَسائِلك";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "أضف هذا الـiPad كجهاز مُرتبط جديد دون نقل سجل الرسائل";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "أضف هذا الـ iPad كجهاز مُرتبط جديد دون نقل سجل الرسائل";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "إضافة كجهاز جديد";
@@ -1604,10 +1655,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "نَقل الحساب والرسائل";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "نقل حسابك وسجل الرسائل من جهازك الـiOS القديم";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "انقل حسابك وسِجل الرسائل من جهازك الـ iOS القديم";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "نقل حسابك وسجل الرسائل من جهازك الـiPad القديم.";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "انقل حسابك وسِجل الرسائل من جهازك الـ iPad القديم.";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "النقل من iPad آخر";
@@ -2782,8 +2833,8 @@
 /* Button to delete the story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "حذف قصة المجموعة";
 
-/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "هل أنت متأكد من أنك تريد حذف هذه القصة؟";
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "يُمكن لأعضاء هذه المجموعة \"%1$@\" مشاهدة هذه القصة و الرّد عليها. يمكنك تحديث العضوية لهذه الدردشة في المجموعة.";
@@ -2963,7 +3014,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "ما هي المجموعات الجديدة؟";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "تم حفظ كافة سجلات الرسائل والوسائط قبل الترقية.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "تم الاحتفاظ بكافة سجلات الرسائل والوسائط من قبل الترقية.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "تحوي المجموعات الجديدة على ميزات مثل تضمين الاسم @ والمشرفين، أيضاً ستدعم المزيد من الميزات مستقبلاً.";
@@ -2990,7 +3041,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "هؤلاء الأعضاء تتعذّر إضافتهم للمجموعة الجديدة بشكل تقائي بعد أن تم ترقيتها:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "تم حفظ كافة سجلات الرسائل والوسائط قبل الترقية.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "تم الاحتفاظ بكافة سجلات الرسائل والوسائط قبل الترقية.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "هذا العضو تمت إزالته من المجموعة ولن يتمكن من إعادة الانضمام إليها مرة أُخرى حتى يقوم بالترقية:";
@@ -3728,10 +3779,10 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "الجميع ما عدا…";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "جميع جهات الاتصال في Signal";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "جميع جهات اتصال Signal";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "مشاركة فقط مع...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "مشاركة فقط مع…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "قِصصي";
@@ -4688,13 +4739,13 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "حذف قصة خاصة";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "هل أنت متأكد من أنك تريد حذف \"%1$@\"؟ سيتم أيضًا حذف تحديثات شاركتها مؤخرًا في هذه القصة.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "إزالة";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "لن يتمكن هذا الشخص من رؤية هذه القِصة بعد الآن..";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "لن يتمكن هذا الشخص من رؤية هذه القِصة بعد الآن.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "إزالة %1$@؟";
@@ -4820,13 +4871,13 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "لم يُعثَر على الرسالة الأصلية.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "التفاعلات مع قصتك";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "تفاعلَ مع قصتك";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "تفاعل مع قصة %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "قصة  · %1$@";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "قصة · %1$@";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "مُرفق";
@@ -5102,7 +5153,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "تعذّر جلب رمز الربط";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "لربط هذا الجهاز مع حساب مختلف، يجب عليك أولا إعادة تعيين هذا الجهاز. أأنت على يقين من نيتك حذف كل المحفوظات (للرسائل والمرفقات والمكالمات، إلخ.) ؟ إن هذا الإجراء لا يمكن التراجع عنه.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "لربط هذا الجهاز مع حساب مُختلف، يجب عليك أولا إعادة تعيين هذا الجهاز. هل أنت متأكد من أنك تريد حذف كل المحفوظات (رسائل ومرفقات ومكالمات، إلخ.)؟ لا يمكن التراجع عن هذا الإجراء.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "حذف كل شيء";
@@ -5411,7 +5462,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "حذف كافة البيانات";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "هل أنت متأكد من أنك تريد حذف كل التاريخ (الرسائل، المرفقات، المكالمات، إلخ.)؟ لا يمكن التراجع عن هذا الإجراء.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "هل أنت متأكد من أنك تريد حذف كل المحفوظات (رسائل ومرفقات ومكالمات، إلخ.)؟ لا يمكن التراجع عن هذا الإجراء.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "حذف كل شيء";
@@ -6218,7 +6269,7 @@
 "STORIES_NO_VIEWS_YET" = "لا مشاهدة حاليا";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "تمكين الأفراد الذين يمكنهم مشاهدة قصتك من التفاعل معها والرد عليها.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "السماح للأفراد الذين يمكنهم مشاهدة قصتك من التفاعل معها والرد عليها.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "الإجابات وردود الفعل";
@@ -6245,10 +6296,10 @@
 "STORIES_SETTINGS_TITLE" = "إعدادات خصوصية القِصة";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "لن تتمكن من مشاركة القِصص أو مُشَاهداتها بعد الآن. وسيتم أيضًا حذف تحديثات القصة التي شاركتها مؤخرًا.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "إيقاف وحذف القِصص";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "إذا قمت بإلغاء الاشتراك في القِصص، فلن تتمكن بعد ذلك من مشاركة القِصص أو عرضها.";
@@ -6325,6 +6376,9 @@
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "المتفاعلون مع القصة";
 
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "رد";
 
@@ -6332,7 +6386,7 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "الردّ على المجموعة";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "تعذّر إرسال القصة. يُرجى التحقق من اتصالك بالشبكة ثم حاول مرة أخرى.";
+"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "تعذّر إرسال القصة. يُرجى التحقق من اتصالك بالشبكة ثم حاول مرة أخرى";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "تعذّر إرسال هذه القصة إلى بعض الناس. تحقّق من اتصالك بالشبكة ثم حاول مجددًا";
@@ -6362,29 +6416,28 @@
 "STORY_SENDING" = "جارٍ الإرسال...";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "بدء المحادثة معهم";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "قبول طلب التراسل معهم";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "وجودهم في نظام جهات اتصالك";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "يمكن لِجهات اتصالكَ رؤية اسمك وصورتك، كما يمكنهم الاطلاع على منشوراتك في \"قصتي\" إلا إذا أخفيتها عنهم.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<strong>‫جهات اتصال Signal‬</strong> هم الأفراد الذي اخترت الثقة بهم، إما عبر:";
 
-/* Section footer for the 'viewers' section on the 'story settings' view
-   Section footer for the 'viewers' section on the 'story settings' view. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "اِختر من يُمكنه رؤية قصتك. لن تؤثر التغييرات على القِصص التي أرسلتها من قبل.";
+/* Section footer for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "اِختر من يُمكنه رؤية قصتك من علاقات Signal. لن تؤثر التغييرات على القِصص التي أرسلتها من قبل.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "من يمكنه مشاهدة هذه القصة";
 
-/* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+/* Header for the 'viewers' section on the 'story settings' bottom sheet */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "اِختر من يُمكنه مشاهدة قصتك من جهات اتصال Signal. يُمكنك تغيير هذا في أي وقت في إعدادات الخصوصية.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "سَيتم تجزئة الفيديوهات المُرسلة إلى القِصص إلى مقاطع من %1$d ثانية وإرسالها كعِدة قصص.";
@@ -6399,7 +6452,7 @@
 "STORY_VIEWER_ONBOARDING_3" = "اِسحب لليمين للمُغادرة";
 
 /* Confirmation text shown the first time the user opens the story viewer to dismiss instructions. */
-"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "فهِمت";
+"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "عُلم";
 
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "المشاهدات غير مُشغلة";
@@ -6658,9 +6711,6 @@
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "جهة اتصال مجهولة";
-
-/* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "بلد مجهول";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "أرسل أحد أجهزتك رسالة لا يُمكن مُعالجتها أو عرضها هُنا لأنها تستخدم ميزة جديدة في Signal.";

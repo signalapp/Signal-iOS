@@ -1357,26 +1357,6 @@
 			<string>Opozovi pozivnice</string>
 		</dict>
 	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Podsjetit ćemo vas kasnije. Stvaranje PIN-a postat će obvezno za 1 dan.</string>
-			<key>few</key>
-			<string>Podsjetit ćemo vas kasnije. Stvaranje PIN-a postat će obvezno za %1$d dana.</string>
-			<key>many</key>
-			<string>Podsjetit ćemo vas kasnije. Stvaranje PIN-a postat će obvezno za %1$d dana.</string>
-			<key>other</key>
-			<string>Podsjetit ćemo vas kasnije. Stvaranje PIN-a postat će obvezno za %1$d dana.</string>
-		</dict>
-	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

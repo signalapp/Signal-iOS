@@ -378,7 +378,7 @@
 			<key>one</key>
 			<string>Història privada · %1$d espectador</string>
 			<key>other</key>
-			<string>Història privada · %1$d Visualitzacions</string>
+			<string>Història privada · %1$d espectadors</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -442,7 +442,7 @@
 			<key>one</key>
 			<string>Història de grup · %1$d espectador</string>
 			<key>other</key>
-			<string>Història de grup · %1$d Visualitzacions</string>
+			<string>Història de grup · %1$d espectadors</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -1083,22 +1083,6 @@
 			<string>Rebutja la invitació</string>
 			<key>other</key>
 			<string>Rebutja les invitacions</string>
-		</dict>
-	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>T&apos;ho recordarem més tard. Crear un PIN serà obligatori d&apos;aquí a 1 dia.</string>
-			<key>other</key>
-			<string>T&apos;ho recordarem més tard. Crear un PIN serà obligatori d&apos;aquí a %1$d dies.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>

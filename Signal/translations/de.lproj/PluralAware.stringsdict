@@ -360,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Aufruf</string>
+			<string>%1$d Betrachter</string>
 			<key>other</key>
-			<string>%1$dAnsicht</string>
+			<string>%1$d Betrachter</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Private Story · %1$d Ansichten</string>
+			<string>Private Story · 1 Betrachter</string>
 			<key>other</key>
-			<string>Private Story  %1$d Ansicht</string>
+			<string>Private Story · %1$d Betrachter</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Gruppen-Story · %1$d Ansichten</string>
+			<string>Gruppen-Story · 1 Betrachter</string>
 			<key>other</key>
-			<string>Gruppen-Story %1$d Betrachter</string>
+			<string>Gruppen-Story · %1$d Betrachter</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -1083,22 +1083,6 @@
 			<string>Einladung widerrufen</string>
 			<key>other</key>
 			<string>Einladungen widerrufen</string>
-		</dict>
-	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Wir erinnern dich später. Das Erstellen einer PIN wird in 1 Tag zwingend erforderlich.</string>
-			<key>other</key>
-			<string>Wir erinnern dich später. Das Erstellen einer PIN wird in %1$d Tagen zwingend erforderlich.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>

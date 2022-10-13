@@ -121,7 +121,7 @@
 /* notification body */
 "APN_Message" = "ייתכן שיש לך הודעות חדשות";
 
-/* Message for the 'app launch failed' alert. */
+/* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal אינו יכול להיות מופעל. אנא שלח יומן ניפוי תקלים אל support@signal.org כך שנוכל לפתור סוגייה זו.";
 
 /* Title for the 'app launch failed' alert. */
@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "נפח אחסון נמוך";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "הנתונים שהועברו מהמכשיר הישן שלך לא יכלו להשתחזר. אנא שלח יומן ניפוי תקלים אל support@signal.org כך שנוכל לפתור סוגייה זו. אם תתקין מחדש את Signal, היסטורית ההודעות שלך תאבד.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "לא הצלחנו לשחזר את הנתונים שהועברו מהמכשיר הישן שלכם. אנא שלחו יומן ניפוי באגים ל–support@signal.org כדי שנוכל לפתור בעיה זו. אם תתקינו מחדש את Signal, היסטוריית ההודעות שלכם תאבד.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "לא היה ניתן להשלים את ההעברה";
@@ -780,6 +780,9 @@
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "משתמש Signal";
+
+/* The generic name used for group calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "צלם תמונה ואז שלח אותה";
@@ -1471,6 +1474,54 @@
 /* Title for alert before running a database integrity check */
 "DATABASE_INTEGRITY_CHECK_TITLE" = "להריץ בדיקת מסד נתונים?";
 
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "יתכן שחלק מהיסטוריית ההודעות שלך נפגמה. אל דאגה, אבטחת החשבון או ההודעות שלך לא נפגעה. צריך ללחוץ על ״המשך״ כדי לשחזר את הנתונים שלך.";
+
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "בעיה בשחזור נתונים";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "להמשיך בכל זאת";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "על מנת להשלים את שחזור הנתונים, אנחנו ממליצים שיהיו לך לפחות %1$@ של שטח אחסון פנוי במכשיר שלך.";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "דרוש עוד שטח אחסון";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "לא הצלחנו לשחזר את היסטוריית ההודעות שלך. באפשרותך להמשיך להשתמש ב–Signal לאחר התקנה מחדש. מומלץ לשלוח יומן ניפוי באגים כדי שנוכל להבין טוב יותר מה השתבש.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "איפוס של Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "אפס";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "פרטי החשבון, הפרופיל, וכל ההודעות שלך ימחקו. האפליקציה תיסגר לאחר השלמת התהליך.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "איפוס של Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "הגש יומן ניפוי תקלים";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "הנתונים לא שוחזרו";
+
+/* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "צריך להשאיר את האפליקציה פתוחה בזמן תהליך השחזור. זה עשוי לקחת מספר דקות.";
+
+/* On the database recovery screen, this is the title shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "שחזור נתונים";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "השחזור עבר בהצלחה, אבל יתכן שכמה הודעות לא שוחזרו.";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "שחזור הנתונים הצליח";
+
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "ייתכן וזה יקח מספר דקות";
 
@@ -1592,7 +1643,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "המשך בלי להעביר את החשבון וההודעות שלך";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "הוסף iPad זה כמכשיר מקושר חדש בלי להעביר היסטורית הודעות";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "הוספת iPad זה כמכשיר מקושר חדש בלי להעביר היסטוריית הודעות";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "הוסף כמכשיר חדש";
@@ -1604,10 +1655,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "העבר חשבון והודעות";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "העבר את החשבון והיסטורית ההודעות שלך ממכשיר iOS ישן שלך";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "העברת החשבון והיסטוריית ההודעות שלך ממכשיר ה–iOS הישן שלך";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "העבר את החשבון והיסטורית ההודעות שלך מן iPad ישן שלך";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "העברת החשבון והיסטוריית ההודעות שלך מה–iPad הישן שלך";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "העבר מן iPad אחר";
@@ -2780,16 +2831,16 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ אל %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "הסרת סטורי קבוצתי";
 
-/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "בטוח שמתחשק לך למחוק את הסטורי הזה?";
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%1$@” can view and reply to this story. You can update the membership for this chat in the group.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "חברי הצ׳אט הקבוצתי ״%1$@״ יכולים לצפות ולהשיב לסטורי הזה. יש לך אפשרות לעדכן את החברוּת בצ׳אט הזה בקבוצה.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "מי יכול לצפות בסטורי הזה";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "הקבוצה עודכנה.";
@@ -2939,7 +2990,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "כאשר כל חברי הקבוצה הנוכחיים ישתמשו בגרסה של Signal שמסוגלת להצטרף אל קבוצה חדשה, קבוצה זו תשודרג.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "כל היסטורית ההודעות והמדיה יישמרו מלפני השדרוג.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "כל היסטוריית ההודעות והמדיה יישמרו מלפני השדרוג.";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "זוהי קבוצה מיושנת. מאפיינים כמו מנהלני קבוצה זמינים רק בקבוצות חדשות. %1$@";
@@ -2963,7 +3014,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "מהן קבוצות חדשות?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "כל היסטורית ההודעות וכל המדיה נשמרו מלפני השדרוג.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "כל היסטוריית ההודעות והמדיה נשמרו מלפני השדרוג.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "לקבוצות חדשות יש מאפיינים כמו @אזכורים ומנהלני קבוצה, ויתמכו במאפיינים נוספים בעתיד.";
@@ -2990,7 +3041,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "חברי קבוצה אלו לא יכלו להתווסף באופן אוטומטי אל הקבוצה החדשה כאשר היא שודרגה:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "כל היסטורית ההודעות וכל המדיה נשמרו מלפני השדרוג.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "כל היסטוריית ההודעות והמדיה נשמרו מלפני השדרוג.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "חבר קבוצה זה הוסר מהקבוצה והוא לא יוכל להצטרף מחדש אל הקבוצה עד שהוא ישדרג:";
@@ -3722,16 +3773,16 @@
 "MUTED_BADGE" = "מושתק";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "עדכונים של הסטורי שלך יופיעו כאן.";
+"MY_STORIES_NO_STORIES" = "עדכונים לסטורי שלך יופיעו כאן.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "כולם חוץ מ…";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "כל חברי ה-Signal";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "כל חברי ה–Signal";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "שיתוף רק עם...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "שיתוף רק עם…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "הסטוריז שלי";
@@ -3749,7 +3800,7 @@
 "MY_STORY_SETTINGS_TITLE" = "הסטורי שלי";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "אפשר ללחוץ כדי להוסיף סטוריז";
+"MY_STORY_TAP_TO_ADD" = "יש ללחוץ כדי להוסיף סטורי";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "שינה/שינתה לאחרונה את שם הפרופיל מן %1$@ אל %2$@.";
@@ -3812,7 +3863,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "בחר חברי קבוצה";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ ל%2$@ · סטורי";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "בחירת קבוצה";
@@ -3839,7 +3890,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "שם סטורי חסר";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "שם סטורי (נדרש)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "שם סטורי (חובה)";
 
 /* The title for the 'new private story' view. */
 "NEW_PRIVATE_STORY_VIEW_TITLE" = "בחירת צופים";
@@ -3848,7 +3899,7 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "צופים";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "סיפור חדש";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "סטורי חדש";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "שתף אל קבוצה קיימת";
@@ -4688,13 +4739,13 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "מחיקת סטורי פרטי";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "בטוח שבא לך למחוק את ״%1$@״? עדכונים שישותפו לסטורי הזה ימחקו גם הם.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "הסר";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "האדם הזה לא יוכל לצפות בסטורי הזה יותר.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "להסיר את %1$@?";
@@ -4820,13 +4871,13 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "הודעה מקורית לא נמצאה.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "הגיב/ה אל הסיפור שלך";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "הגיב/ה לסטורי שלך";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "הגיב/ה אל סיפור של %1$@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "הגיב/ה לסטורי של %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · סיפור";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · סטורי";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "צרופה";
@@ -5102,7 +5153,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "לא היה ניתן למשוך קוד קישור";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "כדי לקשר את המכשיר הזה אל חשבון שונה, אתה חייב תחילה לאפס את המכשיר הזה. האם אתה בטוח שאתה רוצה למחוק את כל ההיסטוריה (הודעות, צרופות, שיחות וכד')? פעולה זו אינה ניתנת לביטול.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "כדי לקשר את המכשיר הזה לחשבון שונה, צריך קודם כל לאפס את המכשיר. בטוח שבא לך למחוק את כל ההיסטוריה (הודעות, קבצים מצורפים, שיחות וכו')? פעולה זו אינה ניתנת לביטול.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "מחק הכול";
@@ -5354,7 +5405,7 @@
 "SETTINGS_CHATS" = "התכתבויות";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "נקה היסטורית התכתבויות";
+"SETTINGS_CLEAR_HISTORY" = "ניקוי היסטוריית התכתבויות";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "זכויות יוצרים Signal Messenger\nברישיון תחת GPLv3";
@@ -5411,7 +5462,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "מחק את כל הנתונים";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "האם אתה בטוח שאתה רוצה למחוק את כל ההיסטוריה (הודעות, צרופות, שיחות וכד')? פעולה זו אינה ניתנת לביטול.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "בטוח שבא לך למחוק את כל ההיסטוריה (הודעות, קבצים מצורפים, שיחות וכו')? פעולה זו אינה ניתנת לביטול.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "מחק הכול";
@@ -6011,7 +6062,7 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "התר גישת iOS אל אנשי קשר והתכתבויות של Signal עבור מאפיינים כמו הצעות שיתוף והתראות.";
 
 /* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
+"SETTINGS_STORIES_FOOTER" = "אפשר לנהל את הסטוריז שלך ומי יכול לצפות בהם.";
 
 /* Label for the stories section of the settings view */
 "SETTINGS_STORIES_TITLE" = "סטוריז";
@@ -6185,13 +6236,13 @@
 "STORIES_GO_TO_CHAT_ACTION" = "לך אל התכתבות";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "אין לך אפשרות להשיב לסטורי הזה בגלל שאינך חלק מהקבוצה הזו יותר.";
 
 /* Header for the hidden stories section of the stories list */
 "STORIES_HIDDEN_SECTION_HEADER" = "סטוריז מוסתרים";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "הסתר סיפור";
+"STORIES_HIDE_STORY_ACTION" = "הסתרת סטורי";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
 "STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "עדכוני סטורי חדשים מ%1$@ לא יופיעו יותר בראש רשימת הסטוריז.";
@@ -6218,7 +6269,7 @@
 "STORIES_NO_VIEWS_YET" = "אין צפיות עדין";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "אפשר לתת לאנשים שרואים את הסטורי שלך להגיב ולשלוח תשובות.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "אפשר לתת לאנשים שיכולים לצפות בסטורי שלך להגיב ולהשיב.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "תשובות ותגובות";
@@ -6236,7 +6287,7 @@
 "STORIES_SAVE_STORY_ACTION" = "שמור";
 
 /* Footer for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_FOOTER" = "סטוריז נעלמים אוטומטית אחרי 24 שעות. אפשר לבחור מי יכול לראות את הסטורי שלך או ליצור סטוריז חדשים עם קבוצות או צופים ספציפיים.";
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "סטוריז נעלמים אוטומטית אחרי 24 שעות. אפשר לבחור מי יכול לצפות בסטורי שלך או ליצור סטוריז חדשים עם קבוצות או צופים ספציפיים.";
 
 /* Header for the 'My Stories' section of the stories settings */
 "STORIES_SETTINGS_MY_STORIES_HEADER" = "הסטוריז שלי";
@@ -6245,28 +6296,28 @@
 "STORIES_SETTINGS_TITLE" = "פרטיות של סטורי";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "לא תהיה לך יותר אפשרות לשתף או לצפות בסטוריז. עדכוני סטורי ששיתפת לאחרונה ימחקו גם הם.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "כיבוי ומחיקת סטוריז";
 
 /* Footer for the 'turn off' section of the stories settings */
-"STORIES_SETTINGS_TURN_OFF_FOOTER" = "לאחר כיבוי סטוריז, לא תהיה לך אפשרות לשתף או לראות סטוריז יותר.";
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "לאחר כיבוי סטוריז, לא תהיה לך אפשרות לשתף או לצפות בסטוריז יותר.";
 
 /* Button to turn off stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "כיבוי סטוריז";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "אפשר לשתף סטוריז ולצפות בסטוריז של אחרים. סטוריז ייעלמו אוטומטית אחרי 24 שעות.";
 
 /* Button to turn on stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "הפעלת סטוריז";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "שתף";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "סיפורים";
+"STORIES_TITLE" = "סטוריז";
 
 /* Context menu action to unhide the selected story */
 "STORIES_UNHIDE_STORY_ACTION" = "ביטול הסתרת סטורי";
@@ -6278,7 +6329,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "הסתרת סטורי בוטלה";
 
 /* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "אפשר להפעיל אישורי קריאה כדי לראות מי צפה בסטוריז שלך.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "צפיות";
@@ -6287,19 +6338,19 @@
 "STORY_COMPOSER_CAMERA" = "מצלמה";
 
 /* Displayed when failed to fetch link preview in Text Story composer. */
-"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "לא הצלחנו לטעון את הלינק. כדאי לבדוק את החיבור ולנסות שוב.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "שתף קישור עם צופים של הסיפור שלך";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "אפשר לשתף לינק עם הצופים של הסטורי שלך";
 
 /* Placeholder text in text stories compose UI */
-"STORY_COMPOSER_TAP_ADD_TEXT" = "הקש כדי להוסיף מלל";
+"STORY_COMPOSER_TAP_ADD_TEXT" = "אפשר ללחוץ כדי להוסיף טקסט";
 
 /* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
 "STORY_COMPOSER_TEXT" = "מלל";
 
 /* Placeholder text for URL input field in Text Story composer UI. */
-"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "הקלד או הדבק מען";
+"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "אפשר להקליד או להדביק כתובת URL";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "בקר בקישור";
@@ -6311,19 +6362,22 @@
 "STORY_PRIVACY_SETTINGS" = "פרטיות";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "הגיב/ה %1$@ לסטורי שלך";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Reacted %1$@ to a story";
+"STORY_REACTION_QUOTE_FORMAT" = "הגיב/ה %1$@ לסטורי";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "הגיב/ה %1$@ לסטורי של %2$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "השב";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "הגיב/ה אל סיפור";
+"STORY_REPLY_REACTION" = "הגיב/ה לסטורי";
+
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "השב";
@@ -6335,19 +6389,19 @@
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "לא הצלחנו לשלוח את הסטורי. כדאי לבדוק את החיבור ולנסות שוב.";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "לא הצלחנו לשלוח את הסטורי הזה לחלק מהאנשים. כדא לבדוק את החיבור שלך ולנסות שוב";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "לא הצלחנו לשלוח את הסטורי הזה לחלק מהאנשים. כדאי לבדוק את החיבור שלך ולנסות שוב";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "שיתוף רק עם...";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "שיתוף רק עם…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "כולם חוץ מ…";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "השליחה נכשלה";
 
 /* Text indicating that you can tap to retry sending */
-"STORY_SEND_FAILED_RETRY" = "לחץ כדי לנסות שוב";
+"STORY_SEND_FAILED_RETRY" = "יש ללחוץ כדי לנסות שוב";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED_TAP_FOR_DETAILS" = "השליחה נכשלה. יש ללחוץ כדי לנסות שוב";
@@ -6359,32 +6413,31 @@
 "STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "נשלח חלקית. אפשר ללחוץ לפרטים";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "שולח…";
+"STORY_SENDING" = "שולחים…";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "התחלת שיחה";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "אישור בקשת הודעה";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "שמירה שלהם באנשי הקשר שלך";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "חברי ה–Signal שלך יוכלו לראות את השם והתמונה שלך, וגם את מה ששלחת ל״הסטורי שלי״ אלא אם כן הסתרת זאת מהם.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>חברי Signal</bold> הם אנשים שבחרת לבטוח בהם, באמצעות אחת מהפעולות הבאות:";
 
-/* Section footer for the 'viewers' section on the 'story settings' view
-   Section footer for the 'viewers' section on the 'story settings' view. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+/* Section footer for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "אפשר לבחור אילו חברי Signal יוכלו לצפות בסטורי שלך. השינויים לא ישפיעו על סטוריז שכבר שלחת.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "מי יכול לצפות בסטורי הזה";
 
-/* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+/* Header for the 'viewers' section on the 'story settings' bottom sheet */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "אפשר לבחור אילו חברי Signal יוכלו לראות את הסטורי שלך. תמיד אפשר לשנות את זה בהגדרות הפרטיות.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "סרטונים שנשלחים לסטוריז ייחתכו לקליפים של %1$d שניות ויישלחו כסטוריז נפרדים.";
@@ -6659,9 +6712,6 @@
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "איש קשר בלתי ידוע";
 
-/* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "מדינה בלתי ידועה";
-
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "אחד מהמכשירים שלך שלח הודעה שאינה יכולה להיות מעובדת או להיות מוצגת כאן מאחר שהיא משתמשת במאפיין Signal חדש.";
 
@@ -6828,10 +6878,10 @@
 "VIEW_ONCE_OUTGOING_TOAST" = "קבצי מדיה יוצאים לצפייה חד־פעמית מוסרים באופן אוטומטי לאחר שהם נשלחים.";
 
 /* View the photo of a group or user */
-"VIEW_PHOTO" = "הצג תמונה";
+"VIEW_PHOTO" = "הצגת תמונה";
 
 /* View the story of a group or user */
-"VIEW_STORY" = "View Story";
+"VIEW_STORY" = "צפייה בסטורי";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "החלק כדי לבטל";

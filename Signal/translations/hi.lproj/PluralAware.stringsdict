@@ -376,7 +376,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>निजी स्टोरी · %1$d व्यूअर</string>
+			<string>निजी स्टोरी · 1 व्यूअर</string>
 			<key>other</key>
 			<string>निजी स्टोरी · %1$d व्यूअर</string>
 		</dict>
@@ -440,7 +440,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>ग्रुप स्टोरी · %1$d व्यूअर</string>
+			<string>ग्रुप स्टोरी · 1 व्यूअर</string>
 			<key>other</key>
 			<string>ग्रुप स्टोरी · %1$d व्यूअर</string>
 		</dict>
@@ -1083,22 +1083,6 @@
 			<string>आमंत्रण फिर से लागू करें</string>
 			<key>other</key>
 			<string>आमंत्रण फिर से लागू करें</string>
-		</dict>
-	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>हम आपको बाद में याद दिलाएंगे। 1 दिन में एक पिन बनाना अनिवार्य हो जाएगा।</string>
-			<key>other</key>
-			<string>हम आपको बाद में याद दिलाएंगे। %1$d दिनों में एक पिन बनाना अनिवार्य हो जाएगा।</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>

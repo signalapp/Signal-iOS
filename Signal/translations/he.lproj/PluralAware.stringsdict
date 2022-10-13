@@ -1188,7 +1188,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>צופה %1$d</string>
+			<string>צופה 1</string>
 			<key>two</key>
 			<string>%1$d צופים</string>
 			<key>many</key>
@@ -1357,26 +1357,6 @@
 			<string>שלול הזמנות</string>
 		</dict>
 	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>נזכיר לך מאוחר יותר. יצירת PIN תהפוך לחובה עוד יום 1.</string>
-			<key>two</key>
-			<string>נזכיר לך מאוחר יותר. יצירת PIN תהפוך לחובה עוד יומיים.</string>
-			<key>many</key>
-			<string>נזכיר לך מאוחר יותר. יצירת PIN תהפוך לחובה עוד %1$d ימים.</string>
-			<key>other</key>
-			<string>נזכיר לך מאוחר יותר. יצירת PIN תהפוך לחובה עוד %1$d ימים.</string>
-		</dict>
-	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1448,7 +1428,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>צופה %1$d</string>
+			<string>צופה 1</string>
 			<key>two</key>
 			<string>%1$d צופים</string>
 			<key>many</key>

@@ -376,7 +376,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>ব্যক্তিগত স্টোরি · %1$d জন দর্শক</string>
+			<string>ব্যক্তিগত স্টোরি · 1 জন দর্শক</string>
 			<key>other</key>
 			<string>ব্যক্তিগত স্টোরি · %1$d জন দর্শক</string>
 		</dict>
@@ -440,7 +440,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>গ্ৰুপ স্টোরি · %1$d জন দর্শক</string>
+			<string>গ্ৰুপ স্টোরি · 1 জন দর্শক</string>
 			<key>other</key>
 			<string>গ্ৰুপ স্টোরি · %1$d জন দর্শক</string>
 		</dict>
@@ -1083,22 +1083,6 @@
 			<string>ইনভাইট প্রত্যাখ্যান করুন</string>
 			<key>other</key>
 			<string>ইনভাইট প্রত্যাখ্যান করুন</string>
-		</dict>
-	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>আমরা আপনাকে পরে মনে করিয়ে দেবো। 1 দিনের মধ্যে পিন তৈরি করা বাধ্যতামূলক হবে।</string>
-			<key>other</key>
-			<string>আমরা আপনাকে পরে মনে করিয়ে দেবো। %1$d দিনের মধ্যে পিন তৈরি করা বাধ্যতামূলক হবে।</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>

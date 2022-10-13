@@ -952,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d દર્શક</string>
+			<string>1 દર્શક</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d દર્શકો</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1085,22 +1085,6 @@
 			<string>આમંત્રણો પાછા ખેંચો</string>
 		</dict>
 	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>અમે તમને ફરીથી યાદ અપાવીશું. 1 દિવસમાં પિન બનાવવાનું ફરજિયાત બનશે.</string>
-			<key>other</key>
-			<string>અમે તમને ફરીથી યાદ અપાવીશું. %1$d દિવસોમાં પિન બનાવવાનું ફરજિયાત બનશે.</string>
-		</dict>
-	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1160,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d દર્શક</string>
+			<string>1 દર્શક</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d દર્શકો</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>

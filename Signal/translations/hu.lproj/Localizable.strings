@@ -121,7 +121,7 @@
 /* notification body */
 "APN_Message" = "Új üzenet érkezett";
 
-/* Message for the 'app launch failed' alert. */
+/* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal indítási hiba. Kérlek küldj egy hibanapló fájlt a support@signal.org címre, hogy megvizsgálhassuk, mi történt.";
 
 /* Title for the 'app launch failed' alert. */
@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Kevés a tárhely";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "A régi eszközödről hozott adat nem helyreállítható. Kérlek küldj egy hibanapló fájlt a support@signal.org címre, hogy megvizsgálhassuk, mi történt. Ha újra telepíted a Signalt, az üzenet előzményeid elveszhetnek.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "A régi eszközödről hozott adat nem helyreállítható. Kérjük, küldj egy hibanapló fájlt a support@signal.org e-mail-címre, hogy megvizsgálhassuk, mi történt. Ha újratelepíted a Signalt, az üzenet-előzményeid elveszhetnek.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Az adatok visszaállítása sikertelen.";
@@ -780,6 +780,9 @@
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal felhasználó";
+
+/* The generic name used for group calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Készíts egy képet és küldd el";
@@ -1471,6 +1474,54 @@
 /* Title for alert before running a database integrity check */
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Adatbázis-diagnosztika futtatása?";
 
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Az üzenet-előzményeid egy része lehet, hogy megsérült. Ez semmilyen hatással nincs a fiókod vagy az üzeneteid biztonságára. Az adatok helyreállításához koppints a „Tovább” lehetőségre.";
+
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Probléma az adatok lekérésekor";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Mindenképp folytatom";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "Az adatok helyreállításának befejezéséhez azt javasoljuk, hogy legalább %1$@ szabad tárhely legyen az eszközödön.";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Több tárhelyre van szükség";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Az üzenetelőzményeket nem sikerült helyreállítani. Az újratelepítés után folytathatod a Signal használatát. Küldj be egy hibakeresési naplót, hogy jobban megérthessük a problémát.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Signal visszaállítása";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Visszaállítás";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "A fiókadataid, a profilod és minden üzeneted törlésre kerül. Az alkalmazás a folyamat befejezése után bezárul.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Signal visszaállítása";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Hibanapló továbbítása";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Az adatok helyreállítása sikertelen";
+
+/* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "A helyreállítási folyamat során hagyd megnyitva az alkalmazást. Ez eltarthat néhány percig.";
+
+/* On the database recovery screen, this is the title shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Adatok helyreállítása";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "A helyreállítás sikeres volt, azonban előfordulhat, hogy egyes üzeneteket nem sikerült helyreállítani.";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Az adatok sikeresen helyreállításra kerültek";
+
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Ez pár percet is igénybe vehet.";
 
@@ -1592,7 +1643,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Folytatás az azonosító és régi üzenetek átmozgatása nélkül";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "iPad társítása új eszközként - az azonosító és régi üzenetek mozgatása nélkül.";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "iPad társítása új eszközként, az azonosító és régi üzenetek áthelyezése nélkül";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Hozzáadás új eszközként";
@@ -1604,10 +1655,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Azonosító és üzenetek átmozgatása";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Fiókod és üzenet előzményeid átmozgatása régi iOS eszközödről";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Fiókod és üzenet-előzményeid áthelyezése régi iOS-eszközödről";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Fiókod és üzenet előzményeid átmozgatása régi iPad-edről";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Fiókod és üzenet előzményeid áthelyezése régi iPadedről";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Átmozgatás másik iPad-ről";
@@ -2782,14 +2833,14 @@
 /* Button to delete the story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Csoport Történet eltávolítása";
 
-/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Biztosan törölni szeretnéd ezt a Történetet?";
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "A(z) „%1$@” csoport tagjai megtekinthetik ezt a Történetet, és válaszolhatnak is rá. A csoportban frissítheted a csevegésre vonatkozó tagságot.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Ki láthatja ezt a Történetet";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Ki tekintheti meg ezt a Történetet";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Csoport frissítve.";
@@ -3722,13 +3773,13 @@
 "MUTED_BADGE" = "Némítva";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "A történeteid itt fognak megjelenni";
+"MY_STORIES_NO_STORIES" = "A Történeteid itt fognak megjelenni.";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Mindenki, kivéve...";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Minden Signal-névjegy";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Minden Signal Névjegy";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Megosztás kizárólag a következőkkel...";
@@ -3836,10 +3887,10 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "A Történet címének megadása kötelező.";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Hiányzik a Történet neve";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Hiányzik a Történet címe";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Történet neve (kötelező)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Történet címe (kötelező)";
 
 /* The title for the 'new private story' view. */
 "NEW_PRIVATE_STORY_VIEW_TITLE" = "Nézők kiválasztása";
@@ -3848,19 +3899,19 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Megtekintők";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Új történet";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Új Történet";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Megosztás egy meglévő csoporttal";
 
 /* Title for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Új Csoporttörténet";
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Új Csoport Történet";
 
 /* Subtitle for create private story row on the 'new story sheet' */
 "NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "Csak bizonyos személyek számára látható";
 
 /* Title for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "Új privát történet";
+"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "Új privát Történet";
 
 /* Title for the new story sheet */
 "NEW_STORY_SHEET_TITLE" = "Történet típusának kiválasztása";
@@ -4688,7 +4739,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Privát Történet törlése";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Biztosan törölni szeretnéd a következőt: „%1$@”? A Történethez megosztott frissítések is törlésre kerülnek.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Eltávolítás";
@@ -4820,10 +4871,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Eredeti üzenet nem található";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Válasz a történetedre";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reagált a Történetedre";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Válasz %1$@ történetére";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reagált %1$@ Történetére";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Történet";
@@ -5102,7 +5153,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Társító kód lekérése sikertelen";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Ezt az eszközt az újratársításhoz előbb alaphelyzetbe kell állítani. Biztosan mindent törölni akarsz (üzenetek, csatolmányok, hívások, stb)? Ez a művelet nem visszavonható.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Az eszközt az újratársításhoz előbb alaphelyzetbe kell állítani. Biztosan mindent (üzenetek, csatolmányok, hívások stb.) törölni szeretnél? A művelet nem visszavonható.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Minden törlése";
@@ -5354,7 +5405,7 @@
 "SETTINGS_CHATS" = "Beszélgetések";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Összes beszélgetés törlése";
+"SETTINGS_CLEAR_HISTORY" = "Összes beszélgetés-előzmény törlése";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \nLicenc típusa: GPLv3";
@@ -5411,7 +5462,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Minden adat törlése";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Biztosan mindent törölni akarsz (üzenetek, csatolmányok, hívások, stb)? Ez a művelet nem visszavonható.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Biztosan mindent (üzenetek, csatolmányok, hívások stb.) törölni szeretnél? A művelet nem visszavonható.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Minden törlése";
@@ -6209,7 +6260,7 @@
 "STORIES_INFO_ACTION" = "Részletek";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "Jelenleg nincsenek megjeleníthető frissítések.\nKoppints a + jelre a történetedhez való hozzáadáshoz.";
+"STORIES_NO_RECENT_MESSAGES" = "Jelenleg nincsenek megjeleníthető frissítések.\nKoppints a + jelre a Történetedhez való hozzáadáshoz.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Még nem érkeztek reakciók";
@@ -6218,7 +6269,7 @@
 "STORIES_NO_VIEWS_YET" = "Még nem látta senki";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Engedélyezd, hogy azok, akik láthatják a történetedet, reagáljanak és válaszoljanak!";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Engedélyezd, hogy azok, akik láthatják a Történetedet, reagálhassanak és válaszolhassanak rá.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Válaszok és reakciók";
@@ -6230,7 +6281,7 @@
 "STORIES_REPLIES_TAB" = "Válaszok";
 
 /* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "A Történet mentése sikertelen";
+"STORIES_SAVE_FAILED" = "Történet mentése sikertelen";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "Mentés";
@@ -6245,10 +6296,10 @@
 "STORIES_SETTINGS_TITLE" = "Történet adatvédelmi beállításai";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Többé nem fogsz tudni megosztani vagy megtekinteni Történeteket. A közelmúltban megosztott Történettel kapcsolatos módosítások is törlődnek.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Történetek kikapcsolása és törlése";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Ha leiratkozol a Történetekről, többé nem fogsz tudni megosztani vagy megtekinteni Történeteket.";
@@ -6323,7 +6374,10 @@
 "STORY_REPLY_BUTTON" = "Válasz";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Válasz a történetre";
+"STORY_REPLY_REACTION" = "Reagált a Történetre";
+
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Válasz";
@@ -6362,29 +6416,28 @@
 "STORY_SENDING" = "Küldés...";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Beszélgetést kezdeményeztél velük";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Elfogadtál tőlük egy felkérést";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Szerepelnek a Névjegyeid között";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "A Névjegyeid megtekinthetik a neved, a profilképed, valamint a „Történeteim” szekcióba posztoltakat, kivéve, ha kifejezetten elrejtetted azokat előlük.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "A <bold>Signal Névjegyeid</bold> azok a személyek, akikben megbízol a következők valamelyike alapján:";
 
-/* Section footer for the 'viewers' section on the 'story settings' view
-   Section footer for the 'viewers' section on the 'story settings' view. */
+/* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Döntsd el, melyik Signal Névjegy láthatja a Történeted. A módosítások nem lesznek hatással a már elküldött Történetekre.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Ki láthatja ezt a Történetet";
 
-/* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+/* Header for the 'viewers' section on the 'story settings' bottom sheet */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Döntsd el, hogy mely Signal Névjegyek tekinthetik meg a Történeted. Ezt bármikor módosíthatod az adatvédelmi beállításokban.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "A Történetekhez küldött videókat a rendszer %1$d másodperces klipekre vágja össze, és több Történetként küldi el.";
@@ -6658,9 +6711,6 @@
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Ismeretlen kontakt";
-
-/* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Ismeretlen ország";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Az egyik eszközödről olyan üzenetet küldtél, melyet nem lehet feldolgozni vagy megjeleníteni ezen az eszközön, mivel olyan funkciót tartalmaz, mely csak a Signal egy újabb verziójában érhető el.";

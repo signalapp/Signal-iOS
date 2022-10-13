@@ -121,7 +121,7 @@
 /* notification body */
 "APN_Message" = "Anda mungkin mempunyai mesej baru";
 
-/* Message for the 'app launch failed' alert. */
+/* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal tidak boleh dilancarkan. Sila hantar log nyahpepijat ke support@signal.org supaya kami dapat menyelesaikan masalah ini.";
 
 /* Title for the 'app launch failed' alert. */
@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Kekurangan Ruang Simpanan";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Data yang dipindahkan daripada peranti lama anda tidak dapat dipulihkan. Sila hantar log nyahpepijat ke support@signal.org supaya kami boleh menyelesaikan masalah ini. Jika anda memasang semula Signal, sejarah msej anda akan hilang.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Data yang dipindahkan daripada peranti lama anda tidak dapat dipulihkan. Sila hantar log nyahpepijat ke support@signal.org supaya kami boleh menyelesaikan masalah ini. Jika anda memasang semula Signal, sejarah mesej anda akan hilang.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Tidak Dapat Melengkapkan Pemindahan";
@@ -780,6 +780,9 @@
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Pengguna Signal";
+
+/* The generic name used for group calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Ambil gambar dan kemudian hantar";
@@ -1471,6 +1474,54 @@
 /* Title for alert before running a database integrity check */
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Jalankan diagnostik pangkalan data?";
 
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Sesetengah sejarah mesej anda mungkin rosak. Tiada kesan kepada keselamatan akaun atau mesej anda. Ketik \"Teruskan\" untuk memulihkan data anda.";
+
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Masalah Mendapatkan Data";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Teruskan sahaja";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "Untuk melengkapkan pemulihan data, kami mengesyorkan anda mempunyai sekurang-kurangnya %1$@ ruang storan kosong pada peranti anda.";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Lebih Banyak Ruang Storan Diperlukan";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Sejarah mesej anda tidak dapat dipulihkan. Anda boleh terus menggunakan Signal selepas memasangnya semula. Hantar log nyahpepijat supaya kami dapat memahami dengan lebih baik masalah yang dihadapi.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Tetapkan Semula Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Tetap semula";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Maklumat akaun, profil dan semua mesej anda akan dikosongkan. Aplikasi akan ditutup selepas proses ini selesai.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Tetapkan Semula Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Hantar Log Nyahpepijat";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Data Tidak Dipulihkan";
+
+/* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Pastikan aplikasi dibuka semasa proses pemulihan. Ini mengambil masa beberapa minit.";
+
+/* On the database recovery screen, this is the title shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Memulihkan Data";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Pemulihan telah berjaya, tetapi beberapa mesej mungkin tidak dapat dipulihkan.";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Data Berjaya Dipulihkan";
+
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Ini boleh mengambil masa beberapa minit";
 
@@ -1592,7 +1643,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Teruskan tanpa memindahkan akaun dan mesej anda";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Tambah iPad ini sebagai peranti dipautkan baru tanpa memindahkan sejarah mesej";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Tambah iPad ini sebagai peranti baru yang dipautkan tanpa memindahkan sejarah mesej";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Tambah Sebagai Peranti Baru";
@@ -2782,8 +2833,8 @@
 /* Button to delete the story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Alih Keluar Cerita Kumpulan";
 
-/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Anda pasti mahu memadamkan cerita ini?";
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Ahli kumpulan \"%1$@\" boleh menonton dan membalas cerita ini. Anda boleh kemas kini keahlian untuk sembang ini dalam kumpulan.";
@@ -2939,7 +2990,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Apabila semua ahli kumpulan semasa menggunakan versi Signal yang dapat menyertai Kumpulan Baharu, kumpulan ini akan dinaik taraf.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Semua sejarah mesej dan media akan disimpan sebelum penaiktarafan.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Semua sejarah mesej dan media akan disimpan sebelum naik taraf dibuat.";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Ini Kumpulan Legasi. Ciri-ciri seperti pentadbir kumpulan hanya tersedia untuk Kumpulan Baharu. %1$@";
@@ -2963,7 +3014,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Apakah Kumpulan Baru?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Semua sejarah mesej dan media telah disimpan sebelum penaiktarafan.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Semua sejarah mesej dan media telah disimpan sebelum naik taraf dibuat.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Kumpulan Baharu mempunyai ciri-ciri seperti @sebutan dan pentadbir kumpulan, dan akan menyokong lebih banyak ciri pada masa akan datang.";
@@ -2990,7 +3041,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Ahli-ahli ini tidak dapat ditambah ke Kumpulan Baharu secara automatik apabila kumpulan dinaik taraf:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Semua sejarah mesej dan media telah disimpan sebelum penaiktarafan.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Semua sejarah mesej dan media telah disimpan sebelum naik taraf dibuat.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Ahli ini telah dialih keluar daripada kumpulan dan tidak dapat menyertai semula kumpulan sehingga mereka naik taraf:";
@@ -3731,7 +3782,7 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Semua Hubungan Signal";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Hanya Kongsi Dengan…";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Hanya Kongsi Dengan….";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Cerita Saya";
@@ -4688,7 +4739,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Padam Cerita Peribadi";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Adakah anda pasti mahu memadam \"%1$@\"? Kemas kini yang dikongsi pada cerita ini juga akan dipadam.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Alih keluar";
@@ -4820,13 +4871,13 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Mesej asal tidak dijumpai.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Bereaksi kepada cerita anda";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Menghantar reaksi kepada cerita anda";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Bereaksi kepada cerita %1$@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Menghantar reaksi kepada cerita %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ . Cerita";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Cerita";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Lampiran";
@@ -5102,7 +5153,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Tidak dapat Mengambil Kod Pautan";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Untuk memautkan peranti ini ke akaun lain, anda mesti menetapkan semula peranti ini terlebih dahulu. Adakah anda pasti mahu memadamkan semua sejarah (mesej, lampiran, panggilan dll.)? Tindakan ini tidak dapat diterbalikkan.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Untuk memautkan peranti ini ke akaun lain, anda mesti menetapkan semula peranti ini terlebih dahulu. Adakah anda pasti mahu memadam semua sejarah (mesej, lampiran, panggilan dll.)? Tindakan ini tidak boleh diulang.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Padamkan Semuanya";
@@ -5411,7 +5462,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Padakan Semua Data";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Adakah anda pasti mahu memadamkan semua sejarah (mesej, lampiran, panggilan, dll)? Tindakan ini tidak boleh dikembalikan.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Adakah anda pasti mahu memadam semua sejarah (mesej, lampiran, panggilan, dll)? Tindakan ini tidak boleh diulang.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Padamkan Semuanya";
@@ -6173,7 +6224,7 @@
 "STORIES_DELETE_STORY_ACTION" = "Padam";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Padam cerita ini? Ia juga akan dipadamkan untuk semua orang yang menerimanya.";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Padam cerita ini? Ia juga akan dipadamkan untuk semua orang yang telah menerimanya.";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "Cerita Disimpan";
@@ -6185,7 +6236,7 @@
 "STORIES_GO_TO_CHAT_ACTION" = "Pergi ke Sembang";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Anda tidak boleh membalas kepada cerita ini kerana anda bukan ahli kumpulan ini lagi.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Anda tidak boleh membalas cerita ini kerana anda bukan lagi ahli kumpulan ini.";
 
 /* Header for the hidden stories section of the stories list */
 "STORIES_HIDDEN_SECTION_HEADER" = "Cerita Disembunyikan";
@@ -6194,7 +6245,7 @@
 "STORIES_HIDE_STORY_ACTION" = "Sembunyikan Cerita";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
-"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Kemas kini cerita terbaru daripada %1$@ tidak akan muncul di atas senarai cerita lagi.";
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Kemas kini cerita terbaru daripada %1$@ tidak akan muncul dalam senarai teratas cerita.";
 
 /* Title asking the user if they are sure they want to hide stories from another user */
 "STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Sembunyikan Cerita?";
@@ -6218,7 +6269,7 @@
 "STORIES_NO_VIEWS_YET" = "Tiada tontonan lagi";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Biar orang yang boleh melihat cerita anda bereaksi dan membalas.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Biar orang yang boleh melihat cerita anda menghantar reaksi dan membalas.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Balasan & Reaksi";
@@ -6245,10 +6296,10 @@
 "STORIES_SETTINGS_TITLE" = "Privasi Cerita";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Anda tidak lagi boleh berkongsi atau menonton cerita. Cerita yang anda hantar baru-baru ini juga akan dipadam.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Matikan dan Padamkan Cerita";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Jika anda keluar daripada cerita, anda tidak lagi boleh berkongsi atau menonton cerita.";
@@ -6323,7 +6374,10 @@
 "STORY_REPLY_BUTTON" = "Balas";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Telah bereaksi kepada cerita";
+"STORY_REPLY_REACTION" = "Telah menghantar reaksi kepada cerita";
+
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Balas";
@@ -6335,13 +6389,13 @@
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Cerita ini tidak boleh dihantar. Periksa sambungan anda dan cuba lagi";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Cerita ini tidak boleh dihantar ke beberapa orang. Periksa sambungan anda dan cuba lagi.";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Cerita ini tidak boleh dihantar kepada beberapa orang. Periksa sambungan anda dan cuba lagi";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Hanya Kongsi Dengan…";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Hanya Kongsi Dengan….";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Semua Kecuali…";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Semua Kecuali...";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Penghantaran gagal";
@@ -6362,29 +6416,28 @@
 "STORY_SENDING" = "Menghantar...";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Memulakan perbualan";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Menerima permintaan mesej";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Meletakkan mereka dalam sistem kenalan anda";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Hubungan anda boleh melihat nama dan foto anda, dan boleh melihat hantaran anda ke \"Cerita Saya\" kecuali anda menyembunyikannya daripada mereka.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<strong>Hubungan Signal</strong> ialah orang yang anda pilih untuk dipercayai, sama ada dengan:";
 
-/* Section footer for the 'viewers' section on the 'story settings' view
-   Section footer for the 'viewers' section on the 'story settings' view. */
+/* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Pilih Hubungan Signal yang boleh menonton cerita anda. Perubahan tidak akan menjejaskan cerita yang telah anda hantar.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Siapa Boleh Tonton Cerita Ini";
 
-/* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+/* Header for the 'viewers' section on the 'story settings' bottom sheet */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Pilih hubungan Signal mana yang boleh menonton cerita anda. Ini boleh ditukar pada bila-bila masa dalam tetapan privasi.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Video yang dihantar ke Cerita akan dipotong kepada klip %1$ds dan dihantar menjadi beberapa cerita.";
@@ -6658,9 +6711,6 @@
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Kenalan Tidak Diketahui";
-
-/* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Negara Tidak Diketahui";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Salah satu peranti anda menghantar mesej yang tidak dapat diproses atau dipaparkan di sini kerana menggunakan ciri Signal baru.";

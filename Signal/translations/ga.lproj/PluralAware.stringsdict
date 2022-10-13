@@ -514,15 +514,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Private Story · 1 Viewer</string>
+			<string>Scéal Príobháideach · 1 Amharcóir</string>
 			<key>two</key>
-			<string>Private Story · %1$d Viewers</string>
+			<string>Scéal Príobháideach · %1$d Amharcóir</string>
 			<key>few</key>
-			<string>Private Story · %1$d Viewers</string>
+			<string>Scéal Príobháideach · %1$d Amharcóir</string>
 			<key>many</key>
-			<string>Private Story · %1$d Viewers</string>
+			<string>Scéal Príobháideach · %1$d nAmharcóir</string>
 			<key>other</key>
-			<string>Private Story · %1$d Viewers</string>
+			<string>Scéal Príobháideach · %1$d Amharcóir</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -602,15 +602,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Group Story · 1 Viewer</string>
+			<string>Scéal Grúpa · 1 Amharcóir</string>
 			<key>two</key>
-			<string>Group Story · %1$d Viewers</string>
+			<string>Scéal Grúpa · %1$d Amharcóir</string>
 			<key>few</key>
-			<string>Group Story · %1$d Viewers</string>
+			<string>Scéal Grúpa · %1$d Amharcóir</string>
 			<key>many</key>
-			<string>Group Story · %1$d Viewers</string>
+			<string>Scéal Grúpa · %1$d nAmharcóir</string>
 			<key>other</key>
-			<string>Group Story · %1$d Viewers</string>
+			<string>Scéal Grúpa · %1$d Amharcóir</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -1328,15 +1328,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Member</string>
+			<string>%1$d bhall</string>
 			<key>two</key>
-			<string>%1$d Members</string>
+			<string>%1$d bhall</string>
 			<key>few</key>
-			<string>%1$d Members</string>
+			<string>%1$d bhall</string>
 			<key>many</key>
-			<string>%1$d Members</string>
+			<string>%1$d mball</string>
 			<key>other</key>
-			<string>%1$d Members</string>
+			<string>%1$d ball</string>
 		</dict>
 	</dict>
 	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>
@@ -1491,28 +1491,6 @@
 			<string>Revoke Invites</string>
 			<key>other</key>
 			<string>Revoke Invites</string>
-		</dict>
-	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in 1 day.</string>
-			<key>two</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in %1$d days.</string>
-			<key>few</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in %1$d days.</string>
-			<key>many</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in %1$d days.</string>
-			<key>other</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in %1$d days.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>

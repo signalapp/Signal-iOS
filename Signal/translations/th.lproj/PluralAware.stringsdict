@@ -330,7 +330,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>สตอรี่ส่วนตัว · ผู้ชม %1$d</string>
+			<string>สตอรี่ส่วนตัว · ผู้ชม %1$d คน</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -386,7 +386,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>สตอรี่กลุ่ม · ผู้ชม %1$d</string>
+			<string>สตอรี่กลุ่ม · ผู้ชม %1$d คน</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -947,20 +947,6 @@
 			<string>d</string>
 			<key>other</key>
 			<string>เพิกถอนคำเชิญ</string>
-		</dict>
-	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>เราจะเตือนคุณในภายหลัง การสร้างรหัส PIN จำเป็นต้องทำภายใน %1$d วัน</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>

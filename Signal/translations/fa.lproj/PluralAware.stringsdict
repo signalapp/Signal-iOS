@@ -376,7 +376,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>استوری خصوصی · %1$d بازدیدکننده</string>
+			<string>استوری خصوصی · ۱ بازدیدکننده</string>
 			<key>other</key>
 			<string>استوری خصوصی · %1$d بازدید کننده</string>
 		</dict>
@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>تنها با · ۱ بازدیدکننده هم‌رسانی شود</string>
+			<string>همرسانی تنها با · ۱ بازدیدکننده</string>
 			<key>other</key>
-			<string>تنها با . %1$d بازدیدکننده هم‌رسانی شود</string>
+			<string>همرسانی تنها با . %1$d بازدیدکننده</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -440,7 +440,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>استوری گروهی · %1$d بازدید کننده</string>
+			<string>استوری گروهی · ۱ بازدید کننده</string>
 			<key>other</key>
 			<string>استوری گروهی · %1$d بازدید کننده</string>
 		</dict>
@@ -1083,22 +1083,6 @@
 			<string>لغو دعوت</string>
 			<key>other</key>
 			<string>لغو دعوت‌ها</string>
-		</dict>
-	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>در آینده به شما یادآوری خواهیم کرد. ایجاد پین از ۱ روز دیگر الزامی خواهد شد.</string>
-			<key>other</key>
-			<string>در آینده به شما یادآوری خواهیم کرد. ایجاد پین از %1$d روز دیگر الزامی خواهد شد.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>

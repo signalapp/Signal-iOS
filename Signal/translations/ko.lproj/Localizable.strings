@@ -121,7 +121,7 @@
 /* notification body */
 "APN_Message" = "새 메시지가 있을 수 있음";
 
-/* Message for the 'app launch failed' alert. */
+/* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal 시작에 실패했습니다. 문제 해결을 위해 디버그 로그를 support@signal.org로 보내주세요.";
 
 /* Title for the 'app launch failed' alert. */
@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "저장공간 부족";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "이전 기기에서 전송한 데이터를 복원할 수 없습니다. 문제를 해결할 수 있도록 support@signal.org로 디버그 로그를 보내 주세요. Signal을 다시 설치하면 메시지 기록이 손실될 수 있습니다.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "이전 기기에서 전송한 데이터를 복구할 수 없습니다. 문제를 해결할 수 있도록 support@signal.org로 디버그 로그를 보내 주세요. Signal을 다시 설치하면 메시지 기록이 손실될 수 있습니다.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "전송을 완료할 수 없음";
@@ -780,6 +780,9 @@
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal 사용자";
+
+/* The generic name used for group calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "사진을 찍은 후 전송하세요";
@@ -1471,6 +1474,54 @@
 /* Title for alert before running a database integrity check */
 "DATABASE_INTEGRITY_CHECK_TITLE" = "데이터베이스 진단 검사를 실행할까요?";
 
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "내 메시지 기록 중 일부가 손상됐을 수 있습니다. 계정이나 메시지 보안에는 영향이 없습니다. '계속'을 탭하여 데이터를 복구하세요.";
+
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "데이터를 가져오는 데 문제가 발생함";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "무시하고 계속";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "데이터 복구를 완료하려면 기기에 저장공간이 %1$@ 이상 있어야 합니다.";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "저장공간 부족";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "메시지 기록을 복구할 수 없습니다. Signal을 다시 설치하고 계속 사용할 수 있습니다. 어디에 문제가 있었는지 확인할 수 있도록 디버그 로그를 제출해 주세요.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Signal 초기화";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "초기화";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "내 계정 정보와 프로필, 모든 메시지를 삭제합니다. 이 프로세스를 완료하면 앱을 종료합니다.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Signal 초기화";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "디버그 로그 보내기";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "데이터를 복구하지 못함";
+
+/* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "복구 프로세스 중 앱을 종료하지 마세요. 몇 분 정도가 걸릴 수 있습니다.";
+
+/* On the database recovery screen, this is the title shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "데이터 복구 중";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "복구에 성공했으나 일부 메시지를 복구하지 못했을 수 있습니다.";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "데이터를 복구함";
+
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "몇 분 정도 소요됩니다.";
 
@@ -1592,7 +1643,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "계정과 메시지를 이동하지 않고 계속합니다";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "메시지 기록을 이동하지 않고 iPad를 새로 연결합니다";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "메시지 기록을 이동하지 않고 이 iPad를 새 연결된 기기로 추가합니다.";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "새 기기로 추가";
@@ -2782,11 +2833,11 @@
 /* Button to delete the story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "그룹 스토리 삭제";
 
-/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "이 스토리를 삭제할까요?";
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "'%1$@' 그룹 채팅 멤버는 이 스토리를 보고 답장할 수 있습니다. 그룹에서 이 채팅에 대한 멤버십을 업데이트할 수 있습니다.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "'%1$@' 그룹 채팅 멤버는 이 스토리를 보고 여기에 답장할 수 있습니다. 그룹에서 이 채팅에 대한 멤버십을 업데이트할 수 있습니다.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "이 스토리를 볼 수 있는 사람";
@@ -2939,7 +2990,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "현재 모든 그룹 멤버가 새 그룹에 가입할 수 있는 Signal 버전을 사용하면 그룹이 업그레이드됩니다.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "모든 메시지 기록 및 미디어는 업그레이드 전에 보관됩니다.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "모든 업그레이드 전의 메시지 기록과 미디어를 보관합니다.";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "이 그룹은 구형 그룹입니다. 그룹 관리자 같은 기능들은 새로운 그룹에서만 이용할 수 있습니다. %1$@";
@@ -2963,7 +3014,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "새 그룹이 무엇인가요?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "모든 메시지 기록 및 미디어는 업그레이드 전에 보관되었습니다.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "모든 업그레이드 전의 메시지 기록과 미디어를 보관했습니다.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "새 그룹에는 @멘션 및 그룹 관리자와 같은 기능이 있으며 향후 더 많은 기능을 지원할 예정입니다.";
@@ -2990,7 +3041,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "이 멤버들은 업그레이드 시 자동으로 새 그룹에 추가될 수 없었습니다.";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "모든 메시지 기록 및 미디어는 업그레이드 전에 보관되었습니다.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "모든 업그레이드 전의 메시지 기록과 미디어를 보관했습니다.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "이 멤버는 그룹에서 제거되었으며 업그레이드할 때까지 그룹에 다시 참여할 수 없습니다.";
@@ -4688,7 +4739,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "비공개 스토리 삭제";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "'%1$@'을(를) 삭제할까요? 이 스토리에 공유한 업데이트도 삭제합니다.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "삭제";
@@ -5102,7 +5153,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "연결 코드 가져오기 실패";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "이 장치를 다른 계정에 연결하려면 먼저 장치를 재설정해야 합니다. 모든 기록(메시지, 첨부 파일, 통화 등)을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "이 장치를 다른 계정에 연결하려면 먼저 장치를 재설정해야 합니다. 모든 기록(메시지, 첨부 파일, 통화 등)을 삭제하시겠어요? 이 작업은 되돌릴 수 없습니다.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "모두 삭제";
@@ -5411,7 +5462,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "모든 데이터 삭제";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "모든 기록(첨부 파일, 전화 등)을 삭제하시겠습니까? 되돌릴 수 없습니다.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "모든 기록(첨부 파일, 전화 등)을 삭제하시겠어요? 이 작업은 되돌릴 수 없습니다.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "모두 삭제";
@@ -6194,7 +6245,7 @@
 "STORIES_HIDE_STORY_ACTION" = "스토리 숨기기";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
-"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "%1$@ 님의 새 스토리 업데이트가 더는 스토리 목록 상단에 표시되지 않습니다.";
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "%1$@ 님의 새 스토리 업데이트가 더 이상 스토리 목록 상단에 표시되지 않습니다.";
 
 /* Title asking the user if they are sure they want to hide stories from another user */
 "STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "스토리를 숨길까요?";
@@ -6218,7 +6269,7 @@
 "STORIES_NO_VIEWS_YET" = "아직 아무도 조회 안 함";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "내 스토리를 볼 수 있는 사람들에게 반응과 답장을 받아보세요.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "내 스토리를 볼 수 있는 사람들의 반응과 답장 허용";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "답장 및 반응";
@@ -6242,13 +6293,13 @@
 "STORIES_SETTINGS_MY_STORIES_HEADER" = "내 스토리";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "스토리 개인정보";
+"STORIES_SETTINGS_TITLE" = "스토리 개인정보보호";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "더 이상 스토리를 공유하거나 볼 수 없습니다. 최근 공유한 스토리 업데이트도 삭제합니다.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "스토리 끄기 및 삭제";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "스토리 기능을 끄면 더 이상 스토리를 보거나 공유할 수 없습니다.";
@@ -6290,7 +6341,7 @@
 "STORY_COMPOSER_LINK_PREVIEW_ERROR" = "링크를 로드할 수 없습니다. 연결을 확인하고 다시 시도하세요.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "내 스토리를 볼 수 있도록 링크 공유";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "내 스토리를 볼 수 있는 사람과 링크 공유";
 
 /* Placeholder text in text stories compose UI */
 "STORY_COMPOSER_TAP_ADD_TEXT" = "탭하여 텍스트 추가";
@@ -6324,6 +6375,9 @@
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "스토리에 반응함";
+
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "답장";
@@ -6362,29 +6416,28 @@
 "STORY_SENDING" = "보내는 중…";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "대화 시작";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "메시지 요청 수락";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "시스템 연락처에 포함";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "내 커넥션은 내 이름과 사진을 볼 수 있으며, 따로 숨기지 않는 한 '내 스토리'에 전송하는 스토리를 볼 수 있습니다.";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal 커넥션</bold>은 다음과 같은 방법을 통해 내가 신뢰하는 사용자로 선택한 사람들입니다.";
 
-/* Section footer for the 'viewers' section on the 'story settings' view
-   Section footer for the 'viewers' section on the 'story settings' view. */
+/* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "내 스토리를 볼 수 있는 Signal 커넥션을 선택하세요. 이미 보낸 스토리에는 변경 내용이 적용되지 않습니다.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "이 스토리를 볼 수 있는 사람";
 
-/* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+/* Header for the 'viewers' section on the 'story settings' bottom sheet */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "내 스토리를 볼 수 있는 Signal 커넥션을 선택하세요. 개인정보보호 설정에서 언제든지 변경할 수 있습니다.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "스토리에 보낸 동영상이 %1$d초 클립으로 편집되어 여러 개의 스토리로 전송됩니다.";
@@ -6658,9 +6711,6 @@
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "알 수 없는 연락처";
-
-/* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "알 수 없는 국가";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "내 기기 중 하나에서 새 Signal 기능을 사용한 메시지를 보냈기에 여기에서는 처리되거나 표시할 수 없습니다.";

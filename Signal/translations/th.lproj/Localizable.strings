@@ -121,7 +121,7 @@
 /* notification body */
 "APN_Message" = "คุณอาจมีข้อความใหม่";
 
-/* Message for the 'app launch failed' alert. */
+/* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "ไม่สามารถเปิด Signal ได้ กรุณาส่งปูมดีบักไปที่ support@signal.org เพื่อที่เราจะสามารถแก้ปัญหานี้ได้";
 
 /* Title for the 'app launch failed' alert. */
@@ -152,7 +152,7 @@
 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "พื้นที่จัดเก็บน้อยมาก";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "ข้อมูลที่ถูกถ่ายโอนจากอุปกรณ์เครื่องเก่าของคุณจะไม่สามารถกู้คืนได้ กรุณาส่งปูมดีบักไปที่ support@signal.org เพื่อที่เราจะสามารถแก้ปัญหานี้ได้ ถ้าคุณติดตั้ง Signal ใหม่อีกครั้ง ข้อความเก่าของคุณอาจจะหายไป";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "ข้อมูลที่ถูกถ่ายโอนจากอุปกรณ์เครื่องเก่าของคุณจะไม่สามารถกู้คืนได้ กรุณาส่งบันทึกการดีบักไปที่ support@signal.org เพื่อให้เราแก้ไขปัญหานี้ หากคุณติดตั้ง Signal ใหม่อีกครั้ง ประวัติการส่งข้อความของคุณอาจจะหายไป";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "ไม่สามารถถ่ายโอนจนเสร็จ";
@@ -780,6 +780,9 @@
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "ผู้ใช้ Signal";
+
+/* The generic name used for group calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "ถ่ายรูปและส่งรูป";
@@ -1471,6 +1474,54 @@
 /* Title for alert before running a database integrity check */
 "DATABASE_INTEGRITY_CHECK_TITLE" = "ดำเนินการตรวจสอบฐานข้อมูลหรือไม่";
 
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "ประวัติการส่งข้อความบางส่วนของคุณอาจได้รับความเสียหาย ไม่พบผลกระทบต่อความปลอดภัยในบัญชีหรือข้อความของคุณ แตะ “ดำเนินการต่อ” เพื่อกู้คืนข้อมูล";
+
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "พบปัญหาในการดึงข้อมูล";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "ยืนยันที่จะดำเนินการต่อ";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "เราขอแนะนำให้อุปกรณ์มีพื้นที่จัดเก็บเหลืออย่างน้อย %1$@ เพื่อการกู้คืนข้อมูลที่สมบูรณ์";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "ต้องการพื้นที่จัดเก็บเพิ่ม";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "ไม่สามารถกู้คืนประวัติการส่งข้อความของคุณได้ หลังจากติดตั้ง Signal อีกครั้งแล้ว คุณจะสามารถใช้งานแอปได้ตามปกติ ส่งบันทึกดีบักเพื่อให้เราได้ศึกษาและตรวจสอบข้อผิดพลาดนี้";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "รีเซ็ต Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "รีเซ็ต";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "ข้อมูลบัญชี โปรไฟล์ และข้อความทั้งหมดของคุณจะถูกล้าง แอปจะปิดหลังขั้นตอนนี้เสร็จสิ้น";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "รีเซ็ต Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "ส่งบันทึกดีบัก";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "ไม่สามารถกู้คืนข้อมูลได้";
+
+/* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "โปรดเปิดแอปไว้ระหว่างที่กำลังดำเนินการกู้คืน ขั้นตอนนี้อาจใช้เวลาสักครู่";
+
+/* On the database recovery screen, this is the title shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "กำลังกู้คืนข้อมูล";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "กู้คืนสำเร็จ แต่บางข้อความอาจไม่ได้รับการกู้คืน";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "กู้คืนข้อมูลสำเร็จ";
+
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "นี่อาจใช้เวลาสองสามนาที";
 
@@ -1592,7 +1643,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "ทำต่อโดยไม่ถ่ายโอนบัญชีและข้อความของคุณ";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "เพิ่ม iPad เครื่องนี้เป็นอุปกรณ์เชื่อมโยงเครื่องใหม่โดยไม่ถ่ายโอนข้อความเก่า";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "เพิ่ม iPad เครื่องนี้เป็นอุปกรณ์เชื่อมโยงเครื่องใหม่โดยไม่ถ่ายโอนประวัติการส่งข้อความ";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "เพิ่มเป็นอุปกรณ์ใหม่";
@@ -1604,10 +1655,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "ถ่ายโอนบัญชีและข้อความ";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "ถ่ายโอนบัญชีและข้อความเก่าของคุณจากอุปกรณ์ iOS เครื่องเก่าของคุณ";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "ถ่ายโอนบัญชีและประวัติการส่งข้อความจากอุปกรณ์ iOS เครื่องเก่าของคุณ";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "โอนย้ายบัญชีและข้อความเก่าของคุณจาก iPad เครื่องเก่าของคุณ";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "ถ่ายโอนบัญชีและประวัติการส่งข้อความจาก iPad เครื่องเก่าของคุณ";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "ถ่ายโอนจากไอแพดอีกเครื่อง";
@@ -2782,8 +2833,8 @@
 /* Button to delete the story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "ลบสตอรี่กลุ่ม";
 
-/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "คุณแน่ใจหรือไม่ว่าต้องการลบสตอรี่นี้";
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "สมาชิกในกลุ่มแชท “%1$@” จะดูและตอบกลับสตอรี่นี้ได้ คุณสามารถอัปเดตการเป็นสมาชิกของแชทนี้ได้ภายในกลุ่ม";
@@ -2939,7 +2990,7 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "เมื่อสมาชิกปัจจุบันของกลุ่มทุกคนได้ใช้ Signal รุ่นที่สามารถเข้าร่วมกลุ่มแบบใหม่ได้ กลุ่มนี้จะถูกปรับรุ่น";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "ประวัติข้อความและสื่อทั้งหมดจะถูกรักษาไว้ก่อนการปรับรุ่น";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "ประวัติการส่งข้อความและสื่อทั้งหมดจะได้รับการบันทึกไว้ก่อนการอัปเกรด";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
 "GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "นี่คือกลุ่มแบบเก่า ความสามารถเช่น ระบบผู้ดูแลกลุ่ม จะใช้ได้เฉพาะในกลุ่มแบบใหม่ %1$@";
@@ -2963,7 +3014,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "อะไรคือกลุ่มแบบใหม่?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "ประวัติข้อความและสื่อทั้งหมดได้ถูกรักษาไว้ก่อนการปรับรุ่น";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "ประวัติการส่งข้อความและสื่อทั้งหมดได้ถูกบันทึกไว้ก่อนการอัปเกรด";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "กลุ่มแบบใหม่มีความสามารถเช่นการ @กล่าวถึง และระบบผู้ดูแลกลุ่ม และจะมีความสามารถเพิ่มเติมในอนาคต";
@@ -2990,7 +3041,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "สมาชิกเหล่านี้ไม่สามารถถูกเพิ่มไปยังกลุ่มแบบใหม่ได้โดยอัตโนมัติเมื่อมีการปรับรุ่น:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "ประวัติข้อความและสื่อทั้งหมดได้ถูกรักษาไว้ก่อนการปรับรุ่น";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "ประวัติการส่งข้อความและสื่อทั้งหมดได้ถูกบันทึกไว้ก่อนการอัปเกรด";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "สมาชิกรายนี้ถูกลบออกจากกลุ่ม และจะไม่สามารถเข้าร่วมกลุ่มได้อีกจนกว่าเธอจะปรับรุ่น:";
@@ -4688,7 +4739,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "ลบสตอรี่ส่วนตัว";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "คุณแน่ใจหรือไม่ว่าต้องการลบ “%1$@” การอัปเดตต่างๆ ที่แชร์ในสตอรี่นี้จะถูกลบด้วยเช่นกัน";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "ลบ";
@@ -4820,10 +4871,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "ไม่พบข้อความต้นฉบับ";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "ตอบสนองกับสตอรี่ของคุณ";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "แสดงความรู้สึกต่อสตอรี่ของคุณ";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "ตอบสนองกับสตอรี่ของ %1$@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "แสดงความรู้สึกต่อสตอรี่ของ %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · สตอรี่";
@@ -5102,7 +5153,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "ไม่สามารถนำเข้ารหัสเชื่อมโยงได้";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "เพื่อเชื่อมโยงอุปกรณ์นี้กับบัญชีอื่น คุณต้องรีเซ็ตอุปกรณ์นี้ก่อน คุณแน่ใจว่าต้องการลบประวัติ (ข้อความ แฟ้มแนบ การโทร ฯลฯ) ทั้งหมดหรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "หากต้องการเชื่อมโยงอุปกรณ์นี้กับบัญชีอื่น คุณต้องรีเซ็ตอุปกรณ์นี้ก่อน คุณแน่ใจหรือไม่ว่าต้องการลบประวัติทั้งหมด (ข้อความ ไฟล์แนบ การโทร ฯลฯ) การดำเนินการนี้ไม่สามารถย้อนกลับได้";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "ลบทั้งหมด";
@@ -5354,7 +5405,7 @@
 "SETTINGS_CHATS" = "การสนทนา";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "ล้างประวัติการสนทนา";
+"SETTINGS_CLEAR_HISTORY" = "ล้างประวัติแชท";
 
 /* Footer for the 'about' help section */
 "SETTINGS_COPYRIGHT" = "ลิขสิทธิ์ Signal Messenger \n เผยแพร่ภายใต้สัญญาอนุญาต GPLv3";
@@ -5411,7 +5462,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "ลบข้อมูลทั้งหมด";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "คุณแน่ใจหรือไม่ว่าคุณต้องการลบประวัติทั้งหมด (ข้อความ แฟ้มแนบ การโทร ฯลฯ)? การกระทำนี้จะไม่สามารถย้อนกลับได้";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "คุณแน่ใจหรือไม่ว่าต้องการลบประวัติทั้งหมด (ข้อความ ไฟล์แนบ การโทร ฯลฯ) การดำเนินการนี้ไม่สามารถย้อนกลับได้";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "ลบทั้งหมด";
@@ -6209,7 +6260,7 @@
 "STORIES_INFO_ACTION" = "ข้อมูล";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "ไม่มีอัปเดตแสดงในตอนนี้ \nแตะ + เพื่อเพิ่มสตอรี่ของคุณ";
+"STORIES_NO_RECENT_MESSAGES" = "ไม่มีอัปเดตแสดงในตอนนี้\nแตะ + เพื่อเพิ่มสตอรี่ของคุณ";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "ยังไม่มีการตอบกลับ";
@@ -6245,10 +6296,10 @@
 "STORIES_SETTINGS_TITLE" = "ความเป็นส่วนตัวของสตอรี่";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "คุณจะไม่สามารถแชร์หรือดูสตอรี่ได้อีกต่อไป การอัปเดตสตอรี่ที่คุณเพิ่งแชร์จะถูกลบด้วยเช่นกัน";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "ปิดใช้งานและลบสตอรี่";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "หากปิดใช้งานสตอรี่ คุณจะไม่สามารถแชร์หรือดูสตอรี่ได้อีกต่อไป";
@@ -6323,7 +6374,10 @@
 "STORY_REPLY_BUTTON" = "ตอบกลับ";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "โต้ตอบสตอรี่ของคุณ";
+"STORY_REPLY_REACTION" = "แสดงความรู้สึกต่อสตอรี่";
+
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "ตอบกลับ";
@@ -6362,29 +6416,28 @@
 "STORY_SENDING" = "กำลังส่ง…";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "เริ่มต้นการสนทนา";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "รับคำขอส่งข้อความ";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "มีรายชื่ออยู่ในระบบผู้ติดต่อของคุณ";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "เครือข่ายของคุณจะเห็นชื่อและรูปภาพของคุณ รวมถึงโพสต์ที่คุณส่งใน “สตอรี่ของฉัน” เว้นแต่ว่าคุณจะซ่อนสตอรี่นั้นจากพวกเขา";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>เครือข่าย Signal</bold> คือคนที่คุณเลือกที่จะไว้ใจ ด้วยการ:";
 
-/* Section footer for the 'viewers' section on the 'story settings' view
-   Section footer for the 'viewers' section on the 'story settings' view. */
+/* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "เลือกว่าจะให้เครือข่าย Signal คนไหนเห็นสตอรี่ของคุณบ้าง การเปลี่ยนแปลงจะไม่ส่งผลต่อสตอรี่ที่ส่งไปแล้ว";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "ใครเห็นสตอรี่นี้บ้าง";
 
-/* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+/* Header for the 'viewers' section on the 'story settings' bottom sheet */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "เลือกว่าจะให้เครือข่าย Signal คนไหนเห็นสตอรี่ของคุณบ้าง คุณสามารถเปลี่ยนแปลงตัวเลือกนี้ได้ทุกเมื่อในการตั้งค่าความเป็นส่วนตัว";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "วิดีโอที่ส่งเป็นสตอรี่จะถูกตัดเป็นคลิปยาว %1$d วินาที และส่งเป็นสตอรี่หลายสตอรี่";
@@ -6658,9 +6711,6 @@
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "ผู้ติดต่อที่ไม่รู้จัก";
-
-/* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "ประเทศที่ไม่รู้จัก";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "หนึ่งในอุปกรณ์ของคุณได้ส่งข้อความที่ไม่สามารถประมวลผลหรือแสดงผลได้ เพราะมันใช้ความสามารถของ Signal รุ่นใหม่";
