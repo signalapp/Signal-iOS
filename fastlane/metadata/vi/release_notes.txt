@@ -1,1 +1,3 @@
-• We made a handful of bug fixes to keep your app running smoothly. More exciting changes on the horizon!
+• Group calls now notify you by ringing
+• Faster photo picker for iOS 16
+• Other assorted bug fixes to keep your app running smoothly
