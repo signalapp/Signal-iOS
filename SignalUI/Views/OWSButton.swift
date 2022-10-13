@@ -12,14 +12,12 @@ public class OWSButton: UIButton {
     @objc
     public var block: () -> Void = { }
 
-    @objc
-    public var dimsWhenHighlighted = false
+    public var dimsWhenHighlighted = false {
+        didSet { updateAlpha() }
+    }
 
     public override var isHighlighted: Bool {
-        didSet {
-            guard dimsWhenHighlighted else { return }
-            alpha = isHighlighted ? 0.4 : 1
-        }
+        didSet { updateAlpha() }
     }
 
     // MARK: -
@@ -119,5 +117,10 @@ public class OWSButton: UIButton {
     @objc
     func didTap() {
         block()
+    }
+
+    private func updateAlpha() {
+        let isDimmed = dimsWhenHighlighted && isHighlighted
+        alpha = isDimmed ? 0.4 : 1
     }
 }
