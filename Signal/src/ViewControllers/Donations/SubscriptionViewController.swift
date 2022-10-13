@@ -707,7 +707,7 @@ class SubscriptionViewController: OWSTableViewController2 {
     }
 
     func presentReadMoreSheet() {
-        let readMoreSheet = SubscriptionReadMoreSheet()
+        let readMoreSheet = DonationReadMoreSheetViewController()
         self.present(readMoreSheet, animated: true)
     }
 }

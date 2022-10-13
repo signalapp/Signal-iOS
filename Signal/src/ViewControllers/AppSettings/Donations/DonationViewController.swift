@@ -624,7 +624,7 @@ extension DonationViewController: BadgeConfigurationDelegate {
 extension DonationViewController: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         if textView == descriptionTextView {
-            let readMoreSheet = SubscriptionReadMoreSheet()
+            let readMoreSheet = DonationReadMoreSheetViewController()
             self.present(readMoreSheet, animated: true)
         } else if textView == statusLabel {
             let currentSubscription: Subscription?

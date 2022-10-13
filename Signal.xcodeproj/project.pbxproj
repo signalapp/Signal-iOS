@@ -1137,6 +1137,7 @@
 		F908AA7D28CE629700472E68 /* test-apng.png in Resources */ = {isa = PBXBuildFile; fileRef = F908AA7C28CE629700472E68 /* test-apng.png */; };
 		F908AA8028CE7F8D00472E68 /* TSGroupThreadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */; };
 		F92074762888648A00B7F087 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92074752888648A00B7F087 /* AppDelegate.swift */; };
+		F924A68228F8706200E368C8 /* DonationReadMoreSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F924A68128F8706200E368C8 /* DonationReadMoreSheetViewController.swift */; };
 		F9262C46289462F600063502 /* SignalServiceKit-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = F9C985D2289459860029F9AD /* SignalServiceKit-Prefix.pch */; };
 		F927478828CFE9B10056EAFE /* test-png.png in Resources */ = {isa = PBXBuildFile; fileRef = F927478728CFE9B10056EAFE /* test-png.png */; };
 		F927478A28CFE9C60056EAFE /* test-png-with-metadata.png in Resources */ = {isa = PBXBuildFile; fileRef = F927478928CFE9C60056EAFE /* test-png-with-metadata.png */; };
@@ -3470,6 +3471,7 @@
 		F908AA7C28CE629700472E68 /* test-apng.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-apng.png"; sourceTree = "<group>"; };
 		F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSGroupThreadTest.swift; sourceTree = "<group>"; };
 		F92074752888648A00B7F087 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		F924A68128F8706200E368C8 /* DonationReadMoreSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReadMoreSheetViewController.swift; sourceTree = "<group>"; };
 		F927478728CFE9B10056EAFE /* test-png.png */ = {isa = PBXFileReference; explicitFileType = compiled; path = "test-png.png"; sourceTree = "<group>"; };
 		F927478928CFE9C60056EAFE /* test-png-with-metadata.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-png-with-metadata.png"; sourceTree = "<group>"; };
 		F93999EB28C80A6C00E34899 /* OWSDeviceProvisioningURLParserTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceProvisioningURLParserTest.swift; sourceTree = "<group>"; };
@@ -5476,6 +5478,7 @@
 				3448BFC01EDF0EA7005B2D69 /* ConversationView */,
 				34D8C0221ED3673300188D7C /* DebugUI */,
 				88A4CC13246CE41E0082211F /* Device Transfer */,
+				F924A68028F8703400E368C8 /* Donations */,
 				34BECE2C1F7ABCE000D7438D /* GifPicker */,
 				34386A4C207D0C01009F5D9C /* HomeView */,
 				4C4F360E2284516F00A8DF48 /* MediaGallery */,
@@ -6858,6 +6861,22 @@
 			path = Fixtures;
 			sourceTree = "<group>";
 		};
+		F924A68028F8703400E368C8 /* Donations */ = {
+			isa = PBXGroup;
+			children = (
+				881BB2892743531D00B609B8 /* BadgeDetailsSheet.swift */,
+				F02564D7274EDF4600D7B48A /* BadgeExpirationSheet.swift */,
+				500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */,
+				F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */,
+				8880179327430DDB00346E9A /* BadgeThanksSheet.swift */,
+				888017912741F33B00346E9A /* BoostViewController.swift */,
+				F924A68128F8706200E368C8 /* DonationReadMoreSheetViewController.swift */,
+				F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */,
+				F0CA67F92728A89A002B9DFE /* SubscriptionViewController.swift */,
+			);
+			path = Donations;
+			sourceTree = "<group>";
+		};
 		F94261C7289B1B5300460798 /* Devices */ = {
 			isa = PBXGroup;
 			children = (
@@ -7122,20 +7141,12 @@
 			isa = PBXGroup;
 			children = (
 				F941B16F28412D5F00498CCD /* ApplePayButton.swift */,
-				881BB2892743531D00B609B8 /* BadgeDetailsSheet.swift */,
-				F02564D7274EDF4600D7B48A /* BadgeExpirationSheet.swift */,
-				500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */,
 				F9D83011282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift */,
 				F9A335CB282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift */,
 				F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */,
-				F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */,
-				8880179327430DDB00346E9A /* BadgeThanksSheet.swift */,
-				888017912741F33B00346E9A /* BoostViewController.swift */,
 				F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */,
 				F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */,
 				F9A8ACC6280A175E00AFC6A7 /* DonationViewController.swift */,
-				F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */,
-				F0CA67F92728A89A002B9DFE /* SubscriptionViewController.swift */,
 			);
 			path = Donations;
 			sourceTree = "<group>";
@@ -10174,6 +10185,7 @@
 				34A95501271B503E00B05242 /* DisplayableText.swift in Sources */,
 				340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */,
 				14DB56A62829310B00E01AC9 /* DonationMegaphone.swift in Sources */,
+				F924A68228F8706200E368C8 /* DonationReadMoreSheetViewController.swift in Sources */,
 				F9066F0727ECE41B008C9530 /* DonationReceiptsViewController.swift in Sources */,
 				F900F2DD27F25AB400431E09 /* DonationReceiptViewController.swift in Sources */,
 				F9A8ACC7280A175E00AFC6A7 /* DonationViewController.swift in Sources */,
