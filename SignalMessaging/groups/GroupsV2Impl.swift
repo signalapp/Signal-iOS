@@ -39,8 +39,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
         }
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            self.mergeUserProfiles()
-
             Self.enqueueRestoreGroupPass()
         }
 
@@ -97,23 +95,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             }
         }
         return true
-    }
-
-    // This will only be used for internal builds.
-    private func mergeUserProfiles() {
-        guard DebugFlags.shouldMergeUserProfiles else {
-            return
-        }
-
-        databaseStorage.asyncWrite { transaction in
-            SignalRecipient.anyEnumerate(transaction: transaction) { (recipient, _) in
-                let address = recipient.address
-                guard address.uuid != nil, address.phoneNumber != nil else {
-                    return
-                }
-                OWSUserProfile.mergeUserProfilesIfNecessary(for: address, transaction: transaction)
-            }
-        }
     }
 
     // MARK: - Notifications

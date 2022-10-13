@@ -323,9 +323,6 @@ public class DebugFlags: BaseFlags {
     public static let verboseSignalRecipientLogging = build.includes(.qa)
 
     @objc
-    public static let shouldMergeUserProfiles = build.includes(.qa)
-
-    @objc
     public static let deviceTransferVerboseProgressLogging = build.includes(.qa)
 
     @objc
