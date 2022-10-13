@@ -366,3 +366,10 @@ public class ColorPickerBarView: UIView {
         return gradientView.renderAsImage(opaque: true, scale: UIScreen.main.scale)
     }
 }
+
+public extension UIColor {
+
+    func isCloseToColor(_ color: UIColor) -> Bool {
+        return isEqualToColor(color, tolerance: 0.1)
+    }
+}

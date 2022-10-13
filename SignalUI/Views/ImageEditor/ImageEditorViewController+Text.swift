@@ -95,31 +95,12 @@ extension ImageEditorViewController {
      * This method needs to be called when text item editing is about to begin.
      */
     private func updateTextViewAttributes(using textItem: ImageEditorTextItem) {
-        let textForegroundColor: UIColor = {
-            switch textItem.decorationStyle {
-            case .none: return textItem.color.color
-            default: return .white
-            }
-        }()
-        let textDecorationColor: UIColor? = {
-            switch textItem.decorationStyle {
-            case .none, .inverted: return nil
-            default: return textItem.color.color
-            }
-        }()
-        textView.updateWith(textForegroundColor: textForegroundColor,
+        textView.updateWith(textForegroundColor: textItem.textForegroundColor,
                             font: textItem.font,
                             textAlignment: .center,
-                            textDecorationColor: textDecorationColor,
+                            textDecorationColor: textItem.textDecorationColor,
                             decorationStyle: textItem.decorationStyle)
-
-        let textBackgroundColor: UIColor = {
-            switch textItem.decorationStyle {
-            case .inverted: return textItem.color.color
-            default: return .clear
-            }
-        }()
-        textViewBackgroundView.backgroundColor = textBackgroundColor
+        textViewBackgroundView.backgroundColor = textItem.textBackgroundColor
     }
 
     // Update UITextView to use style (font, color, decoration) as selected in provided TextToolbar.

@@ -7,10 +7,11 @@ import UIKit
 public class MediaTextView: UITextView {
 
     public enum DecorationStyle: String, CaseIterable {
-        case none
-        case inverted
-        case underline
-        case outline
+        case none                   // colored text, no background
+        case whiteBackground        // colored text, white background
+        case coloredBackground      // white text, colored background
+        case underline              // white text, colored underline
+        case outline                // white text, colored outline
     }
 
     // Resource names are derived from these values. Do not change without consideration.
@@ -183,19 +184,31 @@ public class TextStylingToolbar: UIControl {
 
     public var textForegroundColor: UIColor {
         switch decorationStyle {
-        case .none: return colorPickerView.color
-        case .inverted, .outline, .underline: return .white
+        case .none, .whiteBackground: return colorPickerView.color
+
+        case .coloredBackground:
+            // Switch text color to black if background is almost white.
+            let backgroundColor = colorPickerView.color
+            return backgroundColor.isCloseToColor(.white) ? .black : .white
+
+        case .outline, .underline: return .white
         }
     }
     public var textBackgroundColor: UIColor? {
         switch decorationStyle {
         case .none, .underline, .outline: return nil
-        case .inverted: return colorPickerView.color
+
+        case .whiteBackground:
+            // Switch background color to black if text color is almost white.
+            let textColor = colorPickerView.color
+            return textColor.isCloseToColor(.white) ? .black : .white
+
+        case .coloredBackground: return colorPickerView.color
         }
     }
     public var textDecorationColor: UIColor? {
         switch decorationStyle {
-        case .none, .inverted: return nil
+        case .none, .whiteBackground, .coloredBackground: return nil
         case .outline, .underline: return colorPickerView.color
         }
     }
@@ -204,15 +217,6 @@ public class TextStylingToolbar: UIControl {
     public var decorationStyle: MediaTextView.DecorationStyle = .none {
         didSet {
             decorationStyleButton.isSelected = (decorationStyle != .none)
-            // Change default decoration style away from white to avoid white on white situation.
-            if decorationStyle != .none && colorPickerView.selectedValue == .white {
-                colorPickerView.selectedValue = .black
-            }
-            // Switch color picker color back to white because it now controls text color.
-            // The idea is that cycling through decoration styles should keep text white.
-            if decorationStyle == .none && colorPickerView.selectedValue == .black {
-                colorPickerView.selectedValue = .white
-            }
         }
     }
 

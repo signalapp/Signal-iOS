@@ -1586,10 +1586,12 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
     private func didTapDecorationStyleButton() {
         Logger.verbose("")
 
-        // Switch between colored text with no background and white text over colored background.
-        let currentDecorationStyle = textViewAccessoryToolbar.decorationStyle
-        let nextDecorationStyle: MediaTextView.DecorationStyle = currentDecorationStyle == .none ? .inverted : .none
-        textViewAccessoryToolbar.decorationStyle = nextDecorationStyle
+        // "Underline" and "Outline" are not available in text story composer.
+        var decorationStyle = textViewAccessoryToolbar.decorationStyle.next()
+        if decorationStyle == .outline || decorationStyle == .underline {
+            decorationStyle = .none
+        }
+        textViewAccessoryToolbar.decorationStyle = decorationStyle
 
         // `textViewAccessoryToolbar` defines both foreground and background color for text based on the decoration style.
         let textForegroundColor = textViewAccessoryToolbar.textForegroundColor
