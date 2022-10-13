@@ -1250,6 +1250,7 @@
 		F9844C492867936400B16DD4 /* SignalMeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9844C482867936400B16DD4 /* SignalMeTest.swift */; };
 		F988DC13289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */; };
 		F98EA265286A469100791EB4 /* SendGiftBadgeJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */; };
+		F992ACC428F8C9D900906038 /* StripeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F992ACC328F8C9D900906038 /* StripeTest.swift */; };
 		F9A042C6289C7468007D08B6 /* TSInfoMessage+UpdateMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A042C5289C7468007D08B6 /* TSInfoMessage+UpdateMessages.swift */; };
 		F9A042C8289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A042C7289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift */; };
 		F9A335CA282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A335C9282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift */; };
@@ -3582,6 +3583,7 @@
 		F9844C482867936400B16DD4 /* SignalMeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMeTest.swift; sourceTree = "<group>"; };
 		F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingReactionMessageTest.swift; sourceTree = "<group>"; };
 		F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendGiftBadgeJobQueue.swift; sourceTree = "<group>"; };
+		F992ACC328F8C9D900906038 /* StripeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StripeTest.swift; sourceTree = "<group>"; };
 		F9A042C5289C7468007D08B6 /* TSInfoMessage+UpdateMessages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+UpdateMessages.swift"; sourceTree = "<group>"; };
 		F9A042C7289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupManager+GroupUpdateInfoMessages.swift"; sourceTree = "<group>"; };
 		F9A335C9282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingChooseBadgeViewControllerStateTest.swift; sourceTree = "<group>"; };
@@ -8275,6 +8277,7 @@
 			isa = PBXGroup;
 			children = (
 				F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */,
+				F992ACC328F8C9D900906038 /* StripeTest.swift */,
 			);
 			path = test;
 			sourceTree = "<group>";
@@ -10526,6 +10529,7 @@
 				4C3EF802210918740007EBF7 /* SSKProtoEnvelopeTest.swift in Sources */,
 				8803FF6628EF89B50023574A /* StorySharingTests.swift in Sources */,
 				452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */,
+				F992ACC428F8C9D900906038 /* StripeTest.swift in Sources */,
 				E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */,
 				45A3579827DAAC6A0051CE8B /* UserProfileTest.swift in Sources */,
 				B660F6E01C29868000687D6E /* UtilTest.m in Sources */,
