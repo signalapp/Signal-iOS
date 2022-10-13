@@ -1,8 +1,7 @@
-/**
- * Copyright (C) 2014-2022 Open Whisper Systems
- *
- * Licensed according to the LICENSE file in this repository.
- */
+//
+// Copyright 2014 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+//
 
 // iOS - since we use a modern proto-compiler, we must specify
 // the legacy proto format.

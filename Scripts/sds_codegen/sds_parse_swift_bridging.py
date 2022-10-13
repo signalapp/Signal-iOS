@@ -145,9 +145,9 @@ def generate_swift_bridging_header(namespace, swift_bridging_path):
     if len(output) < 1:
         return
 
-    header = '''
-//
-//  Copyright (c) 2022 Signal. All rights reserved.
+    header = '''//
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import <Foundation/Foundation.h>

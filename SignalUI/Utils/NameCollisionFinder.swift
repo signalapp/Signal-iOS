@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 /// A collection of addresses (and adjacent info) that collide (i.e. the user many confuse one element's `currentName` for another)

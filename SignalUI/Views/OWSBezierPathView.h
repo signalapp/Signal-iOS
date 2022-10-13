@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 typedef void (^ConfigureShapeLayerBlock)(CAShapeLayer *_Nonnull layer, CGRect bounds);

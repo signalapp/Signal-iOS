@@ -3,13 +3,10 @@
 import os
 import sys
 import subprocess
-import datetime
 import argparse
 from typing import Iterable
 from pathlib import Path
-
-
-EXTENSIONS_TO_CHECK = set((".h", ".hpp", ".cpp", ".m", ".mm", ".pch", ".swift"))
+from lint.util import EXTENSIONS_TO_CHECK
 
 
 git_repo_path = os.path.abspath(
@@ -193,30 +190,7 @@ def process(filepath):
 
     text = sort_forward_class_statements(filepath, filename, file_ext, text)
     text = sort_forward_protocol_statements(filepath, filename, file_ext, text)
-
-    lines = text.split("\n")
-
-    shebang = ""
-    if lines[0].startswith("#!"):
-        shebang = lines[0] + "\n"
-        lines = lines[1:]
-    elif lines[0].startswith("// swift-tools-version:"):
-        shebang = lines[0] + "\n"
-        lines = lines[1:]
-
-    while lines and lines[0].startswith("//"):
-        lines = lines[1:]
-    text = "\n".join(lines)
-    text = text.strip()
-
-    header = """//
-//  Copyright (c) %s Open Whisper Systems. All rights reserved.
-//
-
-""" % (
-        datetime.datetime.now().year,
-    )
-    text = shebang + header + text + "\n"
+    text = text.strip() + "\n"
 
     if original_text == text:
         return
@@ -351,6 +325,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--ref", help="process all files that have changed since the given ref"
     )
+    parser.add_argument(
+        "--skip_license_header_checks",
+        action="store_true",
+        help="A temporary flag that will skip license header checks. We plan to remove this flag soon.",
+    )
     args = parser.parse_args()
 
     all_file_paths: Iterable[str] = []
@@ -374,17 +353,19 @@ if __name__ == "__main__":
 
     file_paths = set(filter(should_process_file, all_file_paths))
 
+    if not args.skip_license_header_checks:
+        try:
+            subprocess.check_output("Scripts/lint/lint-license-headers", text=True)
+        except subprocess.CalledProcessError as e:
+            sys.exit(1)
+
     lint_swift_files(file_paths)
 
     for file_path in file_paths:
         process(file_path)
 
     print("Sorting Xcode project...")
-    print(
-        subprocess.getoutput(
-            'Scripts/sort-Xcode-project-file Signal.xcodeproj'
-        )
-    )
+    print(subprocess.getoutput("Scripts/sort-Xcode-project-file Signal.xcodeproj"))
 
     print("git clang-format...")
     # we don't want to format .proto files, so we specify every other supported extension

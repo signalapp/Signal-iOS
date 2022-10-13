@@ -98,7 +98,7 @@ jobs:
 
       - name: Lint files changed in the PR
         run: |
-          python3 Scripts/precommit.py --ref origin/${{ github.base_ref }}
+          python3 Scripts/precommit.py --ref origin/${{ github.base_ref }} --skip_license_header_checks
 
           # https://help.github.com/en/actions/reference/development-tools-for-github-actions#logging-commands
           git diff --name-only | sed -E 's|(.*)|::error file=\1::Incorrectly formatted (Scripts/precommit.py)|'

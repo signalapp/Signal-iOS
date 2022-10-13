@@ -1,3 +1,8 @@
+//
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+//
+
 // iOS - since we use a modern proto-compiler, we must specify
 // the legacy proto format.
 syntax = "proto2";
