@@ -306,6 +306,7 @@ extension StoryPageViewController: UIPageViewControllerDelegate {
         pendingTransitionViewControllers = []
         isDisplayLinkPaused = false
         self.view.isUserInteractionEnabled = true
+        currentContextViewController.pageControllerDidAppear()
     }
 }
 

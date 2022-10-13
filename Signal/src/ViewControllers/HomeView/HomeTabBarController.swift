@@ -149,6 +149,7 @@ class HomeTabBarController: UITabBarController {
 
         guard isTabBarHidden != hidden else {
             tabBar.isHidden = hidden
+            owsTabBar?.applyTheme()
             completion?(true)
             return
         }
