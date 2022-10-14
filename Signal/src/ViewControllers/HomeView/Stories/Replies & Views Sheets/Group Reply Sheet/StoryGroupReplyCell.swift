@@ -424,12 +424,26 @@ class StoryGroupReplyCell: UITableViewCell {
         textContainer.maximumNumberOfLines = 0
 
         let lastGlyphIndex = layoutManager.glyphIndexForCharacter(at: attributedString.length - 1)
-        let lastLineFragmentRect = layoutManager.lineFragmentUsedRect(
+        let unroundedLastLineFragmentRect = layoutManager.lineFragmentUsedRect(
             forGlyphAt: lastGlyphIndex,
             effectiveRange: nil
         )
+        let lastLineFragmentRect = CGRect(
+            origin: unroundedLastLineFragmentRect.origin,
+            size: CGSize(
+                width: floor(unroundedLastLineFragmentRect.width),
+                height: floor(unroundedLastLineFragmentRect.height)
+            )
+        )
 
-        let fullTextRect = layoutManager.usedRect(for: textContainer)
+        let unroundedFullTextRect = layoutManager.usedRect(for: textContainer)
+        let fullTextRect = CGRect(
+            origin: unroundedFullTextRect.origin,
+            size: CGSize(
+                width: floor(unroundedFullTextRect.width),
+                height: floor(unroundedFullTextRect.height)
+            )
+        )
 
         return (fullTextRect, lastLineFragmentRect)
     }
