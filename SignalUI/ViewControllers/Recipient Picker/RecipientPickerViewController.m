@@ -773,8 +773,6 @@ const NSUInteger kMinimumSearchLength = 1;
                                 cell.accessibilityIdentifier
                                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(RecipientPickerViewController, cellName);
 
-                                [strongSelf.delegate recipientPicker:strongSelf willRenderRecipient:recipient];
-
                                 return cell;
                             }
                             actionBlock:^{

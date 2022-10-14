@@ -22,9 +22,6 @@ public protocol RecipientPickerDelegate: AnyObject {
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          didSelectRecipient recipient: PickedRecipient)
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         willRenderRecipient recipient: PickedRecipient)
-
     // This delegate method is only used if shouldUseAsyncSelection is set.
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise
@@ -207,8 +204,6 @@ extension RecipientPickerViewController {
 
                         cell.configure(configuration: configuration, transaction: transaction)
                     }
-
-                    self.delegate?.recipientPicker(self, willRenderRecipient: recipient)
 
                     return cell
                 },

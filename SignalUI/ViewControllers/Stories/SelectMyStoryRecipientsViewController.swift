@@ -125,11 +125,7 @@ extension SelectMyStoryRecipientsViewController: MemberViewDelegate {
 
     public func memberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool { true }
 
-    public func memberViewWillRenderRecipient(_ recipient: PickedRecipient) {}
-
     public func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> AnyPromise { AnyPromise(Promise.value(())) }
-
-    public func memberViewNoUuidSubtitleForRecipient(_ recipient: PickedRecipient) -> String? { nil }
 
     public func memberViewShouldShowMemberCount() -> Bool { false }
 

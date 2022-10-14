@@ -150,9 +150,6 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         return true
     }
 
-    public func memberViewWillRenderRecipient(_ recipient: PickedRecipient) {
-    }
-
     public func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> AnyPromise {
         guard let address = recipient.address else {
             owsFailDebug("Invalid recipient.")
@@ -175,10 +172,6 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
 
     func tryToEnableGroupsV2ForAddress(_ address: SignalServiceAddress) -> Promise<Void> {
         GroupManager.tryToEnableGroupsV2(for: [address])
-    }
-
-    public func memberViewNoUuidSubtitleForRecipient(_ recipient: PickedRecipient) -> String? {
-        nil
     }
 
     public func memberViewShouldShowMemberCount() -> Bool {
