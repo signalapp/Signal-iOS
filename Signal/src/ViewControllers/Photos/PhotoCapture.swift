@@ -4,6 +4,7 @@
 //
 
 import AVFoundation
+import CoreMotion
 import CoreServices
 import Foundation
 import SignalCoreKit
@@ -77,22 +78,9 @@ class PhotoCapture: NSObject {
     }
     private(set) var desiredPosition: AVCaptureDevice.Position = .back
 
-    private var _captureOrientation: AVCaptureVideoOrientation = .portrait
-    var captureOrientation: AVCaptureVideoOrientation {
-        get {
-            assertIsOnSessionQueue()
-            return _captureOrientation
-        }
-        set {
-            assertIsOnSessionQueue()
-            _captureOrientation = newValue
-        }
-    }
-
     private let recordingAudioActivity = AudioActivity(audioDescription: "PhotoCapture", behavior: .playAndRecord)
 
     var focusObservation: NSKeyValueObservation?
-    var deviceOrientationObserver: AnyObject?
 
     override init() {
         self.session = AVCaptureSession()
@@ -100,10 +88,7 @@ class PhotoCapture: NSObject {
     }
 
     deinit {
-        if let deviceOrientationObserver = deviceOrientationObserver {
-            NotificationCenter.default.removeObserver(deviceOrientationObserver)
-            UIDevice.current.endGeneratingDeviceOrientationNotifications()
-        }
+        self.motionManager?.stopAccelerometerUpdates()
     }
 
     func didCompleteFocusing() {
@@ -197,30 +182,7 @@ class PhotoCapture: NSObject {
         // If the session is already running, no need to do anything.
         guard !self.session.isRunning else { return Promise.value(()) }
 
-        owsAssertDebug(deviceOrientationObserver == nil)
-        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-
-        deviceOrientationObserver = NotificationCenter.default.addObserver(forName: UIDevice.orientationDidChangeNotification,
-                                                                           object: UIDevice.current,
-                                                                           queue: nil) { [weak self] _ in
-            guard let self = self,
-                  let captureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) else {
-                return
-            }
-
-            self.sessionQueue.async {
-                guard captureOrientation != self.captureOrientation else {
-                    return
-                }
-                self.captureOrientation = captureOrientation
-
-                DispatchQueue.main.async {
-                    self.delegate?.photoCapture(self, didChangeOrientation: captureOrientation)
-                }
-            }
-        }
-
-        let initialCaptureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) ?? .portrait
+        let initialCaptureOrientation = beginObservingOrientationChanges()
 
         return sessionQueue.async(.promise) { [weak self] in
             guard let self = self else { return }
@@ -228,7 +190,7 @@ class PhotoCapture: NSObject {
             self.session.beginConfiguration()
             defer { self.session.commitConfiguration() }
 
-            self.captureOrientation = initialCaptureOrientation
+            self.captureOrientation = initialCaptureOrientation ?? self.captureOrientation
             self.session.sessionPreset = .high
 
             try self.reconfigureCaptureInput()
@@ -427,6 +389,69 @@ class PhotoCapture: NSObject {
     @objc
     private func subjectAreaDidChange(notification: NSNotification) {
         resetFocusAndExposure()
+    }
+
+    // MARK: - Device Orientation
+
+    private var _captureOrientation: AVCaptureVideoOrientation = .portrait
+    var captureOrientation: AVCaptureVideoOrientation {
+        get {
+            assertIsOnSessionQueue()
+            return _captureOrientation
+        }
+        set {
+            assertIsOnSessionQueue()
+            _captureOrientation = newValue
+        }
+    }
+
+    private var motionManager: CMMotionManager?
+
+    // Outputs initial orientation.
+    private func beginObservingOrientationChanges() -> AVCaptureVideoOrientation? {
+        guard self.motionManager == nil else {
+            return nil
+        }
+        let motionManager = CMMotionManager()
+        motionManager.accelerometerUpdateInterval = 0.2
+        motionManager.gyroUpdateInterval = 0.2
+        self.motionManager = motionManager
+
+        // Update the value immediately as the observation doesn't emit until it changes.
+        let initialOrientation: AVCaptureVideoOrientation
+        if let accelerometerOrientation = motionManager.accelerometerData?.acceleration.deviceOrientation {
+            initialOrientation = accelerometerOrientation
+        } else if let deviceOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) {
+            initialOrientation = deviceOrientation
+        } else {
+            initialOrientation = .portrait
+        }
+
+        motionManager.startAccelerometerUpdates(
+            to: OperationQueue.current!,
+            withHandler: { [weak self] accelerometerData, error in
+                if let orientation = accelerometerData?.acceleration.deviceOrientation {
+                    self?.updateOrientation(orientation)
+                } else if let error = error {
+                    Logger.debug("Photo capture accelerometer error: \(error)")
+                }
+            }
+        )
+
+        return initialOrientation
+    }
+
+    private func updateOrientation(_ orientation: AVCaptureVideoOrientation) {
+        self.sessionQueue.async {
+            guard orientation != self.captureOrientation else {
+                return
+            }
+            self.captureOrientation = orientation
+
+            DispatchQueue.main.async {
+                self.delegate?.photoCapture(self, didChangeOrientation: orientation)
+            }
+        }
     }
 
     // MARK: - Rear Camera Selection
@@ -1784,4 +1809,21 @@ private func crop(photoData: Data, toOutputRect outputRect: CGRect) throws -> Da
         throw OWSAssertionError("croppedData was unexpectedly nil")
     }
     return croppedData
+}
+
+extension CMAcceleration {
+
+    var deviceOrientation: AVCaptureVideoOrientation? {
+        if x >= 0.75 {
+            return .landscapeLeft
+        } else if x <= -0.75 {
+            return .landscapeRight
+        } else if y <= -0.75 {
+            return .portrait
+        } else if y >= 0.75 {
+            return .portraitUpsideDown
+        } else {
+            return nil
+        }
+    }
 }
