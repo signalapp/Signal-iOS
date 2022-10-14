@@ -166,10 +166,12 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
                     case .loadNewer, .loadOlder:
                         // Attachments are loaded in descending order so 'loadOlder' actually corresponds with
                         // 'pageAfter' in this case
-                        self?.viewModel.pagedDataObserver?.load(section?.model == .loadOlder ?
-                            .pageAfter :
-                            .pageBefore
-                        )
+                        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                            self?.viewModel.pagedDataObserver?.load(section?.model == .loadOlder ?
+                                .pageAfter :
+                                .pageBefore
+                            )
+                        }
                         return
                         
                     default: continue
@@ -180,8 +182,8 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
     
     private func startObservingChanges() {
         // Start observing for data changes (will callback on the main thread)
-        self.viewModel.onGalleryChange = { [weak self] updatedGalleryData in
-            self?.handleUpdates(updatedGalleryData)
+        self.viewModel.onGalleryChange = { [weak self] updatedGalleryData, changeset in
+            self?.handleUpdates(updatedGalleryData, changeset: changeset)
         }
     }
     
@@ -191,7 +193,10 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
         self.viewModel.onGalleryChange = nil
     }
     
-    private func handleUpdates(_ updatedGalleryData: [MediaGalleryViewModel.SectionModel]) {
+    private func handleUpdates(
+        _ updatedGalleryData: [MediaGalleryViewModel.SectionModel],
+        changeset: StagedChangeset<[MediaGalleryViewModel.SectionModel]>
+    ) {
         // Ensure the first load runs without animations (if we don't do this the cells will animate
         // in from a frame of CGRect.zero)
         guard hasLoadedInitialData else {
@@ -227,7 +232,7 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
         if isInsertingAtTop { CATransaction.setDisableActions(true) }
         
         self.tableView.reload(
-            using: StagedChangeset(source: self.viewModel.galleryData, target: updatedGalleryData),
+            using: changeset,
             with: .automatic,
             interrupt: { $0.changeCount > MediaTileViewController.itemPageSize }
         ) { [weak self] updatedData in
@@ -418,7 +423,7 @@ class DocumentCell: UITableViewCell {
         backgroundView?.layer.cornerRadius = 5
         
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.themeBackgroundColor = .settings_tabHighlight
+        selectedBackgroundView?.themeBackgroundColor = .highlighted(.settings_tabBackground)
         selectedBackgroundView?.layer.cornerRadius = 5
         
         contentView.addSubview(iconImageView)

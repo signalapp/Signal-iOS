@@ -62,28 +62,22 @@ internal enum Theme_OceanDark: ThemeColors {
         
         // SolidButton
         .solidButton_background: .oceanDark2,
-        .solidButton_highlight: .oceanDark4,
         
         // Settings
         .settings_tabBackground: .oceanDark1,
-        .settings_tabHighlight: .oceanDark3,
         
         // Appearance
         .appearance_sectionBackground: .oceanDark3,
         .appearance_buttonBackground: .oceanDark3,
-        .appearance_buttonHighlight: .oceanDark4,
         
         // Alert
         .alert_text: .oceanDark7,
         .alert_background: .oceanDark3,
         .alert_buttonBackground: .oceanDark3,
-        .alert_buttonHighlight: .oceanDark4,
         
         // ConversationButton
         .conversationButton_background: .oceanDark3,
-        .conversationButton_highlight: .oceanDark4,
-        .conversationButton_unreadBackground: .oceanDark2,
-        .conversationButton_unreadHighlight: .oceanDark4,
+        .conversationButton_unreadBackground: .oceanDark4,
         .conversationButton_unreadStripBackground: .primary,
         .conversationButton_unreadBubbleBackground: .primary,
         .conversationButton_unreadBubbleText: .oceanDark0,

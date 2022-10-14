@@ -198,10 +198,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
             // Update the cache, pageInfo and the change callback
             self?.dataCache.mutate { $0 = finalUpdatedDataCache }
             self?.pageInfo.mutate { $0 = updatedPageInfo }
-            
-            DispatchQueue.main.async { [weak self] in
-                self?.onChangeUnsorted(finalUpdatedDataCache.values, updatedPageInfo)
-            }
+            self?.onChangeUnsorted(finalUpdatedDataCache.values, updatedPageInfo)
         }
         
         // Determing if there were any direct or related data changes
@@ -727,12 +724,6 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         let triggerUpdates: () -> () = { [weak self, dataCache = self.dataCache.wrappedValue] in
             self?.onChangeUnsorted(dataCache.values, updatedPageInfo)
             self?.isLoadingMoreData.mutate { $0 = false }
-        }
-        
-        // Make sure the updates run on the main thread
-        guard Thread.isMainThread else {
-            DispatchQueue.main.async { triggerUpdates() }
-            return
         }
         
         triggerUpdates()

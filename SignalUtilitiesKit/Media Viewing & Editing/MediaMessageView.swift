@@ -227,7 +227,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
             for: .normal
         )
         button.setThemeBackgroundColorForced(
-            .theme(.classicLight, color: .settings_tabHighlight),
+            .theme(.classicLight, color: .highlighted(.settings_tabBackground)),
             for: .highlighted
         )
         button.addTarget(self, action: #selector(audioPlayPauseButtonPressed), for: .touchUpInside)

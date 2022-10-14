@@ -186,8 +186,8 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     // MARK: - Updating
     
     private func startObservingChanges(didReturnFromBackground: Bool = false) {
-        self.viewModel.onContactChange = { [weak self] updatedContactData in
-            self?.handleContactUpdates(updatedContactData)
+        self.viewModel.onContactChange = { [weak self] updatedContactData, changeset in
+            self?.handleContactUpdates(updatedContactData, changeset: changeset)
         }
         
         // Note: When returning from the background we could have received notifications but the
@@ -198,12 +198,18 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         }
     }
     
-    private func handleContactUpdates(_ updatedData: [BlockedContactsViewModel.SectionModel], initialLoad: Bool = false) {
+    private func handleContactUpdates(
+        _ updatedData: [BlockedContactsViewModel.SectionModel],
+        changeset: StagedChangeset<[BlockedContactsViewModel.SectionModel]>,
+        initialLoad: Bool = false
+    ) {
         // Ensure the first load runs without animations (if we don't do this the cells will animate
         // in from a frame of CGRect.zero)
         guard hasLoadedInitialContactData else {
             hasLoadedInitialContactData = true
-            UIView.performWithoutAnimation { handleContactUpdates(updatedData, initialLoad: true) }
+            UIView.performWithoutAnimation {
+                handleContactUpdates(updatedData, changeset: changeset, initialLoad: true)
+            }
             return
         }
         
@@ -225,7 +231,7 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         
         // Reload the table content (animate changes after the first load)
         tableView.reload(
-            using: StagedChangeset(source: viewModel.contactData, target: updatedData),
+            using: changeset,
             deleteSectionsAnimation: .none,
             insertSectionsAnimation: .none,
             reloadSectionsAnimation: .none,
@@ -266,7 +272,7 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             
             self?.isLoadingMore = true
             
-            DispatchQueue.global(qos: .default).async { [weak self] in
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
                 self?.viewModel.pagedDataObserver?.load(.pageAfter)
             }
         }
@@ -351,7 +357,7 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             case .loadMore:
                 self.isLoadingMore = true
                 
-                DispatchQueue.global(qos: .default).async { [weak self] in
+                DispatchQueue.global(qos: .userInitiated).async { [weak self] in
                     self?.viewModel.pagedDataObserver?.load(.pageAfter)
                 }
                 

@@ -42,14 +42,14 @@ public class MediaGalleryViewModel {
     public private(set) var pagedDataObserver: PagedDatabaseObserver<Attachment, Item>?
     
     /// This value is the current state of a gallery view
-    private var unobservedGalleryDataChanges: [SectionModel]?
+    private var unobservedGalleryDataChanges: ([SectionModel], StagedChangeset<[SectionModel]>)?
     public private(set) var galleryData: [SectionModel] = []
-    public var onGalleryChange: (([SectionModel]) -> ())? {
+    public var onGalleryChange: (([SectionModel], StagedChangeset<[SectionModel]>) -> ())? {
         didSet {
             // When starting to observe interaction changes we want to trigger a UI update just in case the
             // data was changed while we weren't observing
-            if let unobservedGalleryDataChanges: [SectionModel] = self.unobservedGalleryDataChanges {
-                onGalleryChange?(unobservedGalleryDataChanges)
+            if let unobservedGalleryDataChanges: ([SectionModel], StagedChangeset<[SectionModel]>) = self.unobservedGalleryDataChanges {
+                onGalleryChange?(unobservedGalleryDataChanges.0, unobservedGalleryDataChanges.1)
                 self.unobservedGalleryDataChanges = nil
             }
         }
@@ -93,20 +93,32 @@ public class MediaGalleryViewModel {
             orderSQL: Item.galleryOrderSQL,
             dataQuery: Item.baseQuery(orderSQL: Item.galleryOrderSQL),
             onChangeUnsorted: { [weak self] updatedData, updatedPageInfo in
-                guard let updatedGalleryData: [SectionModel] = self?.process(data: updatedData, for: updatedPageInfo) else {
-                    return
-                }
+                guard
+                    let currentData: [SectionModel] = self?.galleryData,
+                    let updatedGalleryData: [SectionModel] = self?.process(data: updatedData, for: updatedPageInfo)
+                else { return }
                 
-                // If we have the 'onGalleryChange' callback then trigger it, otherwise just store the changes
-                // to be sent to the callback if we ever start observing again (when we have the callback it needs
-                // to do the data updating as it's tied to UI updates and can cause crashes if not updated in the
-                // correct order)
-                guard let onGalleryChange: (([SectionModel]) -> ()) = self?.onGalleryChange else {
-                    self?.unobservedGalleryDataChanges = updatedGalleryData
-                    return
+                let changeset: StagedChangeset<[SectionModel]> = StagedChangeset(
+                    source: currentData,
+                    target: updatedGalleryData
+                )
+                
+                // No need to do anything if there were no changes
+                guard !changeset.isEmpty else { return }
+                
+                // Run any changes on the main thread (as they will generally trigger UI updates)
+                DispatchQueue.main.async {
+                    // If we have the callback then trigger it, otherwise just store the changes to be sent
+                    // to the callback if we ever start observing again (when we have the callback it needs
+                    // to do the data updating as it's tied to UI updates and can cause crashes if not updated
+                    // in the correct order)
+                    guard let onGalleryChange: (([SectionModel], StagedChangeset<[SectionModel]>) -> ()) = self?.onGalleryChange else {
+                        self?.unobservedGalleryDataChanges = (updatedGalleryData, changeset)
+                        return
+                    }
+                    
+                    onGalleryChange(updatedGalleryData, changeset)
                 }
-
-                onGalleryChange(updatedGalleryData)
             }
         )
         
@@ -128,11 +140,11 @@ public class MediaGalleryViewModel {
         // we don't want to mess with the initial view controller behaviour)
         guard !performInitialQuerySync else {
             loadInitialData()
-            updateGalleryData(self.unobservedGalleryDataChanges ?? [])
+            updateGalleryData(self.unobservedGalleryDataChanges?.0 ?? [])
             return
         }
         
-        DispatchQueue.global(qos: .default).async {
+        DispatchQueue.global(qos: .userInitiated).async {
             loadInitialData()
         }
     }

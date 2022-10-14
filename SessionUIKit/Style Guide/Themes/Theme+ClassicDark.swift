@@ -62,28 +62,22 @@ internal enum Theme_ClassicDark: ThemeColors {
         
         // SolidButton
         .solidButton_background: .classicDark3,
-        .solidButton_highlight: .classicDark4,
         
         // Settings
         .settings_tabBackground: .classicDark1,
-        .settings_tabHighlight: .classicDark3,
         
         // Appearance
         .appearance_sectionBackground: .classicDark1,
         .appearance_buttonBackground: .classicDark1,
-        .appearance_buttonHighlight: .classicDark3,
         
         // Alert
         .alert_text: .classicDark6,
         .alert_background: .classicDark1,
         .alert_buttonBackground: .classicDark1,
-        .alert_buttonHighlight: .classicDark3,
         
         // ConversationButton
         .conversationButton_background: .classicDark1,
-        .conversationButton_highlight: .classicDark3,
         .conversationButton_unreadBackground: .classicDark2,
-        .conversationButton_unreadHighlight: .classicDark3,
         .conversationButton_unreadStripBackground: .primary,
         .conversationButton_unreadBubbleBackground: .classicDark3,
         .conversationButton_unreadBubbleText: .classicDark6,

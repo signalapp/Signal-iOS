@@ -94,10 +94,12 @@ public final class BackgroundPoller {
                 guard let snode = swarm.randomElement() else { throw SnodeAPIError.generic }
                 
                 return SnodeAPI.getMessages(from: snode, associatedWith: publicKey)
-                    .then(on: DispatchQueue.main) { messages -> Promise<Void> in
+                    .then(on: DispatchQueue.main) { messages, lastHash -> Promise<Void> in
                         guard !messages.isEmpty, BackgroundPoller.isValid else { return Promise.value(()) }
                         
                         var jobsToRun: [Job] = []
+                        var messageCount: Int = 0
+                        var hadValidHashUpdate: Bool = false
                         
                         Storage.shared.write { db in
                             messages
@@ -115,6 +117,10 @@ public final class BackgroundPoller {
                                                 MessageReceiverError.duplicateControlMessage,
                                                 MessageReceiverError.selfSend:
                                                 break
+                                                
+                                            case MessageReceiverError.duplicateMessageNewSnode:
+                                                hadValidHashUpdate = true
+                                                break
                                             
                                             // In the background ignore 'SQLITE_ABORT' (it generally means
                                             // the BackgroundPoller has timed out
@@ -128,6 +134,8 @@ public final class BackgroundPoller {
                                 }
                                 .grouped { threadId, _, _ in (threadId ?? Message.nonThreadMessageId) }
                                 .forEach { threadId, threadMessages in
+                                    messageCount += threadMessages.count
+                                    
                                     let maybeJob: Job? = Job(
                                         variant: .messageReceive,
                                         behaviour: .runOnce,
@@ -145,6 +153,15 @@ public final class BackgroundPoller {
                                     JobRunner.add(db, job: job, canStartJob: false)
                                     jobsToRun.append(job)
                                 }
+                            
+                            if messageCount == 0 && !hadValidHashUpdate, let lastHash: String = lastHash {
+                                // Update the cached validity of the messages
+                                try SnodeReceivedMessageInfo.handlePotentialDeletedOrInvalidHash(
+                                    db,
+                                    potentiallyInvalidHashes: [lastHash],
+                                    otherKnownValidHashes: messages.map { $0.info.hash }
+                                )
+                            }
                         }
                         
                         let promises: [Promise<Void>] = jobsToRun.map { job -> Promise<Void> in

@@ -134,7 +134,7 @@ public final class MessageSender {
         let plaintext: Data
         
         do {
-            plaintext = (try proto.serializedData() as NSData).paddedMessageBody()
+            plaintext = try proto.serializedData().paddedMessageBody()
         }
         catch {
             SNLog("Couldn't serialize proto due to error: \(error).")
@@ -411,7 +411,7 @@ public final class MessageSender {
         let plaintext: Data
         
         do {
-            plaintext = (try proto.serializedData() as NSData).paddedMessageBody()
+            plaintext = try proto.serializedData().paddedMessageBody()
         }
         catch {
             SNLog("Couldn't serialize proto due to error: \(error).")
@@ -510,7 +510,7 @@ public final class MessageSender {
         let plaintext: Data
         
         do {
-            plaintext = (try proto.serializedData() as NSData).paddedMessageBody()
+            plaintext = try proto.serializedData().paddedMessageBody()
         }
         catch {
             SNLog("Couldn't serialize proto due to error: \(error).")
