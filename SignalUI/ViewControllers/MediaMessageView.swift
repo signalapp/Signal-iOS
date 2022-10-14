@@ -174,10 +174,14 @@ class MediaMessageView: AttachmentPrepContentView, OWSAudioPlayerDelegate {
         view.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor).isActive = true
         view.centerYAnchor.constraint(equalTo: contentLayoutGuide.centerYAnchor).isActive = true
         view.autoPin(toAspectRatio: aspectRatio)
-        if aspectRatio >= 1 {
-            // width bigger than height, pin height.
+        view.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .greaterThanOrEqual)
+        view.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .greaterThanOrEqual)
+        NSLayoutConstraint.autoSetPriority(.defaultLow) {
+            // One of these two constraints will be broken; but the above higher priority
+            // constraints ensure aspect ratio is preserved and both dimensions are bigger
+            // than the container.
+            // The one that isn't broken ensures we fill the container, and do expand beyond it.
             view.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .equal)
-        } else {
             view.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .equal)
         }
     }
