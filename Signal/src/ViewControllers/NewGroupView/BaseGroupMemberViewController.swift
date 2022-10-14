@@ -28,8 +28,6 @@ protocol GroupMemberViewDelegate: AnyObject {
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient,
                                             transaction: SDSAnyReadTransaction) -> Bool
 
-    func groupMemberViewIsGroupsV2Required() -> Bool
-
     func groupMemberViewDismiss()
 
     var isNewGroup: Bool { get }
@@ -160,18 +158,11 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
             owsFailDebug("Invalid recipient.")
             return AnyPromise(Promise.value(()))
         }
-        guard let groupMemberViewDelegate = groupMemberViewDelegate else {
-            owsFailDebug("Missing delegate.")
-            return AnyPromise(Promise.value(()))
-        }
         guard !doesRecipientSupportGroupsV2(recipient) else {
             // Recipient already supports groups v2.
             return AnyPromise(Promise.value(()))
         }
-        let ignoreErrors = !groupMemberViewDelegate.groupMemberViewIsGroupsV2Required()
-        return AnyPromise(tryToEnableGroupsV2ForAddress(address,
-                                                        isBlocking: true,
-                                                        ignoreErrors: ignoreErrors))
+        return AnyPromise(tryToEnableGroupsV2ForAddress(address, isBlocking: true, ignoreErrors: false))
     }
 
     private func doesRecipientSupportGroupsV2(_ recipient: PickedRecipient) -> Bool {

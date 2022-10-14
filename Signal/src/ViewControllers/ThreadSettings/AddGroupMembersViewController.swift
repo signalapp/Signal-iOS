@@ -217,10 +217,6 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
         return false
     }
 
-    func groupMemberViewIsGroupsV2Required() -> Bool {
-        true
-    }
-
     func groupMemberViewDismiss() {
         navigationController?.popViewController(animated: true)
     }
