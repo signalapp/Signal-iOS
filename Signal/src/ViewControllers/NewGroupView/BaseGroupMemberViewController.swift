@@ -153,17 +153,6 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
     }
 
     public func memberViewWillRenderRecipient(_ recipient: PickedRecipient) {
-        guard let address = recipient.address else {
-            owsFailDebug("Invalid recipient.")
-            return
-        }
-        DispatchQueue.global().async {
-            if !self.doesRecipientSupportGroupsV2(recipient) {
-                _ = self.tryToEnableGroupsV2ForAddress(address,
-                                                       isBlocking: false,
-                                                       ignoreErrors: true)
-            }
-        }
     }
 
     public func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> AnyPromise {
@@ -190,35 +179,15 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
             owsFailDebug("Invalid recipient.")
             return false
         }
-        return doesRecipientSupportGroupsV2(address)
-    }
-
-    private func doesRecipientSupportGroupsV2(_ address: SignalServiceAddress) -> Bool {
         return GroupManager.doesUserSupportGroupsV2(address: address)
     }
 
-    func tryToEnableGroupsV2ForAddress(_ address: SignalServiceAddress,
-                                       isBlocking: Bool,
-                                       ignoreErrors: Bool) -> Promise<Void> {
-        return firstly { () -> Promise<Void> in
-            return GroupManager.tryToEnableGroupsV2(for: [address],
-                                                    isBlocking: isBlocking,
-                                                    ignoreErrors: ignoreErrors)
-        }.done(on: .global() ) { [weak self] _ in
-            // If we succeeded in enable groups v2 for this address,
-            // reload the recipient picker to reflect that.
-            if self?.doesRecipientSupportGroupsV2(address) ?? false {
-                DispatchQueue.main.async {
-                    // Reload view content.
-                    self?.recipientPicker.reloadContent()
-                }
-            }
-        }
+    func tryToEnableGroupsV2ForAddress(_ address: SignalServiceAddress, isBlocking: Bool, ignoreErrors: Bool) -> Promise<Void> {
+        GroupManager.tryToEnableGroupsV2(for: [address], isBlocking: isBlocking, ignoreErrors: ignoreErrors)
     }
 
     public func memberViewNoUuidSubtitleForRecipient(_ recipient: PickedRecipient) -> String? {
-        return NSLocalizedString("NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS",
-                                 comment: "Indicates that a group member does not support New Groups.")
+        nil
     }
 
     public func memberViewShouldShowMemberCount() -> Bool {

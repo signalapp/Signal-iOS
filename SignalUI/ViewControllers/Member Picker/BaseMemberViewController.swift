@@ -102,16 +102,6 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
         autoPinView(toBottomOfViewControllerOrKeyboard: recipientPicker.view, avoidNotch: false)
 
         updateMemberCount()
-        tryToFillInMissingUuids()
-    }
-
-    private func tryToFillInMissingUuids() {
-        let addresses = contactsViewHelper.allSignalAccounts.map { $0.recipientAddress }
-        firstly {
-            GroupManager.tryToFillInMissingUuids(for: addresses, isBlocking: false)
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
-        }
     }
 
     @objc
