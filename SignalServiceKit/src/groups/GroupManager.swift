@@ -1194,49 +1194,22 @@ public class GroupManager: NSObject {
 
     // MARK: - UUIDs
 
-    public static func tryToEnableGroupsV2(for addresses: [SignalServiceAddress],
-                                           isBlocking: Bool,
-                                           ignoreErrors: Bool) -> Promise<Void> {
-        let promise = tryToEnableGroupsV2(for: addresses, isBlocking: isBlocking)
-        if ignoreErrors {
-            return promise.recover { error in
-                Logger.warn("Error: \(error).")
-            }
-        } else {
-            return promise
-        }
-    }
-
-    private static func tryToEnableGroupsV2(for addresses: [SignalServiceAddress],
-                                            isBlocking: Bool) -> Promise<Void> {
+    public static func tryToEnableGroupsV2(for addresses: [SignalServiceAddress]) -> Promise<Void> {
         return firstly { () -> Promise<Void> in
-            for address in addresses {
+            let phoneNumbersWithoutUuids = try addresses.compactMap { address -> String? in
                 guard address.isValid else {
                     throw OWSAssertionError("Invalid address: \(address).")
                 }
+                guard address.uuid == nil else {
+                    return nil
+                }
+                return address.phoneNumber
             }
-            return Promise.value(())
-        }.then(on: .global()) { _ -> Promise<Void> in
-            return self.tryToFillInMissingUuids(for: addresses, isBlocking: isBlocking)
-        }
-    }
-
-    public static func tryToFillInMissingUuids(for addresses: [SignalServiceAddress],
-                                               isBlocking: Bool) -> Promise<Void> {
-
-        let phoneNumbersWithoutUuids = addresses.filter { $0.uuid == nil }.compactMap { $0.phoneNumber }
-        guard phoneNumbersWithoutUuids.count > 0 else {
-            return Promise.value(())
-        }
-
-        if isBlocking {
-            // Block on the outcome.
+            guard phoneNumbersWithoutUuids.count > 0 else {
+                return Promise.value(())
+            }
             let discoveryTask = ContactDiscoveryTask(phoneNumbers: Set(phoneNumbersWithoutUuids))
             return discoveryTask.perform(at: .userInitiated).asVoid()
-        } else {
-            // This will throttle, de-bounce, etc.
-            self.bulkUUIDLookup.lookupUuids(phoneNumbers: phoneNumbersWithoutUuids)
-            return Promise.value(())
         }
     }
 

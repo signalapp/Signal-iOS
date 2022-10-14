@@ -162,7 +162,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
             // Recipient already supports groups v2.
             return AnyPromise(Promise.value(()))
         }
-        return AnyPromise(tryToEnableGroupsV2ForAddress(address, isBlocking: true, ignoreErrors: false))
+        return AnyPromise(tryToEnableGroupsV2ForAddress(address))
     }
 
     private func doesRecipientSupportGroupsV2(_ recipient: PickedRecipient) -> Bool {
@@ -173,8 +173,8 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         return GroupManager.doesUserSupportGroupsV2(address: address)
     }
 
-    func tryToEnableGroupsV2ForAddress(_ address: SignalServiceAddress, isBlocking: Bool, ignoreErrors: Bool) -> Promise<Void> {
-        GroupManager.tryToEnableGroupsV2(for: [address], isBlocking: isBlocking, ignoreErrors: ignoreErrors)
+    func tryToEnableGroupsV2ForAddress(_ address: SignalServiceAddress) -> Promise<Void> {
+        GroupManager.tryToEnableGroupsV2(for: [address])
     }
 
     public func memberViewNoUuidSubtitleForRecipient(_ recipient: PickedRecipient) -> String? {

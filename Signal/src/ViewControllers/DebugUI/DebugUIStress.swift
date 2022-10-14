@@ -55,7 +55,7 @@ public extension DebugUIStress {
             for member in members {
                 Logger.verbose("Candidate member: \(member)")
             }
-            return GroupManager.tryToEnableGroupsV2(for: members, isBlocking: true, ignoreErrors: true)
+            return GroupManager.tryToEnableGroupsV2(for: members)
         }.then { () -> Promise<TSGroupThread> in
             guard GroupManager.defaultGroupsVersion == .V2 else {
                 throw OWSAssertionError("Groups v2 not enabled.")
@@ -118,7 +118,7 @@ public extension DebugUIStress {
             for member in membersToAdd {
                 Logger.verbose("Candidate member: \(member)")
             }
-            return GroupManager.tryToEnableGroupsV2(for: Array(membersToAdd), isBlocking: true, ignoreErrors: true)
+            return GroupManager.tryToEnableGroupsV2(for: Array(membersToAdd))
         }.then { () -> Promise<TSGroupThread> in
             let uuidsToAdd: [UUID] = try {
                 let validMembersToAdd: [SignalServiceAddress]
