@@ -40,7 +40,16 @@ class StoryContextViewController: OWSViewController {
             currentItemWasUpdated(messageDidChange: oldValue?.message.uniqueId != currentItem?.message.uniqueId)
         }
     }
-    var currentItemMediaView: StoryItemMediaView?
+    var currentItemMediaView: StoryItemMediaView? {
+        didSet {
+            if
+                oldValue == nil,
+                let pauseAndHideChromeWhenMediaViewIsCreated = pauseAndHideChromeWhenMediaViewIsCreated
+            {
+                pauseCurrentMediaItem(hideChrome: pauseAndHideChromeWhenMediaViewIsCreated)
+            }
+        }
+    }
 
     var allowsReplies: Bool {
         guard let currentItem = currentItem else {
@@ -83,6 +92,7 @@ class StoryContextViewController: OWSViewController {
         pauseTime = nil
         lastTransitionTime = nil
         if let currentItemMediaView = currentItemMediaView {
+            pauseAndHideChromeWhenMediaViewIsCreated = nil
             // Restart playback for the current item
             currentItemMediaView.reset()
             updateProgressState()
@@ -539,6 +549,9 @@ class StoryContextViewController: OWSViewController {
     private var lastTransitionTime: CFTimeInterval?
     private func updateProgressState() {
         lastTransitionTime = CACurrentMediaTime()
+        if let currentItemView = currentItemMediaView, let idx = items.firstIndex(of: currentItemView.item) {
+            playbackProgressView.itemState = .init(index: idx, value: 0)
+        }
     }
 
     @objc
@@ -754,6 +767,46 @@ class StoryContextViewController: OWSViewController {
             }
         }
     }
+
+    func pause(hideChrome: Bool = false) {
+        guard pauseTime == nil else { return }
+        pauseTime = CACurrentMediaTime()
+        delegate?.storyContextViewControllerDidPause(self)
+        pauseCurrentMediaItem(hideChrome: hideChrome)
+    }
+
+    /// If we try and pause before the media has been loaded and media view created,
+    /// we remember that state in this variable and apply it once the view is created.
+    private var pauseAndHideChromeWhenMediaViewIsCreated: Bool?
+
+    private func pauseCurrentMediaItem(hideChrome: Bool) {
+        guard let currentItemMediaView = currentItemMediaView else {
+            pauseAndHideChromeWhenMediaViewIsCreated = hideChrome
+            return
+        }
+        currentItemMediaView.pause(hideChrome: hideChrome) {
+            if hideChrome {
+                self.playbackProgressView.alpha = 0
+                self.closeButton.alpha = 0
+                self.repliesAndViewsButton.alpha = 0
+            }
+        }
+        pauseAndHideChromeWhenMediaViewIsCreated = nil
+    }
+
+    func play() {
+        if let lastTransitionTime = lastTransitionTime, let pauseTime = pauseTime {
+            let pauseDuration = CACurrentMediaTime() - pauseTime
+            self.lastTransitionTime = lastTransitionTime + pauseDuration
+            self.pauseTime = nil
+        }
+        currentItemMediaView?.play {
+            self.playbackProgressView.alpha = 1
+            self.closeButton.alpha = 1
+            self.repliesAndViewsButton.alpha = 1
+        }
+        delegate?.storyContextViewControllerDidResume(self)
+    }
 }
 
 extension StoryContextViewController: UIGestureRecognizerDelegate {
@@ -795,33 +848,6 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
         default:
             break
         }
-    }
-
-    func pause(hideChrome: Bool = false) {
-        guard pauseTime == nil else { return }
-        pauseTime = CACurrentMediaTime()
-        delegate?.storyContextViewControllerDidPause(self)
-        currentItemMediaView?.pause(hideChrome: hideChrome) {
-            if hideChrome {
-                self.playbackProgressView.alpha = 0
-                self.closeButton.alpha = 0
-                self.repliesAndViewsButton.alpha = 0
-            }
-        }
-    }
-
-    func play() {
-        if let lastTransitionTime = lastTransitionTime, let pauseTime = pauseTime {
-            let pauseDuration = CACurrentMediaTime() - pauseTime
-            self.lastTransitionTime = lastTransitionTime + pauseDuration
-            self.pauseTime = nil
-        }
-        currentItemMediaView?.play {
-            self.playbackProgressView.alpha = 1
-            self.closeButton.alpha = 1
-            self.repliesAndViewsButton.alpha = 1
-        }
-        delegate?.storyContextViewControllerDidResume(self)
     }
 
     func presentRepliesAndViewsSheet() {

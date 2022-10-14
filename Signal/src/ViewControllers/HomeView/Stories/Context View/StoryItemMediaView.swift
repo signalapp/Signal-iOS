@@ -81,9 +81,11 @@ class StoryItemMediaView: UIView {
         videoPlayerLoopCount = 0
         videoPlayer?.seek(to: .zero)
         videoPlayer?.play()
+        yyImageView?.startAnimating()
         updateTimestampText()
         bottomContentVStack.alpha = 1
         gradientProtectionView.alpha = 1
+        lastTruncationWidth = nil
     }
 
     func updateItem(_ newItem: StoryItem) {
@@ -97,6 +99,7 @@ class StoryItemMediaView: UIView {
         if item.attachment != oldItem.attachment {
             self.pause()
             updateMediaView()
+            lastTruncationWidth = nil
             updateCaption()
         }
 
@@ -145,6 +148,7 @@ class StoryItemMediaView: UIView {
 
     func pause(hideChrome: Bool = false, animateAlongside: (() -> Void)? = nil) {
         videoPlayer?.pause()
+        yyImageView?.stopAnimating()
 
         if hideChrome {
             UIView.animate(withDuration: 0.15, delay: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
@@ -159,6 +163,7 @@ class StoryItemMediaView: UIView {
 
     func play(animateAlongside: @escaping () -> Void) {
         videoPlayer?.play()
+        yyImageView?.startAnimating()
 
         UIView.animate(withDuration: 0.15, delay: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
             self.bottomContentVStack.alpha = 1
@@ -193,6 +198,10 @@ class StoryItemMediaView: UIView {
                     // as it would cause the video to loop leading to weird UX
                     glyphCount = nil
                 }
+            } else if let animatedImageDuration = (yyImageView?.image as? YYAnimatedImage)?.duration {
+                // GIFs should loop 3 times, or play for 5 seconds
+                // whichever is longer.
+                return max(5, animatedImageDuration * 3)
             } else {
                 // System stories play slightly longer.
                 if item.message.authorAddress.isSystemStoryAddress {
@@ -453,6 +462,7 @@ class StoryItemMediaView: UIView {
 
         fullCaptionText = captionText
         captionLabel.text = captionText
+        updateCaptionTruncation()
     }
 
     private var isCaptionExpanded = false
@@ -619,6 +629,7 @@ class StoryItemMediaView: UIView {
     private func updateMediaView() {
         mediaView?.removeFromSuperview()
         videoPlayer = nil
+        yyImageView = nil
         videoPlayerLoopCount = 0
 
         let mediaView = buildMediaView()
@@ -704,6 +715,7 @@ class StoryItemMediaView: UIView {
         return playerView
     }
 
+    private var yyImageView: YYAnimatedImageView?
     private func buildYYImageView(originalMediaUrl: URL) -> UIView {
         guard let image = YYImage(contentsOfFile: originalMediaUrl.path) else {
             owsFailDebug("Could not load attachment.")
@@ -720,6 +732,7 @@ class StoryItemMediaView: UIView {
         animatedImageView.layer.magnificationFilter = .trilinear
         animatedImageView.layer.allowsEdgeAntialiasing = true
         animatedImageView.image = image
+        self.yyImageView = animatedImageView
         return animatedImageView
     }
 

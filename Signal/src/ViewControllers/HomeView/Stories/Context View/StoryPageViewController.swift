@@ -37,6 +37,12 @@ class StoryPageViewController: UIPageViewController {
 
     private let audioActivity = AudioActivity(audioDescription: "StoriesViewer", behavior: .playbackMixWithOthers)
 
+    private var isDraggingScrollView: Bool {
+        return viewIfLoaded?.subviews.compactMap({ $0 as? UIScrollView }).first?.isDragging ?? false
+    }
+
+    private var isTransitioningByScroll = false
+
     // MARK: View Controllers
 
     var pendingTransitionViewControllers = [StoryContextViewController]()
@@ -86,11 +92,10 @@ class StoryPageViewController: UIPageViewController {
         _ = interactiveDismissCoordinator
     }
 
-    private var isDisplayLinkPaused = false {
-        didSet {
-            displayLink?.isPaused = isDisplayLinkPaused
-        }
-    }
+    /// Doesn't actually call `DisplayLink.isPaused`, but just prevents steps from passing
+    /// down to the current context controller. We keep it going even when "pausing" so we can catch
+    /// UIPageViewController bugs where it gets stuck mid-transition.
+    private var updatesContextForDisplayLink = false
 
     private var displayLink: CADisplayLink?
 
@@ -109,7 +114,6 @@ class StoryPageViewController: UIPageViewController {
             let displayLink = CADisplayLink(target: self, selector: #selector(displayLinkStep))
             displayLink.add(to: .main, forMode: .common)
             self.displayLink = displayLink
-            displayLink.isPaused = isDisplayLinkPaused
         }
         viewIsAppeared = true
     }
@@ -149,6 +153,23 @@ class StoryPageViewController: UIPageViewController {
 
     @objc
     func displayLinkStep(_ displayLink: CADisplayLink) {
+        // UIPageViewController gets buggy and gives us mismatched willTransition and
+        // didFinishTransitioning delegate callbacks, calling the former and not the latter.
+        // This happens rarely, and only when swiping rapidly between pages and cancelling a swipe.
+        // Since the displaylink is firing off anyway, detect this (if we have pending controllers
+        // and an ongoing paging drag transition but the scrollview isnt dragging) and resolve it
+        // by closing the transition out ourselves.
+        if
+            pendingTransitionViewControllers.isEmpty.negated,
+            isTransitioningByScroll,
+            !isDraggingScrollView
+        {
+            didFinishTransitioning(completed: false)
+            return
+        }
+        guard !updatesContextForDisplayLink else {
+            return
+        }
         currentContextViewController.displayLinkStep(displayLink)
     }
 
@@ -271,15 +292,20 @@ extension StoryPageViewController: UIPageViewControllerDelegate {
         willTransition(to: pendingViewControllers)
     }
 
-    private func willTransition(to pendingViewControllers: [UIViewController]) {
+    private func willTransition(to pendingViewControllers: [UIViewController], fromDrag: Bool = true) {
         self.pendingTransitionViewControllers = pendingViewControllers
             .map { $0 as! StoryContextViewController }
-        // Note: this also starts playing the next one transitioning in
-        pendingTransitionViewControllers.forEach { $0.resetForPresentation() }
+        pendingTransitionViewControllers.forEach {
+            $0.resetForPresentation()
+            $0.pause()
+        }
 
         currentContextViewController.pause()
-        isDisplayLinkPaused = true
+        updatesContextForDisplayLink = true
         self.view.isUserInteractionEnabled = false
+        if fromDrag {
+            isTransitioningByScroll = true
+        }
     }
 
     func pageViewController(
@@ -302,11 +328,15 @@ extension StoryPageViewController: UIPageViewControllerDelegate {
             // Play the current one (which is the one we started out with and paused
             // when the transition began)
             currentContextViewController.play()
+        } else {
+            currentContextViewController.resetForPresentation()
+            currentContextViewController.play()
         }
         pendingTransitionViewControllers = []
-        isDisplayLinkPaused = false
+        updatesContextForDisplayLink = false
         self.view.isUserInteractionEnabled = true
         currentContextViewController.pageControllerDidAppear()
+        isTransitioningByScroll = false
     }
 }
 
@@ -361,7 +391,7 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
             return
         }
         let newControllers = [StoryContextViewController(context: nextContext, loadPositionIfRead: loadPositionIfRead, delegate: self)]
-        self.willTransition(to: newControllers)
+        self.willTransition(to: newControllers, fromDrag: false)
         setViewControllers(
             newControllers,
             direction: .forward,
@@ -380,7 +410,7 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
             return
         }
         let newControllers = [StoryContextViewController(context: previousContext, loadPositionIfRead: loadPositionIfRead, delegate: self)]
-        self.willTransition(to: newControllers)
+        self.willTransition(to: newControllers, fromDrag: false)
         setViewControllers(
             newControllers,
             direction: .reverse,
@@ -406,11 +436,11 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
         else {
             return
         }
-        isDisplayLinkPaused = true
+        updatesContextForDisplayLink = true
     }
 
     func storyContextViewControllerDidResume(_ storyContextViewController: StoryContextViewController) {
-        isDisplayLinkPaused = false
+        updatesContextForDisplayLink = false
     }
 
     func storyContextViewControllerShouldOnlyRenderMyStories(_ storyContextViewController: StoryContextViewController) -> Bool {
