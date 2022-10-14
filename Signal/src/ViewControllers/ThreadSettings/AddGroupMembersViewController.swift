@@ -156,10 +156,6 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
         !newRecipientSet.isEmpty
     }
 
-    var shouldTryToEnableGroupsV2ForMembers: Bool {
-        true
-    }
-
     func groupMemberViewRemoveRecipient(_ recipient: PickedRecipient) {
         newRecipientSet.remove(recipient)
         updateNavbar()
