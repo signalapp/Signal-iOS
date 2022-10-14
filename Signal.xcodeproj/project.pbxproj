@@ -1568,7 +1568,6 @@
 		F9C5CCBD289453B300548EEE /* UUIDBackfillTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D6289453B100548EEE /* UUIDBackfillTask.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCBE289453B300548EEE /* SGXContactDiscoveryOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D7289453B100548EEE /* SGXContactDiscoveryOperation.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC0289453B300548EEE /* ContactDiscoveryTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCC2289453B300548EEE /* BulkUUIDLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DB289453B100548EEE /* BulkUUIDLookup.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC3289453B300548EEE /* ContactDiscoveryOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC4289453B300548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC5289453B300548EEE /* SignalAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DE289453B100548EEE /* SignalAccount.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -3908,7 +3907,6 @@
 		F9C5C9D6289453B100548EEE /* UUIDBackfillTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UUIDBackfillTask.swift; sourceTree = "<group>"; };
 		F9C5C9D7289453B100548EEE /* SGXContactDiscoveryOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SGXContactDiscoveryOperation.swift; sourceTree = "<group>"; };
 		F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryTask.swift; sourceTree = "<group>"; };
-		F9C5C9DB289453B100548EEE /* BulkUUIDLookup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BulkUUIDLookup.swift; sourceTree = "<group>"; };
 		F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryOperation.swift; sourceTree = "<group>"; };
 		F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSDisappearingMessagesConfiguration+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C9DE289453B100548EEE /* SignalAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAccount.swift; sourceTree = "<group>"; };
@@ -7654,7 +7652,6 @@
 		F9C5C9D5289453B100548EEE /* Discovery */ = {
 			isa = PBXGroup;
 			children = (
-				F9C5C9DB289453B100548EEE /* BulkUUIDLookup.swift */,
 				F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */,
 				F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */,
 				F9C5C9D7289453B100548EEE /* SGXContactDiscoveryOperation.swift */,
@@ -10589,7 +10586,6 @@
 				F9C5CC74289453B300548EEE /* BlurHash.swift in Sources */,
 				668FE09B28B923A4008B9071 /* Bool+SSK.swift in Sources */,
 				F9C5CE39289453B400548EEE /* BulkProfileFetch.swift in Sources */,
-				F9C5CCC2289453B300548EEE /* BulkUUIDLookup.swift in Sources */,
 				E7D7C93F28B580AC003F043B /* Bundle+OWS.swift in Sources */,
 				F9C5CDE1289453B400548EEE /* ByteParser.m in Sources */,
 				F9C5CD32289453B300548EEE /* CallKitIdStore.m in Sources */,

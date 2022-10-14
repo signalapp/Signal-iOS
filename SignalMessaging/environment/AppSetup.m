@@ -103,7 +103,6 @@ NS_ASSUME_NONNULL_BEGIN
         id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
         MessageFetcherJob *messageFetcherJob = [MessageFetcherJob new];
         BulkProfileFetch *bulkProfileFetch = [BulkProfileFetch new];
-        BulkUUIDLookup *bulkUUIDLookup = [BulkUUIDLookup new];
         id<VersionedProfiles> versionedProfiles = [VersionedProfilesImpl new];
         ModelReadCaches *modelReadCaches =
             [[ModelReadCaches alloc] initWithModelReadCacheFactory:[ModelReadCacheFactory new]];
@@ -171,7 +170,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    groupV2Updates:groupV2Updates
                                                                 messageFetcherJob:messageFetcherJob
                                                                  bulkProfileFetch:bulkProfileFetch
-                                                                   bulkUUIDLookup:bulkUUIDLookup
                                                                 versionedProfiles:versionedProfiles
                                                                   modelReadCaches:modelReadCaches
                                                               earlyMessageManager:earlyMessageManager

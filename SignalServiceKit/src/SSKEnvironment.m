@@ -47,7 +47,6 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<GroupV2Updates> groupV2UpdatesRef;
 @property (nonatomic) MessageFetcherJob *messageFetcherJobRef;
 @property (nonatomic) BulkProfileFetch *bulkProfileFetchRef;
-@property (nonatomic) BulkUUIDLookup *bulkUUIDLookupRef;
 @property (nonatomic) id<VersionedProfiles> versionedProfilesRef;
 @property (nonatomic) ModelReadCaches *modelReadCachesRef;
 @property (nonatomic) EarlyMessageManager *earlyMessageManagerRef;
@@ -115,7 +114,6 @@ static SSKEnvironment *sharedSSKEnvironment;
                          groupV2Updates:(id<GroupV2Updates>)groupV2Updates
                       messageFetcherJob:(MessageFetcherJob *)messageFetcherJob
                        bulkProfileFetch:(BulkProfileFetch *)bulkProfileFetch
-                         bulkUUIDLookup:(BulkUUIDLookup *)bulkUUIDLookup
                       versionedProfiles:(id<VersionedProfiles>)versionedProfiles
                         modelReadCaches:(ModelReadCaches *)modelReadCaches
                     earlyMessageManager:(EarlyMessageManager *)earlyMessageManager
@@ -178,7 +176,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     _messageFetcherJobRef = messageFetcherJob;
     _bulkProfileFetchRef = bulkProfileFetch;
     _versionedProfilesRef = versionedProfiles;
-    _bulkUUIDLookupRef = bulkUUIDLookup;
     _modelReadCachesRef = modelReadCaches;
     _earlyMessageManagerRef = earlyMessageManager;
     _messagePipelineSupervisorRef = messagePipelineSupervisor;

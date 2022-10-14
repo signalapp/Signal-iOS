@@ -11,7 +11,6 @@ extern NSNotificationName const WarmCachesNotification;
 @class AppExpiry;
 @class BlockingManager;
 @class BulkProfileFetch;
-@class BulkUUIDLookup;
 @class ChangePhoneNumber;
 @class EarlyMessageManager;
 @class GroupsV2MessageProcessor;
@@ -111,7 +110,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                          groupV2Updates:(id<GroupV2Updates>)groupV2Updates
                       messageFetcherJob:(MessageFetcherJob *)messageFetcherJob
                        bulkProfileFetch:(BulkProfileFetch *)bulkProfileFetch
-                         bulkUUIDLookup:(BulkUUIDLookup *)bulkUUIDLookup
                       versionedProfiles:(id<VersionedProfiles>)versionedProfiles
                         modelReadCaches:(ModelReadCaches *)modelReadCaches
                     earlyMessageManager:(EarlyMessageManager *)earlyMessageManager
@@ -173,7 +171,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 @property (nonatomic, readonly) SSKPreferences *sskPreferencesRef;
 @property (nonatomic, readonly) MessageFetcherJob *messageFetcherJobRef;
 @property (nonatomic, readonly) BulkProfileFetch *bulkProfileFetchRef;
-@property (nonatomic, readonly) BulkUUIDLookup *bulkUUIDLookupRef;
 @property (nonatomic, readonly) id<VersionedProfiles> versionedProfilesRef;
 @property (nonatomic, readonly) ModelReadCaches *modelReadCachesRef;
 @property (nonatomic, readonly) EarlyMessageManager *earlyMessageManagerRef;

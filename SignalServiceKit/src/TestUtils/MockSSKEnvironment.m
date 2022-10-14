@@ -78,7 +78,6 @@ NS_ASSUME_NONNULL_BEGIN
     id<GroupV2Updates> groupV2Updates = [[MockGroupV2Updates alloc] init];
     MessageFetcherJob *messageFetcherJob = [MessageFetcherJob new];
     BulkProfileFetch *bulkProfileFetch = [BulkProfileFetch new];
-    BulkUUIDLookup *bulkUUIDLookup = [BulkUUIDLookup new];
     id<VersionedProfiles> versionedProfiles = [MockVersionedProfiles new];
     ModelReadCaches *modelReadCaches =
         [[ModelReadCaches alloc] initWithModelReadCacheFactory:[TestableModelReadCacheFactory new]];
@@ -136,7 +135,6 @@ NS_ASSUME_NONNULL_BEGIN
                            groupV2Updates:groupV2Updates
                         messageFetcherJob:messageFetcherJob
                          bulkProfileFetch:bulkProfileFetch
-                           bulkUUIDLookup:bulkUUIDLookup
                         versionedProfiles:versionedProfiles
                           modelReadCaches:modelReadCaches
                       earlyMessageManager:earlyMessageManager

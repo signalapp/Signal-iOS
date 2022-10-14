@@ -355,14 +355,6 @@ public extension NSObject {
         .shared()
     }
 
-    final var bulkUUIDLookup: BulkUUIDLookup {
-        SSKEnvironment.shared.bulkUUIDLookupRef
-    }
-
-    static var bulkUUIDLookup: BulkUUIDLookup {
-        SSKEnvironment.shared.bulkUUIDLookupRef
-    }
-
     final var outgoingReceiptManager: OWSOutgoingReceiptManager {
         SSKEnvironment.shared.outgoingReceiptManagerRef
     }
@@ -852,14 +844,6 @@ public extension Dependencies {
 
     static var deviceManager: OWSDeviceManager {
         .shared()
-    }
-
-    var bulkUUIDLookup: BulkUUIDLookup {
-        SSKEnvironment.shared.bulkUUIDLookupRef
-    }
-
-    static var bulkUUIDLookup: BulkUUIDLookup {
-        SSKEnvironment.shared.bulkUUIDLookupRef
     }
 
     var outgoingReceiptManager: OWSOutgoingReceiptManager {
