@@ -176,14 +176,8 @@ class MediaMessageView: AttachmentPrepContentView, OWSAudioPlayerDelegate {
         view.autoPin(toAspectRatio: aspectRatio)
         view.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .greaterThanOrEqual)
         view.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .greaterThanOrEqual)
-        NSLayoutConstraint.autoSetPriority(.defaultLow) {
-            // One of these two constraints will be broken; but the above higher priority
-            // constraints ensure aspect ratio is preserved and both dimensions are bigger
-            // than the container.
-            // The one that isn't broken ensures we fill the container, and do expand beyond it.
-            view.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .equal)
-            view.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .equal)
-        }
+        view.autoMatch(.width, to: .height, of: self, withMultiplier: aspectRatio, relation: .lessThanOrEqual)
+        view.autoMatch(.height, to: .width, of: self, withMultiplier: 1 / aspectRatio, relation: .lessThanOrEqual)
     }
 
     private func createImagePreview() {
