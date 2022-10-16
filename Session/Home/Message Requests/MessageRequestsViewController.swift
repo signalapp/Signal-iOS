@@ -204,8 +204,8 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     // MARK: - Updating
     
     private func startObservingChanges(didReturnFromBackground: Bool = false) {
-        self.viewModel.onThreadChange = { [weak self] updatedThreadData in
-            self?.handleThreadUpdates(updatedThreadData)
+        self.viewModel.onThreadChange = { [weak self] updatedThreadData, changeset in
+            self?.handleThreadUpdates(updatedThreadData, changeset: changeset)
         }
         
         // Note: When returning from the background we could have received notifications but the
@@ -216,12 +216,18 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         }
     }
     
-    private func handleThreadUpdates(_ updatedData: [MessageRequestsViewModel.SectionModel], initialLoad: Bool = false) {
+    private func handleThreadUpdates(
+        _ updatedData: [MessageRequestsViewModel.SectionModel],
+        changeset: StagedChangeset<[MessageRequestsViewModel.SectionModel]>,
+        initialLoad: Bool = false
+    ) {
         // Ensure the first load runs without animations (if we don't do this the cells will animate
         // in from a frame of CGRect.zero)
         guard hasLoadedInitialThreadData else {
             hasLoadedInitialThreadData = true
-            UIView.performWithoutAnimation { handleThreadUpdates(updatedData, initialLoad: true) }
+            UIView.performWithoutAnimation {
+                handleThreadUpdates(updatedData, changeset: changeset, initialLoad: true)
+            }
             return
         }
         
@@ -241,7 +247,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         
         // Reload the table content (animate changes after the first load)
         tableView.reload(
-            using: StagedChangeset(source: viewModel.threadData, target: updatedData),
+            using: changeset,
             deleteSectionsAnimation: .none,
             insertSectionsAnimation: .none,
             reloadSectionsAnimation: .none,
@@ -280,7 +286,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             
             self?.isLoadingMore = true
             
-            DispatchQueue.global(qos: .default).async { [weak self] in
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
                 self?.viewModel.pagedDataObserver?.load(.pageAfter)
             }
         }
@@ -352,7 +358,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             case .loadMore:
                 self.isLoadingMore = true
                 
-                DispatchQueue.global(qos: .default).async { [weak self] in
+                DispatchQueue.global(qos: .userInitiated).async { [weak self] in
                     self?.viewModel.pagedDataObserver?.load(.pageAfter)
                 }
                 

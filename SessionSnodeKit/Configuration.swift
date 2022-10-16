@@ -14,6 +14,9 @@ public enum SNSnodeKit { // Just to make the external API nice
                 ],
                 [
                     _003_YDBToGRDBMigration.self
+                ],
+                [
+                    _004_FlagMessageHashAsDeletedOrInvalid.self
                 ]
             ]
         )

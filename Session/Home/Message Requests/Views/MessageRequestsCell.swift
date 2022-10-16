@@ -78,7 +78,7 @@ class MessageRequestsCell: UITableViewCell {
     private func setUpViewHierarchy() {
         themeBackgroundColor = .conversationButton_unreadBackground
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.themeBackgroundColor = .conversationButton_unreadHighlight
+        selectedBackgroundView?.themeBackgroundColor = .highlighted(.conversationButton_unreadBackground)
         
         contentView.addSubview(iconContainerView)
         contentView.addSubview(titleLabel)

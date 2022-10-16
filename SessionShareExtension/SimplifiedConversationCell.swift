@@ -60,7 +60,7 @@ final class SimplifiedConversationCell: UITableViewCell {
         themeBackgroundColor = .conversationButton_background
         
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.themeBackgroundColor = .conversationButton_highlight
+        selectedBackgroundView.themeBackgroundColor = .highlighted(.conversationButton_background)
         self.selectedBackgroundView = selectedBackgroundView
         
         addSubview(stackView)
