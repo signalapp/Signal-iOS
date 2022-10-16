@@ -103,7 +103,10 @@ final class ReactionContainerView: UIView {
     private func setUpViewHierarchy() {
         addSubview(mainStackView)
         
-        mainStackView.pin(to: self)
+        mainStackView.pin(.top, to: .top, of: self)
+        mainStackView.pin(.leading, to: .leading, of: self)
+        mainStackView.pin(.trailing, to: .trailing, of: self)
+        mainStackView.pin(.bottom, to: .bottom, of: self, withInset: -Values.verySmallSpacing)
         reactionContainerView.set(.width, to: .width, of: mainStackView)
     }
     
@@ -114,7 +117,7 @@ final class ReactionContainerView: UIView {
         // button appear horizontally centered (if we don't do this it gets offset to one side)
         guard frame != CGRect.zero, frame.size != oldSize else { return }
         
-        var targetSuperview: UIView? = {
+        let targetSuperview: UIView? = {
             var result: UIView? = self.superview
             
             while result != nil, result?.isKind(of: UITableViewCell.self) != true {

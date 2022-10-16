@@ -160,7 +160,7 @@ public final class ClosedGroupPoller {
                         poller?.isPolling.wrappedValue[groupPublicKey] == true
                     else { return Promise(error: Error.pollingCanceled) }
                     
-                    let promises: [Promise<[SnodeReceivedMessage]>] = {
+                    let promises: [Promise<([SnodeReceivedMessage], String?)>] = {
                         if SnodeAPI.hardfork >= 19 && SnodeAPI.softfork >= 1 {
                             return [ SnodeAPI.getMessages(from: snode, associatedWith: groupPublicKey, authenticated: false) ]
                         }
@@ -187,11 +187,20 @@ public final class ClosedGroupPoller {
                             let allMessages: [SnodeReceivedMessage] = messageResults
                                 .reduce([]) { result, next in
                                     switch next {
-                                        case .fulfilled(let messages): return result.appending(contentsOf: messages)
+                                        case .fulfilled(let data): return result.appending(contentsOf: data.0)
                                         default: return result
                                     }
                                 }
+                            let allHashes: [String] = messageResults
+                                .reduce([]) { result, next in
+                                    switch next {
+                                        case .fulfilled(let data): return result.appending(data.1)
+                                        default: return result
+                                    }
+                                }
+                                .compactMap { $0 }
                             var messageCount: Int = 0
+                            var hadValidHashUpdate: Bool = false
                             
                             // No need to do anything if there are no messages
                             guard !allMessages.isEmpty else {
@@ -216,6 +225,10 @@ public final class ClosedGroupPoller {
                                                     MessageReceiverError.duplicateMessage,
                                                     MessageReceiverError.duplicateControlMessage,
                                                     MessageReceiverError.selfSend:
+                                                    break
+                                                    
+                                                case MessageReceiverError.duplicateMessageNewSnode:
+                                                    hadValidHashUpdate = true
                                                     break
                                                     
                                                 // In the background ignore 'SQLITE_ABORT' (it generally means
@@ -248,6 +261,17 @@ public final class ClosedGroupPoller {
                                 // If we are force-polling then add to the JobRunner so they are persistent and will retry on
                                 // the next app run if they fail but don't let them auto-start
                                 JobRunner.add(db, job: jobToRun, canStartJob: !calledFromBackgroundPoller)
+                                
+                                if messageCount == 0 && !hadValidHashUpdate, !allHashes.isEmpty {
+                                    SNLog("Received \(allMessages.count) new message\(messageCount == 1 ? "" : "s") in closed group with public key: \(groupPublicKey), all duplicates - marking the hashes we polled with as invalid")
+                                    
+                                    // Update the cached validity of the messages
+                                    try SnodeReceivedMessageInfo.handlePotentialDeletedOrInvalidHash(
+                                        db,
+                                        potentiallyInvalidHashes: allHashes,
+                                        otherKnownValidHashes: allMessages.map { $0.info.hash }
+                                    )
+                                }
                             }
                             
                             if calledFromBackgroundPoller {
@@ -269,7 +293,7 @@ public final class ClosedGroupPoller {
                                     }
                                 )
                             }
-                            else {
+                            else if messageCount > 0 || hadValidHashUpdate {
                                 SNLog("Received \(messageCount) new message\(messageCount == 1 ? "" : "s") in closed group with public key: \(groupPublicKey) (duplicates: \(allMessages.count - messageCount))")
                             }
                             

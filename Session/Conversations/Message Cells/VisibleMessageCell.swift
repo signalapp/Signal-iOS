@@ -230,7 +230,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         
         // Under bubble content
         addSubview(underBubbleStackView)
-        underBubbleStackView.pin(.top, to: .bottom, of: snContentView, withInset: 5)
+        underBubbleStackView.pin(.top, to: .bottom, of: snContentView, withInset: Values.verySmallSpacing)
         underBubbleStackView.pin(.bottom, to: .bottom, of: self)
         
         underBubbleStackView.addArrangedSubview(reactionContainerView)
@@ -399,6 +399,12 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                 !cellViewModel.isLast
             )
         )
+        
+        // Set the height of the underBubbleStackView to 0 if it has no content (need to do this
+        // otherwise it can randomly stretch)
+        underBubbleStackViewNoHeightConstraint.isActive = underBubbleStackView.arrangedSubviews
+            .filter { !$0.isHidden }
+            .isEmpty
     }
 
     private func populateContentView(

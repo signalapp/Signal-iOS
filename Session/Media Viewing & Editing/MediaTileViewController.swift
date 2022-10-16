@@ -262,10 +262,12 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
                     case .loadNewer, .loadOlder:
                         // Attachments are loaded in descending order so 'loadOlder' actually corresponds with
                         // 'pageAfter' in this case
-                        self?.viewModel.pagedDataObserver?.load(section?.model == .loadOlder ?
-                            .pageAfter :
-                            .pageBefore
-                        )
+                        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                            self?.viewModel.pagedDataObserver?.load(section?.model == .loadOlder ?
+                                .pageAfter :
+                                .pageBefore
+                            )
+                        }
                         return
                         
                     default: continue
@@ -276,8 +278,8 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     
     private func startObservingChanges(didReturnFromBackground: Bool = false) {
         // Start observing for data changes (will callback on the main thread)
-        self.viewModel.onGalleryChange = { [weak self] updatedGalleryData in
-            self?.handleUpdates(updatedGalleryData)
+        self.viewModel.onGalleryChange = { [weak self] updatedGalleryData, changeset in
+            self?.handleUpdates(updatedGalleryData, changeset: changeset)
         }
         
         // Note: When returning from the background we could have received notifications but the
@@ -294,7 +296,10 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
         self.viewModel.onGalleryChange = nil
     }
     
-    private func handleUpdates(_ updatedGalleryData: [MediaGalleryViewModel.SectionModel]) {
+    private func handleUpdates(
+        _ updatedGalleryData: [MediaGalleryViewModel.SectionModel],
+        changeset: StagedChangeset<[MediaGalleryViewModel.SectionModel]>
+    ) {
         // Ensure the first load runs without animations (if we don't do this the cells will animate
         // in from a frame of CGRect.zero)
         guard hasLoadedInitialData else {
@@ -341,7 +346,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
         self.mediaTileViewLayout.isInsertingCellsToTop = isInsertingAtTop
         self.mediaTileViewLayout.contentSizeBeforeInsertingToTop = self.collectionView.contentSize
         self.collectionView.reload(
-            using: StagedChangeset(source: self.viewModel.galleryData, target: updatedGalleryData),
+            using: changeset,
             interrupt: { $0.changeCount > MediaTileViewController.itemPageSize }
         ) { [weak self] updatedData in
             self?.viewModel.updateGalleryData(updatedData)
@@ -456,10 +461,12 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
                 UIScrollView.fastEndScrollingThen(collectionView, self.currentTargetOffset) { [weak self] in
                     // Attachments are loaded in descending order so 'loadOlder' actually corresponds with
                     // 'pageAfter' in this case
-                    self?.viewModel.pagedDataObserver?.load(section.model == .loadOlder ?
-                        .pageAfter :
-                        .pageBefore
-                    )
+                    DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                        self?.viewModel.pagedDataObserver?.load(section.model == .loadOlder ?
+                            .pageAfter :
+                            .pageBefore
+                        )
+                    }
                 }
                 
             case .emptyGallery, .galleryMonth: break

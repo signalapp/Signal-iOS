@@ -98,25 +98,37 @@ public class MessageRequestsViewModel {
                 orderSQL: SessionThreadViewModel.messageRequetsOrderSQL
             ),
             onChangeUnsorted: { [weak self] updatedData, updatedPageInfo in
-                guard let updatedThreadData: [SectionModel] = self?.process(data: updatedData, for: updatedPageInfo) else {
-                    return
-                }
+                guard
+                    let currentData: [SectionModel] = self?.threadData,
+                    let updatedThreadData: [SectionModel] = self?.process(data: updatedData, for: updatedPageInfo)
+                else { return }
                 
-                // If we have the 'onThreadChange' callback then trigger it, otherwise just store the changes
-                // to be sent to the callback if we ever start observing again (when we have the callback it needs
-                // to do the data updating as it's tied to UI updates and can cause crashes if not updated in the
-                // correct order)
-                guard let onThreadChange: (([SectionModel]) -> ()) = self?.onThreadChange else {
-                    self?.unobservedThreadDataChanges = updatedThreadData
-                    return
+                let changeset: StagedChangeset<[SectionModel]> = StagedChangeset(
+                    source: currentData,
+                    target: updatedThreadData
+                )
+                
+                // No need to do anything if there were no changes
+                guard !changeset.isEmpty else { return }
+                
+                // Run any changes on the main thread (as they will generally trigger UI updates)
+                DispatchQueue.main.async {
+                    // If we have the callback then trigger it, otherwise just store the changes to be sent
+                    // to the callback if we ever start observing again (when we have the callback it needs
+                    // to do the data updating as it's tied to UI updates and can cause crashes if not updated
+                    // in the correct order)
+                    guard let onThreadChange: (([SectionModel], StagedChangeset<[SectionModel]>) -> ()) = self?.onThreadChange else {
+                        self?.unobservedThreadDataChanges = (updatedThreadData, changeset)
+                        return
+                    }
+                    
+                    onThreadChange(updatedThreadData, changeset)
                 }
-
-                onThreadChange(updatedThreadData)
             }
         )
         
         // Run the initial query on a background thread so we don't block the push transition
-        DispatchQueue.global(qos: .default).async { [weak self] in
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             // The `.pageBefore` will query from a `0` offset loading the first page
             self?.pagedDataObserver?.load(.pageBefore)
         }
@@ -124,16 +136,16 @@ public class MessageRequestsViewModel {
     
     // MARK: - Thread Data
     
-    public private(set) var unobservedThreadDataChanges: [SectionModel]?
+    public private(set) var unobservedThreadDataChanges: ([SectionModel], StagedChangeset<[SectionModel]>)?
     public private(set) var threadData: [SectionModel] = []
     public private(set) var pagedDataObserver: PagedDatabaseObserver<SessionThread, SessionThreadViewModel>?
     
-    public var onThreadChange: (([SectionModel]) -> ())? {
+    public var onThreadChange: (([SectionModel], StagedChangeset<[SectionModel]>) -> ())? {
         didSet {
             // When starting to observe interaction changes we want to trigger a UI update just in case the
             // data was changed while we weren't observing
-            if let unobservedThreadDataChanges: [SectionModel] = self.unobservedThreadDataChanges {
-                onThreadChange?(unobservedThreadDataChanges)
+            if let unobservedThreadDataChanges: ([SectionModel], StagedChangeset<[SectionModel]>) = self.unobservedThreadDataChanges {
+                self.onThreadChange?(unobservedThreadDataChanges.0, unobservedThreadDataChanges.1)
                 self.unobservedThreadDataChanges = nil
             }
         }

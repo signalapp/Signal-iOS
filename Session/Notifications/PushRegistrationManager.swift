@@ -173,7 +173,7 @@ public enum PushRegistrationError: Error {
         }
     }
     
-    private func createVoipRegistryIfNecessary() {
+    public func createVoipRegistryIfNecessary() {
         AssertIsOnMainThread()
 
         guard voipRegistry == nil else { return }

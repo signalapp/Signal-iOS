@@ -227,7 +227,7 @@ public extension Message {
             // service node, but may have done so for another node - if the hash already existed in
             // the database before we inserted it for this node then we can ignore this message as a
             // duplicate
-            guard numExistingHashes == 0 else { throw MessageReceiverError.duplicateMessage }
+            guard numExistingHashes == 0 else { throw MessageReceiverError.duplicateMessageNewSnode }
             
             return processedMessage
         }

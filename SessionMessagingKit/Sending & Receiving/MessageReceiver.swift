@@ -118,7 +118,7 @@ public enum MessageReceiver {
         let proto: SNProtoContent
         
         do {
-            proto = try SNProtoContent.parseData((plaintext as NSData).removePadding())
+            proto = try SNProtoContent.parseData(plaintext.removePadding())
         }
         catch {
             SNLog("Couldn't parse proto due to error: \(error).")

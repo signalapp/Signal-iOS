@@ -55,7 +55,7 @@ public class SessionHighlightingBackgroundLabel: UIView {
     
     func setHighlighted(_ highlighted: Bool, animated: Bool) {
         self.themeBackgroundColor = (highlighted ?
-            .solidButton_highlight :
+            .highlighted(.solidButton_background) :
             .solidButton_background
         )
     }
@@ -66,7 +66,7 @@ public class SessionHighlightingBackgroundLabel: UIView {
         // need to swap back into the "highlighted" state so we can properly unhighlight within
         // the "deselect" animation
         guard !selected else {
-            self.themeBackgroundColor = .solidButton_highlight
+            self.themeBackgroundColor = .highlighted(.solidButton_background)
             return
         }
         guard animated else {
