@@ -188,6 +188,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
                 self.navigationController?.popViewController(animated: true)
             })
         )
+        presentActionSheet(actionSheet)
     }
 
     private func showAllViewers(revealingIndices: [IndexPath]) {
