@@ -56,10 +56,10 @@
     return builder;
 }
 
-- (void)configureAsSentOnBehalfOf:(TSOutgoingMessage *)message
+- (void)configureAsSentOnBehalfOf:(TSOutgoingMessage *)message inThread:(TSThread *)thread
 {
     self.isSentOnBehalfOfOnlineMessage = message.isOnline;
-    self.isSentOnBehalfOfStoryMessage = message.isStorySend;
+    self.isSentOnBehalfOfStoryMessage = message.isStorySend && !thread.isGroupThread;
 }
 
 @end

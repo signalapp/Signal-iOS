@@ -389,7 +389,7 @@ extension MessageSender {
                 let skdmMessage = OWSOutgoingSenderKeyDistributionMessage(
                     thread: contactThread,
                     senderKeyDistributionMessageBytes: skdmBytes, transaction: writeTx)
-                skdmMessage.configureAsSentOnBehalfOf(originalMessage)
+                skdmMessage.configureAsSentOnBehalfOf(originalMessage, in: thread)
 
                 let plaintext = skdmMessage.buildPlainTextData(contactThread, transaction: writeTx)
                 let payloadId: NSNumber?

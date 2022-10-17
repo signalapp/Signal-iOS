@@ -24,7 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (assign, atomic, readonly) BOOL isSentOnBehalfOfOnlineMessage;
 /// Returns YES if this message is being sent as a precondition to sending a story message.
 @property (assign, atomic, readonly) BOOL isSentOnBehalfOfStoryMessage;
-- (void)configureAsSentOnBehalfOf:(TSOutgoingMessage *)message NS_SWIFT_NAME(configureAsSentOnBehalfOf(_:));
+- (void)configureAsSentOnBehalfOf:(TSOutgoingMessage *)message
+                         inThread:(TSThread *)thread NS_SWIFT_NAME(configureAsSentOnBehalfOf(_:in:));
 
 @end
 
