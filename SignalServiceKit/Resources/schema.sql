@@ -855,6 +855,7 @@ CREATE
             ,"firstViewedTimestamp" DOUBLE NOT NULL
             ,"lastSnoozedTimestamp" DOUBLE NOT NULL
             ,"isComplete" BOOLEAN NOT NULL
+            ,"manifest" BLOB
         )
 ;
 

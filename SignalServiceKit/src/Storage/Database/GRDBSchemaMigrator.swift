@@ -203,6 +203,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addLastReceivedStoryTimestampToTSThread
         case addStoryContextAssociatedDataTable
         case populateStoryContextAssociatedDataTableAndRemoveOldColumns
+        case addColumnForExperienceUpgradeManifest
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2140,6 +2141,16 @@ public class GRDBSchemaMigrator: NSObject {
 
             } catch {
                 owsFail("Error \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addColumnForExperienceUpgradeManifest) { db in
+            do {
+                try db.alter(table: "model_ExperienceUpgrade") { table in
+                    table.add(column: "manifest", .blob)
+                }
+            } catch {
+                owsFail("Error: \(error)")
             }
         }
 

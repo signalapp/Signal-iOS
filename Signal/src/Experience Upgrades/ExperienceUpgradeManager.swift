@@ -21,7 +21,10 @@ class ExperienceUpgradeManager: NSObject {
         })
 
         // If we already have presented this experience upgrade, do nothing.
-        guard let next = optionalNext, lastPresented?.experienceUpgrade.uniqueId != next.uniqueId else {
+        guard
+            let next = optionalNext,
+            lastPresented?.experienceUpgrade.manifest != next.manifest
+        else {
             if optionalNext == nil {
                 dismissLastPresented()
                 return false
@@ -81,32 +84,32 @@ class ExperienceUpgradeManager: NSObject {
         dismissLastPresented(ifMatching: .pinReminder)
     }
 
-    /// Marks the specified type up of upgrade as complete and dismisses it if it is currently presented.
-    static func clearExperienceUpgrade(_ experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
-        ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: experienceUpgradeId, transaction: transaction)
+    /// Marks the given upgrade as complete, and dismisses it if currently presented.
+    static func clearExperienceUpgrade(_ manifest: ExperienceUpgradeManifest, transaction: GRDBWriteTransaction) {
+        ExperienceUpgradeFinder.markAsComplete(experienceUpgradeManifest: manifest, transaction: transaction)
 
         transaction.addAsyncCompletion(queue: .main) {
-            dismissLastPresented(ifMatching: experienceUpgradeId)
+            dismissLastPresented(ifMatching: manifest)
         }
     }
 
-    /// Marks the specified type up of upgrade as complete and dismisses it if it is currently presented.
-    static func snoozeExperienceUpgrade(_ experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
-        ExperienceUpgradeFinder.markAsSnoozed(experienceUpgradeId: experienceUpgradeId, transaction: transaction)
+    /// Snoozes the given upgrade, and dismisses it if currently presented.
+    static func snoozeExperienceUpgrade(_ manifest: ExperienceUpgradeManifest, transaction: GRDBWriteTransaction) {
+        ExperienceUpgradeFinder.markAsSnoozed(experienceUpgradeManifest: manifest, transaction: transaction)
 
         transaction.addAsyncCompletion(queue: .main) {
-            dismissLastPresented(ifMatching: experienceUpgradeId)
+            dismissLastPresented(ifMatching: manifest)
         }
     }
 
-    private static func dismissLastPresented(ifMatching upgradeId: ExperienceUpgradeId? = nil) {
+    private static func dismissLastPresented(ifMatching manifest: ExperienceUpgradeManifest? = nil) {
         guard let lastPresented = lastPresented else {
             return
         }
 
         if
-            let upgradeId = upgradeId,
-            lastPresented.experienceUpgrade.experienceId != upgradeId
+            let manifest = manifest,
+            lastPresented.experienceUpgrade.manifest != manifest
         {
             return
         }
@@ -134,20 +137,21 @@ class ExperienceUpgradeManager: NSObject {
     // MARK: - Megaphone
 
     private static func hasMegaphone(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> Bool {
-        switch experienceUpgrade.experienceId {
-        case .introducingPins,
-             .pinReminder,
-             .notificationPermissionReminder,
-             .contactPermissionReminder,
-             .subscriptionMegaphone:
+        switch experienceUpgrade.manifest {
+        case
+                .introducingPins,
+                .pinReminder,
+                .notificationPermissionReminder,
+                .contactPermissionReminder,
+                .subscriptionMegaphone:
             return true
-        default:
+        case .unrecognized:
             return false
         }
     }
 
     fileprivate static func megaphone(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) -> MegaphoneView? {
-        switch experienceUpgrade.experienceId {
+        switch experienceUpgrade.manifest {
         case .introducingPins:
             return IntroducingPinsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .pinReminder:
@@ -158,13 +162,13 @@ class ExperienceUpgradeManager: NSObject {
             return ContactPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .subscriptionMegaphone:
             return DonationMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        default:
+        case .unrecognized:
             return nil
         }
     }
 }
 
-// MARK: -
+// MARK: - ExperienceUpgradeView
 
 protocol ExperienceUpgradeView: AnyObject, Dependencies {
     var experienceUpgrade: ExperienceUpgrade { get }

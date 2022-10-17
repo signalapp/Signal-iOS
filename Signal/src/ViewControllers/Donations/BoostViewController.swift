@@ -621,7 +621,7 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
 
                     self.databaseStorage.write { transaction in
                         ExperienceUpgradeManager.snoozeExperienceUpgrade(
-                            ExperienceUpgradeId.subscriptionMegaphone,
+                            .subscriptionMegaphone,
                             transaction: transaction.unwrapGrdbWrite
                         )
                     }

@@ -14,23 +14,35 @@ public class ExperienceUpgrade: SDSCodableModel {
         case id
         case recordType
         case uniqueId
+
         case firstViewedTimestamp
         case lastSnoozedTimestamp
         case isComplete
+        case manifest
     }
 
     public var id: RowId?
-    public var uniqueId: String
+    public var uniqueId: String {
+        manifest.uniqueId
+    }
 
     public private(set) var firstViewedTimestamp: TimeInterval
     public private(set) var lastSnoozedTimestamp: TimeInterval
     public private(set) var isComplete: Bool
 
-    public init(uniqueId: String) {
-        self.uniqueId = uniqueId
+    /// Identifies and holds metadata about this ``ExperienceUpgrade``.
+    public let manifest: ExperienceUpgradeManifest
+
+    private init(manifest: ExperienceUpgradeManifest) {
         self.firstViewedTimestamp = 0
         self.lastSnoozedTimestamp = 0
         self.isComplete = false
+
+        self.manifest = manifest
+    }
+
+    static func makeNew(withManifest manifest: ExperienceUpgradeManifest) -> ExperienceUpgrade {
+        ExperienceUpgrade(manifest: manifest)
     }
 
     // MARK: - Codable
@@ -42,11 +54,22 @@ public class ExperienceUpgrade: SDSCodableModel {
         owsAssertDebug(decodedRecordType == Self.recordType, "Unexpectedly decoded record with wrong type.")
 
         id = try container.decodeIfPresent(RowId.self, forKey: .id)
-        uniqueId = try container.decode(String.self, forKey: .uniqueId)
 
         firstViewedTimestamp = try container.decode(TimeInterval.self, forKey: .firstViewedTimestamp)
         lastSnoozedTimestamp = try container.decode(TimeInterval.self, forKey: .lastSnoozedTimestamp)
         isComplete = try container.decode(Bool.self, forKey: .isComplete)
+
+        let persistedUniqueId = try container.decode(String.self, forKey: .uniqueId)
+
+        manifest = try {
+            if let manifest = try container.decodeIfPresent(ExperienceUpgradeManifest.self, forKey: .manifest) {
+                return manifest
+            }
+
+            return ExperienceUpgradeManifest.makeLegacy(fromPersistedExperienceUpgradeUniqueId: persistedUniqueId)
+        }()
+
+        owsAssertDebug(uniqueId == persistedUniqueId, "Persisted unique ID does not match deserialized model!")
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -59,10 +82,12 @@ public class ExperienceUpgrade: SDSCodableModel {
         try container.encode(firstViewedTimestamp, forKey: .firstViewedTimestamp)
         try container.encode(lastSnoozedTimestamp, forKey: .lastSnoozedTimestamp)
         try container.encode(isComplete, forKey: .isComplete)
+
+        try container.encode(manifest, forKey: .manifest)
     }
 }
 
-// MARK: - Modifiers
+// MARK: - Mark as <state>
 
 extension ExperienceUpgrade {
     public func markAsSnoozed(transaction: SDSAnyWriteTransaction) {
@@ -84,7 +109,7 @@ extension ExperienceUpgrade {
     /// on it and updates. Otherwise, performs `block` on ourself and inserts
     /// ourself. Skips calling `block` if this upgrade should not be saved.
     private func upsert(withTransaction transaction: SDSAnyWriteTransaction, inBlock block: (ExperienceUpgrade) -> Void) {
-        guard experienceId.shouldSave else {
+        guard manifest.shouldSave else {
             Logger.debug("Skipping save for experience upgrade: \(String(describing: id))")
             return
         }
