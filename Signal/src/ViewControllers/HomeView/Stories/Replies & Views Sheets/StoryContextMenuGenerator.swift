@@ -80,13 +80,14 @@ class StoryContextMenuGenerator: Dependencies {
         in thread: TSThread?,
         attachment: StoryThumbnailView.Attachment,
         sourceView: @escaping () -> UIView?,
+        hideSaveAction: Bool = false,
         transaction: SDSAnyReadTransaction
     ) -> [ContextMenuAction] {
         return [
             deleteAction(for: message, in: thread),
             hideAction(for: message, transaction: transaction),
             infoAction(for: message, in: thread),
-            saveAction(message: message, attachment: attachment),
+            hideSaveAction ? nil : saveAction(message: message, attachment: attachment),
             forwardAction(message: message),
             shareAction(message: message, attachment: attachment, sourceView: sourceView),
             goToChatAction(thread: thread)
@@ -116,13 +117,14 @@ class StoryContextMenuGenerator: Dependencies {
         in thread: TSThread?,
         attachment: StoryThumbnailView.Attachment,
         sourceView: @escaping () -> UIView?,
+        hideSaveAction: Bool = false,
         transaction: SDSAnyReadTransaction
     ) -> [UIAction] {
         return [
             deleteAction(for: message, in: thread),
             hideAction(for: message, transaction: transaction),
             infoAction(for: message, in: thread),
-            saveAction(message: message, attachment: attachment),
+            hideSaveAction ? nil : saveAction(message: message, attachment: attachment),
             forwardAction(message: message),
             shareAction(message: message, attachment: attachment, sourceView: sourceView),
             goToChatAction(thread: thread)

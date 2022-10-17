@@ -195,6 +195,7 @@ extension MyStoriesViewController: UITableViewDelegate {
                     // refetch the cell in case it changes out from underneath us.
                     return self?.tableView(tableView, cellForRowAt: indexPath)
                 },
+                hideSaveAction: true,
                 transaction: transaction
             )
         }
@@ -282,6 +283,7 @@ extension MyStoriesViewController: ContextMenuButtonDelegate {
                     // refetch the cell in case it changes out from underneath us.
                     return self?.tableView.dequeueReusableCell(withIdentifier: SentStoryCell.reuseIdentifier, for: indexPath)
                 },
+                hideSaveAction: true,
                 transaction: transaction
             )
         }
