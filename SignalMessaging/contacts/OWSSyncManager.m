@@ -73,9 +73,6 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
             OWSAssertDebug(self.contactsManagerImpl.isSetup);
 
             if (self.tsAccountManager.isPrimaryDevice) {
-                if (CurrentAppContext().isNSE) {
-                    return;
-                }
                 // Flush any pending changes.
                 //
                 // sendSyncContactsMessageIfNecessary will skipIfRedundant,
