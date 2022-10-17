@@ -167,6 +167,10 @@ class AttachmentKeyboard: CustomKeyboard {
     }
 
     func updateItemSizes() {
+        // Force a layout cycle so that `recentPhotosCollectionView` has the correct size in all cases.
+        // This became necessary with iOS 16.
+        layoutIfNeeded()
+
         // The items should always expand to fit the height of their collection view.
 
         // If we have space we will show two rows of recent photos (e.g. iPad in landscape).
