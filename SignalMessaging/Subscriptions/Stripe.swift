@@ -270,8 +270,10 @@ fileprivate extension Stripe {
 // See https://stripe.com/docs/currencies
 
 public extension Stripe {
+    /// A list of supported currencies, [according to Stripe][0].
+    ///
+    /// [0]: https://stripe.com/docs/currencies?presentment-currency=US#presentment-currencies
     static let supportedCurrencyCodes: [Currency.Code] = [
-        "USD",
         "AED",
         "AFN",
         "ALL",
@@ -293,6 +295,7 @@ public extension Stripe {
         "BRL",
         "BSD",
         "BWP",
+        "BYN",
         "BZD",
         "CAD",
         "CDF",
@@ -380,6 +383,7 @@ public extension Stripe {
         "SEK",
         "SGD",
         "SHP",
+        "SLE",
         "SLL",
         "SOS",
         "SRD",
@@ -394,6 +398,7 @@ public extension Stripe {
         "TZS",
         "UAH",
         "UGX",
+        "USD",
         "UYU",
         "UZS",
         "VND",
