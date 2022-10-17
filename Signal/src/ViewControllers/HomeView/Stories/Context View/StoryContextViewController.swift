@@ -1061,11 +1061,6 @@ extension StoryContextViewController: StoryItemMediaViewDelegate {
 
 extension StoryContextViewController: StoryContextMenuDelegate {
 
-    func storyContextMenuWillNavigateToConversation(_ completion: @escaping () -> Void) {
-        // Dismiss the viewer before navigating.
-        self.dismiss(animated: true, completion: completion)
-    }
-
     func storyContextMenuWillDelete(_ completion: @escaping () -> Void) {
         // Go to the next item after deleting.
         self.transitionToNextItem()

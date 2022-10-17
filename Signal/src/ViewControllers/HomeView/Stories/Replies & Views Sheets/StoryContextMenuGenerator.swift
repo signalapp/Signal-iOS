@@ -10,9 +10,6 @@ import SignalServiceKit
 
 protocol StoryContextMenuDelegate: AnyObject {
 
-    /// Delegates should dismiss any context and call the completion block to proceed with navigation.
-    func storyContextMenuWillNavigateToConversation(_ completion: @escaping () -> Void)
-
     /// Delegates should handle any required actions prior to deletion (such as dismissing a viewer)
     /// and call the completion block to proceed with deletion.
     func storyContextMenuWillDelete(_ completion: @escaping () -> Void)
@@ -25,9 +22,6 @@ protocol StoryContextMenuDelegate: AnyObject {
 }
 
 extension StoryContextMenuDelegate {
-    func storyContextMenuWillNavigateToConversation(_ completion: @escaping () -> Void) {
-        completion()
-    }
 
     func storyContextMenuWillDelete(_ completion: @escaping () -> Void) {
         completion()
@@ -434,16 +428,9 @@ extension StoryContextMenuGenerator {
                 comment: "Context menu action to open the chat associated with the selected story"
             ),
             icon: .open20,
-            handler: { [weak self] completion in
-                if let delegate = self?.delegate {
-                    delegate.storyContextMenuWillNavigateToConversation {
-                        Self.signalApp.presentConversation(for: thread, action: .compose, animated: true)
-                        completion(true)
-                    }
-                } else {
-                    Self.signalApp.presentConversation(for: thread, action: .compose, animated: true)
-                    completion(true)
-                }
+            handler: { completion in
+                Self.signalApp.presentConversation(for: thread, action: .compose, animated: true)
+                completion(true)
             }
         )
     }
