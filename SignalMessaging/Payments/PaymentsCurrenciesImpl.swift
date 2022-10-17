@@ -238,11 +238,6 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
 
     public static let paymentConversionRatesDidChange = NSNotification.Name("paymentConversionRatesDidChange")
 
-    public var preferredConversionInfos: [CurrencyConversionInfo] {
-        // Always include values for preferred currencies.
-        conversionInfos(for: preferredCurrencyInfos)
-    }
-
     public var supportedConversionInfos: [CurrencyConversionInfo] {
         conversionInfos(for: supportedCurrencyInfos)
     }
