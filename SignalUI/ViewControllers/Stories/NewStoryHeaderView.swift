@@ -50,8 +50,8 @@ public class NewStoryHeaderView: UIStackView {
             selector: #selector(didTapNewStory)
         )
         newStoryButton.setImage(#imageLiteral(resourceName: "plus-12").withRenderingMode(.alwaysTemplate))
-        newStoryButton.contentEdgeInsets = UIEdgeInsets(top: 5, leading: 8, bottom: 5, trailing: 9)
-        newStoryButton.titleEdgeInsets = UIEdgeInsets(top: 0, leading: 1, bottom: 0, trailing: -1)
+        newStoryButton.contentEdgeInsets = UIEdgeInsets(top: 5, leading: 12, bottom: 5, trailing: 18)
+        newStoryButton.titleEdgeInsets = UIEdgeInsets(top: 0, leading: 6, bottom: 0, trailing: -6)
         newStoryButton.tintColor = Theme.primaryIconColor
         newStoryButton.clipsToBounds = true
 
