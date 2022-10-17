@@ -245,10 +245,10 @@ fileprivate extension GroupsV2Migration {
         }
 
         let groupMembership = unmigratedState.groupThread.groupModel.groupMembership
-        let membersToMigrate = membersToTryToMigrate(groupMembership: groupMembership)
 
         return firstly(on: .global()) { () -> Promise<Void> in
-            let phoneNumbersWithoutUuids = membersToMigrate.compactMap { (address: SignalServiceAddress) -> String? in
+            let membersToFetchUuids = membersToTryToMigrate(groupMembership: groupMembership)
+            let phoneNumbersWithoutUuids = membersToFetchUuids.compactMap { (address: SignalServiceAddress) -> String? in
                 if address.uuid != nil {
                     return nil
                 }
@@ -271,7 +271,7 @@ fileprivate extension GroupsV2Migration {
             let membersToFetchProfiles = Self.databaseStorage.read { transaction in
                 // Both the capability and a profile key are required to migrate
                 // If a user doesn't have both, we need to refetch their profile
-                membersToMigrate.filter { address in
+                groupMembership.allMembersOfAnyKind.filter { address in
                     let hasProfileKey = groupsV2.hasProfileKeyCredential(
                         for: address,
                         transaction: transaction)
@@ -522,8 +522,7 @@ fileprivate extension GroupsV2Migration {
         // The group creator is an administrator;
         // the other members are normal users.
         var v2MembershipBuilder = GroupMembership.Builder()
-        let membersToMigrate = membersToTryToMigrate(groupMembership: v1GroupModel.groupMembership)
-        for address in membersToMigrate {
+        for address in v1GroupModel.groupMembership.allMembersOfAnyKind {
             if DebugFlags.groupsV2migrationsDropOtherMembers.get(),
                 !address.isLocalAddress {
                 Logger.warn("Dropping non-local user.")
@@ -623,9 +622,6 @@ fileprivate extension GroupsV2Migration {
         let isGroupInProfileWhitelist = profileManager.isThread(inProfileWhitelist: groupThread,
                                                                 transaction: transaction)
 
-        let groupMembership = groupThread.groupModel.groupMembership
-        let membersToMigrate = membersToTryToMigrate(groupMembership: groupMembership)
-
         // Inspect member list.
         //
         // The group creator is an administrator;
@@ -633,7 +629,7 @@ fileprivate extension GroupsV2Migration {
         var membersWithoutUuids = [SignalServiceAddress]()
         var membersWithoutProfileKeys = [SignalServiceAddress]()
         var membersMigrated = [SignalServiceAddress]()
-        for address in membersToMigrate {
+        for address in groupThread.groupModel.groupMembership.allMembersOfAnyKind {
             if address.isEqualToAddress(localAddress) {
                 continue
             }
