@@ -355,7 +355,9 @@ if __name__ == "__main__":
 
     if not args.skip_license_header_checks:
         try:
-            subprocess.check_output("Scripts/lint/lint-license-headers", text=True)
+            subprocess.check_output(
+                ["Scripts/lint/lint-license-headers", "--fix"], text=True
+            )
         except subprocess.CalledProcessError as e:
             sys.exit(1)
 
