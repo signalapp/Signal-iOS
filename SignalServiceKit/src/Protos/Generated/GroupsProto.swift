@@ -290,7 +290,7 @@ public enum GroupsProtoMemberRole: SwiftProtobuf.Enum {
     public init?(rawValue: Int) {
         switch rawValue {
             case 0: self = .unknown
-            case 1: self = .`default`
+            case 1: self = .default
             case 2: self = .administrator
             default: self = .UNRECOGNIZED(rawValue)
         }
@@ -299,7 +299,7 @@ public enum GroupsProtoMemberRole: SwiftProtobuf.Enum {
     public var rawValue: Int {
         switch self {
             case .unknown: return 0
-            case .`default`: return 1
+            case .default: return 1
             case .administrator: return 2
             case .UNRECOGNIZED(let i): return i
         }

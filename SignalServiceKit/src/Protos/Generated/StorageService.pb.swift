@@ -1,8 +1,3 @@
-//
-// Copyright 2019 Signal Messenger, LLC
-// SPDX-License-Identifier: AGPL-3.0-only
-//
-
 // DO NOT EDIT.
 // swift-format-ignore-file
 //
@@ -28,6 +23,50 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   struct _2: SwiftProtobuf.ProtobufAPIVersion_2 {}
   typealias Version = _2
 }
+
+enum StorageServiceProtos_OptionalBool: SwiftProtobuf.Enum {
+  typealias RawValue = Int
+  case unset // = 0
+  case `true` // = 1
+  case `false` // = 2
+  case UNRECOGNIZED(Int)
+
+  init() {
+    self = .unset
+  }
+
+  init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .unset
+    case 1: self = .true
+    case 2: self = .false
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  var rawValue: Int {
+    switch self {
+    case .unset: return 0
+    case .true: return 1
+    case .false: return 2
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+}
+
+#if swift(>=4.2)
+
+extension StorageServiceProtos_OptionalBool: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  static var allCases: [StorageServiceProtos_OptionalBool] = [
+    .unset,
+    .true,
+    .false,
+  ]
+}
+
+#endif  // swift(>=4.2)
 
 struct StorageServiceProtos_StorageItem {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -621,6 +660,11 @@ struct StorageServiceProtos_AccountRecord {
     set {_uniqueStorage()._storiesDisabled = newValue}
   }
 
+  var storyViewReceiptsEnabled: StorageServiceProtos_OptionalBool {
+    get {return _storage._storyViewReceiptsEnabled}
+    set {_uniqueStorage()._storyViewReceiptsEnabled = newValue}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum PhoneNumberSharingMode: SwiftProtobuf.Enum {
@@ -788,6 +832,7 @@ struct StorageServiceProtos_StoryDistributionListRecord {
 }
 
 #if swift(>=5.5) && canImport(_Concurrency)
+extension StorageServiceProtos_OptionalBool: @unchecked Sendable {}
 extension StorageServiceProtos_StorageItem: @unchecked Sendable {}
 extension StorageServiceProtos_StorageItems: @unchecked Sendable {}
 extension StorageServiceProtos_StorageManifest: @unchecked Sendable {}
@@ -815,6 +860,14 @@ extension StorageServiceProtos_StoryDistributionListRecord: @unchecked Sendable 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "StorageServiceProtos"
+
+extension StorageServiceProtos_OptionalBool: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "UNSET"),
+    1: .same(proto: "TRUE"),
+    2: .same(proto: "FALSE"),
+  ]
+}
 
 extension StorageServiceProtos_StorageItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".StorageItem"
@@ -1525,6 +1578,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     26: .same(proto: "myStoryPrivacyHasBeenSet"),
     27: .same(proto: "viewedOnboardingStory"),
     29: .same(proto: "storiesDisabled"),
+    30: .same(proto: "storyViewReceiptsEnabled"),
   ]
 
   fileprivate class _StorageClass {
@@ -1555,6 +1609,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _myStoryPrivacyHasBeenSet: Bool = false
     var _viewedOnboardingStory: Bool = false
     var _storiesDisabled: Bool = false
+    var _storyViewReceiptsEnabled: StorageServiceProtos_OptionalBool = .unset
 
     static let defaultInstance = _StorageClass()
 
@@ -1588,6 +1643,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       _myStoryPrivacyHasBeenSet = source._myStoryPrivacyHasBeenSet
       _viewedOnboardingStory = source._viewedOnboardingStory
       _storiesDisabled = source._storiesDisabled
+      _storyViewReceiptsEnabled = source._storyViewReceiptsEnabled
     }
   }
 
@@ -1633,6 +1689,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         case 26: try { try decoder.decodeSingularBoolField(value: &_storage._myStoryPrivacyHasBeenSet) }()
         case 27: try { try decoder.decodeSingularBoolField(value: &_storage._viewedOnboardingStory) }()
         case 29: try { try decoder.decodeSingularBoolField(value: &_storage._storiesDisabled) }()
+        case 30: try { try decoder.decodeSingularEnumField(value: &_storage._storyViewReceiptsEnabled) }()
         default: break
         }
       }
@@ -1726,6 +1783,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       if _storage._storiesDisabled != false {
         try visitor.visitSingularBoolField(value: _storage._storiesDisabled, fieldNumber: 29)
       }
+      if _storage._storyViewReceiptsEnabled != .unset {
+        try visitor.visitSingularEnumField(value: _storage._storyViewReceiptsEnabled, fieldNumber: 30)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1762,6 +1822,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._myStoryPrivacyHasBeenSet != rhs_storage._myStoryPrivacyHasBeenSet {return false}
         if _storage._viewedOnboardingStory != rhs_storage._viewedOnboardingStory {return false}
         if _storage._storiesDisabled != rhs_storage._storiesDisabled {return false}
+        if _storage._storyViewReceiptsEnabled != rhs_storage._storyViewReceiptsEnabled {return false}
         return true
       }
       if !storagesAreEqual {return false}

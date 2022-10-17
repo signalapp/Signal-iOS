@@ -13,6 +13,56 @@ public enum StorageServiceProtoError: Error {
     case invalidProtobuf(description: String)
 }
 
+// MARK: - StorageServiceProtoOptionalBool
+
+public enum StorageServiceProtoOptionalBool: SwiftProtobuf.Enum {
+    public typealias RawValue = Int
+    case unset // 0
+    case `true` // 1
+    case `false` // 2
+    case UNRECOGNIZED(Int)
+
+    public init() {
+        self = .unset
+    }
+
+    public init?(rawValue: Int) {
+        switch rawValue {
+            case 0: self = .unset
+            case 1: self = .true
+            case 2: self = .false
+            default: self = .UNRECOGNIZED(rawValue)
+        }
+    }
+
+    public var rawValue: Int {
+        switch self {
+            case .unset: return 0
+            case .true: return 1
+            case .false: return 2
+            case .UNRECOGNIZED(let i): return i
+        }
+    }
+}
+
+private func StorageServiceProtoOptionalBoolWrap(_ value: StorageServiceProtos_OptionalBool) -> StorageServiceProtoOptionalBool {
+    switch value {
+    case .unset: return .unset
+    case .true: return .true
+    case .false: return .false
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
+private func StorageServiceProtoOptionalBoolUnwrap(_ value: StorageServiceProtoOptionalBool) -> StorageServiceProtos_OptionalBool {
+    switch value {
+    case .unset: return .unset
+    case .true: return .true
+    case .false: return .false
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
 // MARK: - StorageServiceProtoStorageItem
 
 public struct StorageServiceProtoStorageItem: Codable, CustomDebugStringConvertible {
@@ -1201,12 +1251,12 @@ public enum StorageServiceProtoContactRecordIdentityState: SwiftProtobuf.Enum {
     case UNRECOGNIZED(Int)
 
     public init() {
-        self = .`default`
+        self = .default
     }
 
     public init?(rawValue: Int) {
         switch rawValue {
-            case 0: self = .`default`
+            case 0: self = .default
             case 1: self = .verified
             case 2: self = .unverified
             default: self = .UNRECOGNIZED(rawValue)
@@ -1215,7 +1265,7 @@ public enum StorageServiceProtoContactRecordIdentityState: SwiftProtobuf.Enum {
 
     public var rawValue: Int {
         switch self {
-            case .`default`: return 0
+            case .default: return 0
             case .verified: return 1
             case .unverified: return 2
             case .UNRECOGNIZED(let i): return i
@@ -1879,12 +1929,12 @@ public enum StorageServiceProtoGroupV2RecordStorySendMode: SwiftProtobuf.Enum {
     case UNRECOGNIZED(Int)
 
     public init() {
-        self = .`default`
+        self = .default
     }
 
     public init?(rawValue: Int) {
         switch rawValue {
-            case 0: self = .`default`
+            case 0: self = .default
             case 1: self = .disabled
             case 2: self = .enabled
             default: self = .UNRECOGNIZED(rawValue)
@@ -1893,7 +1943,7 @@ public enum StorageServiceProtoGroupV2RecordStorySendMode: SwiftProtobuf.Enum {
 
     public var rawValue: Int {
         switch self {
-            case .`default`: return 0
+            case .default: return 0
             case .disabled: return 1
             case .enabled: return 2
             case .UNRECOGNIZED(let i): return i
@@ -2852,6 +2902,24 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
         return true
     }
 
+    public var storyViewReceiptsEnabled: StorageServiceProtoOptionalBool? {
+        guard hasStoryViewReceiptsEnabled else {
+            return nil
+        }
+        return StorageServiceProtoOptionalBoolWrap(proto.storyViewReceiptsEnabled)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    public var unwrappedStoryViewReceiptsEnabled: StorageServiceProtoOptionalBool {
+        if !hasStoryViewReceiptsEnabled {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: AccountRecord.storyViewReceiptsEnabled.")
+        }
+        return StorageServiceProtoOptionalBoolWrap(proto.storyViewReceiptsEnabled)
+    }
+    public var hasStoryViewReceiptsEnabled: Bool {
+        return true
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -2994,6 +3062,9 @@ extension StorageServiceProtoAccountRecord {
         }
         if hasStoriesDisabled {
             builder.setStoriesDisabled(storiesDisabled)
+        }
+        if let _value = storyViewReceiptsEnabled {
+            builder.setStoryViewReceiptsEnabled(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -3170,6 +3241,10 @@ public struct StorageServiceProtoAccountRecordBuilder {
 
     public mutating func setStoriesDisabled(_ valueParam: Bool) {
         proto.storiesDisabled = valueParam
+    }
+
+    public mutating func setStoryViewReceiptsEnabled(_ valueParam: StorageServiceProtoOptionalBool) {
+        proto.storyViewReceiptsEnabled = StorageServiceProtoOptionalBoolUnwrap(valueParam)
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

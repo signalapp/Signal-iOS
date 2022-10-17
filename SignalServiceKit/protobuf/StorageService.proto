@@ -20,6 +20,12 @@ message StorageItems {
                                   // keys that were found
 }
 
+enum OptionalBool {
+  UNSET = 0;
+  TRUE  = 1;
+  FALSE = 2;
+}
+
 message StorageManifest {
   // @required
   uint64 version = 1; // Monotonically increasing value
@@ -178,6 +184,7 @@ message AccountRecord {
            bool                   viewedOnboardingStory         = 27; // Removed 'has' prefix on spec definition to avoid name conflict.
            // reserved deprecatedStoriesDisabled 28;
            bool                   storiesDisabled               = 29;
+           OptionalBool           storyViewReceiptsEnabled      = 30;
 }
 
 message StoryDistributionListRecord {

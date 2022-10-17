@@ -1350,8 +1350,8 @@ class EnumContext(BaseContext):
 
             max_case_index = 0
             for case_name, case_index in self.case_pairs():
-                if case_name == 'default':
-                    case_name = '`default`'
+                if case_name in ['default', 'true', 'false']:
+                    case_name = "`%s`" % case_name
                 writer.add('case %s // %s' % ( case_name, case_index, ) )
                 max_case_index = max(max_case_index, int(case_index))
                 
@@ -1362,8 +1362,6 @@ class EnumContext(BaseContext):
             writer.add('public init() {')
             writer.push_indent()
             for case_name, case_index in self.case_pairs():
-                if case_name == 'default':
-                    case_name = '`default`'
                 writer.add('self = .%s' % case_name)
                 break
             writer.pop_indent()
@@ -1375,8 +1373,6 @@ class EnumContext(BaseContext):
             writer.add('switch rawValue {')
             writer.push_indent()
             for case_name, case_index in self.case_pairs():
-                if case_name == 'default':
-                    case_name = '`default`'
                 writer.add('case %s: self = .%s' % (case_index, case_name) )
             writer.add('default: self = .UNRECOGNIZED(rawValue)')
             writer.pop_indent()
@@ -1390,8 +1386,6 @@ class EnumContext(BaseContext):
             writer.add('switch self {')
             writer.push_indent()
             for case_name, case_index in self.case_pairs():
-                if case_name == 'default':
-                    case_name = '`default`'
                 writer.add('case .%s: return %s' % ( case_name, case_index, ) )
             writer.add('case .UNRECOGNIZED(let i): return i')
             writer.pop_indent()
@@ -1412,8 +1406,8 @@ class EnumContext(BaseContext):
 
             max_case_index = 0
             for case_name, case_index in self.case_pairs():
-                if case_name == 'default':
-                    case_name = '`default`'
+                if case_name in ['default', 'true', 'false']:
+                    case_name = "`%s`" % case_name
                 writer.add('case %s = %s' % (case_name, case_index,))
                 max_case_index = max(max_case_index, int(case_index))
 
@@ -1880,6 +1874,12 @@ def process_proto_file(args, proto_file_path, dst_file_path):
             line = next(parser)
         except StopIteration:
             break
+
+        enum_match = enum_regex.search(line)
+        if enum_match:
+            enum_name = enum_match.group(1).strip()
+            parse_enum(args, proto_file_path, parser, context, enum_name)
+            continue
 
         syntax_match = syntax_regex.search(line)
         if syntax_match:
