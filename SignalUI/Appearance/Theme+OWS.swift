@@ -38,6 +38,7 @@ public enum ThemeIcon: UInt {
     case settingsLinkedDevices
     case settingsAppearance
     case settingsChats
+    case settingsStories
     case settingsNotifications
     case settingsPrivacy
     case settingsDataUsage
@@ -270,6 +271,8 @@ public extension Theme {
             return isDarkThemeEnabled ? "appearance-solid-24" : "appearance-outline-24"
         case .settingsChats:
             return isDarkThemeEnabled ? "message-solid-24" : "message-outline-24"
+        case .settingsStories:
+            return isDarkThemeEnabled ? "stories-24-solid" : "stories-24-outline"
         case .settingsNotifications:
             return isDarkThemeEnabled ? "bell-solid-24" : "bell-outline-24"
         case .settingsPrivacy:

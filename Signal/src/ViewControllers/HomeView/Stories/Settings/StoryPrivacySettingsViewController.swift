@@ -12,10 +12,14 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
 
         NotificationCenter.default.addObserver(self, selector: #selector(storiesEnabledStateDidChange), name: .storiesEnabledStateDidChange, object: nil)
 
-        title = NSLocalizedString("STORIES_SETTINGS_TITLE", comment: "Title for the story privacy settings view")
-
         if navigationController?.viewControllers.count == 1 {
+            title = NSLocalizedString("STORY_PRIVACY_TITLE", comment: "Title for the story privacy settings view")
             navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
+        } else {
+            title = NSLocalizedString(
+                "STORY_SETTINGS_TITLE",
+                comment: "Label for the stories section of the settings view"
+            )
         }
 
         tableView.register(StoryThreadCell.self, forCellReuseIdentifier: StoryThreadCell.reuseIdentifier)

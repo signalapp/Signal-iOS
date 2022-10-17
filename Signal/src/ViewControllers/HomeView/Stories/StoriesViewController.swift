@@ -166,7 +166,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         contextButton.showsContextMenuAsPrimaryAction = true
         contextButton.contextMenu = .init([
             .init(
-                title: NSLocalizedString("STORIES_SETTINGS_TITLE", comment: "Title for the story privacy settings view"),
+                title: NSLocalizedString("STORY_PRIVACY_TITLE", comment: "Title for the story privacy settings view"),
                 image: Theme.iconImage(.settingsPrivacy),
                 handler: { [weak self] _ in
                     self?.showPrivacySettings()
