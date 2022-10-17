@@ -65,6 +65,15 @@ public class StoryManager: NSObject {
                 return
             }
 
+            if
+                let groupModel = groupThread.groupModel as? TSGroupModelV2,
+                groupModel.isAnnouncementsOnly,
+                !groupModel.groupMembership.isFullMemberAndAdministrator(author)
+            {
+                Logger.warn("Dropping story message with timestamp \(timestamp) from non-admin author \(author) in announcement only group")
+                return
+            }
+
         } else {
             guard profileManager.isUser(inProfileWhitelist: author, transaction: transaction) else {
                 Logger.warn("Dropping story message with timestamp \(timestamp) from unapproved author \(author).")

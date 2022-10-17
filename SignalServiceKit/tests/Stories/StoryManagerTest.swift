@@ -182,6 +182,74 @@ class StoryManagerTest: SSKBaseTestSwift {
         }
     }
 
+    func testProcessIncomingStoryMessage_dropsAnnouncementStoryWhenNotAnAdmin() throws {
+        let timestamp = Date().ows_millisecondsSince1970
+
+        let author = SignalServiceAddress(uuid: UUID())
+        let storyMessage = try Self.makeGroupStory(author: author)
+
+        let groupId = try groupsV2.groupV2ContextInfo(forMasterKeyData: storyMessage.group!.masterKey!).groupId
+
+        try write {
+            profileManager.addUser(
+                toProfileWhitelist: author,
+                userProfileWriter: .localUser,
+                transaction: $0
+            )
+
+            try Self.makeGroupThread(groupId: groupId, announcementOnly: true, members: [author], transaction: $0)
+
+            try StoryManager.processIncomingStoryMessage(
+                storyMessage,
+                timestamp: timestamp,
+                author: author,
+                transaction: $0
+            )
+
+            // Message should not have been created.
+            let message = StoryFinder.story(
+                timestamp: timestamp,
+                author: author,
+                transaction: $0
+            )
+            XCTAssertNil(message)
+        }
+    }
+
+    func testProcessIncomingStoryMessage_createsAnnouncementStoryWhenAnAdmin() throws {
+        let timestamp = Date().ows_millisecondsSince1970
+
+        let author = SignalServiceAddress(uuid: UUID())
+        let storyMessage = try Self.makeGroupStory(author: author)
+
+        let groupId = try groupsV2.groupV2ContextInfo(forMasterKeyData: storyMessage.group!.masterKey!).groupId
+
+        try write {
+            profileManager.addUser(
+                toProfileWhitelist: author,
+                userProfileWriter: .localUser,
+                transaction: $0
+            )
+
+            try Self.makeGroupThread(groupId: groupId, announcementOnly: true, admins: [author], transaction: $0)
+
+            try StoryManager.processIncomingStoryMessage(
+                storyMessage,
+                timestamp: timestamp,
+                author: author,
+                transaction: $0
+            )
+
+            // Message should have been created.
+            let message = StoryFinder.story(
+                timestamp: timestamp,
+                author: author,
+                transaction: $0
+            )
+            XCTAssertNotNil(message)
+        }
+    }
+
     func testProcessIncomingStoryMessage_createsStoryWhenAValidGroupMember() throws {
         let timestamp = Date().ows_millisecondsSince1970
 
@@ -311,15 +379,27 @@ class StoryManagerTest: SSKBaseTestSwift {
         return try storyMessageBuilder.build()
     }
 
-    static func makeGroupThread(groupId: Data, members: [SignalServiceAddress] = [], transaction: SDSAnyWriteTransaction) throws {
+    static func makeGroupThread(
+        groupId: Data,
+        announcementOnly: Bool = false,
+        members: [SignalServiceAddress] = [],
+        admins: [SignalServiceAddress] = [],
+        transaction: SDSAnyWriteTransaction
+    ) throws {
         var membershipBuilder = GroupMembership.Builder()
+
         for member in members {
             membershipBuilder.addFullMember(member, role: .normal)
+        }
+
+        for admin in admins {
+            membershipBuilder.addFullMember(admin, role: .administrator)
         }
 
         var modelBuilder = TSGroupModelBuilder()
         modelBuilder.groupId = groupId
         modelBuilder.groupMembership = membershipBuilder.build()
+        modelBuilder.isAnnouncementsOnly = announcementOnly
         let groupModel = try modelBuilder.build()
 
         let thread = TSGroupThread(groupModelPrivate: groupModel, transaction: transaction)
