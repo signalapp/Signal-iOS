@@ -17,9 +17,9 @@ PODS:
   - LibMobileCoin/CoreHTTP (1.2.2):
     - SwiftProtobuf (~> 1.5)
   - libPhoneNumber-iOS (0.9.15)
-  - LibSignalClient (0.19.3):
+  - LibSignalClient (0.21.0):
     - SignalCoreKit
-  - LibSignalClient/Tests (0.19.3):
+  - LibSignalClient/Tests (0.21.0):
     - SignalCoreKit
   - libwebp (1.2.3):
     - libwebp/demux (= 1.2.3)
@@ -179,7 +179,7 @@ CHECKOUT OPTIONS:
     :commit: 8b6f552682be0e66cf25cd0f0db5e1732a1e9f15
     :git: https://github.com/signalapp/libPhoneNumber-iOS
   LibSignalClient:
-    :commit: 13b60197a98c166a7bde7b3cd615e2c2f774cb29
+    :commit: d94f1b3d70140302b452aa07309f2ed7a00ae493
     :git: https://github.com/signalapp/libsignal-client.git
   Mantle:
     :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
@@ -215,7 +215,7 @@ SPEC CHECKSUMS:
   GRDB.swift: 1395cb3556df6b16ed69dfc74c3886abc75d2825
   LibMobileCoin: 860cbd565a4839cb8be784465100d9f09ac419aa
   libPhoneNumber-iOS: 2d26d0a38933eee2702962a4dbdec2fc20e5ef9f
-  LibSignalClient: 3180d534297ae089f15af948eade74c3dcaf16de
+  LibSignalClient: d5fc5e3c791013339932a8574c8b5e81e04a5455
   libwebp: 60305b2e989864154bd9be3d772730f08fc6a59c
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   lottie-ios: 016449b5d8be0c3dcbcfa0a9988469999cd04c5d
