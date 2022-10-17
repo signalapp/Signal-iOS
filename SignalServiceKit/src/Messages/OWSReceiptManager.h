@@ -8,6 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class GRDBWriteTransaction;
+@class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 @class SSKProtoSyncMessageRead;
@@ -121,6 +122,9 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 - (void)prepareCachedValues;
 
 - (BOOL)areReadReceiptsEnabled;
+
+- (BOOL)areReadReceiptsEnabledWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(areReadReceiptsEnabled(transaction:));
 
 - (void)setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration:(BOOL)value;
 

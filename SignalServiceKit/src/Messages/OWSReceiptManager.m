@@ -546,15 +546,23 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
 {
     // We don't need to worry about races around this cached value.
     if (self.areReadReceiptsEnabledCached == nil) {
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            self.areReadReceiptsEnabledCached =
-                @([OWSReceiptManager.keyValueStore getBool:OWSReceiptManagerAreReadReceiptsEnabled
-                                              defaultValue:NO
-                                               transaction:transaction]);
-        } file:__FILE__ function:__FUNCTION__ line:__LINE__];
+        [self.databaseStorage
+            readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                self.areReadReceiptsEnabledCached = @([self areReadReceiptsEnabledWithTransaction:transaction]);
+            }
+                     file:__FILE__
+                 function:__FUNCTION__
+                     line:__LINE__];
     }
 
     return [self.areReadReceiptsEnabledCached boolValue];
+}
+
+- (BOOL)areReadReceiptsEnabledWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [OWSReceiptManager.keyValueStore getBool:OWSReceiptManagerAreReadReceiptsEnabled
+                                       defaultValue:NO
+                                        transaction:transaction];
 }
 
 - (void)setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration:(BOOL)value

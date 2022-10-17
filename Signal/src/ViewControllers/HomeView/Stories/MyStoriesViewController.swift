@@ -436,7 +436,7 @@ class SentStoryCell: UITableViewCell {
                 : NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
             subtitleLabel.text = NSLocalizedString("STORY_SEND_FAILED_RETRY", comment: "Text indicating that you can tap to retry sending")
         case .sent:
-            if receiptManager.areReadReceiptsEnabled() {
+            if StoryManager.areViewReceiptsEnabled {
                 let format = NSLocalizedString(
                     "STORY_VIEWS_%d", tableName: "PluralAware",
                     comment: "Text explaining how many views a story has. Embeds {{ %d number of views }}"

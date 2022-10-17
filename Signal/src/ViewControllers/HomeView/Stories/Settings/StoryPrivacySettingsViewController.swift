@@ -113,6 +113,19 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
             })
         }
 
+        let viewReceiptsSection = OWSTableSection()
+        viewReceiptsSection.footerTitle = NSLocalizedString(
+            "STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER",
+            comment: "Footer for the 'view receipts' section of the stories settings"
+        )
+        viewReceiptsSection.add(.switch(
+            withText: NSLocalizedString("STORIES_SETTINGS_VIEW_RECEIPTS", comment: "Title for the 'view receipts' setting in stories settings"),
+            isOn: { StoryManager.areViewReceiptsEnabled },
+            target: self,
+            selector: #selector(didToggleViewReceipts)
+        ))
+        contents.addSection(viewReceiptsSection)
+
         let turnOffStoriesSection = OWSTableSection()
         turnOffStoriesSection.footerTitle = NSLocalizedString(
             "STORIES_SETTINGS_TURN_OFF_FOOTER",
@@ -203,6 +216,13 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
                     modal.dismiss {}
                 }
             }
+        }
+    }
+
+    @objc
+    func didToggleViewReceipts(_ sender: UISwitch) {
+        databaseStorage.write {
+            StoryManager.setAreViewReceiptsEnabled(sender.isOn, transaction: $0)
         }
     }
 }

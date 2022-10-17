@@ -599,6 +599,9 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         let readReceiptsEnabled = receiptManager.areReadReceiptsEnabled()
         builder.setReadReceipts(readReceiptsEnabled)
 
+        let storyViewReceiptsEnabled = StoryManager.areViewReceiptsEnabled(transaction: transaction)
+        builder.setStoryViewReceiptsEnabled(.init(storyViewReceiptsEnabled))
+
         let sealedSenderIndicatorsEnabled = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
         builder.setSealedSenderIndicators(sealedSenderIndicatorsEnabled)
 
@@ -738,6 +741,15 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         let localReadReceiptsEnabled = receiptManager.areReadReceiptsEnabled()
         if readReceipts != localReadReceiptsEnabled {
             receiptManager.setAreReadReceiptsEnabled(readReceipts, transaction: transaction)
+        }
+
+        let localViewReceiptsEnabled = StoryManager.areViewReceiptsEnabled(transaction: transaction)
+        if let storyViewReceiptsEnabled = storyViewReceiptsEnabled?.boolValue {
+            if storyViewReceiptsEnabled != localViewReceiptsEnabled {
+                StoryManager.setAreViewReceiptsEnabled(storyViewReceiptsEnabled, shouldUpdateStorageService: false, transaction: transaction)
+            }
+        } else {
+            mergeState = .needsUpdate
         }
 
         let sealedSenderIndicatorsEnabled = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
@@ -1173,5 +1185,20 @@ extension StorageServiceProtoStoryDistributionListRecord: Dependencies {
         }
 
         return mergeState
+    }
+}
+
+extension StorageServiceProtoOptionalBool {
+    var boolValue: Bool? {
+        switch self {
+        case .unset: return nil
+        case .true: return true
+        case .false: return false
+        case .UNRECOGNIZED: return nil
+        }
+    }
+
+    init(_ boolValue: Bool) {
+        self = boolValue ? .true : .false
     }
 }

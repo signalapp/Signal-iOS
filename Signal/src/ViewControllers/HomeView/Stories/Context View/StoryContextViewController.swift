@@ -483,7 +483,7 @@ class StoryContextViewController: OWSViewController {
                         comment: "Button for replying to a story with no existing replies.")
                 }
             case .outgoing:
-                if receiptManager.areReadReceiptsEnabled() {
+                if StoryManager.areViewReceiptsEnabled {
                     trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
                     if case .groupId = context {
                         let format = NSLocalizedString(
