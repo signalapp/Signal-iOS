@@ -15,7 +15,7 @@ class NewGroupStoryViewController: ConversationPickerViewController {
         sectionOptions = .groups
         threadFilter = { thread in
             guard let groupThread = thread as? TSGroupThread else { return false }
-            return !groupThread.isStorySendExplicitlyEnabled
+            return !groupThread.isStorySendExplicitlyEnabled && groupThread.canSendChatMessagesToThread()
         }
     }
 
