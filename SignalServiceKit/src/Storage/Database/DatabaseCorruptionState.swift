@@ -6,7 +6,7 @@
 import Foundation
 import GRDB
 
-public class DatabaseCorruptionState: Codable, Equatable {
+public class DatabaseCorruptionState: Codable, Equatable, CustomStringConvertible {
     public enum DatabaseCorruptionStatus: Int, Codable, CustomStringConvertible {
         // We used to store these as booleans, so the value is important.
         case notCorrupted = 0
