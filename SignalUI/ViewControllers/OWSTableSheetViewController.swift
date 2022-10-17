@@ -11,7 +11,7 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
     public override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
 
     open override var sheetBackgroundColor: UIColor {
-        OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
+        OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true, forceDarkMode: tableViewController.forceDarkMode)
     }
 
     open var bottomSafeAreaContentPadding: CGFloat {

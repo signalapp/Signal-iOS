@@ -10,14 +10,19 @@ import SignalUI
 class BlockingAnnouncementOnlyView: UIStackView {
 
     private let thread: TSThread
+    private let forceDarkMode: Bool
 
     private weak var fromViewController: UIViewController?
 
-    init(threadViewModel: ThreadViewModel, fromViewController: UIViewController) {
-        let thread = threadViewModel.threadRecord
+    convenience init(threadViewModel: ThreadViewModel, fromViewController: UIViewController, forceDarkMode: Bool = false) {
+        self.init(thread: threadViewModel.threadRecord, fromViewController: fromViewController, forceDarkMode: forceDarkMode)
+    }
+
+    init(thread: TSThread, fromViewController: UIViewController, forceDarkMode: Bool = false) {
         self.thread = thread
         owsAssertDebug(thread as? TSGroupThread != nil)
         self.fromViewController = fromViewController
+        self.forceDarkMode = forceDarkMode
 
         super.init(frame: .zero)
 
@@ -38,7 +43,7 @@ class BlockingAnnouncementOnlyView: UIStackView {
         isLayoutMarginsRelativeArrangement = true
         alignment = .fill
 
-        let blurView = UIVisualEffectView(effect: Theme.barBlurEffect)
+        let blurView = UIVisualEffectView(effect: forceDarkMode ? Theme.darkThemeBarBlurEffect : Theme.barBlurEffect)
         addSubview(blurView)
         blurView.autoPinEdgesToSuperviewEdges()
 
@@ -49,13 +54,13 @@ class BlockingAnnouncementOnlyView: UIStackView {
         let text = String(format: format, adminsText)
         let attributedString = NSMutableAttributedString(string: text)
         attributedString.setAttributes([
-            .foregroundColor: Theme.accentBlueColor
+            .foregroundColor: forceDarkMode ? .ows_accentBlueDark : Theme.accentBlueColor
         ],
         forSubstring: adminsText)
 
         let label = UILabel()
         label.font = .ows_dynamicTypeSubheadlineClamped
-        label.textColor = Theme.secondaryTextAndIconColor
+        label.textColor = forceDarkMode ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
         label.attributedText = attributedString
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -65,7 +70,7 @@ class BlockingAnnouncementOnlyView: UIStackView {
         addArrangedSubview(label)
 
         let lineView = UIView()
-        lineView.backgroundColor = Theme.hairlineColor
+        lineView.backgroundColor = forceDarkMode ? .ows_gray75 : Theme.hairlineColor
         addSubview(lineView)
         lineView.autoSetDimension(.height, toSize: 1)
         lineView.autoPinWidthToSuperview()
@@ -106,7 +111,7 @@ class BlockingAnnouncementOnlyView: UIStackView {
             return
         }
 
-        let sheet = MessageUserSubsetSheet(addresses: groupAdmins)
+        let sheet = MessageUserSubsetSheet(addresses: groupAdmins, forceDarkMode: forceDarkMode)
         fromViewController.present(sheet, animated: true)
     }
 }
@@ -116,12 +121,16 @@ class BlockingAnnouncementOnlyView: UIStackView {
 @objc
 class MessageUserSubsetSheet: OWSTableSheetViewController {
     private let addresses: [SignalServiceAddress]
+    private let forceDarkMode: Bool
 
-    init(addresses: [SignalServiceAddress]) {
+    init(addresses: [SignalServiceAddress], forceDarkMode: Bool) {
         owsAssertDebug(!addresses.isEmpty)
         self.addresses = addresses.stableSort()
+        self.forceDarkMode = forceDarkMode
 
         super.init()
+
+        tableViewController.forceDarkMode = forceDarkMode
 
         tableViewController.defaultSeparatorInsetLeading = (OWSTableViewController2.cellHInnerMargin +
                                                             CGFloat(AvatarBuilder.smallAvatarSizePoints) +
@@ -149,12 +158,12 @@ class MessageUserSubsetSheet: OWSTableSheetViewController {
                                        comment: "Label indicating the user can contact a group administrators of an 'announcement-only' group.")
         section.headerAttributedTitle = NSAttributedString(string: header, attributes: [
             .font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold,
-            .foregroundColor: Theme.primaryTextColor
+            .foregroundColor: forceDarkMode ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
             ])
         contents.addSection(section)
         for address in addresses {
             section.add(OWSTableItem(
-                            dequeueCellBlock: { tableView in
+                            dequeueCellBlock: { [weak self] tableView in
                                 guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
                                     owsFailDebug("Missing cell.")
                                     return UITableViewCell()
@@ -162,8 +171,12 @@ class MessageUserSubsetSheet: OWSTableSheetViewController {
 
                                 cell.selectionStyle = .none
 
-                                cell.configureWithSneakyTransaction(address: address,
-                                                                    localUserDisplayMode: .asLocalUser)
+                                let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asLocalUser)
+                                configuration.forceDarkAppearance = self?.forceDarkMode ?? false
+
+                                Self.databaseStorage.read {
+                                    cell.configure(configuration: configuration, transaction: $0)
+                                }
 
                                 return cell
                             },
