@@ -123,26 +123,50 @@ public struct Stripe: Dependencies {
         }
     }
 
+    /// Is an amount of money too large?
+    ///
+    /// According to [Stripe's docs][0], amounts can be "up to twelve digits for
+    /// IDR (for example, a value of 999999999999 for a charge of
+    /// 9,999,999,999.99 IDR), and up to eight digits for all other currencies
+    /// (for example, a value of 99999999 for a charge of 999,999.99 USD).
+    ///
+    /// - Parameter amount: The amount of money.
+    /// - Parameter in: The currency code used.
+    /// - Returns: Whether the amount is too large.
+    ///
+    /// [0]: https://stripe.com/docs/currencies?presentment-currency=US#minimum-and-maximum-charge-amounts
     public static func isAmountTooLarge(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> Bool {
-        // Stripe supports a maximum of 8 integral digits.
-        integralAmount(amount, in: currencyCode) > 99_999_999
+        let integerAmount = integralAmount(amount, in: currencyCode)
+        let maximum: UInt = currencyCode == "IDR" ? 999999999999 : 99999999
+        return integerAmount > maximum
     }
 
+    /// Is an amount of money too small?
+    ///
+    /// This is a client-side validation, so if we're not sure, we should
+    /// accept the amount.
+    ///
+    /// These minimums are pulled from [Stripe's document minimums][0]. Note
+    /// that Stripe's values are for *settlement* currency (which is always USD
+    /// for Signal), but we use them as helpful minimums anyway.
+    ///
+    /// - Parameter amount: The amount of money.
+    /// - Parameter in: The currency used.
+    /// - Returns: Whether the amount is too small.
+    ///
+    /// [0]: https://stripe.com/docs/currencies?presentment-currency=US#minimum-and-maximum-charge-amounts
     public static func isAmountTooSmall(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> Bool {
-        // Stripe requires different minimums per currency, but they often depend
-        // on conversion rates which we don't have access to. It's okay to do a best
-        // effort here because stripe will reject the payment anyway, this just allows
-        // us to fail sooner / provide a nicer error to the user.
-        let minimumIntegralAmount = minimumIntegralChargePerCurrencyCode[currencyCode] ?? 50
-        return integralAmount(amount, in: currencyCode) < minimumIntegralAmount
+        let integerAmount = integralAmount(amount, in: currencyCode)
+        let minimum = minimumIntegralChargePerCurrencyCode[currencyCode, default: 50]
+        return integerAmount < minimum
     }
 
     public static func integralAmount(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> UInt {
         let roundedAndScaledAmount: Double
         if zeroDecimalCurrencyCodes.contains(currencyCode.uppercased()) {
-            roundedAndScaledAmount = amount.doubleValue.rounded(.toNearestOrEven)
+            roundedAndScaledAmount = amount.doubleValue.rounded(.toNearestOrAwayFromZero)
         } else {
-            roundedAndScaledAmount = (amount.doubleValue * 100).rounded(.toNearestOrEven)
+            roundedAndScaledAmount = (amount.doubleValue * 100).rounded(.toNearestOrAwayFromZero)
         }
 
         guard roundedAndScaledAmount <= Double(UInt.max) else { return UInt.max }
