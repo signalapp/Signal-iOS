@@ -171,8 +171,8 @@ public class BadgeCellView: UIStackView {
 // MARK: - Gift badge cell view
 
 public class GiftBadgeCellView: BadgeCellView {
-    init(badge: ProfileBadge, price: UInt, currencyCode: Currency.Code) {
-        let formattedPrice = DonationUtilities.formatCurrency(NSDecimalNumber(value: price), currencyCode: currencyCode)
+    init(badge: ProfileBadge, price: Decimal, currencyCode: Currency.Code) {
+        let formattedPrice = DonationUtilities.formatCurrency(price as NSDecimalNumber, currencyCode: currencyCode)
 
         let formattedDurationText: String = {
             guard let duration = badge.duration else {

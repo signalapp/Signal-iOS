@@ -8,12 +8,12 @@ import SignalServiceKit
 
 class BadgeGiftingChooseRecipientViewController: OWSViewController {
     private let badge: ProfileBadge
-    private let price: UInt
+    private let price: Decimal
     private let currencyCode: Currency.Code
 
     private let recipientPicker = RecipientPickerViewController()
 
-    public init(badge: ProfileBadge, price: UInt, currencyCode: Currency.Code) {
+    public init(badge: ProfileBadge, price: Decimal, currencyCode: Currency.Code) {
         self.badge = badge
         self.price = price
         self.currencyCode = currencyCode

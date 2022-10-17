@@ -37,7 +37,7 @@ class BoostViewController: OWSTableViewController2 {
     private var currencyCode = Stripe.defaultCurrencyCode {
         didSet {
             guard oldValue != currencyCode else { return }
-            customValueTextField.setCurrencyCode(currencyCode, symbol: presets?[currencyCode]?.symbol)
+            customValueTextField.setCurrencyCode(currencyCode)
             state = nil
             updateTableContents()
         }
@@ -54,15 +54,15 @@ class BoostViewController: OWSTableViewController2 {
 
     private var donationAmount: NSDecimalNumber? {
         switch state {
-        case .presetSelected(let amount): return NSDecimalNumber(value: amount)
+        case .presetSelected(let amount): return amount as NSDecimalNumber
         case .customValueSelected: return customValueTextField.decimalNumber
         default: return nil
         }
     }
 
-    private var presets: [Currency.Code: DonationUtilities.Presets.Preset]? {
+    private var presets: [Currency.Code: DonationUtilities.Preset]? {
         didSet {
-            customValueTextField.setCurrencyCode(currencyCode, symbol: presets?[currencyCode]?.symbol)
+            customValueTextField.setCurrencyCode(currencyCode)
         }
     }
     private var boostBadge: ProfileBadge?
@@ -78,7 +78,7 @@ class BoostViewController: OWSTableViewController2 {
 
     enum State: Equatable {
         case loading
-        case presetSelected(amount: UInt)
+        case presetSelected(amount: Decimal)
         case customValueSelected
         case donatedSuccessfully
     }
@@ -162,7 +162,7 @@ class BoostViewController: OWSTableViewController2 {
         return result
     }
 
-    var presetButtons: [UInt: UIView] = [:]
+    var presetButtons: [Decimal: UIView] = [:]
     func updatePresetButtonSelection() {
         for (amount, button) in presetButtons {
             if case .presetSelected(amount: amount) = self.state {
@@ -419,7 +419,10 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
                             }
 
                             button.setTitle(
-                                title: DonationUtilities.formatCurrency(NSDecimalNumber(value: amount), currencyCode: self.currencyCode),
+                                title: DonationUtilities.formatCurrency(
+                                    amount as NSDecimalNumber,
+                                    currencyCode: self.currencyCode
+                                ),
                                 font: .ows_regularFont(withSize: UIDevice.current.isIPhone5OrShorter ? 18 : 20),
                                 titleColor: Theme.primaryTextColor
                             )
@@ -792,16 +795,14 @@ private class CustomValueTextField: UIView {
         set { placeholderLabel.text = newValue }
     }
 
-    private lazy var symbol: DonationUtilities.Symbol = .currencyCode
     private lazy var currencyCode = Stripe.defaultCurrencyCode
 
-    func setCurrencyCode(_ currencyCode: Currency.Code, symbol: DonationUtilities.Symbol? = nil) {
-        self.symbol = symbol ?? .currencyCode
+    func setCurrencyCode(_ currencyCode: Currency.Code) {
         self.currencyCode = currencyCode
 
         symbolLabel.removeFromSuperview()
 
-        switch self.symbol {
+        switch DonationUtilities.Symbol.for(currencyCode: currencyCode) {
         case .before(let symbol):
             symbolLabel.text = symbol
             stackView.insertArrangedSubview(symbolLabel, at: 0)

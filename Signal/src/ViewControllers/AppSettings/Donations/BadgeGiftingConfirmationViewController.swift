@@ -12,14 +12,16 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     // MARK: - View state
 
     private let badge: ProfileBadge
-    private let price: UInt
+    private let price: Decimal
     private let currencyCode: Currency.Code
     private let thread: TSContactThread
 
-    public init(badge: ProfileBadge,
-                price: UInt,
-                currencyCode: Currency.Code,
-                thread: TSContactThread) {
+    public init(
+        badge: ProfileBadge,
+        price: Decimal,
+        currencyCode: Currency.Code,
+        thread: TSContactThread
+    ) {
         self.badge = badge
         self.price = price
         self.currencyCode = currencyCode
@@ -175,7 +177,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             Logger.info("[Gifting] Requesting Apple Pay...")
 
             let request = DonationUtilities.newPaymentRequest(
-                for: NSDecimalNumber(value: self.price),
+                for: self.price as NSDecimalNumber,
                 currencyCode: self.currencyCode,
                 isRecurring: false
             )
@@ -394,7 +396,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             descriptionLabel.numberOfLines = 0
 
             let priceLabel = UILabel()
-            priceLabel.text = DonationUtilities.formatCurrency(NSDecimalNumber(value: price), currencyCode: currencyCode)
+            priceLabel.text = DonationUtilities.formatCurrency(price as NSDecimalNumber, currencyCode: currencyCode)
             priceLabel.font = .ows_dynamicTypeBody.ows_semibold
             priceLabel.numberOfLines = 0
 
@@ -489,7 +491,11 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
 
     private func prepareToPay(authorizedPayment: PKPayment) -> Promise<PreparedPayment> {
         firstly {
-            Stripe.createBoostPaymentIntent(for: NSDecimalNumber(value: self.price), in: self.currencyCode, level: .giftBadge(.signalGift))
+            Stripe.createBoostPaymentIntent(
+                for: self.price as NSDecimalNumber,
+                in: self.currencyCode,
+                level: .giftBadge(.signalGift)
+            )
         }.then { paymentIntent in
             Stripe.createPaymentMethod(with: authorizedPayment).map { paymentMethodId in
                 PreparedPayment(paymentIntent: paymentIntent, paymentMethodId: paymentMethodId)

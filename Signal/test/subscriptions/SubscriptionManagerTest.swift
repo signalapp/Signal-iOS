@@ -4,6 +4,7 @@
 //
 
 import XCTest
+@testable import SignalMessaging
 
 class SubscriptionChargeFailureTest: XCTestCase {
     typealias ChargeFailure = Subscription.ChargeFailure
@@ -116,5 +117,60 @@ class BadgeIdsTest: XCTestCase {
         for (badgeId, shouldMatch) in testCases {
             XCTAssertEqual(BoostBadgeIds.contains(badgeId), shouldMatch, "\(badgeId)")
         }
+    }
+}
+
+class SubscriptionManagerTest: XCTestCase {
+    func testParseSuggestedBoostAmountsResponse() throws {
+        let parse = { try SubscriptionManager.parseSuggestedBoostAmountsResponse(body: $0) }
+
+        XCTAssertThrowsError(try parse(nil))
+        XCTAssertThrowsError(try parse([]))
+        XCTAssertThrowsError(try parse("USD"))
+
+        XCTAssertEqual(try parse([:]), [:])
+        XCTAssertEqual(
+            try parse([
+                "USD": [Double]([1, 2.3]),
+                "JPY": [Double]([4, 5]),
+                "xyz": [Double]([6, 7]),
+                "": [Double]([8]),
+                "BAD": Double(9),
+                "SAD": "10",
+                "RAD": [],
+                "MAD": [Double]([1, 0, 2])
+            ]),
+            [
+                "USD": .init(currencyCode: "USD", amounts: [1, 2.3]),
+                "JPY": .init(currencyCode: "JPY", amounts: [4, 5]),
+                "XYZ": .init(currencyCode: "XYZ", amounts: [6, 7])
+            ]
+        )
+    }
+
+    func testParseGiftBadgePricesResponse() throws {
+        let parse = { try SubscriptionManager.parseGiftBadgePricesResponse(body: $0) }
+
+        XCTAssertThrowsError(try parse(nil))
+        XCTAssertThrowsError(try parse([]))
+        XCTAssertThrowsError(try parse("USD"))
+
+        XCTAssertEqual(try parse([:]), [:])
+        XCTAssertEqual(
+            try parse([
+                "USD": Double(1.2),
+                "JPY": Double(3),
+                "xyz": Double(4),
+                "": Double(8),
+                "BAD": "9",
+                "MAD": 0,
+                "SAD": -1
+            ]),
+            [
+                "USD": 1.2,
+                "JPY": 3,
+                "XYZ": 4
+            ]
+        )
     }
 }

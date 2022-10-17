@@ -64,7 +64,7 @@ public class SendGiftBadgeJobQueue: NSObject, JobQueue {
     }
 
     public static func createJob(receiptRequest: (context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest),
-                                 amount: UInt,
+                                 amount: Decimal,
                                  currencyCode: Currency.Code,
                                  paymentIntent: Stripe.PaymentIntent,
                                  paymentMethodId: String,
@@ -73,7 +73,7 @@ public class SendGiftBadgeJobQueue: NSObject, JobQueue {
         OWSSendGiftBadgeJobRecord(
             receiptCredentialRequestContext: receiptRequest.context.serialize().asData,
             receiptCredentialRequest: receiptRequest.request.serialize().asData,
-            amount: NSDecimalNumber(value: amount),
+            amount: amount as NSDecimalNumber,
             currencyCode: currencyCode,
             paymentIntentClientSecret: paymentIntent.clientSecret,
             paymentIntentId: paymentIntent.id,

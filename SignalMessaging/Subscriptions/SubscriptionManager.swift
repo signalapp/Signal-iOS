@@ -1115,30 +1115,54 @@ extension SubscriptionManager {
         }
     }
 
-    public class func getSuggestedBoostAmounts() -> Promise<[Currency.Code: DonationUtilities.Presets.Preset]> {
+    public class func getSuggestedBoostAmounts() -> Promise<[Currency.Code: DonationUtilities.Preset]> {
         firstly {
             networkManager.makePromise(request: OWSRequestFactory.boostSuggestedAmountsRequest())
         }.map { response in
             guard response.responseStatusCode == 200 else {
-                throw OWSAssertionError("Got bad response code \(response.responseStatusCode).")
+                throw OWSGenericError("Got bad response code \(response.responseStatusCode).")
             }
-
-            guard let amounts = response.responseBodyJson as? [String: [UInt]] else {
-                throw OWSAssertionError("Got unexpected response JSON for boost amounts")
-            }
-
-            var presets = [Currency.Code: DonationUtilities.Presets.Preset]()
-            for (key, values) in amounts {
-                presets[key] = .init(
-                    symbol: DonationUtilities.Presets.presets[key]?.symbol ?? .currencyCode,
-                    amounts: values
-                )
-            }
-            return presets
+            return try Self.parseSuggestedBoostAmountsResponse(body: response.responseBodyJson)
         }
     }
 
-    public class func getGiftBadgePricesByCurrencyCode() -> Promise<[Currency.Code: UInt]> {
+    internal class func parseSuggestedBoostAmountsResponse(
+        body: Any?
+    ) throws -> [Currency.Code: DonationUtilities.Preset] {
+        guard let body = body as? [String: Any?] else {
+            throw OWSGenericError("Got unexpected response JSON for boost amounts")
+        }
+
+        var presets = [Currency.Code: DonationUtilities.Preset]()
+        for (rawCurrencyCode, rawAmounts) in body {
+            if rawCurrencyCode.isEmpty {
+                Logger.error("Server gave an empty currency code")
+                continue
+            }
+            let currencyCode = rawCurrencyCode.uppercased()
+
+            guard let amounts = rawAmounts as? [Double] else {
+                Logger.error("Server didn't give an array of doubles for \(currencyCode)")
+                continue
+            }
+            if amounts.isEmpty {
+                Logger.error("Server didn't give any amounts for \(currencyCode)")
+                continue
+            }
+            if amounts.contains(where: { $0 <= 0 }) {
+                Logger.error("Server gave an amount <= 0 for \(currencyCode)")
+                continue
+            }
+
+            presets[currencyCode] = .init(
+                currencyCode: currencyCode,
+                amounts: amounts.map { Decimal($0) }
+            )
+        }
+        return presets
+    }
+
+    public class func getGiftBadgePricesByCurrencyCode() -> Promise<[Currency.Code: Decimal]> {
         firstly {
             networkManager.makePromise(request: OWSRequestFactory.giftBadgePricesRequest())
         }.map { response in
@@ -1146,12 +1170,31 @@ extension SubscriptionManager {
                 throw OWSAssertionError("Got bad response code \(response.responseStatusCode).")
             }
 
-            guard let prices = response.responseBodyJson as? [String: UInt] else {
-                throw OWSAssertionError("Got unexpected response JSON for gift badge amounts")
+            return try parseGiftBadgePricesResponse(body: response.responseBodyJson)
+        }
+    }
+
+    internal class func parseGiftBadgePricesResponse(body: Any?) throws -> [Currency.Code: Decimal] {
+        guard let body = body as? [String: Any?] else {
+            throw OWSGenericError("Got unexpected response JSON for boost amounts")
+        }
+
+        var result = [Currency.Code: Decimal]()
+        for (rawCurrencyCode, rawAmount) in body {
+            if rawCurrencyCode.isEmpty {
+                Logger.error("Server gave an empty currency code")
+                continue
+            }
+            let currencyCode = rawCurrencyCode.uppercased()
+
+            guard let amount = rawAmount as? Double, amount > 0 else {
+                Logger.error("Server gave an invalid amount for \(currencyCode)")
+                continue
             }
 
-            return prices
+            result[currencyCode] = Decimal(amount)
         }
+        return result
     }
 
     public static func requestBoostReceiptCredentialPresentation(for intentId: String,

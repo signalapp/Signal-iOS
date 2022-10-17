@@ -32,34 +32,31 @@ public class DonationUtilities: NSObject {
         case before(String)
         case after(String)
         case currencyCode
-    }
 
-    public struct Presets {
-        public struct Preset {
-            public let symbol: Symbol
-            public let amounts: [UInt]
-        }
-
-        public static let presets: [Currency.Code: Preset] = [
-            "USD": Preset(symbol: .before("$"), amounts: [3, 5, 10, 20, 50, 100]),
-            "AUD": Preset(symbol: .before("A$"), amounts: [5, 10, 15, 25, 65, 125]),
-            "BRL": Preset(symbol: .before("R$"), amounts: [15, 25, 50, 100, 250, 525]),
-            "GBP": Preset(symbol: .before("£"), amounts: [3, 5, 10, 15, 35, 70]),
-            "CAD": Preset(symbol: .before("CA$"), amounts: [5, 10, 15, 25, 60, 125]),
-            "CNY": Preset(symbol: .before("CN¥"), amounts: [20, 35, 65, 130, 320, 650]),
-            "EUR": Preset(symbol: .before("€"), amounts: [3, 5, 10, 15, 40, 80]),
-            "HKD": Preset(symbol: .before("HK$"), amounts: [25, 40, 80, 150, 400, 775]),
-            "INR": Preset(symbol: .before("₹"), amounts: [100, 200, 300, 500, 1_000, 5_000]),
-            "JPY": Preset(symbol: .before("¥"), amounts: [325, 550, 1_000, 2_200, 5_500, 11_000]),
-            "KRW": Preset(symbol: .before("₩"), amounts: [3_500, 5_500, 11_000, 22_500, 55_500, 100_000]),
-            "PLN": Preset(symbol: .after("zł"), amounts: [10, 20, 40, 75, 150, 375]),
-            "SEK": Preset(symbol: .after("kr"), amounts: [25, 50, 75, 150, 400, 800]),
-            "CHF": Preset(symbol: .currencyCode, amounts: [3, 5, 10, 20, 50, 100])
+        private static let symbols: [Currency.Code: Symbol] = [
+            "USD": .before("$"),
+            "AUD": .before("A$"),
+            "BRL": .before("R$"),
+            "GBP": .before("£"),
+            "CAD": .before("CA$"),
+            "CNY": .before("CN¥"),
+            "EUR": .before("€"),
+            "HKD": .before("HK$"),
+            "INR": .before("₹"),
+            "JPY": .before("¥"),
+            "KRW": .before("₩"),
+            "PLN": .after("zł"),
+            "SEK": .after("kr")
         ]
 
-        public static func symbol(for code: Currency.Code) -> Symbol {
-            presets[code]?.symbol ?? .currencyCode
+        public static func `for`(currencyCode: Currency.Code) -> Symbol {
+            return symbols[currencyCode, default: .currencyCode]
         }
+    }
+
+    public struct Preset: Equatable {
+        public let currencyCode: Currency.Code
+        public let amounts: [Decimal]
     }
 
     private static let currencyFormatter: NumberFormatter = {
@@ -87,7 +84,7 @@ public class DonationUtilities: NSObject {
 
         guard includeSymbol else { return valueString }
 
-        switch Presets.symbol(for: currencyCode) {
+        switch Symbol.for(currencyCode: currencyCode) {
         case .before(let symbol): return symbol + valueString
         case .after(let symbol): return valueString + symbol
         case .currencyCode: return currencyCode + " " + valueString
