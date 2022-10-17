@@ -13,6 +13,7 @@ public enum StoryUtil: Dependencies {
         for storyMessage: StoryMessage,
         contactsManager: ContactsManagerProtocol,
         useFullNameForLocalAddress: Bool = true,
+        useShortGroupName: Bool = true,
         transaction: SDSAnyReadTransaction
     ) -> String {
         guard !storyMessage.authorAddress.isSystemStoryAddress else {
@@ -29,6 +30,8 @@ public enum StoryUtil: Dependencies {
                 }
                 return groupThread.groupNameOrDefault
             }()
+
+            if useShortGroupName { return groupName }
 
             let authorShortName: String
             if storyMessage.authorAddress.isLocalAddress {

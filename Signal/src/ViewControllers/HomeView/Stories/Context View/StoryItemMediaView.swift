@@ -409,6 +409,7 @@ class StoryItemMediaView: UIView {
             for: item.message,
             contactsManager: contactsManager,
             useFullNameForLocalAddress: false,
+            useShortGroupName: false,
             transaction: transaction
         )
         return label
