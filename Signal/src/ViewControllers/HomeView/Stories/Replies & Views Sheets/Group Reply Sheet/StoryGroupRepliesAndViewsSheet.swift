@@ -109,7 +109,7 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
         case .views:
             break
         case .replies:
-            maximizeHeight() {
+            maximizeHeight {
                 // Once we maximize, don't let you minimize again or things look weird.
                 self.minimizedHeight = super.maxHeight
             }
@@ -197,7 +197,7 @@ extension StoryGroupRepliesAndViewsSheet: UIScrollViewDelegate {
 
 extension StoryGroupRepliesAndViewsSheet: StoryGroupReplyDelegate {
     func storyGroupReplyViewControllerDidBeginEditing(_ storyGroupReplyViewController: StoryGroupReplyViewController) {
-        maximizeHeight() {
+        maximizeHeight {
             // Once we maximize, don't let you minimize again or things look weird.
             self.minimizedHeight = super.maxHeight
         }

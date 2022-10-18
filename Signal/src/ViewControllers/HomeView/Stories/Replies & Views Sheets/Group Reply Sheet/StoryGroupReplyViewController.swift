@@ -84,6 +84,10 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
         view.addSubview(bottomBar)
         bottomBar.autoPinWidthToSuperview()
         bottomBarBottomConstraint.isActive = true
+        // Its a bit silly but this is the easiest way to capture touches
+        // and not let them pass up to any parent scrollviews. pans inside the
+        // bottom bar shouldn't scroll anything.
+        bottomBar.addGestureRecognizer(UIPanGestureRecognizer())
 
         for type in StoryGroupReplyCell.CellType.all {
             tableView.register(StoryGroupReplyCell.self, forCellReuseIdentifier: type.rawValue)
