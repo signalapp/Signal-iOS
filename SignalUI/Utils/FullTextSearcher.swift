@@ -108,6 +108,38 @@ public class ContactSearchResult: NSObject, Comparable {
 
 // MARK: -
 
+/// Can represent either a group thread with stories, or a private story thread.
+@objc
+public class StorySearchResult: NSObject, Comparable {
+
+    public let thread: TSThread
+
+    private let sortKey: ConversationSortKey
+
+    init(thread: TSThread, sortKey: ConversationSortKey) {
+        self.thread = thread
+        self.sortKey = sortKey
+    }
+
+    // MARK: Comparable
+
+    public static func < (lhs: StorySearchResult, rhs: StorySearchResult) -> Bool {
+        return lhs.sortKey < rhs.sortKey
+    }
+
+    // MARK: Equatable
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let other = object as? Self else {
+            return false
+        }
+
+        return thread.uniqueId == other.thread.uniqueId
+    }
+}
+
+// MARK: -
+
 public class HomeScreenSearchResultSet: NSObject {
     public let searchText: String
     public let contactThreads: [ConversationSearchResult<ConversationSortKey>]
@@ -218,6 +250,80 @@ public class ComposeScreenSearchResultSet: NSObject {
     public init(searchText: String, groups: [GroupSearchResult], signalContacts: [ContactSearchResult]) {
         self.searchText = searchText
         self.groups = groups
+        self.signalContacts = signalContacts
+    }
+
+    @objc
+    public static let empty = ComposeScreenSearchResultSet(searchText: "", groups: [], signalContacts: [])
+
+    @objc
+    public var isEmpty: Bool {
+        return groups.isEmpty && signalContacts.isEmpty
+    }
+
+    @objc
+    public var logDescription: String {
+        var sections = [String]()
+        if !groups.isEmpty {
+            var splits = [String]()
+            for group in groups {
+                splits.append(group.thread.threadRecord.uniqueId)
+            }
+            sections.append("groups: " + splits.joined(separator: ","))
+        }
+        if !signalAccounts.isEmpty {
+            var splits = [String]()
+            for signalAccount in signalAccounts {
+                splits.append(signalAccount.addressComponentsDescription)
+            }
+            sections.append("signalAccounts: " + splits.joined(separator: ","))
+        }
+        return "[" + sections.joined(separator: ",") + "]"
+    }
+}
+
+// MARK: -
+
+@objc
+public class ConversationPickerScreenSearchResultSet: NSObject {
+
+    @objc
+    public let searchText: String
+
+    @objc
+    public let groups: [GroupSearchResult]
+
+    @objc
+    public var groupThreads: [TSGroupThread] {
+        return groups.compactMap { $0.thread.threadRecord as? TSGroupThread }
+    }
+
+    @objc
+    public let signalContacts: [ContactSearchResult]
+
+    @objc
+    public var signalAccounts: [SignalAccount] {
+        return signalContacts.map { $0.signalAccount }
+    }
+
+    /// Includes both group threads with stories, and private story threads.
+    @objc
+    public let storyResults: [StorySearchResult]
+
+    @objc
+    public var storyThreads: [TSThread] {
+        return storyResults.map(\.thread)
+    }
+
+    public init(
+        searchText: String,
+        groups: [GroupSearchResult],
+        storyThreads: [StorySearchResult],
+        signalContacts: [ContactSearchResult]
+    ) {
+        self.searchText = searchText
+        self.groups = groups
+        self.storyResults = storyThreads
         self.signalContacts = signalContacts
     }
 
@@ -414,6 +520,124 @@ public class FullTextSearcher: NSObject {
         groups.sort(by: >)
 
         return ComposeScreenSearchResultSet(searchText: searchText, groups: groups, signalContacts: signalContacts)
+    }
+
+    @objc
+    public func searchForConvsersationPickerScreen(
+        searchText: String,
+        maxResults: UInt = kDefaultMaxResults,
+        transaction: SDSAnyReadTransaction
+    ) -> ConversationPickerScreenSearchResultSet {
+
+        var signalContactMap = [SignalServiceAddress: ContactSearchResult]()
+        var signalRecipentResults: [ContactSearchResult] = []
+        var groups: [GroupSearchResult] = []
+        var storyThreads: [StorySearchResult] = []
+
+        var hasReachedMaxResults: Bool {
+            guard (signalContactMap.count + signalRecipentResults.count + groups.count + storyThreads.count) < maxResults else { return true }
+            return false
+        }
+
+        finder.enumerateObjects(
+            searchText: searchText,
+            collections: [
+                SignalAccount.collection(),
+                SignalRecipient.collection(),
+                TSThread.collection()
+            ],
+            maxResults: maxResults,
+            transaction: transaction
+        ) { match, _, stop in
+
+            guard !hasReachedMaxResults else {
+                stop.pointee = true
+                return
+            }
+
+            switch match {
+            case let signalAccount as SignalAccount:
+                let searchResult = ContactSearchResult(signalAccount: signalAccount, transaction: transaction)
+                assert(signalContactMap[signalAccount.recipientAddress] == nil)
+                signalContactMap[signalAccount.recipientAddress] = searchResult
+            case let signalRecipient as SignalRecipient:
+                guard signalRecipient.devices.count > 0 else {
+                    // Ignore unregistered recipients.
+                    return
+                }
+                let signalAccount = SignalAccount.transientSignalAccount(forSignalRecipient: signalRecipient)
+                let searchResult = ContactSearchResult(signalAccount: signalAccount, transaction: transaction)
+                signalRecipentResults.append(searchResult)
+            case let groupThread as TSGroupThread:
+                let sortKey = ConversationSortKey(isContactThread: false,
+                                                  creationDate: groupThread.creationDate,
+                                                  lastInteractionRowId: groupThread.lastInteractionRowId)
+                let threadViewModel = ThreadViewModel(thread: groupThread,
+                                                      forChatList: true,
+                                                      transaction: transaction)
+                let searchResult = GroupSearchResult(thread: threadViewModel, sortKey: sortKey)
+                groups.append(searchResult)
+
+                if groupThread.isStorySendEnabled(transaction: transaction) {
+                    let searchResult = StorySearchResult(thread: groupThread, sortKey: sortKey)
+                    storyThreads.append(searchResult)
+                }
+
+            case let storyThread as TSPrivateStoryThread:
+                let sortKey = ConversationSortKey(
+                    isContactThread: false,
+                    creationDate: storyThread.creationDate,
+                    lastInteractionRowId: storyThread.lastInteractionRowId
+                )
+                let searchResult = StorySearchResult(thread: storyThread, sortKey: sortKey)
+                storyThreads.append(searchResult)
+            case is TSContactThread:
+                // not included in compose screen results
+                break
+            default:
+                owsFailDebug("Unexpected match of type \(type(of: match))")
+            }
+        }
+
+        // Fill in user matches from SignalRecipients, but only if
+        // we don't already have a SignalAccount for the same user.
+        for signalRecipentResult in signalRecipentResults {
+            if signalContactMap[signalRecipentResult.recipientAddress] == nil {
+                signalContactMap[signalRecipentResult.recipientAddress] = signalRecipentResult
+            }
+        }
+
+        if let localAddress = TSAccountManager.localAddress {
+            if matchesNoteToSelf(searchText: searchText, transaction: transaction) {
+                if signalContactMap[localAddress] == nil {
+                    let localAccount = SignalAccount(address: localAddress)
+                    let localResult = ContactSearchResult(signalAccount: localAccount, transaction: transaction)
+                    signalContactMap[localAddress] = localResult
+                }
+            }
+        } else {
+            owsFailDebug("localAddress was unexpectedly nil")
+        }
+
+        // Filter out contact results with pending message requests.
+        var signalContacts = Array(signalContactMap.values).filter { (contactResult: ContactSearchResult) in
+            !self.shouldFilterContactResult(contactResult: contactResult,
+                                            omitLocalUser: false,
+                                            transaction: transaction)
+        }
+        // Order contact results by display name.
+        signalContacts.sort()
+
+        // Order the conversation and message results in reverse chronological order.
+        // The contact results are pre-sorted by display name.
+        groups.sort(by: >)
+
+        return ConversationPickerScreenSearchResultSet(
+            searchText: searchText,
+            groups: groups,
+            storyThreads: storyThreads,
+            signalContacts: signalContacts
+        )
     }
 
     func shouldFilterContactResult(contactResult: ContactSearchResult,

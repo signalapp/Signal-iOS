@@ -12,7 +12,11 @@ public protocol NewStoryHeaderDelegate: AnyObject, OWSTableViewController2 {
 public class NewStoryHeaderView: UIStackView {
     weak var delegate: NewStoryHeaderDelegate!
 
-    public init(title: String, delegate: NewStoryHeaderDelegate) {
+    public init(
+        title: String,
+        showsNewStoryButton: Bool = true,
+        delegate: NewStoryHeaderDelegate
+    ) {
         self.delegate = delegate
 
         super.init(frame: .zero)
@@ -54,6 +58,7 @@ public class NewStoryHeaderView: UIStackView {
         newStoryButton.titleEdgeInsets = UIEdgeInsets(top: 0, leading: 6, bottom: 0, trailing: -6)
         newStoryButton.tintColor = Theme.primaryIconColor
         newStoryButton.clipsToBounds = true
+        newStoryButton.isHidden = !showsNewStoryButton
 
         let pillWrapper = ManualLayoutView(name: "PillWrapper")
         pillWrapper.shouldDeactivateConstraints = false

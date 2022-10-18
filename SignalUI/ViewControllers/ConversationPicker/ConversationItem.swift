@@ -251,6 +251,7 @@ public struct StoryConversationItem {
     public static func allItems(
         includeImplicitGroupThreads: Bool,
         excludeHiddenContexts: Bool,
+        prioritizeThreadsCreatedAfter: Date? = nil,
         transaction: SDSAnyReadTransaction
     ) -> [StoryConversationItem] {
         func sortTime(
@@ -283,29 +284,46 @@ public struct StoryConversationItem {
             .sorted { lhs, rhs in
                 if (lhs.0 as? TSPrivateStoryThread)?.isMyStory == true { return true }
                 if (rhs.0 as? TSPrivateStoryThread)?.isMyStory == true { return false }
+                if let priorityDateThreshold = prioritizeThreadsCreatedAfter {
+                    let lhsCreatedAfterThreshold = lhs.0.creationDate?.isAfter(priorityDateThreshold) ?? false
+                    let rhsCreatedAfterThreshold = rhs.0.creationDate?.isAfter(priorityDateThreshold) ?? false
+                    if lhsCreatedAfterThreshold != rhsCreatedAfterThreshold {
+                        return lhsCreatedAfterThreshold
+                    }
+                }
                 return sortTime(for: lhs.1, thread: lhs.0) > sortTime(for: rhs.1, thread: rhs.0)
             }
             .map(\.0)
-            .compactMap { thread -> StoryConversationItem.ItemType? in
-                if let groupThread = thread as? TSGroupThread {
-                    guard groupThread.isLocalUserFullMember else {
-                        return nil
-                    }
-                    return .groupStory(GroupConversationItem(
-                        groupThreadId: groupThread.uniqueId,
-                        isBlocked: false,
-                        disappearingMessagesConfig: nil
-                    ))
-                } else if let privateStoryThread = thread as? TSPrivateStoryThread {
-                    return .privateStory(PrivateStoryConversationItem(
-                        storyThreadId: privateStoryThread.uniqueId,
-                        isMyStory: privateStoryThread.isMyStory
-                    ))
-                } else {
-                    owsFailDebug("Unexpected story thread type \(type(of: thread))")
+            .compactMap { thread -> Self? in
+                return .from(thread: thread)
+            }
+    }
+
+    public static func from(thread: TSThread) -> Self? {
+        let backingItem: StoryConversationItem.ItemType? = {
+            if let groupThread = thread as? TSGroupThread {
+                guard groupThread.isLocalUserFullMember else {
                     return nil
                 }
-            }.map { .init(backingItem: $0) }
+                return .groupStory(GroupConversationItem(
+                    groupThreadId: groupThread.uniqueId,
+                    isBlocked: false,
+                    disappearingMessagesConfig: nil
+                ))
+            } else if let privateStoryThread = thread as? TSPrivateStoryThread {
+                return .privateStory(PrivateStoryConversationItem(
+                    storyThreadId: privateStoryThread.uniqueId,
+                    isMyStory: privateStoryThread.isMyStory
+                ))
+            } else {
+                owsFailDebug("Unexpected story thread type \(type(of: thread))")
+                return nil
+            }
+        }()
+        guard let backingItem = backingItem else {
+            return nil
+        }
+        return .init(backingItem: backingItem)
     }
 }
 

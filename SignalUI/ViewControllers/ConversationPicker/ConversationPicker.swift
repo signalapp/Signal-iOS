@@ -36,6 +36,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     private let textAttachment: TextAttachment?
     private let maxVideoAttachmentDuration: TimeInterval?
 
+    private let creationDate = Date()
+
     public let selection: ConversationPickerSelection
 
     private let footerView = ApprovalFooterView()
@@ -227,6 +229,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         super.applyTheme()
 
         searchBar.searchFieldBackgroundColorOverride = Theme.searchFieldElevatedBackgroundColor
+        updateTableContents(shouldReload: false)
     }
 
     open override func viewSafeAreaInsetsDidChange() {
@@ -254,16 +257,14 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         updateUIForCurrentSelection(animated: false)
     }
 
-    func buildSearchResults(searchText: String) -> Promise<ComposeScreenSearchResultSet?> {
+    func buildSearchResults(searchText: String) -> Promise<ConversationPickerScreenSearchResultSet?> {
         guard searchText.count > 1 else {
             return Promise.value(nil)
         }
 
         return firstly(on: .global()) {
             Self.databaseStorage.read { transaction in
-                self.fullTextSearcher.searchForComposeScreen(searchText: searchText,
-                                                             omitLocalUser: false,
-                                                             transaction: transaction)
+                self.fullTextSearcher.searchForConvsersationPickerScreen(searchText: searchText, transaction: transaction)
             }
         }
     }
@@ -380,8 +381,16 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             let storyItems = StoryConversationItem.allItems(
                 includeImplicitGroupThreads: true,
                 excludeHiddenContexts: true,
+                prioritizeThreadsCreatedAfter: creationDate,
                 transaction: transaction
             )
+            if
+                let firstSelectedStoryIndex = storyItems.firstIndex(where: { self.selection.isSelected(conversation: $0)}),
+                firstSelectedStoryIndex >= self.maxStoryConversationsToRender - 1 {
+                // If we've come in already having selected a story in the expanded section,
+                // expand right away.
+                self.isStorySectionExpanded = true
+            }
 
             return ConversationCollection(contactConversations: contactItems,
                                           recentConversations: pinnedItems + recentItems,
@@ -391,7 +400,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
-    fileprivate func buildConversationCollection(searchResults: ComposeScreenSearchResultSet?) -> Promise<ConversationCollection> {
+    fileprivate func buildConversationCollection(searchResults: ConversationPickerScreenSearchResultSet?) -> Promise<ConversationCollection> {
         guard let searchResults = searchResults else {
             return Promise.value(buildConversationCollection())
         }
@@ -406,12 +415,15 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     return self.buildGroupItem(groupThread, transaction: transaction)
                 }
                 let contactItems = searchResults.signalAccounts.map { self.buildContactItem($0.recipientAddress, transaction: transaction) }
+                let storyItems = searchResults.storyThreads.compactMap { StoryConversationItem.from(thread: $0) }
 
-                return ConversationCollection(contactConversations: contactItems,
-                                              recentConversations: [],
-                                              groupConversations: groupItems,
-                                              storyConversations: [],
-                                              isSearchResults: true)
+                return ConversationCollection(
+                    contactConversations: contactItems,
+                    recentConversations: [],
+                    groupConversations: groupItems,
+                    storyConversations: storyItems,
+                    isSearchResults: true
+                )
             }
         }
     }
@@ -455,12 +467,14 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         do {
             let section = OWSTableSection()
             if
+                !conversationCollection.isSearchResults,
                 sectionOptions.contains(.mediaPreview),
                 let attachments = attachments,
                 !attachments.isEmpty
             {
                 addMediaPreview(to: section, attachments: attachments)
             } else if
+                !conversationCollection.isSearchResults,
                 sectionOptions.contains(.mediaPreview),
                 let textAttachment = textAttachment
             {
@@ -473,16 +487,24 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         do {
             let section = OWSTableSection()
             if StoryManager.areStoriesEnabled && sectionOptions.contains(.stories) && !conversationCollection.storyConversations.isEmpty {
-                section.customHeaderView = NewStoryHeaderView(title: Strings.storiesSection, delegate: self)
-
-                addExpandableConversations(
-                    to: section,
-                    sectionIndex: .stories,
-                    conversations: conversationCollection.storyConversations,
-                    maxConversationsToRender: maxStoryConversationsToRender,
-                    isExpanded: isStorySectionExpanded,
-                    markAsExpanded: { [weak self] in self?.isStorySectionExpanded = true }
+                section.customHeaderView = NewStoryHeaderView(
+                    title: Strings.storiesSection,
+                    showsNewStoryButton: !conversationCollection.isSearchResults,
+                    delegate: self
                 )
+
+                if conversationCollection.isSearchResults {
+                    addConversations(to: section, conversations: conversationCollection.storyConversations)
+                } else {
+                    addExpandableConversations(
+                        to: section,
+                        sectionIndex: .stories,
+                        conversations: conversationCollection.storyConversations,
+                        maxConversationsToRender: maxStoryConversationsToRender,
+                        isExpanded: isStorySectionExpanded,
+                        markAsExpanded: { [weak self] in self?.isStorySectionExpanded = true }
+                    )
+                }
                 hasContents = true
             }
             contents.addSection(section)
@@ -558,7 +580,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             return cell
         },
         actionBlock: { [weak self] in
-            self?.didToggleSection(conversation: item)
+            self?.didToggleSelection(conversation: item)
         }))
     }
 
@@ -716,6 +738,19 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
+    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let conversation = conversation(for: indexPath) else {
+            return
+        }
+        if selection.isSelected(conversation: conversation) {
+            cell.setSelected(true, animated: false)
+            tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
+        } else {
+            cell.setSelected(false, animated: false)
+            tableView.deselectRow(at: indexPath, animated: false)
+        }
+    }
+
     public override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         guard let indexPath = super.tableView(tableView, willSelectRowAt: indexPath) else {
             return nil
@@ -794,13 +829,14 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
-    fileprivate func didToggleSection(conversation: ConversationItem) {
+    fileprivate func didToggleSelection(conversation: ConversationItem) {
         AssertIsOnMainThread()
 
         if selection.isSelected(conversation: conversation) {
             didDeselect(conversation: conversation)
         } else {
             didSelect(conversation: conversation)
+            searchBar.resignFirstResponder()
         }
     }
 
@@ -821,20 +857,31 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         selection.add(conversation)
         updateUIForCurrentSelection(animated: true)
 
-        if
-            let storyConversationItem = conversation as? StoryConversationItem,
-            storyConversationItem.isMyStory,
-            Self.databaseStorage.read(block: { !StoryManager.hasSetMyStoriesPrivacy(transaction: $0) }) {
-            // Show first time story privacy settings if selecting my story and settings have'nt been
-            // changed before.
-
-            // Reload the row when we show the sheet, and when it goes away, so we reflect changes.
-            let reloadRowBlock = { [weak self] in
-                self?.tableView.reloadData()
-                self?.tableView.selectRow(at: IndexPath(row: 0, section: 0), animated: false, scrollPosition: .none)
+        if let storyConversationItem = conversation as? StoryConversationItem {
+            if
+                !isStorySectionExpanded,
+                let index = conversationCollection.storyConversations.firstIndex(where: {
+                    ($0 as? StoryConversationItem)?.threadId == storyConversationItem.threadId
+                }),
+                index >= maxStoryConversationsToRender - 1 {
+                // Expand so we can see the selection.
+                isStorySectionExpanded = true
+                updateTableContents(shouldReload: false)
             }
-            let sheetController = MyStorySettingsSheetViewController(willDisappear: reloadRowBlock)
-            self.present(sheetController, animated: true, completion: reloadRowBlock)
+
+            if storyConversationItem.isMyStory,
+               Self.databaseStorage.read(block: { !StoryManager.hasSetMyStoriesPrivacy(transaction: $0) }) {
+                // Show first time story privacy settings if selecting my story and settings have'nt been
+                // changed before.
+
+                // Reload the row when we show the sheet, and when it goes away, so we reflect changes.
+                let reloadRowBlock = { [weak self] in
+                    self?.tableView.reloadData()
+                    self?.tableView.selectRow(at: IndexPath(row: 0, section: 0), animated: false, scrollPosition: .none)
+                }
+                let sheetController = MyStorySettingsSheetViewController(willDisappear: reloadRowBlock)
+                self.present(sheetController, animated: true, completion: reloadRowBlock)
+            }
         }
     }
 

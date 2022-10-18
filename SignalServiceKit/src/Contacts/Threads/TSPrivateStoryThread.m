@@ -22,11 +22,6 @@
 
 @implementation TSPrivateStoryThread
 
-+ (TSFTSIndexMode)FTSIndexMode
-{
-    return TSFTSIndexModeNever;
-}
-
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                             name:(NSString *)name
                    allowsReplies:(BOOL)allowsReplies

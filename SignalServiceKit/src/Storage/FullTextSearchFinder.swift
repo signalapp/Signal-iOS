@@ -602,6 +602,11 @@ class AnySearchIndexer: Dependencies {
         return groupThread.groupModel.groupNameOrDefault
     }
 
+    private static let privateStoryThreadIndexer: SearchIndexer<TSPrivateStoryThread> = SearchIndexer { (storyThread: TSPrivateStoryThread, _: SDSAnyReadTransaction) in
+        // NOTE: returns the right name for my story as well.
+        return storyThread.name
+    }
+
     private static let groupMemberIndexer: SearchIndexer<TSGroupMember> = SearchIndexer { (groupMember: TSGroupMember, transaction: SDSAnyReadTransaction) in
         return recipientIndexer.index(groupMember.address, transaction: transaction)
     }
@@ -670,6 +675,8 @@ class AnySearchIndexer: Dependencies {
 
         if let groupThread = object as? TSGroupThread {
             return self.groupThreadIndexer.index(groupThread, transaction: transaction)
+        } else if let privateStoryThread = object as? TSPrivateStoryThread {
+            return self.privateStoryThreadIndexer.index(privateStoryThread, transaction: transaction)
         } else if let groupMember = object as? TSGroupMember {
             return self.groupMemberIndexer.index(groupMember, transaction: transaction)
         } else if let contactThread = object as? TSContactThread {
