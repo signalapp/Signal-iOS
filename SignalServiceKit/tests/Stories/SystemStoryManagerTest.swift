@@ -342,7 +342,7 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
         read { transaction in
             if let mockManager = Self.systemStoryManager as? SystemStoryManagerMock {
                 mockManager.areSystemStoriesHidden = manager.areSystemStoriesHidden(transaction: transaction)
-                mockManager.isOnboardingStoryViewed = manager.isOnboardingStoryViewed(transaction: transaction)
+                mockManager.isOnboardingStoryRead = manager.isOnboardingStoryViewed(transaction: transaction)
             }
 
             let stories = StoryFinder.unviewedSenderCount(transaction: transaction)

@@ -19,8 +19,8 @@ public class StoryFinder: NSObject {
                 \(StoryContextAssociatedData.columnName(.isHidden)) IS NOT 1
                 AND \(StoryContextAssociatedData.columnName(.latestUnexpiredTimestamp)) IS NOT NULL
                 AND (
-                    \(StoryContextAssociatedData.columnName(.lastViewedTimestamp)) IS NULL
-                    OR \(StoryContextAssociatedData.columnName(.lastViewedTimestamp))
+                    \(StoryContextAssociatedData.columnName(.lastReadTimestamp)) IS NULL
+                    OR \(StoryContextAssociatedData.columnName(.lastReadTimestamp))
                         < \(StoryContextAssociatedData.columnName(.latestUnexpiredTimestamp))
                 )
                 \(ownUUIDClause)
@@ -34,7 +34,7 @@ public class StoryFinder: NSObject {
                 return unviewedStoryCount
             }
 
-            let unviewedSystemStoryCount = Self.systemStoryManager.isOnboardingStoryViewed(transaction: transaction) ? 0 : 1
+            let unviewedSystemStoryCount = Self.systemStoryManager.isOnboardingStoryRead(transaction: transaction) ? 0 : 1
             return unviewedStoryCount + unviewedSystemStoryCount
 
         } catch {
@@ -89,6 +89,31 @@ public class StoryFinder: NSObject {
             FROM \(StoryMessage.databaseTableName)
             WHERE \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.outgoing.rawValue)
             ORDER BY \(StoryMessage.columnName(.timestamp)) DESC
+        """
+
+        do {
+            let cursor = try StoryMessage.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
+            while let message = try cursor.next() {
+                var stop: ObjCBool = false
+                block(message, &stop)
+                if stop.boolValue {
+                    return
+                }
+            }
+        } catch {
+            owsFailDebug("error: \(error)")
+        }
+    }
+
+    public static func enumerateUnreadIncomingStories(
+        transaction: SDSAnyReadTransaction,
+        block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) {
+        let sql = """
+            SELECT *
+            FROM \(StoryMessage.databaseTableName)
+            WHERE \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.incoming.rawValue)
+            AND json_extract(\(StoryMessage.columnName(.manifest)), '$.incoming.receivedState.readTimestamp') is NULL
         """
 
         do {

@@ -774,6 +774,7 @@
 		661602A428BEB94400C1932D /* StoryListDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661602A328BEB94400C1932D /* StoryListDataSource.swift */; };
 		667E90D028E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667E90CF28E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift */; };
 		667EDE6428F8D6B7001FB487 /* YYAnimatedImage+Duration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */; };
+		667EDE6628FA0372001FB487 /* StoryBadgeCountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667EDE6528FA0372001FB487 /* StoryBadgeCountManager.swift */; };
 		668CAB3E289983520085A2C3 /* AudioMessagePlaybackRateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */; };
 		668FE09B28B923A4008B9071 /* Bool+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668FE09A28B923A4008B9071 /* Bool+SSK.swift */; };
 		668FE09F28B947ED008B9071 /* StoryContextMenuGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668FE09E28B947ED008B9071 /* StoryContextMenuGenerator.swift */; };
@@ -3026,6 +3027,7 @@
 		6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		667E90CF28E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyStorySettingsLearnMoreSheetViewController.swift; sourceTree = "<group>"; };
 		667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "YYAnimatedImage+Duration.swift"; sourceTree = "<group>"; };
+		667EDE6528FA0372001FB487 /* StoryBadgeCountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryBadgeCountManager.swift; sourceTree = "<group>"; };
 		668AB0CB28AD610600B31984 /* StoryUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryUtil.swift; sourceTree = "<group>"; };
 		668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessagePlaybackRateView.swift; sourceTree = "<group>"; };
 		668FE09A28B923A4008B9071 /* Bool+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bool+SSK.swift"; sourceTree = "<group>"; };
@@ -7492,6 +7494,7 @@
 			children = (
 				F9C5C96C289453B100548EEE /* OutgoingStoryMessage.swift */,
 				884E4C4728AF2F2A007A338C /* OutgoingStorySentMessageTranscript.swift */,
+				667EDE6528FA0372001FB487 /* StoryBadgeCountManager.swift */,
 				66D709E828E3999400B5013A /* StoryContextAssociatedData.swift */,
 				F9C5C96B289453B100548EEE /* StoryFinder.swift */,
 				F9C5C969289453B100548EEE /* StoryManager.swift */,
@@ -11000,6 +11003,7 @@
 				F9C5CCA3289453B300548EEE /* StorageService.pb.swift in Sources */,
 				F9C5CDE4289453B400548EEE /* StorageService.swift in Sources */,
 				F9C5CC92289453B300548EEE /* StorageServiceProto.swift in Sources */,
+				667EDE6628FA0372001FB487 /* StoryBadgeCountManager.swift in Sources */,
 				66D709E928E3999400B5013A /* StoryContextAssociatedData.swift in Sources */,
 				F9C5CC59289453B300548EEE /* StoryFinder.swift in Sources */,
 				F9C5CC57289453B300548EEE /* StoryManager.swift in Sources */,

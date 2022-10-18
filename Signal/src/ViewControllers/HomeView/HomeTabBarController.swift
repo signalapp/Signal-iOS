@@ -39,6 +39,8 @@ class HomeTabBarController: UITabBarController {
         return tabBar as? OWSTabBar
     }
 
+    private lazy var storyBadgeCountManager = StoryBadgeCountManager()
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -56,28 +58,31 @@ class HomeTabBarController: UITabBarController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(storiesEnabledStateDidChange), name: .storiesEnabledStateDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didEnterForeground), name: .OWSApplicationWillEnterForeground, object: nil)
         applyTheme()
 
         databaseStorage.appendDatabaseChangeDelegate(self)
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(onboardingStoryStateDidChange),
-            name: .onboardingStoryStateDidChange,
-            object: nil
-        )
 
         viewControllers = [chatListNavController, storiesNavController]
 
         chatListNavController.tabBarItem = chatListTabBarItem
         storiesNavController.tabBarItem = storiesTabBarItem
 
-        updateAllBadges()
+        updateChatListBadge()
+        storyBadgeCountManager.beginObserving(observer: self)
 
         // We read directly from the database here, as the cache may not have been warmed by the time
         // this view is loaded (since it's the very first thing to load). Otherwise, there can be a
         // small window where the tab bar is in the wrong state at app launch.
         let shouldHideTabBar = !databaseStorage.read { StoryManager.areStoriesEnabled(transaction: $0) }
         setTabBarHidden(shouldHideTabBar, animated: false)
+    }
+
+    @objc
+    func didEnterForeground() {
+        if selectedTab == .stories {
+            storyBadgeCountManager.markAllStoriesRead()
+        }
     }
 
     @objc
@@ -96,32 +101,6 @@ class HomeTabBarController: UITabBarController {
             }
             selectedTab = .chatList
         }
-    }
-
-    @objc
-    func onboardingStoryStateDidChange() {
-        updateStoriesBadge()
-    }
-
-    func updateAllBadges() {
-        updateStoriesBadge()
-        updateChatListBadge()
-    }
-
-    func updateStoriesBadge() {
-        guard RemoteConfig.stories else { return }
-
-        var badgeValue: String?
-        databaseStorage.read { transaction in
-            if StoryFinder.hasFailedStories(transaction: transaction) {
-                badgeValue = "!"
-            } else {
-                let unviewedStoriesCount = StoryFinder.unviewedSenderCount(transaction: transaction)
-                badgeValue = unviewedStoriesCount > 0 ? "\(unviewedStoriesCount)" : nil
-            }
-        }
-
-        storiesTabBarItem.badgeValue = badgeValue
     }
 
     func updateChatListBadge() {
@@ -199,18 +178,25 @@ extension HomeTabBarController: DatabaseChangeDelegate {
         if databaseChanges.didUpdateInteractions || databaseChanges.didUpdateModel(collection: String(describing: ThreadAssociatedData.self)) {
             updateChatListBadge()
         }
-        if databaseChanges.didUpdateModel(collection: StoryContextAssociatedData.collection()) ||
-            databaseChanges.didUpdateModel(collection: StoryMessage.collection()) {
-            updateStoriesBadge()
-        }
     }
 
     func databaseChangesDidUpdateExternally() {
-        updateAllBadges()
+        updateChatListBadge()
     }
 
     func databaseChangesDidReset() {
-        updateAllBadges()
+        updateChatListBadge()
+    }
+}
+
+extension HomeTabBarController: StoryBadgeCountObserver {
+
+    public var isStoriesTabActive: Bool {
+        return selectedTab == .stories && CurrentAppContext().isAppForegroundAndActive()
+    }
+
+    public func didUpdateStoryBadge(_ badge: String?) {
+        storiesTabBarItem.badgeValue = badge
     }
 }
 
@@ -230,6 +216,12 @@ extension HomeTabBarController: UITabBarControllerDelegate {
         }
 
         return true
+    }
+
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        if isStoriesTabActive {
+            storyBadgeCountManager.markAllStoriesRead()
+        }
     }
 }
 
