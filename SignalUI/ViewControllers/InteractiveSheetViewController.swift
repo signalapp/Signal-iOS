@@ -224,10 +224,11 @@ open class InteractiveSheetViewController: OWSViewController {
         )
     }
 
-    public func maximizeHeight(animated: Bool = true) {
+    public func maximizeHeight(animated: Bool = true, completion: (() -> Void)? = nil) {
         sheetCurrentHeightConstraint.constant = maxHeight
         guard animated else {
             view.layoutIfNeeded()
+            completion?()
             return
         }
 
@@ -238,6 +239,9 @@ open class InteractiveSheetViewController: OWSViewController {
             options: .curveEaseOut,
             animations: {
                 self.view.layoutIfNeeded()
+            },
+            completion: { _ in
+                completion?()
             }
         )
     }
