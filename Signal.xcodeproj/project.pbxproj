@@ -1526,10 +1526,8 @@
 		F9C5CC96289453B300548EEE /* SessionRecord.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9AB289453B100548EEE /* SessionRecord.pb.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC97289453B300548EEE /* WebSocketProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9AC289453B100548EEE /* WebSocketProto.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC98289453B300548EEE /* GroupsProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9AD289453B100548EEE /* GroupsProto.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CC99289453B300548EEE /* ContactDiscovery.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9AE289453B100548EEE /* ContactDiscovery.pb.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC9A289453B300548EEE /* SignalService.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9AF289453B100548EEE /* SignalService.pb.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC9B289453B300548EEE /* KeyBackupProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B0289453B100548EEE /* KeyBackupProto.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CC9C289453B300548EEE /* ContactDiscoveryMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B1289453B100548EEE /* ContactDiscoveryMessage.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC9D289453B300548EEE /* Provisioning.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B2289453B100548EEE /* Provisioning.pb.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC9E289453B300548EEE /* SignalIOSProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B3289453B100548EEE /* SignalIOSProto.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CC9F289453B300548EEE /* FingerprintProto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B4289453B100548EEE /* FingerprintProto.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -1564,9 +1562,7 @@
 		F9C5CCBC289453B300548EEE /* PhoneNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D4289453B100548EEE /* PhoneNumber.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCBD289453B300548EEE /* UUIDBackfillTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D6289453B100548EEE /* UUIDBackfillTask.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCBE289453B300548EEE /* SGXContactDiscoveryOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D7289453B100548EEE /* SGXContactDiscoveryOperation.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCBF289453B300548EEE /* HSMContactDiscoveryOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D8289453B100548EEE /* HSMContactDiscoveryOperation.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC0289453B300548EEE /* ContactDiscoveryTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CCC1289453B300548EEE /* CDSHWebsocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DA289453B100548EEE /* CDSHWebsocket.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC2289453B300548EEE /* BulkUUIDLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DB289453B100548EEE /* BulkUUIDLookup.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC3289453B300548EEE /* ContactDiscoveryOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CCC4289453B300548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -3864,10 +3860,8 @@
 		F9C5C9AB289453B100548EEE /* SessionRecord.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionRecord.pb.swift; sourceTree = "<group>"; };
 		F9C5C9AC289453B100548EEE /* WebSocketProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketProto.swift; sourceTree = "<group>"; };
 		F9C5C9AD289453B100548EEE /* GroupsProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsProto.swift; sourceTree = "<group>"; };
-		F9C5C9AE289453B100548EEE /* ContactDiscovery.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscovery.pb.swift; sourceTree = "<group>"; };
 		F9C5C9AF289453B100548EEE /* SignalService.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalService.pb.swift; sourceTree = "<group>"; };
 		F9C5C9B0289453B100548EEE /* KeyBackupProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyBackupProto.swift; sourceTree = "<group>"; };
-		F9C5C9B1289453B100548EEE /* ContactDiscoveryMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryMessage.swift; sourceTree = "<group>"; };
 		F9C5C9B2289453B100548EEE /* Provisioning.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Provisioning.pb.swift; sourceTree = "<group>"; };
 		F9C5C9B3289453B100548EEE /* SignalIOSProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalIOSProto.swift; sourceTree = "<group>"; };
 		F9C5C9B4289453B100548EEE /* FingerprintProto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FingerprintProto.swift; sourceTree = "<group>"; };
@@ -3902,9 +3896,7 @@
 		F9C5C9D4289453B100548EEE /* PhoneNumber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumber.m; sourceTree = "<group>"; };
 		F9C5C9D6289453B100548EEE /* UUIDBackfillTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UUIDBackfillTask.swift; sourceTree = "<group>"; };
 		F9C5C9D7289453B100548EEE /* SGXContactDiscoveryOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SGXContactDiscoveryOperation.swift; sourceTree = "<group>"; };
-		F9C5C9D8289453B100548EEE /* HSMContactDiscoveryOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HSMContactDiscoveryOperation.swift; sourceTree = "<group>"; };
 		F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryTask.swift; sourceTree = "<group>"; };
-		F9C5C9DA289453B100548EEE /* CDSHWebsocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CDSHWebsocket.swift; sourceTree = "<group>"; };
 		F9C5C9DB289453B100548EEE /* BulkUUIDLookup.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BulkUUIDLookup.swift; sourceTree = "<group>"; };
 		F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryOperation.swift; sourceTree = "<group>"; };
 		F9C5C9DD289453B100548EEE /* OWSDisappearingMessagesConfiguration+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSDisappearingMessagesConfiguration+SDS.swift"; sourceTree = "<group>"; };
@@ -7545,8 +7537,6 @@
 		F9C5C9A2289453B100548EEE /* Generated */ = {
 			isa = PBXGroup;
 			children = (
-				F9C5C9AE289453B100548EEE /* ContactDiscovery.pb.swift */,
-				F9C5C9B1289453B100548EEE /* ContactDiscoveryMessage.swift */,
 				F9C5C9A9289453B100548EEE /* DeviceTransfer.pb.swift */,
 				F9C5C9B5289453B100548EEE /* DeviceTransferProto.swift */,
 				F9C5C9A6289453B100548EEE /* Fingerprint.pb.swift */,
@@ -7647,10 +7637,8 @@
 			isa = PBXGroup;
 			children = (
 				F9C5C9DB289453B100548EEE /* BulkUUIDLookup.swift */,
-				F9C5C9DA289453B100548EEE /* CDSHWebsocket.swift */,
 				F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */,
 				F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */,
-				F9C5C9D8289453B100548EEE /* HSMContactDiscoveryOperation.swift */,
 				F9C5C9D7289453B100548EEE /* SGXContactDiscoveryOperation.swift */,
 				F9C5C9D6289453B100548EEE /* UUIDBackfillTask.swift */,
 			);
@@ -10586,7 +10574,6 @@
 				F9C5CD8D289453B300548EEE /* CaptchaChallenge.swift in Sources */,
 				76387BF028F4ED73002C7BA5 /* CaseIterable.swift in Sources */,
 				F9C5CC0C289453B300548EEE /* CDNDownloadOperation.swift in Sources */,
-				F9C5CCC1289453B300548EEE /* CDSHWebsocket.swift in Sources */,
 				661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */,
 				F9C5CE0E289453B400548EEE /* ChangePhoneNumber.swift in Sources */,
 				F9C5CCF2289453B300548EEE /* ChunkedInputStream.swift in Sources */,
@@ -10594,8 +10581,6 @@
 				F9C5CCE5289453B300548EEE /* Contact+Swift.swift in Sources */,
 				F9C5CCB5289453B300548EEE /* Contact.m in Sources */,
 				F9C5CCE4289453B300548EEE /* Contact.swift in Sources */,
-				F9C5CC99289453B300548EEE /* ContactDiscovery.pb.swift in Sources */,
-				F9C5CC9C289453B300548EEE /* ContactDiscoveryMessage.swift in Sources */,
 				F9C5CCC3289453B300548EEE /* ContactDiscoveryOperation.swift in Sources */,
 				F9C5CDC1289453B400548EEE /* ContactDiscoveryService.swift in Sources */,
 				F9C5CCC0289453B300548EEE /* ContactDiscoveryTask.swift in Sources */,
@@ -10667,7 +10652,6 @@
 				F9C5CE78289453B400548EEE /* GroupsV2.swift in Sources */,
 				F9C5CDA1289453B400548EEE /* GroupsV2MessageJobFinder.swift in Sources */,
 				F9C5CDA2289453B400548EEE /* GroupsV2MessageProcessor.swift in Sources */,
-				F9C5CCBF289453B300548EEE /* HSMContactDiscoveryOperation.swift in Sources */,
 				F9C5CD94289453B300548EEE /* HTMLMetadata.swift in Sources */,
 				F9C5CDC2289453B400548EEE /* HTTPEntities.swift in Sources */,
 				F9C5CDBC289453B400548EEE /* HTTPUtils.m in Sources */,

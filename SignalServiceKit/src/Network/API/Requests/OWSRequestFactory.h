@@ -153,8 +153,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 + (TSRequest *)cdsFeedbackRequestWithStatus:(NSString *)status
                                      reason:(nullable NSString *)reason NS_SWIFT_NAME(cdsFeedbackRequest(status:reason:));
 
-+ (TSRequest *)hsmDirectoryAuthRequest;
-
 #pragma mark - KBS
 
 + (TSRequest *)kbsEnclaveTokenRequestWithEnclaveName:(NSString *)enclaveName

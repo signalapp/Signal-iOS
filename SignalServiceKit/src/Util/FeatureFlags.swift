@@ -89,9 +89,6 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let canUseNativeWebsocket = true
 
-    @objc
-    public static let hsmContactDiscovery = false
-
     public static let shouldUseRemoteConfigForReceivingGiftBadges = true
 
     public static let isPrerelease = build.includes(.beta)

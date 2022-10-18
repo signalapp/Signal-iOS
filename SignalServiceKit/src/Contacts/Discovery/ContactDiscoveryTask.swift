@@ -99,11 +99,7 @@ public class ContactDiscoveryTask: NSObject {
     // MARK: - Private
 
     private func createContactDiscoveryOperation() -> ContactDiscovering {
-        if FeatureFlags.hsmContactDiscovery {
-            return HSMContactDiscoveryOperation(e164sToLookup: e164FetchSet)
-        } else {
-            return SGXContactDiscoveryOperation(e164sToLookup: e164FetchSet)
-        }
+        return SGXContactDiscoveryOperation(e164sToLookup: e164FetchSet)
     }
 
     private func storeResults(
