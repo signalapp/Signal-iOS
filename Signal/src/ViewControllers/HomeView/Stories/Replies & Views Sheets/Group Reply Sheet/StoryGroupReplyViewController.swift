@@ -95,7 +95,7 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
 
         replyLoader = StoryGroupReplyLoader(storyMessage: storyMessage, threadUniqueId: thread?.uniqueId, tableView: tableView)
 
-        view.addSubview(emptyStateView)
+        view.insertSubview(emptyStateView, belowSubview: bottomBar)
         emptyStateView.autoPinWidthToSuperview()
         emptyStateView.autoPinEdge(toSuperviewEdge: .top)
         emptyStateView.autoPinEdge(.bottom, to: .top, of: bottomBar)
