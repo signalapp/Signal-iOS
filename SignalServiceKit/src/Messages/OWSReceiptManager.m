@@ -177,6 +177,29 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
     }
 }
 
+- (void)storyWasRead:(StoryMessage *)storyMessage
+        circumstance:(OWSReceiptCircumstance)circumstance
+         transaction:(SDSAnyWriteTransaction *)transaction
+{
+    switch (circumstance) {
+        case OWSReceiptCircumstanceOnLinkedDevice:
+            // nothing further to do
+            break;
+        case OWSReceiptCircumstanceOnLinkedDeviceWhilePendingMessageRequest:
+            OWSFailDebug(@"Unexectedly had story receipt blocked by message request.");
+            break;
+        case OWSReceiptCircumstanceOnThisDevice: {
+            // We only send read receipts to linked devices, not to the author.
+            [self enqueueLinkedDeviceReadReceiptForStoryMessage:storyMessage transaction:transaction];
+            [transaction addAsyncCompletionOffMain:^{ [self scheduleProcessing]; }];
+            break;
+        }
+        case OWSReceiptCircumstanceOnThisDeviceWhilePendingMessageRequest:
+            OWSFailDebug(@"Unexectedly had story receipt blocked by message request.");
+            break;
+    }
+}
+
 - (void)storyWasViewed:(StoryMessage *)storyMessage
           circumstance:(OWSReceiptCircumstance)circumstance
            transaction:(SDSAnyWriteTransaction *)transaction
@@ -385,7 +408,16 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                                    transaction:transaction];
             }
         } else {
-            [receiptsMissingMessage addObject:readReceiptProto];
+            StoryMessage *_Nullable storyMessage = [StoryFinder storyWithTimestamp:messageIdTimestamp
+                                                                            author:senderAddress
+                                                                       transaction:transaction];
+            if (storyMessage) {
+                [storyMessage markAsReadAt:readTimestamp
+                              circumstance:OWSReceiptCircumstanceOnLinkedDevice
+                               transaction:transaction];
+            } else {
+                [receiptsMissingMessage addObject:readReceiptProto];
+            }
         }
     }
 

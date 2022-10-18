@@ -443,8 +443,10 @@ public class EarlyMessageManager: NSObject {
                 }
 
                 // TODO: Mark Delivered
-            case .messageReadOnLinkedDevice:
-                owsFailDebug("Unexpectexly received early read receipt from linked device for StoryMessage \(identifier)")
+            case .messageReadOnLinkedDevice(let timestamp):
+                Logger.info("Applying early read receipt from linked device for StoryMessage \(identifier)")
+
+                storyMessage.markAsRead(at: timestamp, circumstance: .onLinkedDevice, transaction: transaction)
             case .messageViewedOnLinkedDevice(let timestamp):
                 Logger.info("Applying early viewed receipt from linked device for StoryMessage \(identifier)")
 

@@ -67,6 +67,19 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         }
     }
 
+    public var localUserReadTimestamp: UInt64? {
+        switch manifest {
+        case .incoming(let receivedState):
+            return receivedState.readTimestamp
+        case .outgoing:
+            return timestamp
+        }
+    }
+
+    public var isRead: Bool {
+        return localUserReadTimestamp != nil
+    }
+
     public var localUserViewedTimestamp: UInt64? {
         switch manifest {
         case .incoming(let receivedState):
@@ -283,6 +296,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             receivedState: StoryReceivedState(
                 allowsReplies: false,
                 receivedTimestamp: timestamp,
+                readTimestamp: nil,
                 viewedTimestamp: nil
             )
         )
@@ -306,7 +320,33 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         return record
     }
 
-    // MARK: -
+    // MARK: - Marking Read
+
+    @objc
+    public func markAsRead(at timestamp: UInt64, circumstance: OWSReceiptCircumstance, transaction: SDSAnyWriteTransaction) {
+        anyUpdate(transaction: transaction) { record in
+            guard case .incoming(let receivedState) = record.manifest else {
+                return owsFailDebug("Unexpectedly tried to mark outgoing message as read with wrong method.")
+            }
+            record.manifest = .incoming(receivedState: .init(
+                allowsReplies: receivedState.allowsReplies,
+                receivedTimestamp: receivedState.receivedTimestamp,
+                readTimestamp: timestamp,
+                viewedTimestamp: receivedState.viewedTimestamp
+            ))
+        }
+
+        // Don't send receipts for system stories or outgoing stories.
+        guard !authorAddress.isSystemStoryAddress, direction == .incoming else {
+            return
+        }
+
+        // TODO: update StoryContextAssociatedData with read state.
+
+        receiptManager.storyWasRead(self, circumstance: circumstance, transaction: transaction)
+    }
+
+    // MARK: - Marking Viewed
 
     @objc
     public func markAsViewed(at timestamp: UInt64, circumstance: OWSReceiptCircumstance, transaction: SDSAnyWriteTransaction) {
@@ -317,6 +357,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             record.manifest = .incoming(receivedState: .init(
                 allowsReplies: receivedState.allowsReplies,
                 receivedTimestamp: receivedState.receivedTimestamp,
+                readTimestamp: receivedState.readTimestamp,
                 viewedTimestamp: timestamp
             ))
         }
@@ -361,6 +402,8 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             record.manifest = .outgoing(recipientStates: recipientStates)
         }
     }
+
+    // MARK: -
 
     public func updateRecipients(_ recipients: [SSKProtoSyncMessageSentStoryMessageRecipient], transaction: SDSAnyWriteTransaction) {
         anyUpdate(transaction: transaction) { message in
@@ -677,12 +720,21 @@ public enum StoryManifest: Codable {
 
 public struct StoryReceivedState: Codable {
     public let allowsReplies: Bool
-    public var viewedTimestamp: UInt64?
     public var receivedTimestamp: UInt64?
+    // All current stories are "read" when the user goes to the stories tab.
+    public var readTimestamp: UInt64?
+    // Stories are "viewed" when the user opens them up individually for viewing.
+    public var viewedTimestamp: UInt64?
 
-    init(allowsReplies: Bool, receivedTimestamp: UInt64?, viewedTimestamp: UInt64? = nil) {
+    init(
+        allowsReplies: Bool,
+        receivedTimestamp: UInt64?,
+        readTimestamp: UInt64? = nil,
+        viewedTimestamp: UInt64? = nil
+    ) {
         self.allowsReplies = allowsReplies
         self.receivedTimestamp = receivedTimestamp
+        self.readTimestamp = readTimestamp
         self.viewedTimestamp = viewedTimestamp
     }
 }

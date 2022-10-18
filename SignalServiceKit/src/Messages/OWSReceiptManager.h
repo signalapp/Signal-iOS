@@ -105,6 +105,10 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
             circumstance:(OWSReceiptCircumstance)circumstance
              transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (void)storyWasRead:(StoryMessage *)storyMessage
+        circumstance:(OWSReceiptCircumstance)circumstance
+         transaction:(SDSAnyWriteTransaction *)transaction;
+
 - (void)storyWasViewed:(StoryMessage *)storyMessage
           circumstance:(OWSReceiptCircumstance)circumstance
            transaction:(SDSAnyWriteTransaction *)transaction;

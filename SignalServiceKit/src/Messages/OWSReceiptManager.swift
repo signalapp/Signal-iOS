@@ -173,6 +173,36 @@ public extension OWSReceiptManager {
         )
     }
 
+    func enqueueLinkedDeviceReadReceipt(
+        forStoryMessage message: StoryMessage,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        guard !message.authorAddress.isSystemStoryAddress else {
+            Logger.info("Not sending linked device read receipt for system story")
+            return
+        }
+
+        assert(message.authorAddress.isValid)
+
+        let newReadReceipt = ReceiptForLinkedDevice(
+            senderAddress: message.authorAddress,
+            messageUniqueId: message.uniqueId,
+            messageIdTimestamp: message.timestamp,
+            timestamp: Date.ows_millisecondTimestamp()
+        )
+
+        // Unlike message read receipts, we send every story message read receipt requested.
+        // On the caller side of things, we may choose to only send a read receipt for the latest
+        // known message per story context at the time of reading.
+        // On the receiving end we keep track of the latest read timestamp per context and should
+        // be fine whether we send every read receipt or just the latest; its purely a bandwidth/perf difference.
+        do {
+            try toLinkedDevicesReadReceiptMapStore.setCodable(newReadReceipt, key: message.uniqueId, transaction: transaction)
+        } catch {
+            owsFailDebug("Error: \(error)")
+        }
+    }
+
     func enqueueLinkedDeviceViewedReceipt(
         forStoryMessage message: StoryMessage,
         transaction: SDSAnyWriteTransaction
