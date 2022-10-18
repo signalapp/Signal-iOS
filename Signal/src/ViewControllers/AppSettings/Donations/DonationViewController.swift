@@ -35,7 +35,7 @@ class DonationViewController: OWSTableViewController2 {
 
     private var state: State = .initializing {
         didSet {
-            Logger.info("[Subscriptions] DonationViewController state changed to \(state.debugDescription)")
+            Logger.info("[Donations] DonationViewController state changed to \(state.debugDescription)")
             updateTableContents()
         }
     }
@@ -113,7 +113,7 @@ class DonationViewController: OWSTableViewController2 {
                     return Guarantee.value(result)
                 }
             }.recover { error -> Guarantee<State> in
-                Logger.warn("[Subscriptions] \(error)")
+                Logger.warn("[Donations] \(error)")
                 let result: State = .loadFailed(hasAnyDonationReceipts: hasAnyDonationReceipts,
                                                 profileBadgeLookup: profileBadgeLookup)
                 return Guarantee.value(result)
@@ -131,13 +131,13 @@ class DonationViewController: OWSTableViewController2 {
             // Make the result an Optional.
             $0
         }.recover { error -> Guarantee<SubscriptionManager.OneTimeBadgeResponse?> in
-            Logger.warn("[Subscriptions] Failed to fetch boost badge \(error). Proceeding without it, as it is only cosmetic here")
+            Logger.warn("[Donations] Failed to fetch boost badge \(error). Proceeding without it, as it is only cosmetic here")
             return Guarantee.value(nil)
         }
 
         let subscriptionLevelsPromise: Guarantee<[SubscriptionLevel]> = SubscriptionManager.getSubscriptions()
             .recover { error -> Guarantee<[SubscriptionLevel]> in
-                Logger.warn("[Subscriptions] Failed to fetch subscription levels \(error). Proceeding without them, as they are only cosmetic here")
+                Logger.warn("[Donations] Failed to fetch subscription levels \(error). Proceeding without them, as they are only cosmetic here")
                 return Guarantee.value([])
             }
 
@@ -577,7 +577,7 @@ extension DonationViewController: BadgeConfigurationDelegate {
             }
 
             if oldVisibleBadgeIds != newVisibleBadgeIds {
-                Logger.info("[Subscriptions] Updating visible badges from \(oldVisibleBadgeIds) to \(newVisibleBadgeIds)")
+                Logger.info("[Donations] Updating visible badges from \(oldVisibleBadgeIds) to \(newVisibleBadgeIds)")
                 vc.showDismissalActivity = true
                 return OWSProfileManager.updateLocalProfilePromise(
                     profileGivenName: snapshot.givenName,

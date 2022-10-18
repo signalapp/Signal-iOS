@@ -81,10 +81,10 @@ public extension ChatListViewController {
     // MARK: -
 
     func showBadgeExpirationSheetIfNeeded() {
-        Logger.info("[Subscriptions] Checking whether we should show badge expiration sheet...")
+        Logger.info("[Donations] Checking whether we should show badge expiration sheet...")
 
         guard !hasShownBadgeExpiration else { // Do this once per launch
-            Logger.info("[Subscriptions] Not showing badge expiration sheet, because we've already done so")
+            Logger.info("[Donations] Not showing badge expiration sheet, because we've already done so")
             return
         }
 
@@ -101,16 +101,16 @@ public extension ChatListViewController {
         )}
 
         guard let expiredBadgeID = expiredBadgeID else {
-            Logger.info("[Subscriptions] No expired badge ID, not showing sheet")
+            Logger.info("[Donations] No expired badge ID, not showing sheet")
             return
         }
 
         guard shouldShowExpirySheet else {
-            Logger.info("[Subscriptions] Not showing badge expiration sheet because the flag is off")
+            Logger.info("[Donations] Not showing badge expiration sheet because the flag is off")
             return
         }
 
-        Logger.info("[Subscriptions] showing expiry sheet for expired badge \(expiredBadgeID)")
+        Logger.info("[Donations] showing expiry sheet for expired badge \(expiredBadgeID)")
 
         if BoostBadgeIds.contains(expiredBadgeID) {
             firstly {

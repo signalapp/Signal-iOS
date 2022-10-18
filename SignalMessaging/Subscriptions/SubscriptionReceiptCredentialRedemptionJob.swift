@@ -20,7 +20,7 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
         boostPaymentIntentID: String,
         transaction: SDSAnyWriteTransaction
     ) {
-        Logger.info("[Subscriptions] Adding a boost job")
+        Logger.info("[Donations] Adding a boost job")
         let jobRecord = OWSReceiptCredentialRedemptionJobRecord(
             receiptCredentialRequestContext: receiptCredentialRequestContext,
             receiptCredentailRequest: receiptCredentailRequest,
@@ -45,7 +45,7 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
         boostPaymentIntentID: String,
         transaction: SDSAnyWriteTransaction
     ) {
-        Logger.info("[Subscriptions] Adding a subscription job")
+        Logger.info("[Donations] Adding a subscription job")
         let jobRecord = OWSReceiptCredentialRedemptionJobRecord(
             receiptCredentialRequestContext: receiptCredentialRequestContext,
             receiptCredentailRequest: receiptCredentailRequest,
@@ -158,7 +158,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
     override public func run() {
         assert(self.durableOperationDelegate != nil)
 
-        Logger.info("[Subscriptions] Running job for \(isBoost ? "boost" : "subscription")")
+        Logger.info("[Donations] Running job for \(isBoost ? "boost" : "subscription")")
 
         let getMoneyPromise: Promise<Void>
         if isBoost {
@@ -169,7 +169,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
                     throw OWSAssertionError("Missing subscription")
                 }
 
-                Logger.info("[Subscriptions] Fetched current subscription. \(subscription.debugDescription)")
+                Logger.info("[Donations] Fetched current subscription. \(subscription.debugDescription)")
 
                 // Subscriptions represent $12.34 as `1234`, unlike most other code.
                 var amount = subscription.amount as Decimal
@@ -185,16 +185,16 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
         let getReceiptCredentialPresentationPromise: Promise<ReceiptCredentialPresentation> = firstly(on: .global()) { () -> Promise<ReceiptCredentialPresentation> in
             // We already have a receiptCredentialPresentation, lets use it
             if let receiptCredentialPresentation = self.receiptCredentialPresentation {
-                Logger.info("[Subscriptions] Using persisted receipt credential presentation")
+                Logger.info("[Donations] Using persisted receipt credential presentation")
                 return Promise.value(receiptCredentialPresentation)
             }
 
-            Logger.info("[Subscriptions] Creating new receipt credential presentation")
+            Logger.info("[Donations] Creating new receipt credential presentation")
 
             // Create a new receipt credential presentation
             return firstly(on: .global()) { () -> Promise<ReceiptCredentialPresentation> in
                 if self.isBoost {
-                    Logger.info("[Subscriptions] Durable job requesting receipt for boost")
+                    Logger.info("[Donations] Durable job requesting receipt for boost")
                     return try SubscriptionManager.requestBoostReceiptCredentialPresentation(
                         for: self.boostPaymentIntentID,
                         context: self.receiptCredentialRequestContext,
@@ -202,7 +202,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
                         expectedBadgeLevel: .boostBadge
                     )
                 } else {
-                    Logger.info("[Subscriptions] Durable job requesting receipt for subscription")
+                    Logger.info("[Donations] Durable job requesting receipt for subscription")
                     return try SubscriptionManager.requestReceiptCredentialPresentation(
                         for: self.subscriberID,
                            context: self.receiptCredentialRequestContext,
@@ -212,7 +212,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
                     )
                 }
             }.then(on: .global()) { newReceiptCredentialPresentation -> Promise<ReceiptCredentialPresentation> in
-                Logger.info("[Subscriptions] Storing receipt credential presentation in case the job fails")
+                Logger.info("[Donations] Storing receipt credential presentation in case the job fails")
                 return self.databaseStorage.writePromise { transaction in
                     self.jobRecord.update(
                         withReceiptCredentialPresentation: newReceiptCredentialPresentation.serialize().asData,
@@ -227,7 +227,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
                 try SubscriptionManager.redeemReceiptCredentialPresentation(receiptCredentialPresentation: $0)
             }
         }.done(on: .global()) {
-            Logger.info("[Subscriptions] Successfully redeemed receipt credential presentation")
+            Logger.info("[Donations] Successfully redeemed receipt credential presentation")
             self.didSucceed()
         }.catch(on: .global()) { error in
             self.reportError(error)
@@ -235,7 +235,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
     }
 
     override public func didSucceed() {
-        Logger.info("[Subscriptions] Redemption job succeeded")
+        Logger.info("[Donations] Redemption job succeeded")
         self.databaseStorage.write { transaction in
             if !self.isBoost {
                 SubscriptionManager.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
@@ -249,7 +249,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
                     currencyCode: currencyCode
                 ).anyInsert(transaction: transaction)
             } else {
-                Logger.warn("[Subscriptions] amount and/or currencyCode was missing. Is this an old job?")
+                Logger.warn("[Donations] amount and/or currencyCode was missing. Is this an old job?")
             }
 
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
@@ -275,7 +275,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
     }
 
     override public func didFail(error: Error) {
-        Logger.error("[Subscriptions] failed to redeem receipt credential with error: \(error.userErrorDescription)")
+        Logger.error("[Donations] failed to redeem receipt credential with error: \(error.userErrorDescription)")
         self.databaseStorage.write { transaction in
             NotificationCenter.default.postNotificationNameAsync(
                 SubscriptionManager.SubscriptionJobQueueDidFailJobNotification,
