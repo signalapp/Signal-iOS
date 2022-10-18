@@ -47,11 +47,11 @@ public class NewStorySheet: OWSTableSheetViewController {
         optionsSection.customHeaderHeight = 28
         contents.addSection(optionsSection)
         optionsSection.add(buildOptionItem(
-            icon: .settingsPrivateStory,
-            title: OWSLocalizedString("NEW_STORY_SHEET_PRIVATE_STORY_TITLE",
-                                     comment: "Title for create private story row on the 'new story sheet'"),
-            subtitle: OWSLocalizedString("NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE",
-                                        comment: "Subtitle for create private story row on the 'new story sheet'"),
+            icon: .settingsStories,
+            title: OWSLocalizedString("NEW_STORY_SHEET_CUSTOM_STORY_TITLE",
+                                     comment: "Title for create custom story row on the 'new story sheet'"),
+            subtitle: OWSLocalizedString("NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE",
+                                        comment: "Subtitle for create custom story row on the 'new story sheet'"),
             action: { [weak self] in
                 guard let self = self else { return }
                 let presentingViewController = self.presentingViewController

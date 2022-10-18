@@ -74,14 +74,14 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
         let myStoriesSection = OWSTableSection()
         myStoriesSection.customHeaderView = NewStoryHeaderView(
             title: NSLocalizedString(
-                "STORIES_SETTINGS_MY_STORIES_HEADER",
-                comment: "Header for the 'My Stories' section of the stories settings"
+                "STORIES_SETTINGS_STORIES_HEADER",
+                comment: "Header for the 'Stories' section of the stories settings"
             ),
             delegate: self
         )
         myStoriesSection.footerTitle = NSLocalizedString(
-            "STORIES_SETTINGS_MY_STORIES_FOOTER",
-            comment: "Footer for the 'My Stories' section of the stories settings"
+            "STORIES_SETTINGS_STORIES_FOOTER",
+            comment: "Footer for the 'Stories' section of the stories settings"
         )
         contents.addSection(myStoriesSection)
 

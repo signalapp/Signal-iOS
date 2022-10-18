@@ -296,7 +296,7 @@ class StoryItemMediaView: UIView {
             // For private stories, other than "My Story", render the name of the story
 
             let contextIcon = UIImageView()
-            contextIcon.setTemplateImageName("lock-16", tintColor: Theme.darkThemePrimaryColor)
+            contextIcon.setTemplateImageName("stories-16", tintColor: Theme.darkThemePrimaryColor)
             contextIcon.autoSetDimensions(to: .square(16))
 
             let contextNameLabel = UILabel()

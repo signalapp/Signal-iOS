@@ -461,7 +461,7 @@ extension PrivateStoryConversationItem: ConversationItem {
     }
 
     public var image: UIImage? {
-        UIImage(named: "private-story-\(Theme.isDarkThemeEnabled ? "dark" : "light")-36")
+        UIImage(named: "custom-story-\(Theme.isDarkThemeEnabled ? "dark" : "light")-36")
     }
 
     public func getExistingThread(transaction: SDSAnyReadTransaction) -> TSThread? {
