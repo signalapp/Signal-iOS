@@ -1376,6 +1376,7 @@ CREATE
             ,"latestUnexpiredTimestamp" INTEGER
             ,"lastReceivedTimestamp" INTEGER
             ,"lastViewedTimestamp" INTEGER
+            ,"lastReadTimestamp" INTEGER
         )
 ;
 

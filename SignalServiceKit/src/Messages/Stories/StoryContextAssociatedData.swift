@@ -26,6 +26,7 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
         case isHidden
         case latestUnexpiredTimestamp
         case lastReceivedTimestamp
+        case lastReadTimestamp
         case lastViewedTimestamp
     }
 
@@ -58,22 +59,44 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
     /// Set for all known incoming stories, including those since expired or deleted.
     public private(set) var lastReceivedTimestamp: UInt64? {
         didSet {
-            // We only ever move this forward for undeleted story messages, so its safe
-            // to copy this over to latestUnexpiredTimestamp.
-            if
-                let lastReceivedTimestamp = lastReceivedTimestamp,
-                lastReceivedTimestamp > Date().ows_millisecondsSince1970 - StoryManager.storyLifetimeMillis
-            {
-                latestUnexpiredTimestamp = lastReceivedTimestamp
-            }
+            updateLatestUnexpiredTimestampIfNeeded()
         }
     }
-    public private(set) var lastViewedTimestamp: UInt64?
+
+    private func updateLatestUnexpiredTimestampIfNeeded() {
+        // We only ever move lastReceivedTimestamp forward for undeleted story messages, so its safe
+        // to copy this over to latestUnexpiredTimestamp.
+        if
+            let lastReceivedTimestamp = lastReceivedTimestamp,
+            lastReceivedTimestamp > Date().ows_millisecondsSince1970 - StoryManager.storyLifetimeMillis
+        {
+            latestUnexpiredTimestamp = lastReceivedTimestamp
+        }
+    }
+
+    public private(set) var lastReadTimestamp: UInt64?
+    public private(set) var lastViewedTimestamp: UInt64? {
+        didSet {
+            updateLastReadTimestampIfNeeded()
+        }
+    }
+
+    private func updateLastReadTimestampIfNeeded() {
+        guard let newValue = lastViewedTimestamp else {
+            return
+        }
+        guard newValue >= (lastReadTimestamp ??  0) else {
+            owsFailDebug("Last read timestamp got ahead of last viewed timestamp somehow")
+            return
+        }
+        lastReadTimestamp = newValue
+    }
 
     public init(
         sourceContext: SourceContext,
         isHidden: Bool = false,
         lastReceivedTimestamp: UInt64? = nil,
+        lastReadTimestamp: UInt64? = nil,
         lastViewedTimestamp: UInt64? = nil
     ) {
         self.uniqueId = UUID().uuidString
@@ -87,7 +110,13 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
         }
         self.isHidden = isHidden
         self.lastReceivedTimestamp = lastReceivedTimestamp
+        self.lastReadTimestamp = lastReadTimestamp
         self.lastViewedTimestamp = lastViewedTimestamp
+
+        super.init()
+
+        updateLatestUnexpiredTimestampIfNeeded()
+        updateLatestUnexpiredTimestampIfNeeded()
     }
 
     /**
@@ -101,6 +130,7 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
         sourceContext: SourceContext,
         isHidden: Bool? = nil,
         lastReceivedTimestamp: UInt64? = nil,
+        lastReadTimestamp: UInt64? = nil,
         lastViewedTimestamp: UInt64? = nil,
         transaction: SDSAnyWriteTransaction
     ) -> StoryContextAssociatedData {
@@ -109,6 +139,7 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
             existing.update(
                 isHidden: isHidden,
                 lastReceivedTimestamp: lastReceivedTimestamp,
+                lastReadTimestamp: lastReadTimestamp,
                 lastViewedTimestamp: lastViewedTimestamp,
                 transaction: transaction
             )
@@ -118,6 +149,7 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
                 sourceContext: sourceContext,
                 isHidden: isHidden ?? false,
                 lastReceivedTimestamp: lastReceivedTimestamp,
+                lastReadTimestamp: lastReadTimestamp,
                 lastViewedTimestamp: lastViewedTimestamp
             )
             new.anyInsert(transaction: transaction)
@@ -129,6 +161,7 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
         updateStorageService: Bool = true,
         isHidden: Bool? = nil,
         lastReceivedTimestamp: UInt64? = nil,
+        lastReadTimestamp: UInt64? = nil,
         lastViewedTimestamp: UInt64? = nil,
         transaction: SDSAnyWriteTransaction
     ) {
@@ -139,7 +172,10 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
             if let lastReceivedTimestamp = lastReceivedTimestamp {
                 record.lastReceivedTimestamp = lastReceivedTimestamp
             }
-            if let lastViewedTimestamp = lastViewedTimestamp {
+            if let lastReadTimestamp = lastReadTimestamp, lastReadTimestamp > (record.lastReadTimestamp ?? 0) {
+                record.lastReadTimestamp = lastReadTimestamp
+            }
+            if let lastViewedTimestamp = lastViewedTimestamp, lastViewedTimestamp > (record.lastViewedTimestamp ?? 0) {
                 record.lastViewedTimestamp = lastViewedTimestamp
             }
         }
@@ -245,7 +281,13 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
         isHidden = try container.decode(Bool.self, forKey: .isHidden)
         latestUnexpiredTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .latestUnexpiredTimestamp)
         lastReceivedTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .lastReceivedTimestamp)
+        lastReadTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .lastReadTimestamp)
         lastViewedTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .lastViewedTimestamp)
+
+        super.init()
+
+        updateLatestUnexpiredTimestampIfNeeded()
+        updateLastReadTimestampIfNeeded()
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -259,6 +301,7 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
         try container.encode(isHidden, forKey: .isHidden)
         try container.encode(latestUnexpiredTimestamp, forKey: .latestUnexpiredTimestamp)
         try container.encode(lastReceivedTimestamp, forKey: .lastReceivedTimestamp)
+        try container.encode(lastReadTimestamp, forKey: .lastReadTimestamp)
         try container.encode(lastViewedTimestamp, forKey: .lastViewedTimestamp)
     }
 }

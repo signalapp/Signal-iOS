@@ -204,6 +204,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addStoryContextAssociatedDataTable
         case populateStoryContextAssociatedDataTableAndRemoveOldColumns
         case addColumnForExperienceUpgradeManifest
+        case addStoryContextAssociatedDataReadTimestampColumn
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -254,10 +255,11 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_deleteOldGroupCapabilities
         case dataMigration_updateStoriesDisabledInAccountRecord
         case dataMigration_removeGroupStoryRepliesFromSearchIndex
+        case dataMigration_populateStoryContextAssociatedDataLastReadTimestamp
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 47
+    public static let grdbSchemaVersionLatest: UInt = 49
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2154,6 +2156,16 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
+        migrator.registerMigration(.addStoryContextAssociatedDataReadTimestampColumn) { db in
+            do {
+                try db.alter(table: "model_StoryContextAssociatedData") { table in
+                    table.add(column: "lastReadTimestamp", .integer)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -2539,6 +2551,18 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.execute(sql: indexUpdateSql)
             } catch {
                 owsFail("Error \(error)")
+            }
+        }
+
+        migrator.registerMigration(.dataMigration_populateStoryContextAssociatedDataLastReadTimestamp) { db in
+            do {
+                let sql = """
+                    UPDATE model_StoryContextAssociatedData
+                    SET lastReadTimestamp = lastViewedTimestamp
+                """
+                try db.execute(sql: sql)
+            } catch {
+                owsFail("Error: \(error)")
             }
         }
 

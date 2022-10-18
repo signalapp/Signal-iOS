@@ -341,7 +341,17 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             return
         }
 
-        // TODO: update StoryContextAssociatedData with read state.
+        switch context {
+        case .groupId, .authorUuid, .privateStory:
+            // Record on the context when the local user last read the story for this context
+            if let associatedData = context.associatedData(transaction: transaction) {
+                associatedData.update(lastReadTimestamp: timestamp, transaction: transaction)
+            } else {
+                owsFailDebug("Missing associated data for story context \(context)")
+            }
+        case .none:
+            owsFailDebug("Reading invalid story context")
+        }
 
         receiptManager.storyWasRead(self, circumstance: circumstance, transaction: transaction)
     }
@@ -373,7 +383,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             if let associatedData = context.associatedData(transaction: transaction) {
                 associatedData.update(lastViewedTimestamp: timestamp, transaction: transaction)
             } else {
-                owsFailDebug("Missing thread for story context \(context)")
+                owsFailDebug("Missing associated data for story context \(context)")
             }
         case .none:
             owsFailDebug("Viewing invalid story context")
