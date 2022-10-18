@@ -180,7 +180,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         updateInputAccessoryPlaceholderHeight()
         updateBottomBarPosition()
-        updateContentInsets(animated: false)
+        updateContentInsets()
     }
 
     public func voiceMemoGestureDidStart() {

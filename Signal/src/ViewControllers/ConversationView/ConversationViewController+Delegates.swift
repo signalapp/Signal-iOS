@@ -350,7 +350,7 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
         AssertIsOnMainThread()
 
         updateBottomBarPosition()
-        updateContentInsets(animated: false)
+        updateContentInsets()
     }
 
     public func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval,
@@ -365,7 +365,7 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
         AssertIsOnMainThread()
 
         updateBottomBarPosition()
-        updateContentInsets(animated: false)
+        updateContentInsets()
         updateScrollingContent()
     }
 
@@ -414,12 +414,12 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
             UIView.setAnimationDuration(duration)
             updateBottomBarPosition()
             // To minimize risk, only animatedly update insets when animating quoted reply for now
-            if isAnimatingQuotedReply { updateContentInsets(animated: true) }
+            if isAnimatingQuotedReply { updateContentInsets() }
             UIView.commitAnimations()
-            if !isAnimatingQuotedReply { updateContentInsets(animated: true) }
+            if !isAnimatingQuotedReply { updateContentInsets() }
         } else {
             updateBottomBarPosition()
-            updateContentInsets(animated: false)
+            updateContentInsets()
         }
     }
 }

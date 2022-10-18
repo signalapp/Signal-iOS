@@ -36,15 +36,13 @@ public class ConversationViewController: OWSViewController {
 
     var otherUsersProfileDidChangeEvent: DebouncedEvent?
 
-    var shouldNextContentInsetsUpdateBeAnimated: Bool?
-    /// See `ConversationViewController+OWS.updateContentInsetsFromEvent`
+    /// See `ConversationViewController+OWS.updateContentInsetsDebounced`
     lazy var updateContentInsetsEvent = DebouncedEvents.build(
         mode: .lastOnly,
         maxFrequencySeconds: 0.01,
         onQueue: .asyncOnQueue(queue: .main),
         notifyBlock: { [weak self] in
-            self?.updateContentInsetsFromEvent(animated: self?.shouldNextContentInsetsUpdateBeAnimated ?? false)
-            self?.shouldNextContentInsetsUpdateBeAnimated = nil
+            self?.updateContentInsets()
         })
 
     private var leases = [ModelReadCacheSizeLease]()
@@ -608,7 +606,7 @@ public class ConversationViewController: OWSViewController {
 
         super.viewSafeAreaInsetsDidChange()
 
-        updateContentInsets(animated: false)
+        updateContentInsetsDebounced()
         self.updateInputToolbarLayout()
         self.viewSafeAreaInsetsDidChangeForLoad()
         self.updateConversationStyle()

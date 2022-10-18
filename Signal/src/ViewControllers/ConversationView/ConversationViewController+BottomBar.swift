@@ -146,7 +146,7 @@ public extension ConversationViewController {
 
         updateInputAccessoryPlaceholderHeight()
         updateBottomBarPosition()
-        updateContentInsets(animated: hasAppearedAndHasAppliedFirstLoad)
+        updateContentInsets()
     }
 
     // This is expensive. We only need to do it if conversationStyle has changed.
@@ -295,7 +295,7 @@ public extension ConversationViewController {
             // Without this, UIKit does a bad job of picking up the final safe area for
             // constraints on the toolbar on its own.
             self.view.setNeedsLayout()
-            self.updateContentInsets(animated: false)
+            self.updateContentInsets()
         }
     }
 

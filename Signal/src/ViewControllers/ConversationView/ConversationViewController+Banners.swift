@@ -558,7 +558,7 @@ extension ConversationViewController {
 
         if banners.isEmpty {
             if hasViewDidAppearEverBegun {
-                updateContentInsets(animated: false)
+                updateContentInsets()
             }
             return
         }
@@ -574,7 +574,7 @@ extension ConversationViewController {
 
         self.bannerView = bannerView
         if hasViewDidAppearEverBegun {
-            updateContentInsets(animated: false)
+            updateContentInsets()
         }
     }
 
