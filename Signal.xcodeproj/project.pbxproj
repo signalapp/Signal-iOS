@@ -944,6 +944,7 @@
 		887CD48A24735D4200FDD265 /* launchApp-iPhone.json in Resources */ = {isa = PBXBuildFile; fileRef = 887CD48824735D4200FDD265 /* launchApp-iPhone.json */; };
 		887CD48B24735D4200FDD265 /* launchApp-iPad.json in Resources */ = {isa = PBXBuildFile; fileRef = 887CD48924735D4200FDD265 /* launchApp-iPad.json */; };
 		887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */; };
+		887F898228FF32A600D3B78E /* AllSignalConnectionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887F898128FF32A600D3B78E /* AllSignalConnectionsViewController.swift */; };
 		888017842741E5B400346E9A /* boost_badge.json in Resources */ = {isa = PBXBuildFile; fileRef = 888017832741E5B400346E9A /* boost_badge.json */; };
 		8880178B2741E5DB00346E9A /* boost_clap.json in Resources */ = {isa = PBXBuildFile; fileRef = 888017852741E5DA00346E9A /* boost_clap.json */; };
 		8880178C2741E5DB00346E9A /* boost_shock.json in Resources */ = {isa = PBXBuildFile; fileRef = 888017862741E5DA00346E9A /* boost_shock.json */; };
@@ -3213,6 +3214,7 @@
 		887CD48824735D4200FDD265 /* launchApp-iPhone.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "launchApp-iPhone.json"; sourceTree = "<group>"; };
 		887CD48924735D4200FDD265 /* launchApp-iPad.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "launchApp-iPad.json"; sourceTree = "<group>"; };
 		887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinReminderMegaphone.swift; sourceTree = "<group>"; };
+		887F898128FF32A600D3B78E /* AllSignalConnectionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllSignalConnectionsViewController.swift; sourceTree = "<group>"; };
 		888017832741E5B400346E9A /* boost_badge.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = boost_badge.json; sourceTree = "<group>"; };
 		888017852741E5DA00346E9A /* boost_clap.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = boost_clap.json; sourceTree = "<group>"; };
 		888017862741E5DA00346E9A /* boost_shock.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = boost_shock.json; sourceTree = "<group>"; };
@@ -6211,6 +6213,7 @@
 		8868A087287F44F3000E74A5 /* Stories */ = {
 			isa = PBXGroup;
 			children = (
+				887F898128FF32A600D3B78E /* AllSignalConnectionsViewController.swift */,
 				667E90CF28E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift */,
 				66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */,
 				88B986F3287F5B6500F8C74D /* NewGroupStoryViewController.swift */,
@@ -9632,6 +9635,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3402AA35271D9DCD0084CBAE /* ActionSheetController.swift in Sources */,
+				887F898228FF32A600D3B78E /* AllSignalConnectionsViewController.swift in Sources */,
 				342FFE62271DB2E7000AC89F /* AppContext+SignalUI.swift in Sources */,
 				3402AA4E271D9DCD0084CBAE /* ApprovalFooterView.swift in Sources */,
 				3402AA3F271D9DCD0084CBAE /* ApprovalRailCellView.swift in Sources */,

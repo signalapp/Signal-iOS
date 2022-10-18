@@ -1059,6 +1059,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         applyTheme(to: self)
 
         tableView.backgroundColor = self.tableBackgroundColor
+        tableView.sectionIndexColor = forceDarkMode ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
 
         updateNavbarStyling()
 

@@ -122,12 +122,26 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
 
         do {
             let isSelected = myStoryThread.storyViewMode == .blockList && myStoryThread.addresses.isEmpty
+            let detailText: String?
+            if isSelected {
+                let formatString = OWSLocalizedString(
+                    "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d",
+                    tableName: "PluralAware",
+                    comment: "Subtitle for the visibility option. Embeds number of allowed members")
+                detailText = String.localizedStringWithFormat(formatString, myStoryThread.recipientAddressesWithSneakyTransaction.count)
+            } else {
+                detailText = nil
+            }
             visibilitySection.add(buildVisibilityItem(
                 title: OWSLocalizedString(
                     "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE",
                     comment: "Title for the visibility option"),
+                detailText: detailText,
                 isSelected: isSelected,
-                showDisclosureIndicator: false
+                accessory: isSelected ? .button(title: CommonStrings.viewButton, action: { [weak self] in
+                    let vc = AllSignalConnectionsViewController()
+                    self?.delegate?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+                }) : .none
             ) { [weak self] in
                 Self.databaseStorage.write { transaction in
                     myStoryThread.updateWithStoryViewMode(
@@ -159,7 +173,7 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
                     comment: "Title for the visibility option"),
                 detailText: detailText,
                 isSelected: isSelected,
-                showDisclosureIndicator: true
+                accessory: .none
             ) { [weak self] in
                 let vc = SelectMyStoryRecipientsViewController(thread: myStoryThread, mode: .blockList) {
                     self?.delegate?.reloadTableContents()
@@ -186,7 +200,7 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
                     comment: "Title for the visibility option"),
                 detailText: detailText,
                 isSelected: isSelected,
-                showDisclosureIndicator: true
+                accessory: .none
             ) { [weak self] in
                 let vc = SelectMyStoryRecipientsViewController(thread: myStoryThread, mode: .explicit) {
                     self?.delegate?.reloadTableContents()
@@ -224,11 +238,17 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
         }
     }
 
+    enum Accessory {
+        case none
+        case disclosure
+        case button(title: String, action: () -> Void)
+    }
+
     func buildVisibilityItem(
         title: String,
         detailText: String? = nil,
         isSelected: Bool,
-        showDisclosureIndicator: Bool,
+        accessory: Accessory,
         action: @escaping () -> Void
     ) -> OWSTableItem {
         OWSTableItem {
@@ -238,7 +258,7 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
             hStack.axis = .horizontal
             hStack.spacing = 9
             cell.contentView.addSubview(hStack)
-            hStack.autoPinEdgesToSuperviewMargins()
+            hStack.autoPinWidthToSuperviewMargins()
 
             if isSelected {
                 let imageView = UIImageView()
@@ -250,24 +270,42 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
                 hStack.addArrangedSubview(.spacer(withWidth: 22))
             }
 
+            let vStack = UIStackView()
+            vStack.axis = .vertical
+            hStack.addArrangedSubview(vStack)
+
             let titleLabel = UILabel()
             titleLabel.text = title
             titleLabel.numberOfLines = 0
-            titleLabel.font = .ows_dynamicTypeBody
+            titleLabel.font = .ows_dynamicTypeBodyClamped
             titleLabel.textColor = Theme.primaryTextColor
-            hStack.addArrangedSubview(titleLabel)
+            vStack.addArrangedSubview(titleLabel)
 
-            if let detailText = detailText {
+            if let detailText = detailText?.nilIfEmpty {
                 let detailLabel = UILabel()
-                detailLabel.setContentHuggingHorizontalHigh()
                 detailLabel.text = detailText
                 detailLabel.numberOfLines = 0
-                detailLabel.font = .ows_dynamicTypeBody
+                detailLabel.font = .ows_dynamicTypeCaption1Clamped
                 detailLabel.textColor = Theme.secondaryTextAndIconColor
-                hStack.addArrangedSubview(detailLabel)
+                vStack.addArrangedSubview(detailLabel)
+
+                hStack.autoPinHeightToSuperview(withMargin: 6)
+            } else {
+                hStack.autoPinHeightToSuperviewMargins()
             }
 
-            if showDisclosureIndicator {
+            switch accessory {
+            case .none:
+                break
+            case .button(let title, let action):
+                let button = OWSButton(block: action)
+                button.setTitle(title, for: .normal)
+                button.setTitleColor(Theme.primaryTextColor, for: .normal)
+                button.setTitleColor(Theme.primaryTextColor.withAlphaComponent(0.6), for: .highlighted)
+                button.titleLabel?.font = .ows_dynamicTypeSubheadlineClamped.ows_semibold
+                button.sizeToFit()
+                cell.accessoryView = button
+            case .disclosure:
                 cell.accessoryType = .disclosureIndicator
             }
 
