@@ -25,8 +25,19 @@ public protocol SystemStoryManagerProtocol: SystemStoryManagerProtocolObjc {
     /// Called on its own when the app is backgrounded.
     func cleanUpOnboardingStoryIfNeeded() -> Promise<Void>
 
+    /// "Read" means the user went to the stories tab with the onboarding story available.
+    /// If its viewed, its also read.
+    /// Reading doesn't cause the story to get cleaned up and deleted.
+    func isOnboardingStoryRead(transaction: SDSAnyReadTransaction) -> Bool
+
+    /// "Viewed" means the user actually opened the onboarding story.
     func isOnboardingStoryViewed(transaction: SDSAnyReadTransaction) -> Bool
 
+    /// "Read" means the user went to the stories tab with the onboarding story available.
+    /// Reading doesn't cause the story to get cleaned up and deleted.
+    func setHasReadOnboardingStory(transaction: SDSAnyWriteTransaction, updateStorageService: Bool)
+
+    /// "Viewed" means the user actually opened the onboarding story.
     func setHasViewedOnboardingStoryOnAnotherDevice(transaction: SDSAnyWriteTransaction)
 
     // MARK: Hidden State

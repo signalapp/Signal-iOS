@@ -659,6 +659,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
 
         builder.setMyStoryPrivacyHasBeenSet(StoryManager.hasSetMyStoriesPrivacy(transaction: transaction))
 
+        builder.setReadOnboardingStory(Self.systemStoryManager.isOnboardingStoryRead(transaction: transaction))
         builder.setViewedOnboardingStory(Self.systemStoryManager.isOnboardingStoryViewed(transaction: transaction))
 
         builder.setDisplayBadgesOnProfile(subscriptionManager.displayBadgesOnProfile(transaction: transaction))
@@ -880,6 +881,11 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         let localHasSetMyStoriesPrivacy = StoryManager.hasSetMyStoriesPrivacy(transaction: transaction)
         if !localHasSetMyStoriesPrivacy && myStoryPrivacyHasBeenSet {
             StoryManager.setHasSetMyStoriesPrivacy(transaction: transaction, shouldUpdateStorageService: false)
+        }
+
+        let localHasReadOnboardingStory = systemStoryManager.isOnboardingStoryRead(transaction: transaction)
+        if !localHasReadOnboardingStory && readOnboardingStory {
+            systemStoryManager.setHasReadOnboardingStory(transaction: transaction, updateStorageService: false)
         }
 
         let localHasViewedOnboardingStory = systemStoryManager.isOnboardingStoryViewed(transaction: transaction)

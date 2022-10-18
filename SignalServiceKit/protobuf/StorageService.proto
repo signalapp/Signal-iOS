@@ -182,9 +182,10 @@ message AccountRecord {
            bool                   keepMutedChatsArchived        = 25;
            bool                   myStoryPrivacyHasBeenSet      = 26; // Removed 'has' prefix on spec definition to avoid name conflict.
            bool                   viewedOnboardingStory         = 27; // Removed 'has' prefix on spec definition to avoid name conflict.
-           // reserved deprecatedStoriesDisabled 28;
+           // reserved            deprecatedStoriesDisabled     = 28;
            bool                   storiesDisabled               = 29;
            OptionalBool           storyViewReceiptsEnabled      = 30;
+           bool                   readOnboardingStory           = 31;
 }
 
 message StoryDistributionListRecord {

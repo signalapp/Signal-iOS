@@ -659,7 +659,7 @@ struct StorageServiceProtos_AccountRecord {
     set {_uniqueStorage()._viewedOnboardingStory = newValue}
   }
 
-  /// reserved deprecatedStoriesDisabled 28;
+  /// reserved            deprecatedStoriesDisabled     = 28;
   var storiesDisabled: Bool {
     get {return _storage._storiesDisabled}
     set {_uniqueStorage()._storiesDisabled = newValue}
@@ -668,6 +668,11 @@ struct StorageServiceProtos_AccountRecord {
   var storyViewReceiptsEnabled: StorageServiceProtos_OptionalBool {
     get {return _storage._storyViewReceiptsEnabled}
     set {_uniqueStorage()._storyViewReceiptsEnabled = newValue}
+  }
+
+  var readOnboardingStory: Bool {
+    get {return _storage._readOnboardingStory}
+    set {_uniqueStorage()._readOnboardingStory = newValue}
   }
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -1584,6 +1589,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     27: .same(proto: "viewedOnboardingStory"),
     29: .same(proto: "storiesDisabled"),
     30: .same(proto: "storyViewReceiptsEnabled"),
+    31: .same(proto: "readOnboardingStory"),
   ]
 
   fileprivate class _StorageClass {
@@ -1615,6 +1621,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _viewedOnboardingStory: Bool = false
     var _storiesDisabled: Bool = false
     var _storyViewReceiptsEnabled: StorageServiceProtos_OptionalBool = .unset
+    var _readOnboardingStory: Bool = false
 
     static let defaultInstance = _StorageClass()
 
@@ -1649,6 +1656,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       _viewedOnboardingStory = source._viewedOnboardingStory
       _storiesDisabled = source._storiesDisabled
       _storyViewReceiptsEnabled = source._storyViewReceiptsEnabled
+      _readOnboardingStory = source._readOnboardingStory
     }
   }
 
@@ -1695,6 +1703,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         case 27: try { try decoder.decodeSingularBoolField(value: &_storage._viewedOnboardingStory) }()
         case 29: try { try decoder.decodeSingularBoolField(value: &_storage._storiesDisabled) }()
         case 30: try { try decoder.decodeSingularEnumField(value: &_storage._storyViewReceiptsEnabled) }()
+        case 31: try { try decoder.decodeSingularBoolField(value: &_storage._readOnboardingStory) }()
         default: break
         }
       }
@@ -1791,6 +1800,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       if _storage._storyViewReceiptsEnabled != .unset {
         try visitor.visitSingularEnumField(value: _storage._storyViewReceiptsEnabled, fieldNumber: 30)
       }
+      if _storage._readOnboardingStory != false {
+        try visitor.visitSingularBoolField(value: _storage._readOnboardingStory, fieldNumber: 31)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1828,6 +1840,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._viewedOnboardingStory != rhs_storage._viewedOnboardingStory {return false}
         if _storage._storiesDisabled != rhs_storage._storiesDisabled {return false}
         if _storage._storyViewReceiptsEnabled != rhs_storage._storyViewReceiptsEnabled {return false}
+        if _storage._readOnboardingStory != rhs_storage._readOnboardingStory {return false}
         return true
       }
       if !storagesAreEqual {return false}

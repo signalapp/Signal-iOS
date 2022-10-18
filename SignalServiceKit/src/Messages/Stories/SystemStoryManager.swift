@@ -94,6 +94,14 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         }.asVoid()
     }
 
+    public func isOnboardingStoryRead(transaction: SDSAnyReadTransaction) -> Bool {
+        if onboardingStoryReadStatus(transaction: transaction) {
+            return true
+        }
+        // If its viewed, that also counts as being read.
+        return isOnboardingStoryViewed(transaction: transaction)
+    }
+
     public func isOnboardingStoryViewed(transaction: SDSAnyReadTransaction) -> Bool {
         let status = onboardingStoryViewStatus(transaction: transaction)
         switch status.status {
@@ -102,6 +110,10 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         case .viewedOnThisDevice, .viewedOnAnotherDevice:
             return true
         }
+    }
+
+    public func setHasReadOnboardingStory(transaction: SDSAnyWriteTransaction, updateStorageService: Bool) {
+        try? setOnboardingStoryRead(transaction: transaction, updateStorageService: updateStorageService)
     }
 
     public func setHasViewedOnboardingStoryOnAnotherDevice(transaction: SDSAnyWriteTransaction) {
@@ -414,6 +426,10 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
             return
         }
 
+        guard isExpired || forceDelete else {
+            return
+        }
+
         stories.forEach {
             $0.sdsRemove(transaction: transaction)
         }
@@ -514,6 +530,23 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
     }
 
     // MARK: - KV Store
+
+    // MARK: Onboarding Story Read Status
+
+    private func onboardingStoryReadStatus(transaction: SDSAnyReadTransaction) -> Bool {
+        return kvStore.getBool(Constants.kvStoreOnboardingStoryIsReadKey, defaultValue: false, transaction: transaction)
+    }
+
+    private func setOnboardingStoryRead(transaction: SDSAnyWriteTransaction, updateStorageService: Bool) throws {
+        guard !onboardingStoryReadStatus(transaction: transaction) else {
+            return
+        }
+        kvStore.setBool(true, key: Constants.kvStoreOnboardingStoryIsReadKey, transaction: transaction)
+        if updateStorageService {
+            Self.storageServiceManager.recordPendingLocalAccountUpdates()
+        }
+        NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
+    }
 
     // MARK: Onboarding Story View Status
 
@@ -616,6 +649,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
     }
 
     internal enum Constants {
+        static let kvStoreOnboardingStoryIsReadKey = "OnboardingStoryIsRead"
         static let kvStoreOnboardingStoryViewStatusKey = "OnboardingStoryViewStatus"
         static let kvStoreOnboardingStoryDownloadStatusKey = "OnboardingStoryStatus"
         static let kvStoreHiddenStateKey = "SystemStoriesAreHidden"

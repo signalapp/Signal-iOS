@@ -26,10 +26,18 @@ public class SystemStoryManagerMock: NSObject, SystemStoryManagerProtocol {
         return cleanUpOnboardingStoryHandler()
     }
 
+    public func isOnboardingStoryRead(transaction: SDSAnyReadTransaction) -> Bool {
+        fatalError("Unimplemented for tests")
+    }
+
     public var isOnboardingStoryViewed: Bool = false
 
     public func isOnboardingStoryViewed(transaction: SDSAnyReadTransaction) -> Bool {
         return isOnboardingStoryViewed
+    }
+
+    public func setHasReadOnboardingStory(transaction: SDSAnyWriteTransaction, updateStorageService: Bool) {
+        return
     }
 
     public func setHasViewedOnboardingStoryOnAnotherDevice(transaction: SDSAnyWriteTransaction) {

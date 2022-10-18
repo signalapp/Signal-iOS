@@ -2920,6 +2920,13 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
         return true
     }
 
+    public var readOnboardingStory: Bool {
+        return proto.readOnboardingStory
+    }
+    public var hasReadOnboardingStory: Bool {
+        return true
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -3065,6 +3072,9 @@ extension StorageServiceProtoAccountRecord {
         }
         if let _value = storyViewReceiptsEnabled {
             builder.setStoryViewReceiptsEnabled(_value)
+        }
+        if hasReadOnboardingStory {
+            builder.setReadOnboardingStory(readOnboardingStory)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -3245,6 +3255,10 @@ public struct StorageServiceProtoAccountRecordBuilder {
 
     public mutating func setStoryViewReceiptsEnabled(_ valueParam: StorageServiceProtoOptionalBool) {
         proto.storyViewReceiptsEnabled = StorageServiceProtoOptionalBoolUnwrap(valueParam)
+    }
+
+    public mutating func setReadOnboardingStory(_ valueParam: Bool) {
+        proto.readOnboardingStory = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
