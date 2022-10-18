@@ -65,13 +65,13 @@ public class DonationUtilities: NSObject {
         return currencyFormatter
     }()
 
-    public static func formatCurrency(_ value: NSDecimalNumber, currencyCode: Currency.Code, includeSymbol: Bool = true) -> String {
+    public static func formatCurrency(_ value: Decimal, currencyCode: Currency.Code, includeSymbol: Bool = true) -> String {
         let isZeroDecimalCurrency = Stripe.zeroDecimalCurrencyCodes.contains(currencyCode)
 
         let decimalPlaces: Int
         if isZeroDecimalCurrency {
             decimalPlaces = 0
-        } else if value.doubleValue == Double(value.intValue) {
+        } else if value.isInteger {
             decimalPlaces = 0
         } else {
             decimalPlaces = 2
@@ -80,7 +80,8 @@ public class DonationUtilities: NSObject {
         currencyFormatter.minimumFractionDigits = decimalPlaces
         currencyFormatter.maximumFractionDigits = decimalPlaces
 
-        let valueString = currencyFormatter.string(from: value) ?? value.stringValue
+        let nsValue = value as NSDecimalNumber
+        let valueString = currencyFormatter.string(from: nsValue) ?? nsValue.stringValue
 
         guard includeSymbol else { return valueString }
 
@@ -105,19 +106,26 @@ public class DonationUtilities: NSObject {
         )
     }
 
-    public static func newPaymentRequest(for amount: NSDecimalNumber, currencyCode: String, isRecurring: Bool) -> PKPaymentRequest {
+    public static func newPaymentRequest(for amount: Decimal, currencyCode: String, isRecurring: Bool) -> PKPaymentRequest {
+        let nsAmount = amount as NSDecimalNumber
         let paymentSummaryItem: PKPaymentSummaryItem
         if isRecurring {
             if #available(iOS 15, *) {
-                let recurringSummaryItem = PKRecurringPaymentSummaryItem(label: donationToSignal(), amount: amount)
+                let recurringSummaryItem = PKRecurringPaymentSummaryItem(
+                    label: donationToSignal(),
+                    amount: nsAmount
+                )
                 recurringSummaryItem.intervalUnit = .month
                 recurringSummaryItem.intervalCount = 1  // once per month
                 paymentSummaryItem = recurringSummaryItem
             } else {
-                paymentSummaryItem = PKPaymentSummaryItem(label: monthlyDonationToSignal(), amount: amount)
+                paymentSummaryItem = PKPaymentSummaryItem(
+                    label: monthlyDonationToSignal(),
+                    amount: nsAmount
+                )
             }
         } else {
-            paymentSummaryItem = PKPaymentSummaryItem(label: donationToSignal(), amount: amount)
+            paymentSummaryItem = PKPaymentSummaryItem(label: donationToSignal(), amount: nsAmount)
         }
         let request = PKPaymentRequest()
         request.paymentSummaryItems = [paymentSummaryItem]

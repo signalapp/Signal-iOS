@@ -63,7 +63,7 @@ public class SubscriptionLevel: Comparable {
     public let level: UInt
     public let name: String
     public let badge: ProfileBadge
-    public let currency: [String: NSDecimalNumber]
+    public let currency: [String: Decimal]
 
     public init(level: UInt, jsonDictionary: [String: Any]) throws {
         self.level = level
@@ -72,12 +72,12 @@ public class SubscriptionLevel: Comparable {
         let badgeDict: [String: Any] = try params.required(key: "badge")
         badge = try ProfileBadge(jsonDictionary: badgeDict)
         let currencyDict: [String: Any] = try params.required(key: "currencies")
-        currency = currencyDict.compactMapValues {
-            guard let int64Currency = $0 as? Int64 else {
+        currency = currencyDict.compactMapValues { value -> Decimal? in
+            guard let int64Currency = value as? Int64 else {
                 owsFailDebug("Failed to convert currency value")
                 return nil
             }
-            return NSDecimalNumber(value: int64Currency)
+            return Decimal(int64Currency)
         }
     }
 
@@ -126,7 +126,7 @@ public struct Subscription {
 
     public let level: UInt
     public let currency: String
-    public let amount: NSDecimalNumber
+    public let amount: Decimal
     public let endOfCurrentPeriod: TimeInterval
     public let billingCycleAnchor: TimeInterval
     public let active: Bool
@@ -150,7 +150,7 @@ public struct Subscription {
         level = try params.required(key: "level")
         currency = try params.required(key: "currency")
         let amountValue: Int64 = try params.required(key: "amount")
-        amount = NSDecimalNumber(value: amountValue)
+        amount = Decimal(amountValue)
         endOfCurrentPeriod = try params.required(key: "endOfCurrentPeriod")
         billingCycleAnchor = try params.required(key: "billingCycleAnchor")
         active = try params.required(key: "active")

@@ -172,7 +172,7 @@ public class BadgeCellView: UIStackView {
 
 public class GiftBadgeCellView: BadgeCellView {
     init(badge: ProfileBadge, price: Decimal, currencyCode: Currency.Code) {
-        let formattedPrice = DonationUtilities.formatCurrency(price as NSDecimalNumber, currencyCode: currencyCode)
+        let formattedPrice = DonationUtilities.formatCurrency(price, currencyCode: currencyCode)
 
         let formattedDurationText: String = {
             guard let duration = badge.duration else {
@@ -289,7 +289,7 @@ public final class DonationViewsUtil {
                     let pricingFormat = NSLocalizedString("SUSTAINER_VIEW_PRICING", comment: "Pricing text for sustainer view badges, embeds {{price}}")
                     var amount = currentSubscription.amount
                     if !Stripe.zeroDecimalCurrencyCodes.contains(currentSubscription.currency) {
-                        amount = amount.dividing(by: NSDecimalNumber(value: 100))
+                        amount /= 100
                     }
                     let currencyString = DonationUtilities.formatCurrency(amount, currencyCode: currentSubscription.currency)
                     pricingLabel.text = String(format: pricingFormat, currencyString)

@@ -177,7 +177,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             Logger.info("[Gifting] Requesting Apple Pay...")
 
             let request = DonationUtilities.newPaymentRequest(
-                for: self.price as NSDecimalNumber,
+                for: self.price,
                 currencyCode: self.currencyCode,
                 isRecurring: false
             )
@@ -396,7 +396,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             descriptionLabel.numberOfLines = 0
 
             let priceLabel = UILabel()
-            priceLabel.text = DonationUtilities.formatCurrency(price as NSDecimalNumber, currencyCode: currencyCode)
+            priceLabel.text = DonationUtilities.formatCurrency(price, currencyCode: currencyCode)
             priceLabel.font = .ows_dynamicTypeBody.ows_semibold
             priceLabel.numberOfLines = 0
 
@@ -492,7 +492,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
     private func prepareToPay(authorizedPayment: PKPayment) -> Promise<PreparedPayment> {
         firstly {
             Stripe.createBoostPaymentIntent(
-                for: self.price as NSDecimalNumber,
+                for: self.price,
                 in: self.currencyCode,
                 level: .giftBadge(.signalGift)
             )

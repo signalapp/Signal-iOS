@@ -762,7 +762,7 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
 
     }
 
-    private func presentApplePay(for amount: NSDecimalNumber, currencyCode: String) {
+    private func presentApplePay(for amount: Decimal, currencyCode: String) {
         guard case let .loaded(_, _, selectedSubscriptionLevel, _) = state else {
             owsFailDebug("Not loaded, can't invoke Apple Pay donation")
             return

@@ -9,7 +9,7 @@ final class StripeTest: XCTestCase {
     private let unknownCurrency = "ZZZ"
 
     func testIsAmountTooLarge() {
-        let tooLarge: [(NSDecimalNumber, Currency.Code)] = [
+        let tooLarge: [(Decimal, Currency.Code)] = [
             (1_000_000, "USD"),
             (100_000_000, "JPY"),
             (1_000_000_000_000, "IDR"),
@@ -21,7 +21,7 @@ final class StripeTest: XCTestCase {
             XCTAssertTrue(Stripe.isAmountTooLarge(amount, in: currencyCode), "\(amount) \(currencyCode)")
         }
 
-        let allGood: [(NSDecimalNumber, Currency.Code)] = [
+        let allGood: [(Decimal, Currency.Code)] = [
             (0, "USD"),
             (999_999.99, "USD"),
             (99_999_999, "JPY"),
@@ -36,7 +36,7 @@ final class StripeTest: XCTestCase {
     }
 
     func testIsAmountTooSmall() {
-        let tooSmall: [(NSDecimalNumber, Currency.Code)] = [
+        let tooSmall: [(Decimal, Currency.Code)] = [
             (0, "USD"),
             (0, "JPY"),
             (0, unknownCurrency),
@@ -51,7 +51,7 @@ final class StripeTest: XCTestCase {
             XCTAssertTrue(Stripe.isAmountTooSmall(amount, in: currencyCode))
         }
 
-        let allGood: [(NSDecimalNumber, Currency.Code)] = [
+        let allGood: [(Decimal, Currency.Code)] = [
             (0.5, "USD"),
             (1, "USD"),
             (1_000_000_000_000, "USD"),

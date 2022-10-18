@@ -28,7 +28,7 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
             targetSubscriptionLevel: 0,
             priorSubscriptionLevel: 0,
             isBoost: true,
-            amount: NSDecimalNumber(decimal: amount),
+            amount: amount as NSDecimalNumber,
             currencyCode: currencyCode,
             boostPaymentIntentID: boostPaymentIntentID,
             label: self.jobRecordLabel

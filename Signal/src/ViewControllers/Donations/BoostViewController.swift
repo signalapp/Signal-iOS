@@ -52,9 +52,9 @@ class BoostViewController: OWSTableViewController2 {
         return animationView
     }()
 
-    private var donationAmount: NSDecimalNumber? {
+    private var donationAmount: Decimal? {
         switch state {
-        case .presetSelected(let amount): return amount as NSDecimalNumber
+        case .presetSelected(let amount): return amount
         case .customValueSelected: return customValueTextField.decimalNumber
         default: return nil
         }
@@ -420,7 +420,7 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
 
                             button.setTitle(
                                 title: DonationUtilities.formatCurrency(
-                                    amount as NSDecimalNumber,
+                                    amount,
                                     currencyCode: self.currencyCode
                                 ),
                                 font: .ows_regularFont(withSize: UIDevice.current.isIPhone5OrShorter ? 18 : 20),
@@ -766,10 +766,15 @@ private class CustomValueTextField: UIView {
         }
     }
 
-    var decimalNumber: NSDecimalNumber? {
-        let number = NSDecimalNumber(string: valueString(for: text), locale: Locale.current)
-        guard number != NSDecimalNumber.notANumber else { return nil }
-        return number
+    var decimalNumber: Decimal? {
+        guard
+            let string = valueString(for: text),
+            let result = Decimal(string: string, locale: Locale.current),
+            result.isFinite
+        else {
+            return nil
+        }
+        return result
     }
 
     var font: UIFont? {

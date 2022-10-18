@@ -18,10 +18,12 @@ public struct Stripe: Dependencies {
         }
     }
 
-    public static func boost(amount: NSDecimalNumber,
-                             in currencyCode: Currency.Code,
-                             level: OneTimeBadgeLevel,
-                             for payment: PKPayment) -> Promise<String> {
+    public static func boost(
+        amount: Decimal,
+        in currencyCode: Currency.Code,
+        level: OneTimeBadgeLevel,
+        for payment: PKPayment
+    ) -> Promise<String> {
         firstly { () -> Promise<PaymentIntent> in
             createBoostPaymentIntent(for: amount, in: currencyCode, level: level)
         }.then { intent in
@@ -30,7 +32,7 @@ public struct Stripe: Dependencies {
     }
 
     public static func createBoostPaymentIntent(
-        for amount: NSDecimalNumber,
+        for amount: Decimal,
         in currencyCode: Currency.Code,
         level: OneTimeBadgeLevel
     ) -> Promise<PaymentIntent> {
@@ -135,7 +137,7 @@ public struct Stripe: Dependencies {
     /// - Returns: Whether the amount is too large.
     ///
     /// [0]: https://stripe.com/docs/currencies?presentment-currency=US#minimum-and-maximum-charge-amounts
-    public static func isAmountTooLarge(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> Bool {
+    public static func isAmountTooLarge(_ amount: Decimal, in currencyCode: Currency.Code) -> Bool {
         let integerAmount = integralAmount(amount, in: currencyCode)
         let maximum: UInt = currencyCode == "IDR" ? 999999999999 : 99999999
         return integerAmount > maximum
@@ -155,23 +157,26 @@ public struct Stripe: Dependencies {
     /// - Returns: Whether the amount is too small.
     ///
     /// [0]: https://stripe.com/docs/currencies?presentment-currency=US#minimum-and-maximum-charge-amounts
-    public static func isAmountTooSmall(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> Bool {
+    public static func isAmountTooSmall(_ amount: Decimal, in currencyCode: Currency.Code) -> Bool {
         let integerAmount = integralAmount(amount, in: currencyCode)
         let minimum = minimumIntegralChargePerCurrencyCode[currencyCode, default: 50]
         return integerAmount < minimum
     }
 
-    public static func integralAmount(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> UInt {
-        let roundedAndScaledAmount: Double
+    private static func integralAmount(_ amount: Decimal, in currencyCode: Currency.Code) -> UInt {
+        let scaled: Decimal
         if zeroDecimalCurrencyCodes.contains(currencyCode.uppercased()) {
-            roundedAndScaledAmount = amount.doubleValue.rounded(.toNearestOrAwayFromZero)
+            scaled = amount
         } else {
-            roundedAndScaledAmount = (amount.doubleValue * 100).rounded(.toNearestOrAwayFromZero)
+            scaled = amount * 100
         }
 
-        guard roundedAndScaledAmount <= Double(UInt.max) else { return UInt.max }
-        guard roundedAndScaledAmount >= 0 else { return 0 }
-        return UInt(roundedAndScaledAmount)
+        let rounded = scaled.rounded()
+
+        guard rounded >= 0 else { return 0 }
+        guard rounded <= Decimal(UInt.max) else { return UInt.max }
+
+        return (rounded as NSDecimalNumber).uintValue
     }
 }
 

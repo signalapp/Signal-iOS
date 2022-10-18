@@ -1232,6 +1232,9 @@
 		F94262A1289B1B5600460798 /* SignalServiceAddressTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426239289B1B5500460798 /* SignalServiceAddressTest.swift */; };
 		F94262A2289B1B5600460798 /* SSKBaseTestSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942623A289B1B5500460798 /* SSKBaseTestSwift.swift */; };
 		F94BFA9528EBB0D800A5F34E /* FakeMessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */; };
+		F94C912028FDEA2E0065DF75 /* Decimal+rounded.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94C911F28FDEA2E0065DF75 /* Decimal+rounded.swift */; };
+		F94C912228FDEAF50065DF75 /* Decimal+isInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94C912128FDEAF50065DF75 /* Decimal+isInteger.swift */; };
+		F94C912428FDECC40065DF75 /* DecimalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94C912328FDECC40065DF75 /* DecimalTest.swift */; };
 		F94D12FF28BD0DD900B2C478 /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */; };
 		F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */; };
 		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
@@ -3568,6 +3571,9 @@
 		F9426239289B1B5500460798 /* SignalServiceAddressTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceAddressTest.swift; sourceTree = "<group>"; };
 		F942623A289B1B5500460798 /* SSKBaseTestSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SSKBaseTestSwift.swift; path = SignalServiceKit/tests/SSKBaseTestSwift.swift; sourceTree = SOURCE_ROOT; };
 		F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeMessageSender.swift; sourceTree = "<group>"; };
+		F94C911F28FDEA2E0065DF75 /* Decimal+rounded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+rounded.swift"; sourceTree = "<group>"; };
+		F94C912128FDEAF50065DF75 /* Decimal+isInteger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+isInteger.swift"; sourceTree = "<group>"; };
+		F94C912328FDECC40065DF75 /* DecimalTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalTest.swift; sourceTree = "<group>"; };
 		F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechManager.swift; sourceTree = "<group>"; };
 		F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseRecoveryTest.swift; sourceTree = "<group>"; };
 		F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingThanksSheet.swift; sourceTree = "<group>"; };
@@ -6954,6 +6960,7 @@
 				509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */,
 				F93999F528C81F2100E34899 /* DataMessagePaddingTests.swift */,
 				F94261F8289B1B5400460798 /* Date+SSKTest.swift */,
+				F94C912328FDECC40065DF75 /* DecimalTest.swift */,
 				F94261F6289B1B5400460798 /* DeviceNamesTest.swift */,
 				F94261FA289B1B5400460798 /* DispatchQueue+OWSTest.swift */,
 				F94261E7289B1B5400460798 /* FeatureFlagsTests.swift */,
@@ -8090,6 +8097,8 @@
 				F9C5CB07289453B200548EEE /* DataSource.m */,
 				F9C5CB7C289453B200548EEE /* Date+SSK.swift */,
 				F9C5CB06289453B200548EEE /* DebouncedEvent.swift */,
+				F94C912128FDEAF50065DF75 /* Decimal+isInteger.swift */,
+				F94C911F28FDEA2E0065DF75 /* Decimal+rounded.swift */,
 				F9C5CB79289453B200548EEE /* DecodableDefaults.swift */,
 				F9C5CB2B289453B200548EEE /* Dependencies+SSK.swift */,
 				F9C5CB3A289453B200548EEE /* DeviceNames.swift */,
@@ -10600,6 +10609,8 @@
 				F9C5CDD9289453B400548EEE /* DataSource.m in Sources */,
 				F9C5CE4D289453B400548EEE /* Date+SSK.swift in Sources */,
 				F9C5CDD8289453B400548EEE /* DebouncedEvent.swift in Sources */,
+				F94C912228FDEAF50065DF75 /* Decimal+isInteger.swift in Sources */,
+				F94C912028FDEA2E0065DF75 /* Decimal+rounded.swift in Sources */,
 				F9C5CE4A289453B400548EEE /* DecodableDefaults.swift in Sources */,
 				F9C5CD27289453B300548EEE /* DeepCopy.swift in Sources */,
 				F9C5CC11289453B300548EEE /* DefaultStickers.swift in Sources */,
@@ -11127,6 +11138,7 @@
 				F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */,
 				F972180028DCBD4700113D9F /* DatabaseTestHelpers.swift in Sources */,
 				F9426265289B1B5500460798 /* Date+SSKTest.swift in Sources */,
+				F94C912428FDECC40065DF75 /* DecimalTest.swift in Sources */,
 				F942629B289B1B5600460798 /* DeliveryReceiptContextTests.swift in Sources */,
 				F9426263289B1B5500460798 /* DeviceNamesTest.swift in Sources */,
 				F9426267289B1B5500460798 /* DispatchQueue+OWSTest.swift in Sources */,
