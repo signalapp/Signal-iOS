@@ -497,7 +497,7 @@ public extension ChatListViewController {
         presentFormSheet(navigationController, animated: true, completion: completion)
     }
 
-    /// Verifies that the currently selected cell matches the provided thread's uniqueId.
+    /// Verifies that the currently selected cell matches the provided thread.
     /// If it does or if the user's in multi-select: Do nothing.
     /// If it doesn't: Select the first cell matching the provided thread, if one exists. Otherwise, deselect the current row.
     @objc
