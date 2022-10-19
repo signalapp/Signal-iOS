@@ -3803,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "My Story";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add a story";
+"MY_STORY_TAP_TO_ADD" = "Tap to add";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
@@ -6287,7 +6287,7 @@
 "STORIES_SAVE_STORY_ACTION" = "Save";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Stories automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
 
 /* Header for the 'Stories' section of the stories settings */
 "STORIES_SETTINGS_STORIES_HEADER" = "Stories";
