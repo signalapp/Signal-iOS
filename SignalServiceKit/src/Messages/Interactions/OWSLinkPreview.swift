@@ -732,10 +732,13 @@ fileprivate extension URL {
         guard password == nil else { return false }
         let rawHostname: String?
 
-        if let sourceString = sourceString {
+        if var sourceString = sourceString {
             let schemePrefix = "\(scheme)://"
+            if let schemeRange = sourceString.range(of: schemePrefix, options: [ .anchored, .caseInsensitive ]) {
+                sourceString.removeSubrange(schemeRange)
+            }
+
             rawHostname = sourceString
-                .dropFirst(schemePrefix.count)
                 .split(maxSplits: 1, whereSeparator: { Self.urlDelimeters.contains($0) }).first
                 .map { String($0) }
         } else {

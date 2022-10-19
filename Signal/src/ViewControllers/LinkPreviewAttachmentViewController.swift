@@ -212,6 +212,8 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
             guard currentPreviewUrl != oldValue else { return }
             guard let previewUrl = currentPreviewUrl else { return }
 
+            linkPreviewPanel.setState(.loading, animated: true)
+
             linkPreviewManager.fetchLinkPreview(for: previewUrl).done(on: .main) { [weak self] draft in
                 guard let self = self else { return }
                 guard self.currentPreviewUrl == previewUrl else { return }
@@ -219,21 +221,22 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
             }.catch(on: .main) { [weak self] error in
                 guard let self = self else { return }
                 guard self.currentPreviewUrl == previewUrl else { return }
-                switch error {
-                case LinkPreviewError.featureDisabled:
-                    self.displayLinkPreview(OWSLinkPreviewDraft(url: previewUrl, title: nil))
-                default:
-                    self.clearLinkPreview(withError: error)
-                }
+
+                self.displayLinkPreview(OWSLinkPreviewDraft(url: previewUrl, title: nil))
             }
         }
     }
 
     private func updateLinkPreviewIfNecessary() {
-        guard
-            let trimmedText = textField.text?.ows_stripped(), !trimmedText.isEmpty,
-            let previewUrl = linkPreviewManager.findFirstValidUrl(in: trimmedText, bypassSettingsCheck: true) else
-        {
+        guard var sourceString = textField.text?.ows_stripped(), !sourceString.isEmpty else { return }
+
+        // Prepend HTTPS if address is missing one and it doesn't appear to have any other protocol specified.
+        let httpsSchemePrefix = "https://"
+        if sourceString.range(of: httpsSchemePrefix, options: [ .caseInsensitive, .anchored ]) == nil && sourceString.range(of: "://") == nil {
+            sourceString.insert(contentsOf: httpsSchemePrefix, at: sourceString.startIndex)
+        }
+
+        guard let previewUrl = linkPreviewManager.findFirstValidUrl(in: sourceString, bypassSettingsCheck: true) else {
             clearLinkPreview()
             return
         }
@@ -384,6 +387,8 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
             viewToMakeVisible.setIsHidden(false, animated: animated)
             if case .draft = state {
                 linkPreviewView = viewToMakeVisible as? TextAttachmentView.LinkPreviewView
+            } else if case .loading = state {
+                activityIndicatorView.startAnimating()
             }
 
             let viewsToHide = contentViews.subtracting([viewToMakeVisible])
