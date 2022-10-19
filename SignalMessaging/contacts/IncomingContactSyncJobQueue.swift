@@ -58,9 +58,12 @@ public class IncomingContactSyncJobQueue: NSObject, JobQueue {
     }
 
     @objc
-    public func add(attachmentId: String, transaction: SDSAnyWriteTransaction) {
-        let jobRecord = OWSIncomingContactSyncJobRecord(attachmentId: attachmentId,
-                                                        label: self.jobRecordLabel)
+    public func add(attachmentId: String, isComplete: Bool, transaction: SDSAnyWriteTransaction) {
+        let jobRecord = OWSIncomingContactSyncJobRecord(
+            attachmentId: attachmentId,
+            isComplete: isComplete,
+            label: self.jobRecordLabel
+        )
         self.add(jobRecord: jobRecord, transaction: transaction)
     }
 }
@@ -201,7 +204,12 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
 
                 // We use batching to avoid long-running write transactions
                 // and to place an upper bound on memory usage.
-                while try processBatch(contactStream: contactStream) {}
+                var allSignalServiceAddresses = [SignalServiceAddress]()
+                while try processBatch(contactStream: contactStream, processedAddresses: &allSignalServiceAddresses) {}
+
+                if jobRecord.isCompleteContactSync {
+                    pruneContacts(except: allSignalServiceAddresses)
+                }
 
                 databaseStorage.write { transaction in
                     // Always fire just one identity change notification, rather than potentially
@@ -214,7 +222,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
     }
 
     // Returns false when there are no more contacts to process.
-    private func processBatch(contactStream: ContactsInputStream) throws -> Bool {
+    private func processBatch(contactStream: ContactsInputStream, processedAddresses: inout [SignalServiceAddress]) throws -> Bool {
         try autoreleasepool {
             // We use batching to avoid long-running write transactions.
             guard let contacts = try Self.buildBatch(contactStream: contactStream) else {
@@ -227,6 +235,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             try databaseStorage.write { transaction in
                 for contact in contacts {
                     try self.process(contactDetails: contact, transaction: transaction)
+                    processedAddresses.append(contact.address)
                 }
             }
             return true
@@ -324,6 +333,36 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
                 self.blockingManager.removeBlockedAddress(contactDetails.address,
                                                           wasLocallyInitiated: false,
                                                           transaction: transaction)
+            }
+        }
+    }
+
+    private func pruneContacts(except addresses: [SignalServiceAddress]) {
+        let setOfAddresses = Set(addresses)
+        self.databaseStorage.write { transaction in
+            // Rather than collecting SignalAccount objects, collect their unique IDs.
+            // This operation can run in the memory-constrainted NSE, so trade off a
+            // bit of speed to save memory.
+            var uniqueIdsToRemove = [String]()
+            SignalAccount.anyEnumerate(transaction: transaction, batchSize: 8) { signalAccount, _ in
+                guard let contact = signalAccount.contact, contact.isFromContactSync else {
+                    // This only cleans up contacts from a contact sync.
+                    return
+                }
+                guard !setOfAddresses.contains(signalAccount.recipientAddress) else {
+                    // This contact was received in this batch, so don't remove it.
+                    return
+                }
+                uniqueIdsToRemove.append(signalAccount.uniqueId)
+            }
+            Logger.info("Removing \(uniqueIdsToRemove.count) contacts during contact sync")
+            for uniqueId in uniqueIdsToRemove {
+                autoreleasepool {
+                    guard let signalAccount = SignalAccount.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                        return
+                    }
+                    signalAccount.anyRemove(transaction: transaction)
+                }
             }
         }
     }

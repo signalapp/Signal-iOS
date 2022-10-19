@@ -205,6 +205,7 @@ public class GRDBSchemaMigrator: NSObject {
         case populateStoryContextAssociatedDataTableAndRemoveOldColumns
         case addColumnForExperienceUpgradeManifest
         case addStoryContextAssociatedDataReadTimestampColumn
+        case addIsCompleteToContactSyncJob
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -260,7 +261,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 50
+    public static let grdbSchemaVersionLatest: UInt = 51
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2166,6 +2167,16 @@ public class GRDBSchemaMigrator: NSObject {
                 owsFail("Error: \(error)")
             }
         }
+
+        migrator.registerMigration(.addIsCompleteToContactSyncJob) { db in
+            do {
+                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                    table.add(column: "isCompleteContactSync", .boolean).defaults(to: false)
+                }
+            } catch let error {
+                owsFail("Error: \(error)")
+            }
+        } // end: .addIsCompleteToContactSyncJob
 
         // MARK: - Schema Migration Insertion Point
     }

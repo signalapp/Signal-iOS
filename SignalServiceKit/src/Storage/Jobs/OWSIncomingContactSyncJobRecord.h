@@ -12,10 +12,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, nonatomic, readonly) NSString *defaultLabel;
 
 @property (nonatomic, readonly) NSString *attachmentId;
+@property (nonatomic, readonly) BOOL isCompleteContactSync;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithAttachmentId:(NSString *)attachmentId label:(NSString *)label NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithAttachmentId:(NSString *)attachmentId
+                          isComplete:(BOOL)isComplete
+                               label:(NSString *)label NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithLabel:(NSString *)label NS_UNAVAILABLE;
 
@@ -41,7 +44,8 @@ NS_ASSUME_NONNULL_BEGIN
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                     attachmentId:(NSString *)attachmentId
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:exclusiveProcessIdentifier:failureCount:label:sortId:status:attachmentId:));
+           isCompleteContactSync:(BOOL)isCompleteContactSync
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:exclusiveProcessIdentifier:failureCount:label:sortId:status:attachmentId:isCompleteContactSync:));
 
 // clang-format on
 

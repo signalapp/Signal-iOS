@@ -17,10 +17,11 @@
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithAttachmentId:(NSString *)attachmentId label:(NSString *)label
+- (instancetype)initWithAttachmentId:(NSString *)attachmentId isComplete:(BOOL)isComplete label:(NSString *)label
 {
     self = [super initWithLabel:label];
     _attachmentId = attachmentId;
+    _isCompleteContactSync = isComplete;
     return self;
 }
 
@@ -38,6 +39,7 @@
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                     attachmentId:(NSString *)attachmentId
+           isCompleteContactSync:(BOOL)isCompleteContactSync
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
@@ -52,6 +54,7 @@
     }
 
     _attachmentId = attachmentId;
+    _isCompleteContactSync = isCompleteContactSync;
 
     return self;
 }

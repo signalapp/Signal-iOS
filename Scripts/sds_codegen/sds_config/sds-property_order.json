@@ -138,6 +138,7 @@
     "JobRecordRecord.failureCount": 1,
     "JobRecordRecord.invisibleMessage": 7,
     "JobRecordRecord.isBoost": 22,
+    "JobRecordRecord.isCompleteContactSync": 32,
     "JobRecordRecord.isHighPriority": 15,
     "JobRecordRecord.isMediaMessage": 12,
     "JobRecordRecord.label": 2,

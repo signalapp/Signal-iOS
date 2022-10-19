@@ -62,6 +62,7 @@ public struct JobRecordRecord: SDSRecord {
     public let paymentMethodId: String?
     public let replacementAdminUuid: String?
     public let waitForMessageProcessing: Bool?
+    public let isCompleteContactSync: Bool?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -98,6 +99,7 @@ public struct JobRecordRecord: SDSRecord {
         case paymentMethodId
         case replacementAdminUuid
         case waitForMessageProcessing
+        case isCompleteContactSync
     }
 
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -155,6 +157,7 @@ public extension JobRecordRecord {
         paymentMethodId = row[31]
         replacementAdminUuid = row[32]
         waitForMessageProcessing = row[33]
+        isCompleteContactSync = row[34]
     }
 }
 
@@ -215,6 +218,7 @@ extension SSKJobRecord {
             let sortId: UInt64 = UInt64(recordId)
             let status: SSKJobRecordStatus = record.status
             let attachmentId: String = try SDSDeserialization.required(record.attachmentId, name: "attachmentId")
+            let isCompleteContactSync: Bool = try SDSDeserialization.required(record.isCompleteContactSync, name: "isCompleteContactSync")
 
             return OWSIncomingContactSyncJobRecord(grdbId: recordId,
                                                    uniqueId: uniqueId,
@@ -223,7 +227,8 @@ extension SSKJobRecord {
                                                    label: label,
                                                    sortId: sortId,
                                                    status: status,
-                                                   attachmentId: attachmentId)
+                                                   attachmentId: attachmentId,
+                                                   isCompleteContactSync: isCompleteContactSync)
 
         case .incomingGroupSyncJobRecord:
 
@@ -734,6 +739,7 @@ extension SSKJobRecord: DeepCopyable {
             let sortId: UInt64 = modelToCopy.sortId
             let status: SSKJobRecordStatus = modelToCopy.status
             let attachmentId: String = modelToCopy.attachmentId
+            let isCompleteContactSync: Bool = modelToCopy.isCompleteContactSync
 
             return OWSIncomingContactSyncJobRecord(grdbId: id,
                                                    uniqueId: uniqueId,
@@ -742,7 +748,8 @@ extension SSKJobRecord: DeepCopyable {
                                                    label: label,
                                                    sortId: sortId,
                                                    status: status,
-                                                   attachmentId: attachmentId)
+                                                   attachmentId: attachmentId,
+                                                   isCompleteContactSync: isCompleteContactSync)
         }
 
         if let modelToCopy = self as? OWSBroadcastMediaMessageJobRecord {
@@ -844,6 +851,7 @@ extension SSKJobRecordSerializer {
     static var paymentMethodIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "paymentMethodId", columnType: .unicodeString, isOptional: true) }
     static var replacementAdminUuidColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "replacementAdminUuid", columnType: .unicodeString, isOptional: true) }
     static var waitForMessageProcessingColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "waitForMessageProcessing", columnType: .int, isOptional: true) }
+    static var isCompleteContactSyncColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isCompleteContactSync", columnType: .int, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -884,7 +892,8 @@ extension SSKJobRecordSerializer {
         paymentIntentClientSecretColumn,
         paymentMethodIdColumn,
         replacementAdminUuidColumn,
-        waitForMessageProcessingColumn
+        waitForMessageProcessingColumn,
+        isCompleteContactSyncColumn
         ])
     }
 }
@@ -1306,8 +1315,9 @@ class SSKJobRecordSerializer: SDSSerializer {
         let paymentMethodId: String? = nil
         let replacementAdminUuid: String? = nil
         let waitForMessageProcessing: Bool? = nil
+        let isCompleteContactSync: Bool? = nil
 
-        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority, receiptCredentailRequest: receiptCredentailRequest, receiptCredentailRequestContext: receiptCredentailRequestContext, priorSubscriptionLevel: priorSubscriptionLevel, subscriberID: subscriberID, targetSubscriptionLevel: targetSubscriptionLevel, boostPaymentIntentID: boostPaymentIntentID, isBoost: isBoost, receiptCredentialPresentation: receiptCredentialPresentation, amount: amount, currencyCode: currencyCode, unsavedMessagesToSend: unsavedMessagesToSend, messageText: messageText, paymentIntentClientSecret: paymentIntentClientSecret, paymentMethodId: paymentMethodId, replacementAdminUuid: replacementAdminUuid, waitForMessageProcessing: waitForMessageProcessing)
+        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority, receiptCredentailRequest: receiptCredentailRequest, receiptCredentailRequestContext: receiptCredentailRequestContext, priorSubscriptionLevel: priorSubscriptionLevel, subscriberID: subscriberID, targetSubscriptionLevel: targetSubscriptionLevel, boostPaymentIntentID: boostPaymentIntentID, isBoost: isBoost, receiptCredentialPresentation: receiptCredentialPresentation, amount: amount, currencyCode: currencyCode, unsavedMessagesToSend: unsavedMessagesToSend, messageText: messageText, paymentIntentClientSecret: paymentIntentClientSecret, paymentMethodId: paymentMethodId, replacementAdminUuid: replacementAdminUuid, waitForMessageProcessing: waitForMessageProcessing, isCompleteContactSync: isCompleteContactSync)
     }
 }
 

@@ -270,6 +270,7 @@ CREATE
             ,"paymentMethodId" TEXT
             ,"replacementAdminUuid" TEXT
             ,"waitForMessageProcessing" BOOLEAN
+            ,"isCompleteContactSync" BOOLEAN DEFAULT 0
         )
 ;
 
