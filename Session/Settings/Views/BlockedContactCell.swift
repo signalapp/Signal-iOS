@@ -41,7 +41,7 @@ class BlockedContactCell: UITableViewCell {
         
         // Highlight color
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.themeBackgroundColor = .conversationButton_highlight
+        selectedBackgroundView.themeBackgroundColor = .highlighted(.conversationButton_background)
         self.selectedBackgroundView = selectedBackgroundView
         
         // Add the UI

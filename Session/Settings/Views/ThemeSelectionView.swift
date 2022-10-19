@@ -16,7 +16,7 @@ class ThemeSelectionView: UIView {
         let result: UIButton = UIButton()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.setThemeBackgroundColor(.appearance_buttonBackground, for: .normal)
-        result.setThemeBackgroundColor(.appearance_buttonHighlight, for: .highlighted)
+        result.setThemeBackgroundColor(.highlighted(.appearance_buttonBackground), for: .highlighted)
         result.addTarget(self, action: #selector(itemSelected), for: .touchUpInside)
         
         return result

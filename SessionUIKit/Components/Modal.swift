@@ -121,7 +121,7 @@ open class Modal: UIViewController, UIGestureRecognizerDelegate {
         result.setTitle(title, for: .normal)
         result.setThemeTitleColor(titleColor, for: .normal)
         result.setThemeBackgroundColor(.alert_buttonBackground, for: .normal)
-        result.setThemeBackgroundColor(.alert_buttonHighlight, for: .highlighted)
+        result.setThemeBackgroundColor(.highlighted(.alert_buttonBackground), for: .highlighted)
         result.set(.height, to: Values.alertButtonHeight)
                 
         return result

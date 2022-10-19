@@ -62,28 +62,22 @@ internal enum Theme_OceanLight: ThemeColors {
         
         // SolidButton
         .solidButton_background: .oceanLight5,
-        .solidButton_highlight: .oceanLight6,
         
         // Settings
         .settings_tabBackground: .oceanLight6,
-        .settings_tabHighlight: .oceanLight5,
         
         // Appearance
         .appearance_sectionBackground: .oceanLight7,
         .appearance_buttonBackground: .oceanLight7,
-        .appearance_buttonHighlight: .oceanLight5,
         
         // Alert
         .alert_text: .oceanLight0,
         .alert_background: .oceanLight7,
         .alert_buttonBackground: .oceanLight7,
-        .alert_buttonHighlight: .oceanLight5,
         
         // ConversationButton
         .conversationButton_background: .oceanLight7,
-        .conversationButton_highlight: .oceanLight5,
         .conversationButton_unreadBackground: .oceanLight6,
-        .conversationButton_unreadHighlight: .oceanLight5,
         .conversationButton_unreadStripBackground: .primary,
         .conversationButton_unreadBubbleBackground: .primary,
         .conversationButton_unreadBubbleText: .oceanLight1,

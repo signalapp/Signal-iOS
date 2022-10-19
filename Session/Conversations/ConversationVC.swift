@@ -55,6 +55,10 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     var scrollDistanceToBottomBeforeUpdate: CGFloat?
     var baselineKeyboardHeight: CGFloat = 0
     
+    /// This flag is true between `viewDidAppear` and `viewWillDisappear` and is used to prevent keyboard changes
+    /// from trying to animate (as the animations can cause staggering with push transitions)
+    var viewIsFocussed = false
+    
     // Reaction
     var currentReactionListSheet: ReactionListSheet?
     var reactionExpandedMessageIds: Set<String> = []
@@ -404,6 +408,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         // Flag that the initial layout has been completed (the flag blocks and unblocks a number
         // of different behaviours)
         didFinishInitialLayout = true
+        viewIsFocussed = true
         
         if delayFirstResponder || isShowingSearchUI {
             delayFirstResponder = false
@@ -421,6 +426,8 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        
+        viewIsFocussed = false
         
         // Don't set the draft or resign the first responder if we are replacing the thread (want the keyboard
         // to appear to remain focussed)
@@ -507,8 +514,8 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
                 // Note: We want to load the interaction data into the UI after the initial thread data
                 // has loaded to prevent an issue where the conversation loads with the wrong offset
                 if self?.viewModel.onInteractionChange == nil {
-                    self?.viewModel.onInteractionChange = { [weak self] updatedInteractionData in
-                        self?.handleInteractionUpdates(updatedInteractionData)
+                    self?.viewModel.onInteractionChange = { [weak self] updatedInteractionData, changeset in
+                        self?.handleInteractionUpdates(updatedInteractionData, changeset: changeset)
                     }
                     
                     // Note: When returning from the background we could have received notifications but the
@@ -532,9 +539,18 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         // Ensure the first load or a load when returning from a child screen runs without animations (if
         // we don't do this the cells will animate in from a frame of CGRect.zero or have a buggy transition)
         guard hasLoadedInitialThreadData && hasReloadedThreadDataAfterDisappearance else {
+            // Need to correctly determine if it's the initial load otherwise we would be needlesly updating
+            // extra UI elements
+            let isInitialLoad: Bool = (
+                !hasLoadedInitialThreadData &&
+                hasReloadedThreadDataAfterDisappearance
+            )
             hasLoadedInitialThreadData = true
             hasReloadedThreadDataAfterDisappearance = true
-            UIView.performWithoutAnimation { handleThreadUpdates(updatedThreadData, initialLoad: true) }
+            
+            UIView.performWithoutAnimation {
+                handleThreadUpdates(updatedThreadData, initialLoad: isInitialLoad)
+            }
             return
         }
         
@@ -629,7 +645,11 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         }
     }
     
-    private func handleInteractionUpdates(_ updatedData: [ConversationViewModel.SectionModel], initialLoad: Bool = false) {
+    private func handleInteractionUpdates(
+        _ updatedData: [ConversationViewModel.SectionModel],
+        changeset: StagedChangeset<[ConversationViewModel.SectionModel]>,
+        initialLoad: Bool = false
+    ) {
         // Ensure the first load or a load when returning from a child screen runs without
         // animations (if we don't do this the cells will animate in from a frame of
         // CGRect.zero or have a buggy transition)
@@ -690,10 +710,6 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
             }
         }
         
-        let changeset: StagedChangeset<[ConversationViewModel.SectionModel]> = StagedChangeset(
-            source: viewModel.interactionData,
-            target: updatedData
-        )
         let numItemsInserted: Int = changeset.map { $0.elementInserted.count }.reduce(0, +)
         let isInsert: Bool = (numItemsInserted > 0)
         let wasLoadingMore: Bool = self.isLoadingMore
@@ -963,7 +979,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
             
             self?.isLoadingMore = true
             
-            DispatchQueue.global(qos: .default).async { [weak self] in
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
                 // Attachments are loaded in descending order so 'loadOlder' actually corresponds with
                 // 'pageAfter' in this case
                 self?.viewModel.pagedDataObserver?.load(shouldLoadOlder ?
@@ -1058,6 +1074,8 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     // MARK: - Notifications
 
     @objc func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
+        guard viewIsFocussed || !didFinishInitialLayout else { return }
+        
         // Please refer to https://github.com/mapbox/mapbox-navigation-ios/issues/1600
         // and https://stackoverflow.com/a/25260930 to better understand what we are
         // doing with the UIViewAnimationOptions
@@ -1104,7 +1122,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         }
 
         // Perform the changes (don't animate if the initial layout hasn't been completed)
-        guard hasDoneLayout else {
+        guard hasDoneLayout && didFinishInitialLayout else {
             UIView.performWithoutAnimation {
                 changes()
             }
@@ -1121,6 +1139,8 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     }
 
     @objc func handleKeyboardWillHideNotification(_ notification: Notification) {
+        guard viewIsFocussed else { return }
+        
         // Please refer to https://github.com/mapbox/mapbox-navigation-ios/issues/1600
         // and https://stackoverflow.com/a/25260930 to better understand what we are
         // doing with the UIViewAnimationOptions
@@ -1281,7 +1301,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
             case .loadOlder, .loadNewer:
                 self.isLoadingMore = true
                 
-                DispatchQueue.global(qos: .default).async { [weak self] in
+                DispatchQueue.global(qos: .userInitiated).async { [weak self] in
                     // Messages are loaded in descending order so 'loadOlder' actually corresponds with
                     // 'pageAfter' in this case
                     self?.viewModel.pagedDataObserver?.load(section.model == .loadOlder ?
@@ -1551,7 +1571,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
             self.isLoadingMore = true
             self.searchController.resultsBar.startLoading()
             
-            DispatchQueue.global(qos: .default).async { [weak self] in
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
                 if isJumpingToLastInteraction {
                     self?.viewModel.pagedDataObserver?.load(.jumpTo(
                         id: interactionId,

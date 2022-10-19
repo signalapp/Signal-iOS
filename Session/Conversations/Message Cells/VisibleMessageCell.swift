@@ -399,6 +399,12 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                 !cellViewModel.isLast
             )
         )
+        
+        // Set the height of the underBubbleStackView to 0 if it has no content (need to do this
+        // otherwise it can randomly stretch)
+        underBubbleStackViewNoHeightConstraint.isActive = underBubbleStackView.arrangedSubviews
+            .filter { !$0.isHidden }
+            .isEmpty
     }
 
     private func populateContentView(

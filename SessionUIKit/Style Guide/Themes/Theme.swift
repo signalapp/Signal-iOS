@@ -55,6 +55,13 @@ public enum Theme: String, CaseIterable, Codable, EnumStringSetting {
     public func color(for value: ThemeValue) -> UIColor? {
         switch value {
             case .value(let value, let alpha): return color(for: value)?.withAlphaComponent(alpha)
+            
+            case .highlighted(let value, let alwaysDarken):
+                switch (self.interfaceStyle, alwaysDarken) {
+                    case (.light, _), (_, true): return color(for: value)?.brighten(by: -0.06)
+                    default: return color(for: value)?.brighten(by: 0.08)
+                }
+            
             default: return colors[value]
         }
     }
@@ -76,6 +83,14 @@ public protocol ThemedNavigation {
 
 public indirect enum ThemeValue: Hashable {
     case value(ThemeValue, alpha: CGFloat)
+    
+    // The 'highlighted' state of a colour will automatically lighten/darken a ThemeValue
+    // by a fixed amount depending on wither the theme is dark/light mode
+    case highlighted(ThemeValue, alwaysDarken: Bool)
+    
+    public static func highlighted(_ value: ThemeValue) -> ThemeValue {
+        return .highlighted(value, alwaysDarken: false)
+    }
     
     // General
     case white
@@ -135,28 +150,22 @@ public indirect enum ThemeValue: Hashable {
     
     // SolidButton
     case solidButton_background
-    case solidButton_highlight
     
     // Settings
     case settings_tabBackground
-    case settings_tabHighlight
     
     // Appearance
     case appearance_sectionBackground
     case appearance_buttonBackground
-    case appearance_buttonHighlight
     
     // Alert
     case alert_text
     case alert_background
     case alert_buttonBackground
-    case alert_buttonHighlight
     
     // ConversationButton
     case conversationButton_background
-    case conversationButton_highlight
     case conversationButton_unreadBackground
-    case conversationButton_unreadHighlight
     case conversationButton_unreadStripBackground
     case conversationButton_unreadBubbleBackground
     case conversationButton_unreadBubbleText

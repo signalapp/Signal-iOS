@@ -4,6 +4,7 @@ import Foundation
 
 public enum MessageReceiverError: LocalizedError {
     case duplicateMessage
+    case duplicateMessageNewSnode
     case duplicateControlMessage
     case invalidMessage
     case unknownMessage
@@ -21,8 +22,9 @@ public enum MessageReceiverError: LocalizedError {
 
     public var isRetryable: Bool {
         switch self {
-            case .duplicateMessage, .duplicateControlMessage, .invalidMessage, .unknownMessage, .unknownEnvelopeType,
-                .invalidSignature, .noData, .senderBlocked, .noThread, .selfSend, .decryptionFailed:
+            case .duplicateMessage, .duplicateMessageNewSnode, .duplicateControlMessage,
+                .invalidMessage, .unknownMessage, .unknownEnvelopeType, .invalidSignature,
+                .noData, .senderBlocked, .noThread, .selfSend, .decryptionFailed:
                 return false
                 
             default: return true
@@ -32,6 +34,7 @@ public enum MessageReceiverError: LocalizedError {
     public var errorDescription: String? {
         switch self {
             case .duplicateMessage: return "Duplicate message."
+            case .duplicateMessageNewSnode: return "Duplicate message from different service node."
             case .duplicateControlMessage: return "Duplicate control message."
             case .invalidMessage: return "Invalid message."
             case .unknownMessage: return "Unknown message type."

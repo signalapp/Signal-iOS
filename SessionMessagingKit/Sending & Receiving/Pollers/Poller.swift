@@ -129,11 +129,12 @@ public final class Poller {
         let userPublicKey: String = getUserHexEncodedPublicKey()
         
         return SnodeAPI.getMessages(from: snode, associatedWith: userPublicKey)
-            .then(on: Threading.pollerQueue) { [weak self] messages -> Promise<Void> in
+            .then(on: Threading.pollerQueue) { [weak self] messages, lastHash -> Promise<Void> in
                 guard self?.isPolling.wrappedValue == true else { return Promise { $0.fulfill(()) } }
                 
                 if !messages.isEmpty {
                     var messageCount: Int = 0
+                    var hadValidHashUpdate: Bool = false
                     
                     Storage.shared.write { db in
                         messages
@@ -149,6 +150,10 @@ public final class Poller {
                                             MessageReceiverError.duplicateMessage,
                                             MessageReceiverError.duplicateControlMessage,
                                             MessageReceiverError.selfSend:
+                                            break
+                                            
+                                        case MessageReceiverError.duplicateMessageNewSnode:
+                                            hadValidHashUpdate = true
                                             break
                                             
                                         case DatabaseError.SQLITE_ABORT:
@@ -178,9 +183,21 @@ public final class Poller {
                                     )
                                 )
                             }
+                        
+                        if messageCount == 0 && !hadValidHashUpdate, let lastHash: String = lastHash {
+                            SNLog("Received \(messages.count) new message\(messages.count == 1 ? "" : "s"), all duplicates - marking the hash we polled with as invalid")
+                            
+                            // Update the cached validity of the messages
+                            try SnodeReceivedMessageInfo.handlePotentialDeletedOrInvalidHash(
+                                db,
+                                potentiallyInvalidHashes: [lastHash],
+                                otherKnownValidHashes: messages.map { $0.info.hash }
+                            )
+                        }
+                        else {
+                            SNLog("Received \(messageCount) new message\(messageCount == 1 ? "" : "s") (duplicates:  \(messages.count - messageCount))")
+                        }
                     }
-                    
-                    SNLog("Received \(messageCount) new message\(messageCount == 1 ? "" : "s") (duplicates:  \(messages.count - messageCount))")
                 }
                 else {
                     SNLog("Received no new messages")
