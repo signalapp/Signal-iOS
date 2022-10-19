@@ -41,7 +41,7 @@ public protocol MemberViewDelegate: AnyObject {
 // MARK: -
 
 @objc
-open class BaseMemberViewController: OWSViewController {
+open class BaseMemberViewController: RecipientPickerContainerViewController {
 
     // This delegate is the subclass.
     public weak var memberViewDelegate: MemberViewDelegate?
@@ -61,8 +61,6 @@ open class BaseMemberViewController: OWSViewController {
         }
         return memberViewDelegate.memberViewHasUnsavedChanges
     }
-
-    public let recipientPicker = RecipientPickerViewController()
 
     private let memberBar = NewMembersBar()
     private let memberCountLabel = UILabel()
@@ -224,7 +222,6 @@ open class BaseMemberViewController: OWSViewController {
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        recipientPicker.applyTheme(to: self)
         recipientPicker.pickedRecipients = recipientSet.orderedMembers
 
         updateMemberBar()
@@ -239,12 +236,6 @@ open class BaseMemberViewController: OWSViewController {
                                                                target: self,
                                                                action: #selector(dismissPressed))
         }
-    }
-
-    open override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        recipientPicker.removeTheme(from: self)
     }
 
     @objc

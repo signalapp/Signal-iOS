@@ -11,19 +11,9 @@ protocol AddToBlockListDelegate: AnyObject {
 }
 
 @objc
-class AddToBlockListViewController: OWSViewController {
+class AddToBlockListViewController: RecipientPickerContainerViewController {
     @objc
     weak var delegate: AddToBlockListDelegate?
-
-    let recipientPicker: RecipientPickerViewController = {
-        let recipientPicker = RecipientPickerViewController()
-        recipientPicker.groupsToShow = .showAllGroupsWhenSearching
-        recipientPicker.findByPhoneNumberButtonTitle = NSLocalizedString(
-            "BLOCK_LIST_VIEW_BLOCK_BUTTON",
-            comment: "A label for the block button in the block list view"
-        )
-        return recipientPicker
-    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +21,11 @@ class AddToBlockListViewController: OWSViewController {
         title = NSLocalizedString("SETTINGS_ADD_TO_BLOCK_LIST_TITLE",
                                   comment: "Title for the 'add to block list' view.")
 
+        recipientPicker.groupsToShow = .showAllGroupsWhenSearching
+        recipientPicker.findByPhoneNumberButtonTitle = NSLocalizedString(
+            "BLOCK_LIST_VIEW_BLOCK_BUTTON",
+            comment: "A label for the block button in the block list view"
+        )
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
@@ -38,16 +33,6 @@ class AddToBlockListViewController: OWSViewController {
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .leading)
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .trailing)
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        recipientPicker.applyTheme(to: self)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        recipientPicker.removeTheme(from: self)
     }
 
     func block(address: SignalServiceAddress) {

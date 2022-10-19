@@ -6,12 +6,10 @@
 import Foundation
 import SignalServiceKit
 
-class BadgeGiftingChooseRecipientViewController: OWSViewController {
+class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewController {
     private let badge: ProfileBadge
     private let price: Decimal
     private let currencyCode: Currency.Code
-
-    private let recipientPicker = RecipientPickerViewController()
 
     public init(badge: ProfileBadge, price: Decimal, currencyCode: Currency.Code) {
         self.badge = badge
@@ -39,16 +37,6 @@ class BadgeGiftingChooseRecipientViewController: OWSViewController {
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
 
         rerender()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        recipientPicker.applyTheme(to: self)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        recipientPicker.removeTheme(from: self)
     }
 
     override func themeDidChange() {

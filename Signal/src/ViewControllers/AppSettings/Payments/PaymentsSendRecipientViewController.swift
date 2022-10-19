@@ -6,11 +6,9 @@
 import Foundation
 
 @objc
-class PaymentsSendRecipientViewController: OWSViewController {
+class PaymentsSendRecipientViewController: RecipientPickerContainerViewController {
 
     private let isOutgoingTransfer: Bool
-
-    let recipientPicker = RecipientPickerViewController()
 
     public init(isOutgoingTransfer: Bool) {
         self.isOutgoingTransfer = isOutgoingTransfer
@@ -46,22 +44,6 @@ class PaymentsSendRecipientViewController: OWSViewController {
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(didTapDismiss))
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        recipientPicker.applyTheme(to: self)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        recipientPicker.removeTheme(from: self)
-    }
-
-    public override func applyTheme() {
-        super.applyTheme()
-
-        view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
     }
 
     @objc

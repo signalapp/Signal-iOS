@@ -764,6 +764,7 @@
 		500FE5042890510800FA090C /* BadgeGiftingStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE5032890510800FA090C /* BadgeGiftingStrings.swift */; };
 		503614CF282AF657008128B4 /* GiftBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503614CE282AF657008128B4 /* GiftBadgeView.swift */; };
 		5042EAA3287F96FB00C9B19F /* VisibleBadgeResolverTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5042EAA2287F96FB00C9B19F /* VisibleBadgeResolverTest.swift */; };
+		506A92512900888900A2EFC2 /* RecipientPickerContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */; };
 		5075004628B09CE6001922C9 /* ContactDiscoveryOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4BC6C22102D697004040C9 /* ContactDiscoveryOperationTest.swift */; };
 		509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */; };
 		50CF28F02829C94800752AB3 /* CVComponentGiftBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */; };
@@ -3019,6 +3020,7 @@
 		503614D2282C572F008128B4 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = id; path = translations/id.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D6282C7B76008128B4 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = zh_CN; path = translations/zh_CN.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		5042EAA2287F96FB00C9B19F /* VisibleBadgeResolverTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisibleBadgeResolverTest.swift; sourceTree = "<group>"; };
+		506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerContainerViewController.swift; sourceTree = "<group>"; };
 		509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+SSKTest.swift"; sourceTree = "<group>"; };
 		50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentGiftBadge.swift; sourceTree = "<group>"; };
 		50F96F3A28ECBC3200541EED /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = translations/ms.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -6421,6 +6423,7 @@
 		88B986F728807D7400F8C74D /* Recipient Picker */ = {
 			isa = PBXGroup;
 			children = (
+				506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */,
 				8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */,
 				8835DDF7230CEDC300DC6B66 /* RecipientPickerViewController.h */,
 				8835DDF8230CEDC300DC6B66 /* RecipientPickerViewController.m */,
@@ -9785,6 +9788,7 @@
 				34A955BB271B55BA00B05242 /* PaymentsUI.swift in Sources */,
 				3402AA79271D9E180084CBAE /* PermissiveGestureRecognizer.swift in Sources */,
 				32FAB92A2727A57100FB76A6 /* PrimaryImageView.swift in Sources */,
+				506A92512900888900A2EFC2 /* RecipientPickerContainerViewController.swift in Sources */,
 				88B986F528807D6F00F8C74D /* RecipientPickerDelegate.swift in Sources */,
 				88B986F628807D6F00F8C74D /* RecipientPickerViewController.m in Sources */,
 				F9B652BC28D514E6006914CA /* RecipientPickerViewController.swift in Sources */,

@@ -6,9 +6,7 @@
 import Foundation
 
 @objc
-class ComposeViewController: OWSViewController {
-    let recipientPicker = RecipientPickerViewController()
-
+class ComposeViewController: RecipientPickerContainerViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -31,16 +29,6 @@ class ComposeViewController: OWSViewController {
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(dismissPressed))
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        recipientPicker.applyTheme(to: self)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        recipientPicker.removeTheme(from: self)
     }
 
     @objc
