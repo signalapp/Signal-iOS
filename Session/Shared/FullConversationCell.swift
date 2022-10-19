@@ -71,7 +71,7 @@ public final class FullConversationCell: UITableViewCell {
                 .withRenderingMode(.alwaysTemplate)
         )
         result.clipsToBounds = true
-        result.themeTintColor = .textPrimary
+        result.themeTintColor = .textSecondary
         result.contentMode = .scaleAspectFit
         result.set(.width, to: FullConversationCell.unreadCountViewSize)
         result.set(.height, to: FullConversationCell.unreadCountViewSize)
@@ -148,7 +148,7 @@ public final class FullConversationCell: UITableViewCell {
         
         // Highlight color
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.themeBackgroundColor = .conversationButton_highlight
+        selectedBackgroundView.themeBackgroundColor = .highlighted(.conversationButton_background)
         self.selectedBackgroundView = selectedBackgroundView
         
         // Accent line view
@@ -340,14 +340,12 @@ public final class FullConversationCell: UITableViewCell {
     
     public func update(with cellViewModel: SessionThreadViewModel) {
         let unreadCount: UInt = (cellViewModel.threadUnreadCount ?? 0)
-        themeBackgroundColor = (unreadCount > 0 ?
+        let themeBackgroundColor: ThemeValue = (unreadCount > 0 ?
             .conversationButton_unreadBackground :
             .conversationButton_background
         )
-        self.selectedBackgroundView?.themeBackgroundColor = (unreadCount > 0 ?
-            .conversationButton_unreadHighlight :
-            .conversationButton_highlight
-        )
+        self.themeBackgroundColor = themeBackgroundColor
+        self.selectedBackgroundView?.themeBackgroundColor = .highlighted(themeBackgroundColor)
         
         if cellViewModel.threadIsBlocked == true {
             accentLineView.themeBackgroundColor = .danger

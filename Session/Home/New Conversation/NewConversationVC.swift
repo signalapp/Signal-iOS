@@ -230,7 +230,7 @@ private final class NewConversationButton: UIView {
     
     private let selectedBackgroundView: UIView = {
         let result: UIView = UIView()
-        result.themeBackgroundColor = .settings_tabHighlight
+        result.themeBackgroundColor = .highlighted(.settings_tabBackground)
         result.isHidden = true
         
         return result

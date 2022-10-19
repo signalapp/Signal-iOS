@@ -69,9 +69,10 @@ final class MediaPlaceholderView: UIView {
         let stackView = UIStackView(arrangedSubviews: [ imageView, titleLabel ])
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 12)
         addSubview(stackView)
-        stackView.pin(to: self, withInset: Values.smallSpacing)
+        stackView.pin(.top, to: .top, of: self, withInset: Values.smallSpacing)
+        stackView.pin(.leading, to: .leading, of: self, withInset: Values.smallSpacing)
+        stackView.pin(.trailing, to: .trailing, of: self, withInset: -Values.largeSpacing)
+        stackView.pin(.bottom, to: .bottom, of: self, withInset: -Values.smallSpacing)
     }
 }

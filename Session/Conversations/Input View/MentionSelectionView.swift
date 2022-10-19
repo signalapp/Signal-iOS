@@ -151,7 +151,7 @@ private extension MentionSelectionView {
             
             // Highlight color
             let selectedBackgroundView = UIView()
-            selectedBackgroundView.themeBackgroundColor = .settings_tabHighlight
+            selectedBackgroundView.themeBackgroundColor = .highlighted(.settings_tabBackground)
             self.selectedBackgroundView = selectedBackgroundView
             
             // Profile picture image view

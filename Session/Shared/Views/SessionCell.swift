@@ -30,7 +30,7 @@ public class SessionCell: UITableViewCell {
     private var botSeparatorLeftConstraint: NSLayoutConstraint = NSLayoutConstraint()
     private var botSeparatorRightConstraint: NSLayoutConstraint = NSLayoutConstraint()
     private lazy var leftAccessoryFillConstraint: NSLayoutConstraint = contentStackView.set(.height, to: .height, of: leftAccessoryView)
-    private lazy var rightAccessoryFillConstraint: NSLayoutConstraint = contentStackView.set(.height, to: .height, of: rightAccessoryView)// .heightAnchor.constraint(equalTo: iconImageView.heightAnchor)
+    private lazy var rightAccessoryFillConstraint: NSLayoutConstraint = contentStackView.set(.height, to: .height, of: rightAccessoryView)
     
     private let cellBackgroundView: UIView = {
         let result: UIView = UIView()
@@ -44,7 +44,7 @@ public class SessionCell: UITableViewCell {
     private let cellSelectedBackgroundView: UIView = {
         let result: UIView = UIView()
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.themeBackgroundColor = .settings_tabHighlight
+        result.themeBackgroundColor = .highlighted(.settings_tabBackground)
         result.alpha = 0
         
         return result

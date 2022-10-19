@@ -51,6 +51,13 @@ extension MessageReceiver {
                 
                 _ = try interaction.attachments
                     .deleteAll(db)
+                
+                if let serverHash: String = interaction.serverHash {
+                    try SnodeReceivedMessageInfo.handlePotentialDeletedOrInvalidHash(
+                        db,
+                        potentiallyInvalidHashes: [serverHash]
+                    )
+                }
         }
     }
 }

@@ -36,5 +36,29 @@ public extension UIColor {
             alpha: CGFloatLerp(a0, a1, finalAlpha)
         )
     }
+    
+    func brighten(by percentage: CGFloat) -> UIColor {
+        guard percentage != 0 else { return self }
+        
+        var hue: CGFloat = 0
+        var saturation: CGFloat = 0
+        var brightness: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        // Note: Looks like as of iOS 10 devices use the kCGColorSpaceExtendedGray color
+        // space for grayscale colors which seems to be compatible with the RGB color space
+        // meaning we don't need to check 'getWhite:alpha:' if the below method fails, for
+        // more info see: https://developer.apple.com/documentation/uikit/uicolor#overview
+        guard self.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha) else {
+            return self
+        }
+
+        return UIColor(
+            hue: hue,
+            saturation: saturation,
+            brightness: (brightness + percentage),
+            alpha: alpha
+        )
+    }
 }
 
