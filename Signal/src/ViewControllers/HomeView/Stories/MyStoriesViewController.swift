@@ -471,6 +471,10 @@ class SentStoryCell: UITableViewCell {
         contextButton.setBackgroundImage(UIImage(color: Theme.secondaryBackgroundColor), for: .normal)
         contextButton.delegate = contextMenuButtonDelegate
         contextButton.indexPath = indexPath
+
+        let selectedBackgroundView = UIView()
+        selectedBackgroundView.backgroundColor = Theme.tableCell2SelectedBackgroundColor2
+        self.selectedBackgroundView = selectedBackgroundView
     }
 }
 

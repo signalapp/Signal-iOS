@@ -86,7 +86,6 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
             return
         }
         guard newValue >= (lastReadTimestamp ??  0) else {
-            owsFailDebug("Last read timestamp got ahead of last viewed timestamp somehow")
             return
         }
         lastReadTimestamp = newValue

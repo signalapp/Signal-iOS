@@ -261,6 +261,14 @@ public class OWSTabBar: UITabBar {
                                                object: nil)
     }
 
+    public override var isHidden: Bool {
+        didSet {
+            if !isHidden {
+                applyTheme()
+            }
+        }
+    }
+
     // MARK: Theme
 
     var tabBarBackgroundColor: UIColor {

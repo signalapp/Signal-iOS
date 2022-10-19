@@ -20,14 +20,12 @@ class MyStoryCell: UITableViewCell {
     let failedIconView = UIImageView()
 
     let addStoryButton = OWSButton()
-    let plusIcon = UIImageView()
+    private let plusIcon = PlusIconView()
 
     let contentHStackView = UIStackView()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-
-        backgroundColor = .clear
 
         titleLabel.text = NSLocalizedString("MY_STORIES_TITLE", comment: "Title for the 'My Stories' view")
 
@@ -38,7 +36,7 @@ class MyStoryCell: UITableViewCell {
         let titleStack = UIStackView(arrangedSubviews: [titleLabel, titleChevron])
         titleStack.axis = .horizontal
         titleStack.alignment = .center
-        titleStack.spacing = 6
+        titleStack.spacing = 2
 
         failedIconView.autoSetDimension(.width, toSize: 16)
         failedIconView.contentMode = .scaleAspectFit
@@ -56,13 +54,6 @@ class MyStoryCell: UITableViewCell {
         addStoryButton.addSubview(avatarView)
         avatarView.autoPinEdgesToSuperviewEdges()
 
-        plusIcon.image = #imageLiteral(resourceName: "plus-my-story").withRenderingMode(.alwaysTemplate)
-        plusIcon.tintColor = .white
-        plusIcon.contentMode = .center
-        plusIcon.autoSetDimensions(to: .square(26))
-        plusIcon.layer.cornerRadius = 13
-        plusIcon.layer.borderWidth = 3
-        plusIcon.backgroundColor = .ows_accentBlue
         plusIcon.isUserInteractionEnabled = false
 
         addStoryButton.addSubview(plusIcon)
@@ -78,11 +69,15 @@ class MyStoryCell: UITableViewCell {
         contentHStackView.autoPinEdgesToSuperviewMargins()
 
         attachmentThumbnail.autoSetDimensions(to: CGSize(width: 64, height: 84))
+
+        updateColors()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    private var attachmentThumbnailDividerView: UIView?
 
     func configure(with model: MyStoryViewModel, addStoryAction: @escaping () -> Void) {
         configureSubtitle(with: model)
@@ -93,8 +88,6 @@ class MyStoryCell: UITableViewCell {
         titleChevron.tintColor = Theme.primaryTextColor
         titleChevron.isHiddenInStackView = model.messages.isEmpty
 
-        plusIcon.layer.borderColor = Theme.backgroundColor.cgColor
-
         addStoryButton.block = addStoryAction
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
@@ -104,6 +97,7 @@ class MyStoryCell: UITableViewCell {
         }
 
         attachmentThumbnail.removeAllSubviews()
+        attachmentThumbnailDividerView = nil
 
         if let latestMessageAttachment = model.latestMessageAttachment {
             attachmentThumbnail.isHiddenInStackView = false
@@ -124,16 +118,23 @@ class MyStoryCell: UITableViewCell {
                 secondLatestThumbnailView.autoPinEdge(toSuperviewEdge: .leading)
 
                 let dividerView = UIView()
-                dividerView.backgroundColor = Theme.backgroundColor
+                dividerView.backgroundColor = backgroundColor
                 dividerView.layer.cornerRadius = 12
                 attachmentThumbnail.insertSubview(dividerView, belowSubview: latestThumbnailView)
                 dividerView.autoSetDimensions(to: CGSize(width: 60, height: 88))
                 dividerView.autoPinEdge(toSuperviewEdge: .trailing, withInset: -2)
                 dividerView.autoPinEdge(toSuperviewEdge: .top, withInset: -2)
+                attachmentThumbnailDividerView = dividerView
             }
         } else {
             attachmentThumbnail.isHiddenInStackView = true
         }
+
+        let selectedBackgroundView = SelectedBackgroundView()
+        selectedBackgroundView.backgroundColor = Theme.tableCell2SelectedBackgroundColor2
+        self.selectedBackgroundView = selectedBackgroundView
+
+        updateColors()
     }
 
     func configureSubtitle(with model: MyStoryViewModel) {
@@ -161,6 +162,92 @@ class MyStoryCell: UITableViewCell {
         } else {
             subtitleLabel.text = NSLocalizedString("MY_STORY_TAP_TO_ADD", comment: "Prompt to add to your story")
             failedIconView.isHiddenInStackView = true
+        }
+
+        updateColors()
+    }
+
+    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        super.setHighlighted(highlighted, animated: animated)
+
+        updateColors()
+    }
+
+    private var showingSelectedBackgroundView = false
+
+    public func updateColors() {
+        guard
+            showingSelectedBackgroundView,
+            let backgroundView = self.selectedBackgroundView
+        else {
+            attachmentThumbnailDividerView?.alpha = 1
+            attachmentThumbnailDividerView?.backgroundColor = backgroundColor
+            plusIcon.borderColor = backgroundColor
+            return
+        }
+        attachmentThumbnailDividerView?.alpha = backgroundView.alpha
+        attachmentThumbnailDividerView?.backgroundColor = backgroundView.backgroundColor
+        plusIcon.borderColor = backgroundView.backgroundColor?.withAlphaComponent(backgroundView.alpha)
+    }
+
+    private class SelectedBackgroundView: UIView {
+
+        override func willMove(toSuperview newSuperview: UIView?) {
+            if let cell = newSuperview as? MyStoryCell {
+                cell.showingSelectedBackgroundView = true
+                cell.updateColors()
+            } else if let cell = superview as? MyStoryCell {
+                cell.showingSelectedBackgroundView = false
+                cell.updateColors()
+            }
+        }
+
+        override var alpha: CGFloat {
+            didSet {
+                if let cell = superview as? MyStoryCell {
+                    cell.updateColors()
+                }
+            }
+        }
+    }
+
+    private class PlusIconView: UIView {
+
+        var borderColor: UIColor? {
+            get {
+                return outerCircle.backgroundColor
+            }
+            set {
+                outerCircle.backgroundColor = newValue
+            }
+        }
+
+        let outerCircle = UIView()
+        let iconView = UIImageView()
+
+        init() {
+            super.init(frame: .zero)
+
+            addSubview(outerCircle)
+            addSubview(iconView)
+
+            iconView.image = #imageLiteral(resourceName: "plus-my-story").withRenderingMode(.alwaysTemplate)
+            iconView.tintColor = .white
+            iconView.contentMode = .center
+            iconView.autoSetDimensions(to: .square(20))
+            iconView.layer.cornerRadius = 10
+            iconView.autoCenterInSuperview()
+            iconView.backgroundColor = .ows_accentBlue
+
+            // NOTE: gets written over by the cell's theme application.
+            outerCircle.backgroundColor = Theme.backgroundColor
+            outerCircle.autoSetDimensions(to: .square(26))
+            outerCircle.layer.cornerRadius = 13
+            outerCircle.autoPinEdgesToSuperviewEdges()
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
         }
     }
 }

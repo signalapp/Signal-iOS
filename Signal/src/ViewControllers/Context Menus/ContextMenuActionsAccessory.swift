@@ -265,7 +265,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
             var iconViewFrame = CGRect(x: 0, y: 0, width: iconSize, height: iconSize)
 
             titleFrame.y = ceil((bounds.height - titleFrame.height) / 2)
-            iconViewFrame.y = max(0, (bounds.height - iconView.height) / 2)
+            iconViewFrame.y = max(0, (bounds.height - iconViewFrame.height) / 2)
 
             let titleWidth = bounds.width - iconViewFrame.width - 3 * margin
             if titleWidth < titleFrame.width {

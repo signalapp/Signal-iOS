@@ -106,6 +106,10 @@ class StoryCell: UITableViewCell {
         storyThumbnailView.autoPinEdgesToSuperviewEdges()
 
         contentView.alpha = model.isHidden ? 0.27 : 1
+
+        let selectedBackgroundView = UIView()
+        selectedBackgroundView.backgroundColor = Theme.tableCell2SelectedBackgroundColor2
+        self.selectedBackgroundView = selectedBackgroundView
     }
 
     func configureSubtitle(with model: StoryViewModel) {

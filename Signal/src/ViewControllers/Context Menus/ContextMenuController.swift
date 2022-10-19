@@ -306,8 +306,12 @@ private class ContextMenuHostView: UIView {
         }
 
         if accessoryFrame.maxX > contentRect.maxX {
-            let adjust = accessoryFrame.maxX - contentRect.maxX
-            updatedFrame.x -= adjust
+            let adjust = contentRect.maxX - accessoryFrame.maxX
+            updatedFrame.x += adjust
+        }
+        if accessoryFrame.minX < contentRect.minX {
+            let adjust =  contentRect.minX - accessoryFrame.minX
+            updatedFrame.x += adjust
         }
 
         return updatedFrame
