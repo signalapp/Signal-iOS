@@ -481,6 +481,9 @@ public class FullTextSearcher: NSObject {
             case is TSContactThread:
                 // not included in compose screen results
                 break
+            case is TSPrivateStoryThread:
+                // not included in compose screen results
+                break
             default:
                 owsFailDebug("Unexpected match of type \(type(of: match))")
             }
