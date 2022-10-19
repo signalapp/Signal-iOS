@@ -7,7 +7,6 @@ import Foundation
 import SignalCoreKit
 
 /// The primary interface for discovering contacts through the CDS service
-@objc(OWSContactDiscoveryTask)
 public class ContactDiscoveryTask: NSObject {
 
     // MARK: - Lifecycle
@@ -144,28 +143,6 @@ public class ContactDiscoveryTask: NSObject {
             }
 
             return recipientSet
-        }
-    }
-}
-
-// MARK: - ObjC Support
-
-@objc
-public extension ContactDiscoveryTask {
-
-    @objc(performAtQoS:callbackQueue:success:failure:)
-    func perform(at rawQoS: qos_class_t,
-                 callbackQueue: DispatchQueue,
-                 success: @escaping (Set<SignalRecipient>) -> Void,
-                 failure: @escaping (Error) -> Void) {
-        firstly { () -> Promise<Set<SignalRecipient>> in
-            let qosClass = DispatchQoS.QoSClass(flooring: rawQoS)
-            let qos = DispatchQoS(qosClass: qosClass, relativePriority: 0)
-            return perform(at: qos)
-        }.done(on: callbackQueue) { (results) in
-            success(results)
-        }.catch(on: callbackQueue) { error in
-            failure(error)
         }
     }
 }

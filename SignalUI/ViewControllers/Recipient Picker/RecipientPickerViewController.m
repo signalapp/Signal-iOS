@@ -1286,16 +1286,9 @@ const NSUInteger kMinimumSearchLength = 1;
     }
 
     __weak RecipientPickerViewController *weakSelf = self;
-
-    OWSContactDiscoveryTask *discoveryTask = [[OWSContactDiscoveryTask alloc] initWithPhoneNumbers:unknownPhoneNumbers];
-    [discoveryTask performAtQoS:QOS_CLASS_USER_INITIATED
-                  callbackQueue:dispatch_get_main_queue()
-                        success:^(NSSet<SignalRecipient *> *resultSet) {
-                            [weakSelf updateNonContactAccountSet:[resultSet allObjects]];
-                        }
-                        failure:^(NSError *error) {
-                            // Ignore.
-                        }];
+    [self discoverWithPhoneNumbers:unknownPhoneNumbers success:^(NSSet<SignalRecipient *> * _Nonnull resultSet) {
+        [weakSelf updateNonContactAccountSet:[resultSet allObjects]];
+    }];
 }
 
 - (void)updateNonContactAccountSet:(NSArray<SignalRecipient *> *)recipients

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 extension RecipientPickerViewController {
     @objc(groupSectionForSearchResults:)
@@ -31,5 +32,14 @@ extension RecipientPickerViewController {
                 self.item(forRecipient: PickedRecipient.for(groupThread: $0))
             }
         )
+    }
+
+    @objc
+    func discover(phoneNumbers: Set<String>, success: @escaping (Set<SignalRecipient>) -> Void) {
+        firstly {
+            ContactDiscoveryTask(phoneNumbers: phoneNumbers).perform(at: .userInitiated)
+        }.done(on: .main) {
+            success($0)
+        }.cauterize()
     }
 }

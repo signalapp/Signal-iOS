@@ -838,6 +838,52 @@ extension OWSContactsManager {
     }
 }
 
+// MARK: - Intersection
+
+@objc
+extension OWSContactsManager {
+    func intersectContacts(
+        _ phoneNumbers: Set<String>,
+        retryDelaySeconds: TimeInterval,
+        success: @escaping (Set<SignalRecipient>) -> Void,
+        failure: @escaping (Error) -> Void
+    ) {
+        owsAssertDebug(!phoneNumbers.isEmpty)
+        owsAssertDebug(retryDelaySeconds > 0)
+
+        firstly {
+            ContactDiscoveryTask(phoneNumbers: phoneNumbers).perform(at: .userInitiated)
+        }.done(on: .global()) { signalRecipients in
+            Logger.info("Successfully intersected contacts.")
+            success(signalRecipients)
+        }.`catch`(on: .global()) { error in
+            var retryAfter: TimeInterval = retryDelaySeconds
+
+            if let cdsError = error as? ContactDiscoveryError {
+                guard cdsError.code != ContactDiscoveryError.Kind.rateLimit.rawValue else {
+                    Logger.error("Contact intersection hit rate limit with error: \(error)")
+                    failure(error)
+                    return
+                }
+                guard cdsError.retrySuggested else {
+                    Logger.error("Contact intersection error suggests not to retry. Aborting without rescheduling.")
+                    failure(error)
+                    return
+                }
+                if let retryAfterDate = cdsError.retryAfterDate {
+                    retryAfter = max(retryAfter, retryAfterDate.timeIntervalSinceNow)
+                }
+            }
+
+            // TODO: Abort if another contact intersection succeeds in the meantime.
+            Logger.warn("Contact intersection failed with error: \(error). Rescheduling.")
+            DispatchQueue.global().asyncAfter(deadline: .now() + retryAfter) {
+                self.intersectContacts(phoneNumbers, retryDelaySeconds: retryDelaySeconds * 2, success: success, failure: failure)
+            }
+        }
+    }
+}
+
 // MARK: -
 
 @objc
