@@ -147,7 +147,6 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
         viewsButton.isSelected = false
         view.layoutIfNeeded()
         pagingScrollView.setContentOffset(CGPoint(x: pagingScrollView.width, y: 0), animated: animated)
-        isManuallySwitchingTabs = false
     }
 
     func switchToViewsTab(animated: Bool) {
@@ -156,7 +155,6 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
         repliesButton.isSelected = false
         viewsButton.isSelected = true
         pagingScrollView.setContentOffset(.zero, animated: animated)
-        isManuallySwitchingTabs = false
     }
 
     func createToggleButton(title: String, block: @escaping () -> Void) -> UIButton {
@@ -192,6 +190,10 @@ extension StoryGroupRepliesAndViewsSheet: UIScrollViewDelegate {
             viewsButton.isSelected = false
             focusedTab = .replies
         }
+    }
+
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        isManuallySwitchingTabs = false
     }
 }
 
