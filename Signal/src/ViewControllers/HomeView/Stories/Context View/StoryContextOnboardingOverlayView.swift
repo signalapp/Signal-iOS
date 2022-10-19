@@ -4,8 +4,9 @@
 //
 
 import Foundation
-import UIKit
+import Lottie
 import SignalServiceKit
+import UIKit
 
 protocol StoryContextOnboardingOverlayViewDelegate: AnyObject {
 
@@ -90,10 +91,16 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
         self.isHidden = false
         blurView.effect = .none
         blurView.contentView.alpha = 0
-        UIView.animate(withDuration: 0.35) {
-            self.blurView.effect = UIBlurEffect(style: .dark)
-            self.blurView.contentView.alpha = 1
-        }
+        UIView.animate(
+            withDuration: 0.35,
+            animations: {
+                self.blurView.effect = UIBlurEffect(style: .dark)
+                self.blurView.contentView.alpha = 1
+            },
+            completion: { [weak self] _ in
+                self?.startAnimations()
+            }
+        )
     }
 
     func dismiss() {
@@ -118,6 +125,8 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
 
     private lazy var blurView = UIVisualEffectView()
 
+    private var animationViews = [AnimationView]()
+
     private func setupSubviews() {
         addSubview(blurView)
         blurView.autoPinEdgesToSuperviewEdges()
@@ -128,18 +137,22 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
         vStack.distribution = .equalSpacing
         vStack.spacing = 42
 
+        animationViews = []
+
         for asset in assets {
             let imageContainer = UIView()
 
-            let imageView = UIImageView(image: asset.image?.withRenderingMode(.alwaysTemplate).asTintedImage(color: .ows_white))
-            imageView.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+            let animationView = AnimationView(name: asset.lottieName)
+            animationView.loopMode = .playOnce
+            animationView.backgroundBehavior = .forceFinish
+            animationView.autoSetDimensions(to: .square(54))
 
-            imageContainer.addSubview(imageView)
+            imageContainer.addSubview(animationView)
 
-            imageContainer.autoPinHeight(toHeightOf: imageView)
-            imageContainer.autoPinWidth(toWidthOf: imageView)
-            imageView.autoVCenterInSuperview()
-            imageView.autoAlignAxis(.vertical, toSameAxisOf: imageContainer, withOffset: asset.imageXOffset)
+            imageContainer.autoPinHeight(toHeightOf: animationView)
+            imageContainer.autoPinWidth(toWidthOf: animationView)
+            animationView.autoVCenterInSuperview()
+            animationView.autoAlignAxis(.vertical, toSameAxisOf: imageContainer)
 
             let label = UILabel()
             label.textColor = .ows_gray05
@@ -157,6 +170,8 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
             innerVStack.addArrangedSubviews([imageContainer, label])
 
             vStack.addArrangedSubview(innerVStack)
+
+            animationViews.append(animationView)
         }
 
         let confirmButtonContainer = ManualLayoutView(name: "confirm_button")
@@ -223,35 +238,48 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
         closeButton.autoPinEdge(toSuperviewEdge: .leading, withInset: 20)
     }
 
+    private func startAnimations() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            self?.playAnimation(at: 0)
+        }
+    }
+
+    private func playAnimation(at index: Int) {
+        guard !animationViews.isEmpty, self.isDisplaying else {
+            return
+        }
+        guard let animationView = animationViews[safe: index] else {
+            startAnimations()
+            return
+        }
+        animationView.play { [weak self] _ in
+            self?.playAnimation(at: index + 1)
+        }
+    }
+
     private struct Asset {
-        let image: UIImage?
-        let imageXOffset: CGFloat
+        let lottieName: String
         let text: String
     }
 
     private var assets: [Asset] {
         [
             Asset(
-                image: #imageLiteral(resourceName: "story_viewer_onboarding_1"),
-                imageXOffset: 0,
+                lottieName: "story_viewer_onboarding_1",
                 text: NSLocalizedString(
                     "STORY_VIEWER_ONBOARDING_1",
                     comment: "Text shown the first time the user opens the story viewer instructing them how to use it."
                 )
             ),
             Asset(
-                image: #imageLiteral(resourceName: "story_viewer_onboarding_2"),
-                imageXOffset: 0,
+                lottieName: "story_viewer_onboarding_2",
                 text: NSLocalizedString(
                     "STORY_VIEWER_ONBOARDING_2",
                     comment: "Text shown the first time the user opens the story viewer instructing them how to use it."
                 )
             ),
             Asset(
-                image: #imageLiteral(resourceName: "story_viewer_onboarding_3"),
-                // The asset is "centered" but the designs require misalignment of the
-                // assets frame to visually align a sub-part of its contents.
-                imageXOffset: -12,
+                lottieName: "story_viewer_onboarding_3",
                 text: NSLocalizedString(
                     "STORY_VIEWER_ONBOARDING_3",
                     comment: "Text shown the first time the user opens the story viewer instructing them how to use it."
