@@ -782,7 +782,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Utilizator Signal";
 
 /* The generic name used for group calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Grup Signal";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Fă o poză și trimite-o";
@@ -2834,7 +2834,7 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Elimină Povestea de Grup";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Sigur vrei să elimini „%1$@“?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Membrii conversației de grup „%1$@” pot vedea și răspunde la această poveste. Poți actualiza calitatea de membru pentru acest chat în grup.";
@@ -6377,7 +6377,7 @@
 "STORY_REPLY_REACTION" = "Ai reacționat la poveste";
 
 /* header text for replying to private story. Embeds {{author name}} */
-"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Răspunde-i în privat lui %1$@";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Răspunde";

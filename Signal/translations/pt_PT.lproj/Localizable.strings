@@ -782,7 +782,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Utilizador do Signal";
 
 /* The generic name used for group calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Grupo do Signal";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Tire uma fotografia e envie-a";
@@ -2834,7 +2834,7 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Eliminar história de grupo";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Tem a certeza de que deseja eliminar “%1$@”?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Os membros da conversa de grupo “%1$@” podem ver e responder a esta história. Pode atualizar os membros desta conversa no grupo.";
@@ -6377,7 +6377,7 @@
 "STORY_REPLY_REACTION" = "Reagiu à história";
 
 /* header text for replying to private story. Embeds {{author name}} */
-"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Resposta privada a %1$@";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Responder";

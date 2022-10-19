@@ -782,7 +782,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal-gebruiker";
 
 /* The generic name used for group calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal-groep";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Neem een foto en verzend deze";
@@ -2834,7 +2834,7 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Verwijder groepsverhaal";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Weet je zeker dat je \"%1$@\" wil verwijderen?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Leden van het groepsgesprek “%1$@” kunnen dit verhaal bekijken en erop antwoorden. Je kunt het lidmaatschap voor dit gesprek updaten in de groep.";
@@ -6377,7 +6377,7 @@
 "STORY_REPLY_REACTION" = "Reageerde op dit verhaal";
 
 /* header text for replying to private story. Embeds {{author name}} */
-"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Privéreactie op %1$@";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Reageren";

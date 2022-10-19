@@ -782,7 +782,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Používateľ Signal";
 
 /* The generic name used for group calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal skupina";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Nasnímať obrázok a potom ho poslať";
@@ -2834,7 +2834,7 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Odstrániť skupinový príbeh";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Naozaj chcete odstrániť „%1$@“?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Členovia skupiny „%1$@“ môžu vidieť tento príbeh a odpovedať naň. Členov tohto četu môžete upraviť v skupine.";
@@ -6377,7 +6377,7 @@
 "STORY_REPLY_REACTION" = "Reagoval/a na príbeh";
 
 /* header text for replying to private story. Embeds {{author name}} */
-"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Súkromná odpoveď používateľovi %1$@";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Odpovedať";

@@ -1,3 +1,3 @@
-• Group calls will now show up in your iOS call log
-• Faster photo picker for iOS 16
-• Other assorted bug fixes to keep your app running smoothly
+• Le chiamate di gruppo d'ora in poi vengono mostrate anche nel registro chiamate di iOS
+• Il processo di selezione foto su iOS 16 è stato velocizzato
+• Altre correzioni di bug per migliorare l'esperienza sull'app

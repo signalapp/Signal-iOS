@@ -1,3 +1,3 @@
-• Group calls will now show up in your iOS call log
-• Faster photo picker for iOS 16
-• Other assorted bug fixes to keep your app running smoothly
+• ग्रुप कॉल अब आपके iOS कॉल लॉग में दिखेंगे
+• iOS 16 के लिए और भी तेज़ फ़ोटो पिकर
+• अन्य चुनिन्दा बग फ़िक्स ताकि आपका ऐप बिना किसी रुकावट चलता रहे

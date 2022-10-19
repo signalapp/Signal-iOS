@@ -782,7 +782,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Пользователь Signal";
 
 /* The generic name used for group calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Группа Signal";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Сделать фотографию и отправить её";
@@ -2834,7 +2834,7 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Удалить историю в группе";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Вы действительно хотите удалить «%1$@»?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Участники группы «%1$@» могут просматривать эту историю и отвечать на неё. Вы можете обновить членство в этом чате в группе.";
@@ -3794,7 +3794,7 @@
 "MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Выберите, кто может просматривать эту историю";
 
 /* Title for the my story settings sheet */
-"MY_STORY_SETTINGS_SHEET_TITLE" = "Настройки приватности моих историй";
+"MY_STORY_SETTINGS_SHEET_TITLE" = "Настройки приватности «Моей истории»";
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "Моя история";
@@ -5978,7 +5978,7 @@
 "SETTINGS_PINS_TITLE" = "PIN-код Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Настройки обхода цензуры, ретрансляции звонков, прокси и скрытого отправителя.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Настройки обхода цензуры, прокси, ретрансляции звонков и запечатанного отправителя.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Расширенные";
@@ -6377,7 +6377,7 @@
 "STORY_REPLY_REACTION" = "Отреагировал(-а) на историю";
 
 /* header text for replying to private story. Embeds {{author name}} */
-"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Приватный ответ %1$@";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Ответить";
@@ -6410,7 +6410,7 @@
 "STORY_SEND_PARTIALLY_FAILED" = "Отправлено не полностью";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Отправлено не полностью Показать подробности";
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Отправлено не полностью. Показать подробности";
 
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "Отправляем…";

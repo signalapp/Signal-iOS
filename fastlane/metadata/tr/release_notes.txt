@@ -1,3 +1,3 @@
-• Group calls will now show up in your iOS call log
-• Faster photo picker for iOS 16
-• Other assorted bug fixes to keep your app running smoothly
+• Grup aramaları artık iOS arama geçmişinde görünecek
+• iOS 16 için daha hızlı fotoğraf seçici
+• Uygulamanın sorunsuz çalışmasını sağlamak için diğer hata düzeltmeleri

@@ -782,7 +782,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal વપરાશકર્તા";
 
 /* The generic name used for group calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal ગ્રુપ";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "એક ફોટો લો અને પછી તેને મોકલો";
@@ -2834,7 +2834,7 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "ગ્રુપ સ્ટોરી દૂર કરો";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "શું તમે ખરેખર “ %1$@ ” ને દૂર કરવા માંગો છો?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "“%1$@” ગ્રુપ ચેટના સભ્યો આ સ્ટોરી જોઈ શકે અને તેમાં જવાબ આપી શકે છે. તમે આ ગ્રુપમાં આ ચેટ માટેના સભ્યપદને અપડેટ કરી શકો છો.";
@@ -6377,7 +6377,7 @@
 "STORY_REPLY_REACTION" = "સ્ટોરી પર પ્રતિક્રિયા આપી";
 
 /* header text for replying to private story. Embeds {{author name}} */
-"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "%1$@ ને ખાનગી જવાબ આપો";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "જવાબ";
