@@ -37,12 +37,12 @@ class BoostViewController: OWSTableViewController2 {
     private var currencyCode = Stripe.defaultCurrencyCode {
         didSet {
             guard oldValue != currencyCode else { return }
-            customValueTextField.setCurrencyCode(currencyCode)
+            customAmountTextField.setCurrencyCode(currencyCode)
             state = nil
             updateTableContents()
         }
     }
-    private let customValueTextField = CustomValueTextField()
+    private let customAmountTextField = OneTimeDonationCustomAmountTextField()
     private let headerAnimationView: AnimationView = {
         let animationView = AnimationView(name: "boost_badge")
         animationView.loopMode = .playOnce
@@ -55,14 +55,14 @@ class BoostViewController: OWSTableViewController2 {
     private var donationAmount: Decimal? {
         switch state {
         case .presetSelected(let amount): return amount
-        case .customValueSelected: return customValueTextField.decimalNumber
+        case .customValueSelected: return customAmountTextField.decimalNumber
         default: return nil
         }
     }
 
     private var presets: [Currency.Code: DonationUtilities.Preset]? {
         didSet {
-            customValueTextField.setCurrencyCode(currencyCode)
+            customAmountTextField.setCurrencyCode(currencyCode)
         }
     }
     private var boostBadge: ProfileBadge?
@@ -92,8 +92,8 @@ class BoostViewController: OWSTableViewController2 {
     }
 
     func clearCustomTextField() {
-        customValueTextField.text = nil
-        customValueTextField.resignFirstResponder()
+        customAmountTextField.text = nil
+        customAmountTextField.resignFirstResponder()
     }
 
     override func viewDidLoad() {
@@ -115,12 +115,12 @@ class BoostViewController: OWSTableViewController2 {
             owsFailDebug("Failed to fetch boost info \(error)")
         }
 
-        customValueTextField.placeholder = NSLocalizedString(
+        customAmountTextField.placeholder = NSLocalizedString(
             "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER",
             comment: "Default text for the custom amount field of the boost view."
         )
-        customValueTextField.delegate = self
-        customValueTextField.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "custom_amount_text_field")
+        customAmountTextField.delegate = self
+        customAmountTextField.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "custom_amount_text_field")
 
         updateTableContents()
     }
@@ -157,7 +157,7 @@ class BoostViewController: OWSTableViewController2 {
         // If we become the first responder, but the user was entering
         // a customValue, restore the first responder state to the text field.
         if result, case .customValueSelected = state {
-            customValueTextField.becomeFirstResponder()
+            customAmountTextField.becomeFirstResponder()
         }
         return result
     }
@@ -178,7 +178,7 @@ class BoostViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
         defer {
             self.contents = contents
-            if case .customValueSelected = state { customValueTextField.becomeFirstResponder() }
+            if case .customValueSelected = state { customAmountTextField.becomeFirstResponder() }
         }
 
         let section = OWSTableSection()
@@ -444,27 +444,27 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
         // Custom donation option
 
         let applePayButtonIndex = IndexPath(row: section.items.count + 1, section: 0)
-        let customValueTextField = self.customValueTextField
+        let customAmountTextField = self.customAmountTextField
         section.add(.init(
             customCellBlock: { [weak self] in
                 guard let self = self else { return UITableViewCell() }
                 let cell = self.newCell()
 
-                customValueTextField.backgroundColor = DonationViewsUtil.bubbleBackgroundColor
-                customValueTextField.layer.cornerRadius = 24
-                customValueTextField.layer.borderWidth = DonationViewsUtil.bubbleBorderWidth
-                customValueTextField.layer.borderColor = DonationViewsUtil.bubbleBorderColor.cgColor
+                customAmountTextField.backgroundColor = DonationViewsUtil.bubbleBackgroundColor
+                customAmountTextField.layer.cornerRadius = 24
+                customAmountTextField.layer.borderWidth = DonationViewsUtil.bubbleBorderWidth
+                customAmountTextField.layer.borderColor = DonationViewsUtil.bubbleBorderColor.cgColor
 
-                customValueTextField.font = .ows_dynamicTypeBodyClamped
-                customValueTextField.textColor = Theme.primaryTextColor
+                customAmountTextField.font = .ows_dynamicTypeBodyClamped
+                customAmountTextField.textColor = Theme.primaryTextColor
 
-                cell.contentView.addSubview(customValueTextField)
-                customValueTextField.autoPinEdgesToSuperviewMargins()
+                cell.contentView.addSubview(customAmountTextField)
+                customAmountTextField.autoPinEdgesToSuperviewMargins()
 
                 return cell
             },
             actionBlock: { [weak self] in
-                customValueTextField.becomeFirstResponder()
+                customAmountTextField.becomeFirstResponder()
                 self?.tableView.scrollToRow(at: applePayButtonIndex, at: .bottom, animated: true)
             }
         ))
@@ -704,196 +704,8 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
     }
 }
 
-// MARK: - CustomValueTextField
-
-private protocol CustomValueTextFieldDelegate: AnyObject {
-    func customValueTextFieldStateDidChange(_ textField: CustomValueTextField)
-}
-
-private class CustomValueTextField: UIView {
-    private let placeholderLabel = UILabel()
-    private let symbolLabel = UILabel()
-    private let textField = UITextField()
-    private let stackView = UIStackView()
-
-    weak var delegate: CustomValueTextFieldDelegate?
-
-    @discardableResult
-    override func becomeFirstResponder() -> Bool { textField.becomeFirstResponder() }
-
-    @discardableResult
-    override func resignFirstResponder() -> Bool { textField.resignFirstResponder() }
-
-    override var canBecomeFirstResponder: Bool { textField.canBecomeFirstResponder }
-    override var canResignFirstResponder: Bool { textField.canResignFirstResponder }
-    override var isFirstResponder: Bool { textField.isFirstResponder }
-
-    init() {
-        super.init(frame: .zero)
-        textField.autocorrectionType = .no
-        textField.spellCheckingType = .no
-        textField.keyboardType = .decimalPad
-        textField.textAlignment = .center
-        textField.delegate = self
-
-        symbolLabel.textAlignment = .center
-        placeholderLabel.textAlignment = .center
-
-        stackView.axis = .horizontal
-
-        stackView.addArrangedSubview(placeholderLabel)
-        stackView.addArrangedSubview(textField)
-
-        addSubview(stackView)
-        stackView.autoPinHeightToSuperview()
-        stackView.autoMatch(.width, to: .width, of: self, withMultiplier: 1, relation: .lessThanOrEqual)
-        stackView.autoHCenterInSuperview()
-        stackView.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
-
-        updateVisibility()
-        setCurrencyCode(currencyCode)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    var text: String? {
-        get { textField.text }
-        set {
-            textField.text = newValue
-            updateVisibility()
-        }
-    }
-
-    var decimalNumber: Decimal? {
-        guard
-            let string = valueString(for: text),
-            let result = Decimal(string: string, locale: Locale.current),
-            result.isFinite
-        else {
-            return nil
-        }
-        return result
-    }
-
-    var font: UIFont? {
-        get { textField.font }
-        set {
-            textField.font = newValue
-            placeholderLabel.font = newValue
-            symbolLabel.font = newValue
-        }
-    }
-
-    var textColor: UIColor? {
-        get { textField.textColor }
-        set {
-            textField.textColor = newValue
-            placeholderLabel.textColor = newValue
-            symbolLabel.textColor = newValue
-        }
-    }
-
-    var placeholder: String? {
-        get { placeholderLabel.text }
-        set { placeholderLabel.text = newValue }
-    }
-
-    private lazy var currencyCode = Stripe.defaultCurrencyCode
-
-    func setCurrencyCode(_ currencyCode: Currency.Code) {
-        self.currencyCode = currencyCode
-
-        symbolLabel.removeFromSuperview()
-
-        switch DonationUtilities.Symbol.for(currencyCode: currencyCode) {
-        case .before(let symbol):
-            symbolLabel.text = symbol
-            stackView.insertArrangedSubview(symbolLabel, at: 0)
-        case .after(let symbol):
-            symbolLabel.text = symbol
-            stackView.addArrangedSubview(symbolLabel)
-        case .currencyCode:
-            symbolLabel.text = currencyCode + " "
-            stackView.insertArrangedSubview(symbolLabel, at: 0)
-        }
-    }
-
-    func updateVisibility() {
-        let shouldShowPlaceholder = text.isEmptyOrNil && !isFirstResponder
-        placeholderLabel.isHiddenInStackView = !shouldShowPlaceholder
-        symbolLabel.isHiddenInStackView = shouldShowPlaceholder
-        textField.isHiddenInStackView = shouldShowPlaceholder
-    }
-}
-
-extension CustomValueTextField: UITextFieldDelegate {
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        updateVisibility()
-        delegate?.customValueTextFieldStateDidChange(self)
-    }
-
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        updateVisibility()
-    }
-
-    func textField(_ textField: UITextField, shouldChangeCharactersIn editingRange: NSRange, replacementString: String) -> Bool {
-        let existingString = textField.text ?? ""
-
-        let newString = (existingString as NSString).replacingCharacters(in: editingRange, with: replacementString)
-        if let numberString = self.valueString(for: newString) {
-            textField.text = numberString
-            // Make a best effort to preserve cursor position
-            if let newPosition = textField.position(
-                from: textField.beginningOfDocument,
-                offset: editingRange.location + max(0, numberString.count - existingString.count)
-            ) {
-                textField.selectedTextRange = textField.textRange(from: newPosition, to: newPosition)
-            }
-        } else {
-            textField.text = ""
-        }
-
-        updateVisibility()
-        delegate?.customValueTextFieldStateDidChange(self)
-
-        return false
-    }
-
-    /// Converts an arbitrary string into a string representing a valid value
-    /// for the current currency. If no valid value is represented, returns nil
-    func valueString(for string: String?) -> String? {
-        guard let string = string else { return nil }
-
-        let isZeroDecimalCurrency = Stripe.zeroDecimalCurrencyCodes.contains(currencyCode)
-        guard !isZeroDecimalCurrency else { return string.digitsOnly }
-
-        let decimalSeparator = Locale.current.decimalSeparator ?? "."
-        let components = string.components(separatedBy: decimalSeparator).compactMap { $0.digitsOnly.nilIfEmpty }
-
-        guard let integralString = components.first else {
-            if string.contains(decimalSeparator) {
-                return "0" + decimalSeparator
-            } else {
-                return nil
-            }
-        }
-
-        if let decimalString = components.dropFirst().joined().nilIfEmpty {
-            return integralString + decimalSeparator + decimalString
-        } else if string.starts(with: decimalSeparator) {
-            return "0" + decimalSeparator + integralString
-        } else if string.contains(decimalSeparator) {
-            return integralString + decimalSeparator
-        } else {
-            return integralString
-        }
-    }
-}
-
-extension BoostViewController: CustomValueTextFieldDelegate {
-    fileprivate func customValueTextFieldStateDidChange(_ textField: CustomValueTextField) {
+extension BoostViewController: OneTimeDonationCustomAmountTextFieldDelegate {
+    func oneTimeDonationCustomAmountTextFieldStateDidChange(_ textField: OneTimeDonationCustomAmountTextField) {
         state = .customValueSelected
     }
 }
