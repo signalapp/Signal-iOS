@@ -79,6 +79,9 @@ class MyStoryCell: UITableViewCell {
 
     private var attachmentThumbnailDividerView: UIView?
 
+    private var latestMessageAttachment: StoryThumbnailView.Attachment?
+    private var secondLatestMessageAttachment: StoryThumbnailView.Attachment?
+
     func configure(with model: MyStoryViewModel, addStoryAction: @escaping () -> Void) {
         configureSubtitle(with: model)
 
@@ -96,38 +99,44 @@ class MyStoryCell: UITableViewCell {
             config.usePlaceholderImages()
         }
 
-        attachmentThumbnail.removeAllSubviews()
-        attachmentThumbnailDividerView = nil
+        if self.latestMessageAttachment != model.latestMessageAttachment ||
+            self.secondLatestMessageAttachment != model.secondLatestMessageAttachment {
+            self.latestMessageAttachment = model.latestMessageAttachment
+            self.secondLatestMessageAttachment = model.secondLatestMessageAttachment
 
-        if let latestMessageAttachment = model.latestMessageAttachment {
-            attachmentThumbnail.isHiddenInStackView = false
+            attachmentThumbnail.removeAllSubviews()
+            attachmentThumbnailDividerView = nil
 
-            let latestThumbnailView = StoryThumbnailView(attachment: latestMessageAttachment)
-            attachmentThumbnail.addSubview(latestThumbnailView)
-            latestThumbnailView.autoPinHeightToSuperview()
-            latestThumbnailView.autoSetDimensions(to: CGSize(width: 56, height: 84))
-            latestThumbnailView.autoPinEdge(toSuperviewEdge: .trailing)
+            if let latestMessageAttachment = model.latestMessageAttachment {
+                attachmentThumbnail.isHiddenInStackView = false
 
-            if let secondLatestMessageAttachment = model.secondLatestMessageAttachment {
-                let secondLatestThumbnailView = StoryThumbnailView(attachment: secondLatestMessageAttachment)
-                secondLatestThumbnailView.layer.cornerRadius = 6
-                secondLatestThumbnailView.transform = .init(rotationAngle: (CurrentAppContext().isRTL ? 1 : -1) * 0.18168878)
-                attachmentThumbnail.insertSubview(secondLatestThumbnailView, belowSubview: latestThumbnailView)
-                secondLatestThumbnailView.autoPinEdge(toSuperviewEdge: .top, withInset: 4)
-                secondLatestThumbnailView.autoSetDimensions(to: CGSize(width: 43, height: 64))
-                secondLatestThumbnailView.autoPinEdge(toSuperviewEdge: .leading)
+                let latestThumbnailView = StoryThumbnailView(attachment: latestMessageAttachment)
+                attachmentThumbnail.addSubview(latestThumbnailView)
+                latestThumbnailView.autoPinHeightToSuperview()
+                latestThumbnailView.autoSetDimensions(to: CGSize(width: 56, height: 84))
+                latestThumbnailView.autoPinEdge(toSuperviewEdge: .trailing)
 
-                let dividerView = UIView()
-                dividerView.backgroundColor = backgroundColor
-                dividerView.layer.cornerRadius = 12
-                attachmentThumbnail.insertSubview(dividerView, belowSubview: latestThumbnailView)
-                dividerView.autoSetDimensions(to: CGSize(width: 60, height: 88))
-                dividerView.autoPinEdge(toSuperviewEdge: .trailing, withInset: -2)
-                dividerView.autoPinEdge(toSuperviewEdge: .top, withInset: -2)
-                attachmentThumbnailDividerView = dividerView
+                if let secondLatestMessageAttachment = model.secondLatestMessageAttachment {
+                    let secondLatestThumbnailView = StoryThumbnailView(attachment: secondLatestMessageAttachment)
+                    secondLatestThumbnailView.layer.cornerRadius = 6
+                    secondLatestThumbnailView.transform = .init(rotationAngle: (CurrentAppContext().isRTL ? 1 : -1) * 0.18168878)
+                    attachmentThumbnail.insertSubview(secondLatestThumbnailView, belowSubview: latestThumbnailView)
+                    secondLatestThumbnailView.autoPinEdge(toSuperviewEdge: .top, withInset: 4)
+                    secondLatestThumbnailView.autoSetDimensions(to: CGSize(width: 43, height: 64))
+                    secondLatestThumbnailView.autoPinEdge(toSuperviewEdge: .leading)
+
+                    let dividerView = UIView()
+                    dividerView.backgroundColor = backgroundColor
+                    dividerView.layer.cornerRadius = 12
+                    attachmentThumbnail.insertSubview(dividerView, belowSubview: latestThumbnailView)
+                    dividerView.autoSetDimensions(to: CGSize(width: 60, height: 88))
+                    dividerView.autoPinEdge(toSuperviewEdge: .trailing, withInset: -2)
+                    dividerView.autoPinEdge(toSuperviewEdge: .top, withInset: -2)
+                    attachmentThumbnailDividerView = dividerView
+                }
+            } else {
+                attachmentThumbnail.isHiddenInStackView = true
             }
-        } else {
-            attachmentThumbnail.isHiddenInStackView = true
         }
 
         let selectedBackgroundView = SelectedBackgroundView()

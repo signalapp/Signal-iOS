@@ -6,7 +6,7 @@
 import Foundation
 
 class StoryThumbnailView: UIView {
-    enum Attachment {
+    enum Attachment: Equatable {
         case file(TSAttachment)
         case text(TextAttachment)
         case missing

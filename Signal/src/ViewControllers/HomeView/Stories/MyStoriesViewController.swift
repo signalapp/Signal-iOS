@@ -410,15 +410,20 @@ class SentStoryCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    private var attachment: StoryThumbnailView.Attachment?
+
     fileprivate func configure(
         with item: OutgoingStoryItem,
         contextMenuButtonDelegate: ContextMenuButtonDelegate,
         indexPath: IndexPath
     ) {
-        let thumbnailView = StoryThumbnailView(attachment: item.attachment)
-        attachmentThumbnail.removeAllSubviews()
-        attachmentThumbnail.addSubview(thumbnailView)
-        thumbnailView.autoPinEdgesToSuperviewEdges()
+        if self.attachment != item.attachment {
+            self.attachment = item.attachment
+            let thumbnailView = StoryThumbnailView(attachment: item.attachment)
+            attachmentThumbnail.removeAllSubviews()
+            attachmentThumbnail.addSubview(thumbnailView)
+            thumbnailView.autoPinEdgesToSuperviewEdges()
+        }
 
         titleLabel.textColor = Theme.primaryTextColor
         subtitleLabel.textColor = Theme.isDarkThemeEnabled ? Theme.secondaryTextAndIconColor : .ows_gray45

@@ -451,8 +451,14 @@ open class TextAttachmentView: UIView {
                 if layout == .regular && (imageSize.width < 300 || imageSize.height < 300) {
                     layout = .compact
                 }
-                linkPreview.imageAsync(thumbnailQuality: layout == .regular ? .mediumLarge : .small) { image in
+                let thumbnailQuality: AttachmentThumbnailQuality = layout == .regular ? .mediumLarge : .small
+                if let cacheKey = linkPreview.imageCacheKey(thumbnailQuality: thumbnailQuality),
+                   let image = Self.mediaCache.get(key: cacheKey) as? UIImage {
                     thumbnailImageView.image = image
+                } else {
+                    linkPreview.imageAsync(thumbnailQuality: thumbnailQuality) { image in
+                        thumbnailImageView.image = image
+                    }
                 }
             } else {
                 // Dark placeholder icon on light background if there's no thumbnail associated with the link preview.
@@ -565,6 +571,8 @@ open class TextAttachmentView: UIView {
             formatter.timeStyle = .none
             return formatter
         }()
+
+        fileprivate static let mediaCache = LRUCache<String, NSObject>(maxSize: 32, shouldEvacuateInBackground: true)
     }
 }
 
