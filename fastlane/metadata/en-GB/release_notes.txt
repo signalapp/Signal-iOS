@@ -1,3 +1,1 @@
-• Group calls now notify you by ringing
-• Faster photo picker for iOS 16
-• Other assorted bug fixes to keep your app running smoothly
+• Assorted bug fixes to keep your app running smoothly. Thanks for using Signal!
