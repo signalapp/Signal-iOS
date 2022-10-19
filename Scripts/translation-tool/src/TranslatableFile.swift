@@ -39,7 +39,12 @@ extension TranslatableFile {
 
     private static func fetchLocalLocalizationCodes(in directoryURL: URL, suffix: String) throws -> Set<String> {
         var result = Set<String>()
-        for filename in try FileManager.default.contentsOfDirectory(atPath: directoryURL.path) {
+        for fileURL in try FileManager.default.contentsOfDirectory(at: directoryURL, includingPropertiesForKeys: [.isDirectoryKey]) {
+            let resourceValues = try fileURL.resourceValues(forKeys: [.isDirectoryKey])
+            guard resourceValues.isDirectory == true else {
+                continue
+            }
+            let filename = fileURL.lastPathComponent
             guard filename.hasSuffix(suffix) else {
                 continue
             }
