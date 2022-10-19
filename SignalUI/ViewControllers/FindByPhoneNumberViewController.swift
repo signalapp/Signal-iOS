@@ -182,45 +182,48 @@ public class FindByPhoneNumberViewController: OWSViewController {
         button.setEnabled(hasValidPhoneNumber())
     }
 
-    func possiblePhoneNumbers() -> [PhoneNumber] {
+    func validPhoneNumber() -> String? {
         guard let localNumber = TSAccountManager.localNumber else {
             owsFailDebug("local number unexpectedly nil")
-            return []
+            return nil
         }
-        guard let phoneNumberText = phoneNumberTextField.text else { return [] }
-        let possiblePhoneNumber = callingCode + phoneNumberText
-        return PhoneNumber.tryParsePhoneNumbers(fromUserSpecifiedText: possiblePhoneNumber, clientPhoneNumber: localNumber)
+        guard let userSpecifiedText = phoneNumberTextField.text else {
+            return nil
+        }
+        let possiblePhoneNumbers = PhoneNumber.tryParsePhoneNumbers(
+            fromUserSpecifiedText: callingCode + userSpecifiedText,
+            clientPhoneNumber: localNumber
+        )
+        let possibleValidPhoneNumbers = possiblePhoneNumbers.map { $0.toE164() }.filter { !$0.isEmpty }
+
+        // There should only be one phone number, since we're explicitly specifying
+        // a country code and therefore parsing a number in e164 format.
+        owsAssertDebug(possibleValidPhoneNumbers.count <= 1)
+
+        return possibleValidPhoneNumbers.first
     }
 
     func hasValidPhoneNumber() -> Bool {
-        let phoneNumbers = possiblePhoneNumbers()
-        guard phoneNumbers.count > 0 else {
-            return false
-        }
-
-        // It'd be nice to use [PhoneNumber isValid] but it always returns false for some countries
-        // (like afghanistan) and there doesn't seem to be a good way to determine beforehand
-        // which countries it can validate for without forking libPhoneNumber.
-        return !phoneNumbers[0].toE164().isEmpty
+        // It'd be nice to use [PhoneNumber isValid] but it always returns false
+        // for some countries (like Afghanistan), and there doesn't seem to be a
+        // good way to determine beforehand which countries it can validate without
+        // forking libPhoneNumber. Instead, we consider it valid if we can convert
+        // it to a non-empty e164 (which is the same validation we use when the
+        // user submits the number).
+        return validPhoneNumber() != nil
     }
 
     @objc
     func tryToSelectPhoneNumber() {
-        guard hasValidPhoneNumber() else { return }
-
-        let phoneNumbers = possiblePhoneNumbers()
-        guard phoneNumbers.count > 0 else { return owsFailDebug("unexpectedly found no numbers") }
-
-        // There should only be one phone number, since we're explicitly specifying
-        // a country code and therefore parsing a number in e164 format.
-        assert(phoneNumbers.count == 1)
+        guard let phoneNumber = validPhoneNumber() else {
+            return
+        }
 
         phoneNumberTextField.resignFirstResponder()
 
         if requiresRegisteredNumber {
             ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { [weak self] modal in
-                let discoverySet = Set(phoneNumbers.map { $0.toE164() })
-                let discoveryTask = ContactDiscoveryTask(phoneNumbers: discoverySet)
+                let discoveryTask = ContactDiscoveryTask(phoneNumbers: [phoneNumber])
                 firstly { () -> Promise<Set<SignalRecipient>> in
                     discoveryTask.perform(at: .userInitiated)
 
@@ -248,7 +251,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
                 }
             }
         } else {
-            delegate?.findByPhoneNumber(self, didSelectAddress: SignalServiceAddress(phoneNumber: phoneNumbers[0].toE164()))
+            delegate?.findByPhoneNumber(self, didSelectAddress: SignalServiceAddress(phoneNumber: phoneNumber))
         }
     }
 }
