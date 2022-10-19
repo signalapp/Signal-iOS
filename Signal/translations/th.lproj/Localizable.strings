@@ -115,6 +115,9 @@
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "เกี่ยวกับคำขอส่งข้อความ";
 
+/* Title for the view of all your signal connections */
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "รับสาย";
 
@@ -782,7 +785,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "ผู้ใช้ Signal";
 
 /* The generic name used for group calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "กลุ่ม Signal";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "ถ่ายรูปและส่งรูป";
@@ -2834,7 +2837,7 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "ลบสตอรี่กลุ่ม";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "คุณแน่ใจหรือไม่ว่าต้องการลบ “%1$@”";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "สมาชิกในกลุ่มแชท “%1$@” จะดูและตอบกลับสตอรี่นี้ได้ คุณสามารถอัปเดตการเป็นสมาชิกของแชทนี้ได้ภายในกลุ่ม";
@@ -3800,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "สตอรี่ของฉัน";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "แตะเพื่อเพิ่มสตอรี่";
+"MY_STORY_TAP_TO_ADD" = "Tap to add";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "เพิ่งเปลี่ยนชื่อของเขาจาก %1$@ เป็น %2$@";
@@ -3889,6 +3892,9 @@
 /* Title for error alert indicating that a story name is required. */
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "ไม่พบชื่อสตอรี่";
 
+/* Section footer for the name text field on the 'new private story' creation view */
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "ชื่อสตอรี่ (ต้องระบุ)";
 
@@ -3899,19 +3905,19 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "ผู้ชม";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "สตอรี่ใหม่";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+
+/* Subtitle for create custom story row on the 'new story sheet' */
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+
+/* Title for create custom story row on the 'new story sheet' */
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "แชร์ไปยังกลุ่มที่มีอยู่";
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "สตอรี่กลุ่มใหม่";
-
-/* Subtitle for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "เห็นได้เป็นบางคนเท่านั้น";
-
-/* Title for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "สตอรี่ส่วนตัวใหม่";
 
 /* Title for the new story sheet */
 "NEW_STORY_SHEET_TITLE" = "เลือกประเภทสตอรี่";
@@ -4736,7 +4742,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "เพิ่มผู้ชม";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "ลบสตอรี่ส่วนตัว";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "คุณแน่ใจหรือไม่ว่าต้องการลบ “%1$@” การอัปเดตต่างๆ ที่แชร์ในสตอรี่นี้จะถูกลบด้วยเช่นกัน";
@@ -6061,12 +6067,6 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "อนุญาตให้ iOS เข้าถึงรายชื่อผู้ติดต่อ Signal และแชตสำหรับฟีเจอร์ เช่น การแชร์คำแนะนำและการแจ้งเตือน";
 
-/* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "จัดการและกำหนดผู้ชมของสตอรี่คุณ";
-
-/* Label for the stories section of the settings view */
-"SETTINGS_STORIES_TITLE" = "สตอรี่";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "กุญแจลงทะเบียน";
 
@@ -6286,14 +6286,11 @@
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "บันทึก";
 
-/* Footer for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_FOOTER" = "สตอรี่จะหายไปโดยอัตโนมัติหลังจากครบ 24 ชั่วโมง เลือกได้ว่าจะให้ใครเห็นสตอรี่ของคุณ หรือสร้างสตอรี่ใหม่พร้อมกำหนดผู้ชมหรือกลุ่มเฉพาะ";
+/* Footer for the 'Stories' section of the stories settings */
+"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
 
-/* Header for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_HEADER" = "สตอรี่ของฉัน";
-
-/* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "ความเป็นส่วนตัวของสตอรี่";
+/* Header for the 'Stories' section of the stories settings */
+"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "คุณจะไม่สามารถแชร์หรือดูสตอรี่ได้อีกต่อไป การอัปเดตสตอรี่ที่คุณเพิ่งแชร์จะถูกลบด้วยเช่นกัน";
@@ -6313,6 +6310,12 @@
 /* Button to turn on stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "เปิดใช้งานสตอรี่";
 
+/* Title for the 'view receipts' setting in stories settings */
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+
+/* Footer for the 'view receipts' section of the stories settings */
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "แบ่งปัน";
 
@@ -6328,8 +6331,8 @@
 /* Toast shown when a story is successfuly unhidden */
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "ยกเลิกการซ่อนสตอรี่แล้ว";
 
-/* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "เปิดใช้ตัวเลือกการแจ้งว่าอ่านแล้ว เพื่อแสดงว่าใครดูสตอรี่ของคุณ";
+/* Text explaining that you will not see any views for your story because you have view receipts turned off */
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "รับชม";
@@ -6361,6 +6364,9 @@
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "ความเป็นส่วนตัว";
 
+/* Title for the story privacy settings view */
+"STORY_PRIVACY_TITLE" = "Story Privacy";
+
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "แสดงความรู้สึกต่อสตอรี่ของคุณด้วย %1$@";
 
@@ -6377,7 +6383,7 @@
 "STORY_REPLY_REACTION" = "แสดงความรู้สึกต่อสตอรี่";
 
 /* header text for replying to private story. Embeds {{author name}} */
-"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "ตอบกลับเป็นการส่วนตัวกับ %1$@";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "ตอบกลับ";
@@ -6429,6 +6435,9 @@
 
 /* Header for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>เครือข่าย Signal</bold> คือคนที่คุณเลือกที่จะไว้ใจ ด้วยการ:";
+
+/* Label for the stories section of the settings view */
+"STORY_SETTINGS_TITLE" = "Stories";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "เลือกว่าจะให้เครือข่าย Signal คนไหนเห็นสตอรี่ของคุณบ้าง การเปลี่ยนแปลงจะไม่ส่งผลต่อสตอรี่ที่ส่งไปแล้ว";

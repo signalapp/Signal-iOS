@@ -115,6 +115,9 @@
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "关于消息请求";
 
+/* Title for the view of all your signal connections */
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "接听";
 
@@ -782,7 +785,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal 用户";
 
 /* The generic name used for group calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal 群组";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "拍照并发送";
@@ -2834,7 +2837,7 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "移除群组动态";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "确定要移除“%1$@”吗？";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "“%1$@”群组聊天的成员可以浏览和回复此动态。您可以更新此群组聊天的成员资格。";
@@ -3800,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "我的动态";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "点击添加动态";
+"MY_STORY_TAP_TO_ADD" = "Tap to add";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "他们的个人资料名字最近从 %1$@ 更改为 %2$@。";
@@ -3889,6 +3892,9 @@
 /* Title for error alert indicating that a story name is required. */
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "未填写动态名称";
 
+/* Section footer for the name text field on the 'new private story' creation view */
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "动态名称（必填）";
 
@@ -3899,19 +3905,19 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "访客";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "新动态";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+
+/* Subtitle for create custom story row on the 'new story sheet' */
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+
+/* Title for create custom story row on the 'new story sheet' */
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "分享给一个现有群组";
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "新群组动态";
-
-/* Subtitle for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "仅对特定用户可见";
-
-/* Title for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "新私密动态";
 
 /* Title for the new story sheet */
 "NEW_STORY_SHEET_TITLE" = "选择动态类型";
@@ -4736,7 +4742,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "添加访客";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "删除私密动态";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "您确定要删除“%1$@”吗？分享到此动态的更新也将会被删除。";
@@ -6061,12 +6067,6 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "允许 iOS 访问 Signal 联系人和聊天以便使用分享建议和通知等功能。";
 
-/* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "管理您的动态和可见对象。";
-
-/* Label for the stories section of the settings view */
-"SETTINGS_STORIES_TITLE" = "动态";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "注册锁定";
 
@@ -6286,14 +6286,11 @@
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "保存";
 
-/* Footer for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_FOOTER" = "动态将会在 24 小时后自动消失。请选择谁可以查看您的动态，或创建对特定访客或群组可见的新动态。";
+/* Footer for the 'Stories' section of the stories settings */
+"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
 
-/* Header for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_HEADER" = "我的动态";
-
-/* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "动态隐私";
+/* Header for the 'Stories' section of the stories settings */
+"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "您将无法再分享或浏览动态。您最近发布的动态更新也将会被删除。";
@@ -6313,6 +6310,12 @@
 /* Button to turn on stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "开启动态";
 
+/* Title for the 'view receipts' setting in stories settings */
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+
+/* Footer for the 'view receipts' section of the stories settings */
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "分享";
 
@@ -6328,8 +6331,8 @@
 /* Toast shown when a story is successfuly unhidden */
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "已取消隐藏动态";
 
-/* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "启用已读回执功能，看看谁浏览了您的动态。";
+/* Text explaining that you will not see any views for your story because you have view receipts turned off */
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "浏览";
@@ -6361,6 +6364,9 @@
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "隐私";
 
+/* Title for the story privacy settings view */
+"STORY_PRIVACY_TITLE" = "Story Privacy";
+
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "用 %1$@ 回应了您的动态";
 
@@ -6377,7 +6383,7 @@
 "STORY_REPLY_REACTION" = "动态有回应";
 
 /* header text for replying to private story. Embeds {{author name}} */
-"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "给%1$@私密回复";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "回复";
@@ -6429,6 +6435,9 @@
 
 /* Header for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal 密友</bold>是您选择信任的人，选择方式有：";
+
+/* Label for the stories section of the settings view */
+"STORY_SETTINGS_TITLE" = "Stories";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "选择哪些 Signal 密友可以查看您的动态。此更改不会影响您已发送的动态。";

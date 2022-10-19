@@ -468,13 +468,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Частная история · %1$d зритель</string>
+			<string>Custom Story · 1 Viewer</string>
 			<key>few</key>
-			<string>Частная история · %1$d зрителя</string>
+			<string>Custom Story · %1$d Viewers</string>
 			<key>many</key>
-			<string>Частная история · %1$d зрителей</string>
+			<string>Custom Story · %1$d Viewers</string>
 			<key>other</key>
-			<string>Частная история · %1$d зрителя</string>
+			<string>Custom Story · %1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -1155,6 +1155,26 @@
 			<string>Вы заблокировали %1$d участников этой группы</string>
 			<key>other</key>
 			<string>Вы заблокировали %1$d участника этой группы</string>
+		</dict>
+	</dict>
+	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Viewer</string>
+			<key>few</key>
+			<string>%1$d Viewers</string>
+			<key>many</key>
+			<string>%1$d Viewers</string>
+			<key>other</key>
+			<string>%1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>

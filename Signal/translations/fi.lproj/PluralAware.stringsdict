@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Yksityinen tarina · %1$d katsoja</string>
+			<string>Custom Story · 1 Viewer</string>
 			<key>other</key>
-			<string>Yksityinen tarina · %1$d katsojaa</string>
+			<string>Custom Story · %1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -923,6 +923,22 @@
 			<string>Estit 1 jäsenen tässä ryhmässä</string>
 			<key>other</key>
 			<string>Estit %1$d jäsentä tässä ryhmässä</string>
+		</dict>
+	</dict>
+	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Viewer</string>
+			<key>other</key>
+			<string>%1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>

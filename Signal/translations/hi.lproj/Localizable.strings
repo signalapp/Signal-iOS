@@ -115,6 +115,9 @@
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "संदेश अनुरोधों के बारे में";
 
+/* Title for the view of all your signal connections */
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "उत्तर";
 
@@ -782,7 +785,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal उपभोगकर्ता";
 
 /* The generic name used for group calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal समूह \n";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "एक तस्वीर लें औेर भेजें";
@@ -2834,7 +2837,7 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "ग्रुप स्टोरी हटाएँ";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "क्या आप वाकई \"%1$@\" को हटाना चाहते/चाहती हैं?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "\"%1$@\" ग्रुप चैट के सदस्य इस स्टोरी को देख सकते हैं और इसका जवाब दे सकते हैं। आप ग्रुप में इस चैट के लिए सदस्यता को अपडेट कर सकते हैं।";
@@ -3800,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "मेरी स्टोरी";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "कोई स्टोरी जोड़ने के लिए टैप करें";
+"MY_STORY_TAP_TO_ADD" = "Tap to add";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "हाल ही में अपना प्रोफ़ाइल नाम %1$@ से बदलकर %2$@ कर दिया।";
@@ -3889,6 +3892,9 @@
 /* Title for error alert indicating that a story name is required. */
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "स्टोरी नाम नहीं है";
 
+/* Section footer for the name text field on the 'new private story' creation view */
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "स्टोरी नाम (आवश्यक)";
 
@@ -3899,19 +3905,19 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "व्यूअर";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "नई स्टोरी";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+
+/* Subtitle for create custom story row on the 'new story sheet' */
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+
+/* Title for create custom story row on the 'new story sheet' */
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "पहले से मौजूद किसी ग्रुप में शेयर करें";
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "नई ग्रुप स्टोरी";
-
-/* Subtitle for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "केवल निश्चित लोगों को दिखेगी";
-
-/* Title for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "नई निजी स्टोरी";
 
 /* Title for the new story sheet */
 "NEW_STORY_SHEET_TITLE" = "स्टोरी का प्रकार चुनें";
@@ -4736,7 +4742,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "व्यूअर जोड़ें";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "निजी स्टोरी डिलीट करें";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "क्या आप वाकई में \"%1$@\" को डिलीट करना चाहते हैं? इस स्टोरी पर शेयर किए गए अपडेट भी डिलीट कर दिए जाएंगे।";
@@ -6061,12 +6067,6 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "सुझाव और नोटिफ़िकेशन को शेयर करने जैसे फ़ीचर के लिए iOS को Signal के कॉन्टैक्ट और चैट के एक्सेस की अनुमति दें.";
 
-/* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "अपनी स्टोरीज़ को मैनेज करें और यह कि उन्हें कौन देख सकता है।";
-
-/* Label for the stories section of the settings view */
-"SETTINGS_STORIES_TITLE" = "स्टोरीज़";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "पंजीकरण लॉक";
 
@@ -6286,14 +6286,11 @@
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "सेव करें";
 
-/* Footer for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_FOOTER" = "24 घंटे बाद स्टोरीज़ अपने आप गायब हो जाती हैं। चुनें कि आपकी स्टोरी कौन देख सकता है या फिर निश्चित व्यूअर्स या ग्रुप्स के साथ नई स्टोरीज़ बनाएँ।";
+/* Footer for the 'Stories' section of the stories settings */
+"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
 
-/* Header for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_HEADER" = "मेरी स्टोरीज़";
-
-/* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "स्टोरी की निजता";
+/* Header for the 'Stories' section of the stories settings */
+"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "अब आप स्टोरीज़ न तो शेयर कर पाएंगे, न ही उन्हें देख पाएंगे। हाल ही में आपका द्वारा शेयर किए गए स्टोरी अपडेट भी डिलीट कर दिए जाएंगे।";
@@ -6313,6 +6310,12 @@
 /* Button to turn on stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "स्टोरीज़ चालू करें";
 
+/* Title for the 'view receipts' setting in stories settings */
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+
+/* Footer for the 'view receipts' section of the stories settings */
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "साझा करें";
 
@@ -6328,8 +6331,8 @@
 /* Toast shown when a story is successfuly unhidden */
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "छिपी हुई स्टोरी वापस लाई गई";
 
-/* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "आपकी स्टोरीज़ किसने देखी हैं यह देखने के लिए प्राप्ति सूचनाएँ सक्षम करें।";
+/* Text explaining that you will not see any views for your story because you have view receipts turned off */
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "व्यू";
@@ -6361,6 +6364,9 @@
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "गोपनियता";
 
+/* Title for the story privacy settings view */
+"STORY_PRIVACY_TITLE" = "Story Privacy";
+
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "आपकी स्टोरी पर %1$@ प्रतिक्रिया दी";
 
@@ -6377,7 +6383,7 @@
 "STORY_REPLY_REACTION" = "स्टोरी पर प्रतिक्रिया दी";
 
 /* header text for replying to private story. Embeds {{author name}} */
-"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "%1$@ को निजी रूप से जवाब";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "उत्तर";
@@ -6429,6 +6435,9 @@
 
 /* Header for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal कनेक्शन</bold> निम्नलिखित द्वारा आपके भरोसे के लोग होते हैं :";
+
+/* Label for the stories section of the settings view */
+"STORY_SETTINGS_TITLE" = "Stories";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "चुनें कि आपकी स्टोरी कौन-से Signal कनेक्शन देख सकते हैं। आपके द्वारा पहले ही भेजी जा चुकी स्टोरीज़ पर कोई असर नहीं पड़ेगा।";

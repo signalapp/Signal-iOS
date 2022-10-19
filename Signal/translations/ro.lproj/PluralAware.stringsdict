@@ -422,11 +422,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Poveste privată · 1 spectator</string>
+			<string>Custom Story · 1 Viewer</string>
 			<key>few</key>
-			<string>Poveste privată · %1$d spectatori</string>
+			<string>Custom Story · %1$d Viewers</string>
 			<key>other</key>
-			<string>Poveste privată · %1$d de spectatori</string>
+			<string>Custom Story · %1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -1039,6 +1039,24 @@
 			<string>Ai blocat %1$d membri ai acestui grup</string>
 			<key>other</key>
 			<string>Ai blocat %1$d de membri ai acestui grup</string>
+		</dict>
+	</dict>
+	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Viewer</string>
+			<key>few</key>
+			<string>%1$d Viewers</string>
+			<key>other</key>
+			<string>%1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>

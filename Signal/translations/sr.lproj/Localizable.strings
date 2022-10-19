@@ -115,6 +115,9 @@
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "O захтевима за разговор";
 
+/* Title for the view of all your signal connections */
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Јави се";
 
@@ -782,7 +785,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal корисник";
 
 /* The generic name used for group calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal група";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Фотографиши и пошаљи";
@@ -2834,7 +2837,7 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Уклони групну причу";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Желите ли сигурно да уклоните групу „%1$@“?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Чланови групе „%1$@“ могу да виде ову причу и одговоре на њу. Можете да измените чланове овог ћаскања у групи.";
@@ -3800,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "Моја прича";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Dodirnite da dodate priču";
+"MY_STORY_TAP_TO_ADD" = "Tap to add";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Недавно су променили име профила од %1$@ на %2$@.";
@@ -3889,6 +3892,9 @@
 /* Title for error alert indicating that a story name is required. */
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Nedostaje naziv priče";
 
+/* Section footer for the name text field on the 'new private story' creation view */
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Naziv priče (obavezno)";
 
@@ -3899,19 +3905,19 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Gledaoci";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Нова прича";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+
+/* Subtitle for create custom story row on the 'new story sheet' */
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+
+/* Title for create custom story row on the 'new story sheet' */
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Делити са целом групом";
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Nova grupna priča";
-
-/* Subtitle for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "Видљиво само одређеним људима";
-
-/* Title for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "Nova privatna priča";
 
 /* Title for the new story sheet */
 "NEW_STORY_SHEET_TITLE" = "Izaberite tip priče";
@@ -4736,7 +4742,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Dodajte gledaoce";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Izbriši privatnu priču";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Желите ли сигурно да избришете причу „%1$@“? Све што сте поделили у овој причи такође ће бити избрисано.";
@@ -6061,12 +6067,6 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Дозволи iOS да приступи контактима Signal-а и разговора за функције као што су предлоге за дељење и нотификације.";
 
-/* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
-
-/* Label for the stories section of the settings view */
-"SETTINGS_STORIES_TITLE" = "Приче";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Закључавање регистрације";
 
@@ -6286,14 +6286,11 @@
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "Сачувај";
 
-/* Footer for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Priče automatski nestaju nakon 24 sata. Odaberite ko može da vidi vašu priču ili da kreira nove priče sa određenim gledaocima ili grupama.";
+/* Footer for the 'Stories' section of the stories settings */
+"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
 
-/* Header for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_HEADER" = "Моје приче";
-
-/* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Privatnost priča";
+/* Header for the 'Stories' section of the stories settings */
+"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Више нећете моћи да делите или видите приче. Све што сте недавно поделили у причама ће такође бити избрисано.";
@@ -6313,6 +6310,12 @@
 /* Button to turn on stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
 
+/* Title for the 'view receipts' setting in stories settings */
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+
+/* Footer for the 'view receipts' section of the stories settings */
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Поделите";
 
@@ -6328,8 +6331,8 @@
 /* Toast shown when a story is successfuly unhidden */
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Priča je ponovo prikazana";
 
-/* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
+/* Text explaining that you will not see any views for your story because you have view receipts turned off */
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Прегледа";
@@ -6361,6 +6364,9 @@
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "Приватност";
 
+/* Title for the story privacy settings view */
+"STORY_PRIVACY_TITLE" = "Story Privacy";
+
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
 
@@ -6377,7 +6383,7 @@
 "STORY_REPLY_REACTION" = "Реаговано на причу";
 
 /* header text for replying to private story. Embeds {{author name}} */
-"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Пошаљите приватан одговор кориснику (%1$@)";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Одговори";
@@ -6429,6 +6435,9 @@
 
 /* Header for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal везе</bold> су људи којима верујете и које сте одабрали на неки од следећих начина:";
+
+/* Label for the stories section of the settings view */
+"STORY_SETTINGS_TITLE" = "Stories";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";

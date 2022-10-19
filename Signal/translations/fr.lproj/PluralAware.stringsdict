@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Story privée · 1 spectateur</string>
+			<string>Custom Story · 1 Viewer</string>
 			<key>other</key>
-			<string>Story privée · %1$d spectateurs</string>
+			<string>Custom Story · %1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -925,6 +925,22 @@
 			<string>Vous avez bloqué %1$d membres de ce groupe</string>
 		</dict>
 	</dict>
+	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Viewer</string>
+			<key>other</key>
+			<string>%1$d Viewers</string>
+		</dict>
+	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -952,9 +968,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 spectateur</string>
+			<string>1  spectateur</string>
 			<key>other</key>
-			<string>%1$dspectateurs</string>
+			<string>%1$d spectateurs</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>

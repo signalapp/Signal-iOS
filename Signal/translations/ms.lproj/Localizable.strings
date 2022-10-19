@@ -115,6 +115,9 @@
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Mengenai Permintaan Mesej";
 
+/* Title for the view of all your signal connections */
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Jawab";
 
@@ -782,7 +785,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Pengguna Signal";
 
 /* The generic name used for group calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal Group";
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Kumpulan Signal";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Ambil gambar dan kemudian hantar";
@@ -2834,7 +2837,7 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Alih Keluar Cerita Kumpulan";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to remove “%1$@”?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Adakah anda pasti mahu mengalih keluar \"%1$@\"?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Ahli kumpulan \"%1$@\" boleh menonton dan membalas cerita ini. Anda boleh kemas kini keahlian untuk sembang ini dalam kumpulan.";
@@ -3800,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "Cerita Saya";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Ketik untuk tambah cerita";
+"MY_STORY_TAP_TO_ADD" = "Tap to add";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Baru-baru ini mengubah nama profil mereka daripada %1$@ kepada %2$@.";
@@ -3889,6 +3892,9 @@
 /* Title for error alert indicating that a story name is required. */
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Tiada Nama Cerita";
 
+/* Section footer for the name text field on the 'new private story' creation view */
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Nama Cerita (Diperlukan)";
 
@@ -3899,19 +3905,19 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Penonton";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Cerita Baru";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+
+/* Subtitle for create custom story row on the 'new story sheet' */
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+
+/* Title for create custom story row on the 'new story sheet' */
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Kongsi ke kumpulan yang wujud";
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Cerita Kumpulan Baru";
-
-/* Subtitle for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "Kelihatan hanya kepada orang tertentu";
-
-/* Title for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "Cerita Peribadi Baru";
 
 /* Title for the new story sheet */
 "NEW_STORY_SHEET_TITLE" = "Pilih Jenis Cerita";
@@ -4736,7 +4742,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Tambah Penonton";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Padam Cerita Peribadi";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Adakah anda pasti mahu memadam \"%1$@\"? Kemas kini yang dikongsi pada cerita ini juga akan dipadam.";
@@ -6061,12 +6067,6 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Benarkan iOS mengakses ke senarai kenalan dan perbualan Signal untuk memperolehi ciri-ciri seperti perkongsian cadangan dan notifikasi.";
 
-/* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "Urus cerita anda dan siapa yang boleh menontonnya.";
-
-/* Label for the stories section of the settings view */
-"SETTINGS_STORIES_TITLE" = "Cerita";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Kunci Pendaftaran";
 
@@ -6286,14 +6286,11 @@
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "Simpan";
 
-/* Footer for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Cerita akan hilang secara automatik selepas 24 jam. Pilih siapa yang boleh melihat cerita anda atau mencipta cerita baru dengan penonton atau kumpulan tertentu.";
+/* Footer for the 'Stories' section of the stories settings */
+"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
 
-/* Header for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_HEADER" = "Cerita Saya";
-
-/* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Privasi Cerita";
+/* Header for the 'Stories' section of the stories settings */
+"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Anda tidak lagi boleh berkongsi atau menonton cerita. Cerita yang anda hantar baru-baru ini juga akan dipadam.";
@@ -6313,6 +6310,12 @@
 /* Button to turn on stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Hidupkan Cerita";
 
+/* Title for the 'view receipts' setting in stories settings */
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+
+/* Footer for the 'view receipts' section of the stories settings */
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Kongsi";
 
@@ -6328,8 +6331,8 @@
 /* Toast shown when a story is successfuly unhidden */
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Cerita Dinyahsembunyikan";
 
-/* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Dayakan resit baca untuk lihat siapa yang telah menonton cerita anda.";
+/* Text explaining that you will not see any views for your story because you have view receipts turned off */
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Tontonan";
@@ -6361,6 +6364,9 @@
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "Privasi";
 
+/* Title for the story privacy settings view */
+"STORY_PRIVACY_TITLE" = "Story Privacy";
+
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Menghantar reaksi %1$@ kepada cerita anda";
 
@@ -6377,7 +6383,7 @@
 "STORY_REPLY_REACTION" = "Telah menghantar reaksi kepada cerita";
 
 /* header text for replying to private story. Embeds {{author name}} */
-"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Balas secara peribadi kepada %1$@";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Balas";
@@ -6429,6 +6435,9 @@
 
 /* Header for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<strong>Hubungan Signal</strong> ialah orang yang anda pilih untuk dipercayai, sama ada dengan:";
+
+/* Label for the stories section of the settings view */
+"STORY_SETTINGS_TITLE" = "Stories";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Pilih Hubungan Signal yang boleh menonton cerita anda. Perubahan tidak akan menjejaskan cerita yang telah anda hantar.";

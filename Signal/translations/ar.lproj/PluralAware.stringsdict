@@ -560,17 +560,17 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>قصة خاصة · %1$d مشاهدين</string>
+			<string>Custom Story · %1$d Viewers</string>
 			<key>one</key>
-			<string>قصة خاصة · مشاهد واحد</string>
+			<string>Custom Story · 1 Viewer</string>
 			<key>two</key>
-			<string>قصة خاصة · %1$d مشاهدين</string>
+			<string>Custom Story · %1$d Viewers</string>
 			<key>few</key>
-			<string>قصة خاصة · %1$d مشاهدين</string>
+			<string>Custom Story · %1$d Viewers</string>
 			<key>many</key>
-			<string>قصة خاصة · %1$d مشاهدًا</string>
+			<string>Custom Story · %1$d Viewers</string>
 			<key>other</key>
-			<string>قِصة خاصة · %1$d مشاهد</string>
+			<string>Custom Story · %1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -1387,6 +1387,30 @@
 			<string>قمت بحظر %1$d عضوا من هذه المجموعة</string>
 			<key>other</key>
 			<string>قمت بحظر %1$d عضو من هذه المجموعة</string>
+		</dict>
+	</dict>
+	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>zero</key>
+			<string>%1$d Viewers</string>
+			<key>one</key>
+			<string>1 Viewer</string>
+			<key>two</key>
+			<string>%1$d Viewers</string>
+			<key>few</key>
+			<string>%1$d Viewers</string>
+			<key>many</key>
+			<string>%1$d Viewers</string>
+			<key>other</key>
+			<string>%1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
