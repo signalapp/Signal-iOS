@@ -71,7 +71,7 @@ public final class FullConversationCell: UITableViewCell {
                 .withRenderingMode(.alwaysTemplate)
         )
         result.clipsToBounds = true
-        result.themeTintColor = .textPrimary
+        result.themeTintColor = .textSecondary
         result.contentMode = .scaleAspectFit
         result.set(.width, to: FullConversationCell.unreadCountViewSize)
         result.set(.height, to: FullConversationCell.unreadCountViewSize)
