@@ -14,13 +14,14 @@ public class DonationReadMoreSheetViewController: InteractiveSheetViewController
     override public func viewDidLoad() {
         super.viewDidLoad()
 
-        minimizedHeight = 740
-        super.allowsExpansion = false
+        minimizedHeight = 600
+        super.allowsExpansion = true
 
         contentView.addSubview(contentScrollView)
 
         stackView.axis = .vertical
         stackView.layoutMargins = UIEdgeInsets(hMargin: 24, vMargin: 24)
+        stackView.spacing = 32
         stackView.isLayoutMarginsRelativeArrangement = true
         contentScrollView.addSubview(stackView)
         stackView.autoPinHeightToSuperview()
@@ -34,60 +35,48 @@ public class DonationReadMoreSheetViewController: InteractiveSheetViewController
     }
 
     private func buildContents() {
-
-        // Header image
         let image = UIImage(named: "sustainer-heart")
         let imageView = UIImageView(image: image)
         imageView.contentMode = .scaleAspectFit
         stackView.addArrangedSubview(imageView)
-        stackView.setCustomSpacing(12, after: imageView)
 
-        // Header label
         let titleLabel = UILabel()
-        titleLabel.textAlignment = .natural
+        titleLabel.textAlignment = .center
         titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
         titleLabel.text = NSLocalizedString(
-            "SUSTAINER_READ_MORE_TITLE",
-            comment: "Title for the signal sustainer read more view"
+            "DONATION_READ_MORE_SCREEN_TITLE",
+            value: "Signal is different.",
+            comment: "There is a screen where users can read more about their donation to Signal. This is the title of that screen."
         )
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         stackView.addArrangedSubview(titleLabel)
-        stackView.setCustomSpacing(12, after: titleLabel)
 
-        let firstDescriptionBlock = UILabel()
-        firstDescriptionBlock.textAlignment = .natural
-        firstDescriptionBlock.font = .ows_dynamicTypeBody
-        firstDescriptionBlock.text = NSLocalizedString(
-            "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE",
-            comment: "First block of description text in read more sheet"
-        )
-        firstDescriptionBlock.numberOfLines = 0
-        firstDescriptionBlock.lineBreakMode = .byWordWrapping
-        stackView.addArrangedSubview(firstDescriptionBlock)
-        stackView.setCustomSpacing(32, after: firstDescriptionBlock)
-
-        let titleLabel2 = UILabel()
-        titleLabel2.textAlignment = .natural
-        titleLabel2.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
-        titleLabel2.text = NSLocalizedString(
-            "SUSTAINER_READ_MORE_WHY_CONTRIBUTE",
-            comment: "Why Contribute title for the signal sustainer read more view"
-        )
-        titleLabel2.numberOfLines = 0
-        titleLabel2.lineBreakMode = .byWordWrapping
-        stackView.addArrangedSubview(titleLabel2)
-        stackView.setCustomSpacing(12, after: titleLabel2)
-
-        let secondDescriptionBlock = UILabel()
-        secondDescriptionBlock.textAlignment = .natural
-        secondDescriptionBlock.font = .ows_dynamicTypeBody
-        secondDescriptionBlock.text = NSLocalizedString(
-            "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO",
-            comment: "Second block of description text in read more sheet"
-        )
-        secondDescriptionBlock.numberOfLines = 0
-        secondDescriptionBlock.lineBreakMode = .byWordWrapping
-        stackView.addArrangedSubview(secondDescriptionBlock)
+        let paragraphs: [String] = [
+            NSLocalizedString(
+                "DONATION_READ_MORE_SCREEN_PARAGRAPH_1",
+                value: "Private messaging. No ads, no trackers, no surveillance.",
+                comment: "There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen."
+            ),
+            NSLocalizedString(
+                "DONATION_READ_MORE_SCREEN_PARAGRAPH_2",
+                value: "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.",
+                comment: "There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen."
+            ),
+            NSLocalizedString(
+                "DONATION_READ_MORE_SCREEN_PARAGRAPH_3",
+                value: "If you can, please donate today to keep Signal fun, dependable, and available for everyone.",
+                comment: "There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen."
+            )
+        ]
+        for paragraph in paragraphs {
+            let paragraphLabel = UILabel()
+            paragraphLabel.text = paragraph
+            paragraphLabel.textAlignment = .natural
+            paragraphLabel.font = .ows_dynamicTypeBody
+            paragraphLabel.numberOfLines = 0
+            paragraphLabel.lineBreakMode = .byWordWrapping
+            stackView.addArrangedSubview(paragraphLabel)
+        }
     }
 }

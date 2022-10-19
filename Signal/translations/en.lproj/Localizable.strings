@@ -1831,6 +1831,18 @@
 /* Donation payment error for decline failures where the payment cannot be authorized. */
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
 
+/* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "If you can, please donate today to keep Signal fun, dependable, and available for everyone.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal is different.";
+
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Amount";
 
@@ -6525,18 +6537,6 @@
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Loading";
-
-/* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly donation and receive a profile badge to share your support.";
-
-/* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
-
-/* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you—not for your data—by joining the community that sustains it.";
-
-/* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Why Donate?";
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
