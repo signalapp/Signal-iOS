@@ -34,11 +34,6 @@ public class AccountManager: NSObject {
 
     // MARK: registration
 
-    @objc
-    func requestRegistrationVerificationObjC(e164: String, captchaToken: String?, isSMS: Bool) -> AnyPromise {
-        return AnyPromise(requestRegistrationVerification(e164: e164, captchaToken: captchaToken, isSMS: isSMS))
-    }
-
     func requestRegistrationVerification(e164: String, captchaToken: String?, isSMS: Bool) -> Promise<Void> {
         requestAccountVerification(e164: e164,
                                    captchaToken: captchaToken,
