@@ -44,6 +44,8 @@ class HiddenStoryHeaderCell: UITableViewCell {
 
     func configure(isCollapsed: Bool, animated: Bool = true) {
 
+        self.backgroundColor = .clear
+
         label.textColor = Theme.primaryTextColor
         iconView.tintColor = Theme.primaryIconColor
 
