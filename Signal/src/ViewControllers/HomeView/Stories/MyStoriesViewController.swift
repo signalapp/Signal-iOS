@@ -196,6 +196,7 @@ extension MyStoriesViewController: UITableViewDelegate {
                     return self?.tableView(tableView, cellForRowAt: indexPath)
                 },
                 hideSaveAction: true,
+                onlyRenderMyStories: true,
                 transaction: transaction
             )
         }
@@ -284,6 +285,7 @@ extension MyStoriesViewController: ContextMenuButtonDelegate {
                     return self?.tableView.dequeueReusableCell(withIdentifier: SentStoryCell.reuseIdentifier, for: indexPath)
                 },
                 hideSaveAction: true,
+                onlyRenderMyStories: true,
                 transaction: transaction
             )
         }
