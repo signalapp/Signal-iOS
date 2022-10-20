@@ -776,6 +776,7 @@
 		66586D3729005A1B00DDA9B9 /* story_viewer_onboarding_2.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3429005A1B00DDA9B9 /* story_viewer_onboarding_2.json */; };
 		66586D3829005A1B00DDA9B9 /* story_viewer_onboarding_1.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3529005A1B00DDA9B9 /* story_viewer_onboarding_1.json */; };
 		66586D3929005A1B00DDA9B9 /* story_viewer_onboarding_3.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3629005A1B00DDA9B9 /* story_viewer_onboarding_3.json */; };
+		66586D4129009C0000DDA9B9 /* TextAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66586D4029009C0000DDA9B9 /* TextAttachment.swift */; };
 		667E90D028E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667E90CF28E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift */; };
 		667EDE6428F8D6B7001FB487 /* YYAnimatedImage+Duration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */; };
 		667EDE6628FA0372001FB487 /* StoryBadgeCountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667EDE6528FA0372001FB487 /* StoryBadgeCountManager.swift */; };
@@ -3034,6 +3035,7 @@
 		66586D3429005A1B00DDA9B9 /* story_viewer_onboarding_2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = story_viewer_onboarding_2.json; sourceTree = "<group>"; };
 		66586D3529005A1B00DDA9B9 /* story_viewer_onboarding_1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = story_viewer_onboarding_1.json; sourceTree = "<group>"; };
 		66586D3629005A1B00DDA9B9 /* story_viewer_onboarding_3.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = story_viewer_onboarding_3.json; sourceTree = "<group>"; };
+		66586D4029009C0000DDA9B9 /* TextAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAttachment.swift; sourceTree = "<group>"; };
 		667E90CF28E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyStorySettingsLearnMoreSheetViewController.swift; sourceTree = "<group>"; };
 		667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "YYAnimatedImage+Duration.swift"; sourceTree = "<group>"; };
 		667EDE6528FA0372001FB487 /* StoryBadgeCountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryBadgeCountManager.swift; sourceTree = "<group>"; };
@@ -7640,6 +7642,7 @@
 				F9C5C9E1289453B100548EEE /* SignalRecipient.swift */,
 				F9C5C9FA289453B100548EEE /* SignalRecipientFinder.swift */,
 				F9C5C9FC289453B100548EEE /* SignalServiceAddress.swift */,
+				66586D4029009C0000DDA9B9 /* TextAttachment.swift */,
 				F9C5C9F2289453B100548EEE /* ThreadAssociatedData.swift */,
 				45161BA828A2E54B0055AB45 /* ThreadReplyInfo.swift */,
 				F9C5C9FD289453B100548EEE /* TSGroupMember.swift */,
@@ -11040,6 +11043,7 @@
 				F9C5CDCE289453B400548EEE /* TestModel+SDS.swift in Sources */,
 				F9C5CE22289453B400548EEE /* TestModel.m in Sources */,
 				F9C5CE5C289453B400548EEE /* TestProtocolRunner.swift in Sources */,
+				66586D4129009C0000DDA9B9 /* TextAttachment.swift in Sources */,
 				F9C5CCD8289453B300548EEE /* ThreadAssociatedData.swift in Sources */,
 				F9C5CDE2289453B400548EEE /* ThreadBacked.swift in Sources */,
 				F9C5CD17289453B300548EEE /* ThreadFinder.swift in Sources */,

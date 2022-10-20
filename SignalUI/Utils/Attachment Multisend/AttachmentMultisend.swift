@@ -23,6 +23,10 @@ public class AttachmentMultisend: Dependencies {
             )
         }.map(on: ThreadUtil.enqueueSendQueue) { (preparedSend: PreparedMediaMultisend) -> [TSThread] in
             self.databaseStorage.write { transaction in
+                // This will upload the TSAttachments whose IDs are the keys of attachmentIdMap
+                // and propagate their upload state to each of the TSAttachment unique IDs in the values.
+                // Each outgoing destination gets its own TSAttachment per attached media, but we upload only one,
+                // and propagate its upload state to each of these independent clones.
                 self.broadcastMediaMessageJobQueue.add(
                     attachmentIdMap: preparedSend.attachmentIdMap,
                     unsavedMessagesToSend: preparedSend.unsavedMessages,
@@ -205,7 +209,9 @@ public class AttachmentMultisend: Dependencies {
                     }
                     return .init(thread: thread, content: .media(attachments))
                 }
-
+                // This will create TSAttachments for each destination, but will not actually upload anything.
+                // It will map the UUIDs we created above for each attachment we want to upload to the unique ids
+                // of each created TSAttachment in state.correspondingAttachmentIds.
                 try wrapper.type.prepareForMultisending(destinations: destinations, state: state, transaction: transaction)
             }
 
@@ -218,6 +224,9 @@ public class AttachmentMultisend: Dependencies {
                     let attachmentToUpload = try attachmentInfo.value.asStreamConsumingDataSource(withIsVoiceMessage: false)
                     attachmentToUpload.anyInsert(transaction: transaction)
 
+                    // Finally we map the unique ID of each TSAttachment we intend to upload to the unique IDs of
+                    // all the independent TSAttachments we created for each destination. This lets us upload only
+                    // the one attachment (the one whose id is the key below) instead of uploading once per destination.
                     state.attachmentIdMap[attachmentToUpload.uniqueId] = state.correspondingAttachmentIds[attachmentInfo.id]
                 } catch {
                     owsFailDebug("error: \(error)")
@@ -236,46 +245,80 @@ public class AttachmentMultisend: Dependencies {
 public extension AttachmentMultisend {
 
     class func sendTextAttachment(
-        _ textAttachment: TextAttachment,
+        _ textAttachment: UnsentTextAttachment,
         to conversations: [ConversationItem]
     ) -> Promise<[TSThread]> {
         return firstly(on: ThreadUtil.enqueueSendQueue) {
             let preparedSend = try self.prepareForSending(conversations: conversations, textAttachment: textAttachment)
             self.databaseStorage.write { transaction in
-                for message in preparedSend.messages {
-                    self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
-                }
+                // This will upload the TSAttachment at the key of attachmentIdMap (just one, you can
+                // only send one text attachment at a time) and propagate its upload state to each of the
+                // TSAttachment unique IDs in the value (an array). Each outgoing destination gets its own
+                // TSAttachment, but we upload only one, and propagate its upload state to each of them.
+                self.broadcastMediaMessageJobQueue.add(
+                    attachmentIdMap: preparedSend.attachmentIdMap,
+                    unsavedMessagesToSend: preparedSend.messages,
+                    transaction: transaction
+                )
             }
             return preparedSend.threads
         }
     }
 
     private struct PreparedTextMultisend {
+        let attachmentIdMap: [String: [String]]
         let messages: [TSOutgoingMessage]
         let threads: [TSThread]
     }
 
     private class func prepareForSending(
         conversations: [ConversationItem],
-        textAttachment: TextAttachment
+        textAttachment: UnsentTextAttachment
     ) throws -> PreparedTextMultisend {
 
         let state = MultisendState(approvalMessageBody: nil)
         let conversationsByMessageType = Dictionary(grouping: conversations, by: { TypeWrapper(type: $0.outgoingMessageClass) })
         try self.databaseStorage.write { transaction in
+
+            // Create one special TextAttachment from our UnsentTextAttachment; this implicitly creates a TSAttachment
+            // for the link preview's image (if there is any link preview image).
+            // This is the TSAttachment we will upload to the server, and whose uploaded information we will
+            // propagate to the independent TSAttachments that will be created per each destination.
+            // (Each destination needs its own independent TSAttachment so that deleting one has no effect on
+            // the others)
+            let attachmentToUploadIdentifier = UUID()
+            guard let attachmentToUpload = textAttachment.validateLinkPreviewAndBuildTextAttachment(transaction: transaction) else {
+                throw OWSAssertionError("Invalid text attachment")
+            }
+
             for (wrapper, conversations) in conversationsByMessageType {
                 let destinations = try conversations.lazy.map { conversation -> MultisendDestination in
                     guard let thread = conversation.getOrCreateThread(transaction: transaction) else {
                         throw OWSAssertionError("Missing thread for conversation")
                     }
-                    return .init(thread: thread, content: .text(textAttachment))
+                    return .init(thread: thread, content: .text(.init(textAttachment, id: attachmentToUploadIdentifier)))
                 }
 
+                // This will create TextAttachments and TSAttachments if needed for each destination, but
+                // will not actually upload anything.
+                // It will map the id we created above to the unique ids of each created TSAttachment in
+                // state.correspondingAttachmentIds.
                 try wrapper.type.prepareForMultisending(destinations: destinations, state: state, transaction: transaction)
+            }
+
+            if
+                let linkPreviewAttachmentId = attachmentToUpload.preview?.imageAttachmentId,
+                let correspondingAttachments = state.correspondingAttachmentIds[attachmentToUploadIdentifier]
+            {
+                // Map the unique ID of the attachment we intend to actually upload to the unique IDs
+                // of all the independent attachments that won't be uploaded, so we know to update their
+                // metadata down the road.
+                state.attachmentIdMap[linkPreviewAttachmentId] = correspondingAttachments
             }
         }
 
         return PreparedTextMultisend(
+            attachmentIdMap: state.attachmentIdMap,
             messages: state.unsavedMessages,
             threads: state.threads)
     }
@@ -301,7 +344,7 @@ class Identified<T> {
 
 enum MultisendContent {
     case media([Identified<SignalAttachment>])
-    case text(TextAttachment)
+    case text(Identified<UnsentTextAttachment>)
 }
 
 class MultisendDestination: NSObject {

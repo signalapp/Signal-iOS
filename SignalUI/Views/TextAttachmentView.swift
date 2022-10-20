@@ -9,7 +9,9 @@ import SignalServiceKit
 
 open class TextAttachmentView: UIView {
 
-    private var textAttachment: TextAttachment?
+    private var linkPreviewUrlString: String? {
+        return linkPreview?.urlString()
+    }
 
     public let contentLayoutGuide = UILayoutGuide()
 
@@ -22,7 +24,18 @@ open class TextAttachmentView: UIView {
             background: attachment.background,
             linkPreview: attachment.preview
         )
-        self.textAttachment = attachment
+    }
+
+    convenience public init(attachment: UnsentTextAttachment) {
+        self.init(
+            text: attachment.text,
+            textStyle: attachment.textStyle,
+            textForegroundColor: attachment.textForegroundColor,
+            textBackgroundColor: attachment.textBackgroundColor,
+            background: attachment.background,
+            linkPreview: nil,
+            linkPreviewDraft: attachment.linkPreviewDraft
+        )
     }
 
     public init(
@@ -31,7 +44,8 @@ open class TextAttachmentView: UIView {
         textForegroundColor: UIColor?,
         textBackgroundColor: UIColor?,
         background: TextAttachment.Background,
-        linkPreview: OWSLinkPreview?
+        linkPreview: OWSLinkPreview?,
+        linkPreviewDraft: OWSLinkPreviewDraft? = nil
     ) {
         self.text = text
         self.textStyle = textStyle
@@ -63,6 +77,8 @@ open class TextAttachmentView: UIView {
                 imageAttachment: attachment,
                 conversationStyle: nil
             )
+        } else if let linkPreviewDraft = linkPreviewDraft {
+            self.linkPreview = LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft)
         }
 
         updateTextAttributes()
@@ -396,7 +412,7 @@ open class TextAttachmentView: UIView {
 
             return true
         } else if let linkPreviewView = linkPreviewView,
-                  let urlString = textAttachment?.preview?.urlString,
+                  let urlString = linkPreviewUrlString,
                   let container = linkPreviewView.superview,
                   linkPreviewView.frame.contains(gesture.location(in: container)) {
             let tooltipView = LinkPreviewTooltipView(
