@@ -1879,6 +1879,15 @@
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "If you have reinstalled Signal, receipts from previous donations will not be available.";
 
+/* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
+
+/* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
+"DONATION_SCREENS_HEADER_READ_MORE" = "Read more";
+
+/* On donation screens, a small amount of information text is shown. This is the title for that text. */
+"DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
+
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "Donate to Signal";
 
@@ -6589,9 +6598,6 @@
 /* Status text while processing a badge redemption */
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
 
-/* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read more.";
-
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Renews %@";
 
@@ -6604,9 +6610,6 @@
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Not Now";
 
-/* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Signal is powered by people like you.";
-
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%@) of the new subscription price today. Your new subscription will renew monthly.";
 
@@ -6615,9 +6618,6 @@
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Update";
-
-/* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Make a recurring monthly donation to Signal to support technology built for you, not your data.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Off";

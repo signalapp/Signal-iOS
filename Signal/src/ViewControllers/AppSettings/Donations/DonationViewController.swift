@@ -48,7 +48,6 @@ class DonationViewController: OWSTableViewController2 {
     }()
 
     private lazy var statusLabel = LinkingTextView()
-    private lazy var descriptionTextView = LinkingTextView()
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -217,8 +216,8 @@ class DonationViewController: OWSTableViewController2 {
             let section = OWSTableSection()
             section.hasBackground = false
             section.customHeaderView = {
-                let stackView = self.getHeroHeaderView()
-                stackView.spacing = 20
+                let heroStack = self.heroHeaderView()
+                heroStack.layoutMargins = UIEdgeInsets(top: 0, left: 19, bottom: 0, right: 19)
 
                 let label = UILabel()
                 label.text = NSLocalizedString("DONATION_VIEW_LOAD_FAILED",
@@ -227,9 +226,9 @@ class DonationViewController: OWSTableViewController2 {
                 label.numberOfLines = 0
                 label.textColor = .ows_accentRed
                 label.textAlignment = .center
-                stackView.addArrangedSubview(label)
+                heroStack.addArrangedSubview(label)
 
-                return stackView
+                return heroStack
             }()
             return section
         }()
@@ -255,7 +254,11 @@ class DonationViewController: OWSTableViewController2 {
         let heroSection: OWSTableSection = {
             let section = OWSTableSection()
             section.hasBackground = false
-            section.customHeaderView = { getHeroHeaderView() }()
+            section.customHeaderView = {
+                let heroStack = heroHeaderView()
+                heroStack.layoutMargins = UIEdgeInsets(top: 0, left: 19, bottom: 0, right: 19)
+                return heroStack
+            }()
             return section
         }()
         result.append(heroSection)
@@ -341,21 +344,10 @@ class DonationViewController: OWSTableViewController2 {
 
                 guard let self = self else { return cell }
 
-                let stackView = self.getHeroHeaderView()
-                cell.addSubview(stackView)
-                stackView.autoPinEdgesToSuperviewMargins(with: UIEdgeInsets(hMargin: 0, vMargin: 6))
-                stackView.spacing = 20
-
-                let descriptionTextView = self.descriptionTextView
-                descriptionTextView.attributedText = .composed(of: [NSLocalizedString("SUSTAINER_VIEW_WHY_DONATE_BODY", comment: "The body text for the signal sustainer view"), " ", NSLocalizedString("SUSTAINER_VIEW_READ_MORE", comment: "Read More tappable text in sustainer view body").styled(with: .link(SupportConstants.subscriptionFAQURL))]).styled(with: .color(Theme.primaryTextColor), .font(.ows_dynamicTypeBody))
-                descriptionTextView.textAlignment = .center
-                descriptionTextView.linkTextAttributes = [
-                    .foregroundColor: Theme.accentBlueColor,
-                    .underlineColor: UIColor.clear,
-                    .underlineStyle: NSUnderlineStyle.single.rawValue
-                ]
-                descriptionTextView.delegate = self
-                stackView.addArrangedSubview(descriptionTextView)
+                let heroStack = self.heroHeaderView()
+                cell.addSubview(heroStack)
+                heroStack.autoPinEdgesToSuperviewMargins(with: UIEdgeInsets(hMargin: 0, vMargin: 6))
+                heroStack.spacing = 20
 
                 let button: OWSButton
                 if DonationUtilities.isApplePayAvailable {
@@ -375,7 +367,7 @@ class DonationViewController: OWSTableViewController2 {
                 button.layer.cornerRadius = 8
                 button.backgroundColor = .ows_accentBlue
                 button.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
-                stackView.addArrangedSubview(button)
+                heroStack.addArrangedSubview(button)
                 button.autoSetDimension(.height, toSize: 48)
                 button.autoPinWidthToSuperviewMargins()
 
@@ -396,27 +388,10 @@ class DonationViewController: OWSTableViewController2 {
         return result
     }
 
-    private func getHeroHeaderView() -> UIStackView {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .center
-
-        stackView.addArrangedSubview(avatarView)
-        stackView.setCustomSpacing(16, after: avatarView)
-
-        // Title text
-        let titleLabel = UILabel()
-        titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
-        titleLabel.text = NSLocalizedString(
-            "SUSTAINER_VIEW_TITLE",
-            comment: "Title for the signal sustainer view"
-        )
-        titleLabel.numberOfLines = 0
-        titleLabel.lineBreakMode = .byWordWrapping
-        stackView.addArrangedSubview(titleLabel)
-
-        return stackView
+    private func heroHeaderView() -> UIStackView {
+        let heroView = DonationHeroView(avatarView: avatarView)
+        heroView.delegate = self
+        return heroView
     }
 
     private func getOtherWaysToGiveSection() -> OWSTableSection? {
@@ -619,14 +594,19 @@ extension DonationViewController: BadgeConfigurationDelegate {
     }
 }
 
-// MARK: - Read more
+// MARK: - Donation hero delegate
+
+extension DonationViewController: DonationHeroViewDelegate {
+    func present(readMoreSheet: DonationReadMoreSheetViewController) {
+        present(readMoreSheet, animated: true)
+    }
+}
+
+// MARK: - Badge can't be added
 
 extension DonationViewController: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        if textView == descriptionTextView {
-            let readMoreSheet = DonationReadMoreSheetViewController()
-            self.present(readMoreSheet, animated: true)
-        } else if textView == statusLabel {
+        if textView == statusLabel {
             let currentSubscription: Subscription?
             switch state {
             case .initializing, .loading, .loadFailed:

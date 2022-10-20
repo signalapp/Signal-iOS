@@ -87,7 +87,6 @@ class SubscriptionViewController: OWSTableViewController2 {
     private var applePayButton: ApplePayButton?
 
     private lazy var statusLabel: LinkingTextView = LinkingTextView()
-    private lazy var descriptionTextView = LinkingTextView()
 
     private var subscriptionLevelCells: [SubscriptionLevelCell] = []
 
@@ -227,46 +226,10 @@ class SubscriptionViewController: OWSTableViewController2 {
         contents.addSection(section)
 
         section.customHeaderView = {
-            let stackView = UIStackView()
-            stackView.axis = .vertical
-            stackView.alignment = .center
-            stackView.layoutMargins = UIEdgeInsets(top: 0, left: 19, bottom: 20, right: 19)
-            stackView.isLayoutMarginsRelativeArrangement = true
-
-            stackView.addArrangedSubview(avatarView)
-            stackView.setCustomSpacing(16, after: avatarView)
-
-            // Title text
-            let titleLabel = UILabel()
-            titleLabel.textAlignment = .center
-            titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
-            titleLabel.text = NSLocalizedString(
-                "SUSTAINER_VIEW_TITLE",
-                comment: "Title for the signal sustainer view"
-            )
-            titleLabel.numberOfLines = 0
-            titleLabel.lineBreakMode = .byWordWrapping
-            stackView.addArrangedSubview(titleLabel)
-            stackView.setCustomSpacing(20, after: titleLabel)
-
-            switch state {
-            case .initializing, .loading, .loadFailed:
-                break
-            case .loaded:
-                descriptionTextView.attributedText = .composed(of: [NSLocalizedString("SUSTAINER_VIEW_WHY_DONATE_BODY", comment: "The body text for the signal sustainer view"), " ", NSLocalizedString("SUSTAINER_VIEW_READ_MORE", comment: "Read More tappable text in sustainer view body").styled(with: .link(SupportConstants.subscriptionFAQURL))]).styled(with: .color(Theme.primaryTextColor), .font(.ows_dynamicTypeBody))
-                descriptionTextView.textAlignment = .center
-
-                descriptionTextView.linkTextAttributes = [
-                    .foregroundColor: Theme.accentBlueColor,
-                    .underlineColor: UIColor.clear,
-                    .underlineStyle: NSUnderlineStyle.single.rawValue
-                ]
-
-                descriptionTextView.delegate = self
-                stackView.addArrangedSubview(descriptionTextView)
-            }
-
-            return stackView
+            let heroStack = DonationHeroView(avatarView: avatarView)
+            heroStack.delegate = self
+            heroStack.layoutMargins = UIEdgeInsets(top: 0, left: 19, bottom: 20, right: 19)
+            return heroStack
         }()
 
         // Update avatar view
@@ -705,11 +668,6 @@ class SubscriptionViewController: OWSTableViewController2 {
         actionSheet.addAction(OWSActionSheets.okayAction)
         self.navigationController?.topViewController?.presentActionSheet(actionSheet)
     }
-
-    func presentReadMoreSheet() {
-        let readMoreSheet = DonationReadMoreSheetViewController()
-        self.present(readMoreSheet, animated: true)
-    }
 }
 
 extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
@@ -969,8 +927,6 @@ extension SubscriptionViewController: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         if textView == statusLabel {
             presentBadgeCantBeAddedSheet()
-        } else if textView == descriptionTextView {
-            presentReadMoreSheet()
         }
         return false
     }
@@ -985,5 +941,13 @@ private class SubscriptionLevelCell: UITableViewCell {
         if let background = cellBackgroundView {
             background.layer.borderColor = selected ? Theme.accentBlueColor.cgColor : DonationViewsUtil.bubbleBorderColor.cgColor
         }
+    }
+}
+
+// MARK: - Donation hero delegate
+
+extension SubscriptionViewController: DonationHeroViewDelegate {
+    func present(readMoreSheet: DonationReadMoreSheetViewController) {
+        present(readMoreSheet, animated: true)
     }
 }
