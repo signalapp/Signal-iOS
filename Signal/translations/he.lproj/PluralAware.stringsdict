@@ -2,26 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CAMERA_VO_N_ITEMS</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>פריט %1$d</string>
-			<key>two</key>
-			<string>%1$d פריטים</string>
-			<key>many</key>
-			<string>%1$d פריטים</string>
-			<key>other</key>
-			<string>%1$d פריטים</string>
-		</dict>
-	</dict>
 	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -40,6 +20,26 @@
 			<string>הודעה קולית %1$d שניות</string>
 			<key>other</key>
 			<string>הודעה קולית %1$d שניות</string>
+		</dict>
+	</dict>
+	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>הוסף חבר קבוצה</string>
+			<key>two</key>
+			<string>הוסף חברי קבוצה</string>
+			<key>many</key>
+			<string>הוסף חברי קבוצה</string>
+			<key>other</key>
+			<string>הוסף חברי קבוצה</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -82,7 +82,7 @@
 			<string>הוסף חברי קבוצה חדשים</string>
 		</dict>
 	</dict>
-	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
+	<key>CAMERA_VO_N_ITEMS</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -93,13 +93,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>הוסף חבר קבוצה</string>
+			<string>פריט %1$d</string>
 			<key>two</key>
-			<string>הוסף חברי קבוצה</string>
+			<string>%1$d פריטים</string>
 			<key>many</key>
-			<string>הוסף חברי קבוצה</string>
+			<string>%1$d פריטים</string>
 			<key>other</key>
-			<string>הוסף חברי קבוצה</string>
+			<string>%1$d פריטים</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -397,6 +397,86 @@
 			<string>שלח %1$d הודעות</string>
 		</dict>
 	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>קבוצה זו לא יכולה להיווצר כי חבר/ה 1 משתמש/ת בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה. %2$@</string>
+			<key>two</key>
+			<string>קבוצה זו לא יכולה להיווצר כי %1$d חברים משתמשים בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה. %2$@</string>
+			<key>many</key>
+			<string>קבוצה זו לא יכולה להיווצר כי %1$d חברים משתמשים בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה. %2$@</string>
+			<key>other</key>
+			<string>קבוצה זו לא יכולה להיווצר כי %1$d חברים משתמשים בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה. %2$@</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>קבוצה זו לא יכולה להיווצר כי חבר/ה 1 משתמש/ת בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה.</string>
+			<key>two</key>
+			<string>קבוצה זו לא יכולה להיווצר כי %1$d חברים משתמשים בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה.</string>
+			<key>many</key>
+			<string>קבוצה זו לא יכולה להיווצר כי %1$d חברים משתמשים בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה.</string>
+			<key>other</key>
+			<string>קבוצה זו לא יכולה להיווצר כי %1$d חברים משתמשים בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה.</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>חבר/ה 1 לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
+			<key>two</key>
+			<string>%1$d חברי קבוצה לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
+			<key>many</key>
+			<string>%1$d חברי קבוצה לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
+			<key>other</key>
+			<string>%1$d חברי קבוצה לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
+		</dict>
+	</dict>
+	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>קבוצות Signal מתפקדות בצורה הטובה ביותר עם חבר/ה 1 או פחות. הוספת חברים נוספים תגרום לעיכובים בשליחה ובקבלה של הודעות.</string>
+			<key>two</key>
+			<string>קבוצות Signal מתפקדות בצורה הטובה ביותר עם %1$d חברים או פחות. הוספת חברים נוספים תגרום לעיכובים בשליחה ובקבלה של הודעות.</string>
+			<key>many</key>
+			<string>קבוצות Signal מתפקדות בצורה הטובה ביותר עם %1$d חברים או פחות. הוספת חברים נוספים תגרום לעיכובים בשליחה ובקבלה של הודעות.</string>
+			<key>other</key>
+			<string>קבוצות Signal מתפקדות בצורה הטובה ביותר עם %1$d חברים או פחות. הוספת חברים נוספים תגרום לעיכובים בשליחה ובקבלה של הודעות.</string>
+		</dict>
+	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -435,166 +515,6 @@
 			<string>בשיחה זו · %1$d אנשים</string>
 			<key>other</key>
 			<string>בשיחה זו · %1$d אנשים</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>צפייה %1$d</string>
-			<key>two</key>
-			<string>%1$d צפיות</string>
-			<key>many</key>
-			<string>%1$d צפיות</string>
-			<key>other</key>
-			<string>%1$d צפיות</string>
-		</dict>
-	</dict>
-	<key>PRIVATE_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Custom Story · 1 Viewer</string>
-			<key>two</key>
-			<string>Custom Story · %1$d Viewers</string>
-			<key>many</key>
-			<string>Custom Story · %1$d Viewers</string>
-			<key>other</key>
-			<string>Custom Story · %1$d Viewers</string>
-		</dict>
-	</dict>
-	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>כל חברי ה–Signal · צופה 1</string>
-			<key>two</key>
-			<string>כל חברי ה–Signal · %1$d צופים</string>
-			<key>many</key>
-			<string>כל חברי ה–Signal · %1$d צופים</string>
-			<key>other</key>
-			<string>כל חברי ה–Signal · %1$d צופים</string>
-		</dict>
-	</dict>
-	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>כל חברי ה–Signal · מוסתר מאדם 1</string>
-			<key>two</key>
-			<string>כל חברי ה–Signal · מוסתר מ–%1$d אנשים</string>
-			<key>many</key>
-			<string>כל חברי ה–Signal · מוסתר מ–%1$d אנשים</string>
-			<key>other</key>
-			<string>כל חברי ה–Signal · מוסתר מ–%1$d אנשים</string>
-		</dict>
-	</dict>
-	<key>MY_STORY_VIEWERS_ONLY_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>שיתוף רק עם · צופה 1</string>
-			<key>two</key>
-			<string>שיתוף רק עם · %1$d צופים</string>
-			<key>many</key>
-			<string>שיתוף רק עם · %1$d צופים</string>
-			<key>other</key>
-			<string>שיתוף רק עם · %1$d צופים</string>
-		</dict>
-	</dict>
-	<key>GROUP_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>סטורי קבוצתי · צופה %1$d</string>
-			<key>two</key>
-			<string>סטורי קבוצתי · %1$d צופים</string>
-			<key>many</key>
-			<string>סטורי קבוצתי · %1$d צופים</string>
-			<key>other</key>
-			<string>סטורי קבוצתי · %1$d צופים</string>
-		</dict>
-	</dict>
-	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Signal יצלצל אל %2$@, %3$@ ואל %1$d אחר</string>
-			<key>two</key>
-			<string>Signal תתקשר ל%2$@, %3$@, ועוד %1$d</string>
-			<key>many</key>
-			<string>Signal תתקשר ל%2$@, %3$@, ועוד %1$d</string>
-			<key>other</key>
-			<string>Signal תתקשר ל%2$@, %3$@, ועוד %1$d אחרים</string>
-		</dict>
-	</dict>
-	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%2$@, %3$@ ועוד %1$d אחר יוודעו</string>
-			<key>two</key>
-			<string>%2$@, %3$@, ועוד %1$d יקבלו התראה</string>
-			<key>many</key>
-			<string>%2$@, %3$@, ועוד %1$d יקבלו התראה</string>
-			<key>other</key>
-			<string>%2$@, %3$@, ועוד %1$d יקבלו התראה</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
@@ -677,6 +597,46 @@
 			<string>%2$@, %3$@, ועוד %1$d עזבו את השיחה</string>
 		</dict>
 	</dict>
+	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@, %3$@ ועוד %1$d אחר יוודעו</string>
+			<key>two</key>
+			<string>%2$@, %3$@, ועוד %1$d יקבלו התראה</string>
+			<key>many</key>
+			<string>%2$@, %3$@, ועוד %1$d יקבלו התראה</string>
+			<key>other</key>
+			<string>%2$@, %3$@, ועוד %1$d יקבלו התראה</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Signal יצלצל אל %2$@, %3$@ ואל %1$d אחר</string>
+			<key>two</key>
+			<string>Signal תתקשר ל%2$@, %3$@, ועוד %1$d</string>
+			<key>many</key>
+			<string>Signal תתקשר ל%2$@, %3$@, ועוד %1$d</string>
+			<key>other</key>
+			<string>Signal תתקשר ל%2$@, %3$@, ועוד %1$d אחרים</string>
+		</dict>
+	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -695,46 +655,6 @@
 			<string>%1$d הזמנות נשלחו</string>
 			<key>other</key>
 			<string>%1$d הזמנות נשלחו</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d חבר קבוצה</string>
-			<key>two</key>
-			<string>%1$d חברי קבוצה</string>
-			<key>many</key>
-			<string>%1$d חברי קבוצה</string>
-			<key>other</key>
-			<string>%1$d חברי קבוצה</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d חבר קבוצה</string>
-			<key>two</key>
-			<string>%1$d חברי קבוצה</string>
-			<key>many</key>
-			<string>%1$d חברי קבוצה</string>
-			<key>other</key>
-			<string>%1$d חברי קבוצה</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
@@ -797,7 +717,7 @@
 			<string>ל–%1$d חברי קבוצה יש שם זהה, אפשר לסקור את החברים למטה או לבחור לנקוט בפעולה.</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
+	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -808,19 +728,19 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>הזמנה לקבוצה בוטלה עבור אדם 1.</string>
+			<string>%1$d חבר קבוצה</string>
 			<key>two</key>
-			<string>הזמנות לקבוצה בוטלו עבור %1$d אנשים.</string>
+			<string>%1$d חברי קבוצה</string>
 			<key>many</key>
-			<string>הזמנות לקבוצה בוטלו עבור %1$d אנשים.</string>
+			<string>%1$d חברי קבוצה</string>
 			<key>other</key>
-			<string>הזמנות לקבוצה בוטלו עבור %1$d אנשים.</string>
+			<string>%1$d חברי קבוצה</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
+	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
+		<string>%#@text@</string>
 		<key>text</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
@@ -828,13 +748,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ ביטל/ה הזמנה לקבוצה עבור אדם 1.</string>
+			<string>%1$d חבר קבוצה</string>
 			<key>two</key>
-			<string>%2$@ ביטל/ה הזמנה לקבוצה עבור %1$d אנשים.</string>
+			<string>%1$d חברי קבוצה</string>
 			<key>many</key>
-			<string>%2$@ ביטל/ה הזמנה לקבוצה עבור %1$d אנשים.</string>
+			<string>%1$d חברי קבוצה</string>
 			<key>other</key>
-			<string>%2$@ ביטל/ה הזמנה לקבוצה עבור %1$d אנשים.</string>
+			<string>%1$d חברי קבוצה</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -877,6 +797,46 @@
 			<string>%2$@ הזמין/ה %1$d אנשים לקבוצה.</string>
 		</dict>
 	</dict>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>הזמנה לקבוצה בוטלה עבור אדם 1.</string>
+			<key>two</key>
+			<string>הזמנות לקבוצה בוטלו עבור %1$d אנשים.</string>
+			<key>many</key>
+			<string>הזמנות לקבוצה בוטלו עבור %1$d אנשים.</string>
+			<key>other</key>
+			<string>הזמנות לקבוצה בוטלו עבור %1$d אנשים.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@ ביטל/ה הזמנה לקבוצה עבור אדם 1.</string>
+			<key>two</key>
+			<string>%2$@ ביטל/ה הזמנה לקבוצה עבור %1$d אנשים.</string>
+			<key>many</key>
+			<string>%2$@ ביטל/ה הזמנה לקבוצה עבור %1$d אנשים.</string>
+			<key>other</key>
+			<string>%2$@ ביטל/ה הזמנה לקבוצה עבור %1$d אנשים.</string>
+		</dict>
+	</dict>
 	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -895,6 +855,26 @@
 			<string>%2$@ ביקשו וביטלו %1$d בקשות להצטרף דרך הלינק הקבוצתי.</string>
 			<key>other</key>
 			<string>%2$@ ביקשו וביטלו %1$d בקשות להצטרף דרך הלינק הקבוצתי.</string>
+		</dict>
+	</dict>
+	<key>GROUP_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>סטורי קבוצתי · צופה %1$d</string>
+			<key>two</key>
+			<string>סטורי קבוצתי · %1$d צופים</string>
+			<key>many</key>
+			<string>סטורי קבוצתי · %1$d צופים</string>
+			<key>other</key>
+			<string>סטורי קבוצתי · %1$d צופים</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -935,86 +915,6 @@
 			<string>%1$d חברים לא יכלו להתווסף לקבוצה החדשה והוזמנו להצטרף אליה.</string>
 			<key>other</key>
 			<string>%1$d חברים לא יכלו להתווסף לקבוצה החדשה והוזמנו להצטרף אליה.</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>קבוצה זו לא יכולה להיווצר כי חבר/ה 1 משתמש/ת בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה. %2$@</string>
-			<key>two</key>
-			<string>קבוצה זו לא יכולה להיווצר כי %1$d חברים משתמשים בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה. %2$@</string>
-			<key>many</key>
-			<string>קבוצה זו לא יכולה להיווצר כי %1$d חברים משתמשים בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה. %2$@</string>
-			<key>other</key>
-			<string>קבוצה זו לא יכולה להיווצר כי %1$d חברים משתמשים בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה. %2$@</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>קבוצה זו לא יכולה להיווצר כי חבר/ה 1 משתמש/ת בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה.</string>
-			<key>two</key>
-			<string>קבוצה זו לא יכולה להיווצר כי %1$d חברים משתמשים בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה.</string>
-			<key>many</key>
-			<string>קבוצה זו לא יכולה להיווצר כי %1$d חברים משתמשים בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה.</string>
-			<key>other</key>
-			<string>קבוצה זו לא יכולה להיווצר כי %1$d חברים משתמשים בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה.</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>חבר/ה 1 לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
-			<key>two</key>
-			<string>%1$d חברי קבוצה לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
-			<key>many</key>
-			<string>%1$d חברי קבוצה לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
-			<key>other</key>
-			<string>%1$d חברי קבוצה לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
-		</dict>
-	</dict>
-	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>קבוצות Signal מתפקדות בצורה הטובה ביותר עם חבר/ה 1 או פחות. הוספת חברים נוספים תגרום לעיכובים בשליחה ובקבלה של הודעות.</string>
-			<key>two</key>
-			<string>קבוצות Signal מתפקדות בצורה הטובה ביותר עם %1$d חברים או פחות. הוספת חברים נוספים תגרום לעיכובים בשליחה ובקבלה של הודעות.</string>
-			<key>many</key>
-			<string>קבוצות Signal מתפקדות בצורה הטובה ביותר עם %1$d חברים או פחות. הוספת חברים נוספים תגרום לעיכובים בשליחה ובקבלה של הודעות.</string>
-			<key>other</key>
-			<string>קבוצות Signal מתפקדות בצורה הטובה ביותר עם %1$d חברים או פחות. הוספת חברים נוספים תגרום לעיכובים בשליחה ובקבלה של הודעות.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -1117,26 +1017,6 @@
 			<string>%1$d פריטים</string>
 		</dict>
 	</dict>
-	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d נבחר</string>
-			<key>two</key>
-			<string>%1$d נבחרו</string>
-			<key>many</key>
-			<string>%1$d נבחרו</string>
-			<key>other</key>
-			<string>%1$d נבחרו</string>
-		</dict>
-	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1157,24 +1037,24 @@
 			<string>חסמת %1$d חברים של קבוצה זו</string>
 		</dict>
 	</dict>
-	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>
+	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>%1$d נבחר</string>
 			<key>two</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d נבחרו</string>
 			<key>many</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d נבחרו</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d נבחרו</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -1197,6 +1077,26 @@
 			<string>מוסתר מ–%1$d צופים</string>
 		</dict>
 	</dict>
+	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d Viewer</string>
+			<key>two</key>
+			<string>%1$d Viewers</string>
+			<key>many</key>
+			<string>%1$d Viewers</string>
+			<key>other</key>
+			<string>%1$d Viewers</string>
+		</dict>
+	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1215,6 +1115,66 @@
 			<string>%1$d צופים</string>
 			<key>other</key>
 			<string>%1$d צופים</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>כל חברי ה–Signal · צופה 1</string>
+			<key>two</key>
+			<string>כל חברי ה–Signal · %1$d צופים</string>
+			<key>many</key>
+			<string>כל חברי ה–Signal · %1$d צופים</string>
+			<key>other</key>
+			<string>כל חברי ה–Signal · %1$d צופים</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>כל חברי ה–Signal · מוסתר מאדם 1</string>
+			<key>two</key>
+			<string>כל חברי ה–Signal · מוסתר מ–%1$d אנשים</string>
+			<key>many</key>
+			<string>כל חברי ה–Signal · מוסתר מ–%1$d אנשים</string>
+			<key>other</key>
+			<string>כל חברי ה–Signal · מוסתר מ–%1$d אנשים</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ONLY_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>שיתוף רק עם · צופה 1</string>
+			<key>two</key>
+			<string>שיתוף רק עם · %1$d צופים</string>
+			<key>many</key>
+			<string>שיתוף רק עם · %1$d צופים</string>
+			<key>other</key>
+			<string>שיתוף רק עם · %1$d צופים</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1337,6 +1297,26 @@
 			<string>ביטול %1$d הזמנות לא חוקיות</string>
 		</dict>
 	</dict>
+	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>שלול הזמנה</string>
+			<key>two</key>
+			<string>שלול הזמנות</string>
+			<key>many</key>
+			<string>שלול הזמנות</string>
+			<key>other</key>
+			<string>שלול הזמנות</string>
+		</dict>
+	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1357,24 +1337,24 @@
 			<string>לבטל %1$d הזמנות שנשלחו על ידי ”%2$@“?</string>
 		</dict>
 	</dict>
-	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
+	<key>PRIVATE_STORY_VIEWERS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
+		<string>%#@text@</string>
+		<key>text</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>שלול הזמנה</string>
+			<string>Custom Story · %1$d Viewer</string>
 			<key>two</key>
-			<string>שלול הזמנות</string>
+			<string>Custom Story · %1$d Viewers</string>
 			<key>many</key>
-			<string>שלול הזמנות</string>
+			<string>Custom Story · %1$d Viewers</string>
 			<key>other</key>
-			<string>שלול הזמנות</string>
+			<string>Custom Story · %1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1497,6 +1477,61 @@
 			<string>שולחים %1$d…</string>
 		</dict>
 	</dict>
+	<key>STORY_VIEWS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>צפייה %1$d</string>
+			<key>two</key>
+			<string>%1$d צפיות</string>
+			<key>many</key>
+			<string>%1$d צפיות</string>
+			<key>other</key>
+			<string>%1$d צפיות</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@views@  %2$#@replies@</string>
+		<key>replies</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>תשובה &lt;bold&gt;1&lt;/bold&gt;</string>
+			<key>two</key>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; תשובות</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; תשובות</string>
+			<key>other</key>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; תשובות</string>
+		</dict>
+		<key>views</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>צפייה &lt;bold&gt;1&lt;/bold&gt;</string>
+			<key>two</key>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; צפיות</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; צפיות</string>
+			<key>other</key>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; צפיות</string>
+		</dict>
+	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1515,281 +1550,6 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; צפיות</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; צפיות</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@views@  %2$#@replies@</string>
-		<key>views</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>צפייה &lt;bold&gt;1&lt;/bold&gt;</string>
-			<key>two</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; צפיות</string>
-			<key>many</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; צפיות</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; צפיות</string>
-		</dict>
-		<key>replies</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>תשובה &lt;bold&gt;1&lt;/bold&gt;</string>
-			<key>two</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; תשובות</string>
-			<key>many</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; תשובות</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; תשובות</string>
-		</dict>
-	</dict>
-	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>חבר/ה ב%2$@, %3$@ וקבוצה 1 נוספת</string>
-			<key>two</key>
-			<string>חבר/ה ב%2$@, %3$@ ו–%1$d קבוצות נוספות</string>
-			<key>many</key>
-			<string>חבר/ה ב%2$@, %3$@ ו–%1$d קבוצות נוספות</string>
-			<key>other</key>
-			<string>חבר/ה ב%2$@, %3$@ ו–%1$d קבוצות נוספות</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_DAYS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>יום %1$d</string>
-			<key>two</key>
-			<string>%1$d ימים</string>
-			<key>many</key>
-			<string>%1$d ימים</string>
-			<key>other</key>
-			<string>%1$d ימים</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_DAYS_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>יום 1</string>
-			<key>two</key>
-			<string>יומיים</string>
-			<key>many</key>
-			<string>%1$d ימים</string>
-			<key>other</key>
-			<string>%1$d ימים</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_HOURS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>שעה %1$d</string>
-			<key>two</key>
-			<string>%1$d שעות</string>
-			<key>many</key>
-			<string>%1$d שעות</string>
-			<key>other</key>
-			<string>%1$d שעות</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_HOURS_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>שע&apos; %1$d</string>
-			<key>two</key>
-			<string>%1$d שע&apos;</string>
-			<key>many</key>
-			<string>%1$d שע&apos;</string>
-			<key>other</key>
-			<string>%1$d שע&apos;</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_MINUTES_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>דקה %1$d</string>
-			<key>two</key>
-			<string>%1$d דקות</string>
-			<key>many</key>
-			<string>%1$d דקות</string>
-			<key>other</key>
-			<string>%1$d דקות</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$d דקות</string>
-			<key>two</key>
-			<string>%1$d דק&apos;</string>
-			<key>many</key>
-			<string>%1$d דק&apos;</string>
-			<key>other</key>
-			<string>%1$d דק&apos;</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_SECONDS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>שנייה %1$d</string>
-			<key>two</key>
-			<string>%1$d שניות</string>
-			<key>many</key>
-			<string>%1$d שניות</string>
-			<key>other</key>
-			<string>%1$d שניות</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>שנייה 1</string>
-			<key>two</key>
-			<string>%1$d שניות</string>
-			<key>many</key>
-			<string>%1$d שניות</string>
-			<key>other</key>
-			<string>%1$d שניות</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_WEEKS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>שבוע %1$d</string>
-			<key>two</key>
-			<string>%1$d שבועות</string>
-			<key>many</key>
-			<string>%1$d שבועות</string>
-			<key>other</key>
-			<string>%1$d שבועות</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>שבוע 1</string>
-			<key>two</key>
-			<string>שבועיים</string>
-			<key>many</key>
-			<string>%1$d שבועות</string>
-			<key>other</key>
-			<string>%1$d שבועות</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_YEARS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>שנה 1</string>
-			<key>two</key>
-			<string>שנתיים</string>
-			<key>many</key>
-			<string>%1$d שנים</string>
-			<key>other</key>
-			<string>%1$d שנים</string>
 		</dict>
 	</dict>
 </dict>
