@@ -250,7 +250,7 @@ extension MessageSender {
             guard senderKeyRecipients.count > 0 else {
                 // Something went wrong with the SKDM promise. Exit early.
                 owsAssertDebug(didHitAnyFailure.get())
-                return .init()
+                return .value(())
             }
 
             return firstly { () -> Promise<SenderKeySendResult> in
@@ -430,6 +430,12 @@ extension MessageSender {
                     }.map(on: self.senderKeyQueue) { _ -> OWSMessageSend in
                         messageSend
                     }.recover(on: self.senderKeyQueue) { error -> Promise<OWSMessageSend> in
+                        if error is MessageSenderNoSuchSignalRecipientError {
+                            self.databaseStorage.write { transaction in
+                                self.markAddressAsUnregistered(messageSend.address, message: originalMessage, thread: thread, transaction: transaction)
+                            }
+                        }
+
                         // Note that we still rethrow. It's just easier to access the address
                         // while we still have the messageSend in scope.
                         let wrappedError = SenderKeyError.recipientSKDMFailed(error)
