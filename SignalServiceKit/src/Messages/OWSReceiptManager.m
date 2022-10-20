@@ -304,11 +304,6 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
 
     NSMutableArray<NSNumber *> *sentTimestampsMissingMessage = [NSMutableArray new];
 
-    if (![self areReadReceiptsEnabled]) {
-        OWSLogInfo(@"Ignoring incoming receipt message as read receipts are disabled.");
-        return @[];
-    }
-
     for (NSNumber *nsSentTimestamp in sentTimestamps) {
         UInt64 sentTimestamp = [nsSentTimestamp unsignedLongLongValue];
 
@@ -329,6 +324,11 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
         }
 
         if (messages.count > 0) {
+            if (![self areReadReceiptsEnabled]) {
+                OWSLogInfo(@"Ignoring incoming receipt message as read receipts are disabled.");
+                return @[];
+            }
+
             for (TSOutgoingMessage *message in messages) {
                 [message updateWithViewedRecipient:address
                                  recipientDeviceId:deviceId
@@ -340,6 +340,11 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                                                                             author:TSAccountManager.localAddress
                                                                        transaction:transaction];
             if (storyMessage) {
+                if (!StoryManager.areViewReceiptsEnabled) {
+                    OWSLogInfo(@"Ignoring incoming story receipt message as view receipts are disabled.");
+                    return @[];
+                }
+
                 [storyMessage markAsViewedAt:viewedTimestamp by:address transaction:transaction];
             } else {
                 [sentTimestampsMissingMessage addObject:@(sentTimestamp)];
