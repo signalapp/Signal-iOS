@@ -15,7 +15,7 @@ import SignalUI
 protocol PhotoCaptureViewControllerDelegate: AnyObject {
     func photoCaptureViewControllerDidFinish(_ photoCaptureViewController: PhotoCaptureViewController)
     func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController,
-                                    didFinishWithTextAttachment textAttachment: TextAttachment)
+                                    didFinishWithTextAttachment textAttachment: UnsentTextAttachment)
     func photoCaptureViewControllerDidCancel(_ photoCaptureViewController: PhotoCaptureViewController)
     func photoCaptureViewControllerDidTryToCaptureTooMany(_ photoCaptureViewController: PhotoCaptureViewController)
     func photoCaptureViewControllerViewWillAppear(_ photoCaptureViewController: PhotoCaptureViewController)
@@ -917,32 +917,16 @@ extension PhotoCaptureViewController {
         let textStyle = textStoryComposerView.textStyle
         let background = textStoryComposerView.background
 
-        var validatedLinkPreview: OWSLinkPreview?
-        if let linkPreview = textStoryComposerView.linkPreviewDraft {
-            self.databaseStorage.write { transaction in
-                do {
-                    validatedLinkPreview = try OWSLinkPreview.buildValidatedLinkPreview(fromInfo: linkPreview, transaction: transaction)
-                } catch LinkPreviewError.featureDisabled {
-                    validatedLinkPreview = OWSLinkPreview(urlString: linkPreview.urlString, title: nil, imageAttachmentId: nil)
-                } catch {
-                    Logger.error("Failed to generate link preview.")
-                }
-            }
-        }
-
-        guard validatedLinkPreview != nil || !text.isEmpty else {
-            owsFailDebug("Empty content")
-            return
-        }
-
-        let textAttachment = TextAttachment(
+        let unsentTextAttachment = UnsentTextAttachment(
             text: text,
             textStyle: textStyle,
             textForegroundColor: textForegroundColor,
             textBackgroundColor: textBackgroundColor,
             background: background,
-            linkPreview: validatedLinkPreview)
-        delegate?.photoCaptureViewController(self, didFinishWithTextAttachment: textAttachment)
+            linkPreviewDraft: textStoryComposerView.linkPreviewDraft
+        )
+
+        delegate?.photoCaptureViewController(self, didFinishWithTextAttachment: unsentTextAttachment)
     }
 }
 

@@ -18,28 +18,19 @@ public enum StorySharing: Dependencies {
 
         guard !storyConversations.isEmpty else { return Promise.value(()) }
 
-        let linkPreview: OWSLinkPreview?
-        if let linkPreviewDraft = linkPreviewDraft {
-            linkPreview = databaseStorage.write { transaction in
-                try? OWSLinkPreview.buildValidatedLinkPreview(fromInfo: linkPreviewDraft, transaction: transaction)
-            }
-        } else {
-            linkPreview = nil
-        }
-
-        let textAttachment = TextAttachment(
-            text: text(for: messageBody, with: linkPreview),
+        let textAttachment = UnsentTextAttachment(
+            text: text(for: messageBody, with: linkPreviewDraft),
             textStyle: .regular,
             textForegroundColor: .white,
             textBackgroundColor: nil,
             background: .color(.init(rgbHex: 0x688BD4)),
-            linkPreview: linkPreview
+            linkPreviewDraft: linkPreviewDraft
         )
 
         return AttachmentMultisend.sendTextAttachment(textAttachment, to: storyConversations).asVoid()
     }
 
-    internal static func text(for messageBody: MessageBody, with linkPreview: OWSLinkPreview?) -> String? {
+    internal static func text(for messageBody: MessageBody, with linkPreview: OWSLinkPreviewDraft?) -> String? {
         // Turn any mentions in the message body to plaintext
         let plaintextMessageBody = databaseStorage.read { messageBody.plaintextBody(transaction: $0.unwrapGrdbRead) }
 

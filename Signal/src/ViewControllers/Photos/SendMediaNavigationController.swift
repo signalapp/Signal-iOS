@@ -13,7 +13,7 @@ protocol SendMediaNavDelegate: AnyObject {
 
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageBody: MessageBody?)
 
-    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didFinishWithTextAttachment textAttachment: TextAttachment)
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didFinishWithTextAttachment textAttachment: UnsentTextAttachment)
 
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageBody newMessageBody: MessageBody?)
 
@@ -297,7 +297,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     }
 
     func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController,
-                                    didFinishWithTextAttachment textAttachment: TextAttachment) {
+                                    didFinishWithTextAttachment textAttachment: UnsentTextAttachment) {
         sendMediaNavDelegate?.sendMediaNav(self, didFinishWithTextAttachment: textAttachment)
     }
 

@@ -26,10 +26,9 @@ class StorySharingTests: SignalBaseTest {
                     text: input,
                     ranges: .empty
                 ),
-                with: OWSLinkPreview(
-                    urlString: "https://signal.org",
-                    title: nil,
-                    imageAttachmentId: nil
+                with: OWSLinkPreviewDraft(
+                    url: URL(string: "https://signal.org")!,
+                    title: nil
                 )
             )
             XCTAssertEqual(output, expectedOutput)

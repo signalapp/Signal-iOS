@@ -387,7 +387,9 @@ extension ForwardMessageViewController {
                                                          approvalMessageBody: item.messageBody,
                                                          approvedAttachments: attachments).asVoid()
         } else if let textAttachment = item.textAttachment {
-            return AttachmentMultisend.sendTextAttachment(textAttachment, to: selectedConversations).asVoid()
+            // TODO: we want to reuse the uploaded link preview image attachment instead of re-uploading
+            // if the original was sent recently (if not the image could be stale)
+            return AttachmentMultisend.sendTextAttachment(textAttachment.asUnsentAttachment(), to: selectedConversations).asVoid()
         } else if let messageBody = item.messageBody {
             let linkPreviewDraft = item.linkPreviewDraft
             let nonStorySendPromise = send(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in

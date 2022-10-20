@@ -51,11 +51,33 @@ extension OutgoingStoryMessage {
                 }
 
             case .text(let textAttachment):
-                let message = try OutgoingStoryMessage.createUnsentMessage(
-                    attachment: .text(attachment: textAttachment),
-                    thread: destination.thread,
-                    transaction: transaction
-                )
+                guard let finalTextAttachment = textAttachment.value.validateLinkPreviewAndBuildTextAttachment(transaction: transaction) else {
+                    throw OWSAssertionError("Invalid text attachment")
+                }
+
+                if let linkPreviewAttachmentId = finalTextAttachment.preview?.imageAttachmentId {
+                    var correspondingIdsForAttachment = state.correspondingAttachmentIds[textAttachment.id] ?? []
+                    correspondingIdsForAttachment += [linkPreviewAttachmentId]
+                    state.correspondingAttachmentIds[textAttachment.id] = correspondingIdsForAttachment
+                }
+
+                let message: OutgoingStoryMessage
+                if destination.thread is TSPrivateStoryThread, let privateStoryMessageId = privateStoryMessageIds[textAttachment.id] {
+                    message = try OutgoingStoryMessage.createUnsentMessage(
+                        thread: destination.thread,
+                        storyMessageId: privateStoryMessageId,
+                        transaction: transaction
+                    )
+                } else {
+                    message = try OutgoingStoryMessage.createUnsentMessage(
+                        attachment: .text(attachment: finalTextAttachment),
+                        thread: destination.thread,
+                        transaction: transaction
+                    )
+                    if destination.thread is TSPrivateStoryThread {
+                        privateStoryMessageIds[textAttachment.id] = message.storyMessageId
+                    }
+                }
 
                 state.messages.append(message)
                 state.unsavedMessages.append(message)

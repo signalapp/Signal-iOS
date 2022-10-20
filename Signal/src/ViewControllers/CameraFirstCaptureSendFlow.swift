@@ -18,7 +18,7 @@ class CameraFirstCaptureSendFlow: NSObject {
 
     private var approvedAttachments: [SignalAttachment]?
     private var approvalMessageBody: MessageBody?
-    private var textAttachment: TextAttachment?
+    private var textAttachment: UnsentTextAttachment?
 
     private var mentionCandidates: [SignalServiceAddress] = []
 
@@ -86,7 +86,7 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
         sendMediaNavigationController.pushViewController(pickerVC, animated: true)
     }
 
-    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didFinishWithTextAttachment textAttachment: TextAttachment) {
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didFinishWithTextAttachment textAttachment: UnsentTextAttachment) {
         self.textAttachment = textAttachment
 
         let pickerVC = ConversationPickerViewController(selection: selection, textAttacment: textAttachment)

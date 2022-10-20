@@ -33,7 +33,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     private let kMaxPickerSelection = 5
     private let attachments: [SignalAttachment]?
-    private let textAttachment: TextAttachment?
+    private let textAttachment: UnsentTextAttachment?
     private let maxVideoAttachmentDuration: TimeInterval?
 
     private let creationDate = Date()
@@ -82,7 +82,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     /// Include a text attachment to display an attachment preview at the top (if configured with the `mediaPreview` section option)
     public convenience init(
         selection: ConversationPickerSelection,
-        textAttacment: TextAttachment
+        textAttacment: UnsentTextAttachment
     ) {
         self.init(selection: selection, attachments: nil, textAttachment: textAttacment)
     }
@@ -90,7 +90,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     public init(
         selection: ConversationPickerSelection,
         attachments: [SignalAttachment]? = nil,
-        textAttachment: TextAttachment? = nil
+        textAttachment: UnsentTextAttachment? = nil
     ) {
         self.selection = selection
         self.attachments = attachments
@@ -631,7 +631,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     private func addMediaPreview(
         to section: OWSTableSection,
-        textAttachment: TextAttachment
+        textAttachment: UnsentTextAttachment
     ) {
         let previewView = TextAttachmentView(attachment: textAttachment).asThumbnailView()
         previewView.layer.masksToBounds = true

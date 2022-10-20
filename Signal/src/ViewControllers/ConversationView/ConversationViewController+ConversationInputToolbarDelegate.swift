@@ -823,7 +823,7 @@ extension ConversationViewController: SendMediaNavDelegate {
     }
 
     func sendMediaNav(_ sendMediaNavifationController: SendMediaNavigationController,
-                      didFinishWithTextAttachment textAttachment: TextAttachment) {
+                      didFinishWithTextAttachment textAttachment: UnsentTextAttachment) {
         owsFailDebug("Can not post text stories to chat.")
     }
 
