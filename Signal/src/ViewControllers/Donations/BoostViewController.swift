@@ -65,6 +65,12 @@ class BoostViewController: OWSTableViewController2 {
             customAmountTextField.setCurrencyCode(currencyCode)
         }
     }
+
+    private var supportedCurrencyCodes: Set<Currency.Code> {
+        guard let presets = presets else { return [] }
+        return Set(presets.keys)
+    }
+
     private var boostBadge: ProfileBadge?
     private var boostExpiration: UInt64? {
         profileManagerImpl.localUserProfile().profileBadgeInfo?.first { BoostBadgeIds.contains($0.badgeId) }?.expiration
@@ -335,7 +341,10 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
                 let currencyPickerButton = DonationCurrencyPickerButton(currentCurrencyCode: self.currencyCode) { [weak self] in
                     guard let self = self else { return }
                     let vc = CurrencyPickerViewController(
-                        dataSource: StripeCurrencyPickerDataSource(currentCurrencyCode: self.currencyCode)
+                        dataSource: StripeCurrencyPickerDataSource(
+                            currentCurrencyCode: self.currencyCode,
+                            supportedCurrencyCodes: self.supportedCurrencyCodes
+                        )
                     ) { [weak self] currencyCode in
                         self?.currencyCode = currencyCode
                     }
