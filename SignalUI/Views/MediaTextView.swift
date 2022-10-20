@@ -121,9 +121,9 @@ public class MediaTextView: UITextView {
         }
 
         attributedText = NSAttributedString(string: text, attributes: attributes)
-
         // This makes UITextView apply text styling to the text that user enters.
         typingAttributes = attributes
+        tintColor = textForegroundColor
 
         invalidateIntrinsicContentSize()
     }
