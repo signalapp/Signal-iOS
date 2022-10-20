@@ -470,7 +470,12 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             for (address, outgoingMessageState) in outgoingMessageStates {
                 guard let uuid = address.uuid else { continue }
                 guard var recipientState = recipientStates[uuid] else { continue }
-                recipientState.sendingState = outgoingMessageState.state
+
+                // Only take the sending state from the message if we're in a transient state
+                if recipientState.sendingState != .sent {
+                    recipientState.sendingState = outgoingMessageState.state
+                }
+
                 recipientState.sendingErrorCode = outgoingMessageState.errorCode?.intValue
                 recipientStates[uuid] = recipientState
             }
