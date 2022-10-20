@@ -85,6 +85,8 @@ class MyStoryCell: UITableViewCell {
     func configure(with model: MyStoryViewModel, addStoryAction: @escaping () -> Void) {
         configureSubtitle(with: model)
 
+        self.backgroundColor = .clear
+
         titleLabel.font = .ows_dynamicTypeHeadline
         titleLabel.textColor = Theme.primaryTextColor
 
