@@ -9,8 +9,16 @@ class DonationMegaphone: MegaphoneView {
     init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {
         super.init(experienceUpgrade: experienceUpgrade)
 
-        titleText = NSLocalizedString("DONATE_MEGAPHONE_TITLE", comment: "Title for donate megaphone")
-        bodyText = NSLocalizedString("DONATE_MEGAPHONE_BODY", comment: "Body for donate megaphone")
+        titleText = NSLocalizedString(
+            "DONATE_MEGAPHONE_TITLE",
+            value: "Donate to Signal",
+            comment: "Title for donate megaphone"
+        )
+        bodyText = NSLocalizedString(
+            "DONATE_MEGAPHONE_BODY",
+            value: "Signal is funded by your donations. Privacy over profit.",
+            comment: "Body for donate megaphone"
+        )
         imageName = "donate-megaphone"
 
         setButtons(

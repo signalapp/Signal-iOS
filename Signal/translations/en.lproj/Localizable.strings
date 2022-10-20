@@ -1784,7 +1784,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Donate";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Signal is funded by your donations. Privacy over profit.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Not Now";
