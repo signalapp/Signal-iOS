@@ -31,7 +31,7 @@ done
 
 # Search directories for .m & .h files and collect string definitions with genstrings.
 # Exclude the files that define OWSLocalizedString for Swift and ObjC, though.
-find "${TARGETS[@]}" '(' -name "*.m" -or -name "*.h" -or -name "*.swift" ')' -and -not '(' -name 'LocalizedStringAccess.swift' -or -name 'SignalCoreKit.h' ')' -exec genstrings -s OWSLocalizedString -skipTable "PluralAware" -o "$TMP" "{}" "+"
+find "${TARGETS[@]}" '(' -name "*.m" -or -name "*.h" -or -name "*.swift" ')' -and -not '(' -name 'LocalizedStringAccess.swift' -or -name 'SignalCoreKit.h' ')' -exec genstrings -s OWSLocalizedString -o "$TMP" "{}" "+"
 
 # We have to convert the new .strings files to UTF-8 in order to deal with them
 # STRINGFILE is already UTF-8.
@@ -52,3 +52,4 @@ echo "$OLDUTF8" | grep -Eo '^".*"' | \
 		if($2 ~ /"$/){$2 = $2";"};
 		print}' - <(echo "$NEWUTF8") > $STRINGFILE
 
+swift run --package-path Scripts/translation-tool translation-tool genstrings-pluralaware "$TMP"

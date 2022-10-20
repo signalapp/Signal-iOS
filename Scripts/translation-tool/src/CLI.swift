@@ -8,6 +8,7 @@ import Foundation
 enum Constant {
     static let concurrentRequestLimit = 12
     static let projectIdentifier = "4b899d72e"
+    static let repositoryURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
 }
 
 @main
@@ -16,32 +17,51 @@ struct CLI {
     // MARK: - Entrypoint
 
     static func main() async throws {
+        var remainingArgs = CommandLine.arguments.dropFirst()
+        while let arg = remainingArgs.popFirst() {
+            switch arg {
+            case "upload-metadata":
+                try await loadCLI().uploadFiles(metadataFiles)
+            case "upload-resources":
+                try await loadCLI().uploadFiles(resourceFiles)
+            case "download-metadata":
+                try MetadataFile.checkForUnusedLocalizations(in: Constant.repositoryURL)
+                try await loadCLI().downloadFiles(metadataFiles)
+            case "download-resources":
+                try ResourceFile.checkForUnusedLocalizations(in: Constant.repositoryURL)
+                try await loadCLI().downloadFiles(resourceFiles)
+            case "genstrings-pluralaware":
+                guard let temporaryDirectoryPath = remainingArgs.popFirst() else {
+                    print("Missing temporary directory path")
+                    exit(1)
+                }
+                try Genstrings.filterPluralAware(
+                    resourceFile: pluralAwareFile,
+                    repositoryURL: Constant.repositoryURL,
+                    temporaryDirectoryURL: URL(fileURLWithPath: temporaryDirectoryPath)
+                )
+            default:
+                print("Unknown action: \(arg)")
+            }
+        }
+    }
+
+    private static var loadedCLI: CLI?
+    static func loadCLI() throws -> CLI {
+        if let result = loadedCLI {
+            return result
+        }
         guard let (userIdentifier, userSecret) = try loadUserParameters() else {
             showIntructionsForUserParameters()
         }
-        let repositoryURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
         let client = Smartling(
             projectIdentifier: Constant.projectIdentifier,
             userIdentifier: userIdentifier,
             userSecret: userSecret
         )
-        let cli = CLI(repositoryURL: repositoryURL, client: client)
-        for arg in CommandLine.arguments.dropFirst() {
-            switch arg {
-            case "upload-metadata":
-                try await cli.uploadFiles(metadataFiles)
-            case "upload-resources":
-                try await cli.uploadFiles(resourceFiles)
-            case "download-metadata":
-                try MetadataFile.checkForUnusedLocalizations(in: repositoryURL)
-                try await cli.downloadFiles(metadataFiles)
-            case "download-resources":
-                try ResourceFile.checkForUnusedLocalizations(in: repositoryURL)
-                try await cli.downloadFiles(resourceFiles)
-            default:
-                print("Unknown action: \(arg)")
-            }
-        }
+        let result = CLI(repositoryURL: Constant.repositoryURL, client: client)
+        loadedCLI = result
+        return result
     }
 
     // MARK: - Upload & Download
@@ -51,10 +71,12 @@ struct CLI {
         MetadataFile(filename: "description.txt")
     ]
 
+    private static let pluralAwareFile = ResourceFile(filename: "PluralAware.stringsdict")
+
     private static let resourceFiles: [ResourceFile] = [
         ResourceFile(filename: "InfoPlist.strings"),
         ResourceFile(filename: "Localizable.strings"),
-        ResourceFile(filename: "PluralAware.stringsdict")
+        pluralAwareFile
     ]
 
     var repositoryURL: URL
