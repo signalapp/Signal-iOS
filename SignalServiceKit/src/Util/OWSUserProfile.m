@@ -19,9 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 NSNotificationName const kNSNotificationNameProfileWhitelistDidChange = @"kNSNotificationNameProfileWhitelistDidChange";
 NSNotificationName const kNSNotificationNameLocalProfileDidChange = @"kNSNotificationNameLocalProfileDidChange";
 NSNotificationName const kNSNotificationNameLocalProfileKeyDidChange = @"kNSNotificationNameLocalProfileKeyDidChange";
-
-NSNotificationName const kNSNotificationNameOtherUsersProfileWillChange
-    = @"kNSNotificationNameOtherUsersProfileWillChange";
 NSNotificationName const kNSNotificationNameOtherUsersProfileDidChange
     = @"kNSNotificationNameOtherUsersProfileDidChange";
 
@@ -892,12 +889,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                                                              object:nil
                                                            userInfo:nil];
                                   } else {
-                                      [[NSNotificationCenter defaultCenter]
-                                          postNotificationNameAsync:kNSNotificationNameOtherUsersProfileWillChange
-                                                             object:nil
-                                                           userInfo:@ {
-                                                               kNSNotificationKey_ProfileAddress : self.address,
-                                                           }];
                                       [[NSNotificationCenter defaultCenter]
                                           postNotificationNameAsync:kNSNotificationNameOtherUsersProfileDidChange
                                                              object:nil
