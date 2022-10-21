@@ -101,6 +101,8 @@ open class TextAttachmentView: UIView {
         public static let linkPreviewVMargin: CGFloat = 20
     }
 
+    private var expandedLinkPreviewAreaHeight: CGFloat?
+
     open var isEditing: Bool { false }
 
     public private(set) var textContentSize: CGSize = .zero
@@ -125,6 +127,12 @@ open class TextAttachmentView: UIView {
                 dx: LayoutConstants.linkPreviewHMargin,
                 dy: LayoutConstants.linkPreviewVMargin
             )
+
+            // Save height of link preview with "regular" layout so that we can calculate
+            // if there's enough room to go back from "compact" to "regular".
+            if linkPreviewView.layout == .regular {
+                expandedLinkPreviewAreaHeight = linkPreviewWrapperView.frame.height
+            }
         }
 
         textContentSize = calculateTextContentSize()
@@ -135,6 +143,21 @@ open class TextAttachmentView: UIView {
             let contentHeight = textContentSize.height + LayoutConstants.linkPreviewAreaTopMargin + linkPreviewWrapperView.frame.height
             if contentHeight > contentLayoutGuide.layoutFrame.height {
                 forceCompactLayoutForLinkPreview = true
+                reloadLinkPreviewAppearance()
+                return
+            }
+        }
+
+        // If link preview view has "compact" layout and there's enough vertical space for both text
+        // and link in "regular" size, we disable forcing link preview to be compact.
+        if let linkPreviewView = linkPreviewView, linkPreviewView.layout == .compact,
+           let expandedLinkPreviewAreaHeight = expandedLinkPreviewAreaHeight, forceCompactLayoutForLinkPreview == true {
+            var contentHeight = expandedLinkPreviewAreaHeight
+            if textContentSize.height > 0 {
+                contentHeight += (LayoutConstants.linkPreviewAreaTopMargin + textContentSize.height)
+            }
+            if contentHeight < contentLayoutGuide.layoutFrame.height {
+                forceCompactLayoutForLinkPreview = false
                 reloadLinkPreviewAppearance()
                 return
             }
@@ -354,7 +377,10 @@ open class TextAttachmentView: UIView {
     // MARK: - Link Preview
 
     public var linkPreview: LinkPreviewState? {
-        didSet { reloadLinkPreviewAppearance() }
+        didSet {
+            expandedLinkPreviewAreaHeight = nil
+            reloadLinkPreviewAppearance()
+        }
     }
 
     public private(set) var linkPreviewView: LinkPreviewView?
