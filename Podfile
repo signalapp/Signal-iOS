@@ -11,7 +11,7 @@ abstract_target 'GlobalDependencies' do
   # FIXME: If https://github.com/jedisct1/swift-sodium/pull/249 gets resolved then revert this back to the standard pod
   pod 'Sodium', :git => 'https://github.com/oxen-io/session-ios-swift-sodium.git', branch: 'session-build'
   pod 'GRDB.swift/SQLCipher'
-  pod 'SQLCipher', '~> 4.0'
+  pod 'SQLCipher', '~> 4.5.0' # FIXME: Version 4.5.2 is crashing when access DB settings
 
   # FIXME: We want to remove this once it's been long enough since the migration to GRDB
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/oxen-io/session-ios-yap-database.git', branch: 'signal-release'

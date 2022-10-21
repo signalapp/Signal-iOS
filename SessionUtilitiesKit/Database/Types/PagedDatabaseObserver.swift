@@ -1005,10 +1005,11 @@ public enum PagedData {
         filterSQL: SQL
     ) -> Int {
         let tableNameLiteral: SQL = SQL(stringLiteral: tableName)
+        let finalJoinSQL: SQL = (requiredJoinSQL ?? "")
         let request: SQLRequest<Int> = """
             SELECT \(tableNameLiteral).rowId
             FROM \(tableNameLiteral)
-            \(requiredJoinSQL ?? "")
+            \(finalJoinSQL)
             WHERE \(filterSQL)
         """
         
@@ -1027,12 +1028,14 @@ public enum PagedData {
         offset: Int
     ) -> [Int64] {
         let tableNameLiteral: SQL = SQL(stringLiteral: tableName)
+        let finalJoinSQL: SQL = (requiredJoinSQL ?? "")
+        let finalGroupSQL: SQL = (groupSQL ?? "")
         let request: SQLRequest<Int64> = """
             SELECT \(tableNameLiteral).rowId
             FROM \(tableNameLiteral)
-            \(requiredJoinSQL ?? "")
+            \(finalJoinSQL)
             WHERE \(filterSQL)
-            \(groupSQL ?? "")
+            \(finalGroupSQL)
             ORDER BY \(orderSQL)
             LIMIT \(limit) OFFSET \(offset)
         """
@@ -1052,6 +1055,7 @@ public enum PagedData {
     ) -> Int? {
         let tableNameLiteral: SQL = SQL(stringLiteral: tableName)
         let idColumnLiteral: SQL = SQL(stringLiteral: idColumn)
+        let finalJoinSQL: SQL = (requiredJoinSQL ?? "")
         let request: SQLRequest<Int> = """
             SELECT
                 (data.rowIndex - 1) AS rowIndex -- Converting from 1-Indexed to 0-indexed
@@ -1060,7 +1064,7 @@ public enum PagedData {
                     \(tableNameLiteral).\(idColumnLiteral) AS \(idColumnLiteral),
                     ROW_NUMBER() OVER (ORDER BY \(orderSQL)) AS rowIndex
                 FROM \(tableNameLiteral)
-                \(requiredJoinSQL ?? "")
+                \(finalJoinSQL)
                 WHERE \(filterSQL)
             ) AS data
             WHERE \(SQL("data.\(idColumnLiteral) = \(id)"))
@@ -1083,6 +1087,7 @@ public enum PagedData {
         guard !rowIds.isEmpty else { return [] }
         
         let tableNameLiteral: SQL = SQL(stringLiteral: tableName)
+        let finalJoinSQL: SQL = (requiredJoinSQL ?? "")
         let request: SQLRequest<RowIndexInfo> = """
             SELECT
                 data.rowId AS rowId,
@@ -1092,7 +1097,7 @@ public enum PagedData {
                     \(tableNameLiteral).rowid AS rowid,
                     ROW_NUMBER() OVER (ORDER BY \(orderSQL)) AS rowIndex
                 FROM \(tableNameLiteral)
-                \(requiredJoinSQL ?? "")
+                \(finalJoinSQL)
                 WHERE \(filterSQL)
             ) AS data
             WHERE \(SQL("data.rowid IN \(rowIds)"))

@@ -469,7 +469,7 @@ public final class OpenGroupManager: NSObject {
                 }
         }
         
-        db.afterNextTransactionCommit { db in
+        db.afterNextTransaction { db in
             // Start the poller if needed
             if dependencies.cache.pollers[server.lowercased()] == nil {
                 dependencies.mutableCache.mutate {

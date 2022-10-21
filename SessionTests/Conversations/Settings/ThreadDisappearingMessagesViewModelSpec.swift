@@ -23,7 +23,7 @@ class ThreadDisappearingMessagesViewModelSpec: QuickSpec {
             
             beforeEach {
                 mockStorage = Storage(
-                    customWriter: DatabaseQueue(),
+                    customWriter: try! DatabaseQueue(),
                     customMigrations: [
                         SNUtilitiesKit.migrations(),
                         SNSnodeKit.migrations(),

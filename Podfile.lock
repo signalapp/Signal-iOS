@@ -27,8 +27,8 @@ PODS:
   - DifferenceKit/Core (1.2.0)
   - DifferenceKit/UIKitExtension (1.2.0):
     - DifferenceKit/Core
-  - GRDB.swift/SQLCipher (5.26.0):
-    - SQLCipher (>= 3.4.0)
+  - GRDB.swift/SQLCipher (6.1.0):
+    - SQLCipher (>= 3.4.2)
   - libwebp (1.2.1):
     - libwebp/demux (= 1.2.1)
     - libwebp/mux (= 1.2.1)
@@ -154,7 +154,7 @@ DEPENDENCIES:
   - SignalCoreKit (from `https://github.com/oxen-io/session-ios-core-kit`, branch `session-version`)
   - SocketRocket (~> 0.5.1)
   - Sodium (from `https://github.com/oxen-io/session-ios-swift-sodium.git`, branch `session-build`)
-  - SQLCipher (~> 4.0)
+  - SQLCipher (~> 4.5.0)
   - SwiftProtobuf (~> 1.5.0)
   - WebRTC-lib
   - YapDatabase/SQLCipher (from `https://github.com/oxen-io/session-ios-yap-database.git`, branch `signal-release`)
@@ -222,7 +222,7 @@ SPEC CHECKSUMS:
   CryptoSwift: a532e74ed010f8c95f611d00b8bbae42e9fe7c17
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
   DifferenceKit: 5659c430bb7fe45876fa32ce5cba5d6167f0c805
-  GRDB.swift: 1395cb3556df6b16ed69dfc74c3886abc75d2825
+  GRDB.swift: 611778a5e113385373baeb3e2ce474887d1aadb7
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   Nimble: 5316ef81a170ce87baf72dd961f22f89a602ff84
   NVActivityIndicatorView: 1f6c5687f1171810aa27a3296814dc2d7dec3667
@@ -242,6 +242,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 430e3b57d986dc8890415294fc6cf5e4eabfce3e
+PODFILE CHECKSUM: 402850f74d70b3b57fc81eff82d0fc86d695b392
 
 COCOAPODS: 1.11.3

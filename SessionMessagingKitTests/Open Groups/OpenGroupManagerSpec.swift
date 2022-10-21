@@ -100,7 +100,7 @@ class OpenGroupManagerSpec: QuickSpec {
                 mockOGMCache = MockOGMCache()
                 mockGeneralCache = MockGeneralCache()
                 mockStorage = Storage(
-                    customWriter: DatabaseQueue(),
+                    customWriter: try! DatabaseQueue(),
                     customMigrations: [
                         SNUtilitiesKit.migrations(),
                         SNMessagingKit.migrations()
