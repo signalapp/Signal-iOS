@@ -647,6 +647,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     transaction: transaction
                 ) { thread, stop in
                     guard thread.isGroupV2Thread else { return }
+                    guard thread.isLocalUserFullMember else { return }
                     stop.pointee = true
                     needsReactiveProfileKeyMessage = true
                 }
