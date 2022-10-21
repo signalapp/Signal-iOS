@@ -4034,7 +4034,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "Incorrect PIN";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New Pin";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New PIN";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
