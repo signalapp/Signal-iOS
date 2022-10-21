@@ -289,12 +289,12 @@ public final class CallService: LightweightCallManager {
                 return
             }
 
-            guard granted else {
-                return frontmostViewController.ows_showNoMicrophonePermissionActionSheet()
+            if !granted {
+                frontmostViewController.ows_showNoMicrophonePermissionActionSheet()
             }
 
-            // Success callback; microphone permissions are granted.
-            self.updateIsLocalAudioMutedWithMicrophonePermission(call: call, isLocalAudioMuted: isLocalAudioMuted)
+            let mutedAfterAskingForPermission = !granted
+            self.updateIsLocalAudioMutedWithMicrophonePermission(call: call, isLocalAudioMuted: mutedAfterAskingForPermission)
         }
     }
 
@@ -350,10 +350,8 @@ public final class CallService: LightweightCallManager {
                 return
             }
 
-            if granted {
-                // Success callback; camera permissions are granted.
-                self.updateIsLocalVideoMutedWithCameraPermissions(call: call, isLocalVideoMuted: isLocalVideoMuted)
-            }
+            let mutedAfterAskingForPermission = !granted
+            self.updateIsLocalVideoMutedWithCameraPermissions(call: call, isLocalVideoMuted: mutedAfterAskingForPermission)
         }
     }
 
