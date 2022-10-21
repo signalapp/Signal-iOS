@@ -27,29 +27,13 @@ public enum RequestMakerError: Error {
 
 // MARK: -
 
-@objc(OWSRequestMakerResult)
-public class RequestMakerResult: NSObject {
-    @objc
+public struct RequestMakerResult {
     public let response: HTTPResponse
-
-    @objc
     public let wasSentByUD: Bool
-
-    @objc
     public let wasSentByWebsocket: Bool
 
-    @objc
     public var responseJson: Any? {
         response.responseBodyJson
-    }
-
-    @objc
-    public init(response: HTTPResponse,
-                wasSentByUD: Bool,
-                wasSentByWebsocket: Bool) {
-        self.response = response
-        self.wasSentByUD = wasSentByUD
-        self.wasSentByWebsocket = wasSentByWebsocket
     }
 }
 
@@ -57,8 +41,7 @@ public class RequestMakerResult: NSObject {
 //
 // * UD auth-to-Non-UD auth failover.
 // * Websocket-to-REST failover.
-@objc(OWSRequestMaker)
-public class RequestMaker: NSObject {
+public final class RequestMaker: Dependencies {
 
     public typealias RequestFactoryBlock = (SMKUDAccessKey?) -> TSRequest?
     public typealias UDAuthFailureBlock = () -> Void
@@ -72,7 +55,6 @@ public class RequestMaker: NSObject {
     private let udAccess: OWSUDAccess?
     private let canFailoverUDAuth: Bool
 
-    @objc
     public init(
         label: String,
         requestFactoryBlock: @escaping RequestFactoryBlock,
@@ -89,11 +71,6 @@ public class RequestMaker: NSObject {
         self.address = address
         self.udAccess = udAccess
         self.canFailoverUDAuth = canFailoverUDAuth
-    }
-
-    @objc
-    public func makeRequestObjc() -> AnyPromise {
-        AnyPromise(makeRequest())
     }
 
     public func makeRequest() -> Promise<RequestMakerResult> {
