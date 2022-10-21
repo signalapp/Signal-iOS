@@ -485,15 +485,14 @@ fileprivate extension RemoteAttestation {
         let isvEnclaveQuoteStatus: String
         let version: Int
         let advisoryURL: String?
-        let advisoryIDs: [String]?
+        let advisoryIDs: Set<String>?
+
+        private static let allowedAdvisoryIDs = ["INTEL-SA-00334", "INTEL-SA-00615"]
 
         var hasValidStatus: Bool {
             switch isvEnclaveQuoteStatus {
             case "OK": return true
-            // We can safely treat this status as OK IFF the only advisor ID is "INTEL-SA-00334",
-            // because it indicates that the hardware is vulnerable to LVI and the software needs
-            // to implement mitigations for such. Our enclaves all appropriately have mitigations.
-            case "SW_HARDENING_NEEDED": return version == 4 && advisoryIDs == ["INTEL-SA-00334"]
+            case "SW_HARDENING_NEEDED": return version == 4 && (advisoryIDs ?? Set()).isSubset(of: Self.allowedAdvisoryIDs)
             default: return false
             }
         }
