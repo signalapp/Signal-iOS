@@ -367,33 +367,37 @@ public class ProfileFetcherJob: NSObject {
             udAccess = udManager.udAccess(forAddress: address, requireSyncAccess: false)
         }
 
-        let canFailoverUDAuth = true
         var currentVersionedProfileRequest: VersionedProfileRequest?
-        let requestMaker = RequestMaker(label: "Profile Fetch",
-                                        requestFactoryBlock: { (udAccessKeyForRequest) -> TSRequest? in
-            // Clear out any existing request.
-            currentVersionedProfileRequest = nil
+        let requestMaker = RequestMaker(
+            label: "Profile Fetch",
+            requestFactoryBlock: { (udAccessKeyForRequest) -> TSRequest? in
+                // Clear out any existing request.
+                currentVersionedProfileRequest = nil
 
-            if shouldUseVersionedFetch {
-                do {
-                    let request = try self.versionedProfiles.versionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
-                    currentVersionedProfileRequest = request
-                    return request.request
-                } catch {
-                    owsFailDebug("Error: \(error)")
-                    return nil
+                if shouldUseVersionedFetch {
+                    do {
+                        let request = try self.versionedProfiles.versionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
+                        currentVersionedProfileRequest = request
+                        return request.request
+                    } catch {
+                        owsFailDebug("Error: \(error)")
+                        return nil
+                    }
+                } else {
+                    Logger.info("Unversioned profile fetch.")
+                    return OWSRequestFactory.getUnversionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
                 }
-            } else {
-                Logger.info("Unversioned profile fetch.")
-                return OWSRequestFactory.getUnversionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
-            }
-        }, udAuthFailureBlock: {
-            // Do nothing
-        }, websocketFailureBlock: {
-            // Do nothing
-        }, address: address,
-                                        udAccess: udAccess,
-                                        canFailoverUDAuth: canFailoverUDAuth)
+            },
+            udAuthFailureBlock: {
+                // Do nothing
+            },
+            websocketFailureBlock: {
+                // Do nothing
+            },
+            address: address,
+            udAccess: udAccess,
+            canFailoverUDAuth: true
+        )
 
         return firstly {
             return requestMaker.makeRequest()

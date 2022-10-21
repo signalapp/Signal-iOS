@@ -213,23 +213,30 @@ public extension MessageSender {
         // Don't use UD for story preKey fetches, we don't have a valid UD auth key
         let udAccess = messageSend.message.isStorySend ? nil : messageSend.udSendingAccess?.udAccess
 
-        let requestMaker = RequestMaker(label: "Prekey Fetch",
-                                        requestFactoryBlock: { (udAccessKeyForRequest: SMKUDAccessKey?) -> TSRequest? in
-                                            Logger.verbose("Building prekey request for recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
-                                            return OWSRequestFactory.recipientPreKeyRequest(with: recipientAddress,
-                                                                                            deviceId: deviceId.stringValue,
-                                                                                            udAccessKey: udAccessKeyForRequest)
-                                        }, udAuthFailureBlock: {
-                                            // Note the UD auth failure so subsequent retries
-                                            // to this recipient also use basic auth.
-                                            messageSend.setHasUDAuthFailed()
-                                        }, websocketFailureBlock: {
-                                            // Note the websocket failure so subsequent retries
-                                            // to this recipient also use REST.
-                                            messageSend.hasWebsocketSendFailed = true
-                                        }, address: recipientAddress,
-                                        udAccess: udAccess,
-                                        canFailoverUDAuth: true)
+        let requestMaker = RequestMaker(
+            label: "Prekey Fetch",
+            requestFactoryBlock: { (udAccessKeyForRequest: SMKUDAccessKey?) -> TSRequest? in
+                Logger.verbose("Building prekey request for recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
+                return OWSRequestFactory.recipientPreKeyRequest(
+                    with: recipientAddress,
+                    deviceId: deviceId.stringValue,
+                    udAccessKey: udAccessKeyForRequest
+                )
+            },
+            udAuthFailureBlock: {
+                // Note the UD auth failure so subsequent retries
+                // to this recipient also use basic auth.
+                messageSend.setHasUDAuthFailed()
+            },
+            websocketFailureBlock: {
+                // Note the websocket failure so subsequent retries
+                // to this recipient also use REST.
+                messageSend.hasWebsocketSendFailed = true
+            },
+            address: recipientAddress,
+            udAccess: udAccess,
+            canFailoverUDAuth: true
+        )
 
         firstly(on: .global()) { () -> Promise<RequestMakerResult> in
             return requestMaker.makeRequest()
