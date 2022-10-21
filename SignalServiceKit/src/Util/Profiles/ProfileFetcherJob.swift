@@ -396,7 +396,7 @@ public class ProfileFetcherJob: NSObject {
             },
             address: address,
             udAccess: udAccess,
-            canFailoverUDAuth: true
+            options: [.allowIdentifiedFallback, .isProfileFetch]
         )
 
         return firstly {

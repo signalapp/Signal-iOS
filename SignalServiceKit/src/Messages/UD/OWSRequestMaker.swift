@@ -47,13 +47,29 @@ public final class RequestMaker: Dependencies {
     public typealias UDAuthFailureBlock = () -> Void
     public typealias WebsocketFailureBlock = () -> Void
 
+    public struct Options: OptionSet {
+        public let rawValue: Int
+
+        public init(rawValue: Int) {
+            self.rawValue = rawValue
+        }
+
+        /// If the initial request uses UD and that fails, send the request again as
+        /// an identified request.
+        static let allowIdentifiedFallback = Options(rawValue: 1 << 0)
+
+        /// This RequestMaker is used when fetching profiles, so it shouldn't kick
+        /// off additional profile fetches when errors occur.
+        static let isProfileFetch = Options(rawValue: 1 << 1)
+    }
+
     private let label: String
     private let requestFactoryBlock: RequestFactoryBlock
     private let udAuthFailureBlock: UDAuthFailureBlock
     private let websocketFailureBlock: WebsocketFailureBlock
     private let address: SignalServiceAddress
     private let udAccess: OWSUDAccess?
-    private let canFailoverUDAuth: Bool
+    private let options: Options
 
     public init(
         label: String,
@@ -62,7 +78,7 @@ public final class RequestMaker: Dependencies {
         websocketFailureBlock: @escaping WebsocketFailureBlock,
         address: SignalServiceAddress,
         udAccess: OWSUDAccess?,
-        canFailoverUDAuth: Bool
+        options: Options
     ) {
         self.label = label
         self.requestFactoryBlock = requestFactoryBlock
@@ -70,7 +86,7 @@ public final class RequestMaker: Dependencies {
         self.websocketFailureBlock = websocketFailureBlock
         self.address = address
         self.udAccess = udAccess
-        self.canFailoverUDAuth = canFailoverUDAuth
+        self.options = options
     }
 
     public func makeRequest() -> Promise<RequestMakerResult> {
@@ -128,10 +144,12 @@ public final class RequestMaker: Dependencies {
                     // If a UD request fails due to service response (as opposed to network
                     // failure), mark address as _not_ in UD mode, then retry.
                     self.udManager.setUnidentifiedAccessMode(.disabled, address: self.address)
-                    self.profileManager.fetchProfile(for: self.address)
+                    if !self.options.contains(.isProfileFetch) {
+                        self.profileManager.fetchProfile(for: self.address)
+                    }
                     self.udAuthFailureBlock()
 
-                    if self.canFailoverUDAuth {
+                    if self.options.contains(.allowIdentifiedFallback) {
                         Logger.info("UD websocket request '\(self.label)' auth failed; failing over to non-UD websocket request.")
                         return self.makeRequestInternal(skipUD: true, skipWebsocket: skipWebsocket)
                     } else {
@@ -183,10 +201,12 @@ public final class RequestMaker: Dependencies {
                     // If a UD request fails due to service response (as opposed to network
                     // failure), mark recipient as _not_ in UD mode, then retry.
                     self.udManager.setUnidentifiedAccessMode(.disabled, address: self.address)
-                    self.profileManager.fetchProfile(for: self.address)
+                    if !self.options.contains(.isProfileFetch) {
+                        self.profileManager.fetchProfile(for: self.address)
+                    }
                     self.udAuthFailureBlock()
 
-                    if self.canFailoverUDAuth {
+                    if self.options.contains(.allowIdentifiedFallback) {
                         Logger.info("UD REST request '\(self.label)' auth failed; failing over to non-UD REST request.")
                         return self.makeRequestInternal(skipUD: true, skipWebsocket: skipWebsocket)
                     } else {
@@ -214,7 +234,6 @@ public final class RequestMaker: Dependencies {
         guard udAccess.udAccessMode == .unknown else {
             return
         }
-
         if udAccess.isRandomKey {
             // If a UD request succeeds for an unknown user with a random key,
             // mark address as .unrestricted.
@@ -224,8 +243,13 @@ public final class RequestMaker: Dependencies {
             // mark address as .enabled.
             udManager.setUnidentifiedAccessMode(.enabled, address: address)
         }
-        DispatchQueue.main.async {
-            self.profileManager.fetchProfile(for: self.address)
+
+        if !self.options.contains(.isProfileFetch) {
+            // If this request isn't a profile fetch, kick off a profile fetch. If it
+            // is a profile fetch, don't bother fetching it *again*.
+            DispatchQueue.main.async {
+                self.profileManager.fetchProfile(for: self.address)
+            }
         }
     }
 }

@@ -235,7 +235,7 @@ public extension MessageSender {
             },
             address: recipientAddress,
             udAccess: udAccess,
-            canFailoverUDAuth: true
+            options: [.allowIdentifiedFallback]
         )
 
         firstly(on: .global()) { () -> Promise<RequestMakerResult> in
@@ -845,7 +845,7 @@ public extension MessageSender {
             },
             address: address,
             udAccess: messageSend.udSendingAccess?.udAccess,
-            canFailoverUDAuth: false
+            options: []
         )
 
         // Client-side fanout can yield many
