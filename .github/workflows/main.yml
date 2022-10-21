@@ -7,6 +7,15 @@ on:
       - main
       - release/*
 
+# On PRs, "head_ref" is defined and is consistent across updates. On
+# pushes, it's not defined, so we use "run_id", which is unique across
+# every run; as a result, all actions on pushes will run to completion.
+#
+# Reference: https://docs.github.com/en/actions/using-jobs/using-concurrency
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 env:
   # Path format pulled from https://github.com/actions/virtual-environments/blob/main/images/macos/macos-11-Readme.md#xcode
   DEVELOPER_DIR: /Applications/Xcode_14.0.1.app
