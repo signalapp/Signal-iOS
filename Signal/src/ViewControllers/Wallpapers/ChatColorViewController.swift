@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 class ChatColorViewController: OWSTableViewController2 {
 

@@ -4,8 +4,9 @@
 //
 
 import Foundation
-import UIKit
+import SignalMessaging
 import SignalUI
+import UIKit
 
 class PrivateStorySettingsViewController: OWSTableViewController2 {
     let thread: TSPrivateStoryThread

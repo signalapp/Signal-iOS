@@ -5,6 +5,7 @@
 
 import Foundation
 import SafariServices
+import SignalMessaging
 
 @objc
 extension ConversationViewController: MessageRequestDelegate {

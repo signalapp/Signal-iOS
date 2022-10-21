@@ -4,8 +4,9 @@
 //
 
 import Foundation
-import SignalUI
+import SignalMessaging
 import SignalServiceKit
+import SignalUI
 
 public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 

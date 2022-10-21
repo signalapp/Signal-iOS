@@ -5,6 +5,7 @@
 
 import Foundation
 import Lottie
+import SignalMessaging
 
 class DeviceTransferInitialViewController: DeviceTransferBaseViewController {
     let animationView = AnimationView(name: "transfer")

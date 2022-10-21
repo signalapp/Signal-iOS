@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 class DisappearingMessagesTimerSettingsViewController: OWSTableViewController2 {
     let thread: TSThread?

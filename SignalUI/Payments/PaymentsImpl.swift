@@ -5,6 +5,7 @@
 
 import Foundation
 import MobileCoin
+import SignalMessaging
 import SignalServiceKit
 
 @objc

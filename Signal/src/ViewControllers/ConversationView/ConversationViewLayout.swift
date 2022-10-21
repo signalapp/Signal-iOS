@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 public enum ScrollContinuity: CustomStringConvertible {
     // Do not try to maintain scroll continuity.

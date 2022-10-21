@@ -5,6 +5,7 @@
 
 import Foundation
 import Lottie
+import SignalMessaging
 
 class MegaphoneView: UIView, ExperienceUpgradeView {
     let experienceUpgrade: ExperienceUpgrade

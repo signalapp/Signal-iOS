@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 // TODO: Rename to NewGroupViewController; remove old view.
 @objc

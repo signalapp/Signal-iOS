@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import MultipeerConnectivity
+import SignalMessaging
+import UIKit
 
 @objc
 public class OnboardingTransferProgressViewController: OnboardingBaseViewController {

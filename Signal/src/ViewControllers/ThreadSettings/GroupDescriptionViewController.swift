@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 protocol GroupDescriptionViewControllerDelegate: AnyObject {
     func groupDescriptionViewControllerDidComplete(groupDescription: String?)

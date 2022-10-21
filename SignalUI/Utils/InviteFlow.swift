@@ -6,6 +6,7 @@
 import ContactsUI
 import Foundation
 import MessageUI
+import SignalMessaging
 import SignalServiceKit
 
 @objc(OWSInviteFlow)

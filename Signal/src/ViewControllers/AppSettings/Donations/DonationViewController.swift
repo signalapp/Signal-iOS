@@ -4,9 +4,10 @@
 //
 
 import Foundation
+import SafariServices
+import SignalMessaging
 import SignalUI
 import UIKit
-import SafariServices
 
 class DonationViewController: OWSTableViewController2 {
     private enum State {

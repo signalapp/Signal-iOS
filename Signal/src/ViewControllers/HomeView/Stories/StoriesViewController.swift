@@ -5,9 +5,10 @@
 
 import Foundation
 import Photos
+import SignalMessaging
 import SignalServiceKit
-import UIKit
 import SignalUI
+import UIKit
 
 class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
     let tableView = UITableView()

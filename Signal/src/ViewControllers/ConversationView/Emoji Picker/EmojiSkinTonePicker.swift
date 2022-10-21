@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 class EmojiSkinTonePicker: UIView {
     let emoji: Emoji

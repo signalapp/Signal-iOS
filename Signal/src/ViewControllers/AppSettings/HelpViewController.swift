@@ -5,6 +5,7 @@
 
 import Foundation
 import SafariServices
+import SignalMessaging
 
 @objc(OWSHelpViewController)
 final class HelpViewController: OWSTableViewController2 {

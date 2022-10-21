@@ -5,6 +5,7 @@
 
 import AVFoundation
 import Foundation
+import SignalMessaging
 import SignalUI
 
 extension ConversationViewController: AttachmentApprovalViewControllerDelegate {

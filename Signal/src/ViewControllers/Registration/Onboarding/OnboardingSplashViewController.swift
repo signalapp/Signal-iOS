@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import SafariServices
+import SignalMessaging
 import SignalServiceKit
+import UIKit
 
 @objc
 public class OnboardingSplashViewController: OnboardingBaseViewController {

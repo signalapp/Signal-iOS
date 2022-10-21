@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 enum AvatarContext {
     case groupId(Data)

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 class NotificationSettingsContentViewController: OWSTableViewController2 {

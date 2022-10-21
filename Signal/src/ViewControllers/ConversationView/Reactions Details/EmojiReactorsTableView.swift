@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 class EmojiReactorsTableView: UITableView {
     struct ReactorItem {

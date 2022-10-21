@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 class AvatarEditViewController: OWSTableViewController2 {
     private let originalModel: AvatarModel

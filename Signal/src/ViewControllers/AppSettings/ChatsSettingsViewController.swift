@@ -5,6 +5,7 @@
 
 import Foundation
 import IntentsUI
+import SignalMessaging
 
 @objc
 class ChatsSettingsViewController: OWSTableViewController2 {

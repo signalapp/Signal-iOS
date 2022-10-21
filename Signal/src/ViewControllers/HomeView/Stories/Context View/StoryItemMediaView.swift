@@ -3,13 +3,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import SignalCoreKit
-import YYImage
-import UIKit
-import SignalUI
-import SafariServices
 import CoreMedia
+import Foundation
+import SafariServices
+import SignalCoreKit
+import SignalMessaging
+import SignalUI
+import UIKit
+import YYImage
 
 protocol StoryItemMediaViewDelegate: ContextMenuButtonDelegate {
     func storyItemMediaViewWantsToPause(_ storyItemMediaView: StoryItemMediaView)

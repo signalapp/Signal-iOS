@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 class NotificationPermissionReminderMegaphone: MegaphoneView {
     weak var actionSheetController: ActionSheetController?

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 import SignalServiceKit
 
 class DatabaseRecoveryViewController: OWSViewController {

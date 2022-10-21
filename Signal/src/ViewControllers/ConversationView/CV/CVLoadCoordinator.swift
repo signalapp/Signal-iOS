@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 import SignalServiceKit
 
 protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {

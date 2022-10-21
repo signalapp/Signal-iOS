@@ -4,8 +4,9 @@
 //
 
 import Foundation
-import UIKit
+import SignalMessaging
 import SignalUI
+import UIKit
 
 // TODO: We could theoretically replace this with QuotedMessageView, but that's very
 // deeply tied into the CV rendering system and not easy to use outside of that context.

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 import SignalUI
 
 // Caching builder used for a single CVC load.

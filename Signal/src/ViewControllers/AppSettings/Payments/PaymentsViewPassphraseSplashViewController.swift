@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 public protocol PaymentsViewPassphraseDelegate: AnyObject {
     func viewPassphraseDidComplete()

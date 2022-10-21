@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalCoreKit
+import SignalMessaging
 
 class StoryGroupReplyLoader: Dependencies {
     private let loadingLock = UnfairLock()

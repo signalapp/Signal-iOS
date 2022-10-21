@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import BonMot
 import Foundation
 import Lottie
+import SignalMessaging
 import UIKit
-import BonMot
 
 // MARK: - Profile badge lookup
 

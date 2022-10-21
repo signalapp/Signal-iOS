@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 @objc(OWSAvatarTableViewCell)
 public class AvatarTableViewCell: UITableViewCell {

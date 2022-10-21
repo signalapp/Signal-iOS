@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
     private var useProxy = SignalProxy.useProxy

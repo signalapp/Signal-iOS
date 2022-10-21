@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
+import SignalMessaging
 import SignalUI
+import UIKit
 
 @objc(OWSAvatarViewController)
 class AvatarViewController: UIViewController, InteractivelyDismissableViewController {

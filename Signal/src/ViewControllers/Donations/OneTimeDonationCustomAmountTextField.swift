@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 protocol OneTimeDonationCustomAmountTextFieldDelegate: AnyObject {
     func oneTimeDonationCustomAmountTextFieldStateDidChange(_ textField: OneTimeDonationCustomAmountTextField)

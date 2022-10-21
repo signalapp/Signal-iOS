@@ -5,6 +5,7 @@
 
 import Foundation
 import MultipeerConnectivity
+import SignalMessaging
 
 public class OnboardingTransferQRCodeViewController: OnboardingBaseViewController {
 

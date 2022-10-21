@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import SignalServiceKit
 import ContactsUI
+import Foundation
 import MessageUI
+import SignalMessaging
+import SignalServiceKit
 
 @objc
 public protocol ContactShareViewHelperDelegate: AnyObject {

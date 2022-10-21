@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 class OnboardingModeSwitchConfirmationViewController: OnboardingBaseViewController {
     var warningText: String?

@@ -3,11 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import SafariServices
 import SignalCoreKit
+import SignalMessaging
 import SignalServiceKit
 import SignalUI
+import UIKit
 
 @objc(OWSPinSetupViewController)
 public class PinSetupViewController: OWSViewController {

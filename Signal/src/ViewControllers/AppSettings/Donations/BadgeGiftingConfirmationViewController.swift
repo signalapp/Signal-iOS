@@ -4,9 +4,10 @@
 //
 
 import Foundation
-import UIKit
 import PassKit
+import SignalMessaging
 import SignalServiceKit
+import UIKit
 
 class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     // MARK: - View state

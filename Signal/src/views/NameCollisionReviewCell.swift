@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 struct NameCollisionCellModel {
     let address: SignalServiceAddress

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 protocol PreviewWallpaperDelegate: AnyObject {
     func previewWallpaperDidCancel(_ vc: PreviewWallpaperViewController)

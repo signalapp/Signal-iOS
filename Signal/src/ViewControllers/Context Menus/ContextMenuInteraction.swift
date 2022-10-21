@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 /// UIContextMenuInteractionDelegate analog
 public protocol ContextMenuInteractionDelegate: AnyObject {

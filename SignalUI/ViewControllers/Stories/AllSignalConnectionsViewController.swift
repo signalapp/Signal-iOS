@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 public class AllSignalConnectionsViewController: OWSTableViewController2 {
     let collation = UILocalizedIndexedCollation.current()

@@ -5,6 +5,7 @@
 
 import Foundation
 import Lottie
+import SignalMessaging
 
 @objc
 public enum PaymentsSettingsMode: UInt, CustomStringConvertible {

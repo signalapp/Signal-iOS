@@ -5,6 +5,7 @@
 
 import Foundation
 import MobileCoin
+import SignalMessaging
 
 public class PaymentsReconciliation: Dependencies {
 

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 import SignalServiceKit
 
 public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {

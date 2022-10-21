@@ -5,6 +5,7 @@
 
 import Foundation
 import Photos
+import SignalMessaging
 import UIKit
 
 protocol ImagePickerGridControllerDelegate: AnyObject {

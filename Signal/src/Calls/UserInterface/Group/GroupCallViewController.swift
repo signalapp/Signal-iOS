@@ -4,8 +4,9 @@
 //
 
 import Foundation
-import SignalUI
+import SignalMessaging
 import SignalRingRTC
+import SignalUI
 
 // TODO: Eventually add 1:1 call support to this view
 // and replace CallViewController

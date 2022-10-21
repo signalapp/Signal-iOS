@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 // TODO: Decompose into multiple source files?
 @objc

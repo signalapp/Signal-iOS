@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import ContactsUI
+import Foundation
+import SignalMessaging
 
 public extension ConversationViewController {
 

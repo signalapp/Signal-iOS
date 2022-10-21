@@ -5,6 +5,7 @@
 
 import Foundation
 import Photos
+import SignalMessaging
 
 @objc
 protocol AttachmentKeyboardDelegate {

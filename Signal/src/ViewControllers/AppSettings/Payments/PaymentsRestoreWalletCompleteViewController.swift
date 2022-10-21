@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController2 {
 

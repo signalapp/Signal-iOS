@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 class PinReminderMegaphone: MegaphoneView {
     init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {

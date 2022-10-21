@@ -6,6 +6,7 @@
 import Foundation
 import MessageUI
 import SignalCoreKit
+import SignalMessaging
 
 // This extension reproduces some of the UITextView link interaction behavior.
 // This is how UITextView behaves:

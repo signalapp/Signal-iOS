@@ -4,8 +4,9 @@
 //
 
 import Foundation
-import QuickLook
 import PassKit
+import QuickLook
+import SignalMessaging
 
 @objc
 public class CVComponentGenericAttachment: CVComponentBase, CVComponent {

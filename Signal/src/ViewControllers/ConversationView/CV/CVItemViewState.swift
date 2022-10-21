@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 import SignalServiceKit
 
 // CVItemViewState represents the transient, un-persisted values

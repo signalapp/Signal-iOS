@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 import UIKit
 
 protocol GroupAttributesEditorHelperDelegate: AnyObject {

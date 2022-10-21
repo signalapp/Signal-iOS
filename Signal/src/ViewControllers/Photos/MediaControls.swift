@@ -4,6 +4,7 @@
 //
 
 import Photos
+import SignalMessaging
 import SignalUI
 import UIKit
 

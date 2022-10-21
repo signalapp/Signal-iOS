@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 enum ViewOnceState: Equatable {
     case unknown

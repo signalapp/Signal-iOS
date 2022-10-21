@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 public class CVContactShareView: ManualStackView {
 

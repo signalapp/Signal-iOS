@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalCoreKit
+import SignalMessaging
 
 protocol GroupMemberRequestsAndInvitesViewControllerDelegate: AnyObject {
     func requestsAndInvitesViewDidUpdate()

@@ -3,15 +3,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import SignalUI
-import SignalServiceKit
-import UIKit
 import BonMot
+import Foundation
+import Lottie
 import PassKit
 import SafariServices
-import Lottie
 import SignalCoreKit
+import SignalMessaging
+import SignalServiceKit
+import SignalUI
+import UIKit
 
 class SubscriptionViewController: OWSTableViewController2 {
     // MARK: - View controller state

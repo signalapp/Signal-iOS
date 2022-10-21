@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import Contacts
 import Lottie
+import SignalMessaging
+import UIKit
 
 @objc
 public class OnboardingPermissionsViewController: OnboardingBaseViewController {

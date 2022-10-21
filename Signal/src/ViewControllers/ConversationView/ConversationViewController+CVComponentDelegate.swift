@@ -4,8 +4,9 @@
 //
 
 import Foundation
-import QuickLook
 import PassKit
+import QuickLook
+import SignalMessaging
 import SignalServiceKit
 
 extension ConversationViewController: CVComponentDelegate {

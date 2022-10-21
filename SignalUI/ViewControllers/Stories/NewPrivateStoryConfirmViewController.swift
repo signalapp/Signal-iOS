@@ -5,6 +5,7 @@
 
 import Foundation
 import SafariServices
+import SignalMessaging
 import SignalServiceKit
 
 @objc

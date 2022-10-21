@@ -4,8 +4,9 @@
 //
 
 import Foundation
-import UIKit
+import SignalMessaging
 import SignalUI
+import UIKit
 
 class GroupStorySettingsViewController: OWSTableViewController2 {
     let thread: TSGroupThread

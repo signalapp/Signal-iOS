@@ -6,6 +6,7 @@
 import Foundation
 import Photos
 import PhotosUI
+import SignalMessaging
 
 protocol RecentPhotosDelegate: AnyObject {
     var isMediaLibraryAccessGranted: Bool { get }

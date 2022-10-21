@@ -4,8 +4,9 @@
 //
 
 import Foundation
-import UIKit
 import Lottie
+import SignalMessaging
+import UIKit
 
 @objc
 public protocol SendPaymentCompletionDelegate {

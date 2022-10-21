@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 class SoundAndNotificationsSettingsViewController: OWSTableViewController2 {
     let threadViewModel: ThreadViewModel

@@ -5,6 +5,7 @@
 
 import Foundation
 import Photos
+import SignalMessaging
 import SignalUI
 
 protocol SendMediaNavDelegate: AnyObject {

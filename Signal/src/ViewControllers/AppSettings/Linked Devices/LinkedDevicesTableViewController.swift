@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 class LinkedDevicesTableViewController: OWSTableViewController2 {

@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalCoreKit
+import SignalMessaging
 
 @objc
 public class DebugLogUploader: NSObject {

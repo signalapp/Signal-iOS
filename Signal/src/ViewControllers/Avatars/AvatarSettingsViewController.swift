@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import CoreServices
+import Foundation
+import SignalMessaging
 
 class AvatarSettingsViewController: OWSTableViewController2 {
     let context: AvatarContext

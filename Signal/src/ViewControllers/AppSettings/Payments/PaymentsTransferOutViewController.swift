@@ -6,6 +6,7 @@
 import Foundation
 import Lottie
 import MobileCoin
+import SignalMessaging
 
 @objc
 public class PaymentsTransferOutViewController: OWSTableViewController2 {

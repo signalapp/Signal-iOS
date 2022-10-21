@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 protocol GroupPermissionsSettingsDelegate: AnyObject {
     func groupPermissionSettingsDidUpdate()

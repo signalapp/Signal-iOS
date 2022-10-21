@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 protocol GroupMemberViewDelegate: AnyObject {
     var groupMemberViewRecipientSet: OrderedSet<PickedRecipient> { get }

@@ -8,10 +8,11 @@
 //  Created by Almas Sapargali on 7/29/15.
 //  Parts Copyright (c) 2015 almassapargali. All rights reserved.
 
-import MapKit
 import Contacts
 import CoreLocation
 import CoreServices
+import MapKit
+import SignalMessaging
 import UIKit
 
 @objc

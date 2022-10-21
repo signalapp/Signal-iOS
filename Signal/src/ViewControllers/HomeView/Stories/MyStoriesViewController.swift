@@ -4,10 +4,11 @@
 //
 
 import Foundation
-import SignalServiceKit
-import UIKit
-import SignalUI
 import PhotosUI
+import SignalMessaging
+import SignalServiceKit
+import SignalUI
+import UIKit
 
 class MyStoriesViewController: OWSViewController {
     private let tableView = UITableView(frame: .zero, style: .grouped)

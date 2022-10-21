@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CoreServices
 import Foundation
 import Photos
-import CoreServices
+import SignalMessaging
 
 extension ConversationViewController: ConversationInputToolbarDelegate {
 

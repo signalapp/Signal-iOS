@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import AVFoundation
-import Vision
+import Foundation
+import SignalMessaging
 import SignalServiceKit
+import Vision
 
 @objc
 public enum QRCodeScanOutcome: UInt {

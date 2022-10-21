@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 public class ReactionFlybyAnimation: UIView {
     private static let maxWidth: CGFloat = 500
