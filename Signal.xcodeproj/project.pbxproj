@@ -231,8 +231,6 @@
 		342FFE57271DA8C9000AC89F /* OWSSounds+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE56271DA8C9000AC89F /* OWSSounds+SignalUI.swift */; };
 		342FFE59271DAA25000AC89F /* OWSAudioSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE58271DAA25000AC89F /* OWSAudioSession.swift */; };
 		342FFE62271DB2E7000AC89F /* AppContext+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE61271DB2E7000AC89F /* AppContext+SignalUI.swift */; };
-		342FFE65271DB66E000AC89F /* OWSProfileManager+SignalUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 342FFE63271DB66E000AC89F /* OWSProfileManager+SignalUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		342FFE66271DB66E000AC89F /* OWSProfileManager+SignalUI.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE64271DB66E000AC89F /* OWSProfileManager+SignalUI.m */; };
 		342FFE6A271EF502000AC89F /* ConversationSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE67271EF4FF000AC89F /* ConversationSearch.swift */; };
 		342FFE6B271EF502000AC89F /* OWSWindowManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE69271EF500000AC89F /* OWSWindowManager.m */; };
 		342FFE76271EF581000AC89F /* CNContactViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 342FFE6E271EF580000AC89F /* CNContactViewController+OWS.m */; };
@@ -2311,8 +2309,6 @@
 		342FFE56271DA8C9000AC89F /* OWSSounds+SignalUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSSounds+SignalUI.swift"; sourceTree = "<group>"; };
 		342FFE58271DAA25000AC89F /* OWSAudioSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAudioSession.swift; sourceTree = "<group>"; };
 		342FFE61271DB2E7000AC89F /* AppContext+SignalUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AppContext+SignalUI.swift"; sourceTree = "<group>"; };
-		342FFE63271DB66E000AC89F /* OWSProfileManager+SignalUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OWSProfileManager+SignalUI.h"; sourceTree = "<group>"; };
-		342FFE64271DB66E000AC89F /* OWSProfileManager+SignalUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "OWSProfileManager+SignalUI.m"; sourceTree = "<group>"; };
 		342FFE67271EF4FF000AC89F /* ConversationSearch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ConversationSearch.swift; path = UserInterface/ConversationSearch.swift; sourceTree = "<group>"; };
 		342FFE68271EF500000AC89F /* OWSWindowManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSWindowManager.h; path = UserInterface/OWSWindowManager.h; sourceTree = "<group>"; };
 		342FFE69271EF500000AC89F /* OWSWindowManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSWindowManager.m; path = UserInterface/OWSWindowManager.m; sourceTree = "<group>"; };
@@ -5165,8 +5161,6 @@
 				3402AAC0271DA60F0084CBAE /* OWSAudioPlayer.h */,
 				3402AAC1271DA6100084CBAE /* OWSAudioPlayer.m */,
 				342FFE58271DAA25000AC89F /* OWSAudioSession.swift */,
-				342FFE63271DB66E000AC89F /* OWSProfileManager+SignalUI.h */,
-				342FFE64271DB66E000AC89F /* OWSProfileManager+SignalUI.m */,
 				342FFE56271DA8C9000AC89F /* OWSSounds+SignalUI.swift */,
 				88B6D67128076F37005D86EC /* StoryMessage+SignalUI.swift */,
 				88F5FA9228EBD484007AA1BF /* StorySharing.swift */,
@@ -8327,7 +8321,6 @@
 				88B9870828808A2100F8C74D /* OWSBezierPathView.h in Headers */,
 				3402AAA1271D9E180084CBAE /* OWSBubbleView.h in Headers */,
 				3402AA5D271D9DCD0084CBAE /* OWSNavigationController.h in Headers */,
-				342FFE65271DB66E000AC89F /* OWSProfileManager+SignalUI.h in Headers */,
 				3402AA66271D9DEC0084CBAE /* OWSQuotedReplyModel.h in Headers */,
 				3402AA85271D9E180084CBAE /* OWSSearchBar.h in Headers */,
 				3402AA4C271D9DCD0084CBAE /* OWSTableViewController.h in Headers */,
@@ -9772,7 +9765,6 @@
 				3402AA71271D9E180084CBAE /* OWSLayerView.swift in Sources */,
 				3402AAB1271D9E180084CBAE /* OWSNavigationBar.swift in Sources */,
 				3402AA58271D9DCD0084CBAE /* OWSNavigationController.m in Sources */,
-				342FFE66271DB66E000AC89F /* OWSProfileManager+SignalUI.m in Sources */,
 				3402AA69271D9DEC0084CBAE /* OWSQuotedReplyModel.m in Sources */,
 				3402AA6E271D9E180084CBAE /* OWSSearchBar.m in Sources */,
 				342FFE57271DA8C9000AC89F /* OWSSounds+SignalUI.swift in Sources */,

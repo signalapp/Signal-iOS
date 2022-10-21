@@ -21,14 +21,6 @@ public extension ConversationViewController {
         groupV2UpdatesObjc.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(groupThread)
     }
 
-    func presentAddThreadToProfileWhitelist(success: @escaping () -> Void) {
-        AssertIsOnMainThread()
-
-        profileManagerImpl.presentAddThread(toProfileWhitelist: thread,
-                                            from: self,
-                                            success: success)
-    }
-
     func showUnblockConversationUI(completion: BlockActionCompletionBlock?) {
         self.userHasScrolled = false
 
