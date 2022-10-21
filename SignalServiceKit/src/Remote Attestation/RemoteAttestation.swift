@@ -464,10 +464,7 @@ fileprivate extension RemoteAttestation {
         }
 
         // Only accept signatures from the last 24 hours.
-        guard let timestampDatePlus1Day = Calendar.current.date(byAdding: .day, value: 1, to: timestampDate) else {
-            throw attestationError(reason: "Failed to calculate timestamp date offset by 24 hours")
-        }
-
+        let timestampDatePlus1Day = timestampDate.addingTimeInterval(kDayInterval)
         if Date().isAfter(timestampDatePlus1Day) {
             if DebugFlags.internalLogging {
                 Logger.info("signatureBody: \(signatureBody)")
@@ -492,12 +489,12 @@ fileprivate extension RemoteAttestation {
         var hasValidStatus: Bool {
             switch isvEnclaveQuoteStatus {
             case "OK": return true
-            case "SW_HARDENING_NEEDED": return version == 4 && (advisoryIDs ?? Set()).isSubset(of: Self.allowedAdvisoryIDs)
+            case "SW_HARDENING_NEEDED": return (advisoryIDs ?? Set()).isSubset(of: Self.allowedAdvisoryIDs)
             default: return false
             }
         }
 
-        var hasValidVersion: Bool { [3, 4].contains(version) }
+        var hasValidVersion: Bool { version == 4 }
     }
 
     static func parseSignatureBodyEntity(_ signatureBodyEntity: String) throws -> SignatureBodyEntity {
