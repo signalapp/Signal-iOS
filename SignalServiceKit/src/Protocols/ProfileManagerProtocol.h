@@ -140,11 +140,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 
 - (void)fetchProfileForAddress:(SignalServiceAddress *)address;
 
-- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address;
-- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address
-                                  mainAppOnly:(BOOL)mainAppOnly
-                             ignoreThrottling:(BOOL)ignoreThrottling;
-
 // Profile fetches will make a best effort
 // to download and decrypt avatar data,
 // but optionalAvatarFileUrl may

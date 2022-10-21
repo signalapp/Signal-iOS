@@ -256,18 +256,6 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
-- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address
-{
-    return [AnyPromise promiseWithValue:@(1)];
-}
-
-- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address
-                                  mainAppOnly:(BOOL)mainAppOnly
-                             ignoreThrottling:(BOOL)ignoreThrottling
-{
-    return [AnyPromise promiseWithValue:@(1)];
-}
-
 - (void)warmCaches
 {
     // Do nothing.

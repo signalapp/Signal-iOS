@@ -461,20 +461,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     return [ProfileFetcherJob fetchProfilePromiseObjcWithAddress:localAddress mainAppOnly:NO ignoreThrottling:YES];
 }
 
-- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address
-{
-    return [ProfileFetcherJob fetchProfilePromiseObjcWithAddress:address mainAppOnly:NO ignoreThrottling:YES];
-}
-
-- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address
-                                  mainAppOnly:(BOOL)mainAppOnly
-                             ignoreThrottling:(BOOL)ignoreThrottling
-{
-    return [ProfileFetcherJob fetchProfilePromiseObjcWithAddress:address
-                                                     mainAppOnly:mainAppOnly
-                                                ignoreThrottling:ignoreThrottling];
-}
-
 - (void)fetchProfileForUsername:(NSString *)username
                         success:(void (^)(SignalServiceAddress *))success
                        notFound:(void (^)(void))notFound

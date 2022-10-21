@@ -198,9 +198,7 @@ public class BulkProfileFetch: NSObject {
                 return Guarantee.value(())
             }
         }.then(on: .global()) {
-            self.profileManager.fetchProfile(forAddressPromise: SignalServiceAddress(uuid: uuid),
-                                             mainAppOnly: true,
-                                             ignoreThrottling: false).asVoid()
+            ProfileFetcherJob.fetchProfilePromise(address: SignalServiceAddress(uuid: uuid)).asVoid()
         }.done(on: .global()) {
             self.serialQueue.asyncAfter(deadline: DispatchTime.now() + updateDelaySeconds) {
                 self.isUpdateInFlight = false
