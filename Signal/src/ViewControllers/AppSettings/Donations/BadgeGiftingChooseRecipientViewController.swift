@@ -8,13 +8,11 @@ import SignalServiceKit
 
 class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewController {
     private let badge: ProfileBadge
-    private let price: Decimal
-    private let currencyCode: Currency.Code
+    private let price: FiatMoney
 
-    public init(badge: ProfileBadge, price: Decimal, currencyCode: Currency.Code) {
+    public init(badge: ProfileBadge, price: FiatMoney) {
         self.badge = badge
         self.price = price
-        self.currencyCode = currencyCode
     }
 
     public override func viewDidLoad() {
@@ -73,7 +71,7 @@ extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate {
             owsFail("Recipient is missing address, but we expected one")
         }
         let thread = databaseStorage.write { TSContactThread.getOrCreateThread(withContactAddress: address, transaction: $0) }
-        let vc = BadgeGiftingConfirmationViewController(badge: badge, price: price, currencyCode: currencyCode, thread: thread)
+        let vc = BadgeGiftingConfirmationViewController(badge: badge, price: price, thread: thread)
         self.navigationController?.pushViewController(vc, animated: true)
     }
 

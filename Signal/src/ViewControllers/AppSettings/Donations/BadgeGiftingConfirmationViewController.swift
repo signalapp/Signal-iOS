@@ -13,19 +13,16 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     // MARK: - View state
 
     private let badge: ProfileBadge
-    private let price: Decimal
-    private let currencyCode: Currency.Code
+    private let price: FiatMoney
     private let thread: TSContactThread
 
     public init(
         badge: ProfileBadge,
-        price: Decimal,
-        currencyCode: Currency.Code,
+        price: FiatMoney,
         thread: TSContactThread
     ) {
         self.badge = badge
         self.price = price
-        self.currencyCode = currencyCode
         self.thread = thread
     }
 
@@ -177,11 +174,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
             Logger.info("[Gifting] Requesting Apple Pay...")
 
-            let request = DonationUtilities.newPaymentRequest(
-                for: self.price,
-                currencyCode: self.currencyCode,
-                isRecurring: false
-            )
+            let request = DonationUtilities.newPaymentRequest(for: self.price, isRecurring: false)
 
             let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
             paymentController.delegate = self
@@ -266,7 +259,6 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     private func setUpTableContents() {
         let badge = badge
         let price = price
-        let currencyCode = currencyCode
         let avatarViewDataSource = avatarViewDataSource
         let thread = thread
         let messageTextView = messageTextView
@@ -276,7 +268,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             guard let self = self else { return UITableViewCell() }
             let cell = AppSettingsViewsUtil.newCell(cellOuterInsets: self.cellOuterInsets)
 
-            let badgeCellView = GiftBadgeCellView(badge: badge, price: price, currencyCode: currencyCode)
+            let badgeCellView = GiftBadgeCellView(badge: badge, price: price)
             cell.contentView.addSubview(badgeCellView)
             badgeCellView.autoPinEdgesToSuperviewMargins()
 
@@ -397,7 +389,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             descriptionLabel.numberOfLines = 0
 
             let priceLabel = UILabel()
-            priceLabel.text = DonationUtilities.formatCurrency(price, currencyCode: currencyCode)
+            priceLabel.text = DonationUtilities.format(money: price)
             priceLabel.font = .ows_dynamicTypeBody.ows_semibold
             priceLabel.numberOfLines = 0
 
@@ -494,7 +486,6 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
         firstly {
             Stripe.createBoostPaymentIntent(
                 for: self.price,
-                in: self.currencyCode,
                 level: .giftBadge(.signalGift)
             )
         }.then { paymentIntent in
@@ -567,7 +558,6 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
             // update the UI partway through the job's execution, and when it completes.
             let jobRecord = SendGiftBadgeJobQueue.createJob(receiptRequest: try SubscriptionManager.generateReceiptRequest(),
                                                             amount: self.price,
-                                                            currencyCode: self.currencyCode,
                                                             paymentIntent: preparedPayment.paymentIntent,
                                                             paymentMethodId: preparedPayment.paymentMethodId,
                                                             thread: self.thread,

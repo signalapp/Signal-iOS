@@ -56,7 +56,7 @@ public class DonationUtilities: NSObject {
 
     public struct Preset: Equatable {
         public let currencyCode: Currency.Code
-        public let amounts: [Decimal]
+        public let amounts: [FiatMoney]
     }
 
     private static let currencyFormatter: NumberFormatter = {
@@ -65,7 +65,10 @@ public class DonationUtilities: NSObject {
         return currencyFormatter
     }()
 
-    public static func formatCurrency(_ value: Decimal, currencyCode: Currency.Code, includeSymbol: Bool = true) -> String {
+    public static func format(money: FiatMoney, includeSymbol: Bool = true) -> String {
+        let value = money.value
+        let currencyCode = money.currencyCode
+
         let isZeroDecimalCurrency = Stripe.zeroDecimalCurrencyCodes.contains(currencyCode)
 
         let decimalPlaces: Int
@@ -106,14 +109,16 @@ public class DonationUtilities: NSObject {
         )
     }
 
-    public static func newPaymentRequest(for amount: Decimal, currencyCode: String, isRecurring: Bool) -> PKPaymentRequest {
-        let nsAmount = amount as NSDecimalNumber
+    public static func newPaymentRequest(for amount: FiatMoney, isRecurring: Bool) -> PKPaymentRequest {
+        let nsValue = amount.value as NSDecimalNumber
+        let currencyCode = amount.currencyCode
+
         let paymentSummaryItem: PKPaymentSummaryItem
         if isRecurring {
             if #available(iOS 15, *) {
                 let recurringSummaryItem = PKRecurringPaymentSummaryItem(
                     label: donationToSignal(),
-                    amount: nsAmount
+                    amount: nsValue
                 )
                 recurringSummaryItem.intervalUnit = .month
                 recurringSummaryItem.intervalCount = 1  // once per month
@@ -121,12 +126,13 @@ public class DonationUtilities: NSObject {
             } else {
                 paymentSummaryItem = PKPaymentSummaryItem(
                     label: monthlyDonationToSignal(),
-                    amount: nsAmount
+                    amount: nsValue
                 )
             }
         } else {
-            paymentSummaryItem = PKPaymentSummaryItem(label: donationToSignal(), amount: nsAmount)
+            paymentSummaryItem = PKPaymentSummaryItem(label: donationToSignal(), amount: nsValue)
         }
+
         let request = PKPaymentRequest()
         request.paymentSummaryItems = [paymentSummaryItem]
         request.merchantIdentifier = "merchant." + Bundle.main.merchantId

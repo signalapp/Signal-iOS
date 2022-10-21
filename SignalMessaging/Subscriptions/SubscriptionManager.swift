@@ -63,7 +63,7 @@ public class SubscriptionLevel: Comparable {
     public let level: UInt
     public let name: String
     public let badge: ProfileBadge
-    public let currency: [String: Decimal]
+    public let amounts: [Currency.Code: FiatMoney]
 
     public init(level: UInt, jsonDictionary: [String: Any]) throws {
         self.level = level
@@ -71,14 +71,23 @@ public class SubscriptionLevel: Comparable {
         name = try params.required(key: "name")
         let badgeDict: [String: Any] = try params.required(key: "badge")
         badge = try ProfileBadge(jsonDictionary: badgeDict)
-        let currencyDict: [String: Any] = try params.required(key: "currencies")
-        currency = currencyDict.compactMapValues { value -> Decimal? in
-            guard let int64Currency = value as? Int64 else {
-                owsFailDebug("Failed to convert currency value")
-                return nil
+        amounts = try {
+            let amountsDict: [String: Any] = try params.required(key: "currencies")
+            var amounts = [Currency.Code: FiatMoney]()
+            for (rawCurrencyCode, rawValue) in amountsDict {
+                guard
+                    !rawCurrencyCode.isEmpty,
+                    let doubleValue = rawValue as? Double
+                else {
+                    owsFailDebug("Failed to convert amount")
+                    continue
+                }
+                let currencyCode: Currency.Code = rawCurrencyCode.uppercased()
+                let value = Decimal(doubleValue)
+                amounts[currencyCode] = FiatMoney(currencyCode: currencyCode, value: value)
             }
-            return Decimal(int64Currency)
-        }
+            return amounts
+        }()
     }
 
     // MARK: Comparable
@@ -125,8 +134,7 @@ public struct Subscription {
     }
 
     public let level: UInt
-    public let currency: String
-    public let amount: Decimal
+    public let amount: FiatMoney
     public let endOfCurrentPeriod: TimeInterval
     public let billingCycleAnchor: TimeInterval
     public let active: Bool
@@ -148,9 +156,22 @@ public struct Subscription {
     public init(subscriptionDict: [String: Any], chargeFailureDict: [String: Any]?) throws {
         let params = ParamParser(dictionary: subscriptionDict)
         level = try params.required(key: "level")
-        currency = try params.required(key: "currency")
-        let amountValue: Int64 = try params.required(key: "amount")
-        amount = Decimal(amountValue)
+        let currencyCode: Currency.Code = try {
+            let raw: String = try params.required(key: "currency")
+            return raw.uppercased()
+        }()
+        amount = FiatMoney(
+            currencyCode: currencyCode,
+            value: try {
+                let integerValue: Int64 = try params.required(key: "amount")
+                let decimalValue = Decimal(integerValue)
+                if Stripe.zeroDecimalCurrencyCodes.contains(currencyCode) {
+                    return decimalValue
+                } else {
+                    return decimalValue / 100
+                }
+            }()
+        )
         endOfCurrentPeriod = try params.required(key: "endOfCurrentPeriod")
         billingCycleAnchor = try params.required(key: "billingCycleAnchor")
         active = try params.required(key: "active")
@@ -1093,9 +1114,10 @@ public class OWSRetryableSubscriptionError: NSObject, CustomNSError, IsRetryable
 }
 
 extension SubscriptionManager {
-    public class func createAndRedeemBoostReceipt(for intentId: String,
-                                                  amount: Decimal,
-                                                  currencyCode: Currency.Code) throws {
+    public class func createAndRedeemBoostReceipt(
+        for intentId: String,
+        amount: FiatMoney
+    ) throws {
         let request = try generateReceiptRequest()
 
         // Remove prior operations if one exists (allow prior job to complete)
@@ -1107,7 +1129,6 @@ extension SubscriptionManager {
 
         databaseStorage.asyncWrite { transaction in
             self.subscriptionJobQueue.addBoostJob(amount: amount,
-                                                  currencyCode: currencyCode,
                                                   receiptCredentialRequestContext: request.context.serialize().asData,
                                                   receiptCredentailRequest: request.request.serialize().asData,
                                                   boostPaymentIntentID: intentId,
@@ -1156,13 +1177,15 @@ extension SubscriptionManager {
 
             presets[currencyCode] = .init(
                 currencyCode: currencyCode,
-                amounts: amounts.map { Decimal($0) }
+                amounts: amounts.map {
+                    FiatMoney(currencyCode: currencyCode, value: Decimal($0))
+                }
             )
         }
         return presets
     }
 
-    public class func getGiftBadgePricesByCurrencyCode() -> Promise<[Currency.Code: Decimal]> {
+    public class func getGiftBadgePricesByCurrencyCode() -> Promise<[Currency.Code: FiatMoney]> {
         firstly {
             networkManager.makePromise(request: OWSRequestFactory.giftBadgePricesRequest())
         }.map { response in
@@ -1174,12 +1197,12 @@ extension SubscriptionManager {
         }
     }
 
-    internal class func parseGiftBadgePricesResponse(body: Any?) throws -> [Currency.Code: Decimal] {
+    internal class func parseGiftBadgePricesResponse(body: Any?) throws -> [Currency.Code: FiatMoney] {
         guard let body = body as? [String: Any?] else {
             throw OWSGenericError("Got unexpected response JSON for boost amounts")
         }
 
-        var result = [Currency.Code: Decimal]()
+        var result = [Currency.Code: FiatMoney]()
         for (rawCurrencyCode, rawAmount) in body {
             if rawCurrencyCode.isEmpty {
                 Logger.error("Server gave an empty currency code")
@@ -1192,7 +1215,7 @@ extension SubscriptionManager {
                 continue
             }
 
-            result[currencyCode] = Decimal(amount)
+            result[currencyCode] = FiatMoney(currencyCode: currencyCode, value: Decimal(amount))
         }
         return result
     }

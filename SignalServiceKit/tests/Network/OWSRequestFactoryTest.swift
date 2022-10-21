@@ -74,7 +74,11 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
     }
 
     func testBoostCreatePaymentIntentWithAmount() {
-        let request = OWSRequestFactory.boostCreatePaymentIntent(withAmount: 123, inCurrencyCode: "CHF", level: 456)
+        let request = OWSRequestFactory.boostCreatePaymentIntent(
+            integerMoneyValue: 123,
+            inCurrencyCode: "CHF",
+            level: 456
+        )
 
         XCTAssertEqual(request.url?.path, "v1/subscription/boost/create")
         XCTAssertEqual(request.httpMethod, "POST")

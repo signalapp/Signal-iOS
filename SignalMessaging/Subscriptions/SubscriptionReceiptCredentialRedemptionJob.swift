@@ -13,8 +13,7 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
     // Add optional paymentIntentID / isBoost
 
     public func addBoostJob(
-        amount: Decimal,
-        currencyCode: Currency.Code,
+        amount: FiatMoney,
         receiptCredentialRequestContext: Data,
         receiptCredentailRequest: Data,
         boostPaymentIntentID: String,
@@ -28,8 +27,8 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
             targetSubscriptionLevel: 0,
             priorSubscriptionLevel: 0,
             isBoost: true,
-            amount: amount as NSDecimalNumber,
-            currencyCode: currencyCode,
+            amount: amount.value as NSDecimalNumber,
+            currencyCode: amount.currencyCode,
             boostPaymentIntentID: boostPaymentIntentID,
             label: self.jobRecordLabel
         )
@@ -132,15 +131,21 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
 
     // For boosts, these should always be present.
     // For subscriptions, these will be absent until the job runs, which should populate them.
-    var amount: Decimal?
-    var currencyCode: Currency.Code?
+    var amount: FiatMoney?
 
     @objc
     public required init(_ jobRecord: OWSReceiptCredentialRedemptionJobRecord) throws {
         self.jobRecord = jobRecord
         self.isBoost = jobRecord.isBoost
-        self.amount = jobRecord.amount.map { $0 as Decimal }
-        self.currencyCode = jobRecord.currencyCode
+        self.amount = {
+            if
+                let value = jobRecord.amount.map({ $0 as Decimal }),
+                let currencyCode = jobRecord.currencyCode {
+                return FiatMoney(currencyCode: currencyCode, value: value)
+            } else {
+                return nil
+            }
+        }()
         self.subscriberID = jobRecord.subscriberID
         self.targetSubscriptionLevel = jobRecord.targetSubscriptionLevel
         self.priorSubscriptionLevel = jobRecord.priorSubscriptionLevel
@@ -171,14 +176,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
 
                 Logger.info("[Donations] Fetched current subscription. \(subscription.debugDescription)")
 
-                // Subscriptions represent $12.34 as `1234`, unlike most other code.
-                var amount = subscription.amount as Decimal
-                if !Stripe.zeroDecimalCurrencyCodes.contains(subscription.currency) {
-                    amount /= 100
-                }
-
-                self.amount = amount
-                self.currencyCode = subscription.currency
+                self.amount = subscription.amount
             }
         }
 
@@ -241,15 +239,14 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
                 SubscriptionManager.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
             }
 
-            if let amount = amount, let currencyCode = currencyCode {
+            if let amount = amount {
                 DonationReceipt(
                     receiptType: self.isBoost ? .boost : .subscription(subscriptionLevel: targetSubscriptionLevel),
                     timestamp: Date(),
-                    amount: amount,
-                    currencyCode: currencyCode
+                    amount: amount
                 ).anyInsert(transaction: transaction)
             } else {
-                Logger.warn("[Donations] amount and/or currencyCode was missing. Is this an old job?")
+                Logger.warn("[Donations] amount was missing. Is this an old job?")
             }
 
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)

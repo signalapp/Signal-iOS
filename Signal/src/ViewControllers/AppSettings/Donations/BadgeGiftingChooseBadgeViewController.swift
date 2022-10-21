@@ -17,7 +17,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
         case loaded(
             selectedCurrencyCode: Currency.Code,
             badge: ProfileBadge,
-            pricesByCurrencyCode: [Currency.Code: Decimal]
+            pricesByCurrencyCode: [Currency.Code: FiatMoney]
         )
 
         public var canContinue: Bool {
@@ -66,16 +66,16 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
     }
 
     private func loadData() -> Guarantee<State> {
-        firstly { () -> Promise<(ProfileBadge, [Currency.Code: Decimal])> in
+        firstly { () -> Promise<(ProfileBadge, [Currency.Code: FiatMoney])> in
             Logger.info("[Gifting] Fetching badge data...")
             return Promise.when(fulfilled: SubscriptionManager.getGiftBadge(), SubscriptionManager.getGiftBadgePricesByCurrencyCode())
         }.then { (
             giftBadge: ProfileBadge,
-            pricesByCurrencyCode: [Currency.Code: Decimal]
-        ) -> Promise<(ProfileBadge, [Currency.Code: Decimal])> in
+            pricesByCurrencyCode: [Currency.Code: FiatMoney]
+        ) -> Promise<(ProfileBadge, [Currency.Code: FiatMoney])> in
             Logger.info("[Gifting] Populating badge assets...")
             return self.profileManager.badgeStore.populateAssetsOnBadge(giftBadge).map { (giftBadge, pricesByCurrencyCode) }
-        }.then { (giftBadge: ProfileBadge, pricesByCurrencyCode: [Currency.Code: Decimal]) -> Guarantee<State> in
+        }.then { (giftBadge: ProfileBadge, pricesByCurrencyCode: [Currency.Code: FiatMoney]) -> Guarantee<State> in
             let selectedCurrencyCode: Currency.Code
             if pricesByCurrencyCode[Stripe.defaultCurrencyCode] != nil {
                 selectedCurrencyCode = Stripe.defaultCurrencyCode
@@ -106,9 +106,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
                 owsFailDebug("State is invalid. We selected a currency code that we don't have a price for")
                 return
             }
-            let vc = BadgeGiftingChooseRecipientViewController(badge: badge,
-                                                               price: price,
-                                                               currencyCode: selectedCurrencyCode)
+            let vc = BadgeGiftingChooseRecipientViewController(badge: badge, price: price)
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -241,7 +239,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
     private func loadedSections(
         selectedCurrencyCode: Currency.Code,
         badge: ProfileBadge,
-        pricesByCurrencyCode: [Currency.Code: Decimal]
+        pricesByCurrencyCode: [Currency.Code: FiatMoney]
     ) -> [OWSTableSection] {
         let currencyButtonSection = OWSTableSection()
         currencyButtonSection.hasBackground = false
@@ -276,7 +274,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
                 owsFailDebug("State is invalid. We selected a currency code that we don't have a price for.")
                 return cell
             }
-            let badgeCellView = GiftBadgeCellView(badge: badge, price: price, currencyCode: selectedCurrencyCode)
+            let badgeCellView = GiftBadgeCellView(badge: badge, price: price)
             cell.contentView.addSubview(badgeCellView)
             badgeCellView.autoPinEdgesToSuperviewMargins()
 

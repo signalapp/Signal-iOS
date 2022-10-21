@@ -64,8 +64,7 @@ public class SendGiftBadgeJobQueue: NSObject, JobQueue {
     }
 
     public static func createJob(receiptRequest: (context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest),
-                                 amount: Decimal,
-                                 currencyCode: Currency.Code,
+                                 amount: FiatMoney,
                                  paymentIntent: Stripe.PaymentIntent,
                                  paymentMethodId: String,
                                  thread: TSContactThread,
@@ -73,8 +72,8 @@ public class SendGiftBadgeJobQueue: NSObject, JobQueue {
         OWSSendGiftBadgeJobRecord(
             receiptCredentialRequestContext: receiptRequest.context.serialize().asData,
             receiptCredentialRequest: receiptRequest.request.serialize().asData,
-            amount: amount as NSDecimalNumber,
-            currencyCode: currencyCode,
+            amount: amount.value as NSDecimalNumber,
+            currencyCode: amount.currencyCode,
             paymentIntentClientSecret: paymentIntent.clientSecret,
             paymentIntentId: paymentIntent.id,
             paymentMethodId: paymentMethodId,
@@ -136,8 +135,7 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
 
     private let receiptCredentialRequestContext: ReceiptCredentialRequestContext
     private let receiptCredentialRequest: ReceiptCredentialRequest
-    private let amount: Decimal
-    private let currencyCode: Currency.Code
+    private let amount: FiatMoney
     private let paymentIntentClientSecret: String
     private let paymentIntentId: String
     private let paymentMethodId: String
@@ -149,8 +147,10 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
         self.jobRecord = jobRecord
         receiptCredentialRequestContext = try ReceiptCredentialRequestContext(contents: [UInt8](jobRecord.receiptCredentailRequestContext))
         receiptCredentialRequest = try ReceiptCredentialRequest(contents: [UInt8](jobRecord.receiptCredentailRequest))
-        amount = jobRecord.amount as Decimal
-        currencyCode = jobRecord.currencyCode
+        amount = FiatMoney(
+            currencyCode: jobRecord.currencyCode,
+            value: jobRecord.amount as Decimal
+        )
         paymentIntentClientSecret = jobRecord.paymentIntentClientSecret
         paymentIntentId = jobRecord.boostPaymentIntentID
         paymentMethodId = jobRecord.paymentMethodId
@@ -256,8 +256,7 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
             DonationReceipt(
                 receiptType: .gift,
                 timestamp: Date(),
-                amount: amount,
-                currencyCode: currencyCode
+                amount: amount
             ).anyInsert(transaction: transaction)
         }
         postJobEventNotification(.jobSucceeded)

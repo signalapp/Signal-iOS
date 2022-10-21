@@ -19,41 +19,39 @@ public struct Stripe: Dependencies {
     }
 
     public static func boost(
-        amount: Decimal,
-        in currencyCode: Currency.Code,
+        amount: FiatMoney,
         level: OneTimeBadgeLevel,
         for payment: PKPayment
     ) -> Promise<String> {
         firstly { () -> Promise<PaymentIntent> in
-            createBoostPaymentIntent(for: amount, in: currencyCode, level: level)
+            createBoostPaymentIntent(for: amount, level: level)
         }.then { intent in
             confirmPaymentIntent(for: payment, clientSecret: intent.clientSecret, paymentIntentId: intent.id).map { intent.id }
         }
     }
 
     public static func createBoostPaymentIntent(
-        for amount: Decimal,
-        in currencyCode: Currency.Code,
+        for amount: FiatMoney,
         level: OneTimeBadgeLevel
     ) -> Promise<PaymentIntent> {
         firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
-            guard !isAmountTooSmall(amount, in: currencyCode) else {
+            guard !isAmountTooSmall(amount) else {
                 throw OWSAssertionError("Amount too small")
             }
 
-            guard !isAmountTooLarge(amount, in: currencyCode) else {
+            guard !isAmountTooLarge(amount) else {
                 throw OWSAssertionError("Amount too large")
             }
 
-            guard supportedCurrencyCodes.contains(currencyCode.uppercased()) else {
+            guard supportedCurrencyCodes.contains(amount.currencyCode.uppercased()) else {
                 throw OWSAssertionError("Unexpected currency code")
             }
 
             // The description is never translated as it's populated into an
             // english only receipt by Stripe.
             let request = OWSRequestFactory.boostCreatePaymentIntent(
-                withAmount: integralAmount(amount, in: currencyCode),
-                inCurrencyCode: currencyCode,
+                integerMoneyValue: integralAmount(amount),
+                inCurrencyCode: amount.currencyCode,
                 level: level.rawValue
             )
 
@@ -133,13 +131,12 @@ public struct Stripe: Dependencies {
     /// (for example, a value of 99999999 for a charge of 999,999.99 USD).
     ///
     /// - Parameter amount: The amount of money.
-    /// - Parameter in: The currency code used.
     /// - Returns: Whether the amount is too large.
     ///
     /// [0]: https://stripe.com/docs/currencies?presentment-currency=US#minimum-and-maximum-charge-amounts
-    public static func isAmountTooLarge(_ amount: Decimal, in currencyCode: Currency.Code) -> Bool {
-        let integerAmount = integralAmount(amount, in: currencyCode)
-        let maximum: UInt = currencyCode == "IDR" ? 999999999999 : 99999999
+    public static func isAmountTooLarge(_ amount: FiatMoney) -> Bool {
+        let integerAmount = integralAmount(amount)
+        let maximum: UInt = amount.currencyCode == "IDR" ? 999999999999 : 99999999
         return integerAmount > maximum
     }
 
@@ -153,22 +150,21 @@ public struct Stripe: Dependencies {
     /// for Signal), but we use them as helpful minimums anyway.
     ///
     /// - Parameter amount: The amount of money.
-    /// - Parameter in: The currency used.
     /// - Returns: Whether the amount is too small.
     ///
     /// [0]: https://stripe.com/docs/currencies?presentment-currency=US#minimum-and-maximum-charge-amounts
-    public static func isAmountTooSmall(_ amount: Decimal, in currencyCode: Currency.Code) -> Bool {
-        let integerAmount = integralAmount(amount, in: currencyCode)
-        let minimum = minimumIntegralChargePerCurrencyCode[currencyCode, default: 50]
+    public static func isAmountTooSmall(_ amount: FiatMoney) -> Bool {
+        let integerAmount = integralAmount(amount)
+        let minimum = minimumIntegralChargePerCurrencyCode[amount.currencyCode, default: 50]
         return integerAmount < minimum
     }
 
-    private static func integralAmount(_ amount: Decimal, in currencyCode: Currency.Code) -> UInt {
+    private static func integralAmount(_ amount: FiatMoney) -> UInt {
         let scaled: Decimal
-        if zeroDecimalCurrencyCodes.contains(currencyCode.uppercased()) {
-            scaled = amount
+        if zeroDecimalCurrencyCodes.contains(amount.currencyCode.uppercased()) {
+            scaled = amount.value
         } else {
-            scaled = amount * 100
+            scaled = amount.value * 100
         }
 
         let rounded = scaled.rounded()

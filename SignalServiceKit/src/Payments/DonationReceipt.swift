@@ -27,8 +27,7 @@ public final class DonationReceipt: NSObject, SDSCodableModel {
     public let uniqueId: String
     public let receiptType: DonationReceiptType
     public let timestamp: Date
-    public let amount: Decimal
-    public let currencyCode: Currency.Code
+    public let amount: FiatMoney
 
     public static let databaseTableName = "model_DonationReceipt"
 
@@ -43,14 +42,12 @@ public final class DonationReceipt: NSObject, SDSCodableModel {
     public init(
         receiptType: DonationReceiptType,
         timestamp: Date,
-        amount: Decimal,
-        currencyCode: Currency.Code
+        amount: FiatMoney
     ) {
         self.uniqueId = UUID().uuidString
         self.receiptType = receiptType
         self.timestamp = timestamp
         self.amount = amount
-        self.currencyCode = currencyCode
     }
 
     public init(from decoder: Decoder) throws {
@@ -59,8 +56,10 @@ public final class DonationReceipt: NSObject, SDSCodableModel {
         id = try container.decodeIfPresent(RowId.self, forKey: .id)
         uniqueId = try container.decode(String.self, forKey: .uniqueId)
         timestamp = try container.decode(Date.self, forKey: .timestamp)
-        amount = try container.decode(Decimal.self, forKey: .amount)
-        currencyCode = try container.decode(Currency.Code.self, forKey: .currencyCode)
+        amount = FiatMoney(
+            currencyCode: try container.decode(Currency.Code.self, forKey: .currencyCode),
+            value: try container.decode(Decimal.self, forKey: .amount)
+        )
 
         let subscriptionLevel = try container.decodeIfPresent(UInt.self, forKey: .subscriptionLevel)
         let rawReceiptType = try container.decodeIfPresent(UInt.self, forKey: .receiptType)
@@ -92,8 +91,8 @@ public final class DonationReceipt: NSObject, SDSCodableModel {
         try container.encodeIfPresent(id, forKey: .id)
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encode(timestamp, forKey: .timestamp)
-        try container.encode(amount, forKey: .amount)
-        try container.encode(currencyCode, forKey: .currencyCode)
+        try container.encode(amount.value, forKey: .amount)
+        try container.encode(amount.currencyCode, forKey: .currencyCode)
 
         switch receiptType {
         case .boost:

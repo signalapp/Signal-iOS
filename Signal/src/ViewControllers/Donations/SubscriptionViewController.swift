@@ -196,7 +196,7 @@ class SubscriptionViewController: OWSTableViewController2 {
             let selectedCurrencyCode: Currency.Code
             let selectedSubscriptionLevel: SubscriptionLevel?
             if let currentSubscription = currentSubscription {
-                selectedCurrencyCode = previousCurrencyCode ?? currentSubscription.currency
+                selectedCurrencyCode = previousCurrencyCode ?? currentSubscription.amount.currencyCode
                 selectedSubscriptionLevel = subscriptionLevels.first { currentSubscription.level == $0.level } ?? subscriptionLevels.first
             } else {
                 selectedCurrencyCode = Stripe.defaultCurrencyCode
@@ -337,8 +337,8 @@ class SubscriptionViewController: OWSTableViewController2 {
     /// Get the currency codes that are supported by all the subscription levels.
     private static func supportedCurrencyCodes(subscriptionLevels: [SubscriptionLevel]) -> Set<Currency.Code> {
         guard let firstLevel = subscriptionLevels.first else { return Set() }
-        return subscriptionLevels.reduce(Set(firstLevel.currency.keys)) { (result, level) in
-            result.intersection(level.currency.keys)
+        return subscriptionLevels.reduce(Set(firstLevel.amounts.keys)) { (result, level) in
+            result.intersection(level.amounts.keys)
         }
     }
 
@@ -501,10 +501,10 @@ class SubscriptionViewController: OWSTableViewController2 {
 
                     let pricingLabel = UILabel()
 
-                    let currencyCode: Currency.Code = currentSubscription?.currency ?? selectedCurrencyCode
-                    if let price = subscription.currency[currencyCode] {
+                    let currencyCode: Currency.Code = currentSubscription?.amount.currencyCode ?? selectedCurrencyCode
+                    if let price = subscription.amounts[currencyCode] {
                         let pricingFormat = NSLocalizedString("SUSTAINER_VIEW_PRICING", comment: "Pricing text for sustainer view badges, embeds {{price}}")
-                        let currencyString = DonationUtilities.formatCurrency(price, currencyCode: currencyCode)
+                        let currencyString = DonationUtilities.format(money: price)
                         pricingLabel.numberOfLines = 0
 
                         if !isCurrent {
@@ -685,17 +685,17 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             return
         }
 
-        guard let subscriptionAmount = subscription.currency[selectedCurrencyCode] else {
+        guard let subscriptionAmount = subscription.amounts[selectedCurrencyCode] else {
             owsFailDebug("Failed to get amount for current currency code")
             return
         }
 
         if currentSubscription == nil {
-            presentApplePay(for: subscriptionAmount, currencyCode: selectedCurrencyCode)
+            presentApplePay(for: subscriptionAmount)
         } else {
             var currencyString: String = ""
-            if let selectedSubscription = selectedSubscription, let price = selectedSubscription.currency[selectedCurrencyCode] {
-                currencyString = DonationUtilities.formatCurrency(price, currencyCode: selectedCurrencyCode)
+            if let selectedSubscription = selectedSubscription, let price = selectedSubscription.amounts[selectedCurrencyCode] {
+                currencyString = DonationUtilities.format(money: price)
             }
 
             let title = NSLocalizedString("SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE", comment: "Update Subscription? Action sheet title")
@@ -707,7 +707,7 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
                 title: confirm,
                 style: .default,
                 handler: { [weak self] _ in
-                    self?.presentApplePay(for: subscriptionAmount, currencyCode: selectedCurrencyCode)
+                    self?.presentApplePay(for: subscriptionAmount)
                 }
             ))
 
@@ -721,7 +721,7 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
 
     }
 
-    private func presentApplePay(for amount: Decimal, currencyCode: String) {
+    private func presentApplePay(for amount: FiatMoney) {
         guard case let .loaded(_, _, selectedSubscriptionLevel, _) = state else {
             owsFailDebug("Not loaded, can't invoke Apple Pay donation")
             return
@@ -732,24 +732,23 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             return
         }
 
-        guard let subscriptionAmount = subscription.currency[currencyCode] else {
+        guard let subscriptionAmount = subscription.amounts[amount.currencyCode] else {
             owsFailDebug("Failed to get amount for current currency code")
             return
         }
 
-        guard !Stripe.isAmountTooSmall(subscriptionAmount, in: currencyCode) else {
+        guard !Stripe.isAmountTooSmall(subscriptionAmount) else {
             owsFailDebug("Subscription amount is too small per Stripe API")
             return
         }
 
-        guard !Stripe.isAmountTooLarge(subscriptionAmount, in: currencyCode) else {
+        guard !Stripe.isAmountTooLarge(subscriptionAmount) else {
             owsFailDebug("Subscription amount is too large per Stripe API")
             return
         }
 
         let request = DonationUtilities.newPaymentRequest(
             for: subscriptionAmount,
-            currencyCode: currencyCode,
             isRecurring: true
         )
 

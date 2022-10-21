@@ -9,61 +9,61 @@ final class StripeTest: XCTestCase {
     private let unknownCurrency = "ZZZ"
 
     func testIsAmountTooLarge() {
-        let tooLarge: [(Decimal, Currency.Code)] = [
-            (1_000_000, "USD"),
-            (100_000_000, "JPY"),
-            (1_000_000_000_000, "IDR"),
-            (1_000_000, unknownCurrency),
+        let tooLarge: [FiatMoney] = [
+            FiatMoney(currencyCode: "USD", value: 1_000_000),
+            FiatMoney(currencyCode: "JPY", value: 100_000_000),
+            FiatMoney(currencyCode: "IDR", value: 1_000_000_000_000),
+            FiatMoney(currencyCode: unknownCurrency, value: 1_000_000),
             // Rounding
-            (999_999.995, "USD")
+            FiatMoney(currencyCode: "USD", value: 999_999.995)
         ]
-        for (amount, currencyCode) in tooLarge {
-            XCTAssertTrue(Stripe.isAmountTooLarge(amount, in: currencyCode), "\(amount) \(currencyCode)")
+        for amount in tooLarge {
+            XCTAssertTrue(Stripe.isAmountTooLarge(amount), "\(amount)")
         }
 
-        let allGood: [(Decimal, Currency.Code)] = [
-            (0, "USD"),
-            (999_999.99, "USD"),
-            (99_999_999, "JPY"),
-            (9_999_999_999.99, "IDR"),
-            (999_999, unknownCurrency),
+        let allGood: [FiatMoney] = [
+            FiatMoney(currencyCode: "USD", value: 0),
+            FiatMoney(currencyCode: "USD", value: 999_999.99),
+            FiatMoney(currencyCode: "JPY", value: 99_999_999),
+            FiatMoney(currencyCode: "IDR", value: 9_999_999_999.99),
+            FiatMoney(currencyCode: unknownCurrency, value: 999_999.99),
             // Rounding
-            (999_999.994, "USD")
+            FiatMoney(currencyCode: "USD", value: 999_999.994)
         ]
-        for (amount, currencyCode) in allGood {
-            XCTAssertFalse(Stripe.isAmountTooLarge(amount, in: currencyCode))
+        for amount in allGood {
+            XCTAssertFalse(Stripe.isAmountTooLarge(amount), "\(amount)")
         }
     }
 
     func testIsAmountTooSmall() {
-        let tooSmall: [(Decimal, Currency.Code)] = [
-            (0, "USD"),
-            (0, "JPY"),
-            (0, unknownCurrency),
-            (0.49, "USD"),
-            (49, "JPY"),
+        let tooSmall: [FiatMoney] = [
+            FiatMoney(currencyCode: "USD", value: 0),
+            FiatMoney(currencyCode: "JPY", value: 0),
+            FiatMoney(currencyCode: unknownCurrency, value: 0),
+            FiatMoney(currencyCode: "USD", value: 0.49),
+            FiatMoney(currencyCode: "JPY", value: 49),
             // Rounding
-            (0.494, "USD"),
-            (49.4, "JPY"),
-            (0.494, unknownCurrency)
+            FiatMoney(currencyCode: "USD", value: 0.494),
+            FiatMoney(currencyCode: "JPY", value: 49.4),
+            FiatMoney(currencyCode: unknownCurrency, value: 0.494)
         ]
-        for (amount, currencyCode) in tooSmall {
-            XCTAssertTrue(Stripe.isAmountTooSmall(amount, in: currencyCode))
+        for amount in tooSmall {
+            XCTAssertTrue(Stripe.isAmountTooSmall(amount), "\(amount)")
         }
 
-        let allGood: [(Decimal, Currency.Code)] = [
-            (0.5, "USD"),
-            (1, "USD"),
-            (1_000_000_000_000, "USD"),
-            (50, "JPY"),
-            (0.5, unknownCurrency),
+        let allGood: [FiatMoney] = [
+            FiatMoney(currencyCode: "USD", value: 0.5),
+            FiatMoney(currencyCode: "USD", value: 1),
+            FiatMoney(currencyCode: "USD", value: 1_000_000_000_000),
+            FiatMoney(currencyCode: "JPY", value: 50),
+            FiatMoney(currencyCode: unknownCurrency, value: 0.5),
             // Rounding
-            (0.495, "USD"),
-            (49.5, "JPY"),
-            (0.495, unknownCurrency)
+            FiatMoney(currencyCode: "USD", value: 0.495),
+            FiatMoney(currencyCode: "JPY", value: 49.5),
+            FiatMoney(currencyCode: unknownCurrency, value: 0.495)
         ]
-        for (amount, currencyCode) in allGood {
-            XCTAssertFalse(Stripe.isAmountTooSmall(amount, in: currencyCode))
+        for amount in allGood {
+            XCTAssertFalse(Stripe.isAmountTooSmall(amount), "\(amount)")
         }
     }
 }

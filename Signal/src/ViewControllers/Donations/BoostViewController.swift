@@ -52,11 +52,14 @@ class BoostViewController: OWSTableViewController2 {
         return animationView
     }()
 
-    private var donationAmount: Decimal? {
+    private var donationAmount: FiatMoney? {
         switch state {
-        case .presetSelected(let amount): return amount
-        case .customValueSelected: return customAmountTextField.decimalNumber
-        default: return nil
+        case .presetSelected(let amount):
+            return amount
+        case .customValueSelected:
+            return customAmountTextField.amount
+        default:
+            return nil
         }
     }
 
@@ -84,7 +87,7 @@ class BoostViewController: OWSTableViewController2 {
 
     enum State: Equatable {
         case loading
-        case presetSelected(amount: Decimal)
+        case presetSelected(amount: FiatMoney)
         case customValueSelected
         case donatedSuccessfully
     }
@@ -168,7 +171,7 @@ class BoostViewController: OWSTableViewController2 {
         return result
     }
 
-    var presetButtons: [Decimal: UIView] = [:]
+    var presetButtons: [FiatMoney: UIView] = [:]
     func updatePresetButtonSelection() {
         for (amount, button) in presetButtons {
             if case .presetSelected(amount: amount) = self.state {
@@ -428,10 +431,7 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
                             }
 
                             button.setTitle(
-                                title: DonationUtilities.formatCurrency(
-                                    amount,
-                                    currencyCode: self.currencyCode
-                                ),
+                                title: DonationUtilities.format(money: amount),
                                 font: .ows_regularFont(withSize: UIDevice.current.isIPhone5OrShorter ? 18 : 20),
                                 titleColor: Theme.primaryTextColor
                             )
@@ -543,7 +543,7 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
             return
         }
 
-        guard !Stripe.isAmountTooSmall(donationAmount, in: currencyCode) else {
+        guard !Stripe.isAmountTooSmall(donationAmount) else {
             presentToast(text: NSLocalizedString(
                 "BOOST_VIEW_SELECT_A_LARGER_AMOUNT",
                 comment: "Error text notifying the user they must select a large amount on the donate to signal view"
@@ -551,7 +551,7 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
             return
         }
 
-        guard !Stripe.isAmountTooLarge(donationAmount, in: currencyCode) else {
+        guard !Stripe.isAmountTooLarge(donationAmount) else {
             presentToast(text: NSLocalizedString(
                 "BOOST_VIEW_SELECT_A_SMALLER_AMOUNT",
                 comment: "Error text notifying the user they must select a smaller amount on the donate to signal view"
@@ -561,7 +561,6 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
 
         let request = DonationUtilities.newPaymentRequest(
             for: donationAmount,
-            currencyCode: currencyCode,
             isRecurring: false
         )
 
@@ -592,7 +591,6 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
 
         firstly {
             Stripe.boost(amount: donationAmount,
-                         in: currencyCode,
                          level: .boostBadge,
                          for: payment)
         }.done { intentId in
@@ -600,9 +598,10 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
             SubscriptionManager.terminateTransactionIfPossible = false
 
             do {
-                try SubscriptionManager.createAndRedeemBoostReceipt(for: intentId,
-                                                                    amount: donationAmount as Decimal,
-                                                                    currencyCode: self.currencyCode)
+                try SubscriptionManager.createAndRedeemBoostReceipt(
+                    for: intentId,
+                    amount: donationAmount
+                )
             } catch {
 
             }

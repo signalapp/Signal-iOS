@@ -66,15 +66,15 @@ class OneTimeDonationCustomAmountTextField: UIView {
         }
     }
 
-    var decimalNumber: Decimal? {
+    var amount: FiatMoney? {
         guard
             let string = valueString(for: text),
-            let result = Decimal(string: string, locale: Locale.current),
-            result.isFinite
+            let value = Decimal(string: string, locale: Locale.current),
+            value.isFinite
         else {
             return nil
         }
-        return result
+        return FiatMoney(currencyCode: currencyCode, value: value)
     }
 
     var font: UIFont? {

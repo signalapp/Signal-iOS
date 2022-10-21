@@ -1247,6 +1247,7 @@
 		F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */; };
 		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
 		F96A534328A1AE7C003262D4 /* OutgoingGroupUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */; };
+		F97121EA2903244700C0F5F2 /* FiatMoney.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97121E92903244700C0F5F2 /* FiatMoney.swift */; };
 		F97217F628DC9A5000113D9F /* OWSFileSystemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */; };
 		F97217F828DC9F3700113D9F /* DatabaseCorruptionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217F728DC9F3700113D9F /* DatabaseCorruptionState.swift */; };
 		F97217FB28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */; };
@@ -3591,6 +3592,7 @@
 		F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingThanksSheet.swift; sourceTree = "<group>"; };
 		F965C5B87BFDF8F86556C04C /* Pods-SignalNSE.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.profiling.xcconfig"; sourceTree = "<group>"; };
 		F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingGroupUpdateMessage.swift; sourceTree = "<group>"; };
+		F97121E92903244700C0F5F2 /* FiatMoney.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiatMoney.swift; sourceTree = "<group>"; };
 		F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFileSystemTest.swift; sourceTree = "<group>"; };
 		F97217F728DC9F3700113D9F /* DatabaseCorruptionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseCorruptionState.swift; sourceTree = "<group>"; };
 		F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseCorruptionStateTest.swift; sourceTree = "<group>"; };
@@ -8127,6 +8129,7 @@
 				F9C5CB73289453B200548EEE /* Error+isRetryable.swift */,
 				F9C5CB51289453B200548EEE /* Error+SSK.swift */,
 				F9C5CB59289453B200548EEE /* FeatureFlags.swift */,
+				F97121E92903244700C0F5F2 /* FiatMoney.swift */,
 				F9C5CB6E289453B200548EEE /* FunctionalUtil.h */,
 				F9C5CB1A289453B200548EEE /* FunctionalUtil.m */,
 				F9C5CB0D289453B200548EEE /* ImageQuality.swift */,
@@ -10662,6 +10665,7 @@
 				F94BFA9528EBB0D800A5F34E /* FakeMessageSender.swift in Sources */,
 				F9C5CE54289453B400548EEE /* FakeStorageServiceManager.swift in Sources */,
 				F9C5CE2B289453B400548EEE /* FeatureFlags.swift in Sources */,
+				F97121EA2903244700C0F5F2 /* FiatMoney.swift in Sources */,
 				F9C5CC91289453B300548EEE /* Fingerprint.pb.swift in Sources */,
 				F9C5CC9F289453B300548EEE /* FingerprintProto.swift in Sources */,
 				F9C5CD59289453B300548EEE /* FullTextSearchFinder.swift in Sources */,

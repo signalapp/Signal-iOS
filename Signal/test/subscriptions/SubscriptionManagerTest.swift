@@ -52,8 +52,7 @@ class SubscriptionTest: XCTestCase {
                                             chargeFailureDict: nil)
 
         XCTAssertEqual(subscription.level, 123)
-        XCTAssertEqual(subscription.currency, "USD")
-        XCTAssertEqual(subscription.amount, 500)
+        XCTAssertEqual(subscription.amount, FiatMoney(currencyCode: "USD", value: 5))
         XCTAssertEqual(subscription.endOfCurrentPeriod, 1618881836)
         XCTAssertEqual(subscription.billingCycleAnchor, 1587345836)
         XCTAssertTrue(subscription.active)
@@ -141,9 +140,18 @@ class SubscriptionManagerTest: XCTestCase {
                 "MAD": [Double]([1, 0, 2])
             ]),
             [
-                "USD": .init(currencyCode: "USD", amounts: [1, 2.3]),
-                "JPY": .init(currencyCode: "JPY", amounts: [4, 5]),
-                "XYZ": .init(currencyCode: "XYZ", amounts: [6, 7])
+                "USD": .init(
+                    currencyCode: "USD",
+                    amounts: [1, 2.3].map { FiatMoney(currencyCode: "USD", value: $0) }
+                ),
+                "JPY": .init(
+                    currencyCode: "JPY",
+                    amounts: [4, 5].map { FiatMoney(currencyCode: "JPY", value: $0) }
+                ),
+                "XYZ": .init(
+                    currencyCode: "XYZ",
+                    amounts: [6, 7].map { FiatMoney(currencyCode: "XYZ", value: $0) }
+                )
             ]
         )
     }
@@ -167,9 +175,9 @@ class SubscriptionManagerTest: XCTestCase {
                 "SAD": -1
             ]),
             [
-                "USD": 1.2,
-                "JPY": 3,
-                "XYZ": 4
+                "USD": FiatMoney(currencyCode: "USD", value: 1.2),
+                "JPY": FiatMoney(currencyCode: "JPY", value: 3),
+                "XYZ": FiatMoney(currencyCode: "XYZ", value: 4)
             ]
         )
     }
