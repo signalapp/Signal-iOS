@@ -45,7 +45,7 @@ class StoryListDataSource: NSObject, Dependencies {
     }
 
     var allStories: [StoryViewModel] {
-        return syncingModels.exposedModel.stories
+        return syncingModels.exposedModel.unfilteredStories
     }
 
     var visibleStories: [StoryViewModel] {
@@ -68,6 +68,14 @@ class StoryListDataSource: NSObject, Dependencies {
         return syncingModels.threadSafeHiddenStoryContexts
     }
 
+    public var shouldDisplayMyStory: Bool {
+        return syncingModels.exposedModel.shouldDisplayMyStory
+    }
+
+    public var shouldDisplayHiddenStoriesHeader: Bool {
+        return syncingModels.exposedModel.shouldDisplayHiddenStoriesHeader
+    }
+
     public var isHiddenStoriesSectionCollapsed: Bool {
         get {
             return syncingModels.exposedModel.isHiddenStoriesSectionCollapsed
@@ -77,25 +85,34 @@ class StoryListDataSource: NSObject, Dependencies {
         }
     }
 
+    public var shouldDisplayHiddenStories: Bool {
+        return syncingModels.exposedModel.shouldDisplayHiddenStories
+    }
+
+    public func setSearchText(_ text: String?) {
+        updateStoriesForSearchText(text)
+    }
+
     // MARK: - Reload
 
     func reloadStories() {
         loadingQueue.async {
             self.syncingModels.mutate { oldModel -> StoryChanges? in
-                let (listStories, outgoingStories) = Self.databaseStorage.read {
-                    (
-                        StoryFinder.storiesForListView(transaction: $0),
-                        StoryFinder.outgoingStories(transaction: $0)
-                    )
+                let (listStories, myStoryModel) = Self.databaseStorage.read { transaction -> ([StoryViewModel], MyStoryViewModel) in
+                    let storiesForList = StoryFinder.storiesForListView(transaction: transaction)
+                    let groupedMessages = Dictionary(grouping: storiesForList) { $0.context }
+                    let storyListModels = groupedMessages.compactMap { _, messages -> StoryViewModel? in
+                        return try? StoryViewModel(messages: messages, transaction: transaction)
+                    }
+                    let outgoingStories = StoryFinder.outgoingStories(transaction: transaction)
+                    let myStoryModel = MyStoryViewModel(messages: outgoingStories, transaction: transaction)
+
+                    return (storyListModels, myStoryModel)
                 }
-                let myStoryModel = Self.databaseStorage.read { MyStoryViewModel(messages: outgoingStories, transaction: $0) }
-                let groupedMessages = Dictionary(grouping: listStories) { $0.context }
-                let newValues = Self.databaseStorage.read { transaction in
-                    groupedMessages.compactMap { try? StoryViewModel(messages: $1, transaction: transaction) }
-                }.sorted(by: Self.sortStoryModels)
                 let newModel = StoryListViewModel(
                     myStory: myStoryModel,
-                    stories: newValues,
+                    stories: listStories.sorted(by: Self.sortStoryModels),
+                    searchText: oldModel.searchText,
                     isHiddenStoriesSectionCollapsed: oldModel.isHiddenStoriesSectionCollapsed
                 )
                 // Note everything but the new model gets ignored since we reload data
@@ -168,6 +185,32 @@ class StoryListDataSource: NSObject, Dependencies {
                 hiddenStoryUpdates: [],
                 myStoryChanged: false
             )
+        }
+    }
+
+    private func updateStoriesForSearchText(_ searchText: String?) {
+        loadingQueue.async {
+            self.syncingModels.mutate { oldModel -> StoryChanges? in
+                let newModel = StoryListViewModel(
+                    myStory: oldModel.myStory,
+                    stories: oldModel.unfilteredStories,
+                    searchText: searchText,
+                    isHiddenStoriesSectionCollapsed: oldModel.isHiddenStoriesSectionCollapsed
+                )
+                // Note everything but the new model gets ignored since we reload data
+                // rather than apply individual row updates.
+                return StoryChanges(
+                    oldModel: oldModel,
+                    newModel: newModel,
+                    visibleStoryUpdates: [], // is ignored
+                    hiddenStoryUpdates: [], // is ignored
+                    myStoryChanged: true // is ignored
+                )
+            } sync: { _ in
+                self.tableView?.reloadData()
+                self.observeAssociatedDataChangesForAvailableModels()
+                self.delegate?.tableViewDidUpdate()
+            }
         }
     }
 
@@ -335,7 +378,7 @@ class StoryListDataSource: NSObject, Dependencies {
         var changedHiddenContexts = [StoryContext]()
 
         let newModels = try Self.databaseStorage.read { transaction -> [StoryViewModel] in
-            let changedModels = try oldViewModel.stories.compactMap { oldModel -> StoryViewModel? in
+            let changedModels = try oldViewModel.unfilteredStories.compactMap { oldModel -> StoryViewModel? in
                 guard let latestMessage = oldModel.messages.first else { return oldModel }
 
                 let modelDeletedRowIds: [Int64] = oldModel.messages.lazy.compactMap(\.id).filter { deletedRowIds.contains($0) }
@@ -391,7 +434,7 @@ class StoryListDataSource: NSObject, Dependencies {
         let newIsHiddenStoriesSectionCollapsed: Bool
         if !oldViewModel.isHiddenStoriesSectionCollapsed {
             newIsHiddenStoriesSectionCollapsed = false
-        } else if oldViewModel.hiddenStories.isEmpty && newModels.contains(where: \.isHidden) {
+        } else if oldViewModel.unfilteredHiddenStories.isEmpty && newModels.contains(where: \.isHidden) {
             newIsHiddenStoriesSectionCollapsed = false
         } else {
             newIsHiddenStoriesSectionCollapsed = true
@@ -400,6 +443,7 @@ class StoryListDataSource: NSObject, Dependencies {
         let newViewModel = StoryListViewModel(
             myStory: myStoryModel ?? oldViewModel.myStory,
             stories: newModels,
+            searchText: oldViewModel.searchText,
             isHiddenStoriesSectionCollapsed: newIsHiddenStoriesSectionCollapsed
         )
 
@@ -482,13 +526,12 @@ class StoryListDataSource: NSObject, Dependencies {
             self.delegate?.tableViewDidUpdate()
         }
 
-        if changes.oldModel.myStory == nil, changes.newModel.myStory != nil {
+        if !changes.oldModel.shouldDisplayMyStory, changes.newModel.shouldDisplayMyStory {
             tableView.insertRows(at: [IndexPath(row: 0, section: Section.myStory.rawValue)], with: .fade)
-        } else if changes.oldModel.myStory != nil, changes.newModel.myStory == nil {
-            // My story should never go away after being loaded, but for the sake of completeness...
+        } else if changes.oldModel.shouldDisplayMyStory, !changes.newModel.shouldDisplayMyStory {
             tableView.deleteRows(at: [IndexPath(row: 0, section: Section.myStory.rawValue)], with: .fade)
-        } else if changes.myStoryChanged {
-            tableView.reloadRows(at: [IndexPath(row: 0, section: Section.myStory.rawValue)], with: .none)
+        } else if changes.myStoryChanged, changes.newModel.shouldDisplayMyStory {
+            tableView.reloadRows(at: [IndexPath(row: 0, section: Section.myStory.rawValue)], with: .fade)
         }
 
         // Visible stories section is always visible, directly apply changes.
@@ -503,13 +546,14 @@ class StoryListDataSource: NSObject, Dependencies {
             return
         }
 
-        switch (changes.oldModel.hiddenStories.isEmpty, changes.newModel.hiddenStories.isEmpty) {
-
-        case (true, true):
-            // No need to do anything.
-            return
+        // Header
+        switch (changes.oldModel.shouldDisplayHiddenStoriesHeader, changes.newModel.shouldDisplayHiddenStoriesHeader) {
 
         case (false, false):
+            // No need to do anything.
+            break
+
+        case (true, true):
             // Just reload the header row if we have to.
             if changes.oldModel.isHiddenStoriesSectionCollapsed != changes.newModel.isHiddenStoriesSectionCollapsed {
                 // If the cell is visible, reconfigure it directly without reloading.
@@ -523,68 +567,84 @@ class StoryListDataSource: NSObject, Dependencies {
                     tableView.reloadRows(at: [path], with: .none)
                 }
             }
-        case (true, false):
-            tableView.insertRows(at: [IndexPath(row: 0, section: Section.hiddenStories.rawValue)], with: .fade)
+
         case (false, true):
+            tableView.insertRows(at: [IndexPath(row: 0, section: Section.hiddenStories.rawValue)], with: .fade)
+        case (true, false):
             tableView.deleteRows(at: [IndexPath(row: 0, section: Section.hiddenStories.rawValue)], with: .fade)
-            applyTableViewBatchUpdates(
-                changes.oldModel.hiddenStories.lazy.enumerated().map {
-                    // Offset by 1 to account for the header cell.
-                    return .init(value: $1.context, updateType: .delete(oldIndex: $0 + 1))
-                },
-                toSection: .hiddenStories,
-                models: changes.oldModel.hiddenStories
-            )
-            return
         }
 
-        switch (changes.oldModel.isHiddenStoriesSectionCollapsed, changes.newModel.isHiddenStoriesSectionCollapsed) {
+        // Offset by 1 to account for the header cell.
+        let oldHeaderOffset = changes.oldModel.shouldDisplayHiddenStoriesHeader ? 1 : 0
+        let newHeaderOffset = changes.newModel.shouldDisplayHiddenStoriesHeader ? 1 : 0
 
-        case (false, false):
-            // Update the hidden section, it was expanded before and after
+        switch (changes.oldModel.shouldDisplayHiddenStories, changes.newModel.shouldDisplayHiddenStories) {
+
+        case (true, true):
+            // Update the hidden section, it was shown before and after
             applyTableViewBatchUpdates(
                 changes.hiddenStoryUpdates.map {
-                    // Offset by 1 to account for the header cell.
                     switch $0.updateType {
                     case let .update(oldIndex, newIndex):
-                        return .init(value: $0.value, updateType: .update(oldIndex: oldIndex + 1, newIndex: newIndex + 1))
+                        return .init(
+                            value: $0.value,
+                            updateType: .update(
+                                oldIndex: oldIndex + oldHeaderOffset,
+                                newIndex: newIndex + newHeaderOffset
+                            )
+                        )
                     case let .move(oldIndex, newIndex):
-                        return .init(value: $0.value, updateType: .move(oldIndex: oldIndex + 1, newIndex: newIndex + 1))
+                        return .init(
+                            value: $0.value,
+                            updateType: .move(
+                                oldIndex: oldIndex + oldHeaderOffset,
+                                newIndex: newIndex + newHeaderOffset
+                            )
+                        )
                     case let .insert(newIndex):
-                        return .init(value: $0.value, updateType: .insert(newIndex: newIndex + 1))
+                        return .init(
+                            value: $0.value,
+                            updateType: .insert(
+                                newIndex: newIndex + newHeaderOffset
+                            )
+                        )
                     case let .delete(oldIndex):
-                        return .init(value: $0.value, updateType: .delete(oldIndex: oldIndex + 1))
+                        return .init(
+                            value: $0.value,
+                            updateType: .delete(
+                                oldIndex: oldIndex + oldHeaderOffset
+                            )
+                        )
                     }
                 },
                 toSection: .hiddenStories,
-                // Offset by 1 to account for the header cell.
-                models: [changes.newModel.hiddenStories.first].compactMap({ $0 }) + changes.newModel.hiddenStories
+                models: [changes.newModel.hiddenStories.first].compactMap({
+                    changes.newModel.shouldDisplayHiddenStoriesHeader ? $0 : nil
+                }) + changes.newModel.hiddenStories
             )
 
-        case (true, false):
-            // Was collapsed and is now expanded, reload.
+        case (false, true):
+            // Was hidden and is now shown, reload.
             applyTableViewBatchUpdates(
                 changes.newModel.hiddenStories.lazy.enumerated().map {
-                    // Offset by 1 to account for the header cell.
-                    return .init(value: $1.context, updateType: .insert(newIndex: $0 + 1))
+                    return .init(value: $1.context, updateType: .insert(newIndex: $0 + newHeaderOffset))
                 },
                 toSection: .hiddenStories,
                 models: changes.newModel.hiddenStories
             )
 
-        case (false, true):
-            // Was expanded and is now collapsed, everything counts as a delete.
+        case (true, false):
+            // Was shown and is now hidden, everything counts as a delete.
             applyTableViewBatchUpdates(
                 changes.oldModel.hiddenStories.lazy.enumerated().map {
-                    // Offset by 1 to account for the header cell.
-                    return .init(value: $1.context, updateType: .delete(oldIndex: $0 + 1))
+                    return .init(value: $1.context, updateType: .delete(oldIndex: $0 + oldHeaderOffset))
                 },
                 toSection: .hiddenStories,
                 models: changes.oldModel.hiddenStories
             )
 
-        case (true, true):
-            // Was collapsed and is collapsed, so can just ignore any updates.
+        case (false, false):
+            // Was hidden and is hidden, so can just ignore any updates.
             break
         }
     }
@@ -717,27 +777,74 @@ private class SyncingStoryListViewModel {
 private struct StoryListViewModel {
 
     let myStory: MyStoryViewModel?
-    let stories: [StoryViewModel]
+    let unfilteredStories: [StoryViewModel]
+    let searchText: String?
     let isHiddenStoriesSectionCollapsed: Bool
 
+    let stories: [StoryViewModel]
+
+    init(
+        myStory: MyStoryViewModel?,
+        stories: [StoryViewModel],
+        searchText: String?,
+        isHiddenStoriesSectionCollapsed: Bool
+    ) {
+        self.myStory = myStory
+        self.unfilteredStories = stories
+        self.searchText = searchText
+        self.isHiddenStoriesSectionCollapsed = isHiddenStoriesSectionCollapsed
+
+        self.stories = {
+            guard let searchText = searchText else {
+                return stories
+            }
+            return stories.filter {
+                $0.latestMessageName.localizedCaseInsensitiveContains(searchText)
+            }
+        }()
+    }
+
     static var empty: Self {
-        return .init(myStory: nil, stories: [], isHiddenStoriesSectionCollapsed: true)
+        return .init(myStory: nil, stories: [], searchText: nil, isHiddenStoriesSectionCollapsed: true)
     }
 
     func copy(isHiddenStoriesSectionCollapsed: Bool) -> Self {
         return  .init(
             myStory: myStory,
-            stories: stories,
+            stories: unfilteredStories,
+            searchText: searchText,
             isHiddenStoriesSectionCollapsed: isHiddenStoriesSectionCollapsed
         )
+    }
+
+    var shouldDisplayMyStory: Bool {
+        return myStory != nil && searchText.isEmptyOrNil
     }
 
     var visibleStories: [StoryViewModel] {
         return stories.lazy.filter(\.isHidden.negated)
     }
 
+    // MARK: Hidden stories
+
     var hiddenStories: [StoryViewModel] {
         return stories.lazy.filter(\.isHidden)
+    }
+
+    var unfilteredHiddenStories: [StoryViewModel] {
+        return unfilteredStories.lazy.filter(\.isHidden)
+    }
+
+    var shouldDisplayHiddenStoriesHeader: Bool {
+        return !hiddenStories.isEmpty && searchText.isEmptyOrNil
+    }
+
+    var shouldDisplayHiddenStories: Bool {
+        if shouldDisplayHiddenStoriesHeader {
+            return !isHiddenStoriesSectionCollapsed
+        } else {
+            return !hiddenStories.isEmpty
+        }
     }
 }
 
