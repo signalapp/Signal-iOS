@@ -407,12 +407,14 @@ class SettingsViewModel: SessionTableViewModel<SettingsViewModel.NavButton, Sett
     
     private func showPhotoLibraryForAvatar() {
         Permissions.requestLibraryPermissionIfNeeded { [weak self] in
-            let picker: UIImagePickerController = UIImagePickerController()
-            picker.sourceType = .photoLibrary
-            picker.mediaTypes = [ "public.image" ]
-            picker.delegate = self?.imagePickerHandler
-            
-            self?.transitionToScreen(picker, transitionType: .present)
+            DispatchQueue.main.async {
+                let picker: UIImagePickerController = UIImagePickerController()
+                picker.sourceType = .photoLibrary
+                picker.mediaTypes = [ "public.image" ]
+                picker.delegate = self?.imagePickerHandler
+                
+                self?.transitionToScreen(picker, transitionType: .present)
+            }
         }
     }
     

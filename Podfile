@@ -82,6 +82,7 @@ abstract_target 'GlobalDependencies' do
       target 'SessionUtilitiesKit' do
         pod 'SAMKeychain'
         pod 'YYImage/libwebp', git: 'https://github.com/signalapp/YYImage'
+        pod 'DifferenceKit'
         
         target 'SessionUtilitiesKitTests' do
           inherit! :complete

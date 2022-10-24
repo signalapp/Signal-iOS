@@ -2,6 +2,7 @@
 
 import Foundation
 import GRDB
+import DifferenceKit
 
 // MARK: - PagedDatabaseObserver
 
@@ -198,6 +199,16 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
             // Update the cache, pageInfo and the change callback
             self?.dataCache.mutate { $0 = finalUpdatedDataCache }
             self?.pageInfo.mutate { $0 = updatedPageInfo }
+            
+            
+            // Make sure the updates run on the main thread
+            guard Thread.isMainThread else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.onChangeUnsorted(finalUpdatedDataCache.values, updatedPageInfo)
+                }
+                return
+            }
+            
             self?.onChangeUnsorted(finalUpdatedDataCache.values, updatedPageInfo)
         }
         
@@ -673,7 +684,12 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
             let updatedLimitInfo: PagedData.PageInfo = PagedData.PageInfo(
                 pageSize: currentPageInfo.pageSize,
                 pageOffset: queryInfo.updatedCacheOffset,
-                currentCount: (currentPageInfo.currentCount + newData.count),
+                currentCount: {
+                    switch target {
+                        case .reloadCurrent: return currentPageInfo.currentCount
+                        default: return (currentPageInfo.currentCount + newData.count)
+                    }
+                }(),
                 totalCount: totalCount
             )
             
@@ -724,6 +740,12 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         let triggerUpdates: () -> () = { [weak self, dataCache = self.dataCache.wrappedValue] in
             self?.onChangeUnsorted(dataCache.values, updatedPageInfo)
             self?.isLoadingMoreData.mutate { $0 = false }
+        }
+        
+        // Make sure the updates run on the main thread
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { triggerUpdates() }
+            return
         }
         
         triggerUpdates()
@@ -994,6 +1016,56 @@ public enum PagedData {
     fileprivate struct RowIndexInfo: Decodable, FetchableRecord {
         let rowId: Int64
         let rowIndex: Int64
+    }
+    
+    // MARK: - Convenience Functions
+    
+    // FIXME: Would be good to clean this up further in the future (should be able to do more processing on BG threads)
+    public static func processAndTriggerUpdates<SectionModel: DifferentiableSection>(
+        updatedData: [SectionModel]?,
+        currentDataRetriever: @escaping (() -> [SectionModel]?),
+        onDataChange: (([SectionModel], StagedChangeset<[SectionModel]>) -> ())?,
+        onUnobservedDataChange: @escaping (([SectionModel], StagedChangeset<[SectionModel]>) -> Void)
+    ) {
+        guard let updatedData: [SectionModel] = updatedData else { return }
+        
+        // Note: While it would be nice to generate the changeset on a background thread it introduces
+        // a multi-threading issue where a data change can come in while the table is processing multiple
+        // updates resulting in the data being in a partially updated state (which makes the subsequent
+        // table reload crash due to inconsistent state)
+        let performUpdates = {
+            guard let currentData: [SectionModel] = currentDataRetriever() else { return }
+            
+            let changeset: StagedChangeset<[SectionModel]> = StagedChangeset(
+                source: currentData,
+                target: updatedData
+            )
+            
+            // No need to do anything if there were no changes
+            guard !changeset.isEmpty else { return }
+            
+            // If we have the callback then trigger it, otherwise just store the changes to be sent
+            // to the callback if we ever start observing again (when we have the callback it needs
+            // to do the data updating as it's tied to UI updates and can cause crashes if not updated
+            // in the correct order)
+            guard let onDataChange: (([SectionModel], StagedChangeset<[SectionModel]>) -> ()) = onDataChange else {
+                onUnobservedDataChange(updatedData, changeset)
+                return
+            }
+            
+            onDataChange(updatedData, changeset)
+        }
+        
+        // No need to dispatch to the next run loop if we are alread on the main thread
+        guard !Thread.isMainThread else {
+            performUpdates()
+            return
+        }
+        
+        // Run any changes on the main thread (as they will generally trigger UI updates)
+        DispatchQueue.main.async {
+            performUpdates()
+        }
     }
     
     // MARK: - Internal Functions
