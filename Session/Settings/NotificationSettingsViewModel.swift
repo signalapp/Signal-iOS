@@ -108,7 +108,7 @@ class NotificationSettingsViewModel: SessionTableViewModel<NoNav, NotificationSe
                             title: "NOTIFICATIONS_STYLE_SOUND_WHEN_OPEN_TITLE".localized(),
                             rightAccessory: .toggle(.settingBool(key: .playNotificationSoundInForeground)),
                             onTap: {
-                                Storage.shared.writeAsync { db in
+                                Storage.shared.write { db in
                                     db[.playNotificationSoundInForeground] = !db[.playNotificationSoundInForeground]
                                 }
                             }

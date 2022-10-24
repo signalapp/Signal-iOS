@@ -361,7 +361,7 @@ public final class MessageSender {
                 .defaulting(to: [])
             
             // If the server doesn't support blinding then go with an unblinded id
-            guard capabilities.contains(.blind) else {
+            guard capabilities.isEmpty || capabilities.contains(.blind) else {
                 return SessionId(.unblinded, publicKey: userEdKeyPair.publicKey).hexString
             }
             guard let blindedKeyPair: Box.KeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: openGroup.publicKey, edKeyPair: userEdKeyPair, genericHash: dependencies.genericHash) else {

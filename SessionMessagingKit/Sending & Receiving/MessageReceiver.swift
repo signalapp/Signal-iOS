@@ -376,7 +376,7 @@ public enum MessageReceiver {
         
         // Download the profile picture if needed
         if updatedProfile.profilePictureUrl != profile.profilePictureUrl || updatedProfile.profileEncryptionKey != profile.profileEncryptionKey {
-            db.afterNextTransactionCommit { _ in
+            db.afterNextTransaction { _ in
                 ProfileManager.downloadAvatar(for: updatedProfile)
             }
         }

@@ -93,32 +93,14 @@ public class MediaGalleryViewModel {
             orderSQL: Item.galleryOrderSQL,
             dataQuery: Item.baseQuery(orderSQL: Item.galleryOrderSQL),
             onChangeUnsorted: { [weak self] updatedData, updatedPageInfo in
-                guard
-                    let currentData: [SectionModel] = self?.galleryData,
-                    let updatedGalleryData: [SectionModel] = self?.process(data: updatedData, for: updatedPageInfo)
-                else { return }
-                
-                let changeset: StagedChangeset<[SectionModel]> = StagedChangeset(
-                    source: currentData,
-                    target: updatedGalleryData
-                )
-                
-                // No need to do anything if there were no changes
-                guard !changeset.isEmpty else { return }
-                
-                // Run any changes on the main thread (as they will generally trigger UI updates)
-                DispatchQueue.main.async {
-                    // If we have the callback then trigger it, otherwise just store the changes to be sent
-                    // to the callback if we ever start observing again (when we have the callback it needs
-                    // to do the data updating as it's tied to UI updates and can cause crashes if not updated
-                    // in the correct order)
-                    guard let onGalleryChange: (([SectionModel], StagedChangeset<[SectionModel]>) -> ()) = self?.onGalleryChange else {
-                        self?.unobservedGalleryDataChanges = (updatedGalleryData, changeset)
-                        return
+                PagedData.processAndTriggerUpdates(
+                    updatedData: self?.process(data: updatedData, for: updatedPageInfo),
+                    currentDataRetriever: { self?.galleryData },
+                    onDataChange: self?.onGalleryChange,
+                    onUnobservedDataChange: { updatedData, changeset in
+                        self?.unobservedGalleryDataChanges = (updatedData, changeset)
                     }
-                    
-                    onGalleryChange(updatedGalleryData, changeset)
-                }
+                )
             }
         )
         

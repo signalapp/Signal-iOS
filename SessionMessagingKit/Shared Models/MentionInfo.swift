@@ -38,6 +38,8 @@ public extension MentionInfo {
         
         let request: SQLRequest<MentionInfo> = {
             guard let pattern: FTS5Pattern = pattern else {
+                let finalLimitSQL: SQL = (limitSQL ?? "")
+                
                 return """
                     SELECT
                         \(Profile.self).*,
@@ -61,12 +63,13 @@ public extension MentionInfo {
                     )
                     GROUP BY \(profile[.id])
                     ORDER BY \(interaction[.timestampMs].desc)
-                    \(limitSQL ?? "")
+                    \(finalLimitSQL)
                 """
             }
             
             // If we do have a search patern then use FTS
             let matchLiteral: SQL = SQL(stringLiteral: "\(Profile.Columns.nickname.name):\(pattern.rawPattern) OR \(Profile.Columns.name.name):\(pattern.rawPattern)")
+            let finalLimitSQL: SQL = (limitSQL ?? "")
             
             return """
                 SELECT
@@ -93,7 +96,7 @@ public extension MentionInfo {
                 WHERE \(profileFullTextSearch) MATCH '\(matchLiteral)'
                 GROUP BY \(profile[.id])
                 ORDER BY \(interaction[.timestampMs].desc)
-                \(limitSQL ?? "")
+                \(finalLimitSQL)
             """
         }()
         

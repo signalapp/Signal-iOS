@@ -422,7 +422,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     profilePictureUrl: legacyContact.profilePictureURL,
                     profilePictureFileName: legacyContact.profilePictureFileName,
                     profileEncryptionKey: legacyContact.profileEncryptionKey
-                ).insert(db)
+                ).migrationSafeInsert(db)
                 
                 /// **Note:** The blow "shouldForce" flags are here to allow us to avoid having to run legacy migrations they
                 /// replicate the behaviour of a number of the migrations and perform the changes if the migrations had never run
@@ -490,7 +490,7 @@ enum _003_YDBToGRDBMigration: Migration {
                             shouldForceDidApproveMe
                         ),
                         hasBeenBlocked: (!isCurrentUser && (legacyContact.hasBeenBlocked || legacyContact.isBlocked))
-                    ).insert(db)
+                    ).migrationSafeInsert(db)
                 }
                 
                 // Increment the progress for each contact
@@ -587,7 +587,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     ),
                     mutedUntilTimestamp: legacyThread.mutedUntilDate?.timeIntervalSince1970,
                     onlyNotifyForMentions: onlyNotifyForMentions
-                ).insert(db)
+                ).migrationSafeInsert(db)
                 
                 // Disappearing Messages Configuration
                 if let config: SMKLegacy._DisappearingMessagesConfiguration = disappearingMessagesConfiguration[threadId] {
@@ -595,12 +595,12 @@ enum _003_YDBToGRDBMigration: Migration {
                         threadId: threadId,
                         isEnabled: config.isEnabled,
                         durationSeconds: TimeInterval(config.durationSeconds)
-                    ).insert(db)
+                    ).migrationSafeInsert(db)
                 }
                 else {
                     try DisappearingMessagesConfiguration
                         .defaultWith(threadId)
-                        .insert(db)
+                        .migrationSafeInsert(db)
                 }
                 
                 // Closed Groups
@@ -618,7 +618,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         threadId: threadId,
                         name: name,
                         formationTimestamp: TimeInterval(formationTimestamp)
-                    ).insert(db)
+                    ).migrationSafeInsert(db)
                     
                     // Note: If a user has left a closed group then they won't actually have any keys
                     // but they should still be able to browse the old messages so we do want to allow
@@ -629,7 +629,7 @@ enum _003_YDBToGRDBMigration: Migration {
                             publicKey: legacyKeys.publicKey,
                             secretKey: legacyKeys.privateKey,
                             receivedTimestamp: timestamp
-                        ).insert(db)
+                        ).migrationSafeInsert(db)
                     }
                     
                     // Create the 'GroupMember' models for the group (even if the current user is no longer
@@ -643,15 +643,16 @@ enum _003_YDBToGRDBMigration: Migration {
                         try? Profile(
                             id: profileId,
                             name: profileId
-                        ).save(db)
+                        ).migrationSafeSave(db)
                     }
                     
                     try groupModel.groupMemberIds.forEach { memberId in
-                        try _006_FixHiddenModAdminSupport.PreMigrationGroupMember(
+                        try GroupMember(
                             groupId: threadId,
                             profileId: memberId,
-                            role: .standard
-                        ).insert(db)
+                            role: .standard,
+                            isHidden: false // Ignored: Didn't exist at time of migration
+                        ).migrationSafeInsert(db)
                         
                         if !validProfileIds.contains(memberId) {
                             createDummyProfile(profileId: memberId)
@@ -659,11 +660,12 @@ enum _003_YDBToGRDBMigration: Migration {
                     }
                     
                     try groupModel.groupAdminIds.forEach { adminId in
-                        try _006_FixHiddenModAdminSupport.PreMigrationGroupMember(
+                        try GroupMember(
                             groupId: threadId,
                             profileId: adminId,
-                            role: .admin
-                        ).insert(db)
+                            role: .admin,
+                            isHidden: false // Ignored: Didn't exist at time of migration
+                        ).migrationSafeInsert(db)
                         
                         if !validProfileIds.contains(adminId) {
                             createDummyProfile(profileId: adminId)
@@ -671,11 +673,12 @@ enum _003_YDBToGRDBMigration: Migration {
                     }
                     
                     try (closedGroupZombieMemberIds[legacyThread.uniqueId] ?? []).forEach { zombieId in
-                        try _006_FixHiddenModAdminSupport.PreMigrationGroupMember(
+                        try GroupMember(
                             groupId: threadId,
                             profileId: zombieId,
-                            role: .zombie
-                        ).insert(db)
+                            role: .zombie,
+                            isHidden: false // Ignored: Didn't exist at time of migration
+                        ).migrationSafeInsert(db)
                         
                         if !validProfileIds.contains(zombieId) {
                             createDummyProfile(profileId: zombieId)
@@ -707,7 +710,8 @@ enum _003_YDBToGRDBMigration: Migration {
                         sequenceNumber: 0,
                         inboxLatestMessageId: 0,
                         outboxLatestMessageId: 0
-                    ).insert(db)
+                    )
+                    .migrationSafeInsert(db)
                 }
             }
             
@@ -930,7 +934,7 @@ enum _003_YDBToGRDBMigration: Migration {
                                 openGroupServerMessageId: openGroupServerMessageId,
                                 openGroupWhisperMods: false,
                                 openGroupWhisperTo: nil
-                            ).inserted(db)
+                            ).migrationSafeInserted(db)
                         }
                         catch {
                             switch error {
@@ -950,7 +954,7 @@ enum _003_YDBToGRDBMigration: Migration {
                             threadId: threadId,
                             variant: variant,
                             timestampMs: Int64.zeroingOverflow(legacyInteraction.timestamp)
-                        )?.insert(db)
+                        )?.migrationSafeInsert(db)
                         
                         // Remove timestamps we created records for (they will be protected by unique
                         // constraints so don't need legacy process records)
@@ -1012,7 +1016,7 @@ enum _003_YDBToGRDBMigration: Migration {
                                     mostRecentFailureText :
                                     nil
                                 )
-                            ).save(db)
+                            ).migrationSafeSave(db)
                         }
                         
                         // Handle any quote
@@ -1045,7 +1049,7 @@ enum _003_YDBToGRDBMigration: Migration {
                                 try Profile(
                                     id: quotedMessage.authorId,
                                     name: quotedMessage.authorId
-                                ).save(db)
+                                ).migrationSafeSave(db)
                             }
                             
                             // Note: It looks like there is a way for a quote to not have it's
@@ -1093,7 +1097,7 @@ enum _003_YDBToGRDBMigration: Migration {
                                 timestampMs: Int64.zeroingOverflow(quotedMessage.timestamp),
                                 body: quotedMessage.body,
                                 attachmentId: attachmentId
-                            ).insert(db)
+                            ).migrationSafeInsert(db)
                         }
                         
                         // Handle any LinkPreview
@@ -1120,7 +1124,7 @@ enum _003_YDBToGRDBMigration: Migration {
                                 variant: linkPreviewVariant,
                                 title: linkPreview.title,
                                 attachmentId: attachmentId
-                            ).save(db)
+                            ).migrationSafeSave(db)
                         }
                         
                         // Handle any attachments
@@ -1156,7 +1160,7 @@ enum _003_YDBToGRDBMigration: Migration {
                                 albumIndex: index,
                                 interactionId: interactionId,
                                 attachmentId: attachmentId
-                            ).insert(db)
+                            ).migrationSafeInsert(db)
                         }
                         
                         // Increment the progress for each contact
@@ -1225,7 +1229,7 @@ enum _003_YDBToGRDBMigration: Migration {
                             timestampMs: legacyJob.message.timestamp
                         )
                     )
-                )?.inserted(db)
+                )?.migrationSafeInserted(db)
             }
         }
         
@@ -1256,7 +1260,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         messages: [processedMessage.messageInfo],
                         calledFromBackgroundPoller: legacyJob.isBackgroundPoll
                     )
-                )?.inserted(db)
+                )?.migrationSafeInserted(db)
             }
         }
         
@@ -1346,7 +1350,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         destination: legacyJob.destination,
                         message: legacyJob.message.toNonLegacy()
                     )
-                )?.inserted(db)
+                )?.migrationSafeInserted(db)
                 
                 if let oldId: String = legacyJob.id {
                     messageSendJobLegacyMap[oldId] = job
@@ -1373,7 +1377,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         messageSendJobId: sendJobId,
                         attachmentId: legacyJob.attachmentID
                     )
-                )?.inserted(db)
+                )?.migrationSafeInserted(db)
                 
                 // Add the dependency to the relevant MessageSendJob
                 guard let uploadJobId: Int64 = uploadJob?.id else {
@@ -1384,7 +1388,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 try JobDependencies(
                     jobId: sendJobId,
                     dependantId: uploadJobId
-                ).insert(db)
+                ).migrationSafeInsert(db)
             }
         }
         
@@ -1413,7 +1417,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     details: AttachmentDownloadJob.Details(
                         attachmentId: legacyJob.attachmentID
                     )
-                )?.inserted(db)
+                )?.migrationSafeInserted(db)
             }
         }
         
@@ -1429,7 +1433,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         destination: .contact(publicKey: threadId),
                         timestampMsValues: timestampsMs
                     )
-                )?.inserted(db)
+                )?.migrationSafeInserted(db)
             }
         }
         Storage.update(progress: 0.99, for: self, in: target)
@@ -1625,7 +1629,7 @@ enum _003_YDBToGRDBMigration: Migration {
                 }
             }(),
             caption: legacyAttachment.caption
-        ).inserted(db)
+        ).migrationSafeInserted(db)
         
         processedAttachmentIds.insert(legacyAttachmentId)
         
@@ -1664,7 +1668,7 @@ enum _003_YDBToGRDBMigration: Migration {
             encryptionKey: nil,
             digest: nil,
             caption: nil
-        ).inserted(db)
+        ).migrationSafeInserted(db)
         
         processedAttachmentIds.insert(legacyAttachmentId)
         

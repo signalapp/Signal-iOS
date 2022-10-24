@@ -20,6 +20,7 @@ public struct TargetMigrations: Comparable {
         case snodeKit
         case messagingKit
         case uiKit
+        case test
         
         public static func < (lhs: Self, rhs: Self) -> Bool {
             let lhsIndex: Int = (Identifier.allCases.firstIndex(of: lhs) ?? Identifier.allCases.count)
