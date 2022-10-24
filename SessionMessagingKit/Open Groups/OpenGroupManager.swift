@@ -252,7 +252,6 @@ public final class OpenGroupManager: NSObject {
                             db,
                             for: roomToken,
                             on: targetServer,
-                            authenticated: false,
                             using: dependencies
                         )
                 }
@@ -935,7 +934,6 @@ public final class OpenGroupManager: NSObject {
                 OpenGroupAPI.capabilitiesAndRooms(
                     db,
                     on: OpenGroupAPI.defaultServer,
-                    authenticated: false,
                     using: dependencies
                 )
             }
