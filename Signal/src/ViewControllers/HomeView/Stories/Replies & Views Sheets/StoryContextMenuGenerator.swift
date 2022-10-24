@@ -284,7 +284,8 @@ extension StoryContextMenuGenerator {
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
             style: .cancel
-        ) { _ in
+        ) { [weak self] _ in
+            self?.isDisplayingFollowup = false
             completion(false)
         })
 
