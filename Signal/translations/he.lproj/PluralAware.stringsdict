@@ -1088,13 +1088,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Viewer</string>
+			<string>צופה %1$d</string>
 			<key>two</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d צופים</string>
 			<key>many</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d צופים</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d צופים</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>

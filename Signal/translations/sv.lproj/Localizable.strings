@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Om meddelandeförfrågningar";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "Alla förbindelser";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Svara";
@@ -602,7 +602,7 @@
 "BLUR_TOOLTIP" = "Nytt: Oskärpa ansikten eller dra var som helst för att oskärpa.";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Gör en engångsdonation och få ett Boost märke i 30 dagar.";
+"BOOST_VIEW_BODY" = "Gör en engångsdonation och få ett Boost-märke i 30 dagar.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Ditt Boost-märke upphör att gälla %1$@.";
@@ -3803,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "Min Story";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "Tryck för att lägga till";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Nyligen ändrat sitt profilnamn från %1$@ till %2$@.";
@@ -3893,7 +3893,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Saknar storynamn";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Bara du kan se namnet på den här storyn.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Storynamn (krävs)";
@@ -3905,13 +3905,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Tittare";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Ny";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Synlig endast för specifika personer";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Ny anpassad story";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Dela till en befintlig grupp";
@@ -4742,7 +4742,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Lägg till tittare";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Ta bort anpassad story";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Är du säker på att du vill ta bort %1$@? Uppdateringar som har delats till den här berättelsen kommer också att raderas.";
@@ -6287,7 +6287,7 @@
 "STORIES_SAVE_STORY_ACTION" = "Spara";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "Storyuppdateringar försvinner automatiskt efter 24 timmar. Välj vilka som kan visa din story eller skapa nya stories för specifika tittare eller grupper.";
 
 /* Header for the 'Stories' section of the stories settings */
 "STORIES_SETTINGS_STORIES_HEADER" = "Stories";
@@ -6311,10 +6311,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Aktivera stories";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "Visa kvitton";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Se och dela när stories visas. Om de är inaktiverade ser du inte när andra ser din story.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Dela";
@@ -6332,7 +6332,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Story inte längre dold";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Aktivera läskvitton för att se vem som har visat din story.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Visningar";
@@ -6365,7 +6365,7 @@
 "STORY_PRIVACY_SETTINGS" = "Integritet";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "Storyintegritet";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reagerade %1$@ på din story";
@@ -6530,7 +6530,7 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal är en ideell organisation utan annonsörer eller investerare, endast stödd av de människor som använder och värdesätter den. Gör en återkommande månatlig donation och få ett profilmärke för att dela ditt stöd.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal är engagerad i att utveckla integritetsteknologi med öppen källkod som skyddar yttrandefriheten och möjliggör säker global kommunikation.\n\nDin donation driver denna sak och betalar för utvecklingen och driften av en app som används av miljoner för privat kommunikation. Inga annonser. Inga spårare. Inget påhitt.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal är engagerade i att utveckla integritetsteknologi med öppen källkod som skyddar yttrandefriheten och möjliggör säker global kommunikation.\n\nDin donation driver denna fråga och betalar för utvecklingen och driften av en app som används av miljoner för privat kommunikation. Inga annonser. Inga spårare. Inget påhitt.";
 
 /* Title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_TITLE" = "Stöd teknik som är byggd för dig - inte för dina data - genom att gå med i gemenskapen som upprätthåller den.";
@@ -6581,7 +6581,7 @@
 "SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Upphör %1$@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Förnyar %1$@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Förnyas %1$@";
 
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Bearbetar betalning...";
@@ -6593,7 +6593,7 @@
 "SUSTAINER_VIEW_READ_MORE" = "Läs mer.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Förnyar %1$@";
+"SUSTAINER_VIEW_RENEWAL" = "Förnyas %1$@";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Din betalning behandlas fortfarande. Detta kan ta några minuter beroende på din anslutning.";

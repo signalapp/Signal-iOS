@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "حَول طلبات المُراسلة";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "جميع جهات الاتصال";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "الإجابة";
@@ -515,7 +515,7 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "عرض في الملف الشخصي";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "الحصول على شارة مميزة";
+"BADGE_THANKS_MAKE_FEATURED" = "اختيار الشارة المميزة";
 
 /* Title for subscription on the thank you sheet. */
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "شكراً لدعمك!";
@@ -602,7 +602,7 @@
 "BLUR_TOOLTIP" = "جديد : اطمس الوجوه أو ارسم في أي مكان لتضبيبه.";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "يُرجى التبرع مرة واحدة. سيمكنك ذلك من الحصول على شارة التعزيز لمدة 30 يوم.";
+"BOOST_VIEW_BODY" = "تبرع مرة واحدة للحصول على شارة التعزيز لمدة 30 يوم.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "ستنتهي صلاحية شارة الدعم الخاصة بك يوم %1$@.";
@@ -1256,7 +1256,7 @@
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "احصل على شارة لملفك الشخصي عن طريق دعم Signal. انقر على شارة لمعرفة المزيد.";
 
 /* Header title for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_HEADER" = "شارات";
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "الشارات";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "لن تتلقى بعد الآن رسائل أو تحديثات من هذا المُستخدم.";
@@ -1445,7 +1445,7 @@
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "حرِك وحَجِّم";
 
 /* Title for the 'currency picker' view in the app settings. */
-"CURRENCY_PICKER_VIEW_TITLE" = "تَعيين العُملَة";
+"CURRENCY_PICKER_VIEW_TITLE" = "تحديد العُملَة";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "مُتدرِّج";
@@ -1784,7 +1784,7 @@
 "DONATE_MEGAPHONE_ACTION" = "تبرع";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "تستمد Signal قوتها من أشخاص مثلك. تبرّع شهريًا واحصل على وسام.";
+"DONATE_MEGAPHONE_BODY" = "تستمد Signal قوتها من أشخاص مثلك. تبرّع شهريًا واحصل على شارة.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "ليس الآن";
@@ -1913,7 +1913,7 @@
 "DONATION_VIEW_TITLE" = "تبرَّع لـ Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "ضبط العملة";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "تحديد العملة";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "يُمكِنُك تمكين الوصول من خِلال تطبيق إعدادات iOS.";
@@ -2135,7 +2135,7 @@
 "FEATURED_BADGE_SECTION_HEADER" = "اختر شارة";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "الشارة المميزة";
+"FEATURED_BADGE_SETTINGS_TITLE" = "الشارة المُميزة";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "علِّم كمُتحقَّق منه";
@@ -3803,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "قِصتي";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "انقر للإضافة";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "مُؤخَّرًا غَيَّرَ اِسمَ مَلَفِّهِ الشَّخصِيِ مِن %1$@ إلى %2$@.";
@@ -3893,7 +3893,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "ينقُصك اسم القصة";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "أنت فقط من يرى اسم هذه القصة.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "اسم القصة (مطلوب)";
@@ -3905,13 +3905,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "المشاهدون";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "جديد";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "ظاهرة فقط لأفراد معينين";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "قصة مخصصة جديدة";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "المشاركة مع مجموعة موجودة";
@@ -4742,7 +4742,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "إضافة مشاهدين";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "إزالة قصة مخصصة";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "هل أنت متأكد من أنك تريد حذف \"%1$@\"؟ سيتم أيضًا حذف تحديثات شاركتها مؤخرًا في هذه القصة.";
@@ -6287,10 +6287,10 @@
 "STORIES_SAVE_STORY_ACTION" = "حفظ";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "تختفي تحديثات القصص تلقائيًا بعد 24 ساعة. اختر من يمكنه مشاهدة قصتك أو أنشئ قِصص جديدة مع مشاهدين أو مجموعات محددة.";
 
 /* Header for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
+"STORIES_SETTINGS_STORIES_HEADER" = "القِصَص";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "لن تتمكن من مشاركة القِصص أو مُشَاهداتها بعد الآن. وسيتم أيضًا حذف تحديثات القصة التي شاركتها مؤخرًا.";
@@ -6311,10 +6311,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "تشغيل القِصص";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "مشاهدة الإيصالات";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "مشاهدة ومشاركة متى يمكن مشاهدة القصص. إذا كانت هذه الخاصية مُعطلة، لن ترى من شاهد قِصصك.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "المُشاركة";
@@ -6332,7 +6332,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "تمّ إظهار القصة";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "فعِّل إيصالات القراءة لرؤية من شاهد قِصصك.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "المشاهدات";
@@ -6365,7 +6365,7 @@
 "STORY_PRIVACY_SETTINGS" = "الخصوصية";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "إعدادات خصوصية القِصة";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "تفاعل %1$@ مع قصتك";
@@ -6437,7 +6437,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<strong>‫جهات اتصال Signal‬</strong> هم الأفراد الذي اخترت الثقة بهم، إما عبر:";
 
 /* Label for the stories section of the settings view */
-"STORY_SETTINGS_TITLE" = "Stories";
+"STORY_SETTINGS_TITLE" = "القِصَص";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "اِختر من يُمكنه رؤية قصتك من علاقات Signal. لن تؤثر التغييرات على القِصص التي أرسلتها من قبل.";
@@ -6527,13 +6527,13 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "يَجري التَّحميل";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "إن Signal غير ربحي، وبلا إعلانات ولا مستثمرين، يدعمه فقط الأشخاص الذين يستخدمونه ويقدرونه. نرجو منك التبرع بشكل شهري للحصول على شارة في حسابك لأجل مشاركة دعمك لنا مع الآخرين.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "إن Signal شركة غير ربحية، وبلا إعلانات ولا مُستثمرين، يدعمها فقط الأشخاص الذين يستخدمونها ويقدرونها. نرجو منك التبرّع بشكل شهري للحصول على شارة في حسابك لمُشاركة دعمك لنا مع الآخرين.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "إن منظمة Signal ملتزمة بتطوير تكنولوجيا للخصوصية مفتوحة المصدر تحمي حرية التعبير وتجعل التواصل العالمي الآمن ممكناً.\n\nتدعم مساهمتك هذه القضية وتساعد في دفع تكلفة التطوير والعمليات اللازمة لتطبيق يستخدمه الملايين للتواصل الخاص. بلا إعلانات. بلا أدوات تتبع. إننا جادون حقا.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "إن Signal ملتزمة بتطوير تكنولوجيا للخصوصية مفتوحة المصدر تحمي حرية التعبير وتجعل التواصل العالمي الآمن ممكناً.\n\nتدعم مساهمتك هذه القضية وتساعد في دفع تكلفة التطوير والعمليات اللازمة لتطبيق يَستخدمه الملايين للتواصل الخاص. بلا إعلانات. بلا أدوات تتبع. إننا جادون حقًا.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "يُرجى دعم التكنولوجيا المبنية لأجلك — لا لأجل بياناتك —، وذلك عبر الانضمام إلى المجتمع الداعم لـ Signal.";
+"SUSTAINER_READ_MORE_TITLE" = "ادعم التكنولوجيا المبنية لأجلك—لا لأجل بياناتك—وذلك عبر الانضمام إلى المجتمع الداعم لها.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "لِماذا أتبرع؟";
@@ -6551,7 +6551,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "تأكيد";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "لن يتم محاسبتك مرة أخرى. ستتم إزالة شارتك من ملفك الشخصي في نهاية المدة الزمنية لإعداد الفواتير.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "لن يتم تحصيل رسوم منك مرة أخرى. سَتتم إزالة شارتك من ملفك الشخصي في نهاية المدة الزمنية لإعداد الفواتير.";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "تأكيد الإلغاء؟";
@@ -6617,7 +6617,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "تحديث التطبيق";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "يُرجى التبرع شهريا لـ Signal بشكل متواصل، وذلك لدعم التكنولوجيا التي بُنيَت لأجلك، وليس لأجل الحصول على بياناتك.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "تبرع شهريًا لـ Signal بشكل متواصل لدعم التكنولوجيا التي بُنيَت لأجلك، وليس لأجل بياناتك.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "مُعطَّل";

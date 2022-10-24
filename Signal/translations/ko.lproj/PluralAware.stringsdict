@@ -153,7 +153,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d %2$#@total@</string>
+			<string>%1$d %2$#@total@개</string>
 		</dict>
 		<key>total</key>
 		<dict>
@@ -162,7 +162,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>총 %2$d개 검색 결과</string>
+			<string>/%2$d개 검색 결과</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -232,7 +232,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d개 메시지를 삭제할까요?</string>
+			<string>메시지 %1$d개를 삭제할까요?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -246,7 +246,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>그룹 최대 인원(%1$d명)이 초과되었습니다.</string>
+			<string>그룹 최대 인원(%1$d명)에 도달했습니다.</string>
 		</dict>
 	</dict>
 	<key>EXPIRATION_WARNING_%d</key>
@@ -330,7 +330,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Signal 그룹 최적의 인원은 %1$d명 이하입니다. 멤버를 더 추가하면 메시지 송수신 지연 등의 성능 저하가 발생합니다.</string>
+			<string>Signal 그룹의 최적 인원은 %1$d명 이하입니다. 멤버를 더 추가하면 메시지 송수신 지연 등의 성능 저하가 발생합니다.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -344,7 +344,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>이 통화의 최대 참여 인원(%1$d명)이 초과되었습니다. 나중에 다시 시도하세요.</string>
+			<string>이 통화의 최대 참여 인원(%1$d명)에 도달했습니다. 나중에 다시 시도하세요.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -456,7 +456,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d 초대 보냄</string>
+			<string>초대 %1$d개 보냄</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
@@ -764,7 +764,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>볼 수 있는 사람 %1$d명</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -946,7 +946,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>사용자 지정 스토리 · 볼 수 있는 사람 %1$d명</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1016,7 +1016,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d명을 제외함</string>
+			<string>%1$d명 제외</string>
 		</dict>
 	</dict>
 	<key>STORY_SENDING_%d</key>
@@ -1058,7 +1058,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>조회 &lt;bold&gt;%1$d&lt;/bold&gt;명</string>
+			<string>답장 &lt;bold&gt;%1$d&lt;/bold&gt;개</string>
 		</dict>
 		<key>views</key>
 		<dict>

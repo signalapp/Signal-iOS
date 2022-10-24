@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Sobre as solicitações de conversas";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "Todos os contatos";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Atender";
@@ -362,7 +362,7 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Torne-se um apoiador";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Fazer uma doação ao Signal";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Fazer uma doação para o Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "Seu selo de Boost expirou e não está mais disponível para exibição no seu perfil.";
@@ -623,7 +623,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Selecione uma quantia para doar";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Fazer uma doação ao Signal";
+"BOOST_VIEW_TITLE" = "Fazer uma doação para o Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Adicionar";
@@ -1784,7 +1784,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Doar";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "O Signal é movido por pessoas como você. Doe todo mês e ganhe um selo.";
+"DONATE_MEGAPHONE_BODY" = "O Signal é mantido por pessoas como você. Doe todo mês e ganhe um selo.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Agora não";
@@ -3803,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "Meu Story";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "Toque para adicionar";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Mudou recentemente o nome de perfil de %1$@ para %2$@.";
@@ -3893,7 +3893,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Story sem nome";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Somente você pode ver o nome deste story.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Nome do story (obrigatório)";
@@ -3905,13 +3905,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Visualizadores";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Novidade";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visível apenas para pessoas específicas";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Novo story personalizado";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Compartilhar em um grupo existente";
@@ -4742,7 +4742,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Adicionar espectadores";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Excluir story personalizado";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Tem certeza que deseja excluir “%1$@”? As atualizações desse story também serão excluídas.";
@@ -6287,7 +6287,7 @@
 "STORIES_SAVE_STORY_ACTION" = "Salvar";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "As atualizações dos stories desaparecem automaticamente após 24 horas. Escolha quem pode ver seu story ou crie novos stories com visualizadores ou grupos específicos.";
 
 /* Header for the 'Stories' section of the stories settings */
 "STORIES_SETTINGS_STORIES_HEADER" = "Stories";
@@ -6311,10 +6311,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Ativar Stories";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "Ver confirmações de leitura";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Veja e compartilhe visualizações de stories. Se este recurso estiver desativado, você não saberá que outras pessoas viram seu story.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Compartilhar";
@@ -6332,7 +6332,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "O story não está mais oculto";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Ative as confirmações de leitura para saber quem viu seus stories.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Visualizações";
@@ -6365,7 +6365,7 @@
 "STORY_PRIVACY_SETTINGS" = "Privacidade";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "Privacidade do story";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reagiu com %1$@ ao seu story";
@@ -6530,10 +6530,10 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "O Signal é uma entidade sem fins lucrativos, sem anunciantes ou investidores, apoiada apenas pelas pessoas que o usam e valorizam. Faça uma doação mensal recorrente e receba um selo no perfil para demonstrar o seu apoio.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "O Signal está comprometido com desenvolvimento de uma tecnologia de privacidade de código aberto que protege a liberdade de expressão e permite uma comunicação global segura.\n\nSua doação incentiva esta causa e paga pelo desenvolvimento e funcionamento de um aplicativo usado por milhões de pessoas para comunicação privada. Sem anúncios. Sem rastreadores. Sem brincadeira.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "O Signal está comprometido com o desenvolvimento de uma tecnologia de privacidade de código aberto que protege a liberdade de expressão e permite uma comunicação global segura.\n\nSua doação incentiva esta causa e paga pelo desenvolvimento e funcionamento de um aplicativo usado por milhões de pessoas para comunicação privada. Sem anúncios. Sem rastreadores. Sem brincadeira.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Apoie a tecnologia que é desenvolvida pensando em você - e não em seus dados, junte-se à comunidade que a sustenta financeiramente.";
+"SUSTAINER_READ_MORE_TITLE" = "Apoie a tecnologia que é desenvolvida pensando em você, e não em seus dados. Junte-se à comunidade que a sustenta financeiramente.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Por que doar?";
@@ -6542,19 +6542,19 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Ainda em processamento";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Obter um selo %1$@";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Ganhe um selo %1$@";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Cancelar doação";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Cancelar assinatura";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Confirmar";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Você não será cobrado novamente. O seu selo será removido do seu perfil ao final do período do seu faturamento.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "A cobrança não será feita novamente. O selo será removido do seu perfil ao final do período do seu faturamento.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Cancelar?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Quer cancelar?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Não foi possível adicionar o selo. %1$@";
@@ -6617,7 +6617,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Atualizar";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Faça uma doação mensal recorrente para o Signal a fim de apoiar essa tecnologia desenvolvida pensando em você; não em seus dados.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Faça uma doação mensal recorrente para o Signal a fim de apoiar essa tecnologia desenvolvida pensando em você, e não em seus dados.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Desligado";

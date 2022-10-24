@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "A csevegési felkérésekről";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "Összes Névjegy";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Válasz";
@@ -602,7 +602,7 @@
 "BLUR_TOOLTIP" = "Új: Homályosíts ki arcokat vagy más fénykép részeket.";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Tegyél egyszeri támogatást és Lökés kitűzőt kapsz 30 napra.";
+"BOOST_VIEW_BODY" = "Tegyél egyszeri támogatást, és Lökés kitűzőt kapsz 30 napra.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Lökés kitűződ lejár: %1$@.";
@@ -1784,7 +1784,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Támogatás";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "A Signalt az olyan emberek tartják működésben, mint Te. Támogasd havonta és kapj egy kitűzőt.";
+"DONATE_MEGAPHONE_BODY" = "A Signalt az olyan emberek tartják működésben, mint Te. Támogasd havonta, és kapsz egy kitűzőt.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Később";
@@ -3803,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "Történetem";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "A hozzáadáshoz koppints";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Nemrég megváltoztatta profilnevét erről: %1$@ erre: %2$@.";
@@ -3893,7 +3893,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Hiányzik a Történet címe";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Csak te láthatod ennek a Történetnek a nevét.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Történet címe (kötelező)";
@@ -3905,13 +3905,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Megtekintők";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Új";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Csak bizonyos személyek számára látható";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Új egyéni Történet";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Megosztás egy meglévő csoporttal";
@@ -4742,7 +4742,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Nézők hozzáadása";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Egyéni Történet törlése";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Biztosan törölni szeretnéd a következőt: „%1$@”? A Történethez megosztott frissítések is törlésre kerülnek.";
@@ -6287,10 +6287,10 @@
 "STORIES_SAVE_STORY_ACTION" = "Mentés";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "A Történetfrissítések 24 óra elteltével automatikusan eltűnnek. Válaszd ki, hogy ki tekintheti meg a Történeted, vagy hozz létre újakat meghatározott nézőkkel vagy csoportokkal.";
 
 /* Header for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
+"STORIES_SETTINGS_STORIES_HEADER" = "Történetek";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Többé nem fogsz tudni megosztani vagy megtekinteni Történeteket. A közelmúltban megosztott Történettel kapcsolatos módosítások is törlődnek.";
@@ -6311,10 +6311,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Történetek bekapcsolása";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "Olvasási értesítések megtekintése";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Tekintsd meg és oszd meg, ha megnézték a Történeteket. Ha ez a funkció ki van kapcsolva, nem fogod látni, hogy mások mikor nézik meg Történeted.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Megosztás";
@@ -6332,7 +6332,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Történet elrejtése visszavonva";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Engedélyezd a Megtekintési értesítéseket, hogy lásd, kik nézték meg a Történeteidet!";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Megtekintések";
@@ -6365,7 +6365,7 @@
 "STORY_PRIVACY_SETTINGS" = "Adatvédelem";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "Történet adatvédelmi beállításai";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Így reagált a Történetedre: %1$@";
@@ -6437,7 +6437,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "A <bold>Signal Névjegyeid</bold> azok a személyek, akikben megbízol a következők valamelyike alapján:";
 
 /* Label for the stories section of the settings view */
-"STORY_SETTINGS_TITLE" = "Stories";
+"STORY_SETTINGS_TITLE" = "Történetek";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Döntsd el, melyik Signal Névjegy láthatja a Történeted. A módosítások nem lesznek hatással a már elküldött Történetekre.";
@@ -6530,7 +6530,7 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "A Signal egy nonprofit, hirdetők és befektetők nélküli, kizárólag felhasználók és rajongók által fenntartott alkalmazás. Indíts havi, rendszeres támogatást, és cserébe kitűzőt kapsz profilképedre, amivel láthatóvá teheted támogatásodat.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "A Signal csapata elkötelezett, hogy nyílt forrású fejlesztéseivel előmozdítsa a privát technológiák térnyerését, amelyek a szólásszabadságot és a biztonságos globális kommunikáció elterjedését biztosítják. \n\nAdományoddal hozzájárulhatsz a fejlesztés és üzemeltetés költségeihez, amelyek a milliók által világszerte használt azonnali privát kommunikációt megteremtő alkalmazás működtetéséhez szükségesek. Nincs reklám. Nincs követés. Nincs trükk.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "A Signal csapata elkötelezett, hogy nyílt forrású fejlesztéseivel előmozdítsa a privát technológiák térnyerését, amelyek a szólásszabadságot és a biztonságos globális kommunikáció elterjedését biztosítják.\n\nAdományoddal hozzájárulhatsz a fejlesztés és üzemeltetés költségeihez, amelyek a milliók által világszerte használt azonnali privát kommunikációt megteremtő alkalmazás működtetéséhez szükségesek. Nincs reklám. Nincs követés. Nincs trükk.";
 
 /* Title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_TITLE" = "Támogass egy olyan technológiát, amely számodra, nem pedig adataid megszerzéséért készült. A fenntartók, támogatók közössége vár.";

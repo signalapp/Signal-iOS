@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "संदेश विनंत्यांबद्दल";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "सर्व कनेक्शन्स";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "उत्तर";
@@ -353,16 +353,16 @@
 "BACK_BUTTON" = "मागे";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "आपले बॅजेेस्";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "माझे बॅजेस";
 
 /* The title for the badge configuration page */
-"BADGE_CONFIGURATION_TITLE" = "बॅजेस्";
+"BADGE_CONFIGURATION_TITLE" = "बॅजेस";
 
 /* Text prompting the user to become a signal sustainer */
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "सस्टेनर बना";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Signal ला बूस्ट करा";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Signal ला मजबूत बनवा";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "आपला बूस्ट बॅज कालबाह्य झाला आहे आणि तो आपल्या प्रोफाईलवर प्रदर्शित करण्यासाठी यापुढे उपलब्ध राहणार नाही.";
@@ -608,7 +608,7 @@
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "आपला बूस्ट बॅज कालबाह्य होईल. %1$@";
 
 /* Default text for the custom amount field of the boost view. */
-"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "कस्टम रक्कम प्रविष्ट करा";
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "सानुकूल रक्कम प्रविष्ट करा";
 
 /* Text explaining there are other ways to donate on the boost view. */
 "BOOST_VIEW_OTHER_WAYS" = "अधिक पेमेंट पर्याय";
@@ -623,7 +623,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "देणगी देण्यासाठी एक रक्कम निवडा";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Signal ला बूस्ट करा";
+"BOOST_VIEW_TITLE" = "Signal ला मजबूत बनवा";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "जोडा";
@@ -1256,7 +1256,7 @@
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Signal ला सपोर्ट करून तुमच्या प्रोफाइलसाठी बॅज मिळवा. अधिक जाणून घेण्यासाठी बॅजवर टॅप करा.";
 
 /* Header title for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_HEADER" = "बॅजेस्";
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "बॅजेस";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "या वापरकर्त्याकडून आपल्याला यापुढे संदेश किंवा अद्यतने प्राप्त होणार नाहीत.";
@@ -1772,7 +1772,7 @@
 "DISMISS_CONTEXT_MENU" = "संदर्भ मेन्यु बरखास्त करा";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "बॅज प्रोफाइलवर दाखवा";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "प्रोफाइलवर बॅजेस दाखवा";
 
 /* Title for the proxy confirmation */
 "DO_YOU_WANT_TO_USE_PROXY" = "आपण हा प्रॉक्सी पत्ता वापरू इच्छिता?";
@@ -1784,7 +1784,7 @@
 "DONATE_MEGAPHONE_ACTION" = "दान करा";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal तुमच्यासारख्या लोकांच्या मदतीने चालते. दर महिन्याला दान करा आणि एक बॅज मिळवा.";
+"DONATE_MEGAPHONE_BODY" = "Signal तुमच्यासारख्या लोकांच्या मदतीने चालते. दर महिन्याला देणगी द्या आणि एक बॅज मिळवा.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "आता नाही";
@@ -1883,7 +1883,7 @@
 "DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "मासिक देणगी द्या";
 
 /* Title for the 'Badges' button on the donation screen */
-"DONATION_VIEW_MANAGE_BADGES" = "बॅजेस्";
+"DONATION_VIEW_MANAGE_BADGES" = "बॅजेस";
 
 /* Title for the 'Manage Subscription' button on the donation screen */
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "सब्स्क्रिप्शन व्यवस्थापित करा";
@@ -3803,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "माझी स्टोरी";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "जोडण्यासाठी टॅप करा";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "अलीकडे त्यांचे प्रोफाईल नाव %1$@ ते %2$@ वर बदलले.";
@@ -3893,7 +3893,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "स्टोरी नाव गहाळ आहे";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "फक्त आपण या स्टोरी चे नाव पाहू शकता.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "स्टोरी नाव (आवश्यक)";
@@ -3905,13 +3905,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "दर्शक";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "नवीन";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "केवळ विशिष्ट लोकांसाठी दृश्यमान";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "नवीन सानुकूल स्टोरी";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "विद्यमान गटामध्ये शेअर करा";
@@ -4742,7 +4742,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "दर्शक जोडा";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "सानुकूल स्टोरी हटवा";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "आपण खात्रीने “%1$@” हटवू इच्छित आहात? या स्टोरी ला शेअर केलेली अद्यतने देखील हटवली जातील.";
@@ -6287,10 +6287,10 @@
 "STORIES_SAVE_STORY_ACTION" = "जतन करा";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "स्टोरी अद्यतने 24 तासानंतर स्वयंचलितपणे अदृश्य होतात. आपली स्टोरी कोण पाहू शकते ते निवडा किंवा विशिष्ट दर्शक किंवा ग्रुप्ससह नवीन स्टोरीज तयार करा.";
 
 /* Header for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
+"STORIES_SETTINGS_STORIES_HEADER" = "स्टोरीज";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "आपण यापुढे स्टोरीज शेअर किंवा पाहू शकणार नाही. आपण अलिकडेच शेअर केलेली स्टोरीज अद्यतने देखील हटवली जातील.";
@@ -6311,10 +6311,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "स्टोरीज चालू करा";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "पावत्या पहा";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "स्टोरीज जेव्हा पाहिल्या जातील तेव्हा पहा आणि शेअर करा. अक्षम करण्यात आल्यास, जेव्हा इतर लोक आपल्या स्टोरीज पाहतील ते आपण पाहू शकणार नाही.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "सामायिक करा";
@@ -6332,7 +6332,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "स्टोरी उघड केली";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "आपल्या स्टोरीज कोणी पाहिल्या ते पाहण्यासाठी वाचल्याची पोच सक्षम करा.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "दृश्ये";
@@ -6365,7 +6365,7 @@
 "STORY_PRIVACY_SETTINGS" = "गोपनीयता";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "स्टोरीची गोपनीयता";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "%1$@ नी आपल्या स्टोरी वर प्रतिक्रिया दिली";
@@ -6437,7 +6437,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal कनेक्शन्स</bold> हे लोक आहेत ज्यांच्यावर आपण विश्वास ठेवला आहे, एकतर:";
 
 /* Label for the stories section of the settings view */
-"STORY_SETTINGS_TITLE" = "Stories";
+"STORY_SETTINGS_TITLE" = "स्टोरीज";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "आपली स्टोरी कोणते Signal कनेक्शन्स पाहू शकतात ते निवडा. बदलांचा आपण आधीच पाठवलेल्या स्टोरीज वर परिणाम होणार नाही.";
@@ -6527,13 +6527,13 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "लोड करत आहे";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal ही एक विना - नफा संस्था आहे ज्यामध्ये कोणतेही जाहिरातदार किंवा गुंतवणूकदार नसतात, केवळ ते वापरणाऱ्या आणि मूल्यवान लोकांद्वारे टिकून राहते. आवर्ती मासिक देणगी द्या आणि तुमचे समर्थन सामायिक करण्यासाठी प्रोफाइल बॅज मिळवा.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal ही एक विना - नफा संस्था आहे ज्यामध्ये कोणतेही जाहिरातदार किंवा गुंतवणूकदार नसतात, केवळ ते वापरणाऱ्या आणि महत्व देणार्‍या लोकांद्वारे टिकून राहते. आवर्ती मासिक देणगी द्या आणि तुमचे समर्थन सामायिक करण्यासाठी प्रोफाइल बॅज मिळवा.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "मुक्त अभिव्यक्तीचे संरक्षण करणारे आणि सुरक्षित जागतिक संचार सक्षम करणारे मुक्त स्रोत गोपनीयता तंत्रज्ञान विकसित करण्यासाठी Signal वचनबद्ध आहे.\n\nआपली देणगी या कारणाला चालना देते आणि खाजगी संचारासाठी लाखो लोक वापरत असलेल्या अॅपच्या विकासासाठी आणि कार्यासाठी पैसे देतात. जाहिराती नाहीत. ट्रॅकर्स नाहीत. चेष्टा नाही.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "मुक्त अभिव्यक्तीचे संरक्षण करणारे आणि सुरक्षित जागतिक संचार सक्षम करणारे मुक्त स्रोत गोपनीयता तंत्रज्ञान विकसित करण्यासाठी Signal वचनबद्ध आहे.\n\nआपली देणगी या कारणाला चालना देते आणि खाजगी संचारासाठी लाखो लोक वापरत असलेल्या अ‍ॅपच्या विकासासाठी आणि कार्यासाठी पैसे देते. जाहिराती नाहीत. ट्रॅकर्स नाहीत. चेष्टा नाही.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "या तंत्रज्ञानाचे समर्थन करा जे तुमच्या साठी बनवले आहे — तुमच्या डेटासाठी नाही — ते टिकवून ठेवणाऱ्या लोकांच्या समुदायात सामील होऊन.";
+"SUSTAINER_READ_MORE_TITLE" = "तुमच्या डेटासाठी नाही तर तुमच्यासाठी बनवलेल्या — तंत्रज्ञानाचे समर्थन करा — ते टिकवून ठेवणाऱ्या लोकांच्या समुदायात सामील होऊन.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "देणगी का द्यायची?";
@@ -6542,10 +6542,10 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "अजूनही प्रक्रिया करत आहे";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "%1$@ बॅज मिळवा";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "एक %1$@ बॅज मिळवा";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "सब्स्क्रिप्शन रद्द करा";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "सदस्यत्व रद्द करा";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "पुष्टी करा";
@@ -6554,7 +6554,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "तुमच्याकडून पुन्हा शुल्क आकारले जाणार नाही. तुमचा बिलिंग कालावधी संपल्यावर तुमचा बॅज तुमच्या प्रोफाइलमधून काढून टाकला जाईल.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "रद्द करण्याची पुष्टी करायची ?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "रद्द करण्याची पुष्टी करायची?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "बॅज जोडता आला नाही. %1$@";
@@ -6581,7 +6581,7 @@
 "SUSTAINER_VIEW_PRICING_EXPIRATION" = " .कालबाह्य %1$@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " .नूतनीकरण %1$@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · नूतनीकरणे %1$@";
 
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "पेमेंटची प्रक्रिया करत आहे…";
@@ -6593,7 +6593,7 @@
 "SUSTAINER_VIEW_READ_MORE" = "अधिक वाचा.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "नूतनीकरण %1$@";
+"SUSTAINER_VIEW_RENEWAL" = "नूतनीकरणे %1$@";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "आपली पेमेंट प्रक्रिया अजूनही चालू आहे. आपल्या कनेक्शन नुसार यास काही मिनिटे लागू शकतात.";

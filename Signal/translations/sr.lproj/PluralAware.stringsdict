@@ -13,7 +13,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Гласовна порука од 1 сек.</string>
+			<string>Гласовна порука од %1$d сек.</string>
 			<key>other</key>
 			<string>Гласовна порука од %1$d сек.</string>
 		</dict>
@@ -93,7 +93,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ова прилагођена боја се користи у 1 ћаскању. Желите ли да је избришете?</string>
+			<string>Ова прилагођена боја се користи у %1$d ћаскању. Желите ли да је избришете?</string>
 			<key>other</key>
 			<string>Ова прилагођена боја се користи у %1$d ћаскања. Желите ли да је избришете из свих ћаскања?</string>
 		</dict>
@@ -109,7 +109,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ова боја се користи у 1 ћаскању. Желите ли да сачувате промене у свим ћаскањима?</string>
+			<string>Ова боја се користи у %1$d ћаскању. Желите ли да сачувате промене у свим ћаскањима?</string>
 			<key>other</key>
 			<string>Ова боја се користи у %1$d ћаскања. Желите ли да сачувате промене у свим ћаскањима?</string>
 		</dict>
@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Желите ли да избришете ћаскање?</string>
+			<string>Желите ли да избришете %1$d ћаскање?</string>
 			<key>other</key>
 			<string>Желите ли да избришете %1$d ћаскања?</string>
 		</dict>
@@ -157,7 +157,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Максимални број ћаскања која можете изабрати је 1.</string>
+			<string>Максимални број ћаскања која можете изабрати је %1$d.</string>
 			<key>other</key>
 			<string>Максимални број ћаскања која можете изабрати је %1$d.</string>
 		</dict>
@@ -173,7 +173,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 %2$#@total@</string>
+			<string>%1$d %2$#@total@</string>
 			<key>other</key>
 			<string>%1$d %2$#@total@</string>
 		</dict>
@@ -184,7 +184,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>спој</string>
+			<string>од укупно спојева: %2$d</string>
 			<key>other</key>
 			<string>од укупно спојева: %2$d</string>
 		</dict>
@@ -200,7 +200,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Чланова: 1</string>
+			<string>Чланова: %1$d</string>
 			<key>other</key>
 			<string>Чланова: %1$d</string>
 		</dict>
@@ -216,7 +216,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Заједничких група: 1</string>
+			<string>Заједничких група: %1$d</string>
 			<key>other</key>
 			<string>Заједничких група: %1$d</string>
 		</dict>
@@ -248,7 +248,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>пре 1 минут</string>
+			<string>пре %1$d минут</string>
 			<key>other</key>
 			<string>пре %1$d минут(а)</string>
 		</dict>
@@ -264,7 +264,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Желите ли да избришете поруку?</string>
+			<string>Желите ли да избришете поруке (%1$d)?</string>
 			<key>other</key>
 			<string>Желите ли да избришете поруке (%1$d)?</string>
 		</dict>
@@ -296,7 +296,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ваша верзија Signal-а истиче за 1 дан. Додирните овде да ажурирате апликацију на најновију верзију.</string>
+			<string>Ваша верзија Signal-а истиче за %1$d дан. Додирните овде да ажурирате апликацију на најновију верзију.</string>
 			<key>other</key>
 			<string>Ваша верзија Signal-а истиче за %1$d дан(а). Додирните овде да ажурирате апликацију на најновију верзију.</string>
 		</dict>
@@ -312,7 +312,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Пошаљи поруку</string>
+			<string>Пошаљи поруке (%1$d)</string>
 			<key>other</key>
 			<string>Пошаљи поруке (%1$d)</string>
 		</dict>
@@ -328,7 +328,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ова група се не може креирати јер један члан користи стару верзију Signal-а. Можете креирати нову групу са тим чланом након што ажурира Signal или га уклонити пре креирања групе. %2$@</string>
+			<string>Ова група се не може креирати јер %1$d члан користи стару верзију Signal-а. Можете креирати нову групу са тим чланом након што ажурира Signal или га уклонити пре креирања групе. %2$@</string>
 			<key>other</key>
 			<string>Ова група се не може креирати јер њих %1$d користи стару верзију Signal-а. Можете креирати нову групу са тим члановима након што ажурирају Signal или их уклонити пре креирања групе. %2$@</string>
 		</dict>
@@ -344,7 +344,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ова група се не може креирати јер један члан користи стару верзију Signal-а. Можете креирати нову групу са тим чланом након што ажурира Signal или га уклонити пре креирања групе.</string>
+			<string>Ова група се не може креирати јер %1$d члан користи стару верзију Signal-а. Можете креирати нову групу са тим чланом након што ажурира Signal или га уклонити пре креирања групе.</string>
 			<key>other</key>
 			<string>Ова група се не може креирати јер њих %1$d користи стару верзију Signal-а. Можете креирати нову групу са тим члановима након што ажурирају Signal или их уклонити пре креирања групе.</string>
 		</dict>
@@ -360,7 +360,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Једног члана није било могуће поново додати у нову групу. Желите ли да додате тог члана сада?</string>
+			<string>%1$d члана није било могуће поново додати у нову групу. Желите ли да додате тог члана сада?</string>
 			<key>other</key>
 			<string>Њих %1$d није било могуће поново додати у нову групу. Желите ли да додате те чланове сада?</string>
 		</dict>
@@ -376,7 +376,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal групе најбоље функционишу када је број чланова 1 или мање. Ако додате више чланова долазиће до кашњења у слању и примању порука.</string>
+			<string>Signal групе најбоље функционишу када је број чланова %1$d или мање. Ако додате више чланова долазиће до кашњења у слању и примању порука.</string>
 			<key>other</key>
 			<string>Signal групе најбоље функционишу када је број чланова %1$d или мање. Ако додате више чланова долазиће до кашњења у слању и примању порука.</string>
 		</dict>
@@ -392,7 +392,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>За овај позив је достигнут максималан број учесника (1). Пробајте поново касније.</string>
+			<string>За овај позив је достигнут максималан број учесника (%1$d). Пробајте поново касније.</string>
 			<key>other</key>
 			<string>За овај позив је достигнут максималан број учесника (%1$d). Пробајте поново касније.</string>
 		</dict>
@@ -408,7 +408,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>У овом позиву · Учесника: 1</string>
+			<string>У овом позиву · Учесника: %1$d</string>
 			<key>other</key>
 			<string>У овом позиву · Учесника: %1$d</string>
 		</dict>
@@ -424,7 +424,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Позивају се %2$@, %3$@ и још 1 особа…</string>
+			<string>Позивају се %2$@, %3$@ и још %1$d особа…</string>
 			<key>other</key>
 			<string>Позивају се %2$@, %3$@ и још њих %1$d…</string>
 		</dict>
@@ -440,7 +440,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>У овом позиву су %2$@, %3$@ и још 1 особа</string>
+			<string>У овом позиву су %2$@, %3$@ и још %1$d особа</string>
 			<key>other</key>
 			<string>У овом позиву су %2$@, %3$@ и још њих %1$d</string>
 		</dict>
@@ -456,7 +456,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Овом позиву су се прикључили %2$@, %3$@ и још 1 особа</string>
+			<string>Овом позиву су се прикључили %2$@, %3$@ и још %1$d особа</string>
 			<key>other</key>
 			<string>Овом позиву су се прикључили %2$@, %3$@ и још њих %1$d</string>
 		</dict>
@@ -472,7 +472,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Овај позив су напустили %2$@, %3$@ и још 1 особа</string>
+			<string>Овај позив су напустили %2$@, %3$@ и још %1$d особа</string>
 			<key>other</key>
 			<string>Овај позив су напустили %2$@, %3$@ и још њих %1$d</string>
 		</dict>
@@ -488,7 +488,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Биће обавештени %2$@, %3$@ и још 1 особа</string>
+			<string>Биће обавештени %2$@, %3$@ и још %1$d особа</string>
 			<key>other</key>
 			<string>Биће обавештени %2$@, %3$@ и још њих %1$d</string>
 		</dict>
@@ -504,7 +504,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Биће позвани %2$@, %3$@ и још 1 особа</string>
+			<string>Биће позвани %2$@, %3$@ и још %1$d особа</string>
 			<key>other</key>
 			<string>Биће позвани %2$@, %3$@ и још њих %1$d</string>
 		</dict>
@@ -520,7 +520,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Позивница је послата</string>
+			<string>Послатих позивница: %1$d</string>
 			<key>other</key>
 			<string>Послатих позивница: %1$d</string>
 		</dict>
@@ -536,7 +536,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 члан групе има слично име.</string>
+			<string>%1$d члан групе има слично име.</string>
 			<key>other</key>
 			<string>Њих %1$d у групи имају слична имена.</string>
 		</dict>
@@ -552,7 +552,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 члан групе има слично име. Прегледајте тог члана у наставку или предузмите мере.</string>
+			<string>%1$d члан групе има слично име. Прегледајте тог члана у наставку или предузмите мере.</string>
 			<key>other</key>
 			<string>Њих %1$d у групи имају слична имена. Прегледајте те чланове у наставку или предузмите мере.</string>
 		</dict>
@@ -568,7 +568,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 члан групе има исто име. Прегледајте тог члана у наставку или предузмите мере.</string>
+			<string>%1$d члан групе има исто име. Прегледајте тог члана у наставку или предузмите мере.</string>
 			<key>other</key>
 			<string>Њих %1$d у групи имају слична имена. Прегледајте те чланове у наставку или предузмите мере.</string>
 		</dict>
@@ -584,7 +584,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Чланова: 1</string>
+			<string>Чланова: %1$d</string>
 			<key>other</key>
 			<string>Чланова: %1$d</string>
 		</dict>
@@ -600,7 +600,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Чланова: 1</string>
+			<string>Чланова: %1$d</string>
 			<key>other</key>
 			<string>Чланова: %1$d</string>
 		</dict>
@@ -616,7 +616,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 особа је позвана у групу.</string>
+			<string>%1$d особа је позвана у групу.</string>
 			<key>other</key>
 			<string>Њих %1$d је позвано у групу.</string>
 		</dict>
@@ -632,7 +632,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ је позвао/ла 1 особу у групу.</string>
+			<string>%2$@ је позвао/ла %1$d особу у групу.</string>
 			<key>other</key>
 			<string>%2$@ је позвао/ла њих %1$d у групу.</string>
 		</dict>
@@ -648,7 +648,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Позивница за групу је повучена за 1 особу.</string>
+			<string>Позивница за групу је повучена за %1$d особу.</string>
 			<key>other</key>
 			<string>Позивнице за групу су повучене за њих %1$d.</string>
 		</dict>
@@ -664,7 +664,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ је повукао/ла позивнице за групу за 1 особу.</string>
+			<string>%2$@ је повукао/ла позивнице за групу за %1$d особу.</string>
 			<key>other</key>
 			<string>%2$@ је повукао/ла позивнице за групу за њих %1$d.</string>
 		</dict>
@@ -696,7 +696,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Групна прича · Гледалаца: 1</string>
+			<string>Групна прича · Гледалаца: %1$d</string>
 			<key>other</key>
 			<string>Групна прича · Гледалаца: %1$d</string>
 		</dict>
@@ -712,7 +712,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Једног члана није било могуће додати у нову групу и тај члан је уклоњен из групе.</string>
+			<string>%1$d члана није било могуће додати у нову групу и тај члан је уклоњен из групе.</string>
 			<key>other</key>
 			<string>Њих %1$d није било могуће додати у нову групу и ти чланови су уклоњени из групе.</string>
 		</dict>
@@ -728,7 +728,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Једног члана није било могуће додати у нову групу и тај члан је добио позивницу да се придружи.</string>
+			<string>%1$d члана није било могуће додати у нову групу и тај члан је добио позивницу да се придружи.</string>
 			<key>other</key>
 			<string>Њих %1$d није било могуће додати у нову групу и ти чланови су добили позивницу да се придруже.</string>
 		</dict>
@@ -760,7 +760,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Заједничких група: 1</string>
+			<string>Заједничких група: %1$d</string>
 			<key>other</key>
 			<string>Заједничких група: %1$d</string>
 		</dict>
@@ -776,7 +776,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Избриши 1 поруку</string>
+			<string>Избриши поруке (%1$d)</string>
 			<key>other</key>
 			<string>Избриши поруке (%1$d)</string>
 		</dict>
@@ -792,7 +792,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Фотографија: 1</string>
+			<string>Фотографија: %1$d</string>
 			<key>other</key>
 			<string>Фотографија: %1$d</string>
 		</dict>
@@ -808,7 +808,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ставки: 1</string>
+			<string>Ставки: %1$d</string>
 			<key>other</key>
 			<string>Ставки: %1$d</string>
 		</dict>
@@ -824,7 +824,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Блокирали сте 1 члана ове групе</string>
+			<string>Блокирали сте %1$d члана ове групе</string>
 			<key>other</key>
 			<string>Блокирали сте њих %1$d у групи</string>
 		</dict>
@@ -840,7 +840,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Изабрано: 1</string>
+			<string>Изабрано: %1$d</string>
 			<key>other</key>
 			<string>Изабрано: %1$d</string>
 		</dict>
@@ -856,7 +856,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Изузетих особа: 1</string>
+			<string>Изузетих особа: %1$d</string>
 			<key>other</key>
 			<string>Изузетих особа: %1$d</string>
 		</dict>
@@ -872,9 +872,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Viewer</string>
+			<string>Гледалаца: %1$d</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>Гледалаца: %1$d</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -888,7 +888,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Гледалаца: 1</string>
+			<string>Гледалаца: %1$d</string>
 			<key>other</key>
 			<string>Гледалаца: %1$d</string>
 		</dict>
@@ -904,7 +904,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Све Signal везе · Гледалаца: 1</string>
+			<string>Све Signal везе · Гледалаца: %1$d</string>
 			<key>other</key>
 			<string>Све Signal везе · Гледалаца: %1$d</string>
 		</dict>
@@ -920,7 +920,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Све Signal везе · Изузетих особа: 1</string>
+			<string>Све Signal везе · Изузетих особа: %1$d</string>
 			<key>other</key>
 			<string>Све Signal везе · Изузетих особа: %1$d</string>
 		</dict>
@@ -936,7 +936,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Само подели са · Гледалаца: 1</string>
+			<string>Само подели са · Гледалаца: %1$d</string>
 			<key>other</key>
 			<string>Само подели са · Гледалаца: %1$d</string>
 		</dict>
@@ -952,7 +952,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Чланова: 1</string>
+			<string>Чланова: %1$d</string>
 			<key>other</key>
 			<string>Чланова: %1$d</string>
 		</dict>
@@ -968,7 +968,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Гледалаца: 1</string>
+			<string>Гледалаца: %1$d</string>
 			<key>other</key>
 			<string>Гледалаца: %1$d</string>
 		</dict>
@@ -984,7 +984,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Нетачан PIN. Преосталих покушаја: 1</string>
+			<string>Нетачан PIN. Преосталих покушаја: %1$d</string>
 			<key>other</key>
 			<string>Нетачан PIN. Преосталих покушаја: %1$d</string>
 		</dict>
@@ -1000,7 +1000,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ је позвао/ла 1 особу</string>
+			<string>%2$@ је позвао/ла %1$d особу</string>
 			<key>other</key>
 			<string>%2$@ је позвао/ла њих %1$d</string>
 		</dict>
@@ -1016,7 +1016,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Захтева за чланство на чекању: 1</string>
+			<string>Захтева за чланство на чекању: %1$d</string>
 			<key>other</key>
 			<string>Захтева за чланство на чекању: %1$d</string>
 		</dict>
@@ -1032,7 +1032,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Повуците неважећу позивницу</string>
+			<string>Повуците неважеће позивнице (%1$d)</string>
 			<key>other</key>
 			<string>Повуците неважеће позивнице (%1$d)</string>
 		</dict>
@@ -1080,9 +1080,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Custom Story · %1$d Viewer</string>
+			<string>Прича · Гледалаца: %1$d</string>
 			<key>other</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>Прича · Гледалаца: %1$d</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1096,7 +1096,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Преостао вам је још 1 покушај. Ако искористите све покушаје, мораћете да креирате нови PIN. Можете да региструјете и користите свој налог, али изгубићете неке сачуване поставке као што су ваши подаци на профилу.</string>
+			<string>Преостао вам је још %1$d покушај. Ако искористите све покушаје, мораћете да креирате нови PIN. Можете да региструјете и користите свој налог, али изгубићете неке сачуване поставке као што су ваши подаци на профилу.</string>
 			<key>other</key>
 			<string>Преостало вам је још %1$d покушаја. Ако искористите све покушаје, мораћете да креирате нови PIN. Можете да региструјете и користите свој налог, али изгубићете неке сачуване поставке, као што су ваши подаци на профилу.</string>
 		</dict>
@@ -1112,7 +1112,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Преостао вам је још 1 покушај. Ако искористите све покушаје, налог ће вам бити закључан. Након 7 дана неактивности моћи ћете поново да се региструјете без PIN-а. Налог ће вам бити избрисан, као и сав његов садржај.</string>
+			<string>Преостао вам је још %1$d покушај. Ако искористите све покушаје, налог ће вам бити закључан. Након 7 дана неактивности моћи ћете поново да се региструјете без PIN-а. Налог ће вам бити избрисан, као и сав његов садржај.</string>
 			<key>other</key>
 			<string>Преостало вам је још %1$d покушаја. Ако искористите све покушаје, налог ће вам бити закључан. Након 7 дана неактивности моћи ћете поново да се региструјете без PIN-а. Налог ће вам бити избрисан, као и сав његов садржај.</string>
 		</dict>
@@ -1128,7 +1128,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Одговора: &lt;bold&gt;1&lt;/bold&gt;</string>
+			<string>Одговора: &lt;bold&gt;%1$d&lt;/bold&gt;</string>
 			<key>other</key>
 			<string>Одговора: &lt;bold&gt;%1$d&lt;/bold&gt;</string>
 		</dict>
@@ -1144,7 +1144,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Гледалаца: 1</string>
+			<string>Гледалаца: %1$d</string>
 			<key>other</key>
 			<string>Гледалаца: %1$d</string>
 		</dict>
@@ -1160,7 +1160,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Изузетих особа: 1</string>
+			<string>Изузетих особа: %1$d</string>
 			<key>other</key>
 			<string>Изузетих особа: %1$d</string>
 		</dict>
@@ -1176,7 +1176,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Шаље се…</string>
+			<string>Шаље се %1$d…</string>
 			<key>other</key>
 			<string>Шаље се %1$d…</string>
 		</dict>
@@ -1192,7 +1192,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Прегледа: 1</string>
+			<string>Прегледа: %1$d</string>
 			<key>other</key>
 			<string>Прегледа: %1$d</string>
 		</dict>
@@ -1208,7 +1208,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Одговора: &lt;bold&gt;1&lt;/bold&gt;</string>
+			<string>Одговора: &lt;bold&gt;%1$d&lt;/bold&gt;</string>
 			<key>other</key>
 			<string>Одговора: &lt;bold&gt;%1$d&lt;/bold&gt;</string>
 		</dict>
@@ -1219,7 +1219,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Прегледа: &lt;bold&gt;1&lt;/bold&gt;</string>
+			<string>Прегледа: &lt;bold&gt;%2$d&lt;/bold&gt;</string>
 			<key>other</key>
 			<string>Прегледа: &lt;bold&gt;%2$d&lt;/bold&gt;</string>
 		</dict>
@@ -1235,7 +1235,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Прегледа: &lt;bold&gt;1&lt;/bold&gt;</string>
+			<string>Прегледа: &lt;bold&gt;%1$d&lt;/bold&gt;</string>
 			<key>other</key>
 			<string>Прегледа: &lt;bold&gt;%1$d&lt;/bold&gt;</string>
 		</dict>

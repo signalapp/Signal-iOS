@@ -13,9 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>ভয়েস মেসেজ 1 সেকেন্ড</string>
+			<string>ভয়েস ম্যাসেজ %1$d সেকেন্ড</string>
 			<key>other</key>
-			<string>ভয়েস মেসেজ %1$d সেকেন্ড</string>
+			<string>ভয়েস ম্যাসেজ %1$d সেকেন্ড</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d চ্যাট-এ কাস্টম রং ব্যবহার করা হয়েছে। আপনি কি সব চ্যাট-এর জন্য এটি মুছতে চান?</string>
+			<string>এই কাস্টম রং %1$dটি চ্যাটে ব্যবহার করা হয়েছে। আপনি কি এটি মুছতে চান?</string>
 			<key>other</key>
-			<string>এই কাস্টম রংটি %1$d চ্যাটে ব্যবহৃত হয়েছে। আপনি কি এটি সব চ্যাটের জন্য মুছতে চান?</string>
+			<string>এই কাস্টম রং %1$dটি চ্যাটে ব্যবহার করা হয়েছে। আপনি কি এটি সব চ্যাটের জন্য মুছতে চান?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>এই রংটি %1$dটি কথোপকথনে ব্যবহার হয়েছে। আপনি কি সেই কথোপকথনে পরিবর্তন করতে চান?</string>
+			<string>এই রংটি %1$dটি চ্যাটে ব্যবহার করা হয়েছে। আপনি কি সব চ্যাটের জন্য এই পরিবর্তনগুলো সেভ করতে চান?</string>
 			<key>other</key>
-			<string>এই রংটি %1$d চ্যাটে ব্যবহৃত হয়েছে। আপনি কি সব চ্যাটের জন্য এই পরিবর্তনগুলো সেভ করতে চান?</string>
+			<string>এই রংটি %1$dটি চ্যাটে ব্যবহার করা হয়েছে। আপনি কি সব চ্যাটের জন্য এই পরিবর্তনগুলো সেভ করতে চান?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -157,7 +157,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>আপনি 1টির বেশি চ্যাট নির্বাচন করতে পারবেন না।</string>
+			<string>আপনি %1$dটির বেশি চ্যাট নির্বাচন করতে পারবেন না।</string>
 			<key>other</key>
 			<string>আপনি %1$dটির বেশি চ্যাট নির্বাচন করতে পারবেন না।</string>
 		</dict>
@@ -173,7 +173,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 %2$#@total@</string>
+			<string>%1$d %2$#@total@</string>
 			<key>other</key>
 			<string>%1$d %2$#@total@</string>
 		</dict>
@@ -186,7 +186,7 @@
 			<key>one</key>
 			<string>ম্যাচ</string>
 			<key>other</key>
-			<string>%2$d ম্যাচের মধ্যে</string>
+			<string>%2$dটি ম্যাচের মধ্যে</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -202,7 +202,7 @@
 			<key>one</key>
 			<string>%1$d জন সদস্য</string>
 			<key>other</key>
-			<string>%1$d সদস্য</string>
+			<string>%1$d জন সদস্য</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -216,9 +216,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d গ্রুপগুলি একই রকম</string>
+			<string>একসাথে %1$dটি গ্রুপে আছেন</string>
 			<key>other</key>
-			<string>%1$d-টি গ্রুপ মিল আছে</string>
+			<string>একসাথে %1$dটি গ্রুপে আছেন</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_%d</key>
@@ -248,7 +248,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 মিনিট আগে</string>
+			<string>%1$d মিনিট আগে</string>
 			<key>other</key>
 			<string>%1$d মিনিট আগে</string>
 		</dict>
@@ -296,7 +296,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>আপনার Signal সংস্করণটি 1 দিনের মধ্যে মেয়াদোত্তীর্ণ হয়ে যাবে। সর্বশেষ সংস্করণে আপডেট করতে ট্যাপ করুন।</string>
+			<string>আপনার Signal সংস্করণটি %1$d দিনের মধ্যে মেয়াদোত্তীর্ণ হয়ে যাবে। সর্বশেষ সংস্করণে আপডেট করতে ট্যাপ করুন।</string>
 			<key>other</key>
 			<string>আপনার Signal সংস্করণটি %1$d দিনের মধ্যে মেয়াদোত্তীর্ণ হয়ে যাবে। সর্বশেষ সংস্করণে আপডেট করতে ট্যাপ করুন।</string>
 		</dict>
@@ -312,9 +312,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d টি বার্তা পাঠান</string>
+			<string>ম্যাসেজ পাঠান</string>
 			<key>other</key>
-			<string>%1$d ম্যাসেজ পাঠান</string>
+			<string>%1$dটি ম্যাসেজ পাঠান</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
@@ -328,7 +328,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>এই গ্রুপটি তৈরি করা যাবে না কারণ 1 জন সদস্য Signal-এর পুরোনো সংস্করণ ব্যবহার করছেন। তিনি Signal আপডেট করার পর আপনি তাকে নিয়ে নতুন স্টাইলের গ্রুপ তৈরি করতে পারবেন অথবা গ্রুপটি তৈরি করার আগে তাকে বাদ দিতে পারবেন। %2$@</string>
+			<string>এই গ্রুপটি তৈরি করা যাবে না, কারণ %1$d জন সদস্য Signal-এর পুরোনো সংস্করণ ব্যবহার করছেন। তিনি Signal আপডেট করার পর আপনি তাকে নিয়ে নতুন স্টাইলের গ্রুপ তৈরি করতে পারবেন অথবা গ্রুপটি তৈরি করার আগে তাকে বাদ দিতে পারবেন। %2$@</string>
 			<key>other</key>
 			<string>এই গ্রুপটি তৈরি করা যাবে না কারণ %1$d জন সদস্য Signal-এর পুরোনো সংস্করণ ব্যবহার করছেন। তারা Signal আপডেট করার পর আপনি তাদেরকে নিয়ে নতুন স্টাইলের গ্রুপ তৈরি করতে পারবেন অথবা গ্রুপটি তৈরি করার আগে তাদেরকে বাদ দিতে পারবেন। %2$@</string>
 		</dict>
@@ -344,7 +344,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>এই গ্রুপটি তৈরি করা যাবে না, কারণ 1 জন সদস্য Signal-এর পুরোনো সংস্করণ ব্যবহার করছেন। তিনি Signal আপডেট করার পর আপনি তাকে নিয়ে নতুন স্টাইলের গ্রুপ তৈরি করতে পারবেন অথবা গ্রুপটি তৈরি করার আগে তাকে বাদ দিতে পারবেন।</string>
+			<string>এই গ্রুপটি তৈরি করা যাবে না, কারণ %1$d জন সদস্য Signal-এর পুরোনো সংস্করণ ব্যবহার করছেন। তিনি Signal আপডেট করার পর আপনি তাকে নিয়ে নতুন স্টাইলের গ্রুপ তৈরি করতে পারবেন অথবা গ্রুপটি তৈরি করার আগে তাকে বাদ দিতে পারবেন।</string>
 			<key>other</key>
 			<string>এই গ্রুপটি তৈরি করা যাবে না, কারণ %1$d জন সদস্য Signal-এর পুরোনো সংস্করণ ব্যবহার করছেন। তারা Signal আপডেট করার পর আপনি তাদেরকে নিয়ে নতুন স্টাইলের গ্রুপ তৈরি করতে পারবেন অথবা গ্রুপটি তৈরি করার আগে তাদেরকে বাদ দিতে পারবেন।</string>
 		</dict>
@@ -360,7 +360,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 জন সদস্যকে নতুন গ্রুপে পুনরায় যোগ করা যায়নি। আপনি কি তাকে এখন যোগ করতে চান?</string>
+			<string>%1$d জন সদস্যকে নতুন গ্রুপে পুনরায় যোগ করা যায়নি। আপনি কি তাকে এখন যোগ করতে চান?</string>
 			<key>other</key>
 			<string>%1$d জন সদস্যকে নতুন গ্রুপে পুনরায় যোগ করা যায়নি। আপনি কি তাদেরকে এখন যোগ করতে চান?</string>
 		</dict>
@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal গ্রুপে 1 জন বা তার কম সদস্য থাকলে সবচেয়ে ভালো কাজ করে। এর চেয়ে বেশি সদস্য যোগ করলে ম্যাসেজ পাঠাতে বা পেতে বিলম্ব হবে।</string>
+			<string>Signal গ্রুপে %1$d জন বা তার কম সদস্য থাকলে সবচেয়ে ভালোভাবে কাজ করে। এর চেয়ে বেশি সদস্য যোগ করলে ম্যাসেজ পাঠাতে বা পেতে বিলম্ব হবে।</string>
 			<key>other</key>
-			<string>Signal গ্রুপে %1$d জন বা তার কম সদস্য থাকলে সবচেয়ে ভালো কাজ করে। এর চেয়ে বেশি সদস্য যোগ করলে ম্যাসেজ পাঠাতে বা পেতে বিলম্ব হবে।</string>
+			<string>Signal গ্রুপে %1$d জন বা তার কম সদস্য থাকলে সবচেয়ে ভালোভাবে কাজ করে। এর চেয়ে বেশি সদস্য যোগ করলে ম্যাসেজ পাঠাতে বা পেতে বিলম্ব হবে।</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -392,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>এই কলটি সর্বোচ্চ 1 জন অংশগ্রহণকারীর সংখ্যায় পৌঁছে গেছে। পরে আবার চেষ্টা করুন।</string>
+			<string>এই কলটিতে %1$d জন অংশগ্রহণকারী যোগ দিয়েছেন, যা সর্বোচ্চ সীমা। পরে আবার চেষ্টা করুন।</string>
 			<key>other</key>
-			<string>এই কলটি সর্বোচ্চ %1$d জন অংশগ্রহণকারীর সংখ্যায় পৌঁছে গেছে। পরে আবার চেষ্টা করুন।</string>
+			<string>এই কলটিতে %1$d জন অংশগ্রহণকারী যোগ দিয়েছেন, যা সর্বোচ্চ সীমা।পরে আবার চেষ্টা করুন।</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -408,9 +408,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>এই কল-এ · %1$d জন</string>
+			<string>এই কলটিতে আছেন · %1$d জন</string>
 			<key>other</key>
-			<string>এই কলটিতে আছেন · %1$d জন লোক</string>
+			<string>এই কলটিতে আছেন · %1$d জন</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, এবং আরো 1 জনকে রিং করা হচ্ছে...</string>
+			<string>%2$@, %3$@, এবং অন্য %1$d জনকে রিং করা হচ্ছে…</string>
 			<key>other</key>
-			<string>%2$@, %3$@, এবং আরো %1$d জনকে রিং করা হচ্ছে...</string>
+			<string>%2$@, %3$@, এবং অন্য %1$d জনকে রিং করা হচ্ছে…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, ও আরো %1$d জন এই কল-এ আছেন</string>
+			<string>%2$@, %3$@, ও অন্য %1$d জন এই কলটিতে আছেন</string>
 			<key>other</key>
-			<string>%2$@, %3$@ ও আরো %1$d জন এই কলটিতে আছেন</string>
+			<string>%2$@, %3$@ ও অন্য %1$d জন এই কলটিতে আছেন</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -456,9 +456,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, এবং আরো 1 জন এই কলটিতে যোগ দিয়েছেন</string>
+			<string>%2$@, %3$@, এবং অন্য %1$d জন এই কলটিতে যোগ দিয়েছেন</string>
 			<key>other</key>
-			<string>%2$@, %3$@, এবং আরো %1$d জন এই কলটিতে যোগ দিয়েছেন</string>
+			<string>%2$@, %3$@, এবং অন্য %1$d জন এই কলটিতে যোগ দিয়েছেন</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -472,9 +472,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, এবং আরো 1 জন কলটি থেকে বের হয়ে গেছেন</string>
+			<string>%2$@, %3$@, এবং অন্য %1$d জন কলটি থেকে বের হয়ে গেছেন</string>
 			<key>other</key>
-			<string>%2$@, %3$@, এবং আরো %1$d জন কলটি থেকে বের হয়ে গেছেন</string>
+			<string>%2$@, %3$@, এবং অন্য %1$d জন কলটি থেকে বের হয়ে গেছেন</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
@@ -490,7 +490,7 @@
 			<key>one</key>
 			<string>%2$@, %3$@, এবং অন্য %1$d জনকে জানানো হবে</string>
 			<key>other</key>
-			<string>%2$@, %3$@, এবং আরো %1$d জনকে জানানো হবে</string>
+			<string>%2$@, %3$@, এবং অন্য %1$d জনকে জানানো হবে</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -504,9 +504,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>সিগন্যাল %2$@, %3$@ এবং অন্যান্য %1$d বেজে উঠবে।</string>
+			<string>Signal %2$@, %3$@, এবং অন্য %1$d জনকে রিং করবে</string>
 			<key>other</key>
-			<string>Signal %2$@, %3$@, এবং আরো %1$d জনকে রিং করবে</string>
+			<string>Signal %2$@, %3$@, এবং অন্য %1$d জনকে রিং করবে</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -536,7 +536,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>গ্রুপের 1 জন সদস্যের নাম একই।</string>
+			<string>গ্রুপের %1$d জন সদস্যের নাম একই।</string>
 			<key>other</key>
 			<string>গ্রুপের %1$d জন সদস্যের নাম একই।</string>
 		</dict>
@@ -552,7 +552,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>গ্রুপের 1 জন সদস্যের নাম একই, নিচের সদস্যদের পর্যবেক্ষণ করুন বা কোনো পদক্ষেপ নিন।</string>
+			<string>গ্রুপের %1$d জন সদস্যের নাম একই, নিচের সদস্যকে পর্যবেক্ষণ করুন বা কোনো পদক্ষেপ নিন।</string>
 			<key>other</key>
 			<string>গ্রুপের %1$d জন সদস্যের নাম একই, নিচের সদস্যদের পর্যবেক্ষণ করুন বা কোনো পদক্ষেপ নিন।</string>
 		</dict>
@@ -568,9 +568,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>গ্রুপের 1 জন সদস্যের নাম একই, নিচের সদস্যদের পর্যালোচনা করুন বা কোনো পদক্ষেপ নিন।</string>
+			<string>গ্রুপের %1$d জন সদস্যের নাম একই, নিচের সদস্যকে পর্যবেক্ষণ করুন বা কোনো পদক্ষেপ নিন।</string>
 			<key>other</key>
-			<string>গ্রুপের %1$d গ্রুপ সদস্যের নাম একই, নিচের সদস্যদের পর্যালোচনা করুন বা কোনো পদক্ষেপ নিন।</string>
+			<string>গ্রুপের %1$d জন সদস্যের নাম একই, নিচের সদস্যদের পর্যবেক্ষণ করুন বা কোনো পদক্ষেপ নিন।</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -616,9 +616,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>গ্রুপটিতে যোগ দিতে 1 জন ব্যক্তিকে আমন্ত্রণ জানানো হয়েছে।</string>
+			<string>%1$d জন ব্যক্তিকে গ্রুপে আমন্ত্রণ জানানো হয়েছে।</string>
 			<key>other</key>
-			<string>গ্রুপটিতে যোগ দিতে %1$d জন ব্যক্তিকে আমন্ত্রণ জানানো হয়েছে।</string>
+			<string>%1$d জন ব্যক্তিকে গ্রুপে আমন্ত্রণ জানানো হয়েছে।</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
@@ -632,9 +632,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ 1 জন ব্যক্তিকে গ্রুপটিতে যোগ দিতে আমন্ত্রণ জানিয়েছেন।</string>
+			<string>%2$@ গ্রুপে %1$d জন ব্যক্তিকে আমন্ত্রণ জানিয়েছেন।</string>
 			<key>other</key>
-			<string>%2$@ %1$d জন ব্যক্তিকে গ্রুপটিতে যোগ দিতে আমন্ত্রণ জানিয়েছেন।</string>
+			<string>%2$@ গ্রুপে %1$d জন ব্যক্তিকে আমন্ত্রণ জানিয়েছেন।</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -648,9 +648,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 জন ব্যক্তিকে পাঠানো গ্ৰুপে যোগ দেওয়ার আমন্ত্রণ প্রত্যাহার করা হয়েছে।</string>
+			<string>গ্ৰুপে যোগ দিতে %1$d জন ব্যক্তিকে পাঠানো আমন্ত্রণ প্রত্যাহার করা হয়েছে।</string>
 			<key>other</key>
-			<string>%1$d জন ব্যক্তিকে পাঠানো গ্ৰুপে যোগ দেওয়ার আমন্ত্রণ প্রত্যাহার করা হয়েছে।</string>
+			<string>গ্ৰুপে যোগ দিতে %1$d জন ব্যক্তিকে পাঠানো আমন্ত্রণ প্রত্যাহার করা হয়েছে।</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -664,9 +664,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ 1 জন ব্যক্তিকে পাঠানো গ্ৰুপে যোগ দেওয়ার আমন্ত্রণ প্রত্যাহার করেছেন৷</string>
+			<string>গ্ৰুপে যোগ দিতে %1$d জন ব্যক্তিকে পাঠানো আমন্ত্রণ %2$@ প্রত্যাহার করেছেন৷</string>
 			<key>other</key>
-			<string>%2$@ %1$d জন ব্যক্তিকে পাঠানো গ্ৰুপে যোগ দেওয়ার আমন্ত্রণ প্রত্যাহার করেছেন৷</string>
+			<string>গ্ৰুপে যোগ দিতে %1$d জন ব্যক্তিকে পাঠানো আমন্ত্রণ %2$@ প্রত্যাহার করেছেন৷</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
@@ -680,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>গ্রুপ লিংকের মাধ্যমে যোগ দেওয়ার জন্য %2$@ অনুরোধ করেছেন এবং অনুরোধ বাতিল করেছেন৷</string>
+			<string>গ্রুপ লিংকের মাধ্যমে যোগ দেওয়ার জন্য %2$@ জন অনুরোধ করেছেন এবং অনুরোধ বাতিল করেছেন৷</string>
 			<key>other</key>
-			<string>গ্রুপ লিংকের মাধ্যমে যোগ দেওয়ার জন্য %2$@ অনুরোধ করেছেন এবং %1$d-গুলো অনুরোধ বাতিল করেছেন৷</string>
+			<string>গ্রুপ লিংকের মাধ্যমে যোগ দেওয়ার জন্য %2$@ জন অনুরোধ করেছেন এবং %1$dটি অনুরোধ বাতিল করেছেন৷</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -696,7 +696,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>গ্ৰুপ স্টোরি · 1 জন দর্শক</string>
+			<string>গ্ৰুপ স্টোরি · %1$d জন দর্শক</string>
 			<key>other</key>
 			<string>গ্ৰুপ স্টোরি · %1$d জন দর্শক</string>
 		</dict>
@@ -760,9 +760,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d গ্রুপগুলি একই রকম</string>
+			<string>একসাথে %1$dটি গ্রুপে আছেন</string>
 			<key>other</key>
-			<string>%1$d-টি একই গ্রুপ আছে</string>
+			<string>একসাথে %1$dটি গ্রুপে আছেন</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
@@ -776,7 +776,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1টি ম্যাসেজ মুছে দিন</string>
+			<string>%1$dটি ম্যাসেজ মুছে দিন</string>
 			<key>other</key>
 			<string>%1$dটি ম্যাসেজ মুছে দিন</string>
 		</dict>
@@ -792,7 +792,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1টি ছবি</string>
+			<string>%1$dটি ছবি</string>
 			<key>other</key>
 			<string>%1$dটি ছবি</string>
 		</dict>
@@ -808,9 +808,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d টি বস্তু</string>
+			<string>%1$dটি আইটেম</string>
 			<key>other</key>
-			<string>%1$d- টি আইটেম</string>
+			<string>%1$dটি আইটেম</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
@@ -824,7 +824,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>আপনি এই গ্রুপের 1 জন সদস্যকে ব্লক করেছেন</string>
+			<string>আপনি এই গ্রুপের %1$d জন সদস্যকে ব্লক করেছেন</string>
 			<key>other</key>
 			<string>আপনি এই গ্রুপের %1$d জন সদস্যকে ব্লক করেছেন</string>
 		</dict>
@@ -840,9 +840,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d নির্বাচিত</string>
+			<string>%1$dটি বেছে নেওয়া হয়েছে</string>
 			<key>other</key>
-			<string>%1$d-টি বেছে নেওয়া হয়েছে</string>
+			<string>%1$dটি বেছে নেওয়া হয়েছে</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -856,7 +856,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 জন বাদ</string>
+			<string>%1$d জন বাদ</string>
 			<key>other</key>
 			<string>%1$d জন বাদ</string>
 		</dict>
@@ -872,9 +872,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Viewer</string>
+			<string>%1$d জন দর্শক</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d জন দর্শক</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -888,7 +888,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 জন দর্শক</string>
+			<string>%1$d জন দর্শক</string>
 			<key>other</key>
 			<string>%1$d জন দর্শক</string>
 		</dict>
@@ -904,7 +904,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>সকল Signal কানেকশন · 1 জন দর্শক</string>
+			<string>সকল Signal কানেকশন · %1$d জন দর্শক</string>
 			<key>other</key>
 			<string>সকল Signal কানেকশন · %1$d জন দর্শক</string>
 		</dict>
@@ -920,7 +920,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>সকল Signal কানেকশন · 1 জন বাদ</string>
+			<string>সকল Signal কানেকশন · %1$d জন বাদ</string>
 			<key>other</key>
 			<string>সকল Signal কানেকশন · %1$d জন বাদ</string>
 		</dict>
@@ -936,7 +936,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>শুধুমাত্র শেয়ার করুন · 1 জন দর্শক</string>
+			<string>শুধুমাত্র শেয়ার করুন · %1$d জন দর্শক</string>
 			<key>other</key>
 			<string>শুধুমাত্র শেয়ার করুন · %1$d জন দর্শক</string>
 		</dict>
@@ -968,7 +968,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d দর্শক</string>
+			<string>%1$d জন দর্শক</string>
 			<key>other</key>
 			<string>%1$d জন দর্শক</string>
 		</dict>
@@ -984,9 +984,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>ভুল PIN। %1$d টি সুযোগ বাকি আছে।</string>
+			<string>ভুল পিন। %1$dটি সুযোগ বাকি আছে।</string>
 			<key>other</key>
-			<string>ভুল পিন। %1$d-টি সুযোগ বাকি আছে।</string>
+			<string>ভুল পিন। %1$dটি সুযোগ বাকি আছে।</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -1000,7 +1000,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ 1 জন ব্যক্তিকে আমন্ত্রণ জানিয়েছেন</string>
+			<string>%2$@ %1$d জন ব্যক্তিকে আমন্ত্রণ জানিয়েছেন</string>
 			<key>other</key>
 			<string>%2$@ %1$d জন ব্যক্তিকে আমন্ত্রণ জানিয়েছেন</string>
 		</dict>
@@ -1016,9 +1016,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d অমীমাংসিত সদস্যের অনুরোধ।</string>
+			<string>সদস্য হওয়ার জন্য পাঠানো %1$dটি অনুরোধ বাকি আছে।</string>
 			<key>other</key>
-			<string>%1$d জন সদস্যের অনুরোধ বাকি আছে।</string>
+			<string>সদস্য হওয়ার জন্য পাঠানো %1$dটি অনুরোধ বাকি আছে।</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -1080,9 +1080,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Custom Story · %1$d Viewer</string>
+			<string>কাস্টম স্টোরি · %1$d জন দর্শক</string>
 			<key>other</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>কাস্টম স্টোরি · %1$d জন দর্শক</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1096,9 +1096,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>আপনি আর 1 বার চেষ্টা করতে পারবেন। আপনার প্রচেষ্টার সুযোগ শেষ হয়ে গেলে আপনি একটি নতুন পিন তৈরি করতে পারবেন। আপনি নিজের অ্যাকাউন্টটি রেজিস্টার করতে এবং ব্যবহার করতে পারেন, তবে আপনি আপনার প্রোফাইল তথ্যের মতো কিছু সেভ করা সেটিংস হারাবেন।</string>
+			<string>আপনি আর %1$d বার চেষ্টা করতে পারবেন। আপনার প্রচেষ্টার সুযোগ শেষ হয়ে গেলে আপনি একটি নতুন পিন তৈরি করতে পারবেন। আপনি নিজের অ্যাকাউন্টটি নিবন্ধন করতে এবং ব্যবহার করতে পারেন, তবে আপনি আপনার প্রোফাইল তথ্যের মতো কিছু সেভ করা সেটিংস হারাবেন।</string>
 			<key>other</key>
-			<string>আপনি আর %1$d বার চেষ্টা করতে পারবেন। আপনার প্রচেষ্টার সুযোগ শেষ হয়ে গেলে আপনি একটি নতুন পিন তৈরি করতে পারবেন। আপনি নিজের অ্যাকাউন্টটি রেজিস্টার করতে এবং ব্যবহার করতে পারেন, তবে আপনি আপনার প্রোফাইল তথ্যের মতো কিছু সেভ করা সেটিংস হারাবেন।</string>
+			<string>আপনি আর %1$d বার চেষ্টা করতে পারবেন। আপনার প্রচেষ্টার সুযোগ শেষ হয়ে গেলে আপনি একটি নতুন পিন তৈরি করতে পারবেন। আপনি নিজের অ্যাকাউন্টটি নিবন্ধন করতে এবং ব্যবহার করতে পারেন, তবে আপনি আপনার প্রোফাইল তথ্যের মতো কিছু সেভ করা সেটিংস হারাবেন।</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -1112,7 +1112,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>আপনি আর 1 বার চেষ্টা করতে পারবেন। আপনার প্রচেষ্টার সুযোগ শেষ হয়ে গেলে আপনার অ্যাকাউন্ট লক করা হবে। 7 দিন নিষ্ক্রিয় থাকার পর, আপনি আপনার পিন ছাড়াই পুনরায় নিবন্ধন করতে পারবেন। আপনার অ্যাকাউন্ট মুছে ফেলা হবে এবং সমস্ত কন্টেন্টও মুছে ফেলা হবে।</string>
+			<string>আপনি আর %1$d বার চেষ্টা করতে পারবেন। আপনার প্রচেষ্টার সুযোগ শেষ হয়ে গেলে আপনার অ্যাকাউন্ট লক করা হবে। 7 দিন নিষ্ক্রিয় থাকার পর, আপনি আপনার পিন ছাড়াই পুনরায় নিবন্ধন করতে পারবেন। আপনার অ্যাকাউন্ট মুছে ফেলা হবে এবং সমস্ত কন্টেন্টও মুছে ফেলা হবে।</string>
 			<key>other</key>
 			<string>আপনি আর %1$d বার চেষ্টা করতে পারবেন। আপনার প্রচেষ্টার সুযোগ শেষ হয়ে গেলে আপনার অ্যাকাউন্ট লক করা হবে। 7 দিন নিষ্ক্রিয় থাকার পর, আপনি আপনার পিন ছাড়াই পুনরায় নিবন্ধন করতে পারবেন। আপনার অ্যাকাউন্ট মুছে ফেলা হবে এবং সমস্ত কন্টেন্টও মুছে ফেলা হবে।</string>
 		</dict>
@@ -1128,9 +1128,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt;-টি উত্তর</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt;টি উত্তর</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt;-টি উত্তর</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt;টি উত্তর</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1144,7 +1144,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 জন দর্শক</string>
+			<string>%1$d জন দর্শক</string>
 			<key>other</key>
 			<string>%1$d জন দর্শক</string>
 		</dict>
@@ -1160,7 +1160,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 জন বাদ</string>
+			<string>%1$d জন বাদ</string>
 			<key>other</key>
 			<string>%1$d জন বাদ</string>
 		</dict>
@@ -1208,9 +1208,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt;-টি উত্তর</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt;টি উত্তর</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt;-টি উত্তর</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt;টি উত্তর</string>
 		</dict>
 		<key>views</key>
 		<dict>
@@ -1219,9 +1219,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; ভিউ</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt;টি ভিউ</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt;-টি ভিউ</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt;টি ভিউ</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
@@ -1235,9 +1235,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt;-টি ভিউ</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt;টি ভিউ</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt;-টি ভিউ</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt;টি ভিউ</string>
 		</dict>
 	</dict>
 </dict>

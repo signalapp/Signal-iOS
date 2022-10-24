@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Quant a les sol·licituds de missatges";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "Totes les connexions";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Respon";
@@ -362,7 +362,7 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Converteix-te en donant";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Doneu una empenta al Signal";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Dona una empenta a Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "La teva insígnia Boost ha caducat i ja no podràs mostrar-la al teu perfil.";
@@ -515,7 +515,7 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Mostra-ho al perfil";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Feu una insígnia inclosa";
+"BADGE_THANKS_MAKE_FEATURED" = "Destaca una insígnia";
 
 /* Title for subscription on the thank you sheet. */
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "Gràcies pel vostre suport!";
@@ -602,13 +602,13 @@
 "BLUR_TOOLTIP" = "Nou: difumineu les cares o dibuixeu enlloc per difuminar.";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Feu una donació única i guanyeu una insígnia d'empenta durant 30 dies.";
+"BOOST_VIEW_BODY" = "Fes una donació única i guanya una insígnia Boost durant 30 dies.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Venciment de la insígnia d'empenta: %1$@.";
 
 /* Default text for the custom amount field of the boost view. */
-"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Introduïu la quantitat personalitzada";
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Introdueix la quantitat personalitzada";
 
 /* Text explaining there are other ways to donate on the boost view. */
 "BOOST_VIEW_OTHER_WAYS" = "Més opcions de pagament";
@@ -623,7 +623,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Seleccioneu una quantitat per donar.";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Doneu una empenta al Signal";
+"BOOST_VIEW_TITLE" = "Dona una empenta a Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Afegeix";
@@ -1784,7 +1784,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Feu una donació";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal és una associació impulsada per persones com vostè. Faci una donació mensual i rebrà un distintiu.";
+"DONATE_MEGAPHONE_BODY" = "Signal existeix gràcies a persones com tu. Fes una donació mensual i rebràs una insígnia.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Ara no";
@@ -3803,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "La meva història";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "Toca per afegir";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recentment han canviat el nom del perfil de %1$@ a %2$@.";
@@ -3893,7 +3893,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Falta posar-li títol a la història";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Només tu pots veure el nom d'aquesta història.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Títol de la història (obligatori)";
@@ -3905,13 +3905,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Espectadors";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Nova";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible només per a persones específiques";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Nova història personalitzada";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Compartiu-la amb un grup existent";
@@ -4742,7 +4742,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Afegir espectadors";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Eliminar història personalitzada";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Segur que vols eliminar \"%1$@\"? També s'eliminaran les actualitzacions compartides en aquesta història.";
@@ -6287,10 +6287,10 @@
 "STORIES_SAVE_STORY_ACTION" = "Desats";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "Les actualitzacions d'històries desapareixeran automàticament després de 24 hores. Tria qui pot veure la teva història o crea noves històries amb espectadors o grups específics.";
 
 /* Header for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
+"STORIES_SETTINGS_STORIES_HEADER" = "Històries";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Ja no podràs compartir o veure històries. Les històries que hagis compartit recentment també seran eliminades.";
@@ -6311,10 +6311,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Activar Històries";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "Veure rebuts";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Veu i comparteix quan es visualitzen les teves històries. Si ho desactives, no veuràs quan altres persones vegin les teves històries.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Comparteix-lo";
@@ -6332,7 +6332,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "S'ha tornat a mostrar la història";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Activa les confirmacions de visualització per veure qui ha vist les teves històries.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Visualitzacions";
@@ -6365,7 +6365,7 @@
 "STORY_PRIVACY_SETTINGS" = "Privadesa";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "Privacitat de la història";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Ha reaccionat %1$@ a la teva història";
@@ -6437,7 +6437,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "Les <bold>connexions del Signal</bold> són persones en qui has triat confiar, ja sigui per";
 
 /* Label for the stories section of the settings view */
-"STORY_SETTINGS_TITLE" = "Stories";
+"STORY_SETTINGS_TITLE" = "Històries";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Tria quines connexions de Signal poden veure la teva història. Els canvis no afectaran les històries que ja hagis enviat.";
@@ -6527,13 +6527,13 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Es carrega";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "El Signal és una organització sense ànim de lucre sense anunciants ni inversors, sostinguda només per les persones que l'usen i el valoren. Feu una donació mensual recurrent i rebeu una insígnia de perfil per compartir el vostre suport.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal és una organització sense ànim de lucre sense anunciants ni inversors, sostinguda només per les persones que l'usen i la valoren. Fes una donació mensual recurrent i rebràs una insígnia de perfil per compartir el teu suport.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal es compromet a desenvolupar una tecnologia de privadesa de codi obert que protegeixi la llibertat d'expressió i permeti una comunicació global segura.\n\nLa vostra donació alimenta aquesta causa i paga el desenvolupament i les operacions d'una aplicació usada per milions per a la comunicació privada. Sense anuncis. Sense rastrejadors. No és broma.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal es compromet a desenvolupar una tecnologia de privacitat de codi obert que protegeixi la llibertat d'expressió i permeti una comunicació global segura.\n\nLa teva donació alimenta aquesta causa i paga el desenvolupament i les operacions d'una aplicació usada per milions per a la comunicació privada. Sense anuncis, ni rastrejadors. Creu-t'ho!";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Doneu suport a la tecnologia creada per a vosaltres, no per a les vostres dades, afegint-vos a la comunitat que la sustenta.";
+"SUSTAINER_READ_MORE_TITLE" = "Dona suport a la tecnologia creada per a tu, no per a les teves dades, afegint-te a la comunitat que la sustenta.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Per què fer-hi una donació?";
@@ -6542,19 +6542,19 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Encara es processa";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Obteniu una insígnia %1$@";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Aconsegueix una insígnia %1$@";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Cancel·la la subscripció";
 
 /* Confirm Cancellation? Action sheet confirm button */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Confirmació";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Confirmar";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "No se us tornarà a cobrar. La insígnia se suprimirà del perfil al final del període de facturació.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "No se't tornarà a cobrar. La insígnia se suprimirà del perfil al final del període de facturació.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "En confirmeu la cancel·lació?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirmar la cancel·lació?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "No s'ha pogut afegir la insígnia. %1$@";
@@ -6590,7 +6590,7 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Es processa la transacció...";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Llegiu-ne més.";
+"SUSTAINER_VIEW_READ_MORE" = "Llegeix-ne més.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Renovació: %1$@";
@@ -6605,7 +6605,7 @@
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Ara no";
 
 /* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "El Signal és alimentat per persones com vosaltres.";
+"SUSTAINER_VIEW_TITLE" = "Signal existeix gràcies a persones com tu.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Se us cobrarà l'import total (%1$@) del preu de la subscripció nova avui. La subscripció es renovarà mensualment.";
@@ -6617,7 +6617,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Actualitza-la";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Feu una donació mensual recurrent al Signal per donar suport a la tecnologia creada per a vós, no per a les vostres dades.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Fes una donació mensual recurrent a Signal per donar suport a la tecnologia creada per a tu, no per a les teves dades.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Inactiu";

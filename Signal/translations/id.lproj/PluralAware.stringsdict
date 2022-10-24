@@ -83,7 +83,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Warna kustom ini digunakan pada %1$d percakapan. Apakah Anda ingin menghapusnya pada semua percakapan?</string>
+			<string>Warna kustom ini digunakan di %1$d obrolan. Apakah Anda ingin menghapusnya untuk semua obrolan?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -97,7 +97,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Warna ini digunakan pada %1$d percakapan. Apakah Anda ingin menyimpannya untuk semua percakapan?</string>
+			<string>Warna ini digunakan di %1$d obrolan. Apakah Anda ingin menyimpannya untuk semua obrolan?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -139,7 +139,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Anda tidak dapat memilih lebih dari %1$d chats.</string>
+			<string>Anda tidak dapat memilih lebih dari %1$d obrolan.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -162,7 +162,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>dari %2$d kecocokan</string>
+			<string>dari %2$d yang cocok</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -218,7 +218,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d menit yang lalu</string>
+			<string>%1$d menit lalu</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -246,7 +246,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Batas maksimum ukuran grup %1$d anggota sudah terpenuhi.</string>
+			<string>Ukuran grup maksimum sebanyak %1$d anggota sudah terpenuhi.</string>
 		</dict>
 	</dict>
 	<key>EXPIRATION_WARNING_%d</key>
@@ -288,7 +288,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Grup ini tidak dapat dibuat karena %1$d anggota menggunakan versi lama Signal. Anda dapat membuat sebuah Grup Gaya Baru dengan mereka setelah mereka memperbarui Signal, atau mengeluarkan mereka sebelum membuat grup. %2$@</string>
+			<string>Grup ini tidak dapat dibuat karena %1$d anggota menggunakan versi lama Signal. Anda dapat membuat Grup Gaya Baru dengan mereka setelah mereka memperbarui Signal, atau keluarkan mereka sebelum membuat grup. %2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
@@ -302,7 +302,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Grup ini tidak dapat dibuat karena %1$d anggota menggunakan versi lama Signal. Anda dapat membuat sebuah Grup Gaya Baru dengan mereka setelah mereka memperbarui Signal, atau mengeluarkan mereka sebelum membuat grup.</string>
+			<string>Grup ini tidak dapat dibuat karena %1$d anggota menggunakan versi lama Signal. Anda dapat membuat Grup Gaya Baru dengan mereka setelah mereka memperbarui Signal, atau keluarkan mereka sebelum membuat grup.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -316,7 +316,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d anggota tidak dapat ditambahkan ulang ke dalam Grup Baru. Apa Anda ingin menambahkannya sekarang?</string>
+			<string>%1$d anggota tidak dapat ditambahkan ulang ke Grup Baru. Anda ingin menambahkannya sekarang?</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -330,7 +330,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Performa grup Signal akan lebih baik dengan jumlah %1$d anggota atau kurang. Menambah anggota lebih banyak akan menyebabkan pengiriman dan penerimaan pesan menjadi lambat.</string>
+			<string>Performa grup Signal bisa optimal dengan jumlah anggota %1$d atau kurang. Menambah anggota lebih banyak akan menyebabkan pengiriman dan penerimaan pesan menjadi lambat.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -344,7 +344,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Jumlah peserta %1$d telah mencapai angka maksimum untuk panggilan ini. Coba lagi nanti.</string>
+			<string>Jumlah maksimum %1$d peserta telah tercapai untuk panggilan ini. Coba lagi nanti.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -470,7 +470,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d anggota grup memiliki nama yang serupa.</string>
+			<string>%1$d anggota grup memiliki nama yang mirip.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -484,7 +484,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d anggota grup memiliki nama yang serupa, tinjau anggota di bawah atau pilih untuk mengambil tindakan.</string>
+			<string>%1$d anggota grup memiliki nama yang mirip, tinjau anggota di bawah atau pilih untuk mengambil tindakan.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -540,7 +540,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d orang diundang masuk ke dalam grup.</string>
+			<string>%1$d orang diundang masuk ke grup.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
@@ -554,7 +554,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%2$@ mengundang %1$d orang ke dalam grup.</string>
+			<string>%2$@ mengundang %1$d orang ke grup.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -596,7 +596,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%2$@ meminta dan membatalkan %1$d permintaan untuk gabung via tautan grup.</string>
+			<string>%2$@ meminta dan membatalkan %1$d permintaan untuk bergabung via tautan grup.</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -638,7 +638,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d anggota tidak dapat ditambahkan ke dalam Grup Baru dan telah diundang untuk bergabung.</string>
+			<string>%1$d anggota tidak dapat ditambahkan ke Grup Baru dan telah diundang untuk bergabung.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -764,7 +764,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d Penonton</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -862,7 +862,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>PIN salah. %1$d percobaan tersisa.</string>
+			<string>PIN salah. Sisa %1$d kali percobaan.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -946,7 +946,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>Cerita kustom · %1$d Penonton</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -960,7 +960,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Anda memiliki %1$d percobaan tersisa. Jika kehabisan, Anda dapat membuat PIN baru. Anda dapat melakukan pendaftaran dan menggunakan akun Anda namun Anda akan kehilangan pengaturan yang disimpan seperti informasi profil.</string>
+			<string>Anda memiliki %1$d percobaan tersisa. Jika kesempatan habis, Anda bisa membuat PIN baru. Anda bisa mendaftar dan menggunakan akun Anda tetapi beberapa pengaturan tersimpan seperti informasi profil akan hilang.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -974,7 +974,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Anda memiliki %1$d percobaan tersisa. Jika Anda kehabisan percobaan, akun Anda akan dikunci. Setelah 7 hari tidak aktif, Anda dapat mendaftar ulang tanpa PIN Anda. Akun Anda dan semua konten di dalamnya akan dihapus.</string>
+			<string>Anda memiliki %1$d percobaan tersisa. Jika kesempatan habis, akun Anda akan terkunci. Setelah 7 hari tidak aktif, Anda dapat mendaftar ulang tanpa PIN. Akun Anda dan semua konten di dalamnya akan dihapus.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
@@ -1044,7 +1044,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d ditonton</string>
+			<string>%1$d dilihat</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
@@ -1058,7 +1058,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; dilihat</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; balasan</string>
 		</dict>
 		<key>views</key>
 		<dict>
@@ -1067,7 +1067,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; balasan</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; dilihat</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>

@@ -1,1 +1,1 @@
-• Assorted bug fixes to keep your app running smoothly. Thanks for using Signal!
+• แก้ไขบั๊กต่างๆ เพื่อให้แอปของคุณทำงานได้อย่างราบรื่นไร้ปัญหา ขอบคุณที่เลือกใช้ Signal!

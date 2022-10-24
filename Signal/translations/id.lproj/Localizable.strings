@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Tentang Permintaan Pesan";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "Semua Koneksi";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Jawab";
@@ -362,7 +362,7 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Menjadi Penyokong";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Beri Penguat untuk Signal";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Beri Dukungan untuk Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "Lencana Boost Anda sudah kedaluwarsa dan tidak bisa lagi ditampilkan di profil.";
@@ -515,7 +515,7 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Tampilkan di Profil";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Buat Lencana Utama";
+"BADGE_THANKS_MAKE_FEATURED" = "Buat Lencana Unggulan";
 
 /* Title for subscription on the thank you sheet. */
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "Terima kasih untuk dukungan Anda!";
@@ -602,7 +602,7 @@
 "BLUR_TOOLTIP" = "Baru: Kaburkan wajah atau gambar di manapun untuk mengaburkan.";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Buat donasi satu kali dan dapatkan lencana Penguat selama 30 hari.";
+"BOOST_VIEW_BODY" = "Beri donasi satu kali dan dapatkan lencana Boost selama 30 hari.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Lencana Penguat Anda akan berakhir pada %1$@.";
@@ -623,7 +623,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Pilih jumlah untuk didonasikan";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Beri Penguat untuk Signal";
+"BOOST_VIEW_TITLE" = "Beri Dukungan untuk Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Tambahkan";
@@ -1772,7 +1772,7 @@
 "DISMISS_CONTEXT_MENU" = "Hentikan Menu Konteks";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Tampilkan lencana pada profil";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Tampilkan lencana di profil";
 
 /* Title for the proxy confirmation */
 "DO_YOU_WANT_TO_USE_PROXY" = "Apakah Anda ingin menggunakan alamat proksi ini?";
@@ -1784,13 +1784,13 @@
 "DONATE_MEGAPHONE_ACTION" = "Donasi";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal didukung oleh orang baik seperti Anda. Donasi setiap bulan dan terima lencana.";
+"DONATE_MEGAPHONE_BODY" = "Signal didukung oleh orang-orang seperti Anda. Beri donasi setiap bulan dan dapatkan lencana.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Jangan Sekarang";
 
 /* Title for donate megaphone */
-"DONATE_MEGAPHONE_TITLE" = "Berdonasi ke Signal";
+"DONATE_MEGAPHONE_TITLE" = "Donasi ke Signal";
 
 /* Donation payment error for decline failures where authentication is required. */
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Coba metode pembayaran lain atau hubungi bank Anda untuk informasi lebih lanjut.";
@@ -1868,7 +1868,7 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Jika Anda menginstall ulang Signal, resi dari donasi sebelumnya tidak akan tersedia.";
 
 /* Text of the 'donate to signal' button on the donation screen */
-"DONATION_VIEW_DONATE_TO_SIGNAL" = "Berdonasi ke Signal";
+"DONATION_VIEW_DONATE_TO_SIGNAL" = "Donasi ke Signal";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Berdonasi ke Signal";
@@ -1910,7 +1910,7 @@
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "Pertanyaan Populer Langganan";
 
 /* Title on the 'Donate to Signal' screen */
-"DONATION_VIEW_TITLE" = "Berdonasi ke Signal";
+"DONATION_VIEW_TITLE" = "Donasi ke Signal";
 
 /* Label for the currency picker button in donation views */
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Atur mata uang";
@@ -2135,7 +2135,7 @@
 "FEATURED_BADGE_SECTION_HEADER" = "Pilih sebuah Lencana";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Lencana Utama";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Lencana Unggulan";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Tandai sebagai Terverifikasi";
@@ -3803,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "Cerita Saya";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "Ketuk untuk menambahkan";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Baru saja mengubah nama profil dari %1$@ ke %2$@.";
@@ -3893,7 +3893,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Nama Cerita Tidak Ada";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Hanya Anda yang dapat melihat nama cerita ini.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Nama Cerita (Wajib)";
@@ -3905,13 +3905,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Penonton";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Baru";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Hanya terlihat oleh orang oraang tertentu";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Cerita Kustom Baru";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Bagikan grup yang sudah ada";
@@ -4742,7 +4742,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Tambah Penonton";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Hapus Cerita Kustom";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Yakin Anda mau menghapus “%1$@”? Pembaruan yang dibagikan ke cerita ini juga akan dihapus.";
@@ -5480,7 +5480,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Atur waktu pesan menghilang untuk semua percakapan yang Anda mulai.";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Berdonasi ke Signal";
+"SETTINGS_DONATE" = "Donasi ke Signal";
 
 /* Title for help button and help pages in app settings. */
 "SETTINGS_HELP" = "Bantuan";
@@ -6287,10 +6287,10 @@
 "STORIES_SAVE_STORY_ACTION" = "Simpan";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "Pembaruan cerita otomatis hilang setelah 24 jam. Pilih siapa yang bisa melihat cerita Anda atau buat cerita baru dengan grup atau penonton spesifik.";
 
 /* Header for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
+"STORIES_SETTINGS_STORIES_HEADER" = "Cerita";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Anda tidak bisa lagi membagikan atau melihat cerita. Pembaruan cerita yang baru-baru ini Anda bagikan juga akan dihapus.";
@@ -6311,10 +6311,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Aktifkan Cerita";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "Bukti Penayangan";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Lihat dan bagikan saat cerita dilihat. Jika dinonaktifkan, Anda tidak akan tahu bila orang lain melihat cerita Anda.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Bagikan";
@@ -6332,7 +6332,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Cerita Ditampilkan";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Aktifkan bukti penayangan untuk mengetahui siapa yang melihat cerita Anda.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Dilihat";
@@ -6365,7 +6365,7 @@
 "STORY_PRIVACY_SETTINGS" = "Privasi";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "Privasi Cerita";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Memberi tanggapan %1$@ ke cerita Anda";
@@ -6437,7 +6437,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<strong>Koneksi Signal</strong> adalah orang-orang terpilih yang Anda percayai, dengan:";
 
 /* Label for the stories section of the settings view */
-"STORY_SETTINGS_TITLE" = "Stories";
+"STORY_SETTINGS_TITLE" = "Cerita";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Pilih Koneksi Signal yang bisa melihat cerita Anda. Perubahan tidak akan memengaruhi cerita yang telah terkirim.";
@@ -6527,10 +6527,10 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Memuat";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal adalah perusahaan nonprofit tanpa pengiklan atau investor, disokong hanya dengan mereka yang menggunakan dan menghargainya. Buat donasi bulanan berulang dan dapatkan lencana profil untuk membagikan dukungan Anda.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal adalah perusahaan nonprofit tanpa pengiklan atau investor, disokong hanya oleh mereka yang menggunakan dan menghargainya. Lakukan donasi bulanan berulang dan dapatkan lencana profil untuk membagikan dukungan Anda.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal berkomitmen untuk mengembangkan teknologi privasi sumber terbuka yang melindungi kebebasan berekspresi dan memungkinkan komunikasi aman secara global.\n\nDonasi Anda mendukung misi kami dan mendanai pengembangan dan pengoperasian aplikasi yang digunakan oleh jutaan pengguna untuk berkomunikasi secara privat. Tanpa iklan. Tanpa pelacak. Tanpa lelucon.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal berkomitmen untuk mengembangkan teknologi privasi sumber terbuka yang melindungi kebebasan berekspresi dan memungkinkan komunikasi aman secara global.\n\nDonasi Anda mendukung misi kami serta mendanai pengembangan dan pengoperasian aplikasi yang digunakan oleh jutaan pengguna untuk berkomunikasi secara privat. Tanpa iklan. Tanpa pelacak. Ini serius.";
 
 /* Title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_TITLE" = "Dukung teknologi yang dikembangkan untuk Anda—bukan untuk data Anda—dengan bergabung dalam komunitas yang mendukungnya.";
@@ -6542,7 +6542,7 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Masih Memproses";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Dapatkan sebuah %1$@ lencana";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Dapatkan lencana %1$@";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Batalkan Langganan";
@@ -6581,7 +6581,7 @@
 "SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Berakhir %1$@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Perbarui %1$@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Perpanjang %1$@";
 
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Memproses pembayaran...";
@@ -6593,7 +6593,7 @@
 "SUSTAINER_VIEW_READ_MORE" = "Baca selengkapnya.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Perbarui %1$@";
+"SUSTAINER_VIEW_RENEWAL" = "Perpanjang %1$@";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Pembayaran Anda sedang diproses. Ini dapat memakan waktu beberapa menit tergantung koneksi Anda.";
@@ -6617,7 +6617,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Perbarui";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Buat donasi bulanan yang berulang ke Signal untuk mendukung teknologi yang dibangun untuk Anda, bukan data Anda.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Beri donasi bulanan berulang untuk Signal demi mendukung teknologi yang dibangun untuk Anda, bukan data Anda.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Mati";

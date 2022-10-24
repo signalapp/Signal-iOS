@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "O žádostech o zprávy";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "Všechna spojení";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Odpovědět";
@@ -353,7 +353,7 @@
 "BACK_BUTTON" = "Zpět";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Mé odznaky";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Moje odznaky";
 
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "Odznaky";
@@ -362,7 +362,7 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Staňte se podporovatelem";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Dejte Signalu Boost";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Pomozte aplikaci Signal se vyšvihnout";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "Platnost vašeho odznaku Boost vypršela a na vašem profilu ho již nelze zobrazit.";
@@ -515,7 +515,7 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Zobrazit v profilu";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Vytvořit doporučený odznak";
+"BADGE_THANKS_MAKE_FEATURED" = "Použít doporučený odznak";
 
 /* Title for subscription on the thank you sheet. */
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "Díky za vaši podporu!";
@@ -608,7 +608,7 @@
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Váš Boost odznak vyprší %1$@.";
 
 /* Default text for the custom amount field of the boost view. */
-"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Zadat vlastní výši";
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Zadejte vlastní částku";
 
 /* Text explaining there are other ways to donate on the boost view. */
 "BOOST_VIEW_OTHER_WAYS" = "Více možností plateb";
@@ -623,7 +623,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Zadejte výši příspěvku";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Dejte Signalu Boost";
+"BOOST_VIEW_TITLE" = "Pomozte aplikaci Signal se vyšvihnout";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Přidat";
@@ -1784,7 +1784,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Sponzorujte";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal je aplikace, za kterou stojí lidé jako vy. Prokažte jim dnes svoji podporu!";
+"DONATE_MEGAPHONE_BODY" = "Signal je aplikace, za kterou stojí lidé, jako jste vy. Podpořte ji každý měsíc a získejte odznak.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Nyní ne";
@@ -3311,7 +3311,7 @@
 "KEY_COMMAND_UNARCHIVE" = "Zrušit archivaci konverzace";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "Dozvědět se více";
+"LEARN_MORE" = "Zjistit více";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Opustit";
@@ -3803,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "Můj příběh";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "Klepnutím přidáte";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Nedávno změnili své jméno z %1$@ na %2$@.";
@@ -3893,7 +3893,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Chybí název příběhu";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Název tohoto příběhu vidíte pouze vy.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Název příběhu (povinné)";
@@ -3905,13 +3905,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Zobrazení";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Novinka";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Viditelný pouze vybraným lidem";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Nový vlastní příběh";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Sdílet existující skupině";
@@ -4742,7 +4742,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Přidat sledující";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Smazat vlastní příběh";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Opravdu chcete odstranit „%1$@“? Aktualizace sdílené k tomuto příběhu budou také odstraněny.";
@@ -6287,10 +6287,10 @@
 "STORIES_SAVE_STORY_ACTION" = "Uložit";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "Aktualizace příběhu automaticky po 24 hodinách zmizí. Vyberte, kdo si může váš příběh zobrazit, nebo vytvořte nový příběh pro konkrétní sledující nebo skupiny.";
 
 /* Header for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
+"STORIES_SETTINGS_STORIES_HEADER" = "Příběhy";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Příběhy již nebudete moci sdílet ani zobrazovat. Aktualizace příběhů, které jste nedávno sdíleli, budou také odstraněny.";
@@ -6311,10 +6311,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Zapnout příběhy";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "Potvrzení o zobrazení";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Když si někdo váš příběh zobrazí, budete o tom vědět. Pokud tuto funkci vypnete, nedozvíte se, kdy si ostatní zobrazí vaše příběhy.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Sdílet";
@@ -6332,7 +6332,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Skrytí příběhu zrušeno";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Povolte potvrzení o zobrazení, abyste viděli, kdo si vaše příběhy zobrazil.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Zobrazení";
@@ -6365,7 +6365,7 @@
 "STORY_PRIVACY_SETTINGS" = "Soukromí";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "Soukromí příběhu";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reagoval/a %1$@ na váš příběh";
@@ -6437,7 +6437,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Spojení Signal</bold> jsou lidé, kterým jste se rozhodli důvěřovat, např.:";
 
 /* Label for the stories section of the settings view */
-"STORY_SETTINGS_TITLE" = "Stories";
+"STORY_SETTINGS_TITLE" = "Příběhy";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Vyberte, kdo ze spojení Signal si může váš příběh prohlédnout. Změny se nedotknou příběhů, které jste už poslali.";
@@ -6527,22 +6527,22 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Načítání";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal je nezisková organizace bez inzerentů a investorů, kterou živí pouze lidé, kteří ji používají a oceňují. Přispívejte pravidelně každý měsíc a získejte profilový odznak, abyste se podělili o svou podporu.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal je nezisková organizace bez inzerentů a investorů, za kterou stojí pouze lidé, kteří ji používají a oceňují. Přispívejte pravidelně každý měsíc a získejte profilový odznak, kterým vyjádříte svou podporu.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Společnost Signal se zavázala vyvíjet open source technologii ochrany soukromí, která chrání svobodu projevu a umožňuje bezpečnou globální komunikaci.\n\nSvým příspěvkem podpoříte tento účel a zaplatíte vývoj a provoz aplikace, kterou používají miliony lidí pro soukromou komunikaci. Žádné reklamy. Žádné trackery. Bez legrace.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Společnost Signal se zavázala vyvíjet open source technologii ochrany soukromí, která chrání svobodu projevu a umožňuje bezpečnou globální komunikaci.\n\nSvým příspěvkem podpoříte tento účel a zaplatíte vývoj a provoz aplikace, kterou používají miliony lidí pro soukromou komunikaci. Žádné reklamy. Žádné sledování. Žádné triky.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Podpořte technologii, která je vytvořena pro vás, ne kvůli vašim datům, a připojte se ke komunitě lidí, kteří ji podporují.";
+"SUSTAINER_READ_MORE_TITLE" = "Podpořte technologii, která je vytvořena pro vás – a ne kvůli vaším údajům – tím, že se připojte ke komunitě, která ji udržuje.";
 
 /* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Proč přispět?";
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Proč přispívat?";
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Stále zpracovávám";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Získat %1$@ odznak";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Získat odznak %1$@";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Zrušit předplatné";
@@ -6551,7 +6551,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Potvrdit";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Nebude vám již účtován žádný poplatek. Na konci zúčtovacího období bude váš odznak z vašeho profilu odstraněn.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Už vám nebude účtován žádný poplatek. Na konci zúčtovacího období bude váš odznak z vašeho profilu odstraněn.";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Potvrdit zrušení?";
@@ -6590,7 +6590,7 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Zpracovávání transakce…";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Číst více.";
+"SUSTAINER_VIEW_READ_MORE" = "Číst dál.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Obnoví se %1$@";
@@ -6605,7 +6605,7 @@
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Nyní ne";
 
 /* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Signal pohání lidé, jako jste vy.";
+"SUSTAINER_VIEW_TITLE" = "Signal je aplikace, za kterou stojí lidé, jako jste vy.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Dnes vám bude účtována plná částka (%1$@) nového předplatného. Vaše předplatné bude obnoveno každý měsíc.";
@@ -6617,7 +6617,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Aktualizovat";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Pravidelným měsíčním příspěvkem společnosti Signal podpoříte technologii vytvořenou pro vás, ne pro vaše data.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Pravidelným měsíčním příspěvkem společnosti Signal podpoříte technologii, kterou vyvíjíme pro vás, ne kvůli vašim údajům.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Vyp.";

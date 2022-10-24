@@ -13,7 +13,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Talebesked på 1 sekund</string>
+			<string>Talebesked på %1$d sekund</string>
 			<key>other</key>
 			<string>Talebesked på %1$d sekunder</string>
 		</dict>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Denne tilpassede farve bruges i %1$d chat. Vil du slette det for alle chats?</string>
+			<string>Denne tilpassede farve bruges i %1$d chat. Vil du slette den?</string>
 			<key>other</key>
-			<string>Denne brugerdefinerede farve bruges i %1$d samtaler. Ønsker du at slette den for alle samtaler?</string>
+			<string>Denne brugerdefinerede farve bruges i %1$d chats. Vil du slette den for alle chats?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -111,7 +111,7 @@
 			<key>one</key>
 			<string>Denne farve bruges i %1$d chat. Vil du gemme ændringer for alle chats?</string>
 			<key>other</key>
-			<string>Denne farve bruges i %1$d samtaler. Vil du gemme ændringer for alle samtaler?</string>
+			<string>Denne farve bruges i %1$d chats. Vil du gemme ændringer for alle chats?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -157,7 +157,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Du kan ikke vælge mere end 1 chat.</string>
+			<string>Du kan ikke vælge mere end %1$d chat.</string>
 			<key>other</key>
 			<string>Du kan ikke vælge mere end %1$d chats.</string>
 		</dict>
@@ -173,7 +173,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 %2$#@total@</string>
+			<string>%1$d %2$#@total@</string>
 			<key>other</key>
 			<string>%1$d %2$#@total@</string>
 		</dict>
@@ -218,7 +218,7 @@
 			<key>one</key>
 			<string>%1$d gruppe til fælles</string>
 			<key>other</key>
-			<string>%1$d grupper til fælles.</string>
+			<string>%1$d grupper til fælles</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_%d</key>
@@ -248,7 +248,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 minut siden</string>
+			<string>%1$d minut siden</string>
 			<key>other</key>
 			<string>%1$d minutter siden</string>
 		</dict>
@@ -296,7 +296,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Din version af Signal udløber om 1 dag. Tryk for at opdatere til den seneste version.</string>
+			<string>Din version af Signal udløber om %1$d dag. Tryk for at opdatere til den seneste version.</string>
 			<key>other</key>
 			<string>Din version af Signal udløber om %1$d dage. Tryk for at opdatere til den seneste version.</string>
 		</dict>
@@ -312,7 +312,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Send %1$d besked</string>
+			<string>Send besked</string>
 			<key>other</key>
 			<string>Send %1$d beskeder</string>
 		</dict>
@@ -328,7 +328,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Gruppen kan ikke oprettes, fordi 1 medlem anvender en ældre version af Signal. Du kan oprette en gruppe i den nye stil med dem, når vedkommende har opdateret Signal eller fjerne personen, inden du opretter gruppen. %2$@</string>
+			<string>Gruppen kan ikke oprettes, fordi %1$d medlem anvender en ældre version af Signal. Du kan oprette en gruppe i den nye stil med dem, når vedkommende har opdateret Signal eller fjerne personen, inden du opretter gruppen. %2$@</string>
 			<key>other</key>
 			<string>Gruppen kan ikke oprettes, fordi %1$d medlemmer anvender en ældre version af Signal. Du kan oprette en gruppe i den nye stil med dem, når de har opdateret Signal, eller fjerne dem før du opretter gruppen. %2$@</string>
 		</dict>
@@ -344,7 +344,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Denne gruppe kan ikke oprettes, fordi 1 medlem anvender en ældre version af Signal. Du kan oprette en gruppe i den nye stil med vedkommende, når personen har opdateret Signal, eller fjerne personen før du opretter gruppen.</string>
+			<string>Denne gruppe kan ikke oprettes, fordi %1$d medlem anvender en ældre version af Signal. Du kan oprette en gruppe i den nye stil med vedkommende, når personen har opdateret Signal, eller fjerne personen før du opretter gruppen.</string>
 			<key>other</key>
 			<string>Denne gruppe kan ikke oprettes, fordi %1$d medlemmer anvender en ældre version af Signal. Du kan oprette en gruppe i den nye stil med dem, når de har opdateret Signal, eller fjerne dem før du opretter gruppen.</string>
 		</dict>
@@ -360,7 +360,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 medlem kunne ikke tilføjes igen til den nye gruppe. Vil du tilføje vedkommende nu?</string>
+			<string>%1$d medlem kunne ikke tilføjes igen til den nye gruppe. Vil du tilføje vedkommende nu?</string>
 			<key>other</key>
 			<string>%1$d medlemmer kunne ikke tilføjes igen til den nye gruppe. Vil du tilføje dem nu?</string>
 		</dict>
@@ -376,7 +376,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal-grupper fungerer bedst med 1 medlem eller færre. Tilføjes der flere medlemmer, vil det medføre forsinkelser i afsendelse og modtagelse af beskeder.</string>
+			<string>Signal-grupper fungerer bedst med %1$d medlem eller færre. Tilføjes der flere medlemmer, vil det medføre forsinkelser i afsendelse og modtagelse af beskeder.</string>
 			<key>other</key>
 			<string>Signal-grupper fungerer bedst med %1$d medlemmer eller færre. Tilføjes der flere medlemmer, vil det medføre forsinkelser i afsendelse og modtagelse af beskeder.</string>
 		</dict>
@@ -392,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Det maksimale antal på 1 deltager er opnået i forbindelse med dette opkald. Prøv igen senere.</string>
+			<string>Det maksimale antal deltagere på %1$d er opnået i forbindelse med dette opkald. Prøv igen senere.</string>
 			<key>other</key>
-			<string>Det maksimale antal på %1$d deltagere er opnået i forbindelse med dette opkald. Prøv igen senere.</string>
+			<string>Det maksimale antal antal deltagere på %1$d er opnået i forbindelse med dette opkald. Prøv igen senere.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -424,7 +424,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ringer til %2$@, %3$@ og 1 anden...</string>
+			<string>Ringer til %2$@, %3$@ og %1$d anden...</string>
 			<key>other</key>
 			<string>Ringer til %2$@, %3$@ og %1$d andre...</string>
 		</dict>
@@ -440,7 +440,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, og %1$d andre deltager i samtalen</string>
+			<string>%2$@, %3$@, og %1$d anden deltager i dette opkald</string>
 			<key>other</key>
 			<string>%2$@, %3$@ og %1$d andre deltager i dette opkald</string>
 		</dict>
@@ -456,7 +456,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ og 1 anden sluttede sig til opkaldet</string>
+			<string>%2$@, %3$@ og %1$d anden sluttede sig til opkaldet</string>
 			<key>other</key>
 			<string>%2$@, %3$@ og %1$d andre sluttede sig til opkaldet</string>
 		</dict>
@@ -472,7 +472,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ og 1 anden forlod opkaldet</string>
+			<string>%2$@, %3$@ og %1$d anden forlod opkaldet</string>
 			<key>other</key>
 			<string>%2$@, %3$@ og %1$d andre forlod opkaldet</string>
 		</dict>
@@ -488,7 +488,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ og %1$d anden vil blive underrettet</string>
+			<string>%2$@, %3$@ og %1$d anden vil få en notifikation</string>
 			<key>other</key>
 			<string>%2$@, %3$@ og %1$d andre vil få en notifikation</string>
 		</dict>
@@ -504,7 +504,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal vil ringe til %2$@, %3$@ og %1$d anden</string>
+			<string>Signal ringer til %2$@, %3$@ og %1$d anden</string>
 			<key>other</key>
 			<string>Signal ringer til %2$@, %3$@ og %1$d andre</string>
 		</dict>
@@ -536,7 +536,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 gruppemedlem har et lignende navn.</string>
+			<string>%1$d gruppemedlem har et lignende navn.</string>
 			<key>other</key>
 			<string>%1$d gruppemedlemmer har lignende navne.</string>
 		</dict>
@@ -552,7 +552,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 gruppemedlem har et lignende navn, find medlemmet nedenfor eller vælg at gøre noget.</string>
+			<string>%1$d gruppemedlem har et lignende navn, find medlemmet nedenfor eller vælg at gøre noget.</string>
 			<key>other</key>
 			<string>%1$d gruppemedlemmer har lignende navne, find medlemmerne nedenfor eller vælg at gøre noget.</string>
 		</dict>
@@ -568,7 +568,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 gruppemedlem har det samme navn, find medlemmet nedenfor eller vælg at gøre noget.</string>
+			<string>%1$d gruppemedlem har det samme navn, find medlemmet nedenfor eller vælg at gøre noget.</string>
 			<key>other</key>
 			<string>%1$d gruppemedlemmer har det samme navn, find medlemmerne nedenfor eller vælg at gøre noget.</string>
 		</dict>
@@ -616,7 +616,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 person blev inviteret til gruppen.</string>
+			<string>%1$d person blev inviteret til gruppen.</string>
 			<key>other</key>
 			<string>%1$d personer blev inviteret til gruppen.</string>
 		</dict>
@@ -632,7 +632,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ inviterede 1 person til gruppen.</string>
+			<string>%2$@ inviterede %1$d person til gruppen.</string>
 			<key>other</key>
 			<string>%2$@ inviterede %1$d personer til gruppen.</string>
 		</dict>
@@ -648,7 +648,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Invitation til gruppen blev annulleret for 1 person.</string>
+			<string>Invitation til gruppen blev annulleret for %1$d person.</string>
 			<key>other</key>
 			<string>Invitationer til gruppen blev annulleret for %1$d personer.</string>
 		</dict>
@@ -664,7 +664,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ annullerede en invitation til gruppen for 1 person.</string>
+			<string>%2$@ annullerede en invitation til gruppen for %1$d person.</string>
 			<key>other</key>
 			<string>%2$@ annullerede en invitation til gruppen for %1$d personer.</string>
 		</dict>
@@ -776,7 +776,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Slet 1 besked</string>
+			<string>Slet %1$d besked</string>
 			<key>other</key>
 			<string>Slet %1$d beskeder</string>
 		</dict>
@@ -792,7 +792,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 billede</string>
+			<string>%1$d billede</string>
 			<key>other</key>
 			<string>%1$d billeder</string>
 		</dict>
@@ -808,7 +808,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Enheder</string>
+			<string>%1$d emne</string>
 			<key>other</key>
 			<string>%1$d emner</string>
 		</dict>
@@ -824,7 +824,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Du blokerede 1 medlem af denne gruppe</string>
+			<string>Du blokerede %1$d medlem af denne gruppe</string>
 			<key>other</key>
 			<string>Du blokerede %1$d medlemmer af denne gruppe</string>
 		</dict>
@@ -856,7 +856,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 ekskluderet</string>
+			<string>%1$d ekskluderet</string>
 			<key>other</key>
 			<string>%1$d ekskluderet</string>
 		</dict>
@@ -872,9 +872,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Viewer</string>
+			<string>%1$d seer</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d seere</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -904,7 +904,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Alle Signal-kontakter · 1 seer</string>
+			<string>Alle Signal-kontakter · %1$d seer</string>
 			<key>other</key>
 			<string>Alle Signal-kontaker · %1$d seere</string>
 		</dict>
@@ -920,7 +920,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Alle Signal-kontaker · 1 ekskluderet</string>
+			<string>Alle Signal-kontaker · %1$d ekskluderet</string>
 			<key>other</key>
 			<string>Alle Signal-kontaker · %1$d ekskluderet</string>
 		</dict>
@@ -936,7 +936,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Del kun med · 1 seer</string>
+			<string>Del kun med · %1$d seer</string>
 			<key>other</key>
 			<string>Del kun med · %1$d seere</string>
 		</dict>
@@ -970,7 +970,7 @@
 			<key>one</key>
 			<string>%1$d seer</string>
 			<key>other</key>
-			<string>%1$d tilskuere</string>
+			<string>%1$d seere</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -984,7 +984,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Forkert PIN. %1$d forsøg tilbage</string>
+			<string>Forkert pinkode. %1$d forsøg tilbage</string>
 			<key>other</key>
 			<string>Forkert pinkode. %1$d forsøg tilbage.</string>
 		</dict>
@@ -1032,9 +1032,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Annuller ugyldig invitation</string>
+			<string>Annullér ugyldig invitation</string>
 			<key>other</key>
-			<string>Annuller %1$d ugyldige invitationer</string>
+			<string>Annullér %1$d ugyldige invitationer</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -1080,9 +1080,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Custom Story · %1$d Viewer</string>
+			<string>Brugerdefineret historie · %1$d seer</string>
 			<key>other</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>Brugerdefineret historie · %1$d seere</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>

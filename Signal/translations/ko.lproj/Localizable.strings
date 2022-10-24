@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "메시지 요청 정보";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "모든 커넥션";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "응답";
@@ -353,7 +353,7 @@
 "BACK_BUTTON" = "뒤로";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "나의 배지";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "내 배지";
 
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "배지";
@@ -1790,7 +1790,7 @@
 "DONATE_MEGAPHONE_CANCEL" = "나중에";
 
 /* Title for donate megaphone */
-"DONATE_MEGAPHONE_TITLE" = "Signal에 후원";
+"DONATE_MEGAPHONE_TITLE" = "Signal에 기부";
 
 /* Donation payment error for decline failures where authentication is required. */
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "다른 결제 방법을 시도하거나 은행에 자세한 정보를 문의하세요.";
@@ -1868,7 +1868,7 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Signal을 다시 설치했다면 이전 기부 영수증은 사용할 수 없습니다.";
 
 /* Text of the 'donate to signal' button on the donation screen */
-"DONATION_VIEW_DONATE_TO_SIGNAL" = "Signal에 후원";
+"DONATION_VIEW_DONATE_TO_SIGNAL" = "Signal에 기부";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Signal 기부";
@@ -1910,7 +1910,7 @@
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "구독 관련 FAQ";
 
 /* Title on the 'Donate to Signal' screen */
-"DONATION_VIEW_TITLE" = "Signal에 후원";
+"DONATION_VIEW_TITLE" = "Signal에 기부";
 
 /* Label for the currency picker button in donation views */
 "DONATIONS_CURRENCY_PICKER_LABEL" = "통화 설정";
@@ -3311,7 +3311,7 @@
 "KEY_COMMAND_UNARCHIVE" = "대화 보관 해제";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "더 알아보기";
+"LEARN_MORE" = "자세히 알아보기";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "나가기";
@@ -3803,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "내 스토리";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "탭하여 추가";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "최근에 프로필 이름을 %1$@에서 %2$@(으)로 변경했습니다.";
@@ -3893,7 +3893,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "스토리 이름 없음";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "이 스토리 이름은 본인만 볼 수 있습니다.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "스토리 이름(필수)";
@@ -3905,13 +3905,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "볼 수 있는 사람";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "새 스토리";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "특정 사용자만 볼 수 있음";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "새 사용자 지정 스토리";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "기존 그룹과 공유";
@@ -4742,7 +4742,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "볼 수 있는 사람 추가";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "사용자 지정 스토리 삭제";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "'%1$@'을(를) 삭제할까요? 이 스토리에 공유한 업데이트도 삭제합니다.";
@@ -5480,7 +5480,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "내가 시작한 모든 새 채팅에 대해 기본 사라지는 메시지 타이머를 설정합니다.";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Signal에 후원";
+"SETTINGS_DONATE" = "Signal에 기부";
 
 /* Title for help button and help pages in app settings. */
 "SETTINGS_HELP" = "도움말";
@@ -6287,10 +6287,10 @@
 "STORIES_SAVE_STORY_ACTION" = "저장";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "스토리 업데이트는 24시간 후에 자동으로 사라집니다. 내 스토리를 볼 수 있는 사람을 선택하거나, 볼 수 있는 사람이나 그룹을 지정하여 새 스토리를 만드세요.";
 
 /* Header for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
+"STORIES_SETTINGS_STORIES_HEADER" = "스토리";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "더 이상 스토리를 공유하거나 볼 수 없습니다. 최근 공유한 스토리 업데이트도 삭제합니다.";
@@ -6311,10 +6311,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "스토리 켜기";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "수신 확인";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "언제 스토리를 조회했는지를 보고 공유합니다. 비활성화할 경우 다른 사람이 내 스토리를 언제 조회했는지를 알 수 없습니다.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "공유";
@@ -6332,7 +6332,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "스토리를 숨김 해제했습니다.";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "내 스토리를 본 사람을 확인하려면 수신 확인을 활성화하세요.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "조회";
@@ -6365,7 +6365,7 @@
 "STORY_PRIVACY_SETTINGS" = "개인정보";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "스토리 개인정보보호";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "내 스토리에 %1$@ 이모지로 반응했습니다.";
@@ -6437,7 +6437,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal 커넥션</bold>은 다음과 같은 방법을 통해 내가 신뢰하는 사용자로 선택한 사람들입니다.";
 
 /* Label for the stories section of the settings view */
-"STORY_SETTINGS_TITLE" = "Stories";
+"STORY_SETTINGS_TITLE" = "스토리";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "내 스토리를 볼 수 있는 Signal 커넥션을 선택하세요. 이미 보낸 스토리에는 변경 내용이 적용되지 않습니다.";
@@ -6536,7 +6536,7 @@
 "SUSTAINER_READ_MORE_TITLE" = "Signal의 기둥 역할을 하는 커뮤니티와 함께하여 데이터가 아닌 사용자를 위해 설계된 기술을 지지해 주세요.";
 
 /* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "왜 기부해야 합니까?";
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Signal에 기부해야 하는 이유";
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "아직 처리 중";
@@ -6590,7 +6590,7 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "거래 처리 중...";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "자세히 알아보기";
+"SUSTAINER_VIEW_READ_MORE" = "자세히 알아보기.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "%1$@ 갱신";
@@ -6605,7 +6605,7 @@
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "나중에";
 
 /* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Signal은 귀하와 같은 분들이 만들어나갑니다.";
+"SUSTAINER_VIEW_TITLE" = "Signal은 여러분과 같은 사용자의 기여를 받아 운영됩니다.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "오늘 새 구독 요금의 전체 금액(%1$@)이 청구됩니다. 새 구독은 매월 갱신됩니다.";
@@ -6617,7 +6617,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "업데이트";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "매달 정기후원으로 Signal이 당신을 위해 기술을 지원하도록 하세요. 당신의 정보가 아니고요.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "매달 Signal에 정기 기부를 하여 사용자의 데이터가 아닌 사용자를 위하는 기술을 지원해 주세요.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "꺼짐";

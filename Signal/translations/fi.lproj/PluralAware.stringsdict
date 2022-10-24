@@ -13,7 +13,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ääniviesti, 1 sekunti</string>
+			<string>Ääniviesti, %1$d sekunti</string>
 			<key>other</key>
 			<string>Ääniviesti, %1$d sekuntia</string>
 		</dict>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tämä väri on käytössä %1$d keskustelussa. Haluatko poistaa sen kaikista keskusteluista?</string>
+			<string>Tämä väri on käytössä %1$d keskustelussa. Haluatko poistaa sen?</string>
 			<key>other</key>
-			<string>Mukautettu väri on käytössä %1$d keskustelussa. Poistetaanko se kaikista?</string>
+			<string>Mukautettu väri on käytössä %1$d keskustelussa. Haluatko poistaa sen kaikista keskusteluista?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -111,7 +111,7 @@
 			<key>one</key>
 			<string>Tämä väri on käytössä %1$d keskustelussa. Haluatko tallentaa muutokset kaikkiin keskusteluihin?</string>
 			<key>other</key>
-			<string>Tämä väri on käytössä %1$d keskustelussa. Tallennetaanko muutos kaikkiin keskusteluihin?</string>
+			<string>Tämä väri on käytössä %1$d keskustelussa. Haluatko tallentaa muutokset kaikkiin keskusteluihin?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -157,7 +157,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Voit valita enintään 1 keskustelun.</string>
+			<string>Voit valita enintään %1$d keskustelun.</string>
 			<key>other</key>
 			<string>Voit valita enintään %1$d keskustelua.</string>
 		</dict>
@@ -173,7 +173,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 %2$#@total@</string>
+			<string>%1$d %2$#@total@</string>
 			<key>other</key>
 			<string>%1$d %2$#@total@</string>
 		</dict>
@@ -248,7 +248,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 minuutti sitten</string>
+			<string>%1$d minuutti sitten</string>
 			<key>other</key>
 			<string>%1$d minuuttia sitten</string>
 		</dict>
@@ -296,7 +296,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tämä Signal-versio vanhenee 1 päivän kuluttua. Päivitä uusimpaan versioon napauttamalla.</string>
+			<string>Tämä Signal-versio vanhenee %1$d päivän kuluttua. Päivitä uusimpaan versioon napauttamalla.</string>
 			<key>other</key>
 			<string>Tämä Signal-versio vanhenee %1$d päivän kuluttua. Päivitä uusimpaan versioon napauttamalla.</string>
 		</dict>
@@ -312,7 +312,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Lähetä %1$d viesti</string>
+			<string>Lähetä viesti</string>
 			<key>other</key>
 			<string>Lähetä %1$d viestiä</string>
 		</dict>
@@ -328,7 +328,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tätä ryhmää ei voida luoda, koska 1 jäsen käyttää vanhaa Signal-versiota. Voit luoda uuden tyylin ryhmän hänen kanssaan, kun hän on päivittänyt Signalin, tai poistaa hänet ennen ryhmän luomista. %2$@</string>
+			<string>Tätä ryhmää ei voida luoda, koska %1$d jäsen käyttää vanhaa Signal-versiota. Voit luoda uuden tyylin ryhmän hänen kanssaan, kun hän on päivittänyt Signalin, tai poistaa hänet ennen ryhmän luomista. %2$@</string>
 			<key>other</key>
 			<string>Tätä ryhmää ei voida luoda, koska %1$d jäsentä käyttää vanhaa Signal-versiota. Voit luoda uuden tyylin ryhmän heidän kanssaan, kun he ovat päivittäneet Signalin, tai poistaa heidät ennen ryhmän luomista. %2$@</string>
 		</dict>
@@ -344,7 +344,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tätä ryhmää ei voida luoda, koska 1 jäsen käyttää vanhaa Signal-versiota. Voit luoda uuden tyylin ryhmän hänen kanssaan, kun hän on päivittänyt Signalin, tai poistaa hänet ennen ryhmän luomista.</string>
+			<string>Tätä ryhmää ei voida luoda, koska %1$d jäsen käyttää vanhaa Signal-versiota. Voit luoda uuden tyylin ryhmän hänen kanssaan, kun hän on päivittänyt Signalin, tai poistaa hänet ennen ryhmän luomista.</string>
 			<key>other</key>
 			<string>Tätä ryhmää ei voida luoda, koska %1$d jäsentä käyttää vanhaa Signal-versiota. Voit luoda uuden tyylin ryhmän heidän kanssaan, kun he ovat päivittäneet Signalin, tai poistaa heidät ennen ryhmän luomista.</string>
 		</dict>
@@ -360,7 +360,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 jäsentä ei voitu lisätä uudelleen uuteen ryhmään. Haluatko lisätä hänet nyt?</string>
+			<string>%1$d jäsentä ei voitu lisätä uudelleen uuteen ryhmään. Haluatko lisätä hänet nyt?</string>
 			<key>other</key>
 			<string>%1$d jäsentä ei voitu lisätä uudelleen uuteen ryhmään. Haluatko lisätä heidät nyt?</string>
 		</dict>
@@ -376,7 +376,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal-ryhmät toimivat parhaiten, kun niissä on enintään 1 jäsen. Korkeampi jäsenmäärä viivästyttää viestien kulkua.</string>
+			<string>Signal-ryhmät toimivat parhaiten, kun niissä on enintään %1$d jäsen. Korkeampi jäsenmäärä viivästyttää viestien kulkua.</string>
 			<key>other</key>
 			<string>Signal-ryhmät toimivat parhaiten, kun niissä on enintään %1$d jäsentä. Korkeampi jäsenmäärä viivästyttää viestien kulkua.</string>
 		</dict>
@@ -392,7 +392,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tämän puhelun osallistujien enimmäismäärä, 1 osallistujaa, on täyttynyt. Yritä myöhemmin uudelleen.</string>
+			<string>Tämän puhelun osallistujien enimmäismäärä, %1$d osallistuja, on täyttynyt. Yritä myöhemmin uudelleen.</string>
 			<key>other</key>
 			<string>Tämän puhelun osallistujien enimmäismäärä, %1$d osallistujaa, on täyttynyt. Yritä myöhemmin uudelleen.</string>
 		</dict>
@@ -410,7 +410,7 @@
 			<key>one</key>
 			<string>Tässä puhelussa · %1$d henkilö</string>
 			<key>other</key>
-			<string>Tässä puhelussa · %1$d osallistujaa</string>
+			<string>Tässä puhelussa · %1$d henkilöä</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
@@ -424,7 +424,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Soitetaan käyttäjille %2$@, %3$@ ja 1 muulle...</string>
+			<string>Soitetaan käyttäjille %2$@, %3$@ ja %1$d muulle...</string>
 			<key>other</key>
 			<string>Soitetaan käyttäjille %2$@, %3$@ ja %1$d muulle...</string>
 		</dict>
@@ -456,7 +456,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ ja 1 muu liittyivät puheluun</string>
+			<string>%2$@, %3$@ ja %1$d muu liittyivät puheluun</string>
 			<key>other</key>
 			<string>%2$@, %3$@ ja %1$d muuta liittyivät puheluun</string>
 		</dict>
@@ -472,7 +472,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ ja 1 muu poistuivat puhelusta</string>
+			<string>%2$@, %3$@ ja %1$d muu poistuivat puhelusta</string>
 			<key>other</key>
 			<string>%2$@, %3$@ ja %1$d muuta poistuivat puhelusta</string>
 		</dict>
@@ -488,7 +488,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@:lle, %3$@:lle sekä %1$d:lle muulle ilmoitetaan</string>
+			<string>Käyttäjille %2$@, %3$@ ja %1$d muulle ilmoitetaan</string>
 			<key>other</key>
 			<string>Käyttäjille %2$@, %3$@ ja %1$d muulle ilmoitetaan</string>
 		</dict>
@@ -504,7 +504,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal soittaa %2$@:lle, %3$@:lle sekä %1$d:lle muulle</string>
+			<string>Signal soittaa käyttäjille %2$@, %3$@ ja %1$d muulle</string>
 			<key>other</key>
 			<string>Signal soittaa käyttäjille %2$@, %3$@ ja %1$d muulle</string>
 		</dict>
@@ -536,7 +536,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 ryhmän jäsenellä on samankaltainen nimi.</string>
+			<string>%1$d ryhmän jäsenellä on samankaltainen nimi.</string>
 			<key>other</key>
 			<string>%1$d ryhmän jäsenellä on samankaltaiset nimet.</string>
 		</dict>
@@ -552,7 +552,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 ryhmän jäsenellä on samankaltainen nimi. Tarkista jäsen alla tai korjaa ongelma.</string>
+			<string>%1$d ryhmän jäsenellä on samankaltainen nimi. Tarkista jäsen alla tai korjaa ongelma.</string>
 			<key>other</key>
 			<string>%1$d ryhmän jäsenellä on samankaltaiset nimet. Tarkista jäsenet alla tai korjaa ongelma.</string>
 		</dict>
@@ -568,7 +568,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 ryhmän jäsenellä on sama nimi. Tarkista jäsen alla tai korjaa ongelma.</string>
+			<string>%1$d ryhmän jäsenellä on sama nimi. Tarkista jäsen alla tai korjaa ongelma.</string>
 			<key>other</key>
 			<string>%1$d ryhmän jäsenellä on sama nimi. Tarkista jäsenet alla tai korjaa ongelma.</string>
 		</dict>
@@ -616,7 +616,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 henkilö kutsuttiin ryhmään.</string>
+			<string>%1$d henkilö kutsuttiin ryhmään.</string>
 			<key>other</key>
 			<string>%1$d henkilöä kutsuttiin ryhmään.</string>
 		</dict>
@@ -632,7 +632,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ kutsui 1 henkilön ryhmään.</string>
+			<string>%2$@ kutsui %1$d henkilön ryhmään.</string>
 			<key>other</key>
 			<string>%2$@ kutsui %1$d henkilöä ryhmään.</string>
 		</dict>
@@ -648,7 +648,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Kutsu ryhmään peruttiin 1 käyttäjältä.</string>
+			<string>Kutsu ryhmään peruttiin %1$d käyttäjältä.</string>
 			<key>other</key>
 			<string>Kutsut ryhmään peruttiin %1$d käyttäjältä.</string>
 		</dict>
@@ -664,7 +664,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ peruutti kutsun ryhmään 1 käyttäjältä.</string>
+			<string>%2$@ peruutti kutsun ryhmään %1$d käyttäjältä.</string>
 			<key>other</key>
 			<string>%2$@ peruutti kutsun ryhmään %1$d käyttäjältä.</string>
 		</dict>
@@ -776,7 +776,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Poista 1 viesti</string>
+			<string>Poista %1$d viesti</string>
 			<key>other</key>
 			<string>Poista %1$d viestiä</string>
 		</dict>
@@ -792,7 +792,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 kuvaa</string>
+			<string>%1$d kuva</string>
 			<key>other</key>
 			<string>%1$d kuvaa</string>
 		</dict>
@@ -808,7 +808,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d kappale</string>
+			<string>%1$d kohde</string>
 			<key>other</key>
 			<string>%1$d kohdetta</string>
 		</dict>
@@ -824,7 +824,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Estit 1 jäsenen tässä ryhmässä</string>
+			<string>Estit %1$d jäsenen tässä ryhmässä</string>
 			<key>other</key>
 			<string>Estit %1$d jäsentä tässä ryhmässä</string>
 		</dict>
@@ -842,7 +842,7 @@
 			<key>one</key>
 			<string>%1$d valittu</string>
 			<key>other</key>
-			<string>%1$d valittuna</string>
+			<string>%1$d valittu</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -856,7 +856,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 suljettu pois</string>
+			<string>%1$d suljettu pois</string>
 			<key>other</key>
 			<string>%1$d suljettu pois</string>
 		</dict>
@@ -872,9 +872,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Viewer</string>
+			<string>%1$d katsoja</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d katsojaa</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -888,9 +888,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 katselija</string>
+			<string>%1$d katsoja</string>
 			<key>other</key>
-			<string>%1$d katselijaa</string>
+			<string>%1$d katsojaa</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -904,7 +904,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Kaikki Signal-kontaktit · 1 katsoja</string>
+			<string>Kaikki Signal-kontaktit · %1$d katsoja</string>
 			<key>other</key>
 			<string>Kaikki Signal-kontaktit · %1$d katsojaa</string>
 		</dict>
@@ -920,7 +920,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Kaikki Signal-kontaktit · 1 suljettu pois</string>
+			<string>Kaikki Signal-kontaktit · %1$d suljettu pois</string>
 			<key>other</key>
 			<string>Kaikki Signal-kontaktit · %1$d suljettu pois</string>
 		</dict>
@@ -936,7 +936,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Jaa vain seuraaville · 1 katsoja</string>
+			<string>Jaa vain seuraaville · %1$d katsoja</string>
 			<key>other</key>
 			<string>Jaa vain seuraaville · %1$d katsojaa</string>
 		</dict>
@@ -968,7 +968,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d katselijaa</string>
+			<string>%1$d katsoja</string>
 			<key>other</key>
 			<string>%1$d katsojaa</string>
 		</dict>
@@ -986,7 +986,7 @@
 			<key>one</key>
 			<string>Väärä PIN-koodi. %1$d yritys jäljellä.</string>
 			<key>other</key>
-			<string>Väärä PIN. %1$d yritystä jäljellä.</string>
+			<string>Väärä PIN-koodi. %1$d yritystä jäljellä.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -1000,7 +1000,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ kutsui 1 henkilön</string>
+			<string>%2$@ kutsui %1$d henkilön</string>
 			<key>other</key>
 			<string>%2$@ kutsui %1$d henkilöä</string>
 		</dict>
@@ -1016,7 +1016,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d odottava ryhmäänliittymispyyntö.</string>
+			<string>%1$d odottava liittymispyyntö.</string>
 			<key>other</key>
 			<string>%1$d odottavaa liittymispyyntöä.</string>
 		</dict>
@@ -1080,9 +1080,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Custom Story · %1$d Viewer</string>
+			<string>Mukautettu tarina · %1$d katsoja</string>
 			<key>other</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>Mukautettu tarina · %1$d katsojaa</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1096,9 +1096,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sinulla on 1 yritys jäljellä. Jos yritykset loppuvat, voit luoda uuden PIN-koodin. Voit rekisteröidä ja käyttää tiliäsi, mutta menetät osan tallennetuista asetuksista, kuten profiilitietosi.</string>
+			<string>Sinulla on %1$d yritys jäljellä. Jos yritykset loppuvat, voit luoda uuden PIN-koodin. Voit rekisteröityä ja käyttää tiliäsi, mutta menetät osan tallennetuista asetuksista, kuten profiilitietosi.</string>
 			<key>other</key>
-			<string>Sinulla on %1$d yritystä jäljellä. Jos yritykset loppuvat, voit luoda uuden PIN-koodin. Voit rekisteröidä ja käyttää tiliäsi, mutta menetät osan tallennetuista asetuksista, kuten profiilitietosi.</string>
+			<string>Sinulla on %1$d yritystä jäljellä. Jos yritykset loppuvat, voit luoda uuden PIN-koodin. Voit rekisteröityä ja käyttää tiliäsi, mutta menetät osan tallennetuista asetuksista, kuten profiilitietosi.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -1112,7 +1112,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sinulla on 1 yritys jäljellä. Jos yritykset loppuvat, tilisi lukitaan. 7 päivän toimettomuuden jälkeen voit rekisteröityä uudelleen ilman PIN-koodia. Tilin kaikki sisältö poistetaan.</string>
+			<string>Sinulla on %1$d yritys jäljellä. Jos yritykset loppuvat, tilisi lukitaan. 7 päivän toimettomuuden jälkeen voit rekisteröityä uudelleen ilman PIN-koodia. Tilin kaikki sisältö poistetaan.</string>
 			<key>other</key>
 			<string>Sinulla on %1$d yritystä jäljellä. Jos yritykset loppuvat, tilisi lukitaan. 7 päivän toimettomuuden jälkeen voit rekisteröityä uudelleen ilman PIN-koodia. Tilin kaikki sisältö poistetaan.</string>
 		</dict>
@@ -1128,7 +1128,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; vastaus</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vastaus</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vastausta</string>
 		</dict>
@@ -1144,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 katselija</string>
+			<string>%1$d katsoja</string>
 			<key>other</key>
-			<string>%1$d katselijaa</string>
+			<string>%1$d katsojaa</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1160,7 +1160,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 suljettu pois</string>
+			<string>%1$d suljettu pois</string>
 			<key>other</key>
 			<string>%1$d suljettu pois</string>
 		</dict>
@@ -1192,15 +1192,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d katselua</string>
+			<string>%1$d katselukerta</string>
 			<key>other</key>
-			<string>%1$d näyttökertaa</string>
+			<string>%1$d katselukertaa</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@views@  %2$#@replies@</string>
+		<string>%1$#@views@ %2$#@replies@</string>
 		<key>replies</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
@@ -1208,7 +1208,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; vastaus</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vastaus</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vastausta</string>
 		</dict>
@@ -1219,7 +1219,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; katselukerta</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; katselukerta</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%2$d&lt;/bold&gt; katselukertaa</string>
 		</dict>
@@ -1235,7 +1235,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; katselukerta</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; katselukerta</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; katselukertaa</string>
 		</dict>

@@ -980,11 +980,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Viewer</string>
+			<string>%1$d spectator</string>
 			<key>few</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d Spectatori</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d de Spectatori</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>

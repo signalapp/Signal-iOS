@@ -13,7 +13,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Wiadomość głosowa 1 sekunda</string>
+			<string>Wiadomość głosowa %1$d sekunda</string>
 			<key>few</key>
 			<string>Wiadomość głosowa %1$d sekundy</string>
 			<key>many</key>
@@ -113,13 +113,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ten własny kolor jest używany w %1$d rozmowie. Czy chcesz usunąć go ze wszystkich rozmów?</string>
+			<string>Ten niestandardowy kolor jest używany w %1$d rozmowie. Czy chcesz go usunąć?</string>
 			<key>few</key>
-			<string>Ten własny kolor jest używany w %1$d  rozmowach. Czy chcesz usunąć go ze wszystkich rozmów?</string>
+			<string>Ten niestandardowy kolor jest używany w %1$d rozmowach. Czy chcesz usunąć go ze wszystkich rozmów?</string>
 			<key>many</key>
-			<string>Ten własny kolor jest używany w %1$d  rozmowach. Czy chcesz usunąć go ze wszystkich rozmów?</string>
+			<string>Ten niestandardowy kolor jest używany w %1$d rozmowach. Czy chcesz usunąć go ze wszystkich rozmów?</string>
 			<key>other</key>
-			<string>Ten własny kolor jest używany w %1$d  rozmowach. Czy chcesz usunąć go ze wszystkich rozmów?</string>
+			<string>Ten niestandardowy kolor jest używany w %1$d rozmowach. Czy chcesz usunąć go ze wszystkich rozmów?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -193,13 +193,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Nie możesz wybrać więcej niż 1 rozmowę.</string>
+			<string>Nie możesz wybrać więcej niż %1$d rozmowę.</string>
 			<key>few</key>
-			<string>Nie możesz wybrać więcej niż %1$d rozmowy.</string>
+			<string>Nie możesz wybrać więcej niż %1$d rozmów.</string>
 			<key>many</key>
 			<string>Nie możesz wybrać więcej niż %1$d rozmów.</string>
 			<key>other</key>
-			<string>Nie możesz wybrać więcej niż %1$d rozmów.</string>
+			<string>Nie możesz wybrać więcej niż %1$d rozmowy.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -213,7 +213,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 %2$#@total@</string>
+			<string>%1$d %2$#@total@</string>
 			<key>few</key>
 			<string>%1$d %2$#@total@</string>
 			<key>many</key>
@@ -308,7 +308,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 minutę temu</string>
+			<string>%1$d minutę temu</string>
 			<key>few</key>
 			<string>%1$d min temu</string>
 			<key>many</key>
@@ -348,13 +348,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Osiągnięto maksymalny rozmiar grupy, %1$d członka.</string>
+			<string>Osiągnięto maksymalny rozmiar %1$d członka grupy.</string>
 			<key>few</key>
-			<string>Osiągnięto maksymalny rozmiar grupy, %1$d członków.</string>
+			<string>Osiągnięto maksymalny rozmiar %1$d członków grupy.</string>
 			<key>many</key>
-			<string>Osiągnięto maksymalny rozmiar grupy, %1$d członków.</string>
+			<string>Osiągnięto maksymalny rozmiar %1$d członków grupy.</string>
 			<key>other</key>
-			<string>Osiągnięto maksymalny rozmiar grupy, %1$d członków.</string>
+			<string>Osiągnięto maksymalny rozmiar grupy %1$d członków grupy.</string>
 		</dict>
 	</dict>
 	<key>EXPIRATION_WARNING_%d</key>
@@ -368,7 +368,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Twoja wersja Signal wygaśnie za 1 dzień. Stuknij, aby zaktualizować do najnowszej wersji.</string>
+			<string>Twoja wersja Signal wygaśnie za %1$d dzień. Stuknij, aby zaktualizować do najnowszej wersji.</string>
 			<key>few</key>
 			<string>Twoja wersja Signal wygaśnie za %1$d dni. Stuknij, aby zaktualizować do najnowszej wersji.</string>
 			<key>many</key>
@@ -388,7 +388,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Wysłano %1$d wiadomość</string>
+			<string>Wyślij wiadomość</string>
 			<key>few</key>
 			<string>Wyślij %1$d wiadomości</string>
 			<key>many</key>
@@ -408,13 +408,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ta grupa nie może zostać utworzona, gdyż 1 członek używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tym kontaktem po tym, jak zaktualizuje Signal, lub usunąć go przed utworzeniem grupy. %2$@</string>
+			<string>Ta grupa nie może zostać utworzona, gdyż %1$d członek używa starej wersji Signal. Możesz utworzyć nową wersję grupy z tym kontaktem po tym, jak zaktualizuje Signal, lub usunąć go przed utworzeniem grupy. %2$@</string>
 			<key>few</key>
-			<string>Ta grupa nie może zostać utworzona, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tymi kontaktami po tym, jak zaktualizują Signal, lub usunąć je przed utworzeniem grupy. %2$@</string>
+			<string>Ta grupa nie może zostać utworzona, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć nową wersję grupy z tymi kontaktami po tym, jak zaktualizują Signal, lub usunąć je przed utworzeniem grupy. %2$@</string>
 			<key>many</key>
-			<string>Ta grupa nie może zostać utworzona, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tymi kontaktami po tym, jak zaktualizują Signal, lub usunąć je przed utworzeniem grupy. %2$@</string>
+			<string>Ta grupa nie może zostać utworzona, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć nową wersję grupy z tymi kontaktami po tym, jak zaktualizują Signal, lub usunąć je przed utworzeniem grupy. %2$@</string>
 			<key>other</key>
-			<string>Ta grupa nie może zostać utworzona, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tymi kontaktami po tym, jak zaktualizują Signal, lub usunąć je przed utworzeniem grupy. %2$@</string>
+			<string>Ta grupa nie może zostać utworzona, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć nową wersję grupy z tymi kontaktami po tym, jak zaktualizują Signal, lub usunąć je przed utworzeniem grupy. %2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
@@ -428,13 +428,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ta grupa nie może zostać utworzona, gdyż 1 członek używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tym kontaktem po tym, jak zaktualizuje Signal, lub usunąć go przed utworzeniem grupy.</string>
+			<string>Ta grupa nie może zostać utworzona, gdyż %1$d członek używa starej wersji Signal. Możesz utworzyć nową wersję grupy z tym kontaktem po tym, jak zaktualizuje Signal, lub usunąć go przed utworzeniem grupy.</string>
 			<key>few</key>
-			<string>Ta grupa nie może zostać utworzona, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tymi kontaktami po tym, jak zaktualizują Signal, lub usunąć je przed utworzeniem grupy.</string>
+			<string>Ta grupa nie może zostać utworzona, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć nową wersję grupy z tymi kontaktami po tym, jak zaktualizują Signal, lub usunąć je przed utworzeniem grupy.</string>
 			<key>many</key>
-			<string>Ta grupa nie może zostać utworzona, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tymi kontaktami po tym, jak zaktualizują Signal, lub usunąć je przed utworzeniem grupy.</string>
+			<string>Ta grupa nie może zostać utworzona, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć nową wersję grupy z tymi kontaktami po tym, jak zaktualizują Signal, lub usunąć je przed utworzeniem grupy.</string>
 			<key>other</key>
-			<string>Ta grupa nie może zostać utworzona, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć Nową wersję grupy z tymi kontaktami po tym, jak zaktualizują Signal, lub usunąć je przed utworzeniem grupy.</string>
+			<string>Ta grupa nie może zostać utworzona, gdyż %1$d członków używa starej wersji Signal. Możesz utworzyć nową wersję grupy z tymi kontaktami po tym, jak zaktualizują Signal, lub usunąć je przed utworzeniem grupy.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -448,13 +448,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 członek nie mógł zostać ponownie dodany do Nowej grupy. Czy chcesz dodać go teraz?</string>
+			<string>%1$d członek nie mógł zostać ponownie dodany do nowej grupy. Czy chcesz dodać go teraz?</string>
 			<key>few</key>
-			<string>%1$d członków nie mogło zostać ponownie dodanych do Nowej grupy. Czy chcesz dodać ich teraz?</string>
+			<string>%1$d członków nie mogło zostać ponownie dodanych do nowej grupy. Czy chcesz dodać ich teraz?</string>
 			<key>many</key>
-			<string>%1$d członków nie mogło zostać ponownie dodanych do Nowej grupy. Czy chcesz dodać ich teraz?</string>
+			<string>%1$d członków nie mogło zostać ponownie dodanych do nowej grupy. Czy chcesz dodać ich teraz?</string>
 			<key>other</key>
-			<string>%1$d członków nie mogło zostać ponownie dodanych do Nowej grupy. Czy chcesz dodać ich teraz?</string>
+			<string>%1$d członków nie mogło zostać ponownie dodanych do nowej grupy. Czy chcesz dodać ich teraz?</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -468,7 +468,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Grupy Signal działają najlepiej, gdy liczba członków jest mniejsza bądź równa 1. Dodanie kolejnych członków grupy spowoduje opóźnienia w wysyłaniu i odbieraniu wiadomości.</string>
+			<string>Grupy Signal działają najlepiej, gdy liczba członków jest równa %1$d. Dodanie kolejnych członków grupy spowoduje opóźnienia w wysyłaniu i odbieraniu wiadomości.</string>
 			<key>few</key>
 			<string>Grupy Signal działają najlepiej, gdy liczba członków jest mniejsza bądź równa %1$d. Dodanie kolejnych członków grupy spowoduje opóźnienia w wysyłaniu i odbieraniu wiadomości.</string>
 			<key>many</key>
@@ -488,7 +488,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Osiągnięto maksymalną liczbę 1 uczestnika rozmowy. Spróbuj później.</string>
+			<string>Osiągnięto maksymalną liczbę %1$d uczestnika rozmowy. Spróbuj później.</string>
 			<key>few</key>
 			<string>Osiągnięto maksymalną liczbę %1$d uczestników rozmowy. Spróbuj później.</string>
 			<key>many</key>
@@ -528,7 +528,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Trwa łączenie z %2$@, %3$@ i 1 inną osobą…</string>
+			<string>Trwa łączenie z %2$@, %3$@ i %1$d inną osobą…</string>
 			<key>few</key>
 			<string>Trwa łączenie z %2$@, %3$@ i %1$d innymi osobami…</string>
 			<key>many</key>
@@ -548,11 +548,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ i %1$d inny uczestniczy w rozmowie</string>
+			<string>%2$@, %3$@ i %1$d inna osoba uczestniczy w rozmowie</string>
 			<key>few</key>
-			<string>%2$@, %3$@ i %1$d innych uczestniczy w tej rozmowie</string>
+			<string>%2$@, %3$@ i %1$d inne osoby uczestniczą w tej rozmowie</string>
 			<key>many</key>
-			<string>%2$@, %3$@ i %1$d innych uczestniczy w tej rozmowie</string>
+			<string>%2$@, %3$@ i %1$d innych osób uczestniczy w tej rozmowie</string>
 			<key>other</key>
 			<string>%2$@, %3$@ i %1$d innych uczestniczy w tej rozmowie</string>
 		</dict>
@@ -568,9 +568,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ i 1 inna osoba dołączyli do rozmowy</string>
+			<string>%2$@, %3$@, i %1$d inna osoba dołączyła do rozmowy</string>
 			<key>few</key>
-			<string>%2$@, %3$@ i %1$d inne osoby dołączyło do rozmowy</string>
+			<string>%2$@, %3$@ i %1$d inne osoby dołączyli do rozmowy</string>
 			<key>many</key>
 			<string>%2$@, %3$@ i %1$d innych osób dołączyło do rozmowy</string>
 			<key>other</key>
@@ -588,7 +588,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ i 1 inna osoba opuścili rozmowę</string>
+			<string>%2$@, %3$@ i %1$d inna osoba opuściła rozmowę</string>
 			<key>few</key>
 			<string>%2$@, %3$@ i %1$d inne osoby opuściły rozmowę</string>
 			<key>many</key>
@@ -608,7 +608,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ i %1$d innych otrzyma powiadomienie</string>
+			<string>%2$@, %3$@ i %1$d inna osoba otrzyma powiadomienie</string>
 			<key>few</key>
 			<string>%2$@, %3$@ i %1$d inne osoby otrzymają powiadomienie</string>
 			<key>many</key>
@@ -628,7 +628,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal zadzwoni do %2$@, %3$@ i %1$d innego</string>
+			<string>Signal zadzwoni do %2$@, %3$@ i %1$d innej osoby</string>
 			<key>few</key>
 			<string>Signal zadzwoni do %2$@, %3$@ i %1$d innych osób</string>
 			<key>many</key>
@@ -668,7 +668,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 członek grupy ma podobną nazwę.</string>
+			<string>%1$d członek grupy ma podobną nazwę.</string>
 			<key>few</key>
 			<string>%1$d członków grupy ma podobną nazwę.</string>
 			<key>many</key>
@@ -688,13 +688,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d członków grupy ma podobne imiona, Przejrzyj poniższych członków i podejmij działania.</string>
+			<string>%1$d członek grupy ma podobną nazwę. Zobacz poniżej, o kim mowa, i podejmij działanie.</string>
 			<key>few</key>
-			<string>1 członek grupy ma podobną nazwę, przejrzyj poniższych członków i podejmij działania.</string>
+			<string>%1$d członków grupy ma podobną nazwę. Przejrzyj poniższych członków i podejmij działanie.</string>
 			<key>many</key>
-			<string>%1$d członków grupy ma podobną nazwę, przejrzyj poniższych członków i podejmij działania.</string>
+			<string>%1$d członków grupy ma podobną nazwę. Przejrzyj poniższych członków i podejmij działanie.</string>
 			<key>other</key>
-			<string>%1$d członków grupy ma podobną nazwę, przejrzyj poniższych członków i podejmij działania.</string>
+			<string>%1$d członków grupy ma podobną nazwę. Przejrzyj poniższych członków i podejmij działanie.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -708,13 +708,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 członek grupy ma taką samą nazwę, przejrzyj poniższych członków i podejmij działania.</string>
+			<string>%1$d członek grupy ma taką samą nazwę. Zobacz poniżej, o kim mowa, i podejmij działanie.</string>
 			<key>few</key>
-			<string>%1$d członków grupy ma taką samą nazwę, przejrzyj poniższych członków i podejmij działania.</string>
+			<string>%1$d członków grupy ma taką samą nazwę. Przejrzyj poniższych członków i podejmij działanie.</string>
 			<key>many</key>
-			<string>%1$d członków grupy ma taką samą nazwę, przejrzyj poniższych członków i podejmij działania.</string>
+			<string>%1$d członków grupy ma taką samą nazwę. Przejrzyj poniższych członków i podejmij działanie.</string>
 			<key>other</key>
-			<string>%1$d członków grupy ma taką samą nazwę, przejrzyj poniższych członków i podejmij działania.</string>
+			<string>%1$d członków grupy ma taką samą nazwę. Przejrzyj poniższych członków i podejmij działanie.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -768,7 +768,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 osoba została zaproszona do grupy.</string>
+			<string>%1$d osoba została zaproszona do grupy.</string>
 			<key>few</key>
 			<string>%1$d osoby zostały zaproszone do grupy.</string>
 			<key>many</key>
@@ -788,7 +788,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ zaprosił(a) 1 osobę do grupy.</string>
+			<string>%2$@ zaprosił(a) %1$d osobę do grupy.</string>
 			<key>few</key>
 			<string>%2$@ zaprosił(a) %1$d osoby do grupy.</string>
 			<key>many</key>
@@ -808,7 +808,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Zaproszenia do grupy dla 1 osoby zostały anulowane.</string>
+			<string>Zaproszenie do grupy dla %1$d osoby zostało anulowane.</string>
 			<key>few</key>
 			<string>Zaproszenia do grupy dla %1$d osób zostały anulowane.</string>
 			<key>many</key>
@@ -828,7 +828,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ anulował(a) zaproszenia do grupy dla 1 osoby.</string>
+			<string>%2$@ anulował(a) zaproszenia do grupy dla %1$d osoby.</string>
 			<key>few</key>
 			<string>%2$@ anulował(a) zaproszenia do grupy dla %1$d osób.</string>
 			<key>many</key>
@@ -848,7 +848,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ poprosił(a) i anulował(a) prośbę o przyjęcie do grupy przez link.</string>
+			<string>%2$@ poprosił(a) i anulował(a) swoją prośbę o przyjęcie do grupy przez link.</string>
 			<key>few</key>
 			<string>%2$@ poprosił(a) i anulował(a) %1$d prośby o przyjęcie do grupy przez link.</string>
 			<key>many</key>
@@ -888,13 +888,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 członek nie mógł zostać dodany do Nowej grupy i został z niej usuniętych.</string>
+			<string>Jeden członek nie mógł zostać dodany do nowej grupy i został z niej usunięty.</string>
 			<key>few</key>
-			<string>%1$d członków nie mogło zostać dodanych do Nowej grupy i zostało z niej usuniętych.</string>
+			<string>%1$d członków nie mogło zostać dodanych do nowej grupy i zostało z niej usuniętych.</string>
 			<key>many</key>
-			<string>%1$d członków nie mogło zostać dodanych do Nowej grupy i zostało z niej usuniętych.</string>
+			<string>%1$d członków nie mogło zostać dodanych do nowej grupy i zostało z niej usuniętych.</string>
 			<key>other</key>
-			<string>%1$d członków nie mogło zostać dodanych do Nowej grupy i zostało z niej usuniętych.</string>
+			<string>%1$d członków nie mogło zostać dodanych do nowej grupy i zostało z niej usuniętych.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -908,13 +908,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 członek nie mógł zostać dodany do Nowej grupy i został do niej zaproszony.</string>
+			<string>Jeden członek nie mógł zostać dodany do nowej grupy i został do niej zaproszony.</string>
 			<key>few</key>
-			<string>%1$d członków nie mogło zostać dodanych do Nowej grupy i zostało do niej zaproszonych.</string>
+			<string>%1$d członków nie mogło zostać dodanych do nowej grupy i zostało do niej zaproszonych.</string>
 			<key>many</key>
-			<string>%1$d członków nie mogło zostać dodanych do Nowej grupy i zostało do niej zaproszonych.</string>
+			<string>%1$d członków nie mogło zostać dodanych do nowej grupy i zostało do niej zaproszonych.</string>
 			<key>other</key>
-			<string>%1$d członków nie mogło zostać dodanych do Nowej grupy i zostało do niej zaproszonych.</string>
+			<string>%1$d członków nie mogło zostać dodanych do nowej grupy i zostało do niej zaproszonych.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -968,7 +968,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Usuń 1 wiadomość</string>
+			<string>Usuń %1$d wiadomość</string>
 			<key>few</key>
 			<string>Usuń %1$d wiadomości</string>
 			<key>many</key>
@@ -988,7 +988,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 zdjęcie</string>
+			<string>%1$d zdjęcie</string>
 			<key>few</key>
 			<string>%1$d zdjęcia</string>
 			<key>many</key>
@@ -1028,13 +1028,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Zablokowałeś(aś) 1 członka tej grupy</string>
+			<string>Zablokowano %1$d członka tej grupy</string>
 			<key>few</key>
-			<string>Zablokowałeś(aś) %1$d członków tej grupy</string>
+			<string>Zablokowano %1$d członków tej grupy</string>
 			<key>many</key>
-			<string>Zablokowałeś(aś) %1$d członków tej grupy</string>
+			<string>Zablokowano %1$d członków tej grupy</string>
 			<key>other</key>
-			<string>Zablokowałeś(aś) %1$d członków tej grupy</string>
+			<string>Zablokowano %1$d członków tej grupy</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
@@ -1048,13 +1048,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d wybrany</string>
+			<string>%1$d wybrana</string>
 			<key>few</key>
 			<string>%1$d wybrane</string>
 			<key>many</key>
 			<string>%1$d wybranych</string>
 			<key>other</key>
-			<string>%1$d wybrane</string>
+			<string>%1$d wybranych</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -1068,7 +1068,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 wykluczona osoba</string>
+			<string>%1$d wykluczona osoba</string>
 			<key>few</key>
 			<string>%1$d wykluczone osoby</string>
 			<key>many</key>
@@ -1088,13 +1088,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d Viewer</string>
+			<string>%1$d odbiorca</string>
 			<key>few</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d odbiorców</string>
 			<key>many</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d odbiorców</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d odbiorców</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -1128,13 +1128,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Wszystkie kontakty Signal · 1 widz</string>
+			<string>Wszystkie kontakty Signal · %1$d odbiorca</string>
 			<key>few</key>
-			<string>Wszystkie kontakty Signal · %1$d widzów</string>
+			<string>Wszystkie kontakty Signal · %1$d odbiorców</string>
 			<key>many</key>
-			<string>Wszystkie kontakty Signal · %1$d widzów</string>
+			<string>Wszystkie kontakty Signal · %1$d odbiorców</string>
 			<key>other</key>
-			<string>Wszystkie kontakty Signal · %1$d widzów</string>
+			<string>Wszystkie kontakty Signal · %1$d odbiorcy</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -1148,7 +1148,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Wszystkie kontakty Signal · 1 wykluczona osoba</string>
+			<string>Wszystkie kontakty Signal · %1$d wykluczona osoba</string>
 			<key>few</key>
 			<string>Wszystkie kontakty Signal · %1$d wykluczone osoby</string>
 			<key>many</key>
@@ -1168,13 +1168,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Udostępniaj tylko · 1 widzowi</string>
+			<string>Udostępniaj tylko · %1$d odbiorcy</string>
 			<key>few</key>
-			<string>Udostępniaj tylko · %1$d widzom</string>
+			<string>Udostępniaj tylko · %1$d odbiorcom</string>
 			<key>many</key>
-			<string>Udostępniaj tylko · %1$d widzom</string>
+			<string>Udostępniaj tylko · %1$d odbiorcom</string>
 			<key>other</key>
-			<string>Udostępniaj tylko · %1$d widzom</string>
+			<string>Udostępniaj tylko · %1$d odbiorcom</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1208,13 +1208,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d widz</string>
+			<string>%1$d odbiorca</string>
 			<key>few</key>
-			<string>%1$d widzów</string>
+			<string>%1$d odbiorców</string>
 			<key>many</key>
-			<string>%1$d widzów</string>
+			<string>%1$d odbiorców</string>
 			<key>other</key>
-			<string>%1$d widzów</string>
+			<string>%1$d odbiorców</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -1234,7 +1234,7 @@
 			<key>many</key>
 			<string>Nieprawidłowy kod PIN. Pozostało %1$d prób.</string>
 			<key>other</key>
-			<string>Nieprawidłowy kod PIN. Pozostały %1$d próby.</string>
+			<string>Nieprawidłowy kod PIN. Pozostało %1$d próby.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -1248,7 +1248,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ zaprosił(a) 1 osobę</string>
+			<string>%2$@ zaprosił(a) %1$d osobę</string>
 			<key>few</key>
 			<string>%2$@ zaprosił(a) %1$d osoby</string>
 			<key>many</key>
@@ -1274,7 +1274,7 @@
 			<key>many</key>
 			<string>%1$d oczekujących próśb o przyjęcie.</string>
 			<key>other</key>
-			<string>%1$d oczekujące prośby o przyjęcie.</string>
+			<string>%1$d oczekujących próśb o przyjęcie.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -1348,13 +1348,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Custom Story · %1$d Viewer</string>
+			<string>Relacja niestandardowa · %1$d odbiorca</string>
 			<key>few</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>Relacja niestandardowa · %1$d odbiorców</string>
 			<key>many</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>Relacja niestandardowa · %1$d odbiorców</string>
 			<key>other</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>Relacja niestandardowa · %1$d odbiorców</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1368,7 +1368,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Pozostała Ci 1 próba. Po wyczerpaniu dostępnych prób możesz utworzyć nowy PIN. Możesz zarejestrować się i używać swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje o Twoim profilu.</string>
+			<string>Pozostała Ci %1$d próba. Po wyczerpaniu dostępnych prób możesz utworzyć nowy PIN. Możesz zarejestrować się i używać swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje o Twoim profilu.</string>
 			<key>few</key>
 			<string>Pozostały Ci %1$d próby. Po wyczerpaniu dostępnych prób możesz utworzyć nowy PIN. Możesz zarejestrować się i używać swojego konta, ale stracisz niektóre zapisane ustawienia, takie jak informacje o Twoim profilu.</string>
 			<key>many</key>
@@ -1388,13 +1388,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Pozostała Ci %1$d próba. Jeśli się skończą, twoje konto zostanie zablokowane. Po 7 dniach nieaktywności możesz zarejestrować się ponownie, bez użycia kodu PIN. Twoje konto zostanie skasowane, a cała jego zawartość usunięta.</string>
+			<string>Pozostała Ci %1$d próba. Po wyczerpaniu dostępnych prób twoje konto zostanie zablokowane. Po 7 dniach braku aktywności możesz zarejestrować się ponownie, bez użycia kodu PIN. Twoje konto zostanie skasowane, a cała jego zawartość usunięta.</string>
 			<key>few</key>
-			<string>Pozostały Ci %1$d próby. Jeśli się skończą, twoje konto zostanie zablokowane. Po 7 dniach nieaktywności możesz zarejestrować się ponownie, bez użycia kodu PIN. Twoje konto zostanie skasowane, a cała jego zawartość usunięta.</string>
+			<string>Pozostały Ci %1$d próby. Po wyczerpaniu dostępnych prób twoje konto zostanie zablokowane. Po 7 dniach braku aktywności możesz zarejestrować się ponownie, bez użycia kodu PIN. Twoje konto zostanie skasowane, a cała jego zawartość usunięta.</string>
 			<key>many</key>
-			<string>Pozostało Ci %1$d prób. Jeśli się skończą, twoje konto zostanie zablokowane. Po 7 dniach nieaktywności możesz zarejestrować się ponownie, bez użycia kodu PIN. Twoje konto zostanie skasowane, a cała jego zawartość usunięta.</string>
+			<string>Pozostało Ci %1$d prób. Po wyczerpaniu dostępnych prób twoje konto zostanie zablokowane. Po 7 dniach braku aktywności możesz zarejestrować się ponownie, bez użycia kodu PIN. Twoje konto zostanie skasowane, a cała jego zawartość usunięta.</string>
 			<key>other</key>
-			<string>Pozostały Ci %1$d próby. Jeśli się skończą, twoje konto zostanie zablokowane. Po 7 dniach nieaktywności możesz zarejestrować się ponownie, bez użycia kodu PIN. Twoje konto zostanie skasowane, a cała jego zawartość usunięta.</string>
+			<string>Pozostały Ci %1$d próby. Po wyczerpaniu dostępnych prób twoje konto zostanie zablokowane. Po 7 dniach nieaktywności możesz zarejestrować się ponownie, bez użycia kodu PIN. Twoje konto zostanie skasowane, a cała jego zawartość usunięta.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
@@ -1408,7 +1408,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; odpowiedź</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; odpowiedź</string>
 			<key>few</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; odpowiedzi</string>
 			<key>many</key>
@@ -1428,13 +1428,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d widz</string>
+			<string>%1$d odbiorca</string>
 			<key>few</key>
-			<string>%1$d widzów</string>
+			<string>%1$d odbiorców</string>
 			<key>many</key>
-			<string>%1$d widzów</string>
+			<string>%1$d odbiorców</string>
 			<key>other</key>
-			<string>%1$d widzów</string>
+			<string>%1$d odbiorców</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1448,13 +1448,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 wykluczony</string>
+			<string>%1$d wykluczona osoba</string>
 			<key>few</key>
-			<string>%1$d wykluczone</string>
+			<string>%1$d wykluczone osoby</string>
 			<key>many</key>
-			<string>%1$d wykluczonych</string>
+			<string>%1$d wykluczonych osób</string>
 			<key>other</key>
-			<string>%1$d wykluczonych</string>
+			<string>%1$d wykluczonych osób</string>
 		</dict>
 	</dict>
 	<key>STORY_SENDING_%d</key>
@@ -1488,7 +1488,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d odsłona</string>
+			<string>%1$d wyświetlenie</string>
 			<key>few</key>
 			<string>%1$d wyświetlenia</string>
 			<key>many</key>
@@ -1523,13 +1523,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Obejrzano &lt;bold&gt;%2$d&lt;/bold&gt; raz</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; wyświetlenie</string>
 			<key>few</key>
-			<string>Obejrzano &lt;bold&gt;%2$d&lt;/bold&gt; razy</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; wyświetlenia</string>
 			<key>many</key>
-			<string>Obejrzano &lt;bold&gt;%2$d&lt;/bold&gt; razy</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; wyświetleń</string>
 			<key>other</key>
-			<string>Obejrzano &lt;bold&gt;%2$d&lt;/bold&gt; raz</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; wyświetleń</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
@@ -1543,13 +1543,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Obejrzano &lt;bold&gt;raz&lt;/bold&gt;</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; wyświetlenie</string>
 			<key>few</key>
-			<string>Obejrzano &lt;bold&gt;%1$d&lt;/bold&gt; razy</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; wyświetlenia</string>
 			<key>many</key>
-			<string>Obejrzano &lt;bold&gt;%1$d&lt;/bold&gt; razy</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; wyświetleń</string>
 			<key>other</key>
-			<string>Obejrzano &lt;bold&gt;%1$d&lt;/bold&gt; razy</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; wyświetleń</string>
 		</dict>
 	</dict>
 </dict>

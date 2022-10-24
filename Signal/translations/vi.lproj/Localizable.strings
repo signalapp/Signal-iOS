@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Về Yêu cầu Nhắn tin";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "Tất cả Liên hệ";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Trả lời";
@@ -362,7 +362,7 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Trở thành người quyên góp";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Quyên góp cho Signal";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Ủng hộ cho Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "Huy hiệu Nhà Ủng hộ của bạn đã hết hạn và không còn hiển thị được trên hồ sơ.";
@@ -515,7 +515,7 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Hiển thị trên thông tin cá nhân";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Chọn huy hiệu mặc định";
+"BADGE_THANKS_MAKE_FEATURED" = "Chọn Huy hiệu Nổi bật";
 
 /* Title for subscription on the thank you sheet. */
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "Cảm ơn bạn đã đống góp!";
@@ -608,7 +608,7 @@
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Huy hiệu Boost của bạn sẽ hết hạn vào %1$@.";
 
 /* Default text for the custom amount field of the boost view. */
-"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Nhập vào Số tiền Tuỳ chọn";
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Nhập Số tiền Tùy chọn";
 
 /* Text explaining there are other ways to donate on the boost view. */
 "BOOST_VIEW_OTHER_WAYS" = "Thêm lựa chọn thanh toán";
@@ -623,7 +623,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Chọn số tiền để đóng góp";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Quyên góp cho Signal";
+"BOOST_VIEW_TITLE" = "Ủng hộ cho Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Thêm";
@@ -1445,7 +1445,7 @@
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Di chuyển và Thay đổi tỉ lệ";
 
 /* Title for the 'currency picker' view in the app settings. */
-"CURRENCY_PICKER_VIEW_TITLE" = "Đặt Tiền tệ";
+"CURRENCY_PICKER_VIEW_TITLE" = "Chọn Tiền tệ";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Theo nhiệt độ";
@@ -1784,7 +1784,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Ủng hộ";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal được thúc đẩy nhờ vào những cá nhân như bạn. Quyên góp hằng tháng và nhận một huy hiệu.";
+"DONATE_MEGAPHONE_BODY" = "Signal được thúc đẩy bởi những cá nhân như bạn. Ủng hộ hàng tháng và nhận một huy hiệu.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Để sau";
@@ -1913,7 +1913,7 @@
 "DONATION_VIEW_TITLE" = "Ủng hộ Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Đặt kỳ hạn";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Chọn tiền tệ";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Bạn có thể cho phép quyền truy cập trong Cài đặt iOS.";
@@ -2135,7 +2135,7 @@
 "FEATURED_BADGE_SECTION_HEADER" = "Chọn một huy hiệu";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Huy hiệu mặc định";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Huy hiệu nổi bật";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Đánh dấu là Đã xác minh";
@@ -3803,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "Story của tôi";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "Nhấn để thêm";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Gần đây vừa đổi tên hồ sơ cá nhâ của họ từ %1$@ sang %2$@.";
@@ -3893,7 +3893,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Thiếu Tên Của Story";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Chỉ bạn có thể thấy tên của story này.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Tên Của Story (Bắt buộc)";
@@ -3905,13 +3905,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Người xem";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Mới";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Chỉ hiện thị với một số người nhất định";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Story Tùy chỉnh Mới";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Chia sẻ với một nhóm sẵn có";
@@ -4742,7 +4742,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Thêm Người Xem";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Xóa Story Tùy chỉnh";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Bạn có chắc muốn xóa \"%1$@\"? Các cập nhật cho story này cũng sẽ được xóa.";
@@ -6287,10 +6287,10 @@
 "STORIES_SAVE_STORY_ACTION" = "Lưu";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "Các story tự động biến mất sau 24 giờ. Chọn người có thể xem story của bạn hoặc tạo các story mới cho các nhóm và người xem nhất định.";
 
 /* Header for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
+"STORIES_SETTINGS_STORIES_HEADER" = "Các Story";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Bạn sẽ không thể tiếp tục chia sẻ hoặc xem story. Các cập nhật story gần đây của bạn cũng sẽ được xóa.";
@@ -6311,10 +6311,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Bật Story";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "Thông báo Đã xem";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Cho bạn biết khi story được xem. Khi tắt, bạn sẽ không biết khi người khác xem story của bạn.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Chia sẻ";
@@ -6332,7 +6332,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Đã Bỏ Ẩn Story";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Bật thông báo đã xem để biết ai đã xem story của bạn.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Lượt xem";
@@ -6365,7 +6365,7 @@
 "STORY_PRIVACY_SETTINGS" = "Riêng tư";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "Sự Riêng tư của Story";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Đã bày tỏ cảm xúc %1$@ với story của bạn";
@@ -6437,7 +6437,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Liên hệ Signal</bold> là những người bạn chọn để tin tưởng, bằng việc:";
 
 /* Label for the stories section of the settings view */
-"STORY_SETTINGS_TITLE" = "Stories";
+"STORY_SETTINGS_TITLE" = "Các Story";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Chọn Liên hệ Signal có thể xem story của bạn. Thay đổi không có hiệu lực với các story bạn đã gửi.";
@@ -6533,10 +6533,10 @@
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal tích cực phát triển công nghệ mã nguồn mở phục vụ quyền riêng tư giúp bảo vệ sự tự do biểu đạt và tạo nền tảng bảo mật cho môi trường giao tiếp toàn cầu.\n\nKhoản ủng hộ của bạn giúp chúng tôi theo đuổi mục tiêu này và giúp chi trả cho chi phí phát triển và vận hành của một ứng dụng được tin dùng bởi hàng triệu người với mục đích giao tiếp riêng tư, bảo mật. Không quảng cáo. Không trình theo dõi. Không bông đùa.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Hãy ủng hộ cho công nghệ được tạo ra dành cho bạn, không hướng đến việc lấy dữ liệu của bạn, bằng cách tham gia cộng đồng giúp duy trì Signal.";
+"SUSTAINER_READ_MORE_TITLE" = "Hãy ủng hộ cho công nghệ được tạo ra dành cho bạn—không hướng đến việc lấy dữ liệu của bạn—bằng cách tham gia cộng đồng giúp duy trì Signal.";
 
 /* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Vì sao Đóng góp?";
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Lý do để Ủng hộ?";
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Vẫn đang xữ lý";
@@ -6545,16 +6545,16 @@
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Nhận một huy hiệu %1$@";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Hũy bỏ Quyên góp";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Hủy Gói Ủng hộ";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Xác nhận";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Bạn sẽ không thể thay đổi quyết định này. Huy hiệu của bạn sẽ được gỡ bỏ khỏi hồ sơ cá nhân khi hết thời hạn.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Bạn sẽ không cần chi trả thêm khoản nào. Huy hiệu của bạn sẽ được gỡ bỏ khỏi hồ sơ cá nhân khi hết thời hạn.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Xác nhận hủy bỏ?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Xác nhận hủy?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Không thể thêm huy hiệu. %1$@";
@@ -6605,7 +6605,7 @@
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Để sau";
 
 /* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Signal được hỗ trợ bởi những cá nhân như bạn.";
+"SUSTAINER_VIEW_TITLE" = "Signal được thúc đẩy bởi những cá nhân như bạn.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Bạn sẽ bị mất tất cả số tiền (%1$@) trong lần quyên góp hôm nay. Việc quyên góp của bạn sẽ được gia hạn vào mỗi tháng.";
