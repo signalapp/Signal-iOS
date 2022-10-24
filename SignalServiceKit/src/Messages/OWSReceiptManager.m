@@ -215,7 +215,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             [self enqueueLinkedDeviceViewedReceiptForStoryMessage:storyMessage transaction:transaction];
             [transaction addAsyncCompletionOffMain:^{ [self scheduleProcessing]; }];
 
-            if ([self areReadReceiptsEnabled]) {
+            if (StoryManager.areViewReceiptsEnabled) {
                 OWSLogVerbose(@"Enqueuing viewed receipt for sender.");
                 [self enqueueSenderViewedReceiptForStoryMessage:storyMessage transaction:transaction];
             }
