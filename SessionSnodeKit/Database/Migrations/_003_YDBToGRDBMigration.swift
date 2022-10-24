@@ -159,7 +159,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     port: legacySnode.port,
                     ed25519PublicKey: legacySnode.publicKeySet.ed25519Key,
                     x25519PublicKey: legacySnode.publicKeySet.x25519Key
-                ).insert(db)
+                ).migrationSafeInsert(db)
             }
             Storage.update(progress: 0.96, for: self, in: target)
             
@@ -173,7 +173,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         nodeIndex: nodeIndex,
                         address: legacySnode.address,
                         port: legacySnode.port
-                    ).insert(db)
+                    ).migrationSafeInsert(db)
                 }
             }
             Storage.update(progress: 0.98, for: self, in: target)
@@ -188,7 +188,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         key: key,
                         hash: hash,
                         expirationDateMs: SnodeReceivedMessage.defaultExpirationSeconds
-                    ).inserted(db)
+                    ).migrationSafeInserted(db)
                 }
             }
             Storage.update(progress: 0.99, for: self, in: target)
@@ -205,7 +205,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         expirationDateMs :
                         SnodeReceivedMessage.defaultExpirationSeconds
                     )
-                ).inserted(db)
+                ).migrationSafeInserted(db)
             }
         }
         

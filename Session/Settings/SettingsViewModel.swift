@@ -407,12 +407,14 @@ class SettingsViewModel: SessionTableViewModel<SettingsViewModel.NavButton, Sett
     
     private func showPhotoLibraryForAvatar() {
         Permissions.requestLibraryPermissionIfNeeded { [weak self] in
-            let picker: UIImagePickerController = UIImagePickerController()
-            picker.sourceType = .photoLibrary
-            picker.mediaTypes = [ "public.image" ]
-            picker.delegate = self?.imagePickerHandler
-            
-            self?.transitionToScreen(picker, transitionType: .present)
+            DispatchQueue.main.async {
+                let picker: UIImagePickerController = UIImagePickerController()
+                picker.sourceType = .photoLibrary
+                picker.mediaTypes = [ "public.image" ]
+                picker.delegate = self?.imagePickerHandler
+                
+                self?.transitionToScreen(picker, transitionType: .present)
+            }
         }
     }
     
@@ -446,7 +448,7 @@ class SettingsViewModel: SessionTableViewModel<SettingsViewModel.NavButton, Sett
                     try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
 
                     // Wait for the database transaction to complete before updating the UI
-                    db.afterNextTransactionCommit { _ in
+                    db.afterNextTransaction { _ in
                         DispatchQueue.main.async {
                             modalActivityIndicator.dismiss(completion: {})
                         }

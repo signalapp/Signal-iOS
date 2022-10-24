@@ -62,32 +62,14 @@ public class BlockedContactsViewModel {
                 orderSQL: DataModel.orderSQL
             ),
             onChangeUnsorted: { [weak self] updatedData, updatedPageInfo in
-                guard
-                    let currentData: [SectionModel] = self?.contactData,
-                    let updatedContactData: [SectionModel] = self?.process(data: updatedData, for: updatedPageInfo)
-                else { return }
-                
-                let changeset: StagedChangeset<[SectionModel]> = StagedChangeset(
-                    source: currentData,
-                    target: updatedContactData
-                )
-                
-                // No need to do anything if there were no changes
-                guard !changeset.isEmpty else { return }
-                
-                // Run any changes on the main thread (as they will generally trigger UI updates)
-                DispatchQueue.main.async {
-                    // If we have the callback then trigger it, otherwise just store the changes to be sent
-                    // to the callback if we ever start observing again (when we have the callback it needs
-                    // to do the data updating as it's tied to UI updates and can cause crashes if not updated
-                    // in the correct order)
-                    guard let onContactChange: (([SectionModel], StagedChangeset<[SectionModel]>) -> ()) = self?.onContactChange else {
-                        self?.unobservedContactDataChanges = (updatedContactData, changeset)
-                        return
+                PagedData.processAndTriggerUpdates(
+                    updatedData: self?.process(data: updatedData, for: updatedPageInfo),
+                    currentDataRetriever: { self?.contactData },
+                    onDataChange: self?.onContactChange,
+                    onUnobservedDataChange: { updatedData, changeset in
+                        self?.unobservedContactDataChanges = (updatedData, changeset)
                     }
-                    
-                    onContactChange(updatedContactData, changeset)
-                }
+                )
             }
         )
         

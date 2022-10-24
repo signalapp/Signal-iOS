@@ -18,7 +18,7 @@ enum _002_SetupStandardJobs: Migration {
             _ = try Job(
                 variant: .syncPushTokens,
                 behaviour: .recurringOnLaunch
-            ).inserted(db)
+            ).migrationSafeInserted(db)
             
             // Note: We actually need this job to run both onLaunch and onActive as the logic differs
             // slightly and there are cases where a user might not be registered in 'onLaunch' but is
@@ -27,7 +27,7 @@ enum _002_SetupStandardJobs: Migration {
                 variant: .syncPushTokens,
                 behaviour: .recurringOnActive,
                 shouldSkipLaunchBecomeActive: true
-            ).inserted(db)
+            ).migrationSafeInserted(db)
         }
         
         Storage.update(progress: 1, for: self, in: target) // In case this is the last migration

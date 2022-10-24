@@ -100,7 +100,7 @@ class PrivacySettingsViewModel: SessionTableViewModel<PrivacySettingsViewModel.N
                             subtitle: "PRIVACY_SCREEN_SECURITY_LOCK_SESSION_DESCRIPTION".localized(),
                             rightAccessory: .toggle(.settingBool(key: .isScreenLockEnabled)),
                             onTap: {
-                                Storage.shared.writeAsync { db in
+                                Storage.shared.write { db in
                                     db[.isScreenLockEnabled] = !db[.isScreenLockEnabled]
                                 }
                             }
@@ -116,7 +116,7 @@ class PrivacySettingsViewModel: SessionTableViewModel<PrivacySettingsViewModel.N
                             subtitle: "PRIVACY_READ_RECEIPTS_DESCRIPTION".localized(),
                             rightAccessory: .toggle(.settingBool(key: .areReadReceiptsEnabled)),
                             onTap: {
-                                Storage.shared.writeAsync { db in
+                                Storage.shared.write { db in
                                     db[.areReadReceiptsEnabled] = !db[.areReadReceiptsEnabled]
                                 }
                             }
@@ -158,7 +158,7 @@ class PrivacySettingsViewModel: SessionTableViewModel<PrivacySettingsViewModel.N
                             },
                             rightAccessory: .toggle(.settingBool(key: .typingIndicatorsEnabled)),
                             onTap: {
-                                Storage.shared.writeAsync { db in
+                                Storage.shared.write { db in
                                     db[.typingIndicatorsEnabled] = !db[.typingIndicatorsEnabled]
                                 }
                             }
@@ -174,7 +174,7 @@ class PrivacySettingsViewModel: SessionTableViewModel<PrivacySettingsViewModel.N
                             subtitle: "PRIVACY_LINK_PREVIEWS_DESCRIPTION".localized(),
                             rightAccessory: .toggle(.settingBool(key: .areLinkPreviewsEnabled)),
                             onTap: {
-                                Storage.shared.writeAsync { db in
+                                Storage.shared.write { db in
                                     db[.areLinkPreviewsEnabled] = !db[.areLinkPreviewsEnabled]
                                 }
                             }
@@ -198,7 +198,7 @@ class PrivacySettingsViewModel: SessionTableViewModel<PrivacySettingsViewModel.N
                                 onConfirm: { _ in Permissions.requestMicrophonePermissionIfNeeded() }
                             ),
                             onTap: {
-                                Storage.shared.writeAsync { db in
+                                Storage.shared.write { db in
                                     db[.areCallsEnabled] = !db[.areCallsEnabled]
                                 }
                             }

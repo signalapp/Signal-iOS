@@ -22,34 +22,34 @@ enum _002_SetupStandardJobs: Migration {
                 variant: .disappearingMessages,
                 behaviour: .recurringOnLaunch,
                 shouldBlock: true
-            ).inserted(db)
+            ).migrationSafeInserted(db)
             
             _ = try Job(
                 variant: .failedMessageSends,
                 behaviour: .recurringOnLaunch,
                 shouldBlock: true
-            ).inserted(db)
+            ).migrationSafeInserted(db)
             
             _ = try Job(
                 variant: .failedAttachmentDownloads,
                 behaviour: .recurringOnLaunch,
                 shouldBlock: true
-            ).inserted(db)
+            ).migrationSafeInserted(db)
             
             _ = try Job(
                 variant: .updateProfilePicture,
                 behaviour: .recurringOnActive
-            ).inserted(db)
+            ).migrationSafeInserted(db)
             
             _ = try Job(
                 variant: .retrieveDefaultOpenGroupRooms,
                 behaviour: .recurringOnActive
-            ).inserted(db)
+            ).migrationSafeInserted(db)
             
             _ = try Job(
                 variant: .garbageCollection,
                 behaviour: .recurringOnActive
-            ).inserted(db)
+            ).migrationSafeInserted(db)
         }
         
         Storage.update(progress: 1, for: self, in: target) // In case this is the last migration
