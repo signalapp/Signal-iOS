@@ -16,13 +16,15 @@ private struct Viewer {
 
 class StoryViewsViewController: OWSViewController {
     private(set) var storyMessage: StoryMessage
+    let context: StoryContext
 
     let tableView = UITableView(frame: .zero, style: .grouped)
 
     private let emptyStateView = UIView()
 
-    init(storyMessage: StoryMessage) {
+    init(storyMessage: StoryMessage, context: StoryContext) {
         self.storyMessage = storyMessage
+        self.context = context
         super.init()
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
@@ -75,20 +77,23 @@ class StoryViewsViewController: OWSViewController {
                 return
             }
 
-            self.viewers = recipientStates.compactMap {
-               guard let viewedTimestamp = $0.value.viewedTimestamp else { return nil }
-                return Viewer(
-                    address: .init(uuid: $0.key),
-                    displayName: contactsManager.displayName(for: .init(uuid: $0.key), transaction: transaction),
-                    comparableName: contactsManager.comparableName(for: .init(uuid: $0.key), transaction: transaction),
-                    viewedTimestamp: viewedTimestamp
-                )
-            }.sorted { lhs, rhs in
-                if lhs.viewedTimestamp == rhs.viewedTimestamp {
-                    return lhs.comparableName.caseInsensitiveCompare(rhs.comparableName) == .orderedAscending
+            self.viewers = recipientStates
+                .lazy
+                .filter { $1.isValidForContext(self.context) }
+                .compactMap {
+                    guard let viewedTimestamp = $0.value.viewedTimestamp else { return nil }
+                    return Viewer(
+                        address: .init(uuid: $0.key),
+                        displayName: Self.contactsManager.displayName(for: .init(uuid: $0.key), transaction: transaction),
+                        comparableName: Self.contactsManager.comparableName(for: .init(uuid: $0.key), transaction: transaction),
+                        viewedTimestamp: viewedTimestamp
+                    )
+                }.sorted { lhs, rhs in
+                    if lhs.viewedTimestamp == rhs.viewedTimestamp {
+                        return lhs.comparableName.caseInsensitiveCompare(rhs.comparableName) == .orderedAscending
+                    }
+                    return lhs.viewedTimestamp > rhs.viewedTimestamp
                 }
-                return lhs.viewedTimestamp > rhs.viewedTimestamp
-            }
         }
     }
 

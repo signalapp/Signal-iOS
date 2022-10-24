@@ -14,8 +14,8 @@ class StoryPrivateViewsSheet: InteractiveSheetViewController {
 
     let viewsViewController: StoryViewsViewController
 
-    init(storyMessage: StoryMessage) {
-        viewsViewController = StoryViewsViewController(storyMessage: storyMessage)
+    init(storyMessage: StoryMessage, context: StoryContext) {
+        viewsViewController = StoryViewsViewController(storyMessage: storyMessage, context: context)
         super.init()
     }
 

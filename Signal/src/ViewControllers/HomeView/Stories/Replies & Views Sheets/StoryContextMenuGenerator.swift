@@ -400,7 +400,7 @@ extension StoryContextMenuGenerator {
     ) {
         if presentingController is StoryContextViewController {
             isDisplayingFollowup = true
-            let vc = StoryInfoSheet(storyMessage: message)
+            let vc = StoryInfoSheet(storyMessage: message, context: thread.storyContext)
             vc.dismissHandler = { [weak self] in
                 self?.isDisplayingFollowup = false
             }
