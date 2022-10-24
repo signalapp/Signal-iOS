@@ -129,6 +129,23 @@ public class BulkProfileFetch: NSObject {
         }
     }
 
+    private func dequeueUuidToUpdate() -> UUID? {
+        while true {
+            // Dequeue.
+            guard let uuid = uuidQueue.first else {
+                return nil
+            }
+            uuidQueue.remove(uuid)
+
+            // De-bounce.
+            guard shouldUpdateUuid(uuid) else {
+                continue
+            }
+
+            return uuid
+        }
+    }
+
     private func process() {
         assertOnQueue(serialQueue)
 
@@ -145,14 +162,7 @@ public class BulkProfileFetch: NSObject {
             return
         }
 
-        // Dequeue.
-        guard let uuid = self.uuidQueue.first else {
-            return
-        }
-        self.uuidQueue.remove(uuid)
-
-        // De-bounce.
-        guard self.shouldUpdateUuid(uuid) else {
+        guard let uuid = dequeueUuidToUpdate() else {
             return
         }
 
