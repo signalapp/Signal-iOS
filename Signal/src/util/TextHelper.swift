@@ -85,8 +85,8 @@ public class TextViewHelper: NSObject {
     }
 }
 
-private enum TextHelper {
-    static func shouldChangeCharactersInRange(
+public enum TextHelper {
+    public static func shouldChangeCharactersInRange(
         with existingString: String?,
         editingRange: NSRange,
         replacementString: String,

@@ -294,7 +294,7 @@ open class TextAttachmentView: UIView {
         setNeedsLayout()
     }
 
-    private func transformedText(_ text: String, for textStyle: TextAttachment.TextStyle) -> String {
+    public func transformedText(_ text: String, for textStyle: TextAttachment.TextStyle) -> String {
         guard case .condensed = textStyle else { return text }
         return text.uppercased()
     }
