@@ -128,7 +128,7 @@ class MyStoryCell: UITableViewCell {
                     secondLatestThumbnailView.autoPinEdge(toSuperviewEdge: .leading)
 
                     let dividerView = UIView()
-                    dividerView.backgroundColor = backgroundColor
+                    dividerView.backgroundColor = Theme.backgroundColor
                     dividerView.layer.cornerRadius = 12
                     attachmentThumbnail.insertSubview(dividerView, belowSubview: latestThumbnailView)
                     dividerView.autoSetDimensions(to: CGSize(width: 60, height: 88))
@@ -192,8 +192,8 @@ class MyStoryCell: UITableViewCell {
             let backgroundView = self.selectedBackgroundView
         else {
             attachmentThumbnailDividerView?.alpha = 1
-            attachmentThumbnailDividerView?.backgroundColor = backgroundColor
-            plusIcon.borderColor = backgroundColor
+            attachmentThumbnailDividerView?.backgroundColor = Theme.backgroundColor
+            plusIcon.borderColor = Theme.backgroundColor
             return
         }
         attachmentThumbnailDividerView?.alpha = backgroundView.alpha
