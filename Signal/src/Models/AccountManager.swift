@@ -144,6 +144,7 @@ public class AccountManager: NSObject {
                     // For new users, read receipts are on by default.
                     self.receiptManager.setAreReadReceiptsEnabled(true,
                                                                   transaction: transaction)
+                    StoryManager.setAreViewReceiptsEnabled(true, transaction: transaction)
 
                     // New users also have the onboarding banner cards enabled
                     GetStartedBannerViewController.enableAllCards(writeTx: transaction)
