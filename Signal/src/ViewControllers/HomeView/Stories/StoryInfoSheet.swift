@@ -8,13 +8,15 @@ import SignalMessaging
 import SignalUI
 
 class StoryInfoSheet: OWSTableSheetViewController {
-    var storyMessage: StoryMessage
+    private(set) var storyMessage: StoryMessage
+    let context: StoryContext
     var dismissHandler: (() -> Void)?
 
     override var sheetBackgroundColor: UIColor { .ows_gray90 }
 
-    init(storyMessage: StoryMessage) {
+    init(storyMessage: StoryMessage, context: StoryContext) {
         self.storyMessage = storyMessage
+        self.context = context
         super.init()
 
         databaseStorage.appendDatabaseChangeDelegate(self)
@@ -136,6 +138,8 @@ class StoryInfoSheet: OWSTableSheetViewController {
     }
 
     private func buildStatusSections(for recipientStates: [UUID: StoryRecipientState]) -> [OWSTableSection] {
+        let recipientStates = recipientStates.filter { $1.isValidForContext(context) }
+
         var sections = [OWSTableSection]()
 
         let orderedSendingStates: [OWSOutgoingMessageRecipientState] = [

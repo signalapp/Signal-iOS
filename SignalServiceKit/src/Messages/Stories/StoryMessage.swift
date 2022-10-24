@@ -93,12 +93,16 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         return localUserViewedTimestamp != nil
     }
 
-    public var remoteViewCount: Int {
+    public func remoteViewCount(in context: StoryContext) -> Int {
         switch manifest {
         case .incoming:
             return 0
         case .outgoing(let recipientStates):
-            return recipientStates.values.lazy.filter { $0.viewedTimestamp != nil }.count
+            return recipientStates.values
+                .lazy
+                .filter { $0.isValidForContext(context) }
+                .filter { $0.viewedTimestamp != nil }
+                .count
         }
     }
 
@@ -766,6 +770,23 @@ public struct StoryRecipientState: Codable {
         self.allowsReplies = allowsReplies
         self.contexts = contexts
         self.sendingState = sendingState
+    }
+}
+
+extension StoryRecipientState {
+    public func isValidForContext(_ context: StoryContext) -> Bool {
+        switch context {
+        case .privateStory(let uuidString):
+            guard let uuid = UUID(uuidString: uuidString) else {
+                owsFailDebug("Invalid UUID for private story")
+                return false
+            }
+            return contexts.contains(uuid)
+        case .groupId, .authorUuid:
+            return true
+        case .none:
+            return false
+        }
     }
 }
 

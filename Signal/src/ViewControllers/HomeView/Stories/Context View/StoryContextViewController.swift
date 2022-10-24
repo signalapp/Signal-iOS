@@ -490,13 +490,13 @@ class StoryContextViewController: OWSViewController {
                             "STORY_VIEWS_AND_REPLIES_COUNT_%d_%d",
                             tableName: "PluralAware",
                             comment: "Button for viewing the replies and views for a story sent to a group")
-                        repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.message.remoteViewCount, currentItem.numberOfReplies)
+                        repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.message.remoteViewCount(in: context), currentItem.numberOfReplies)
                     } else {
                         let format = NSLocalizedString(
                             "STORY_VIEWS_COUNT_%d",
                             tableName: "PluralAware",
                             comment: "Button for viewing the views for a story sent to a private list")
-                        repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.message.remoteViewCount)
+                        repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.message.remoteViewCount(in: context))
                     }
                 } else if case .groupId = context, currentItem.numberOfReplies > 0 {
                     trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
@@ -860,7 +860,7 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
         case .groupId:
             switch currentItem.message.direction {
             case .outgoing:
-                let groupRepliesAndViewsVC = StoryGroupRepliesAndViewsSheet(storyMessage: currentItem.message)
+                let groupRepliesAndViewsVC = StoryGroupRepliesAndViewsSheet(storyMessage: currentItem.message, context: context)
                 groupRepliesAndViewsVC.dismissHandler = { [weak self] in self?.play() }
                 groupRepliesAndViewsVC.focusedTab = currentItem.numberOfReplies > 0 ? .replies : .views
                 self.pause()
@@ -881,7 +881,7 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
             self.pause()
             self.present(directReplyVC, animated: true)
         case .privateStory:
-            let privateViewsVC = StoryPrivateViewsSheet(storyMessage: currentItem.message)
+            let privateViewsVC = StoryPrivateViewsSheet(storyMessage: currentItem.message, context: context)
             privateViewsVC.dismissHandler = { [weak self] in self?.play() }
             self.pause()
             self.present(privateViewsVC, animated: true)
@@ -893,7 +893,7 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
     func presentInfoSheet() {
         guard let currentItem = currentItem else { return }
 
-        let vc = StoryInfoSheet(storyMessage: currentItem.message)
+        let vc = StoryInfoSheet(storyMessage: currentItem.message, context: context)
         vc.dismissHandler = { [weak self] in self?.play() }
         pause()
         present(vc, animated: true)
