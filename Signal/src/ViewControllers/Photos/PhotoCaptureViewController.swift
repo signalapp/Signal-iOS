@@ -1521,7 +1521,9 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
     }
 
     private func updateTextViewAttributes() {
-        let text = textView.text.stripped
+        let text = text ?? ""
+        textView.text = transformedText(text, for: textStyle)
+
         let (fontPointSize, textAlignment) = sizeAndAlignment(forText: text)
         textView.updateWith(
             textForegroundColor: textForegroundColor,
@@ -1534,10 +1536,9 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
 
     private func adjustFontSizeIfNecessary() {
         guard let currentFontSize = textView.font?.pointSize else { return }
-        let text = textView.text.stripped
+        let text = text?.stripped ?? ""
         let desiredFontSize = sizeAndAlignment(forText: text).fontPointSize
         guard desiredFontSize != currentFontSize else { return }
-        self.text = text
         updateTextAttributes()
         updateTextViewAttributes()
     }
@@ -1616,23 +1617,45 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
-        self.text = textView.text.stripped
+        text = text?.stripped
         updateVisibilityOfComponents(animated: true)
         delegate?.textStoryComposerDidEndEditing(self)
     }
 
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        // Truncate the replacement to fit.
-        return TextViewHelper.textView(
-            textView,
-            shouldChangeTextIn: range,
-            replacementText: text,
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText: String) -> Bool {
+
+        let originalInput = text ?? ""
+        let (shouldChange, changedString) = TextHelper.shouldChangeCharactersInRange(
+            with: originalInput,
+            editingRange: range,
+            replacementString: replacementText,
             maxGlyphCount: 700
         )
+
+        if let changedString = changedString {
+            text = changedString
+            textView.text = transformedText(changedString, for: textStyle)
+            textView.delegate?.textViewDidChange?(textView)
+            return false
+        }
+
+        guard shouldChange else {
+            return false
+        }
+
+        text = (originalInput as NSString).replacingCharacters(in: range, with: replacementText)
+
+        let transformedReplacementText = transformedText(replacementText, for: textStyle)
+        guard transformedReplacementText == replacementText else {
+            textView.text = transformedText(text ?? "", for: textStyle)
+            textView.delegate?.textViewDidChange?(textView)
+            return false
+        }
+
+        return true
     }
 
     func textViewDidChange(_ textView: UITextView) {
-        self.text = textView.text.stripped
         adjustFontSizeIfNecessary()
         delegate?.textStoryComposerDidChange(self)
         setNeedsLayout()
