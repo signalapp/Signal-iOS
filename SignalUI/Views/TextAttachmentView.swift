@@ -151,13 +151,17 @@ open class TextAttachmentView: UIView {
         // If link preview view has "compact" layout and there's enough vertical space for both text
         // and link in "regular" size, we disable forcing link preview to be compact.
         if let linkPreviewView = linkPreviewView, linkPreviewView.layout == .compact,
-           let expandedLinkPreviewAreaHeight = expandedLinkPreviewAreaHeight, forceCompactLayoutForLinkPreview == true {
-            var contentHeight = expandedLinkPreviewAreaHeight
-            if textContentSize.height > 0 {
-                contentHeight += (LayoutConstants.linkPreviewAreaTopMargin + textContentSize.height)
+           let expandedLinkPreviewAreaHeight = expandedLinkPreviewAreaHeight {
+            if forceCompactLayoutForLinkPreview {
+                var contentHeight = expandedLinkPreviewAreaHeight
+                if textContentSize.height > 0 {
+                    contentHeight += (LayoutConstants.linkPreviewAreaTopMargin + textContentSize.height)
+                }
+                if contentHeight < contentLayoutGuide.layoutFrame.height {
+                    forceCompactLayoutForLinkPreview = false
+                }
             }
-            if contentHeight < contentLayoutGuide.layoutFrame.height {
-                forceCompactLayoutForLinkPreview = false
+            if !shouldUseCompactLayoutForLinkPreview() {
                 reloadLinkPreviewAppearance()
                 return
             }
