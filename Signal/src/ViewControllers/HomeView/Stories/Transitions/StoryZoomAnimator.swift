@@ -48,12 +48,13 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             return
         }
 
-        let centerCroppedDismissedFrame = containerView.convert(
-            context.thumbnailView.frame,
-            from: context.thumbnailView.superview
-        )
-
-        var storyViewDismissedSize = centerCroppedDismissedFrame.size
+        let getCenterCroppedDismissedFrame = {
+            return containerView.convert(
+                self.context.thumbnailView.frame,
+                from: self.context.thumbnailView.superview
+            )
+        }
+        var storyViewDismissedSize = getCenterCroppedDismissedFrame().size
 
         // The thumbnailView uses contentMode scaleAspectFill to center crop the thumbnail,
         // but the storyView uses contentMode scaleAspectFit to letter box the full screen
@@ -63,7 +64,7 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         // and then crop it ourselves within storyViewContainer.
         if let storyThumbnailSize = context.storyThumbnailSize {
             if storyThumbnailSize.height > storyThumbnailSize.width {
-                if storyThumbnailSize.aspectRatio > centerCroppedDismissedFrame.size.aspectRatio {
+                if storyThumbnailSize.aspectRatio > storyViewDismissedSize.aspectRatio {
                     storyViewDismissedSize.width = storyViewDismissedSize.height * storyThumbnailSize.aspectRatio
                 }
 
@@ -88,7 +89,7 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             containerView.addSubview(storyViewContainer)
             containerView.addSubview(toVC.view)
 
-            storyViewContainer.frame = centerCroppedDismissedFrame
+            storyViewContainer.frame = getCenterCroppedDismissedFrame()
             context.storyView.frame = storyViewContainer.bounds.centerCropping(fullSize: storyViewDismissedSize)
             context.storyView.layoutIfNeeded()
 
@@ -150,7 +151,7 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                         storyView.renderSize = TextAttachmentThumbnailView.defaultRenderSize
                     }
                     self.storyViewContainer.layer.cornerRadius = 12
-                    self.storyViewContainer.frame = centerCroppedDismissedFrame
+                    self.storyViewContainer.frame = getCenterCroppedDismissedFrame()
                     self.context.storyView.frame = self.storyViewContainer.bounds.centerCropping(fullSize: storyViewDismissedSize)
                     self.context.storyView.layoutIfNeeded()
                 }
@@ -192,7 +193,7 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                     self.animateChromeFade()
                     self.animatePresentation(
                         delay: self.presentationDelay,
-                        endFrame: centerCroppedDismissedFrame,
+                        endFrame: getCenterCroppedDismissedFrame(),
                         storyViewEndSize: storyViewDismissedSize
                     )
                     self.animateThumbnailFade(delay: self.presentationDuration + self.crossFadeDuration)

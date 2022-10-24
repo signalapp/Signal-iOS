@@ -12,6 +12,22 @@ import SignalUI
 class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
     let tableView = UITableView()
 
+    let searchBarBackdropView = UIView()
+
+    let searchBarContainer = UIView()
+    let searchBar = OWSSearchBar()
+
+    var searchBarScrollingConstraint: NSLayoutConstraint?
+    var searchBarPinnedConstraint: NSLayoutConstraint?
+
+    var isFocusingSearchBar = false {
+        didSet {
+            searchBarBackdropView.isHidden = !isFocusingSearchBar
+            searchBarScrollingConstraint?.isActive = !isFocusingSearchBar
+            searchBarPinnedConstraint?.isActive = isFocusingSearchBar
+        }
+    }
+
     private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.secondaryTextAndIconColor
@@ -39,18 +55,48 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(profileDidChange), name: .localProfileDidChange, object: nil)
     }
 
-    override func loadView() {
-        view = tableView
-        tableView.delegate = self
-        tableView.dataSource = self
-    }
-
     var tableViewIfLoaded: UITableView? {
-        return viewIfLoaded as? UITableView
+        return viewIfLoaded == nil ? nil : tableView
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        view.addSubview(tableView)
+        tableView.autoPinEdgesToSuperviewEdges()
+        tableView.delegate = self
+        tableView.dataSource = self
+
+        // Search
+        searchBarContainer.layoutMargins = .init(hMargin: 8, vMargin: 0)
+
+        // Comment is wrong but its the same string...
+        searchBar.placeholder = OWSLocalizedString(
+            "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
+            comment: "Placeholder text for search bar which filters conversations."
+        )
+        searchBar.delegate = self
+        searchBar.sizeToFit()
+        searchBar.layoutMargins = .zero
+
+        searchBarContainer.frame = searchBar.frame
+        searchBarContainer.addSubview(searchBar)
+        searchBar.autoPinEdgesToSuperviewMargins()
+
+        let searchBarSizingView = UIView()
+        searchBarSizingView.frame = searchBarContainer.frame
+        self.tableView.tableHeaderView = searchBarSizingView
+
+        searchBarSizingView.addSubview(searchBarContainer)
+        searchBarContainer.autoPinHorizontalEdges(toEdgesOf: view)
+        self.searchBarScrollingConstraint = searchBarContainer.autoPinEdge(.top, to: .top, of: searchBarSizingView)
+        self.searchBarPinnedConstraint = searchBarContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+
+        view.insertSubview(searchBarBackdropView, aboveSubview: tableView)
+        searchBarBackdropView.isHidden = true
+        searchBarBackdropView.backgroundColor = Theme.backgroundColor
+        searchBarBackdropView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+        searchBarBackdropView.autoPinEdge(.bottom, to: .top, of: searchBarContainer)
 
         title = NSLocalizedString("STORIES_TITLE", comment: "Title for the stories view.")
 
@@ -88,10 +134,19 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
                 }
             }
         }
+
+        if isFocusingSearchBar {
+            navigationController?.setNavigationBarHidden(true, animated: false)
+            (tabBarController as? HomeTabBarController)?.setTabBarHidden(true, animated: false)
+        }
     }
+
+    private var viewIsAppeared = false
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        self.viewIsAppeared = true
 
         // Whether or not the theme has changed, always ensure
         // the right theme is applied. The initial collapsed
@@ -116,8 +171,24 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
+        defer {
+            self.viewIsAppeared = false
+        }
+
         timestampUpdateTimer?.invalidate()
         timestampUpdateTimer = nil
+
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        (tabBarController as? HomeTabBarController)?.setTabBarHidden(false, animated: animated)
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        if !searchBar.text.isEmptyOrNil {
+            searchBar.text = nil
+            dataSource.setSearchText(nil)
+        }
     }
 
     override func applyTheme() {
@@ -154,6 +225,8 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
 
         view.backgroundColor = Theme.backgroundColor
         tableView.backgroundColor = Theme.backgroundColor
+        searchBarContainer.backgroundColor = Theme.backgroundColor
+        searchBarBackdropView.backgroundColor = Theme.backgroundColor
 
         updateNavigationBar()
     }
@@ -275,9 +348,11 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
             } else if
                 sectionConstraint ?? .hiddenStories == .hiddenStories,
                 let hiddenStoryIndex = dataSource.hiddenStories.firstIndex(where: { $0.context == context }),
-                !dataSource.isHiddenStoriesSectionCollapsed {
+                dataSource.shouldDisplayHiddenStories {
                 section = .hiddenStories
-                index = hiddenStoryIndex
+                // Offset for the header
+                let headerOffset = dataSource.shouldDisplayHiddenStoriesHeader ? 1 : 0
+                index = hiddenStoryIndex + headerOffset
             } else {
                 // Not found.
                 return
@@ -300,6 +375,13 @@ extension StoriesViewController: CameraFirstCaptureDelegate {
 }
 
 extension StoriesViewController: UITableViewDelegate {
+
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        if isFocusingSearchBar, searchBar.text?.isEmpty ?? true {
+            stopFocusingSearchBar(clearingSearchText: true)
+        }
+    }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
@@ -311,7 +393,7 @@ extension StoriesViewController: UITableViewDelegate {
                 navigationController?.pushViewController(MyStoriesViewController(), animated: true)
             }
         case .hiddenStories:
-            if indexPath.row == 0 {
+            if indexPath.row == 0, dataSource.shouldDisplayHiddenStoriesHeader {
                 // Tapping the collapsing header.
                 let wasCollapsed = dataSource.isHiddenStoriesSectionCollapsed
                 dataSource.isHiddenStoriesSectionCollapsed = !wasCollapsed
@@ -432,7 +514,8 @@ extension StoriesViewController: UITableViewDataSource {
             return dataSource.visibleStories[safe: indexPath.row]
         case .hiddenStories:
             // Offset by 1 to account for the header cell.
-            return dataSource.hiddenStories[safe: indexPath.row - 1]
+            let headerOffset = dataSource.shouldDisplayHiddenStoriesHeader ? 1 : 0
+            return dataSource.hiddenStories[safe: indexPath.row - headerOffset]
         case .myStory, .none:
             return nil
         }
@@ -447,10 +530,11 @@ extension StoriesViewController: UITableViewDataSource {
         if let visibleRow = dataSource.visibleStories.firstIndex(where: { $0.context == context }) {
             indexPath = IndexPath(row: visibleRow, section: Section.visibleStories.rawValue)
         } else if
-            !dataSource.isHiddenStoriesSectionCollapsed,
+            dataSource.shouldDisplayHiddenStories,
             let hiddenRow = dataSource.hiddenStories.firstIndex(where: { $0.context == context }) {
             // Offset by 1 to account for the header cell.
-            indexPath = IndexPath(row: hiddenRow + 1, section: Section.hiddenStories.rawValue)
+            let headerOffset = dataSource.shouldDisplayHiddenStoriesHeader ? 1 : 0
+            indexPath = IndexPath(row: hiddenRow + headerOffset, section: Section.hiddenStories.rawValue)
         } else {
             return nil
         }
@@ -469,7 +553,7 @@ extension StoriesViewController: UITableViewDataSource {
             cell.configure(with: myStoryModel) { [weak self] in self?.showCameraView() }
             return cell
         case .hiddenStories:
-            if indexPath.row == 0 {
+            if indexPath.row == 0 && dataSource.shouldDisplayHiddenStoriesHeader {
                 let cell = tableView.dequeueReusableCell(
                     withIdentifier: HiddenStoryHeaderCell.reuseIdentifier,
                     for: indexPath
@@ -502,17 +586,80 @@ extension StoriesViewController: UITableViewDataSource {
 
         switch Section(rawValue: section) {
         case .myStory:
-            return dataSource.myStory == nil ? 0 : 1
+            return dataSource.shouldDisplayMyStory ? 1 : 0
         case .visibleStories:
             return dataSource.visibleStories.count
         case .hiddenStories:
-            guard !dataSource.hiddenStories.isEmpty else {
-                return 0
-            }
-            return dataSource.isHiddenStoriesSectionCollapsed ? 1 : dataSource.hiddenStories.count + 1
+            return (
+                dataSource.shouldDisplayHiddenStoriesHeader ? 1 : 0
+            ) + (
+                dataSource.shouldDisplayHiddenStories ? dataSource.hiddenStories.count : 0
+            )
         case .none:
             owsFailDebug("Unexpected section \(section)")
             return 0
+        }
+    }
+}
+
+extension StoriesViewController: UISearchBarDelegate {
+
+    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        return viewIsAppeared
+    }
+
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        beginFocusingSearchBar()
+    }
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        dataSource.setSearchText(searchText.isEmpty ? nil : searchText)
+    }
+
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        stopFocusingSearchBar(clearingSearchText: false)
+    }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        stopFocusingSearchBar(clearingSearchText: true)
+    }
+
+    private func beginFocusingSearchBar() {
+        self.navigationController?.setNavigationBarHidden(true, animated: true)
+        (tabBarController as? HomeTabBarController)?.setTabBarHidden(true, animated: true)
+        searchBar.setShowsCancelButton(true, animated: true)
+        // Do this as a transition animation so we get tighter timing
+        // with the navigation controller animation.
+        UIView.transition(
+            with: view,
+            duration: UINavigationController.hideShowBarDuration,
+            animations: {},
+            completion: { _ in
+                // Only change state when animations are done.
+                self.isFocusingSearchBar = true
+            }
+        )
+    }
+
+    private func stopFocusingSearchBar(clearingSearchText: Bool) {
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
+        (tabBarController as? HomeTabBarController)?.setTabBarHidden(false, animated: true)
+        searchBar.setShowsCancelButton(false, animated: true)
+        // Do this as a transition animation so we get tighter timing
+        // with the navigation controller animation.
+        UIView.transition(
+            with: self.view,
+            duration: UINavigationController.hideShowBarDuration,
+            animations: {},
+            completion: { _ in
+                // Only change state when animations are done.
+                self.isFocusingSearchBar = false
+            }
+        )
+        searchBar.resignFirstResponder()
+        if clearingSearchText {
+            self.searchBar.text = nil
+            dataSource.setSearchText(nil)
         }
     }
 }
