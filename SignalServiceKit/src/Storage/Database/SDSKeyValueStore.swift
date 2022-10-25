@@ -273,6 +273,25 @@ public class SDSKeyValueStore: NSObject {
         setObject(NSNumber(value: value), key: key, transaction: transaction)
     }
 
+    // MARK: - Int64
+
+    public func getInt64(_ key: String, transaction: SDSAnyReadTransaction) -> Int64? {
+        guard let number: NSNumber = read(key, transaction: transaction) else {
+            return nil
+        }
+        return number.int64Value
+    }
+
+    @objc
+    public func getInt64(_ key: String, defaultValue: Int64, transaction: SDSAnyReadTransaction) -> Int64 {
+        return getInt64(key, transaction: transaction) ?? defaultValue
+    }
+
+    @objc
+    public func setInt64(_ value: Int64, key: String, transaction: SDSAnyWriteTransaction) {
+        setObject(NSNumber(value: value), key: key, transaction: transaction)
+    }
+
     // MARK: - Double
 
     public func getDouble(_ key: String, transaction: SDSAnyReadTransaction) -> Double? {

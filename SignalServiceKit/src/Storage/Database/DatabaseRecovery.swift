@@ -406,7 +406,8 @@ public extension DatabaseRecovery {
             StoryContextAssociatedData.databaseTableName,
             ExperienceUpgrade.databaseTableName,
             InstalledSticker.table.tableName,
-            TestModel.table.tableName
+            TestModel.table.tableName,
+            CancelledGroupRing.databaseTableName
         ]
 
         /// Log the tables we're explicitly skipping.

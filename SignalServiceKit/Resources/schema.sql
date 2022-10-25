@@ -1393,3 +1393,11 @@ CREATE
         ON "model_StoryContextAssociatedData"("groupId"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "cancelledGroupRing" (
+            "id" INTEGER PRIMARY KEY NOT NULL
+            ,"timestamp" INTEGER NOT NULL
+        )
+;

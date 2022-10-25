@@ -205,19 +205,36 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         let notificationTitle: String?
         let threadIdentifier: String?
+        let callerNameForGroupCall: String?
         switch previewType {
         case .noNameNoPreview:
             notificationTitle = nil
             threadIdentifier = nil
+            callerNameForGroupCall = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
+            (notificationTitle, callerNameForGroupCall) = databaseStorage.read { transaction in
+                let threadName = contactsManager.displayName(for: thread, transaction: transaction)
+                let callerNameForGroupCall: String?
+                if thread.isGroupThread {
+                    callerNameForGroupCall = contactsManager.displayName(for: caller, transaction: transaction)
+                } else {
+                    callerNameForGroupCall = nil
+                }
+                return (threadName, callerNameForGroupCall)
+            }
             threadIdentifier = thread.uniqueId
         }
 
         let notificationBody: String
-        switch call.offerMediaType {
-        case .audio: notificationBody = NotificationStrings.incomingAudioCallBody
-        case .video: notificationBody = NotificationStrings.incomingVideoCallBody
+        if let callerNameForGroupCall = callerNameForGroupCall {
+            notificationBody = String(format: NotificationStrings.incomingGroupCallBodyFormat, callerNameForGroupCall)
+        } else if thread.isGroupThread {
+            notificationBody = NotificationStrings.incomingGroupCallBodyAnonymous
+        } else {
+            switch call.offerMediaType {
+            case .audio: notificationBody = NotificationStrings.incomingAudioCallBody
+            case .video: notificationBody = NotificationStrings.incomingVideoCallBody
+            }
         }
 
         let userInfo = [
@@ -227,8 +244,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         var interaction: INInteraction?
         if #available(iOS 13, *),
-            previewType != .noNameNoPreview,
-            let intent = thread.generateStartCallIntent(callerAddress: caller) {
+           previewType != .noNameNoPreview,
+           let intent = thread.generateIncomingCallIntent(callerAddress: caller) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
@@ -352,8 +369,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         var interaction: INInteraction?
         if #available(iOS 13, *),
-            previewType != .noNameNoPreview,
-            let intent = thread.generateStartCallIntent(callerAddress: caller) {
+           previewType != .noNameNoPreview,
+           let intent = thread.generateIncomingCallIntent(callerAddress: caller) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper

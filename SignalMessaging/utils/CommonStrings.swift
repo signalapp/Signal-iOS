@@ -381,6 +381,16 @@ public class NotificationStrings: NSObject {
     }
 
     @objc
+    static public var incomingGroupCallBodyFormat: String {
+        OWSLocalizedString("CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT", comment: "Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}}")
+    }
+
+    @objc
+    static public var incomingGroupCallBodyAnonymous: String {
+        OWSLocalizedString("CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS", comment: "Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications")
+    }
+
+    @objc
     static public var missedCallBecauseOfIdentityChangeBody: String {
         OWSLocalizedString("CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY",
                           comment: "notification body")

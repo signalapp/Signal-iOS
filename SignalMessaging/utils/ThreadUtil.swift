@@ -258,8 +258,15 @@ extension TSThread {
     }
 
     @available(iOS 13, *)
-    public func generateStartCallIntent(callerAddress: SignalServiceAddress) -> INStartCallIntent? {
+    public func generateIncomingCallIntent(callerAddress: SignalServiceAddress) -> INIntent? {
         databaseStorage.read { transaction in
+            guard !self.isGroupThread else {
+                // Fall back to a "send message" intent for group calls,
+                // because the "start call" intent makes the notification look too much like a 1:1 call.
+                return self.generateSendMessageIntent(context: .senderAddress(callerAddress),
+                                                      transaction: transaction)
+            }
+
             guard SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return nil }
 
             let caller = inPersonForRecipient(callerAddress, transaction: transaction)
@@ -269,12 +276,6 @@ extension TSThread {
                                                     contacts: [caller],
                                                     recordTypeForRedialing: .unknown,
                                                     callCapability: .unknown)
-
-            if #available(iOS 14, *), self.isGroupThread {
-                if let image = intentThreadAvatarImage(transaction: transaction) {
-                    startCallIntent.setImage(image, forParameterNamed: \.callRecordToCallBack)
-                }
-            }
 
             return startCallIntent
         }

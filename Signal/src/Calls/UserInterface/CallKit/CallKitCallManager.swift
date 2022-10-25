@@ -47,11 +47,7 @@ final class CallKitCallManager: NSObject {
         // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
     }
 
-    // MARK: Actions
-
-    func startCall(_ call: SignalCall) {
-        let handle: CXHandle
-
+    func createCallHandleWithSneakyTransaction(for call: SignalCall) -> CXHandle {
         if showNamesOnCallScreen {
             let type: CXHandle.HandleType
             let value: String
@@ -65,13 +61,18 @@ final class CallKitCallManager: NSObject {
                 type = .generic
                 value = call.individualCall.remoteAddress.uuidString!
             }
-            handle = CXHandle(type: type, value: value)
+            return CXHandle(type: type, value: value)
         } else {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
-            handle = CXHandle(type: .generic, value: callKitId)
             CallKitIdStore.setThread(call.thread, forCallKitId: callKitId)
+            return CXHandle(type: .generic, value: callKitId)
         }
+    }
 
+    // MARK: Actions
+
+    func startCall(_ call: SignalCall) {
+        let handle = createCallHandleWithSneakyTransaction(for: call)
         let startCallAction = CXStartCallAction(call: call.localId, handle: handle)
 
         if call.isIndividualCall {

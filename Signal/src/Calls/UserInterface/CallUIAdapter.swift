@@ -8,6 +8,7 @@ import CallKit
 import SignalServiceKit
 import SignalMessaging
 import WebRTC
+import UIKit
 
 protocol CallUIAdaptee: AnyObject {
     var notificationPresenter: NotificationPresenter { get }
@@ -38,16 +39,23 @@ extension CallUIAdaptee {
 
     internal func showCall(_ call: SignalCall) {
         AssertIsOnMainThread()
-        if !call.isTerminatedIndividualCall {
-            Logger.info("showCall")
 
-            let callViewController = IndividualCallViewController(call: call)
-            callViewController.modalTransitionStyle = .crossDissolve
-
-            OWSWindowManager.shared.startCall(callViewController)
-        } else {
+        guard !call.isTerminatedIndividualCall else {
             Logger.info("Not showing window for terminated individual call")
+            return
         }
+
+        Logger.info("showCall")
+
+        let callViewController: UIViewController & CallViewControllerWindowReference
+        if call.isGroupCall {
+            callViewController = GroupCallViewController(call: call)
+        } else {
+            callViewController = IndividualCallViewController(call: call)
+        }
+
+        callViewController.modalTransitionStyle = .crossDissolve
+        OWSWindowManager.shared.startCall(callViewController)
     }
 
     internal func reportMissedCall(_ call: SignalCall) {
@@ -154,7 +162,10 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
     internal func reportIncomingCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        Logger.info("remoteAddress: \(call.individualCall.remoteAddress)")
+        guard let caller = call.caller else {
+            return
+        }
+        Logger.info("remoteAddress: \(caller)")
 
         // make sure we don't terminate audio session during call
         _ = audioSession.startAudioActivity(call.audioActivity)
@@ -162,7 +173,20 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
         adaptee(for: call).reportIncomingCall(call) { error in
             AssertIsOnMainThread()
 
-            guard var error = error else { return }
+            guard var error = error else {
+                // Individual calls ring on their state transitions, but group calls ring immediately.
+                if call.isGroupCall {
+                    // Wait to start ringing until all observers have recognized this as the current call.
+                    DispatchQueue.main.async {
+                        guard call == self.callService.currentCall else {
+                            // Assume that the call failed before we got a chance to start ringing.
+                            return
+                        }
+                        self.callService.audioService.startRinging(call: call)
+                    }
+                }
+                return
+            }
 
             let nsError: NSError = error as NSError
             Logger.warn("Error: \(nsError.domain), \(nsError.code), error: \(error)")
@@ -289,7 +313,7 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
         adaptee(for: call).failCall(call, error: error)
     }
 
-    internal func showCall(_ call: SignalCall) {
+    private func showCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
         adaptee(for: call).showCall(call)
@@ -319,7 +343,7 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
     internal func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
         AssertIsOnMainThread()
 
-        guard let call = newValue, call.isIndividualCall else { return }
+        guard let call = newValue else { return }
 
         callService.audioService.handleRinging = adaptee(for: call).hasManualRinger
     }

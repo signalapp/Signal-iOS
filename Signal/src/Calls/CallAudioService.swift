@@ -385,14 +385,14 @@ class CallAudioService: NSObject, CallObserver {
 
     private var ringerSwitchObserver: CallRingerSwitchObserver?
 
-    private func startRinging(call: SignalCall) {
+    func startRinging(call: SignalCall) {
         guard handleRinging else {
             Logger.debug("ignoring \(#function) since CallKit handles it's own ringing state")
             return
         }
 
         // Only CallKit calls should be in the transitory ringing states
-        owsAssertDebug(call.individualCall.state == .localRinging_ReadyToAnswer)
+        owsAssertDebug(call.isGroupCall || call.individualCall.state == .localRinging_ReadyToAnswer)
 
         vibrateTimer?.invalidate()
         vibrateTimer = .scheduledTimer(withTimeInterval: vibrateRepeatDuration, repeats: true) { [weak self] _ in
@@ -407,7 +407,7 @@ class CallAudioService: NSObject, CallObserver {
         ringerSwitchObserver = CallRingerSwitchObserver(callService: self, player: player, call: call)
     }
 
-    private func stopRinging() {
+    func stopRinging() {
         guard handleRinging else {
             Logger.debug("ignoring \(#function) since CallKit handles it's own ringing state")
             return

@@ -175,7 +175,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             OWSReaction.self,
             TSGroupMember.self,
             TSMention.self,
-            ExperienceUpgrade.self
+            ExperienceUpgrade.self,
+            CancelledGroupRing.self
         ]
     }
 

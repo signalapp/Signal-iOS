@@ -207,6 +207,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addStoryContextAssociatedDataReadTimestampColumn
         case addIsCompleteToContactSyncJob
         case addSnoozeCountToExperienceUpgrade
+        case addCancelledGroupRingsTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2196,6 +2197,17 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.execute(sql: populateSql)
             } catch let error {
                 owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addCancelledGroupRingsTable) { db in
+            do {
+                try db.create(table: CancelledGroupRing.databaseTableName) { table in
+                    table.column("id", .integer).primaryKey().notNull()
+                    table.column("timestamp", .integer).notNull()
+                }
+            } catch {
+                owsFail("\(error)")
             }
         }
 

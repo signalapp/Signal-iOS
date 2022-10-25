@@ -6,6 +6,7 @@
 import Foundation
 import SignalRingRTC
 import SignalMessaging
+import AVFoundation
 
 // All Observer methods will be invoked from the main thread.
 @objc(OWSCallServiceObserver)
@@ -447,6 +448,8 @@ public final class CallService: LightweightCallManager {
 
         if failedCall.isIndividualCall {
             individualCallService.handleFailedCall(failedCall: failedCall, error: callError, shouldResetUI: false, shouldResetRingRTC: true)
+        } else {
+            terminate(call: failedCall)
         }
     }
 
@@ -454,6 +457,15 @@ public final class CallService: LightweightCallManager {
         if call.isIndividualCall {
             individualCallService.handleLocalHangupCall(call)
         } else {
+            if case .incomingRing(_, let ringId) = call.groupCallRingState {
+                do {
+                    try callManager.cancelGroupRing(groupId: call.thread.groupModelIfGroupThread!.groupId,
+                                                    ringId: ringId,
+                                                    reason: .declinedByUser)
+                } catch {
+                    owsFailDebug("RingRTC failed to cancel group ring \(ringId): \(error)")
+                }
+            }
             terminate(call: call)
         }
     }
@@ -534,8 +546,8 @@ public final class CallService: LightweightCallManager {
                     call.videoCaptureController.stopCapture()
                 }
             }
-        case .group(let groupCall):
-            if !Platform.isSimulator && !groupCall.isOutgoingVideoMuted {
+        case .group:
+            if shouldHaveLocalVideoTrack {
                 call.videoCaptureController.startCapture()
             } else {
                 call.videoCaptureController.stopCapture()
@@ -555,10 +567,10 @@ public final class CallService: LightweightCallManager {
         // By default, group calls should start out with speakerphone enabled.
         self.audioService.requestSpeakerphone(isEnabled: true)
 
-        currentCall = call
-
         call.groupCall.isOutgoingAudioMuted = false
         call.groupCall.isOutgoingVideoMuted = videoMuted
+
+        currentCall = call
 
         guard call.groupCall.connect() else {
             terminate(call: call)
@@ -594,7 +606,7 @@ public final class CallService: LightweightCallManager {
             call.groupCall.join()
             // Group calls can get disconnected, but we don't count that as ending the call.
             // So this call may have already been reported.
-            if call.systemState == .notReported {
+            if call.systemState == .notReported && !call.groupCallRingState.isIncomingRing {
                 callUIAdapter.startOutgoingCall(call: call)
             }
         }
@@ -1309,7 +1321,117 @@ extension CallService: CallManagerDelegate {
         sender: UUID,
         update: RingUpdate
     ) {
-        Logger.info("Stubbed \(#function)")
+        guard RemoteConfig.groupRings else {
+            return
+        }
+
+        guard update == .requested else {
+            if let currentCall = self.currentCall,
+               currentCall.isGroupCall,
+               case .incomingRing(_, ringId) = currentCall.groupCallRingState {
+
+                switch update {
+                case .requested:
+                    owsFail("checked above")
+                case .expiredRing:
+                    owsFailDebug("shouldn't have rung in the first place")
+                    self.callUIAdapter.remoteDidHangupCall(currentCall)
+                case .acceptedOnAnotherDevice:
+                    self.callUIAdapter.didAnswerElsewhere(call: currentCall)
+                case .declinedOnAnotherDevice:
+                    self.callUIAdapter.didDeclineElsewhere(call: currentCall)
+                case .busyLocally:
+                    owsFailDebug("shouldn't get reported here")
+                    fallthrough
+                case .busyOnAnotherDevice:
+                    self.callUIAdapter.wasBusyElsewhere(call: currentCall)
+                case .cancelledByRinger:
+                    self.callUIAdapter.remoteDidHangupCall(currentCall)
+                }
+
+                self.terminate(call: currentCall)
+            }
+
+            databaseStorage.asyncWrite { transaction in
+                do {
+                    try CancelledGroupRing(id: ringId).insert(transaction.unwrapGrdbWrite.database)
+                    try CancelledGroupRing.deleteExpired(expiration: Date().addingTimeInterval(-30 * kMinuteInterval),
+                                                         transaction: transaction)
+                } catch {
+                    owsFailDebug("failed to update cancellation table: \(error)")
+                }
+            }
+
+            return
+        }
+
+        let caller = SignalServiceAddress(uuid: sender)
+
+        enum RingAction {
+            case cancel
+            case ring(TSGroupThread)
+        }
+
+        let action: RingAction = databaseStorage.read { transaction in
+            guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                owsFailDebug("discarding group ring \(ringId) from \(sender) for unknown group")
+                return .cancel
+            }
+
+            guard GroupsV2MessageProcessor.discardMode(forMessageFrom: caller,
+                                                       groupId: groupId,
+                                                       transaction: transaction) == .doNotDiscard else {
+                Logger.warn("discarding group ring \(ringId) from \(sender)")
+                return .cancel
+            }
+
+            do {
+                if try CancelledGroupRing.exists(transaction.unwrapGrdbRead.database, key: ringId) {
+                    return .cancel
+                }
+            } catch {
+                owsFailDebug("unable to check cancellation table: \(error)")
+            }
+
+            return .ring(thread)
+        }
+
+        switch action {
+        case .cancel:
+            do {
+                try callManager.cancelGroupRing(groupId: groupId, ringId: ringId, reason: nil)
+            } catch {
+                owsFailDebug("RingRTC failed to cancel group ring \(ringId): \(error)")
+            }
+        case .ring(let thread):
+            let currentCall = self.currentCall
+            if currentCall?.thread.uniqueId == thread.uniqueId {
+                // We're already ringing or connected, or at the very least already in the lobby.
+                return
+            }
+            guard currentCall == nil else {
+                do {
+                    try callManager.cancelGroupRing(groupId: groupId, ringId: ringId, reason: .busy)
+                } catch {
+                    owsFailDebug("RingRTC failed to cancel group ring \(ringId): \(error)")
+                }
+                return
+            }
+
+            // Mute video by default unless the user has already approved it.
+            // This keeps us from popping the "give permission to use your camera" alert before the user answers.
+            let videoMuted = AVCaptureDevice.authorizationStatus(for: .video) != .authorized
+            guard let groupCall = Self.callService.buildAndConnectGroupCallIfPossible(
+                thread: thread,
+                videoMuted: videoMuted
+            ) else {
+                return owsFailDebug("Failed to build group call")
+            }
+
+            groupCall.groupCallRingState = .incomingRing(caller: caller, ringId: ringId)
+
+            self.callUIAdapter.reportIncomingCall(groupCall)
+        }
     }
 }
 

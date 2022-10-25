@@ -107,6 +107,18 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         self.provider.setDelegate(self, queue: nil)
     }
 
+    private func localizedCallerNameWithSneakyTransaction(for call: SignalCall) -> String {
+        if showNamesOnCallScreen {
+            return contactsManager.displayNameWithSneakyTransaction(thread: call.thread)
+        } else if call.isIndividualCall {
+            return NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME",
+                                     comment: "The generic name used for calls if CallKit privacy is enabled")
+        } else {
+            return NSLocalizedString("CALLKIT_ANONYMOUS_GROUP_NAME",
+                                     comment: "The generic name used for group calls if CallKit privacy is enabled")
+        }
+    }
+
     // MARK: CallUIAdaptee
 
     func startOutgoingCall(call: SignalCall) {
@@ -163,20 +175,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         // Construct a CXCallUpdate describing the incoming call, including the caller.
         let update = CXCallUpdate()
-
-        if showNamesOnCallScreen {
-            update.localizedCallerName = contactsManager.displayName(for: call.individualCall.remoteAddress)
-            if let phoneNumber = call.individualCall.remoteAddress.phoneNumber {
-                update.remoteHandle = CXHandle(type: .phoneNumber, value: phoneNumber)
-            }
-        } else {
-            let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
-            update.remoteHandle = CXHandle(type: .generic, value: callKitId)
-            CallKitIdStore.setThread(call.thread, forCallKitId: callKitId)
-            update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME", comment: "The generic name used for calls if CallKit privacy is enabled")
-        }
-
-        update.hasVideo = call.individualCall.offerMediaType == .video
+        update.localizedCallerName = localizedCallerNameWithSneakyTransaction(for: call)
+        update.remoteHandle = callManager.createCallHandleWithSneakyTransaction(for: call)
+        update.hasVideo = call.isGroupCall || call.individualCall.offerMediaType == .video
 
         disableUnsupportedFeatures(callUpdate: update)
 
@@ -359,15 +360,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
 
         let update = CXCallUpdate()
-        if showNamesOnCallScreen {
-            update.localizedCallerName = contactsManager.displayNameWithSneakyTransaction(thread: call.thread)
-        } else if call.isIndividualCall {
-            update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME",
-                                                           comment: "The generic name used for calls if CallKit privacy is enabled")
-        } else {
-            update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_GROUP_NAME",
-                                                           comment: "The generic name used for group calls if CallKit privacy is enabled")
-        }
+        update.localizedCallerName = localizedCallerNameWithSneakyTransaction(for: call)
         provider.reportCall(with: call.localId, updated: update)
 
         if call.isGroupCall {
@@ -380,6 +373,10 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
                 fallthrough
             case .doNotRing:
                 // Immediately consider ourselves connected.
+                recipientAcceptedCall(call)
+            case .incomingRing:
+                owsFailDebug("should not happen for an outgoing call")
+                // Recover by considering ourselves connected
                 recipientAcceptedCall(call)
             }
         }
@@ -395,7 +392,12 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             return
         }
 
-        if call.individualCall.state == .localRinging_Anticipatory {
+        if call.isGroupCall {
+            // Explicitly unmute to request permissions, if needed.
+            callService.updateIsLocalAudioMuted(isLocalAudioMuted: call.isOutgoingAudioMuted)
+            callService.joinGroupCallIfNecessary(call)
+            action.fulfill()
+        } else if call.individualCall.state == .localRinging_Anticipatory {
             // We can't answer the call until RingRTC is ready
             call.individualCall.state = .accepting
             call.individualCall.deferredAnswerCompletion = {

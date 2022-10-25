@@ -86,17 +86,19 @@ class CallButton: UIButton {
         let stackView = UIStackView(arrangedSubviews: [circleViewContainer, label])
         stackView.axis = .vertical
         stackView.spacing = 8
-        stackView.isUserInteractionEnabled =  false
+        stackView.isUserInteractionEnabled = false
+        stackView.alignment = .center
 
         addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
 
-        label.font = .ows_dynamicTypeSubheadline
+        label.font = .ows_dynamicTypeFootnote
         label.textColor = Theme.darkThemePrimaryColor
         label.textAlignment = .center
         label.layer.shadowOffset = .zero
         label.layer.shadowOpacity = 0.25
         label.layer.shadowRadius = 4
+        label.numberOfLines = 2
 
         circleView.addSubview(iconView)
 

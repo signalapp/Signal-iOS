@@ -116,6 +116,25 @@ public class SignalCall: NSObject, CallManagerCallReference {
         }
     }
 
+    /// Returns the remote party for an incoming 1:1 call, or the ringer for a group call ring.
+    ///
+    /// Returns `nil` for an outgoing 1:1 call, a manually-entered group call,
+    /// or a group call that has already been joined.
+    public var caller: SignalServiceAddress? {
+        switch mode {
+        case .individual(let call):
+            guard call.direction == .incoming else {
+                return nil
+            }
+            return call.remoteAddress
+        case .group:
+            guard case .incomingRing(let caller, _) = groupCallRingState else {
+                return nil
+            }
+            return caller
+        }
+    }
+
     private(set) lazy var videoCaptureController = VideoCaptureController()
 
     // Should be used only on the main thread
@@ -155,6 +174,14 @@ public class SignalCall: NSObject, CallManagerCallReference {
         case shouldRing
         case ringing
         case ringingEnded
+        case incomingRing(caller: SignalServiceAddress, ringId: Int64)
+
+        var isIncomingRing: Bool {
+            if case .incomingRing = self {
+                return true
+            }
+            return false
+        }
     }
 
     internal var groupCallRingState: GroupCallRingState = .shouldRing {
@@ -397,6 +424,9 @@ extension SignalCall: GroupCallDelegate {
     public func groupCall(onLocalDeviceStateChanged groupCall: GroupCall) {
         if groupCall.localDeviceState.joinState == .joined, connectedDate == nil {
             connectedDate = Date()
+            if groupCallRingState.isIncomingRing {
+                groupCallRingState = .ringingEnded
+            }
 
             // make sure we don't terminate audio session during call
             audioSession.isRTCAudioEnabled = true
