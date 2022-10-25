@@ -16,6 +16,9 @@ public protocol PaymentsHelper: AnyObject {
     var hasValidPhoneNumberForPayments: Bool { get }
     var canEnablePayments: Bool { get }
 
+    var isPaymentsVersionOutdated: Bool { get }
+    func setPaymentsVersionOutdated(_ value: Bool)
+
     func setArePaymentsEnabled(for address: SignalServiceAddress, hasPaymentsEnabled: Bool, transaction: SDSAnyWriteTransaction)
     func arePaymentsEnabled(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> Bool
 
@@ -146,6 +149,9 @@ extension MockPaymentsHelper: PaymentsHelperSwift, PaymentsHelper {
     public var isKillSwitchActive: Bool { false }
     public var hasValidPhoneNumberForPayments: Bool { false }
     public var canEnablePayments: Bool { false }
+
+    public var isPaymentsVersionOutdated: Bool { false }
+    public func setPaymentsVersionOutdated(_ value: Bool) {}
 
     fileprivate static let keyValueStore = SDSKeyValueStore(collection: "MockPayments")
     public var keyValueStore: SDSKeyValueStore { Self.keyValueStore}

@@ -69,6 +69,25 @@ public class OWSActionSheets: NSObject {
     }
 
     @objc
+    public class func showConfirmationWithNotNowAlert(title: String, message: String? = nil, proceedTitle: String? = nil, proceedStyle: ActionSheetAction.Style = .default, proceedAction: @escaping ActionSheetAction.Handler) {
+        assert(title.count > 0)
+
+        let actionSheet = ActionSheetController(title: title, message: message)
+        actionSheet.addAction(self.notNowAction)
+
+        let actionTitle = proceedTitle ?? CommonStrings.okButton
+        let okAction = ActionSheetAction(
+            title: actionTitle,
+            accessibilityIdentifier: "OWSActionSheets.ok",
+            style: proceedStyle,
+            handler: proceedAction
+        )
+        actionSheet.addAction(okAction)
+
+        CurrentAppContext().frontmostViewController()?.present(actionSheet, animated: true)
+    }
+
+    @objc
     public class func showErrorAlert(message: String) {
         self.showActionSheet(title: CommonStrings.errorAlertTitle, message: message, buttonTitle: nil)
     }
@@ -94,6 +113,19 @@ public class OWSActionSheets: NSObject {
             style: .cancel
         ) { _ in
             Logger.debug("Cancel item")
+            // Do nothing.
+        }
+        return action
+    }
+
+    @objc
+    public class var notNowAction: ActionSheetAction {
+        let action = ActionSheetAction(
+            title: CommonStrings.notNowButton,
+            accessibilityIdentifier: "OWSActionSheets.notNow",
+            style: .cancel
+        ) { _ in
+            Logger.debug("Not now item")
             // Do nothing.
         }
         return action

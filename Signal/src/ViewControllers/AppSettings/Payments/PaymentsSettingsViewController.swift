@@ -35,11 +35,15 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     fileprivate static let maxHistoryCount: Int = 4
 
+    fileprivate let reminderStackView = UIStackView()
+
     @objc
     public required init(mode: PaymentsSettingsMode) {
         self.mode = mode
 
         super.init()
+
+        self.topHeader = reminderStackView
     }
 
     // MARK: - Update Balance Timer
@@ -141,6 +145,30 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
+    // MARK: - Outdated Client Banner
+
+    private func createOutdatedClientReminderView() {
+
+        reminderStackView.isHidden = true
+        reminderStackView.axis = .vertical
+        reminderStackView.spacing = 0
+        let outdatedClientView = ReminderView.nag(text: NSLocalizedString("OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT",
+                                                                        comment: "Label warning the user that they should update Signal to continue using payments."),
+                                            tapAction: { [weak self] in
+                                                self?.didTapOutdatedPaymentClientReminder()
+                                            },
+                                            actionTitle: NSLocalizedString("OUTDATED_PAYMENT_CLIENT_ACTION_TITLE",
+                                                                         comment: "Label for action link when the user has an outdated payment client"))
+        reminderStackView.addArrangedSubview(outdatedClientView)
+        outdatedClientView.accessibilityIdentifier = "outdatedClientView"
+
+    }
+
+    private func didTapOutdatedPaymentClientReminder() {
+        let url = TSConstants.appStoreUpdateURL
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
+
     // MARK: -
 
     public override func viewDidLoad() {
@@ -157,6 +185,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         }
 
         addListeners()
+
+        createOutdatedClientReminderView()
 
         updateTableContents()
 
@@ -194,6 +224,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         paymentsCurrencies.updateConversationRatesIfStale()
 
         startUpdateBalanceTimer()
+        let clientOutdated = OWSActionSheets.showPaymentsOutdatedClientSheetIfNeeded(title: .updateRequired)
+        reminderStackView.isHidden = !clientOutdated
     }
 
     public override func viewDidDisappear(_ animated: Bool) {
@@ -222,6 +254,12 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         )
         NotificationCenter.default.addObserver(
             self,
+            selector: #selector(isPaymentsVersionOutdatedDidChange),
+            name: PaymentsConstants.isPaymentsVersionOutdatedDidChange,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
             selector: #selector(updateTableContents),
             name: PaymentsImpl.currentPaymentBalanceDidChange,
             object: nil
@@ -243,6 +281,12 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             presentToast(text: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST",
                                                  comment: "Message indicating that payments have been disabled in the app settings."))
         }
+    }
+
+    @objc
+    private func isPaymentsVersionOutdatedDidChange() {
+        guard UIApplication.shared.frontmostViewController == self else { return }
+        OWSActionSheets.showPaymentsOutdatedClientSheetIfNeeded(title: .updateRequired)
     }
 
     @objc
@@ -915,6 +959,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             return
         }
 
+        guard !OWSActionSheets.showPaymentsOutdatedClientSheetIfNeeded(title: .updateRequired) else { return }
+
         databaseStorage.asyncWrite { transaction in
             Self.paymentsHelperSwift.enablePayments(transaction: transaction)
 
@@ -1007,6 +1053,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
      }
 
     private func didTapTransferToExchangeButton() {
+        guard !OWSActionSheets.showPaymentsOutdatedClientSheetIfNeeded(title: .updateRequired) else { return }
         let view = PaymentsTransferOutViewController(transferAmount: nil)
         let navigationController = OWSNavigationController(rootViewController: view)
         present(navigationController, animated: true, completion: nil)
@@ -1036,6 +1083,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                                                                       comment: "Error message indicating that payments cannot be sent because the feature is not currently available."))
             return
         }
+        guard !OWSActionSheets.showPaymentsOutdatedClientSheetIfNeeded(title: .updateRequired) else { return }
         PaymentsSendRecipientViewController.presentAsFormSheet(fromViewController: self,
                                                                isOutgoingTransfer: false,
                                                                paymentRequestModel: nil)

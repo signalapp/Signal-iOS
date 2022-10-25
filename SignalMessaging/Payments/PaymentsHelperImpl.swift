@@ -271,6 +271,20 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
                                                            transaction: transaction)
     }
 
+    // MARK: - Version Compatibility
+
+    private let isPaymentsVersionOutdatedCache = AtomicValue<Bool>(false)
+
+    public var isPaymentsVersionOutdated: Bool {
+        isPaymentsVersionOutdatedCache.get()
+    }
+
+    public func setPaymentsVersionOutdated(_ value: Bool) {
+        let oldValue = isPaymentsVersionOutdatedCache.swap(value)
+        guard oldValue != value else { return }
+        NotificationCenter.default.postNotificationNameAsync(PaymentsConstants.isPaymentsVersionOutdatedDidChange, object: nil)
+    }
+
     // MARK: - Incoming Messages
 
     public func processIncomingPaymentRequest(

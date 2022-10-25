@@ -434,6 +434,8 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
             return
         }
 
+        guard !OWSActionSheets.showPaymentsOutdatedClientSheetIfNeeded(title: .cantSendPayment) else { return }
+
         SendPaymentViewController.presentFromConversationView(self,
                                                               delegate: self,
                                                               recipientAddress: contactThread.contactAddress,

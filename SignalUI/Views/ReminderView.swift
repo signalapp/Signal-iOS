@@ -9,6 +9,8 @@ open class ReminderView: UIView {
 
     let label = UILabel()
 
+    let actionLabel = UILabel()
+
     public typealias Action = () -> Void
 
     public var tapAction: Action?
@@ -20,6 +22,16 @@ open class ReminderView: UIView {
 
         set(newText) {
             label.text = newText
+        }
+    }
+
+    public var actionTitle: String? {
+        get {
+            return actionLabel.text
+        }
+
+        set(newText) {
+            actionLabel.text = newText
         }
     }
 
@@ -41,13 +53,14 @@ open class ReminderView: UIView {
         fatalError("init(frame:) has not been implemented")
     }
 
-    public init(mode: ReminderViewMode, text: String, tapAction: Action?) {
+    public init(mode: ReminderViewMode, text: String, tapAction: Action?, actionTitle: String? = nil) {
         self.mode = mode
         self.tapAction = tapAction
 
         super.init(frame: .zero)
 
         self.text = text
+        self.actionTitle = actionTitle
 
         setupSubviews()
     }
@@ -55,6 +68,11 @@ open class ReminderView: UIView {
     @objc
     public class func nag(text: String, tapAction: Action?) -> ReminderView {
         return ReminderView(mode: .nag, text: text, tapAction: tapAction)
+    }
+
+    @objc
+    public class func nag(text: String, tapAction: Action?, actionTitle: String) -> ReminderView {
+        return ReminderView(mode: .nag, text: text, tapAction: tapAction, actionTitle: actionTitle)
     }
 
     @objc
@@ -82,9 +100,16 @@ open class ReminderView: UIView {
         self.addGestureRecognizer(tapGesture)
 
         let container = UIStackView()
-        container.axis = .horizontal
-        container.alignment = .center
         container.isLayoutMarginsRelativeArrangement = true
+
+        switch actionTitle {
+        case .some:
+            container.axis = .vertical
+            container.alignment = .fill
+        default:
+            container.axis = .horizontal
+            container.alignment = .center
+        }
 
         self.addSubview(container)
         container.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
@@ -97,9 +122,9 @@ open class ReminderView: UIView {
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
 
-        // Show the disclosure indicator if this reminder has a tap action.
-        if tapAction != nil {
-            // Icon
+        switch (actionTitle, tapAction) {
+        case (nil, .some):
+            // Show the disclosure indicator if this nag has a tap action and no action title
             let iconName = (CurrentAppContext().isRTL ? "system_disclosure_indicator_rtl" : "system_disclosure_indicator")
             guard let iconImage = UIImage(named: iconName) else {
                 owsFailDebug("missing icon.")
@@ -110,6 +135,15 @@ open class ReminderView: UIView {
             iconView.tintColor = iconColor
             iconView.autoSetDimension(.width, toSize: 13)
             container.addArrangedSubview(iconView)
+        case (.some, .some):
+            // Show the disclosure indicator if this nag has a tap action and an action title
+            actionLabel.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
+            container.addArrangedSubview(actionLabel)
+            actionLabel.textColor = textColor
+            actionLabel.numberOfLines = 1
+            actionLabel.textAlignment = .right
+        default:
+            {}()
         }
     }
 

@@ -358,3 +358,45 @@ public extension TSPaymentModel {
         }
     }
 }
+
+extension OWSActionSheets {
+
+    @discardableResult
+    public class func showPaymentsOutdatedClientSheetIfNeeded(title: OutdatedTitleType) -> Bool {
+        guard self.paymentsHelper.isPaymentsVersionOutdated else { return false }
+        OWSActionSheets.showPaymentsOutdatedClientSheet(title: title)
+        return true
+    }
+
+    public class func showPaymentsOutdatedClientSheet(title: OutdatedTitleType) {
+
+        OWSActionSheets.showConfirmationWithNotNowAlert(title: title.localizedTitle,
+                                              message: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE",
+                                                                         comment: "Message for payments outdated sheet."),
+                                              proceedTitle: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON",
+                                                                              comment: "Button for payments outdated sheet."),
+                                              proceedStyle: .default) { _ in
+            let url = TSConstants.appStoreUpdateURL
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        }
+    }
+
+}
+
+public enum OutdatedTitleType {
+    case cantSendPayment
+    case updateRequired
+}
+
+extension OutdatedTitleType {
+    var localizedTitle: String {
+        switch self {
+        case .cantSendPayment:
+            return NSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND",
+                              comment: "Title for payments outdated sheet saying cant send.")
+        case .updateRequired:
+            return NSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE",
+                              comment: "Title for payments outdated sheet saying update required.")
+        }
+    }
+}

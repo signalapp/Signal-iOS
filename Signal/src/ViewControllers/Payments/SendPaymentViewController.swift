@@ -323,6 +323,8 @@ public class SendPaymentViewController: OWSViewController {
 
         view.backgroundColor = Theme.backgroundColor
 
+        addListeners()
+
         createSubviews()
 
         updateContents()
@@ -345,6 +347,21 @@ public class SendPaymentViewController: OWSViewController {
         super.applyTheme()
 
         updateContents()
+    }
+
+    private func addListeners() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(isPaymentsVersionOutdatedDidChange),
+            name: PaymentsConstants.isPaymentsVersionOutdatedDidChange,
+            object: nil
+        )
+    }
+
+    @objc
+    private func isPaymentsVersionOutdatedDidChange() {
+        guard UIApplication.shared.frontmostViewController == self else { return }
+        OWSActionSheets.showPaymentsOutdatedClientSheetIfNeeded(title: .updateRequired)
     }
 
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
