@@ -228,6 +228,16 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
                 storageServiceManager.recordPendingUpdates(updatedAddresses: [.init(uuid: contactUuid)])
             }
         }
+
+        if !self.isHidden, isHidden == true, let groupId = self.groupId {
+            // When hiding a group, disable sends for the group as well.
+            if
+                let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction),
+                groupThread.storyViewMode != .disabled
+            {
+                groupThread.updateWithStorySendEnabled(false, transaction: transaction, updateStorageService: updateStorageService)
+            }
+        }
     }
 
     public func recomputeLatestUnexpiredTimestamp(transaction: SDSAnyWriteTransaction) {
