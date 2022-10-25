@@ -59,7 +59,9 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
     /// Set for all known incoming stories, including those since expired or deleted.
     public private(set) var lastReceivedTimestamp: UInt64? {
         didSet {
-            updateLatestUnexpiredTimestampIfNeeded()
+            if let oldValue = oldValue, let newValue = lastReceivedTimestamp, newValue > oldValue {
+                updateLatestUnexpiredTimestampIfNeeded()
+            }
         }
     }
 
@@ -115,7 +117,7 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
         super.init()
 
         updateLatestUnexpiredTimestampIfNeeded()
-        updateLatestUnexpiredTimestampIfNeeded()
+        updateLastReadTimestampIfNeeded()
     }
 
     /**
@@ -285,7 +287,6 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
 
         super.init()
 
-        updateLatestUnexpiredTimestampIfNeeded()
         updateLastReadTimestampIfNeeded()
     }
 
