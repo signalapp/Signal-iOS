@@ -355,10 +355,6 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     // MARK: - Actions
 
-    var canPresentStories: Bool {
-        threadViewModel.storyState != .none && StoryManager.areStoriesEnabled
-    }
-
     func presentStoryViewController() {
         let vc = StoryPageViewController(context: thread.storyContext)
         present(vc, animated: true)

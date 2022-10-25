@@ -274,17 +274,6 @@ class MemberActionSheet: OWSTableSheetViewController {
 
 extension MemberActionSheet: ConversationHeaderDelegate {
     var isBlockedByMigration: Bool { groupViewHelper?.isBlockedByMigration == true }
-    func didTapAvatar() {
-        if threadViewModel.storyState == .none || !StoryManager.areStoriesEnabled {
-            presentAvatarViewController()
-        } else {
-
-        }
-    }
-
-    var canPresentStories: Bool {
-        threadViewModel.storyState != .none && StoryManager.areStoriesEnabled
-    }
 
     func presentStoryViewController() {
         dismiss(animated: true) {

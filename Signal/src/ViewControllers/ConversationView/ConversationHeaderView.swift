@@ -58,7 +58,7 @@ public class ConversationHeaderView: UIView {
     private var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass {
         traitCollection.verticalSizeClass == .compact ? .twentyFour : .thirtySix
     }
-    private lazy var avatarView = ConversationAvatarView(
+    private(set) lazy var avatarView = ConversationAvatarView(
         sizeClass: avatarSizeClass,
         localUserDisplayMode: .noteToSelf)
 
@@ -126,7 +126,7 @@ public class ConversationHeaderView: UIView {
     public func configure(threadViewModel: ThreadViewModel) {
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .thread(threadViewModel.threadRecord)
-            config.storyState = StoryManager.areStoriesEnabled ? threadViewModel.storyState : .none
+            config.storyConfiguration = .autoUpdate()
             config.applyConfigurationSynchronously()
         }
     }

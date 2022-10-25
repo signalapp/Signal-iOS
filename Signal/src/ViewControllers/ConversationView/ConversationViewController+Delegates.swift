@@ -246,7 +246,7 @@ extension ConversationViewController: ConversationHeaderViewDelegate {
     public func didTapConversationHeaderViewAvatar(_ conversationHeaderView: ConversationHeaderView) {
         AssertIsOnMainThread()
 
-        if threadViewModel.storyState != .none && StoryManager.areStoriesEnabled {
+        if conversationHeaderView.avatarView.configuration.hasStoriesToDisplay {
             let vc = StoryPageViewController(context: thread.storyContext)
             present(vc, animated: true)
         } else {

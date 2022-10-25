@@ -21,8 +21,6 @@ public class ThreadViewModel: NSObject {
     public let isWallpaperPhoto: Bool
     public let isBlocked: Bool
 
-    public let storyState: ConversationAvatarView.Configuration.StoryState
-
     public var isArchived: Bool { associatedData.isArchived }
     public var isMuted: Bool { associatedData.isMuted }
     public var mutedUntilTimestamp: UInt64 { associatedData.mutedUntilTimestamp }
@@ -92,12 +90,6 @@ public class ThreadViewModel: NSObject {
         } else {
             self.hasWallpaper = false
             self.isWallpaperPhoto = false
-        }
-
-        if !thread.isNoteToSelf, let latestStory = StoryFinder.latestStoryForThread(thread, transaction: transaction) {
-            storyState = latestStory.localUserViewedTimestamp != nil ? .viewed : .unviewed
-        } else {
-            self.storyState = .none
         }
 
         isBlocked = Self.blockingManager.isThreadBlocked(thread, transaction: transaction)
