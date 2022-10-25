@@ -198,7 +198,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
   SignalCoreKit:
-    :commit: 5a9c6be791459177328b5da14bf06459e7b79dbb
+    :commit: 5ae90e076c516a4b025045e38017f49353cf3f76
     :git: "git@github.com:signalapp/SignalCoreKit"
   Starscream:
     :commit: 71ebc08f248256497a237ece262e42e7ad05c4a5
@@ -227,7 +227,7 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalArgon2: 1c24183835ca861e6af06631c18b1671cdf35571
-  SignalCoreKit: 87da14c58d57760793b892ff03838c5ef2ce1167
+  SignalCoreKit: 9febad2d82f80c5b2f446740c68f1fba6d4cd9b2
   SignalRingRTC: 48c58c355141189961729ece75202c1688df1eee
   SQLCipher: 712e8416685e8e575b9b0706ffee71678b2fdcf8
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322

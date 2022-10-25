@@ -8,7 +8,6 @@
 #import "TSAttachmentPointer.h"
 #import "TSMessage.h"
 #import <SignalCoreKit/NSString+OWS.h>
-#import <SignalCoreKit/iOSVersions.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

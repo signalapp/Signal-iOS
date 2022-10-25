@@ -12,7 +12,6 @@
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalCoreKit/Threading.h>
-#import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/MessageSender.h>

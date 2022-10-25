@@ -3,11 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import "UIViewController+OWS.h"
 #import "Theme.h"
 #import "UIUtil.h"
 #import "UIView+SignalUI.h"
-#import <SignalCoreKit/iOSVersions.h>
+#import "UIViewController+OWS.h"
 #import <SignalServiceKit/AppContext.h>
 #import <SignalUI/SignalUI-Swift.h>
 

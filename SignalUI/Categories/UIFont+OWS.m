@@ -4,7 +4,6 @@
 //
 
 #import "UIFont+OWS.h"
-#import <SignalCoreKit/iOSVersions.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
