@@ -67,8 +67,11 @@ public class DonationCurrencyPickerButton: UIStackView {
         let label = UILabel()
         label.font = .ows_dynamicTypeBodyClamped
         label.textColor = Theme.primaryTextColor
-        label.text = NSLocalizedString("DONATIONS_CURRENCY_PICKER_LABEL",
-                                       comment: "Label for the currency picker button in donation views")
+        label.text = NSLocalizedString(
+            "DONATIONS_CURRENCY_PICKER_LABEL",
+            value: "Currency",
+            comment: "Label for the currency picker button in donation views"
+        )
         self.addArrangedSubview(label)
 
         let picker = OWSButton(block: block)
