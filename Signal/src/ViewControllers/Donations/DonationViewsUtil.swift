@@ -57,13 +57,7 @@ public class ProfileBadgeLookup {
 // MARK: - Currency picker view
 
 public class DonationCurrencyPickerButton: UIStackView {
-    private let currentCurrencyCode: Currency.Code
-    private let block: () -> Void
-
     init(currentCurrencyCode: Currency.Code, block: @escaping () -> Void) {
-        self.currentCurrencyCode = currentCurrencyCode
-        self.block = block
-
         super.init(frame: .zero)
 
         self.axis = .horizontal
