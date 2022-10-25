@@ -196,8 +196,9 @@ class PhotoCaptureViewController: OWSViewController {
     private let contentLayoutGuide = UILayoutGuide()
     private var contentLayoutGuideTop: NSLayoutConstraint? // controls vertical position of `contentLayoutGuide` on iPhones.
 
-    private enum ComposerMode {
-        case camera
+    // Values match ContentTypeSelectionControl.selectedSegmentIndex.
+    private enum ComposerMode: Int {
+        case camera = 0
         case text
     }
     private var _internalComposerMode: ComposerMode = .camera
@@ -208,21 +209,38 @@ class PhotoCaptureViewController: OWSViewController {
         guard _internalComposerMode != composerMode else { return }
         _internalComposerMode = composerMode
 
+        if composerMode == .text {
+            startObservingKeyboardNotifications()
+            initializeTextEditorUIIfNecessary()
+        }
+
         updateTopBarAppearance(animated: animated)
         // No need to update bottom bar's visibility because it's always visible if CAMERA|TEXT switch is accessible.
         bottomBar.setMode(composerMode == .text ? .text : .camera, animated: animated)
         updateSideBarVisibility(animated: animated)
 
-        let hideZoomControl = composerMode == .text
+        // Show / hide camera controls and viewfinder.
+        let hideCameraUI = composerMode != .camera
         let isFrontCamera = photoCapture.desiredPosition == .front
-        frontCameraZoomControl?.setIsHidden(hideZoomControl || !isFrontCamera, animated: animated)
-        rearCameraZoomControl?.setIsHidden(hideZoomControl || isFrontCamera, animated: animated)
-
+        frontCameraZoomControl?.setIsHidden(hideCameraUI || !isFrontCamera, animated: animated)
+        rearCameraZoomControl?.setIsHidden(hideCameraUI || isFrontCamera, animated: animated)
+        previewView.setIsHidden(hideCameraUI, animated: animated)
         doneButton.setIsHidden(shouldHideDoneButton, animated: animated)
 
-        previewView.setIsHidden(composerMode == .text, animated: animated)
-        if textEditorUIInitialized {
-            textEditorToolbar.setIsHidden(composerMode != .text, animated: animated)
+        // Show / hide text editor controls.
+        let hideTextComposerUI = composerMode != .text
+        textStoryComposerView.setIsHidden(hideTextComposerUI, animated: animated)
+        textEditorToolbar.setIsHidden(hideTextComposerUI, animated: animated)
+
+        // Stop / start camera as necessary.
+        switch composerMode {
+        case .camera: resumePhotoCapture()
+        case .text: pausePhotoCapture()
+        }
+
+        // Update CAMERA | TEXT switch if necessary.
+        if bottomBar.contentTypeSelectionControl.selectedSegmentIndex != composerMode.rawValue {
+            bottomBar.contentTypeSelectionControl.selectedSegmentIndex = composerMode.rawValue
         }
     }
 
@@ -702,6 +720,11 @@ extension PhotoCaptureViewController {
             textStoryComposerView.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor)
         ])
 
+        // Swipe right to switch to camera.
+        let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeToCamera(gesture:)))
+        swipeGesture.direction = CurrentAppContext().isRTL ? .left : .right
+        textStoryComposerView.addGestureRecognizer(swipeGesture)
+
         // Choose Background and Attach Link buttons.
         // Toolbar is added to VC's view because it might be located outside of the textStoryComposerView.
         view.addSubview(textEditorToolbar)
@@ -928,6 +951,12 @@ extension PhotoCaptureViewController {
 
         delegate?.photoCaptureViewController(self, didFinishWithTextAttachment: unsentTextAttachment)
     }
+
+    @objc
+    func didSwipeToCamera(gesture: UISwipeGestureRecognizer) {
+        guard composerMode == .text else { return }
+        setComposerMode(.camera, animated: true)
+    }
 }
 
 extension PhotoCaptureViewController: TextStoryComposerViewDelegate {
@@ -1024,33 +1053,8 @@ extension PhotoCaptureViewController {
     @objc
     private func contentTypeChanged() {
         Logger.verbose("")
-        let newComposerMode: ComposerMode = {
-            switch bottomBar.contentTypeSelectionControl.selectedSegmentIndex {
-            case 0:
-                return .camera
-
-            case 1:
-                return .text
-
-            default:
-                owsFailDebug("Invalid segment index")
-                return composerMode
-            }
-        }()
+        guard let newComposerMode = ComposerMode(rawValue: bottomBar.contentTypeSelectionControl.selectedSegmentIndex) else { return }
         setComposerMode(newComposerMode, animated: true)
-
-        // Stop / start camera as necessary.
-        switch newComposerMode {
-        case .camera:
-            resumePhotoCapture()
-            textStoryComposerView.setIsHidden(true, animated: true)
-
-        case .text:
-            startObservingKeyboardNotifications()
-            initializeTextEditorUIIfNecessary()
-            textStoryComposerView.setIsHidden(false, animated: true)
-            pausePhotoCapture()
-        }
     }
 }
 
@@ -1068,10 +1072,17 @@ extension PhotoCaptureViewController {
         let tapToFocusGesture = UITapGestureRecognizer(target: self, action: #selector(didTapFocusExpose(tapGesture:)))
         tapToFocusGesture.require(toFail: doubleTapToSwitchCameraGesture)
         previewView.addGestureRecognizer(tapToFocusGesture)
+
+        // Swipe left to switch to text story composer.
+        if bottomBar.isContentTypeSelectionControlAvailable {
+            let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeToTextComposer(gesture:)))
+            swipeGesture.direction = CurrentAppContext().isRTL ? .right : .left
+            previewView.addGestureRecognizer(swipeGesture)
+        }
     }
 
     @objc
-    func didPinchZoom(pinchGesture: UIPinchGestureRecognizer) {
+    private func didPinchZoom(pinchGesture: UIPinchGestureRecognizer) {
         switch pinchGesture.state {
         case .began:
             photoCapture.beginPinchZoom()
@@ -1086,7 +1097,7 @@ extension PhotoCaptureViewController {
     }
 
     @objc
-    func didDoubleTapToSwitchCamera(tapGesture: UITapGestureRecognizer) {
+    private func didDoubleTapToSwitchCamera(tapGesture: UITapGestureRecognizer) {
         guard !isRecordingVideo else {
             // - Orientation gets out of sync when switching cameras mid movie.
             // - Audio gets out of sync when switching cameras mid movie
@@ -1098,7 +1109,7 @@ extension PhotoCaptureViewController {
     }
 
     @objc
-    func didTapFocusExpose(tapGesture: UITapGestureRecognizer) {
+    private func didTapFocusExpose(tapGesture: UITapGestureRecognizer) {
         let viewLocation = tapGesture.location(in: previewView)
         let devicePoint = previewView.previewLayer.captureDevicePointConverted(fromLayerPoint: viewLocation)
         photoCapture.focus(with: .autoFocus, exposureMode: .autoExpose, at: devicePoint, monitorSubjectAreaChange: true)
@@ -1108,6 +1119,12 @@ extension PhotoCaptureViewController {
             positionTapToFocusView(center: tapGesture.location(in: focusFrameSuperview))
             startFocusAnimation()
         }
+    }
+
+    @objc
+    private func didSwipeToTextComposer(gesture: UISwipeGestureRecognizer) {
+        guard composerMode == .camera else { return }
+        setComposerMode(.text, animated: true)
     }
 }
 
