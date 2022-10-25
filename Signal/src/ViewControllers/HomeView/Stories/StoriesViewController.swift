@@ -63,7 +63,8 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         super.viewDidLoad()
 
         view.addSubview(tableView)
-        tableView.autoPinEdgesToSuperviewEdges()
+        tableView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+        autoPinView(toBottomOfViewControllerOrKeyboard: tableView, avoidNotch: true)
         tableView.delegate = self
         tableView.dataSource = self
 
@@ -110,6 +111,8 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         updateNavigationBar()
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
+
+        observeTableViewContentSize()
     }
 
     private var timestampUpdateTimer: Timer?
@@ -229,6 +232,40 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         searchBarBackdropView.backgroundColor = Theme.backgroundColor
 
         updateNavigationBar()
+    }
+
+    private var hasSeenNonZeroContentSize = false
+    private var tableViewContentSizeObservation: NSKeyValueObservation?
+
+    private func stopObsersingTableViewContentSize() {
+        tableViewContentSizeObservation?.invalidate()
+        tableViewContentSizeObservation = nil
+    }
+
+    private func observeTableViewContentSize() {
+        stopObsersingTableViewContentSize()
+        guard !hasSeenNonZeroContentSize else { return }
+
+        tableViewContentSizeObservation = tableView.observe(\.contentSize, changeHandler: { [weak self] _, _ in
+            guard
+                let strongSelf = self,
+                !strongSelf.hasSeenNonZeroContentSize
+            else {
+                self?.stopObsersingTableViewContentSize()
+                return
+            }
+
+            if strongSelf.tableView.contentSize.height > 0 {
+                strongSelf.hasSeenNonZeroContentSize = true
+
+                if strongSelf.tableView.contentSize.height > strongSelf.tableView.frame.height {
+                    // Scroll up the search bar.
+                    strongSelf.tableView.contentOffset = strongSelf.tableView.contentOffset.offsetBy(dy: strongSelf.searchBarContainer.frame.height)
+                }
+
+                strongSelf.stopObsersingTableViewContentSize()
+            }
+        })
     }
 
     @objc
