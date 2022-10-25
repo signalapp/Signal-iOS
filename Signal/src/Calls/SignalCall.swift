@@ -409,7 +409,7 @@ extension SignalCall: GroupCallDelegate {
     public func groupCall(onRemoteDeviceStatesChanged groupCall: GroupCall) {
         observers.elements.forEach { $0.groupCallRemoteDeviceStatesChanged(self) }
         // Change this after notifying observers so that they can see when the ring has concluded.
-        if groupCallRingState == .ringing && !groupCall.remoteDeviceStates.isEmpty {
+        if case .ringing = groupCallRingState, !groupCall.remoteDeviceStates.isEmpty {
             groupCallRingState = .ringingEnded
             // Treat the end of ringing as a "local state change" for listeners that normally ignore remote changes.
             self.groupCall(onLocalDeviceStateChanged: groupCall)

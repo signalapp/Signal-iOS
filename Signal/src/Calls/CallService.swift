@@ -845,10 +845,10 @@ extension CallService: CallObserver {
         updateGroupMembersForCurrentCallIfNecessary()
         configureBandwidthMode()
 
-        if call.groupCallRingState == .shouldRing &&
-            call.ringRestrictions.isEmpty &&
-            call.groupCall.localDeviceState.joinState == .joined &&
-            call.groupCall.remoteDeviceStates.isEmpty {
+        if case .shouldRing = call.groupCallRingState,
+           call.ringRestrictions.isEmpty,
+           call.groupCall.localDeviceState.joinState == .joined,
+           call.groupCall.remoteDeviceStates.isEmpty {
             // Don't start ringing until we join the call successfully.
             call.groupCallRingState = .ringing
             call.groupCall.ringAll()
@@ -857,7 +857,7 @@ extension CallService: CallObserver {
     }
 
     public func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
-        if call.groupCallRingState == .ringing && !call.groupCall.remoteDeviceStates.isEmpty {
+        if case .ringing = call.groupCallRingState, !call.groupCall.remoteDeviceStates.isEmpty {
             // The first time someone joins after a ring, we need to mark the call accepted.
             // (But if we didn't ring, the call will have already been marked accepted.)
             callUIAdapter.recipientAcceptedCall(call)
