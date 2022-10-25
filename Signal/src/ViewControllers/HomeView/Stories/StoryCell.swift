@@ -96,7 +96,8 @@ class StoryCell: UITableViewCell {
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = model.latestMessageAvatarDataSource
-            config.storyState = model.hasUnviewedMessages ? .unviewed : .viewed
+            // We reload the row when this state changes, so don't make the avatar auto update.
+            config.storyConfiguration = .fixed(model.hasUnviewedMessages ? .unviewed : .viewed)
             config.usePlaceholderImages()
         }
 

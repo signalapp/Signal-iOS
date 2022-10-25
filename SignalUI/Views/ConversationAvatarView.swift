@@ -3,13 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import GRDB
 import UIKit
 import SignalMessaging
 
 public protocol ConversationAvatarViewDelegate: AnyObject {
     func didTapBadge()
-
-    var canPresentStories: Bool { get }
 
     func presentStoryViewController()
     func presentAvatarViewController()
@@ -17,8 +16,8 @@ public protocol ConversationAvatarViewDelegate: AnyObject {
     func presentActionSheet(_ vc: ActionSheetController, animated: Bool)
 }
 public extension ConversationAvatarViewDelegate {
-    func didTapAvatar() {
-        if canPresentStories {
+    func didTapAvatar(_ configuration: ConversationAvatarView.Configuration) {
+        if configuration.hasStoriesToDisplay {
             let actionSheet = ActionSheetController()
             actionSheet.addAction(OWSActionSheets.cancelAction)
             actionSheet.addAction(.init(
@@ -127,12 +126,12 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         public var sizeClass: SizeClass
 
         fileprivate var avatarSizeClass: SizeClass {
-            guard storyState != .none else { return sizeClass }
+            guard hasStoriesToDisplay else { return sizeClass }
             return .customDiameter(sizeClass.diameter - (sizeClass.storyBorderInsets * 2))
         }
 
         fileprivate var avatarOffset: CGPoint {
-            guard storyState != .none else { return .zero }
+            guard hasStoriesToDisplay else { return .zero }
             return CGPoint(x: Int(sizeClass.storyBorderInsets), y: Int(sizeClass.storyBorderInsets))
         }
 
@@ -172,12 +171,42 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             useCachedImages = false
         }
 
+        public enum StoryConfiguration: Equatable {
+            /// Won't show the ring even if there are stories.
+            case disabled
+            /// Shows the ring based on the provided state; won't observe updates.
+            case fixed(StoryState)
+            /// Shows the ring if needed and observes story state changes.
+            /// Optional initial value to speed up first load, if not provided state
+            /// will be loaded on its own.
+            case autoUpdate(state: StoryState? = nil)
+        }
+
         public enum StoryState: Equatable {
             case unviewed
             case viewed
-            case none
+            case noStories
+
+            var hasStoriesToDisplay: Bool {
+                switch self {
+                case .noStories: return false
+                case .viewed, .unviewed: return true
+                }
+            }
         }
-        public var storyState: StoryState = .none
+
+        public var storyConfiguration: StoryConfiguration = .disabled
+
+        public var hasStoriesToDisplay: Bool {
+            guard StoryManager.areStoriesEnabled else { return false }
+            switch storyConfiguration {
+            case .disabled: return false
+            case let .autoUpdate(state):
+                return state?.hasStoriesToDisplay ?? false
+            case let .fixed(state):
+                return state.hasStoriesToDisplay
+            }
+        }
     }
 
     public private(set) var configuration: Configuration {
@@ -201,7 +230,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         let shouldShowBadgeDidChange = configuration.addBadgeIfApplicable != oldValue.addBadgeIfApplicable
         let shapeDidChange = configuration.shape != oldValue.shape
         let autolayoutDidChange = configuration.useAutolayout != oldValue.useAutolayout
-        let storyStateDidChange = configuration.storyState != oldValue.storyState
+        let storyStateDidChange = configuration.storyConfiguration != oldValue.storyConfiguration
 
         // Any changes to avatar size or provider will trigger a model update
         if sizeClassDidChange || avatarSizeClassDidChange || dataSourceDidChange || localUserDisplayModeDidChange || shouldShowBadgeDidChange {
@@ -394,8 +423,17 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     override public func layoutSubviews() {
         super.layoutSubviews()
 
-        switch configuration.storyState {
-        case .none:
+        let storyState: Configuration.StoryState?
+        switch configuration.storyConfiguration {
+        case .disabled:
+            storyState = nil
+        case .fixed(let state):
+            storyState = state
+        case .autoUpdate(let state):
+            storyState = state
+        }
+        switch storyState {
+        case .none, .noStories:
             storyStateView.isHidden = true
         case .viewed:
             storyStateView.isHidden = false
@@ -470,7 +508,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
     @objc
     private func didTapAvatar(_ sender: UITapGestureRecognizer) {
         guard avatarView.image != nil else { return }
-        interactionDelegate?.didTapAvatar()
+        interactionDelegate?.didTapAvatar(configuration)
     }
 
     @objc
@@ -523,6 +561,90 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
                                                    name: OWSContactsManager.skipGroupAvatarBlurDidChange,
                                                    object: nil)
         }
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(startObservingStoryChangesIfNeeded),
+            name: .storiesEnabledStateDidChange,
+            object: nil
+        )
+
+        startObservingStoryChangesIfNeeded()
+    }
+
+    private var storyContextAssociatedDataObservation: DatabaseCancellable?
+
+    @objc
+    private func startObservingStoryChangesIfNeeded() {
+        switch configuration.storyConfiguration {
+        case .disabled, .fixed:
+            stopObservingStoryChanges()
+            return
+        case .autoUpdate:
+            break
+        }
+        guard let dataSource = configuration.dataSource, StoryManager.areStoriesEnabled else {
+            stopObservingStoryChanges()
+            return
+        }
+
+        let storyContextAssociatedDataFilterPredicate: SQLSpecificExpressible?
+        if
+            let contactAddress = dataSource.contactAddress,
+            !contactAddress.isLocalAddress,
+            let contactUUID = contactAddress.uuid?.uuidString
+        {
+            storyContextAssociatedDataFilterPredicate = Column(StoryContextAssociatedData.columnName(.contactUuid)) == contactUUID
+        } else if let groupId = dataSource.groupId {
+            // == not available for data, use single item set contains which is the same thing.
+            storyContextAssociatedDataFilterPredicate = Set([groupId]).contains(Column(StoryContextAssociatedData.columnName(.groupId)))
+        } else {
+            storyContextAssociatedDataFilterPredicate = nil
+        }
+
+        stopObservingStoryChanges()
+        if let predicate = storyContextAssociatedDataFilterPredicate {
+            storyContextAssociatedDataObservation = ValueObservation.tracking { db -> StoryContextAssociatedData? in
+                try StoryContextAssociatedData
+                    .filter(predicate)
+                    .fetchOne(db)
+            }.start(
+                in: databaseStorage.grdbStorage.pool,
+                onError: { error in
+                    owsFailDebug("Failed to observe story hidden state: \(error))")
+                },
+                onChange: { [weak self] (associatedData: StoryContextAssociatedData?) in
+                    guard self?.configuration.storyConfiguration != .disabled else {
+                        self?.stopObservingStoryChanges()
+                        return
+                    }
+                    let newStoryState: Configuration.StoryState = {
+                        guard
+                            StoryManager.areStoriesEnabled,
+                            associatedData?.hasUnexpiredStories ?? false
+                        else {
+                            return .noStories
+                        }
+                        return (associatedData?.hasUnviewedStories ?? false) ? .unviewed : .viewed
+                    }()
+                    switch self?.configuration.storyConfiguration {
+                    case .none, .disabled, .fixed:
+                        self?.stopObservingStoryChanges()
+                        return
+                    case .autoUpdate(let currentState):
+                        if newStoryState != currentState {
+                            self?.configuration.storyConfiguration = .autoUpdate(state: newStoryState)
+                            self?.setNeedsLayout()
+                        }
+                    }
+                }
+            )
+        }
+    }
+
+    private func stopObservingStoryChanges() {
+        storyContextAssociatedDataObservation?.cancel()
+        storyContextAssociatedDataObservation = nil
     }
 
     @objc
@@ -659,6 +781,13 @@ public enum ConversationAvatarDataSource: Equatable, Dependencies, CustomStringC
     fileprivate var threadId: String? {
         switch self {
         case .thread(let thread): return thread.uniqueId
+        case .address, .asset: return nil
+        }
+    }
+
+    fileprivate var groupId: Data? {
+        switch self {
+        case .thread(let thread): return (thread as? TSGroupThread)?.groupId
         case .address, .asset: return nil
         }
     }

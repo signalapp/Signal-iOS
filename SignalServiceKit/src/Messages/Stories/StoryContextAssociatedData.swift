@@ -93,6 +93,20 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
         lastReadTimestamp = newValue
     }
 
+    public var hasUnexpiredStories: Bool {
+        return latestUnexpiredTimestamp != nil
+    }
+
+    public var hasUnviewedStories: Bool {
+        guard let latestUnexpiredTimestamp = latestUnexpiredTimestamp else {
+            return false
+        }
+        guard let lastViewedTimestamp = lastViewedTimestamp else {
+            return true
+        }
+        return lastViewedTimestamp < latestUnexpiredTimestamp
+    }
+
     public init(
         sourceContext: SourceContext,
         isHidden: Bool = false,

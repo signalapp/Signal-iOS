@@ -97,7 +97,8 @@ class MyStoryCell: UITableViewCell {
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .address(Self.tsAccountManager.localAddress!)
-            config.storyState = model.messages.isEmpty ? .none : .viewed
+            // We reload the row when this state changes, so don't make the avatar auto update.
+            config.storyConfiguration = .fixed(model.messages.isEmpty ? .noStories : .viewed)
             config.usePlaceholderImages()
         }
 
