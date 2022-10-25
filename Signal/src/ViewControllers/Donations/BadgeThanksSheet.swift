@@ -241,15 +241,11 @@ class BadgeThanksSheet: OWSTableSheetViewController {
 
     private var titleText: String {
         switch self.badgeType {
-        case .boost:
+        case .boost, .subscription:
             return NSLocalizedString(
-                "BADGE_THANKS_BOOST_TITLE",
-                comment: "Title for boost on the thank you sheet."
-            )
-        case .subscription:
-            return NSLocalizedString(
-                "BADGE_THANKS_SUBSCRIPTION_TITLE",
-                comment: "Title for subscription on the thank you sheet."
+                "BADGE_THANKS_TITLE",
+                value: "Thanks for your support!",
+                comment: "When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet."
             )
         case .gift(shortName: let shortName, _, _, _):
             let formatText = NSLocalizedString(
@@ -264,8 +260,9 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         switch self.badgeType {
         case .boost, .subscription:
             let formatText = NSLocalizedString(
-                "BADGE_THANKS_YOU_EARNED_FORMAT",
-                comment: "String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}."
+                "BADGE_THANKS_BODY",
+                value: "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.",
+                comment: "When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet."
             )
             return String(format: formatText, self.badge.localizedName)
         case .gift(_, fullName: let fullName, _, _):
