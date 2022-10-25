@@ -1176,7 +1176,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Enviant…</string>
+			<string>Enviant %1$d…</string>
 			<key>other</key>
 			<string>Enviant %1$d…</string>
 		</dict>

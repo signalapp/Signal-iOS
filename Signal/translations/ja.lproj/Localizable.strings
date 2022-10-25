@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "メッセージ申請について";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "すべてのコネクション";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "応答する";
@@ -3803,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "マイストーリー";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "タップして追加";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "最近、プロフィール名を %1$@ から %2$@ に変更しました。";
@@ -3893,7 +3893,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "ストーリー名がありません";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "あなただけがこのストーリーの名前を見ることができます。";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "ストーリー名 (必須)";
@@ -3905,13 +3905,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "閲覧者";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "新規";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
 "NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "特定のユーザーのみ閲覧可能";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "新規カスタムストーリー";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "既存のグループに共有";
@@ -4742,7 +4742,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "閲覧できる人を追加";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "カスタムストーリーを削除する";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "本当に「%1$@」を削除しますか？ストーリーで共有された更新情報も削除されます。";
@@ -6287,7 +6287,7 @@
 "STORIES_SAVE_STORY_ACTION" = "保存";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "ストーリーの更新は24時間後に自動的に消えます。ストーリーを閲覧できるユーザーを選択したり、特定の閲覧者やグループで新しいストーリーを作成することができます。";
 
 /* Header for the 'Stories' section of the stories settings */
 "STORIES_SETTINGS_STORIES_HEADER" = "ストーリー";
@@ -6311,10 +6311,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "ストーリーを表示する";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "閲覧済表示";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "ストーリーが閲覧されたことを確認・共有することができます。無効にすると、他の人があなたのストーリーを閲覧したことが確認できません。";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "共有";
@@ -6332,7 +6332,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "ストーリーを再表示しました";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "閲覧済を有効にすると、誰があなたのストーリーを閲覧したかわかります。";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "閲覧";
@@ -6527,7 +6527,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "読み込み中";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signalは、広告主や投資家を持たない非営利団体であり、ユーザの皆様の寄付によって成り立っています。\n毎月の定期的な寄付をしていただくと、寄付をしたことを友達に知らせることができる、プロフィールバッジをプレゼントします。";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signalは、広告主や投資家を持たない非営利団体であり、ユーザの皆様の寄付によって成り立っています。毎月の定期的な寄付をしていただくと、寄付をしたことを友達に知らせることができる、プロフィールバッジをプレゼントします。";
 
 /* Second block of description text in read more sheet */
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signalは、表現の自由を守り、安全なグローバルコミュニケーションを可能にする、オープンソースのプライバシー保護技術の開発に取り組んでいます。\n\n寄付金は、Signalの開発や運営に使われます。";

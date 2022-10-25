@@ -888,7 +888,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1  spectateur</string>
+			<string>%1$d spectateur</string>
 			<key>other</key>
 			<string>%1$d spectateurs</string>
 		</dict>

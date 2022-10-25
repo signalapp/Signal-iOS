@@ -368,7 +368,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Acest grup nu poate fi creat deoarece 1 membru folosește o versiune Signal învechită. Poți crea un grup de tip nou cu acesta, după ce își actualizează Signal, sau elimină-l înainte de a crea grupul. %2$@</string>
+			<string>Acest grup nu poate fi creat deoarece %1$d membru folosește o versiune Signal învechită. Poți crea un grup de tip nou cu acesta, după ce își actualizează Signal, sau elimină-l înainte de a crea grupul. %2$@</string>
 			<key>few</key>
 			<string>Acest grup nu poate fi creat deoarece %1$d membri folosesc o versiune Signal învechită. Poți crea un grup de tip nou cu aceștia, după ce își actualizează Signal, sau elimină-i înainte de a crea grupul. %2$@</string>
 			<key>other</key>
@@ -386,7 +386,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Acest grup nu poate fi creat deoarece 1 membru folosește o versiune Signal învechită. Poți crea un grup de tip nou cu acesta, după ce își actualizează Signal, sau elimină-l înainte de a crea grupul.</string>
+			<string>Acest grup nu poate fi creat deoarece %1$d membru folosește o versiune Signal învechită. Poți crea un grup de tip nou cu acesta, după ce își actualizează Signal, sau elimină-l înainte de a crea grupul.</string>
 			<key>few</key>
 			<string>Acest grup nu poate fi creat deoarece %1$d membri folosesc o versiune Signal învechită. Poți crea un grup de tip nou cu aceștia, după ce își actualizează Signal, sau elimină-i înainte de a crea grupul.</string>
 			<key>other</key>
@@ -422,7 +422,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Grupurile Signal funcționează cel mai bine cu 1 membru sau mai puțin. Adăugarea mai multor membri va cauza întârzieri la trimiterea și primirea mesajelor.</string>
+			<string>Grupurile Signal funcționează cel mai bine cu %1$d membru sau mai puțin. Adăugarea mai multor membri va cauza întârzieri la trimiterea și primirea mesajelor.</string>
 			<key>few</key>
 			<string>Grupurile Signal funcționează cel mai bine cu %1$d membri sau mai puțin. Adăugarea mai multor membri va cauza întârzieri la trimiterea și primirea mesajelor.</string>
 			<key>other</key>
@@ -714,7 +714,7 @@
 			<key>few</key>
 			<string>%2$@ a invitat %1$d persoane la grup.</string>
 			<key>other</key>
-			<string>%2$@ a invitat %1$d persoane la grup.</string>
+			<string>%2$@ a invitat %1$d de persoane la grup.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -858,7 +858,7 @@
 			<key>few</key>
 			<string>%1$d grupuri în comun</string>
 			<key>other</key>
-			<string>%1$d grupuri în comun</string>
+			<string>%1$d de grupuri în comun</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
@@ -908,11 +908,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d articol</string>
+			<string>%1$d element</string>
 			<key>few</key>
 			<string>%1$d elemente</string>
 			<key>other</key>
-			<string>%1$d elemente</string>
+			<string>%1$d de elemente</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
@@ -926,7 +926,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ai blocat 1 membru al acestui grup</string>
+			<string>Ai blocat %1$d membru al acestui grup</string>
 			<key>few</key>
 			<string>Ai blocat %1$d membri ai acestui grup</string>
 			<key>other</key>
@@ -946,9 +946,9 @@
 			<key>one</key>
 			<string>%1$d selectată</string>
 			<key>few</key>
-			<string>%1$d Selectate</string>
+			<string>%1$d selectate</string>
 			<key>other</key>
-			<string>%1$d Selectate</string>
+			<string>%1$d selectate</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -962,11 +962,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Exclusă</string>
+			<string>%1$d exclusă</string>
 			<key>few</key>
-			<string>%1$d Excluse</string>
+			<string>%1$d excluse</string>
 			<key>other</key>
-			<string>%1$d Exclus</string>
+			<string>%1$d excluse</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>
@@ -982,9 +982,9 @@
 			<key>one</key>
 			<string>%1$d spectator</string>
 			<key>few</key>
-			<string>%1$d Spectatori</string>
+			<string>%1$d spectatori</string>
 			<key>other</key>
-			<string>%1$d de Spectatori</string>
+			<string>%1$d de spectatori</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -998,11 +998,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Spectator</string>
+			<string>%1$d 1 spectator</string>
 			<key>few</key>
-			<string>%1$d Spectatori</string>
+			<string>%1$d spectatori</string>
 			<key>other</key>
-			<string>%1$d de Spectatori</string>
+			<string>%1$d de spectatori</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -1016,11 +1016,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Toate conexiunile Signal · 1 Spectator</string>
+			<string>Toate conexiunile Signal · 1 spectator</string>
 			<key>few</key>
-			<string>Toate conexiunile Signal · %1$d Spectatori</string>
+			<string>Toate conexiunile Signal · %1$d spectatori</string>
 			<key>other</key>
-			<string>Toate conexiunile Signal · %1$d de Spectatori</string>
+			<string>Toate conexiunile Signal · %1$d de spectatori</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -1034,11 +1034,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Toate conexiunile Signal · 1 Exclusă</string>
+			<string>Toate conexiunile Signal · %1$d exclusă</string>
 			<key>few</key>
-			<string>Toate conexiunile Signal · %1$d Excluse</string>
+			<string>Toate conexiunile Signal · %1$d excluse</string>
 			<key>other</key>
-			<string>Toate conexiunile Signal · %1$d Excluse</string>
+			<string>Toate conexiunile Signal · %1$d excluse</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -1052,11 +1052,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Trimite doar către · 1 Spectator</string>
+			<string>Trimite doar către · 1 spectator</string>
 			<key>few</key>
-			<string>Trimite doar către · %1$d Spectatori</string>
+			<string>Trimite doar către · %1$d spectatori</string>
 			<key>other</key>
-			<string>Trimite doar către · %1$d de Spectatori</string>
+			<string>Trimite doar către · %1$d de spectatori</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1074,7 +1074,7 @@
 			<key>few</key>
 			<string>%1$d membri</string>
 			<key>other</key>
-			<string>%1$d membri</string>
+			<string>%1$d de membri</string>
 		</dict>
 	</dict>
 	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>
@@ -1110,7 +1110,7 @@
 			<key>few</key>
 			<string>PIN incorect. %1$d încercări rămase.</string>
 			<key>other</key>
-			<string>PIN incorect. %1$d încercări rămase.</string>
+			<string>PIN incorect. %1$d de încercări rămase.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -1146,7 +1146,7 @@
 			<key>few</key>
 			<string>%1$d solicitări de membru în așteptare.</string>
 			<key>other</key>
-			<string>%1$d solicitări de membru în așteptare.</string>
+			<string>%1$d de solicitări de membru în așteptare.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -1214,11 +1214,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Custom Story · %1$d Viewer</string>
+			<string>Poveste personalizată · %1$d spectator</string>
 			<key>few</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>Poveste personalizată · %1$d spectatori</string>
 			<key>other</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>Poveste personalizată · %1$d de spectatori</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1250,7 +1250,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Mai ai o încercare rămasă. Dacă rămâi fără încercări, contul tău va fi blocat. După 7 zile de inactivitate, te poți înregistra din nou fără PIN. Contul tău va fi eliminat și tot conținutul acestuia șters.</string>
+			<string>Mai ai %1$d încercare rămasă. Dacă rămâi fără încercări, contul tău va fi blocat. După 7 zile de inactivitate, te poți înregistra din nou fără PIN. Contul tău va fi eliminat și tot conținutul acestuia șters.</string>
 			<key>few</key>
 			<string>Mai ai %1$d încercări rămase. Dacă rămâi fără încercări, contul tău va fi blocat. După 7 zile de inactivitate, te poți înregistra din nou fără PIN. Contul tău va fi eliminat și tot conținutul acestuia șters.</string>
 			<key>other</key>
@@ -1286,11 +1286,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Spectator</string>
+			<string>%1$d spectator</string>
 			<key>few</key>
-			<string>%1$d Spectatori</string>
+			<string>%1$d spectatori</string>
 			<key>other</key>
-			<string>%1$d de Spectatori</string>
+			<string>%1$d de spectatori</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1304,11 +1304,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Exclus</string>
+			<string>%1$d exclus</string>
 			<key>few</key>
-			<string>%1$d Excluse</string>
+			<string>%1$d excluse</string>
 			<key>other</key>
-			<string>%1$d de Excluse</string>
+			<string>%1$d excluse</string>
 		</dict>
 	</dict>
 	<key>STORY_SENDING_%d</key>

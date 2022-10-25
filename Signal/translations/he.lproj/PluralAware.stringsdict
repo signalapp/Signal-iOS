@@ -13,7 +13,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>הודעה קולית שנייה 1</string>
+			<string>הודעה קולית שנייה %1$d</string>
 			<key>two</key>
 			<string>הודעה קולית %1$d שניות</string>
 			<key>many</key>
@@ -113,13 +113,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>צבע מותאם אישית זה נמצא בשימוש בהתכתבות %1$d. האם אתה רוצה למחוק אותו עבור כל ההתכתבויות?</string>
+			<string>צבע מותאם אישית זה נמצא בשימוש בצ׳אט %1$d. למחוק אותו עבור כל הצ׳אטים?</string>
 			<key>two</key>
-			<string>צבע מותאם אישית זה נמצא בשימוש ב־%1$d התכתבויות. האם אתה רוצה למחוק אותו עבור כל ההתכתבויות?</string>
+			<string>צבע מותאם אישית זה נמצא בשימוש ב–%1$d צ׳אטים. למחוק אותו עבור כל הצ׳אטים?</string>
 			<key>many</key>
-			<string>צבע מותאם אישית זה נמצא בשימוש ב־%1$d התכתבויות. האם אתה רוצה למחוק אותו עבור כל ההתכתבויות?</string>
+			<string>צבע מותאם אישית זה נמצא בשימוש ב–%1$d צ׳אטים. למחוק אותו עבור כל הצ׳אטים?</string>
 			<key>other</key>
-			<string>צבע מותאם אישית זה נמצא בשימוש ב־%1$d התכתבויות. האם אתה רוצה למחוק אותו עבור כל ההתכתבויות?</string>
+			<string>צבע מותאם אישית זה נמצא בשימוש ב–%1$d צ׳אטים. למחוק אותו עבור כל הצ׳אטים?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -133,13 +133,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>צבע זה נמצא בשימוש בהתכתבות %1$d. האם אתה רוצה לשמור שינויים עבור כל ההתכתבויות?</string>
+			<string>צבע זה נמצא בשימוש בצ׳אט %1$d. לשמור את השינויים עבור כל הצ׳אטים?</string>
 			<key>two</key>
-			<string>צבע זה נמצא בשימוש ב־%1$d התכתבויות. האם אתה רוצה לשמור שינויים עבור כל ההתכתבויות?</string>
+			<string>צבע זה נמצא בשימוש ב–%1$d צ׳אטים. לשמור את השינויים עבור כל הצ׳אטים?</string>
 			<key>many</key>
-			<string>צבע זה נמצא בשימוש ב־%1$d התכתבויות. האם אתה רוצה לשמור שינויים עבור כל ההתכתבויות?</string>
+			<string>צבע זה נמצא בשימוש ב–%1$d צ׳אטים. לשמור את השינויים עבור כל הצ׳אטים?</string>
 			<key>other</key>
-			<string>צבע זה נמצא בשימוש ב־%1$d התכתבויות. האם אתה רוצה לשמור שינויים עבור כל ההתכתבויות?</string>
+			<string>צבע זה נמצא בשימוש ב–%1$d צ׳אטים. לשמור את השינויים עבור כל הצ׳אטים?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -193,7 +193,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>אי אפשר לבחור יותר מצ׳אט 1.</string>
+			<string>אי אפשר לבחור יותר מצ׳אט %1$d.</string>
 			<key>two</key>
 			<string>אי אפשר לבחור יותר מ–%1$d צ׳אטים.</string>
 			<key>many</key>
@@ -213,7 +213,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 %2$#@total@</string>
+			<string>%1$d %2$#@total@</string>
 			<key>two</key>
 			<string>%1$d %2$#@total@</string>
 			<key>many</key>
@@ -248,13 +248,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d חבר קבוצה</string>
+			<string>חבר/ה %1$d</string>
 			<key>two</key>
-			<string>%1$d חברי קבוצה</string>
+			<string>%1$d חברים</string>
 			<key>many</key>
-			<string>%1$d חברי קבוצה</string>
+			<string>%1$d חברים</string>
 			<key>other</key>
-			<string>%1$d חברי קבוצה</string>
+			<string>%1$d חברים</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -308,7 +308,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>לפני דקה 1</string>
+			<string>לפני דקה %1$d</string>
 			<key>two</key>
 			<string>לפני %1$d דקות</string>
 			<key>many</key>
@@ -348,7 +348,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>גודל קבוצה מרבי של חבר קבוצה %1$d הושג.</string>
+			<string>גודל קבוצה מרבי של חבר/ת קבוצה %1$d הושג.</string>
 			<key>two</key>
 			<string>גודל קבוצה מרבי של %1$d חברי קבוצה הושג.</string>
 			<key>many</key>
@@ -368,7 +368,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>גרסת Signal שלך תפוג עוד יום 1. אפשר ללחוץ כדי לעדכן לגרסה העדכנית ביותר.</string>
+			<string>גרסת Signal שלך תפוג עוד יום %1$d. אפשר ללחוץ כדי לעדכן לגרסה העדכנית ביותר.</string>
 			<key>two</key>
 			<string>גרסת Signal שלך תפוג עוד יומיים. אפשר ללחוץ כדי לעדכן לגרסה העדכנית ביותר.</string>
 			<key>many</key>
@@ -388,13 +388,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>שלח הודעה %1$d</string>
+			<string>שליחת הודעה</string>
 			<key>two</key>
-			<string>שלח %1$d הודעות</string>
+			<string>שליחת%1$d הודעות</string>
 			<key>many</key>
-			<string>שלח %1$d הודעות</string>
+			<string>שליחת%1$d הודעות</string>
 			<key>other</key>
-			<string>שלח %1$d הודעות</string>
+			<string>שליחת%1$d הודעות</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
@@ -408,7 +408,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>קבוצה זו לא יכולה להיווצר כי חבר/ה 1 משתמש/ת בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה. %2$@</string>
+			<string>קבוצה זו לא יכולה להיווצר כי חבר/ה %1$d משתמש/ת בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה. %2$@</string>
 			<key>two</key>
 			<string>קבוצה זו לא יכולה להיווצר כי %1$d חברים משתמשים בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה. %2$@</string>
 			<key>many</key>
@@ -428,7 +428,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>קבוצה זו לא יכולה להיווצר כי חבר/ה 1 משתמש/ת בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה.</string>
+			<string>קבוצה זו לא יכולה להיווצר כי חבר/ה %1$d משתמש/ת בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה.</string>
 			<key>two</key>
 			<string>קבוצה זו לא יכולה להיווצר כי %1$d חברים משתמשים בגרסה ישנה של Signal. אפשר ליצור קבוצה בסגנון חדש איתם לאחר שהם יעדכנו את Signal, או להסיר אותם לפני יצירת הקבוצה.</string>
 			<key>many</key>
@@ -448,13 +448,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>חבר/ה 1 לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
+			<string>חבר/ה %1$d לא יכל/ה להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותו/ה עכשיו?</string>
 			<key>two</key>
-			<string>%1$d חברי קבוצה לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
+			<string>%1$d חברים לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
 			<key>many</key>
-			<string>%1$d חברי קבוצה לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
+			<string>%1$d חברים לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
 			<key>other</key>
-			<string>%1$d חברי קבוצה לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
+			<string>%1$d חברים לא יכלו להתווסף מחדש לקבוצה החדשה. מתחשק לך להוסיף אותם עכשיו?</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -468,7 +468,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>קבוצות Signal מתפקדות בצורה הטובה ביותר עם חבר/ה 1 או פחות. הוספת חברים נוספים תגרום לעיכובים בשליחה ובקבלה של הודעות.</string>
+			<string>קבוצות Signal מתפקדות בצורה הטובה ביותר עם חבר/ה %1$d. הוספת חברים נוספים תגרום לעיכובים בשליחה ובקבלה של הודעות.</string>
 			<key>two</key>
 			<string>קבוצות Signal מתפקדות בצורה הטובה ביותר עם %1$d חברים או פחות. הוספת חברים נוספים תגרום לעיכובים בשליחה ובקבלה של הודעות.</string>
 			<key>many</key>
@@ -488,7 +488,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>הגעת למספר המרבי של משתתף/ת 1 עבור שיחה זו. כדאי לנסות שוב מאוחר יותר.</string>
+			<string>הגעת למספר המרבי של משתתף %1$d עבור שיחה זו. כדאי לנסות שוב מאוחר יותר.</string>
 			<key>two</key>
 			<string>הגעת למספר המרבי של %1$d משתתפים עבור שיחה זו. כדאי לנסות שוב מאוחר יותר.</string>
 			<key>many</key>
@@ -508,7 +508,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>בשיחה זו · איש %1$d</string>
+			<string>בשיחה זו · אדם %1$d</string>
 			<key>two</key>
 			<string>בשיחה זו · %1$d אנשים</string>
 			<key>many</key>
@@ -528,13 +528,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>מתקשרים ל%2$@, %3$@, ועוד 1...</string>
+			<string>מתקשרים ל%2$@, %3$@, ועוד %1$d…</string>
 			<key>two</key>
-			<string>מתקשרים ל%2$@, %3$@, ועוד %1$d...</string>
+			<string>מתקשרים ל%2$@, %3$@, ועוד %1$d…</string>
 			<key>many</key>
-			<string>מתקשרים ל%2$@, %3$@, ועוד %1$d...</string>
+			<string>מתקשרים ל%2$@, %3$@, ועוד %1$d…</string>
 			<key>other</key>
-			<string>מתקשרים ל%2$@, %3$@, ועוד %1$d...</string>
+			<string>מתקשרים ל%2$@, %3$@, ועוד %1$d…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -548,13 +548,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, ועוד %1$d אחר בשיחה זו</string>
+			<string>%2$@, %3$@, ועוד %1$d נמצאים בשיחה זו</string>
 			<key>two</key>
-			<string>%2$@, %3$@, ועוד %1$d אחרים בשיחה זו</string>
+			<string>%2$@, %3$@, ועוד %1$d נמצאים בשיחה זו</string>
 			<key>many</key>
-			<string>%2$@, %3$@, ועוד %1$d אחרים בשיחה זו</string>
+			<string>%2$@, %3$@, ועוד %1$d נמצאים בשיחה זו</string>
 			<key>other</key>
-			<string>%2$@, %3$@, ועוד %1$d אחרים בשיחה זו</string>
+			<string>%2$@, %3$@, ועוד %1$d נמצאים בשיחה זו</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -568,13 +568,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, ועוד 1 הצטרפו אל השיחה</string>
+			<string>%2$@, %3$@, ועוד %1$d הצטרפו לשיחה</string>
 			<key>two</key>
-			<string>%2$@, %3$@, ועוד %1$d הצטרפו אל השיחה</string>
+			<string>%2$@, %3$@, ועוד %1$d הצטרפו לשיחה</string>
 			<key>many</key>
-			<string>%2$@, %3$@, ועוד %1$d הצטרפו אל השיחה</string>
+			<string>%2$@, %3$@, ועוד %1$d הצטרפו לשיחה</string>
 			<key>other</key>
-			<string>%2$@, %3$@, ועוד %1$d הצטרפו אל השיחה</string>
+			<string>%2$@, %3$@, ועוד %1$d הצטרפו לשיחה</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -588,7 +588,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, ועוד 1 עזבו את השיחה</string>
+			<string>%2$@, %3$@, ועוד %1$d עזבו את השיחה</string>
 			<key>two</key>
 			<string>%2$@, %3$@, ועוד %1$d עזבו את השיחה</string>
 			<key>many</key>
@@ -608,7 +608,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ ועוד %1$d אחר יוודעו</string>
+			<string>%2$@, %3$@, ועוד %1$d יקבלו התראה</string>
 			<key>two</key>
 			<string>%2$@, %3$@, ועוד %1$d יקבלו התראה</string>
 			<key>many</key>
@@ -628,13 +628,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal יצלצל אל %2$@, %3$@ ואל %1$d אחר</string>
+			<string>Signal תתקשר ל%2$@, %3$@, ועוד %1$d</string>
 			<key>two</key>
 			<string>Signal תתקשר ל%2$@, %3$@, ועוד %1$d</string>
 			<key>many</key>
 			<string>Signal תתקשר ל%2$@, %3$@, ועוד %1$d</string>
 			<key>other</key>
-			<string>Signal תתקשר ל%2$@, %3$@, ועוד %1$d אחרים</string>
+			<string>Signal תתקשר ל%2$@, %3$@, ועוד %1$d</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -668,7 +668,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>לחבר/ת קבוצה 1 יש שם דומה.</string>
+			<string>לחבר/ת קבוצה %1$d יש שם דומה.</string>
 			<key>two</key>
 			<string>ל–%1$d חברי קבוצה יש שמות דומים.</string>
 			<key>many</key>
@@ -688,13 +688,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>אל %1$d חבר קבוצה 1 יש שם דומה, סקור את חבר הקבוצה למטה או בחר לנקוט בפעולה.</string>
+			<string>לחבר/ת קבוצה %1$d יש שם דומה, אפשר לסקור את החבר/ה למטה או לבחור לנקוט בפעולה.</string>
 			<key>two</key>
-			<string>אל %1$d חברי קבוצה יש שמות דומים, סקור את חברי הקבוצה למטה או בחר לנקוט בפעולה.</string>
+			<string>ל–%1$d חברי קבוצה יש שם דומה, אפשר לסקור את החברים למטה או לבחור לנקוט בפעולה.</string>
 			<key>many</key>
-			<string>אל %1$d חברי קבוצה יש שמות דומים, סקור את חברי הקבוצה למטה או בחר לנקוט בפעולה.</string>
+			<string>ל–%1$d חברי קבוצה יש שם דומה, אפשר לסקור את החברים למטה או לבחור לנקוט בפעולה.</string>
 			<key>other</key>
-			<string>אל %1$d חברי קבוצה יש שמות דומים, סקור את חברי הקבוצה למטה או בחר לנקוט בפעולה.</string>
+			<string>ל–%1$d חברי קבוצה יש שם דומה, אפשר לסקור את החברים למטה או לבחור לנקוט בפעולה.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -708,7 +708,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>לחבר/ת קבוצה 1 יש שם זהה, אפשר לסקור את החבר/ה למטה או לבחור לנקוט בפעולה.</string>
+			<string>לחבר/ת קבוצה %1$d יש שם זהה, אפשר לסקור את החבר/ה למטה או לבחור לנקוט בפעולה.</string>
 			<key>two</key>
 			<string>ל–%1$d חברי קבוצה יש שם זהה, אפשר לסקור את החברים למטה או לבחור לנקוט בפעולה.</string>
 			<key>many</key>
@@ -728,13 +728,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d חבר קבוצה</string>
+			<string>חבר/ה %1$d</string>
 			<key>two</key>
-			<string>%1$d חברי קבוצה</string>
+			<string>%1$d חברים</string>
 			<key>many</key>
-			<string>%1$d חברי קבוצה</string>
+			<string>%1$d חברים</string>
 			<key>other</key>
-			<string>%1$d חברי קבוצה</string>
+			<string>%1$d חברים</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
@@ -748,13 +748,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d חבר קבוצה</string>
+			<string>חבר/ה %1$d</string>
 			<key>two</key>
-			<string>%1$d חברי קבוצה</string>
+			<string>%1$d חברים</string>
 			<key>many</key>
-			<string>%1$d חברי קבוצה</string>
+			<string>%1$d חברים</string>
 			<key>other</key>
-			<string>%1$d חברי קבוצה</string>
+			<string>%1$d חברים</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -768,7 +768,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>אדם 1 הוזמן לקבוצה.</string>
+			<string>אדם %1$d הוזמן לקבוצה.</string>
 			<key>two</key>
 			<string>%1$d אנשים הוזמנו לקבוצה.</string>
 			<key>many</key>
@@ -788,7 +788,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ הזמין/ה אדם 1 לקבוצה.</string>
+			<string>%2$@ הזמין/ה אדם %1$d לקבוצה.</string>
 			<key>two</key>
 			<string>%2$@ הזמין/ה %1$d אנשים לקבוצה.</string>
 			<key>many</key>
@@ -808,7 +808,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>הזמנה לקבוצה בוטלה עבור אדם 1.</string>
+			<string>הזמנה לקבוצה בוטלה עבור אדם %1$d.</string>
 			<key>two</key>
 			<string>הזמנות לקבוצה בוטלו עבור %1$d אנשים.</string>
 			<key>many</key>
@@ -828,7 +828,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ ביטל/ה הזמנה לקבוצה עבור אדם 1.</string>
+			<string>%2$@ ביטל/ה הזמנה לקבוצה עבור אדם %1$d.</string>
 			<key>two</key>
 			<string>%2$@ ביטל/ה הזמנה לקבוצה עבור %1$d אנשים.</string>
 			<key>many</key>
@@ -890,11 +890,11 @@
 			<key>one</key>
 			<string>חבר/ה לא יכל/ה להתווסף לקבוצה החדשה והוסר/ה מהקבוצה.</string>
 			<key>two</key>
-			<string>%1$d חברים לא יכלו להתווסף לקבוצה החדשה והם הוסרו מהקבוצה.</string>
+			<string>%1$d חברים לא יכלו להתווסף לקבוצה החדשה והוסרו מהקבוצה.</string>
 			<key>many</key>
-			<string>%1$d חברים לא יכלו להתווסף לקבוצה החדשה והם הוסרו מהקבוצה.</string>
+			<string>%1$d חברים לא יכלו להתווסף לקבוצה החדשה והוסרו מהקבוצה.</string>
 			<key>other</key>
-			<string>%1$d חברים לא יכלו להתווסף לקבוצה החדשה והם הוסרו מהקבוצה.</string>
+			<string>%1$d חברים לא יכלו להתווסף לקבוצה החדשה והוסרו מהקבוצה.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -968,7 +968,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>מחיקת הודעה 1</string>
+			<string>מחיקת הודעה %1$d</string>
 			<key>two</key>
 			<string>מחיקת %1$d הודעות</string>
 			<key>many</key>
@@ -988,7 +988,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>תמונה 1</string>
+			<string>תמונה %1$d</string>
 			<key>two</key>
 			<string>%1$d תמונות</string>
 			<key>many</key>
@@ -1028,7 +1028,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>חסמת חבר/ה 1 של קבוצה זו</string>
+			<string>חסמת חבר/ה %1$d של קבוצה זו</string>
 			<key>two</key>
 			<string>חסמת %1$d חברים של קבוצה זו</string>
 			<key>many</key>
@@ -1048,7 +1048,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d נבחר</string>
+			<string>%1$d נבחרה</string>
 			<key>two</key>
 			<string>%1$d נבחרו</string>
 			<key>many</key>
@@ -1068,13 +1068,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>מוסתר מצופה 1</string>
+			<string>מוסתר מאדם %1$d</string>
 			<key>two</key>
-			<string>מוסתר מ–%1$d צופים</string>
+			<string>מוסתר מ–%1$d אנשים</string>
 			<key>many</key>
-			<string>מוסתר מ–%1$d צופים</string>
+			<string>מוסתר מ–%1$d אנשים</string>
 			<key>other</key>
-			<string>מוסתר מ–%1$d צופים</string>
+			<string>מוסתר מ–%1$d אנשים</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>
@@ -1108,7 +1108,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>צופה 1</string>
+			<string>צופה %1$d</string>
 			<key>two</key>
 			<string>%1$d צופים</string>
 			<key>many</key>
@@ -1128,7 +1128,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>כל חברי ה–Signal · צופה 1</string>
+			<string>כל חברי ה–Signal · צופה %1$d</string>
 			<key>two</key>
 			<string>כל חברי ה–Signal · %1$d צופים</string>
 			<key>many</key>
@@ -1148,7 +1148,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>כל חברי ה–Signal · מוסתר מאדם 1</string>
+			<string>כל חברי ה–Signal · מוסתר מאדם %1$d</string>
 			<key>two</key>
 			<string>כל חברי ה–Signal · מוסתר מ–%1$d אנשים</string>
 			<key>many</key>
@@ -1168,7 +1168,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>שיתוף רק עם · צופה 1</string>
+			<string>שיתוף רק עם · צופה %1$d</string>
 			<key>two</key>
 			<string>שיתוף רק עם · %1$d צופים</string>
 			<key>many</key>
@@ -1188,13 +1188,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d חבר קבוצה</string>
+			<string>חבר/ה %1$d</string>
 			<key>two</key>
-			<string>%1$d חברי קבוצה</string>
+			<string>%1$d חברים</string>
 			<key>many</key>
-			<string>%1$d חברי קבוצה</string>
+			<string>%1$d חברים</string>
 			<key>other</key>
-			<string>%1$d חברי קבוצה</string>
+			<string>%1$d חברים</string>
 		</dict>
 	</dict>
 	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>
@@ -1248,7 +1248,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ הזמין/ה אדם 1</string>
+			<string>%2$@ הזמין/ה אדם %1$d</string>
 			<key>two</key>
 			<string>%2$@ הזמין/ה %1$d אנשים</string>
 			<key>many</key>
@@ -1268,13 +1268,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>בקשה ממתינה של חבר קבוצה %1$d.</string>
+			<string>בקשת הצטרפות %1$d ממתינה.</string>
 			<key>two</key>
-			<string>%1$d בקשות ממתינות של חברי קבוצה.</string>
+			<string>%1$d בקשות הצטרפות ממתינות.</string>
 			<key>many</key>
-			<string>%1$d בקשות ממתינות של חברי קבוצה.</string>
+			<string>%1$d בקשות הצטרפות ממתינות.</string>
 			<key>other</key>
-			<string>%1$d בקשות ממתינות של חברי קבוצה.</string>
+			<string>%1$d בקשות הצטרפות ממתינות.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -1348,13 +1348,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Custom Story · %1$d Viewer</string>
+			<string>סטורי מותאם אישית · צופה %1$d</string>
 			<key>two</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>סטורי מותאם אישית · %1$d צופים</string>
 			<key>many</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>סטורי מותאם אישית · %1$d צופים</string>
 			<key>other</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>סטורי מותאם אישית · %1$d צופים</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1368,7 +1368,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>נשאר לך עוד ניסיון 1. אם ייגמרו לך הנסיונות, תהיה לך אפשרות ליצור PIN חדש. ניתן להירשם ולהשתמש בחשבון שלך אבל אז יאבדו כמה הגדרות שמורות כמו נתוני הפרופיל שלך.</string>
+			<string>נשאר לך עוד ניסיון %1$d. אם ייגמרו לך הנסיונות, תהיה לך אפשרות ליצור PIN חדש. ניתן להירשם ולהשתמש בחשבון שלך אבל אז יאבדו כמה הגדרות שמורות כמו נתוני הפרופיל שלך.</string>
 			<key>two</key>
 			<string>נשארו לך %1$d נסיונות.אם ייגמרו לך הנסיונות, תהיה לך אפשרות ליצור PIN חדש. ניתן להירשם ולהשתמש בחשבון שלך אבל אז יאבדו כמה הגדרות שמורות כמו נתוני הפרופיל שלך.</string>
 			<key>many</key>
@@ -1388,7 +1388,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>נשאר לך ניסיון 1. אם ייגמרו לך הניסיונות, החשבון שלך יינעל. לאחר 7 ימים של אי-פעילות, תהיה לך אפשרות להירשם מחדש בלי ה-PIN שלך. החשבון שלך ינוקה וכל התוכן יימחק.</string>
+			<string>נשאר לך ניסיון %1$d. אם ייגמרו לך הניסיונות, החשבון שלך יינעל. לאחר 7 ימים של אי-פעילות, תהיה לך אפשרות להירשם מחדש בלי ה-PIN שלך. החשבון שלך ינוקה וכל התוכן יימחק.</string>
 			<key>two</key>
 			<string>נשארו לך %1$d נסיונות. אם ייגמרו לך הניסיונות, החשבון שלך יינעל. לאחר 7 ימים של אי-פעילות, תהיה לך אפשרות להירשם מחדש בלי ה-PIN שלך. החשבון שלך ינוקה וכל התוכן יימחק.</string>
 			<key>many</key>
@@ -1408,7 +1408,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>תשובה &lt;bold&gt;1&lt;/bold&gt;</string>
+			<string>תשובה &lt;bold&gt;%1$d&lt;/bold&gt;</string>
 			<key>two</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; תשובות</string>
 			<key>many</key>
@@ -1428,7 +1428,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>צופה 1</string>
+			<string>צופה %1$d</string>
 			<key>two</key>
 			<string>%1$d צופים</string>
 			<key>many</key>
@@ -1448,7 +1448,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>מוסתר מאדם 1</string>
+			<string>מוסתר מאדם %1$d</string>
 			<key>two</key>
 			<string>מוסתר מ–%1$d אנשים</string>
 			<key>many</key>
@@ -1508,7 +1508,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>תשובה &lt;bold&gt;1&lt;/bold&gt;</string>
+			<string>תשובה &lt;bold&gt;%1$d&lt;/bold&gt;</string>
 			<key>two</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; תשובות</string>
 			<key>many</key>
@@ -1523,7 +1523,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>צפייה &lt;bold&gt;1&lt;/bold&gt;</string>
+			<string>צפייה &lt;bold&gt;%2$d&lt;/bold&gt;</string>
 			<key>two</key>
 			<string>&lt;bold&gt;%2$d&lt;/bold&gt; צפיות</string>
 			<key>many</key>
@@ -1543,7 +1543,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>צפייה &lt;bold&gt;1&lt;/bold&gt;</string>
+			<string>צפייה &lt;bold&gt;%1$d&lt;/bold&gt;</string>
 			<key>two</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; צפיות</string>
 			<key>many</key>

@@ -856,9 +856,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 خارج</string>
+			<string>%1$d خارج کیا گیا</string>
 			<key>other</key>
-			<string>%1$d خارج</string>
+			<string>%1$d خارج کئے گئے</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>

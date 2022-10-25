@@ -288,7 +288,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d人のメンバーが古いバージョンのSignalを使用しているため、このグループを作成できません。 彼らがSignalをアップデート後に改めて新しいスタイルグループを作成するか、彼ら以外のメンバーでグループを作成することが出来ます。%2$@</string>
+			<string>%1$d人のメンバーが古いバージョンのSignalを使用しているため、このグループを作成できません。彼らがSignalをアップデート後に改めて新しいスタイルグループを作成するか、彼ら以外のメンバーでグループを作成することが出来ます。%2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
@@ -372,7 +372,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%2$@、 %3$@、 ほか %1$d 人を呼び出しています…</string>
+			<string>%2$@、 %3$@、他 %1$d 人を呼び出しています…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -428,7 +428,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%2$@、 %3$@、 ほか %1$d 人には通知されません</string>
+			<string>%2$@、 %3$@、他 %1$d 人には通知されます</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -442,7 +442,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Signalは %2$@、 %3$@、 ほか %1$d 人 を呼び出します</string>
+			<string>Signalは %2$@、 %3$@、他 %1$d 人を呼び出します</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -946,7 +946,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>カスタムストーリー · 閲覧 %1$d 人</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1050,7 +1050,7 @@
 	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@views@  %2$#@replies@</string>
+		<string>%1$#@views@%2$#@replies@</string>
 		<key>replies</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
@@ -1058,7 +1058,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>閲覧数 &lt;bold&gt;%1$d&lt;/bold&gt;</string>
+			<string>返信 &lt;bold&gt;%1$d&lt;/bold&gt;</string>
 		</dict>
 		<key>views</key>
 		<dict>
@@ -1067,7 +1067,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>返信 &lt;bold&gt;%2$d&lt;/bold&gt;</string>
+			<string>閲覧数 &lt;bold&gt;%2$d&lt;/bold&gt;</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>

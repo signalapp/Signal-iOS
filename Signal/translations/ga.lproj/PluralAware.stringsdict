@@ -13,7 +13,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Glórphost 1 soicind</string>
+			<string>Glórphost %1$d soicind</string>
 			<key>two</key>
 			<string>Glórphost %1$d shoicind</string>
 			<key>few</key>
@@ -123,7 +123,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá an dath saincheaptha seo á úsáid in 1 chomhrá. An mian leat é a scriosadh?</string>
+			<string>Tá an dath saincheaptha seo á úsáid in %1$d chomhrá. An mian leat é a scriosadh?</string>
 			<key>two</key>
 			<string>Tá an dath saincheaptha seo á úsáid in %1$d chomhrá. An mian leat é a scriosadh do gach comhrá?</string>
 			<key>few</key>
@@ -145,7 +145,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá an dath seo á úsáid in 1 chomhrá. An mian leat athruithe a shábháil do gach comhrá?</string>
+			<string>Tá an dath seo á úsáid in %1$d chomhrá. An mian leat athruithe a shábháil do gach comhrá?</string>
 			<key>two</key>
 			<string>Tá an dath seo á úsáid in %1$d chomhrá. An mian leat athruithe a shábháil do gach comhrá?</string>
 			<key>few</key>
@@ -167,7 +167,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Scrios Comhrá?</string>
+			<string>Scrios%1$d Comhrá?</string>
 			<key>two</key>
 			<string>Scrios %1$d Chomhrá?</string>
 			<key>few</key>
@@ -211,7 +211,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ní féidir leat níos mó ná 1 chomhrá a roghnú.</string>
+			<string>Ní féidir leat níos mó ná %1$d chomhrá a roghnú.</string>
 			<key>two</key>
 			<string>Ní féidir leat níos mó ná %1$d chomhrá a roghnú.</string>
 			<key>few</key>
@@ -233,7 +233,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 %2$#@total@</string>
+			<string>%1$d %2$#@total@</string>
 			<key>two</key>
 			<string>%1$d %2$#@total@</string>
 			<key>few</key>
@@ -272,7 +272,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Bhall</string>
+			<string>%1$d Bhall</string>
 			<key>two</key>
 			<string>%1$d Bhall</string>
 			<key>few</key>
@@ -294,7 +294,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Ghrúpa i bPáirt</string>
+			<string>%1$d Ghrúpa i bPáirt</string>
 			<key>two</key>
 			<string>%1$d Ghrúpa i bPáirt</string>
 			<key>few</key>
@@ -338,7 +338,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>nóiméad ó shin</string>
+			<string>%1$d nóiméad ó shin</string>
 			<key>two</key>
 			<string>%1$d nóiméad ó shin</string>
 			<key>few</key>
@@ -404,7 +404,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Rachaidh do leagan Signal as feidhm i gceann 1 lae. Tapáil chun nuashonrú chuig an leagan is déanaí.</string>
+			<string>Rachaidh do leagan Signal as feidhm i gceann %1$d lae. Tapáil chun nuashonrú chuig an leagan is déanaí.</string>
 			<key>two</key>
 			<string>Rachaidh do leagan Signal as feidhm i gceann %1$d lá. Tapáil chun nuashonrú chuig an leagan is déanaí.</string>
 			<key>few</key>
@@ -448,7 +448,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ní féidir an grúpa seo a chruthú toisc go bhfuil seanleagan de Signal á úsáid ag 1 duine. Is féidir leat Grúpa ar Stíl Nua a chruthú leis an duine tar éis dó/di Signal a uasdátú, nó an duine sin a bhaint roimh an ngrúpa a chruthú. %2$@</string>
+			<string>Ní féidir an grúpa seo a chruthú toisc go bhfuil seanleagan de Signal á úsáid ag %1$d duine. Is féidir leat Grúpa ar Stíl Nua a chruthú leis an duine tar éis dó/di Signal a uasdátú, nó an duine sin a bhaint roimh an ngrúpa a chruthú. %2$@</string>
 			<key>two</key>
 			<string>Ní féidir an grúpa seo a chruthú toisc go bhfuil seanleagan de Signal á úsáid ag %1$d dhuine. Is féidir leat Grúpa ar Stíl Nua a chruthú leo tar éis dóibh Signal a uasdátú, nó iad a bhaint roimh an ngrúpa a chruthú. %2$@</string>
 			<key>few</key>
@@ -470,7 +470,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ní féidir an grúpa seo a chruthú toisc go bhfuil seanleagan de Signal á úsáid ag 1 duine. Is féidir leat Grúpa ar Stíl Nua a chruthú leis an duine tar éis dó/di Signal a uasdátú, nó an duine sin a bhaint roimh an ngrúpa a chruthú.</string>
+			<string>Ní féidir an grúpa seo a chruthú toisc go bhfuil seanleagan de Signal á úsáid ag %1$d duine. Is féidir leat Grúpa ar Stíl Nua a chruthú leis an duine tar éis dó/di Signal a uasdátú, nó an duine sin a bhaint roimh an ngrúpa a chruthú.</string>
 			<key>two</key>
 			<string>Ní féidir an grúpa seo a chruthú toisc go bhfuil seanleagan de Signal á úsáid ag %1$d dhuine. Is féidir leat Grúpa ar Stíl Nua a chruthú leo tar éis dóibh Signal a uasdátú, nó iad a bhaint roimh an ngrúpa a chruthú.</string>
 			<key>few</key>
@@ -492,7 +492,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Níorbh fhéidir 1 bhall a chur leis an nGrúpa Nua athuair. An mian leat an duine sin a chur leis anois?</string>
+			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua athuair. An mian leat an duine sin a chur leis anois?</string>
 			<key>two</key>
 			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua athuair. An mian leat iad a chur leis anois?</string>
 			<key>few</key>
@@ -514,7 +514,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Is fearr a fheidhmíonn grúpaí Signal ina bhfuil 1 bhall nó níos lú. Má chuirtear tuilleadh ball leo cuirfear moill ar sheoladh agus ar fháil teachtaireachtaí.</string>
+			<string>Is fearr a fheidhmíonn grúpaí Signal ina bhfuil %1$d bhall nó níos lú. Má chuirtear tuilleadh ball leo cuirfear moill ar sheoladh agus ar fháil teachtaireachtaí.</string>
 			<key>two</key>
 			<string>Is fearr a fheidhmíonn grúpaí Signal ina bhfuil %1$d bhall nó níos lú. Má chuirtear tuilleadh ball leo cuirfear moill ar sheoladh agus ar fháil teachtaireachtaí.</string>
 			<key>few</key>
@@ -536,7 +536,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá uaslíon 1 rannpháirtí bainte amach don ghlao seo. Triail arís ar ball.</string>
+			<string>Tá uaslíon %1$d rannpháirtí bainte amach don ghlao seo. Triail arís ar ball.</string>
 			<key>two</key>
 			<string>Tá uaslíon %1$d rannpháirtí bainte amach don ghlao seo. Triail arís ar ball.</string>
 			<key>few</key>
@@ -558,7 +558,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sa ghlao seo · 1 duine</string>
+			<string>Sa ghlao seo · %1$d duine</string>
 			<key>two</key>
 			<string>Sa ghlao seo · %1$d dhuine</string>
 			<key>few</key>
@@ -580,7 +580,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Glao á chur ar %2$@, %3$@, agus ar 1 duine eile…</string>
+			<string>Glao á chur ar %2$@, %3$@, agus ar %1$d duine eile…</string>
 			<key>two</key>
 			<string>Glao á chur ar %2$@, %3$@, agus ar %1$d dhuine eile…</string>
 			<key>few</key>
@@ -602,7 +602,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá %2$@, %3$@ agus 1 duine eile sa ghlao seo</string>
+			<string>Tá %2$@, %3$@ agus %1$d duine eile sa ghlao seo</string>
 			<key>two</key>
 			<string>Tá %2$@, %3$@ agus %1$d dhuine eile sa ghlao seo</string>
 			<key>few</key>
@@ -624,7 +624,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Chuaigh %2$@, %3$@ agus 1 duine eile isteach sa ghlao</string>
+			<string>Chuaigh %2$@, %3$@ agus %1$d duine eile isteach sa ghlao</string>
 			<key>two</key>
 			<string>Chuaigh %2$@, %3$@ agus %1$d dhuine eile isteach sa ghlao</string>
 			<key>few</key>
@@ -646,7 +646,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>D&apos;imigh %2$@, %3$@ agus 1 duine eile as an nglao</string>
+			<string>D&apos;imigh %2$@, %3$@ agus %1$d duine eile as an nglao</string>
 			<key>two</key>
 			<string>D&apos;imigh %2$@, %3$@ agus %1$d dhuine eile as an nglao</string>
 			<key>few</key>
@@ -668,7 +668,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Cuirfear %2$@, %3$@ agus 1 duine eile ar an eolas</string>
+			<string>Cuirfear %2$@, %3$@ agus %1$d duine eile ar an eolas</string>
 			<key>two</key>
 			<string>Cuirfear %2$@, %3$@ agus %1$d dhuine eile ar an eolas</string>
 			<key>few</key>
@@ -690,7 +690,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar 1 duine eile</string>
+			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar %1$d duine eile</string>
 			<key>two</key>
 			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar %1$d dhuine eile</string>
 			<key>few</key>
@@ -734,7 +734,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá ainm comhchosúil ag 1 bhall den ghrúpa.</string>
+			<string>Tá ainm comhchosúil ag %1$d bhall den ghrúpa.</string>
 			<key>two</key>
 			<string>Tá ainmneacha comhchosúla ag %1$d bhall den ghrúpa.</string>
 			<key>few</key>
@@ -756,7 +756,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá ainm comhchosúil ag 1 bhall den ghrúpa, athbhreithnigh an ball thíos nó roghnaigh gníomh.</string>
+			<string>Tá ainm comhchosúil ag %1$d bhall den ghrúpa, athbhreithnigh an ball thíos nó roghnaigh gníomh.</string>
 			<key>two</key>
 			<string>Tá ainmneacha comhchosúla ag %1$d bhall den ghrúpa, athbhreithnigh na baill thíos nó roghnaigh gníomh.</string>
 			<key>few</key>
@@ -778,7 +778,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá an t-ainm céanna ag 1 bhall den ghrúpa, athbhreithnigh an ball thíos nó roghnaigh gníomh.</string>
+			<string>Tá an t-ainm céanna ag %1$d bhall den ghrúpa, athbhreithnigh an ball thíos nó roghnaigh gníomh.</string>
 			<key>two</key>
 			<string>Tá an t-ainm céanna ag %1$d bhall den ghrúpa, athbhreithnigh na baill thíos nó roghnaigh gníomh.</string>
 			<key>few</key>
@@ -800,7 +800,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 bhall</string>
+			<string>%1$d bhall</string>
 			<key>two</key>
 			<string>%1$d bhall</string>
 			<key>few</key>
@@ -822,7 +822,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Bhall</string>
+			<string>%1$d Bhall</string>
 			<key>two</key>
 			<string>%1$d Bhall</string>
 			<key>few</key>
@@ -844,7 +844,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tugadh cuireadh do 1 duine chun dul isteach sa ghrúpa.</string>
+			<string>Tugadh cuireadh do %1$d duine chun dul isteach sa ghrúpa.</string>
 			<key>two</key>
 			<string>Tugadh cuireadh do %1$d dhuine chun dul isteach sa ghrúpa.</string>
 			<key>few</key>
@@ -866,7 +866,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Thug %2$@ cuireadh do 1 duine chun dul isteach sa ghrúpa.</string>
+			<string>Thug %2$@ cuireadh do %1$d duine chun dul isteach sa ghrúpa.</string>
 			<key>two</key>
 			<string>Thug %2$@ cuireadh do %1$d dhuine chun dul isteach sa ghrúpa.</string>
 			<key>few</key>
@@ -888,7 +888,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Cealaíodh cuireadh chuig 1 duine chun dul isteach sa ghrúpa.</string>
+			<string>Cealaíodh cuireadh chuig %1$d duine chun dul isteach sa ghrúpa.</string>
 			<key>two</key>
 			<string>Cealaíodh cuirí chuig %1$d dhuine chun dul isteach sa ghrúpa.</string>
 			<key>few</key>
@@ -910,7 +910,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Chealaigh %2$@ cuireadh chuig 1 duine chun dul isteach sa ghrúpa.</string>
+			<string>Chealaigh %2$@ cuireadh chuig %1$d duine chun dul isteach sa ghrúpa.</string>
 			<key>two</key>
 			<string>Chealaigh %2$@ cuireadh chuig %1$d dhuine chun dul isteach sa ghrúpa.</string>
 			<key>few</key>
@@ -954,7 +954,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Scéal Grúpa · 1 Amharcóir</string>
+			<string>Scéal Grúpa · %1$d Amharcóir</string>
 			<key>two</key>
 			<string>Scéal Grúpa · %1$d Amharcóir</string>
 			<key>few</key>
@@ -1042,7 +1042,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 ghrúpa i bpáirt</string>
+			<string>%1$d ghrúpa i bpáirt</string>
 			<key>two</key>
 			<string>%1$d ghrúpa i bpáirt</string>
 			<key>few</key>
@@ -1064,15 +1064,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Scrios 1 Teachtaireacht?</string>
+			<string>Scrios %1$d Teachtaireacht</string>
 			<key>two</key>
-			<string>Scrios %1$d Theachtaireacht?</string>
+			<string>Scrios %1$d Theachtaireacht</string>
 			<key>few</key>
-			<string>Scrios %1$d Theachtaireacht?</string>
+			<string>Scrios %1$d Theachtaireacht</string>
 			<key>many</key>
-			<string>Scrios %1$d dTeachtaireacht?</string>
+			<string>Scrios %1$d dTeachtaireacht</string>
 			<key>other</key>
-			<string>Scrios %1$d Teachtaireacht?</string>
+			<string>Scrios %1$d Teachtaireacht</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -1086,7 +1086,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Ghrianghraf</string>
+			<string>%1$d Ghrianghraf</string>
 			<key>two</key>
 			<string>%1$d Ghrianghraf</string>
 			<key>few</key>
@@ -1108,7 +1108,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Mhír</string>
+			<string>%1$d Mhír</string>
 			<key>two</key>
 			<string>%1$d Mhír</string>
 			<key>few</key>
@@ -1130,7 +1130,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Chuir tú Bac ar 1 Bhall den Ghrúpa Seo</string>
+			<string>Chuir tú Bac ar %1$d Bhall den Ghrúpa Seo</string>
 			<key>two</key>
 			<string>Chuir tú Bac ar %1$d Bhall den Ghrúpa Seo</string>
 			<key>few</key>
@@ -1152,7 +1152,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Roghnaithe</string>
+			<string>%1$d Roghnaithe</string>
 			<key>two</key>
 			<string>%1$d Roghnaithe</string>
 			<key>few</key>
@@ -1174,7 +1174,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 as an áireamh</string>
+			<string>%1$d as an áireamh</string>
 			<key>two</key>
 			<string>%1$d as an áireamh</string>
 			<key>few</key>
@@ -1240,7 +1240,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Gach Teagmhálaí Signal · 1 Amharcóir</string>
+			<string>Gach Teagmhálaí Signal · %1$d Amharcóir</string>
 			<key>two</key>
 			<string>Gach Teagmhálaí Signal · %1$d Amharcóir</string>
 			<key>few</key>
@@ -1262,7 +1262,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Gach Teagmhálaí Signal · 1 as an áireamh</string>
+			<string>Gach Teagmhálaí Signal · %1$d as an áireamh</string>
 			<key>two</key>
 			<string>Gach Teagmhálaí Signal · %1$d as an áireamh</string>
 			<key>few</key>
@@ -1284,7 +1284,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ná Comhroinn Ach Le · 1 Amharcóir</string>
+			<string>Ná Comhroinn Ach Le · %1$d Amharcóir</string>
 			<key>two</key>
 			<string>Ná Comhroinn Ach Le · %1$d Amharcóir</string>
 			<key>few</key>
@@ -1306,15 +1306,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d bhall</string>
+			<string>%1$d Bhall</string>
 			<key>two</key>
-			<string>%1$d bhall</string>
+			<string>%1$d Bhall</string>
 			<key>few</key>
-			<string>%1$d bhall</string>
+			<string>%1$d Bhall</string>
 			<key>many</key>
-			<string>%1$d mball</string>
+			<string>%1$d mBall</string>
 			<key>other</key>
-			<string>%1$d ball</string>
+			<string>%1$d Ball</string>
 		</dict>
 	</dict>
 	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>
@@ -1328,7 +1328,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Amharcóir</string>
+			<string>%1$d Amharcóir</string>
 			<key>two</key>
 			<string>%1$d Amharcóir</string>
 			<key>few</key>
@@ -1350,7 +1350,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>UAP mhícheart. 1 iarracht fágtha.</string>
+			<string>UAP mhícheart. %1$d iarracht fágtha.</string>
 			<key>two</key>
 			<string>UAP mhícheart. %1$d iarracht fágtha.</string>
 			<key>few</key>
@@ -1372,7 +1372,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Thug %2$@ cuireadh do 1 duine</string>
+			<string>Thug %2$@ cuireadh do %1$d duine</string>
 			<key>two</key>
 			<string>Thug %2$@ cuireadh do %1$d dhuine</string>
 			<key>few</key>
@@ -1394,7 +1394,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 iarratas ar bhallraíocht ar feitheamh.</string>
+			<string>%1$d iarratas ar bhallraíocht ar feitheamh.</string>
 			<key>two</key>
 			<string>%1$d iarratas ar bhallraíocht ar feitheamh.</string>
 			<key>few</key>
@@ -1482,15 +1482,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Custom Story · %1$d Viewer</string>
+			<string>Scéal saincheaptha · %1$d Amharcóir</string>
 			<key>two</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>Scéal Saincheaptha · %1$d Amharcóir</string>
 			<key>few</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>Scéal Saincheaptha · %1$d Amharcóir</string>
 			<key>many</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>Scéal Saincheaptha · %1$d nAmharcóir</string>
 			<key>other</key>
-			<string>Custom Story · %1$d Viewers</string>
+			<string>Scéal Saincheaptha · %1$d Amharcóir</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1504,7 +1504,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá 1 iarracht fágtha agat. Má úsáideann tú gach iarracht, is féidir leat UAP nua a chruthú. Is féidir leat clárú agus do chuntas a úsáid ach caillfidh tú socruithe áirithe sábháilte, amhail an fhaisnéis i do phróifíl.</string>
+			<string>Tá %1$d iarracht fágtha agat. Má úsáideann tú gach iarracht, is féidir leat UAP nua a chruthú. Is féidir leat clárú agus do chuntas a úsáid ach caillfidh tú socruithe áirithe sábháilte, amhail an fhaisnéis i do phróifíl.</string>
 			<key>two</key>
 			<string>Tá %1$d iarracht fágtha agat. Má úsáideann tú gach iarracht, is féidir leat UAP nua a chruthú. Is féidir leat clárú agus do chuntas a úsáid ach caillfidh tú socruithe áirithe sábháilte, amhail an fhaisnéis i do phróifíl.</string>
 			<key>few</key>
@@ -1526,7 +1526,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá 1 iarracht fágtha agat. Má úsáideann tú gach iarracht, glasálfar do chuntas. Tar éis 7 lá neamhghníomhaíochta is féidir leat athchlárú gan d&apos;UAP. Glanfar do chuntas agus scriosfar an t-ábhar atá istigh ann.</string>
+			<string>Tá %1$d iarracht fágtha agat. Má úsáideann tú gach iarracht, glasálfar do chuntas. Tar éis 7 lá neamhghníomhaíochta is féidir leat athchlárú gan d&apos;UAP. Glanfar do chuntas agus scriosfar an t-ábhar atá istigh ann.</string>
 			<key>two</key>
 			<string>Tá %1$d iarracht fágtha agat. Má úsáideann tú gach iarracht, glasálfar do chuntas. Tar éis 7 lá neamhghníomhaíochta is féidir leat athchlárú gan d&apos;UAP. Glanfar do chuntas agus scriosfar an t-ábhar atá istigh ann.</string>
 			<key>few</key>
@@ -1548,7 +1548,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; freagra</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; fhreagra</string>
 			<key>two</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; fhreagra</string>
 			<key>few</key>
@@ -1570,7 +1570,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Amharcóir</string>
+			<string>%1$d Amharcóir</string>
 			<key>two</key>
 			<string>%1$d Amharcóir</string>
 			<key>few</key>
@@ -1592,7 +1592,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 as an áireamh</string>
+			<string>%1$d as an áireamh</string>
 			<key>two</key>
 			<string>%1$d as an áireamh</string>
 			<key>few</key>
@@ -1636,7 +1636,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 amharc</string>
+			<string>%1$d amharc</string>
 			<key>two</key>
 			<string>%1$d amharc</string>
 			<key>few</key>
@@ -1658,7 +1658,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; fhreagra</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; fhreagra</string>
 			<key>two</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; fhreagra</string>
 			<key>few</key>
@@ -1675,7 +1675,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; amharc</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; amharc</string>
 			<key>two</key>
 			<string>&lt;bold&gt;%2$d&lt;/bold&gt; amharc</string>
 			<key>few</key>
@@ -1697,7 +1697,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; amharc</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; amharc</string>
 			<key>two</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; amharc</string>
 			<key>few</key>

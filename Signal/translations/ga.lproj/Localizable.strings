@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "About Message Requests";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "Na Teagmhálaithe Uile";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Freagra";
@@ -353,7 +353,7 @@
 "BACK_BUTTON" = "Ar Ais";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "My Badges";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Mo chuid Suaitheantas";
 
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "Suaitheantais";
@@ -362,7 +362,7 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Give Signal a Boost";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Spreag Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "Tá do Shuaitheantas Spreagtha imithe as feidhm agus níl sé ar fáil le taispeáint ar do phróifíl a thuilleadh.";
@@ -515,7 +515,7 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Display on Profile";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
+"BADGE_THANKS_MAKE_FEATURED" = "Cruthaigh Suaitheantas Faoi Thrácht";
 
 /* Title for subscription on the thank you sheet. */
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "Go raibh maith agat as do thacaíocht!";
@@ -602,13 +602,13 @@
 "BLUR_TOOLTIP" = "Nua: Aghaidheanna a dhoiléiriú nó tarraingt áit ar bith le doiléiriú.";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Make a one-time donation and earn a Boost badge for 30 days.";
+"BOOST_VIEW_BODY" = "Bronn airgead uair amháin agus tuill Suaitheantas spreagtha le haghaidh 30 lá.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Your Boost badge will expire on %1$@.";
 
 /* Default text for the custom amount field of the boost view. */
-"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Enter Custom Amount";
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Cuir Isteach Méid Saincheaptha";
 
 /* Text explaining there are other ways to donate on the boost view. */
 "BOOST_VIEW_OTHER_WAYS" = "More Payment Options";
@@ -623,7 +623,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Select an amount to donate";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Give Signal a Boost";
+"BOOST_VIEW_TITLE" = "Spreag Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Cuir leis";
@@ -1445,7 +1445,7 @@
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Bearradh ⁊ Méid";
 
 /* Title for the 'currency picker' view in the app settings. */
-"CURRENCY_PICKER_VIEW_TITLE" = "Socraigh an tAirgeadra";
+"CURRENCY_PICKER_VIEW_TITLE" = "Socraigh Airgeadra";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Gradient";
@@ -1772,7 +1772,7 @@
 "DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Display badges on profile";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Taispeáin suaitheantais ar mo phróifíl";
 
 /* Title for the proxy confirmation */
 "DO_YOU_WANT_TO_USE_PROXY" = "An bhfuil fonn ort an seoladh seachfhreastalaí seo a úsáid?";
@@ -1784,7 +1784,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Tabhair airgead";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Daoine cosúil leatsa a thacaíonn le Signal. Bronn airgead go míosúil agus faigh suaitheantas.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Ná bac leis anois";
@@ -1913,7 +1913,7 @@
 "DONATION_VIEW_TITLE" = "Bronn airgead ar Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Set currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Socraigh airgeadra";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Is féidir leat cead a thabhairt do Signal sna Socruithe iOS.";
@@ -2135,7 +2135,7 @@
 "FEATURED_BADGE_SECTION_HEADER" = "Select a Badge";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Featured Badge";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Suaitheantas Faoi Thrácht";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Marcáil Deimhnithe";
@@ -3803,7 +3803,7 @@
 "MY_STORY_SETTINGS_TITLE" = "Mo Scéal";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "Tapáil chun cur leis";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
@@ -3893,7 +3893,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Tá Ainm ar an Scéal ar Iarraidh";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Tusa amháin a fheicfidh ainm an scéil seo.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Ainm ar an Scéal (Riachtanach)";
@@ -3905,13 +3905,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Amharcóirí";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Nua";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
 "NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Infheicthe ag daoine ar leith amháin";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Scéal saincheaptha nua";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Comhroinn le grúpa atá ann cheana";
@@ -4742,7 +4742,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Cuir Amharcóirí Leis";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Scrios Scéal Saincheaptha";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "An bhfuil tú cinnte go bhfuil fonn ort \"%1$@\" a scriosadh? Chomh maith leis sin, scriosfar na nuashonruithe a comhroinneadh chuig an scéal seo.";
@@ -6287,7 +6287,7 @@
 "STORIES_SAVE_STORY_ACTION" = "Sábháil";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "Imíonn nuashonruithe ar scéalta as radharc go huathoibríoch tar éis 24 uair an chloig. Roghnaigh an lucht féachana ar do scéal nó cruthaigh scéalta nua in éineacht le lucht féachana nó grúpaí ar leith.";
 
 /* Header for the 'Stories' section of the stories settings */
 "STORIES_SETTINGS_STORIES_HEADER" = "Scéalta";
@@ -6311,10 +6311,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Cas Air Scéalta";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "Admhálacha léite";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Féach cathain a fhéachtar ar scéalta agus comhroinn é sin. Agus é sin díchumasaithe, ní bheidh a fhios agat cathain a fhéachann daoine ar do scéal.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Comhroinn";
@@ -6332,7 +6332,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Scéal Dífholaithe";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Cumasaigh admhálacha léite chun na daoine a d'fhéach ar do scéalta a fheiceáil.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Amhairc";
@@ -6527,34 +6527,34 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Ag Lódáil";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly donation and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Comhlacht neamhbhrabúis is ea Signal nach bhfuil aon fhógróirí ná infheisteoirí aige; is iad na daoine a úsáideann Signal agus a bhfuil meas acu air a choimeádann ag imeacht é. Bronn airgead go míosúil agus faigh suaitheantas próifíle chun do thacaíocht a chomhroinnt.";
 
 /* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Tá Signal tiomanta do theicneolaíocht príobháideachta foinse oscailte a fhorbairt a chosnaíonn cead cainte agus a chumasaíonn cumarsáid dhomhanda shlán.\n\n Spreagann do thabhartas an chúis seo agus íocann sé as forbairt agus as oibríochtaí aipe, aip arna húsáid ag na milliúin duine le haghaidh cumarsáid phríobháideach. Fógraí ar bith. Rianairí ar bith. Magadh ar bith.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Support technology that is built for you—not for your data—by joining the community that sustains it.";
+"SUSTAINER_READ_MORE_TITLE" = "Tacaigh le teicneolaíocht atá tógtha duitse — ní le haghaidh do shonraí — trí dhul isteach sa phobal a chothaíonn í.";
 
 /* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Why Donate?";
+"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Cén fáth gur cheart airgead a bhronnadh?";
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Still Processing";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %1$@ badge";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Faigh suaitheantas %1$@";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Cancel Subscription";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Cealaigh Síntiús";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Deimhnigh";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You won't be charged again. Your badge will be removed from your profile at the end of your billing period.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Ní ghearrfar an tabhartas ort arís. Bainfear an suaitheantas de do phróifíl ag deireadh na tréimhse billeála.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirm Cancellation?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Deimhnigh Cealú?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %1$@";
@@ -6575,13 +6575,13 @@
 "SUSTAINER_VIEW_PAYMENT_ERROR" = "Error processing payment. %1$@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%1$@/month";
+"SUSTAINER_VIEW_PRICING" = "%1$@/mí";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
 "SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Expires %1$@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Renews %1$@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Athnuachan %1$@";
 
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
@@ -6590,10 +6590,10 @@
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
 
 /* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Read more.";
+"SUSTAINER_VIEW_READ_MORE" = "Léigh tuilleadh.";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Renews %1$@";
+"SUSTAINER_VIEW_RENEWAL" = "Athnuachan %1$@";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Your payment is still being processed. This can take a few minutes depending on your connection.";
@@ -6605,7 +6605,7 @@
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Ná bac leis anois";
 
 /* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Signal is powered by people like you.";
+"SUSTAINER_VIEW_TITLE" = "Daoine cosúil leatsa a thacaíonn le Signal.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You will be charged the full amount (%1$@) of the new subscription price today. Your new subscription will renew monthly.";
@@ -6617,7 +6617,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Nuashonraigh";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Make a recurring monthly donation to Signal to support technology built for you, not your data.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Bronn airgead ar Signal go míosúil chun tacú le teicneolaíocht arna tógáil duitse, ní le haghaidh do shonraí.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "As";

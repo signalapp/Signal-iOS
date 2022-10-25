@@ -1030,7 +1030,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Menghantar %1$d…</string>
+			<string>Menghantar %1$d….</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1050,7 +1050,7 @@
 	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@views@  %2$#@replies@</string>
+		<string>%1$#@views@ %2$#@replies@</string>
 		<key>replies</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
@@ -1058,7 +1058,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; tontonan</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; balasan</string>
 		</dict>
 		<key>views</key>
 		<dict>
@@ -1067,7 +1067,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; balasan</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; tontonan</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
