@@ -1521,6 +1521,8 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
     }
 
     private func updateTextViewAttributes() {
+        let selectedTextRange = textView.selectedTextRange
+
         let text = text ?? ""
         textView.text = transformedText(text, for: textStyle)
 
@@ -1531,6 +1533,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
             textAlignment: textAlignment,
             textDecorationColor: nil,
             decorationStyle: .none)
+        textView.selectedTextRange = selectedTextRange
         textViewBackgroundView.backgroundColor = textBackgroundColor
     }
 
@@ -1541,6 +1544,27 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
         guard desiredFontSize != currentFontSize else { return }
         updateTextAttributes()
         updateTextViewAttributes()
+    }
+
+    private func validateTextViewAttributes() {
+        guard let attributedString = textView.attributedText else { return }
+
+        // Re-apply attributes to the entire text view's text if more than one font style is detected.
+        // That could happen as a result of undo / redo operation.
+        var shouldReapplyAttributes = false
+        var previousFont: UIFont?
+        attributedString.enumerateAttribute(.font, in: attributedString.entireRange) { attributeValue, range, stop in
+            guard let font = attributeValue as? UIFont else { return }
+
+            if let previousFont = previousFont, !previousFont.isEqual(font) {
+                shouldReapplyAttributes = true
+                stop.pointee = true
+            }
+            previousFont = font
+        }
+        if shouldReapplyAttributes {
+            updateTextViewAttributes()
+        }
     }
 
     @objc
@@ -1657,6 +1681,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
 
     func textViewDidChange(_ textView: UITextView) {
         adjustFontSizeIfNecessary()
+        validateTextViewAttributes()
         delegate?.textStoryComposerDidChange(self)
         setNeedsLayout()
     }
