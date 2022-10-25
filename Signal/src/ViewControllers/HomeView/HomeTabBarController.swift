@@ -198,16 +198,26 @@ extension HomeTabBarController: StoryBadgeCountObserver {
     public func didUpdateStoryBadge(_ badge: String?) {
         storiesTabBarItem.badgeValue = badge
         var views: [UIView] = [tabBar]
+        var badgeViews = [UIView]()
         while let view = views.popLast() {
             if NSStringFromClass(view.classForCoder) == "_UIBadgeView" {
-                view.layer.transform = CATransform3DIdentity
-                let xOffset: CGFloat = CurrentAppContext().isRTL ? 0 : -5
-                view.layer.transform = CATransform3DMakeTranslation(xOffset, 1, 1)
-                views = []
-                break
+                badgeViews.append(view)
             }
             views = view.subviews + views
         }
+        let sortedBadgeViews = badgeViews.sorted { lhs, rhs in
+            let lhsX = view.convert(CGPoint.zero, from: lhs).x
+            let rhsX = view.convert(CGPoint.zero, from: rhs).x
+            if CurrentAppContext().isRTL {
+                return lhsX > rhsX
+            } else {
+                return lhsX < rhsX
+            }
+        }
+        let badgeView = sortedBadgeViews[safe: Tabs.stories.rawValue]
+        badgeView?.layer.transform = CATransform3DIdentity
+        let xOffset: CGFloat = CurrentAppContext().isRTL ? 0 : -5
+        badgeView?.layer.transform = CATransform3DMakeTranslation(xOffset, 1, 1)
     }
 }
 

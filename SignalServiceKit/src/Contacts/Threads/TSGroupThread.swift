@@ -6,10 +6,31 @@
 import Foundation
 
 public extension TSGroupThread {
-    func updateWithStorySendEnabled(_ storySendEnabled: Bool, transaction: SDSAnyWriteTransaction) {
+    func updateWithStorySendEnabled(
+        _ storySendEnabled: Bool,
+        transaction: SDSAnyWriteTransaction,
+        updateStorageService: Bool = true
+    ) {
+        let wasStorySendEnabled = self.isStorySendExplicitlyEnabled
         updateWithStoryViewMode(storySendEnabled ? .explicit : .disabled, transaction: transaction)
 
-        storageServiceManager.recordPendingUpdates(groupModel: groupModel)
+        if updateStorageService {
+            storageServiceManager.recordPendingUpdates(groupModel: groupModel)
+        }
+
+        if !wasStorySendEnabled, storySendEnabled {
+            // When enabling after being disabled, always unhide the story context.
+            if
+                let storyContextAssociatedData = StoryFinder.associatedData(for: self, transaction: transaction),
+                storyContextAssociatedData.isHidden
+            {
+                storyContextAssociatedData.update(
+                    updateStorageService: updateStorageService,
+                    isHidden: false,
+                    transaction: transaction
+                )
+            }
+        }
     }
 
     var isStorySendExplicitlyEnabled: Bool {

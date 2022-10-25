@@ -142,7 +142,9 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
 
     private var isManuallySwitchingTabs = false
     func switchToRepliesTab(animated: Bool) {
-        isManuallySwitchingTabs = true
+        if animated {
+            isManuallySwitchingTabs = true
+        }
         focusedTab = .replies
         repliesButton.isSelected = true
         viewsButton.isSelected = false
@@ -151,7 +153,9 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
     }
 
     func switchToViewsTab(animated: Bool) {
-        isManuallySwitchingTabs = true
+        if animated {
+            isManuallySwitchingTabs = true
+        }
         focusedTab = .views
         repliesButton.isSelected = false
         viewsButton.isSelected = true
