@@ -9,7 +9,7 @@ import SignalMessaging
 import SignalUI
 import UIKit
 
-class DonationViewController: OWSTableViewController2 {
+class DonationSettingsViewController: OWSTableViewController2 {
     private enum State {
         case initializing
         case loading
@@ -36,7 +36,7 @@ class DonationViewController: OWSTableViewController2 {
 
     private var state: State = .initializing {
         didSet {
-            Logger.info("[Donations] DonationViewController state changed to \(state.debugDescription)")
+            Logger.info("[Donations] DonationSettingsViewController state changed to \(state.debugDescription)")
             updateTableContents()
         }
     }
@@ -510,7 +510,7 @@ class DonationViewController: OWSTableViewController2 {
 
 // MARK: - Badge Expiration Delegate
 
-extension DonationViewController: BadgeExpirationSheetDelegate {
+extension DonationSettingsViewController: BadgeExpirationSheetDelegate {
     func badgeExpirationSheetActionTapped(_ action: BadgeExpirationSheetAction) {
         switch action {
         case .dismiss:
@@ -525,7 +525,7 @@ extension DonationViewController: BadgeExpirationSheetDelegate {
 
 // MARK: - Badge management delegate
 
-extension DonationViewController: BadgeConfigurationDelegate {
+extension DonationSettingsViewController: BadgeConfigurationDelegate {
     func badgeConfiguration(_ vc: BadgeConfigurationViewController, didCompleteWithBadgeSetting setting: BadgeConfiguration) {
         if !self.reachabilityManager.isReachable {
             OWSActionSheets.showErrorAlert(
@@ -597,7 +597,7 @@ extension DonationViewController: BadgeConfigurationDelegate {
 
 // MARK: - Donation hero delegate
 
-extension DonationViewController: DonationHeroViewDelegate {
+extension DonationSettingsViewController: DonationHeroViewDelegate {
     func present(readMoreSheet: DonationReadMoreSheetViewController) {
         present(readMoreSheet, animated: true)
     }
@@ -605,7 +605,7 @@ extension DonationViewController: DonationHeroViewDelegate {
 
 // MARK: - Badge can't be added
 
-extension DonationViewController: UITextViewDelegate {
+extension DonationSettingsViewController: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         if textView == statusLabel {
             let currentSubscription: Subscription?

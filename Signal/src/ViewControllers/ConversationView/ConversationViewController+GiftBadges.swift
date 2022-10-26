@@ -140,7 +140,10 @@ extension ConversationViewController: BadgeExpirationSheetDelegate {
             break
         case .openSubscriptionsView:
             let appSettings = AppSettingsViewController.inModalNavigationController()
-            appSettings.viewControllers += [DonationViewController(), SubscriptionViewController()]
+            appSettings.viewControllers += [
+                DonationSettingsViewController(),
+                SubscriptionViewController()
+            ]
             self.presentFormSheet(appSettings, animated: true, completion: nil)
         case .openBoostView:
             owsFailDebug("Not supported")

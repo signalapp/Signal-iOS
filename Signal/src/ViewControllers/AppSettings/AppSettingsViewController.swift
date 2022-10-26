@@ -88,7 +88,7 @@ class AppSettingsViewController: OWSTableViewController2 {
     private var hasExpiredGiftBadge: Bool = false
 
     private func updateHasExpiredGiftBadge() {
-        self.hasExpiredGiftBadge = DonationViewController.shouldShowExpiredGiftBadgeSheetWithSneakyTransaction()
+        self.hasExpiredGiftBadge = DonationSettingsViewController.shouldShowExpiredGiftBadgeSheetWithSneakyTransaction()
     }
 
     @objc
@@ -162,7 +162,10 @@ class AppSettingsViewController: OWSTableViewController2 {
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donate")
             )
         }, actionBlock: { [weak self] in
-            self?.navigationController?.pushViewController(DonationViewController(), animated: true)
+            self?.navigationController?.pushViewController(
+                DonationSettingsViewController(),
+                animated: true
+            )
         }))
         contents.addSection(section1)
 

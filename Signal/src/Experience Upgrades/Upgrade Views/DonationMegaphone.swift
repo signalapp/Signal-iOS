@@ -26,7 +26,7 @@ class DonationMegaphone: MegaphoneView {
                 "DONATE_MEGAPHONE_ACTION",
                 comment: "Action text for donate megaphone"
             )) {
-                let vc = OWSNavigationController(rootViewController: DonationViewController())
+                let vc = OWSNavigationController(rootViewController: DonationSettingsViewController())
                 fromViewController.present(vc, animated: true)
             },
             secondary: Button(title: NSLocalizedString(
