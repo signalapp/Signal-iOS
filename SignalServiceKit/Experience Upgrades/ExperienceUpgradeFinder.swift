@@ -1,5 +1,5 @@
 //
-// Copyright 2017 Signal Messenger, LLC
+// Copyright 2022 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
@@ -14,15 +14,16 @@ public class ExperienceUpgradeFinder: NSObject {
         return allKnownExperienceUpgrades(transaction: transaction.asAnyRead)
             .filter { upgrade in
                 if
+                    upgrade.manifest.shouldBeShown(transaction: transaction.asAnyRead),
                     !upgrade.isComplete,
-                    upgrade.manifest.shouldBeShown(transaction: transaction.asAnyRead)
+                    !upgrade.isSnoozed,
+                    !upgrade.hasPassedNumberOfDaysToShow
                 {
                     return true
                 }
 
                 return false
-            }
-            .first { !$0.isSnoozed }
+            }.first
     }
 
     public class func markAsViewed(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
@@ -116,6 +117,10 @@ public extension ExperienceUpgrade {
         // Check if enough time has passed since the last snooze date.
         let timeSinceLastSnooze = -Date(timeIntervalSince1970: lastSnoozedTimestamp).timeIntervalSinceNow
         return timeSinceLastSnooze <= manifest.snoozeDuration
+    }
+
+    var hasPassedNumberOfDaysToShow: Bool {
+        daysSinceFirstViewed > manifest.numberOfDaysToShowFor
     }
 
     var daysSinceFirstViewed: Int {

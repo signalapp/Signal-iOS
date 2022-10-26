@@ -31,7 +31,7 @@ public class ExperienceUpgrade: SDSCodableModel {
     public private(set) var isComplete: Bool
 
     /// Identifies and holds metadata about this ``ExperienceUpgrade``.
-    public let manifest: ExperienceUpgradeManifest
+    public private(set) var manifest: ExperienceUpgradeManifest
 
     private init(manifest: ExperienceUpgradeManifest) {
         self.firstViewedTimestamp = 0
@@ -87,6 +87,33 @@ public class ExperienceUpgrade: SDSCodableModel {
     }
 }
 
+// MARK: - Removal
+
+extension ExperienceUpgrade {
+    public func anyDidRemove(transaction: SDSAnyWriteTransaction) {
+        switch manifest {
+        case
+                .introducingPins,
+                .notificationPermissionReminder,
+                .subscriptionMegaphone,
+                .pinReminder,
+                .contactPermissionReminder,
+                .unrecognized:
+            return
+        case .remoteMegaphone(let megaphone):
+            guard let imageLocalUrl = megaphone.translation.imageLocalUrl else {
+                return
+            }
+
+            do {
+                try FileManager.default.removeItem(at: imageLocalUrl)
+            } catch let error {
+                owsFailDebug("Failed to remove image file for removed remote megaphone with ID \(megaphone.id)! \(error)")
+            }
+        }
+    }
+}
+
 // MARK: - Mark as <state>
 
 extension ExperienceUpgrade {
@@ -117,5 +144,23 @@ extension ExperienceUpgrade {
         let experienceToUpgrade = ExperienceUpgrade.anyFetch(uniqueId: uniqueId, transaction: transaction) ?? self
         block(experienceToUpgrade)
         experienceToUpgrade.anyUpsert(transaction: transaction)
+    }
+}
+
+// MARK: - Update remote megaphone info
+
+extension ExperienceUpgrade {
+    /// Updates a subset of properties on the existing manifest with the given
+    /// re-fetched megaphone. Does nothing if the given megaphone does not
+    /// match the existing.
+    func updateManifestRemoteMegaphone(withRefetchedMegaphone refetchedMegaphone: RemoteMegaphoneModel) {
+        guard case .remoteMegaphone(var megaphone) = manifest else {
+            owsFailDebug("Attempting to update remote megaphone, but upgrade is not a remote megaphone: \(manifest)")
+            return
+        }
+
+        megaphone.update(withRefetched: refetchedMegaphone)
+
+        manifest = .remoteMegaphone(megaphone: megaphone)
     }
 }

@@ -145,6 +145,9 @@ class ExperienceUpgradeManager: NSObject {
                 .contactPermissionReminder,
                 .subscriptionMegaphone:
             return true
+        case .remoteMegaphone(let megaphone):
+            // TODO: add a megaphone view
+            return false
         case .unrecognized:
             return false
         }
@@ -162,6 +165,9 @@ class ExperienceUpgradeManager: NSObject {
             return ContactPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .subscriptionMegaphone:
             return DonationMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .remoteMegaphone(let megaphone):
+            // TODO: add a megaphone view
+            return nil
         case .unrecognized:
             return nil
         }

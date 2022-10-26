@@ -656,6 +656,17 @@ public extension NSString {
     }
 }
 
+// MARK: - Percent encoding
+
+public extension String {
+    var percentEncodedAsUrlPath: String {
+        var components = URLComponents()
+        components.path = self
+
+        return components.percentEncodedPath
+    }
+}
+
 // MARK: -
 
 public extension String {
@@ -709,5 +720,23 @@ public extension NSString {
             return ""
         }
         return formattedDuration
+    }
+}
+
+// MARK: - Filename
+
+public extension String {
+    private static let permissibleFilenameCharRegex: NSRegularExpression = {
+        let pattern = "^[a-zA-Z0-9\\-_]+$"
+
+        do {
+            return try NSRegularExpression(pattern: pattern)
+        } catch let error {
+            owsFail("Failed to create filename char regex: \(error)")
+        }
+    }()
+
+    var isPermissibleAsFilename: Bool {
+        Self.permissibleFilenameCharRegex.hasMatch(input: self)
     }
 }

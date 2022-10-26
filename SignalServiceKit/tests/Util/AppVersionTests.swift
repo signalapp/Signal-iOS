@@ -32,12 +32,20 @@ class AppVersionTests: SSKBaseTestSwift {
             ("5.35.1.3", "5.35.1.2", .orderedDescending),
             ("5.35.2.0", "5.35.1.2", .orderedDescending),
             ("5.36.0.0", "5.35.1.2", .orderedDescending),
-            ("6.0.0.0", "5.35.1.2", .orderedDescending)
+            ("6.0.0.0", "5.35.1.2", .orderedDescending),
+
+            ("junk", "otherjunk", .orderedSame),
+            ("0.foo.0", "0.0.0", .orderedSame),
+            ("1.foo.0", "2.bar.0", .orderedAscending),
+            ("1.1", "1.foo", .orderedDescending)
         ]
 
-        testCases.forEach {
-            XCTAssertEqual(AppVersion.compare($0.0, with: $0.1), $0.2)
-            XCTAssertEqual(AppVersion.compare($0.1, with: $0.0), $0.2.inverted)
+        testCases.forEach { (lhs, rhs, expected) in
+            let lCompR = AppVersion.compare(lhs, with: rhs)
+            XCTAssertEqual(lCompR, expected, "\(lhs) compared with \(rhs)")
+
+            let rCompL = AppVersion.compare(rhs, with: lhs)
+            XCTAssertEqual(rCompL, expected.inverted, "\(rhs) compared with \(lhs)")
         }
     }
 }

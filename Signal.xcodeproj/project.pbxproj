@@ -1118,6 +1118,8 @@
 		D943F3EF2892F89B008C0C8B /* NSELogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D943F3EE2892F89B008C0C8B /* NSELogger.swift */; };
 		D95DA7ED28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */; };
 		D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */; };
+		D98DD85F28EE53B00089333E /* RemoteMegaphoneFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */; };
+		D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */; };
 		D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */; };
 		D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */; };
 		D9C7CEB428EB8495001E87B6 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */; };
@@ -3449,6 +3451,8 @@
 		D943F3EE2892F89B008C0C8B /* NSELogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSELogger.swift; sourceTree = "<group>"; };
 		D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+SystemMessageItems.swift"; sourceTree = "<group>"; };
 		D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GroupManager+GenericGroupUpdates.swift"; sourceTree = "<group>"; };
+		D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneFetcher.swift; sourceTree = "<group>"; };
+		D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneModel.swift; sourceTree = "<group>"; };
 		D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinderPerformanceTests.swift; sourceTree = "<group>"; };
 		D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift"; sourceTree = "<group>"; };
 		D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgrade.swift; sourceTree = "<group>"; };
@@ -6832,11 +6836,21 @@
 		D920487D28EB8201003F5371 /* Experience Upgrades */ = {
 			isa = PBXGroup;
 			children = (
+				D98DD85C28EE53B00089333E /* Remote Megaphone */,
 				D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */,
 				F9C5CB5B289453B200548EEE /* ExperienceUpgradeFinder.swift */,
 				D9C7CECA28EBC09C001E87B6 /* ExperienceUpgradeManifest.swift */,
 			);
 			path = "Experience Upgrades";
+			sourceTree = "<group>";
+		};
+		D98DD85C28EE53B00089333E /* Remote Megaphone */ = {
+			isa = PBXGroup;
+			children = (
+				D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */,
+				D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */,
+			);
+			path = "Remote Megaphone";
 			sourceTree = "<group>";
 		};
 		E75DD3DC2810CD3500E32C36 /* subscriptions */ = {
@@ -10936,6 +10950,8 @@
 				F9C5CCB1289453B300548EEE /* RemoteAttestationQuote.m in Sources */,
 				F9C5CCB2289453B300548EEE /* RemoteAttestationSigningCertificate.m in Sources */,
 				F9C5CE17289453B400548EEE /* RemoteConfigManager.swift in Sources */,
+				D98DD85F28EE53B00089333E /* RemoteMegaphoneFetcher.swift in Sources */,
+				D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */,
 				F9C5CDC0289453B400548EEE /* RESTNetworkManager.m in Sources */,
 				F9C5CDBE289453B400548EEE /* RESTNetworkManager.swift in Sources */,
 				F9C5CDF8289453B400548EEE /* ReverseDispatchQueue.swift in Sources */,

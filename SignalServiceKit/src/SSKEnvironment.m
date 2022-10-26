@@ -63,6 +63,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) ChangePhoneNumber *changePhoneNumberRef;
 @property (nonatomic) id<SubscriptionManagerProtocol> subscriptionManagerRef;
 @property (nonatomic) id<SystemStoryManagerProtocolObjc> systemStoryManagerRef;
+@property (nonatomic) RemoteMegaphoneFetcher *remoteMegaphoneFetcherRef;
 
 @end
 
@@ -131,6 +132,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                       changePhoneNumber:(ChangePhoneNumber *)changePhoneNumber
                     subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager
                      systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager
+                 remoteMegaphoneFetcher:(RemoteMegaphoneFetcher *)remoteMegaphoneFetcher
 {
     self = [super init];
     if (!self) {
@@ -192,6 +194,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _changePhoneNumberRef = changePhoneNumber;
     _subscriptionManagerRef = subscriptionManager;
     _systemStoryManagerRef = systemStoryManager;
+    _remoteMegaphoneFetcherRef = remoteMegaphoneFetcher;
 
     return self;
 }
