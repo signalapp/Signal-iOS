@@ -162,6 +162,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         pickerVC.shouldShowSearchBar = false
         pickerVC.shouldHideSearchBarIfCancelled = true
         pickerVC.pickerDelegate = self
+        pickerVC.shouldBatchUpdateIdentityKeys = true
 
         forwardNavigationViewController.forwardMessageViewController = self
         forwardNavigationViewController.viewControllers = [ pickerVC ]
