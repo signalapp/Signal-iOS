@@ -496,6 +496,15 @@ extension ExperienceUpgradeManifest {
             return false
         }
 
+        guard RemoteConfig.isCountryCodeBucketEnabled(
+            csvString: manifest.countries,
+            key: manifest.id,
+            csvDescription: "remoteMegaphoneCountries_\(manifest.id)"
+        ) else {
+            Logger.debug("Remote megaphone not enabled for this user, by country code!")
+            return false
+        }
+
         if let conditionalCheck = manifest.conditionalCheck {
             switch conditionalCheck {
             case .unrecognized(let conditionalId):

@@ -87,7 +87,12 @@ extension RemoteMegaphoneModel {
         /// upgrade should be shown.
         let minAppVersion: String
 
-        // TODO: what does this represent and how do we use it?
+        /// A CSV string of `<country-code>:<parts-per-million>` pairs
+        /// representing the fraction of users to which this megaphone should
+        /// be shown, by country code.
+        ///
+        /// This is the same format used in remote-config country-code
+        /// restrictions.
         fileprivate(set) var countries: String
 
         /// Epoch time before which this megaphone should not be shown.
