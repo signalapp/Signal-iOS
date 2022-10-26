@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Despre solicitări mesaj";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "Toate conexiunile";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Răspunde";
@@ -1411,9 +1411,6 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Detalii contact";
 
-/* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Partajează profilul";
-
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Adaugă la contacte";
 
@@ -1784,7 +1781,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Donați";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal se bazează pe oameni ca tine. Donează lunar și vei primi o insignă.";
+"DONATE_MEGAPHONE_BODY" = "Signal is funded by your donations. Privacy over profit.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Nu acum";
@@ -1831,6 +1828,18 @@
 /* Donation payment error for decline failures where the payment cannot be authorized. */
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Verifică dacă metoda ta de plată este actualizată în Apple Pay. Dacă nu, actualizează-o și încearcă din nou.";
 
+/* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "If you can, please donate today to keep Signal fun, dependable, and available for everyone.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal is different.";
+
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Suma";
 
@@ -1866,6 +1875,15 @@
 
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Dacă ai reinstalat Signal, bonurile fiscale ale donațiilor precedente nu vor mai fi disponibile.";
+
+/* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
+
+/* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
+"DONATION_SCREENS_HEADER_READ_MORE" = "Read more";
+
+/* On donation screens, a small amount of information text is shown. This is the title for that text. */
+"DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "Donează pentru Signal";
@@ -3803,7 +3821,7 @@
 "MY_STORY_SETTINGS_TITLE" = "Povestea Mea";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "Atinge ca să adaugi";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recent și-au schimbat numele profilului din %1$@ în %2$@.";
@@ -3840,9 +3858,6 @@
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Noul grup nu a putut fi creat. Verifică-ți conexiunea la internet și încearcă din nou.";
-
-/* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Nu suportă noile grupuri";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Numele grupului este obligatoriu.";
@@ -3893,7 +3908,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Lipsește Numele Poveștii";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Doar tu poți vedea numele poveștii.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Numele Poveștii (Necesar)";
@@ -3905,13 +3920,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Spectatori";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Nou";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Vizibil doar la persoane specifice";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Nouă poveste personalizată";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Distribuie la un grup existent";
@@ -4013,7 +4028,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "PIN incorect";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Omite și creează un PIN nou";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New PIN";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Dacă nu iți mai amintești codul PIN, poți crea unul nou. Îți poți înregistra și utiliza contul, dar vei pierde unele setări salvate, cum ar fi informațiile despre profil.";
@@ -4161,6 +4176,12 @@
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal întâmpină dificultăți tehnice. Muncim din greu pentru a restabili serviciul cât mai repede posibil.";
+
+/* Label for action link when the user has an outdated payment client */
+"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Update Now";
+
+/* Label warning the user that they should update Signal to continue using payments. */
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "Ai apelat pe %1$@";
@@ -4742,7 +4763,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Adaugă Spectatori";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Șterge povestea personalizată";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Sigur vrei să ștergi „%1$@“? Actualizările trimise către această poveste vor fi și ele șterse.";
@@ -5767,6 +5788,18 @@
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Plățile au fost dezactivate.";
 
+/* Button for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Update Signal";
+
+/* Message for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
+
+/* Title for payments outdated sheet saying cant send. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Can't Send Payment";
+
+/* Title for payments outdated sheet saying update required. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";
+
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Toate";
 
@@ -6287,10 +6320,10 @@
 "STORIES_SAVE_STORY_ACTION" = "Salvează";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "Povestea se actualizează automat după 24 de ore. Alege cine îți poate vedea povestea sau creează noi povești cu anumiți spectatori sau grupuri.";
 
 /* Header for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
+"STORIES_SETTINGS_STORIES_HEADER" = "Povești";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Nu vei mai putea să distribui sau să vezi povești. Actualizările poveștilor pe care le-ai distribuit recent vor fi și ele șterse.";
@@ -6311,10 +6344,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Activează Poveștile";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "Confirmări de citire";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Vezi și distribuie când sunt vizualizate poveștile. Dacă dezactivezi, nu vei vedea când alte persoane îți văd povestea.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Distribuie";
@@ -6332,7 +6365,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Poveste Arătată din Nou";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Activează confirmările de citire ca să știi cine ți-a văzut poveștile.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Vizualizări";
@@ -6365,7 +6398,7 @@
 "STORY_PRIVACY_SETTINGS" = "Confidențialitate";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "Confidențialitatea Poveștilor";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "A reacționat cu %1$@ la povestea ta";
@@ -6437,7 +6470,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Conexiunile Signal</bold> sunt persoane în care ai ales să ai încredere, fie de către:";
 
 /* Label for the stories section of the settings view */
-"STORY_SETTINGS_TITLE" = "Stories";
+"STORY_SETTINGS_TITLE" = "Povești";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Alege care dintre conexiunile Signal îți pot vedea povestea. Schimbările nu vor afecta poveștile pe care le-ai trimis deja.";
@@ -6526,18 +6559,6 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Se încarcă";
 
-/* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal este o organizație non-profit, fără agenți de publicitate sau investitori, susținută doar de oamenii care o folosesc și o apreciază. Fă o donație lunară recurentă și primești o insignă de profil pentru a-ți împărtăși sprijinul.";
-
-/* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal este dedicat dezvoltării de tehnologii open source pentru confidențialitate care protejează libertatea de exprimare și permit o comunicare globală sigură.\n\nDonația ta susține această cauză și plătește pentru dezvoltarea și funcționarea unei aplicații folosită de milioane de oameni pentru comunicare privată. Fără reclame. Fără elemente de urmărire. Pe bune.";
-
-/* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Sprijină tehnologia construită pentru tine—nu pentru datele tale—alăturându-te comunității de oameni care o susțin.";
-
-/* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "De ce să donezi?";
-
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "În curs de procesare";
 
@@ -6589,9 +6610,6 @@
 /* Status text while processing a badge redemption */
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Se procesează tranzacția...";
 
-/* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Citește mai mult.";
-
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Reînnoire: %1$@";
 
@@ -6604,9 +6622,6 @@
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Nu acum";
 
-/* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Signal este susținut de oameni ca tine.";
-
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Vei fi taxat astăzi cu prețul integral al noului abonament (%1$@). Noul tău abonament se va reînnoi lunar.";
 
@@ -6615,9 +6630,6 @@
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Actualizează";
-
-/* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Fă o donație lunară recurentă către Signal pentru a sprijini tehnologia creată pentru tine, nu pentru datele tale.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Dezactivate";

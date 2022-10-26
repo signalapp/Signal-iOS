@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Σχετικά με τα αιτήματα μηνυμάτων";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "Όλες οι επαφές";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Απάντηση";
@@ -353,16 +353,16 @@
 "BACK_BUTTON" = "Πίσω";
 
 /* Section header for badge view section in the badge configuration page */
-"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Τα εμβλήματά μου";
+"BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "Τα σήματά μου";
 
 /* The title for the badge configuration page */
-"BADGE_CONFIGURATION_TITLE" = "Εμβλήματα";
+"BADGE_CONFIGURATION_TITLE" = "Σήματα";
 
 /* Text prompting the user to become a signal sustainer */
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Γίνε υποστηρικτής/τρια";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Δώσε Ενίσχυση στο Signal";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Ενίσχυσε το Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "Το σήμα Boost σου έληξε και δεν είναι πλέον διαθέσιμο για εμφάνιση στο προφίλ σου.";
@@ -515,7 +515,7 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Εμφάνιση στο προφίλ";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Να γίνει το βασικό έμβλημα";
+"BADGE_THANKS_MAKE_FEATURED" = "Να γίνει το βασικό σήμα";
 
 /* Title for subscription on the thank you sheet. */
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "Ευχαριστούμε για την υποστήριξη!";
@@ -602,7 +602,7 @@
 "BLUR_TOOLTIP" = "Νέο: Θόλωσε τα πρόσωπα ή ζωγράφισε οπουδήποτε για να θολώσεις.";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Κάνε μια μοναδική δωρεά και κέρδισε το έμβλημα Eνίσχυσης για 30 ημέρες.";
+"BOOST_VIEW_BODY" = "Κάνε μια μεμονωμένη δωρεά και κέρδισε ένα σήμα Boost για 30 ημέρες.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Το έμβλημα Ενίσχυσης θα λήξει στις %1$@.";
@@ -623,7 +623,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Επέλεξε ένα ποσό για δωρεά";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Δώσε Ενίσχυση στο Signal";
+"BOOST_VIEW_TITLE" = "Ενίσχυσε το Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Προσθήκη";
@@ -1256,7 +1256,7 @@
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Πάρε εμβλήματα για το προφίλ σου στηρίζοντας το Signal. Πάτα σε ένα έμβλημα για να μάθεις περισσότερα.";
 
 /* Header title for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_HEADER" = "Εμβλήματα";
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "Σήματα";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Δεν θα λαμβάνεις πια μηνύματα ή ενημερώσεις από αυτόν τον/την χρήστη.";
@@ -1410,9 +1410,6 @@
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Λεπτομέρειες επαφής";
-
-/* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Κοινοποίηση προφίλ";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Προσθήκη στις επαφές";
@@ -1772,7 +1769,7 @@
 "DISMISS_CONTEXT_MENU" = "Απόρριψη μενού περιβάλλοντος";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Εμφάνιση εμβλημάτων στο προφίλ";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Εμφάνιση σημάτων στο προφίλ";
 
 /* Title for the proxy confirmation */
 "DO_YOU_WANT_TO_USE_PROXY" = "Θέλεις να χρησιμοποιήσεις αυτή τη διεύθυνση proxy;";
@@ -1784,7 +1781,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Δωρεά";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "H Signal υποστηρίζεται από ανθρώπους σαν κι εσένα. Κάνε μηνιαίες δωρεές για να λάβεις το badge";
+"DONATE_MEGAPHONE_BODY" = "Signal is funded by your donations. Privacy over profit.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Όχι τώρα";
@@ -1831,6 +1828,18 @@
 /* Donation payment error for decline failures where the payment cannot be authorized. */
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Έλεγξε εάν ο τρόπος πληρωμής σου στο Apple Pay είναι ενημερωμένος. Εάν δεν είναι, ενημέρωσέ τον και δοκίμασε ξανά.";
 
+/* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "If you can, please donate today to keep Signal fun, dependable, and available for everyone.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal is different.";
+
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Ποσό";
 
@@ -1867,6 +1876,15 @@
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Αν έχεις επανεγκαταστήσει το Signal, οι αποδείξεις από προηγούμενες δωρεές δεν θα είναι διαθέσιμες.";
 
+/* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
+
+/* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
+"DONATION_SCREENS_HEADER_READ_MORE" = "Read more";
+
+/* On donation screens, a small amount of information text is shown. This is the title for that text. */
+"DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
+
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "Κάνε μια δωρεά στο Signal";
 
@@ -1883,7 +1901,7 @@
 "DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Κάνε μηνιαία δωρεά";
 
 /* Title for the 'Badges' button on the donation screen */
-"DONATION_VIEW_MANAGE_BADGES" = "Εμβλήματα";
+"DONATION_VIEW_MANAGE_BADGES" = "Σήματα";
 
 /* Title for the 'Manage Subscription' button on the donation screen */
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Διαχείριση συνδρομής";
@@ -2135,7 +2153,7 @@
 "FEATURED_BADGE_SECTION_HEADER" = "Επιλογή εμβλήματος";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Βασικό έμβλημα";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Βασικό σήμα";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Σημείωση ως επιβεβαιωμένο";
@@ -3803,7 +3821,7 @@
 "MY_STORY_SETTINGS_TITLE" = "Η ιστορία μου";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "Πάτα για προσθήκη";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Άλλαξε πρόσφατα το όνομα προφίλ του/της από %1$@ σε %2$@.";
@@ -3840,9 +3858,6 @@
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Δεν μπορέσαμε να δημιουργήσουμε την νέα ομάδα. Έλεγξε τη σύνδεσή σου στο διαδίκτυο και ξαναδοκίμασε.";
-
-/* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Δεν υποστηρίζει Ομάδες νέου τύπου";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Το όνομα της ομάδας είναι απαραίτητο.";
@@ -3893,7 +3908,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Λείπει το όνομα της ιστορίας";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Μόνο εσύ μπορείς να δεις το όνομα αυτής της ιστορίας.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Όνομα ιστορίας (απαιτείται)";
@@ -3905,13 +3920,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Θεατές";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Νέα";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Ορατή μόνο σε συγκεκριμένα άτομα";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Νέα προσαρμοσμένη ιστορία";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Διαμοιρασμός με υφιστάμενη ομάδα";
@@ -4013,7 +4028,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "Λάθος ΡΙΝ";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Παράλειψη και δημιουργία νέου PIN";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New PIN";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Αν δεν μπορείς να θυμηθείς το PIN σου, μπορείς να δημιουργήσεις ένα νέο. Θα έχεις τη δυνατότητα να εγγραφτείς και να χρησιμοποιήσεις τον λογαριασμό σου, αλλά θα χαθούν κάποιες αποθηκευμένες ρυθμίσεις όπως οι πληροφορίες προφίλ σου.";
@@ -4161,6 +4176,12 @@
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Το Signal αντιμετωπίζει τεχνικές δυσκολίες. Εργαζόμαστε σκληρά για να αποκαταστήσουμε την υπηρεσία το συντομότερο δυνατό.";
+
+/* Label for action link when the user has an outdated payment client */
+"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Update Now";
+
+/* Label warning the user that they should update Signal to continue using payments. */
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "Κάλεσες τον/-ην %1$@";
@@ -4742,7 +4763,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Προσθήκη θεατών";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Διαγραφή προσαρμοσμένης ιστορίας";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Σίγουρα θέλεις να διαγράψεις την ιστορία \"%1$@\"; Οι ενημερώσεις που κοινοποιούνται σε αυτήν την ιστορία θα διαγραφούν επίσης.";
@@ -5767,6 +5788,18 @@
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Οι πληρωμές απενεργοποιήθηκαν.";
 
+/* Button for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Update Signal";
+
+/* Message for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
+
+/* Title for payments outdated sheet saying cant send. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Can't Send Payment";
+
+/* Title for payments outdated sheet saying update required. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";
+
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Όλοι/ες";
 
@@ -6287,10 +6320,10 @@
 "STORIES_SAVE_STORY_ACTION" = "Αποθήκευση";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "Οι ενημερώσεις ιστοριών εξαφανίζονται αυτόματα μετά από 24 ώρες. Επίλεξε ποια άτομα μπορούν να δουν την ιστορία σου ή δημιούργησε νέες ιστορίες για συγκεκριμένους θεατές ή ομάδες.";
 
 /* Header for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
+"STORIES_SETTINGS_STORIES_HEADER" = "Ιστορίες";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Δεν θα μπορείς πλέον να μοιράζεσαι ή να βλέπεις ιστορίες. Οι ενημερώσεις ιστορίας που κοινοποίησες πρόσφατα θα διαγραφούν επίσης.";
@@ -6311,10 +6344,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Ενεργοποίηση ιστοριών";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "Προβολή αποδεικτικών ανάγνωσης";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Δες και μοιράσου όταν προβάλλονται ιστορίες. Εάν είναι απενεργοποιημένο, δεν θα βλέπεις πότε οι άλλοι βλέπουν την ιστορία σου.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Μοιράσου";
@@ -6332,7 +6365,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Ιστορία φανερή";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Ενεργοποίησε το αποδεικτικό ανάγνωσης για να βλέπεις ποια άτομα βλέπουν τις ιστορίες σου.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Προβολές";
@@ -6365,7 +6398,7 @@
 "STORY_PRIVACY_SETTINGS" = "Απόρρητο";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "Απόρρητο ιστορίας";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Αντέδρασε με %1$@ στην ιστορία σου";
@@ -6437,7 +6470,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "Οι <bold>επαφές Signal</bold> είναι άτομα που έχεις επιλέξει να εμπιστεύεσαι, με τους εξής τρόπους:";
 
 /* Label for the stories section of the settings view */
-"STORY_SETTINGS_TITLE" = "Stories";
+"STORY_SETTINGS_TITLE" = "Ιστορίες";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Διάλεξε ποιες από τις επαφές Signal μπορούν να δουν την ιστορία σου. Οι αλλαγές δεν επηρεάζουν τις ιστορίες που έχεις στείλει ήδη.";
@@ -6526,23 +6559,11 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Φορτώνει";
 
-/* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Το Signal είναι μια ΜΚΟ χωρις διαφημίσεις και επενδυτές, που συντηρείται μόνο από τα άτομα που το χρησιμοποιούν και το θεωρούν σημαντικό. Με μια επαναλαμβανόμενη μηνιαία δωρεά παίρνεις ένα έμβλημα για το προφίλ σου, για να δείξεις την υποστήριξή σου.";
-
-/* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Η Signal έχει δεσμευτεί στην ανάπτυξη τεχνολογίας απορρήτου με ανοιχτό κώδικα που προστατεύει την ελεύθερη έκφραση και επιτρέπει την ασφαλή παγκόσμια επικοινωνία. Η συνεισφορά σου τροφοδοτεί αυτόν τον σκοπό και πληρώνει για την ανάπτυξη και τη λειτουργία μιας εφαρμογής που χρησιμοποιείται από εκατομμύρια άτομα για τις απόρρητες επικοινωνίες τους. Χωρίς διαφημίσεις. Χωρίς ιχνηλάτες. Πέρα από την πλάκα.";
-
-/* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Υποστήριξε την τεχνολογία που έχει φτιαχτεί για εσένα —όχι για τα δεδομένα σου— συμμετέχοντας στην κοινότητα που τη συντηρεί.";
-
-/* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Γιατί να κάνω δωρεά;";
-
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Ακόμα επεξεργάζεται";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Πάρε ένα έμβλημα %1$@";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Πάρε ένα σήμα %1$@";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Ακύρωση συνδρομής";
@@ -6551,7 +6572,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Επιβεβαίωση";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Δεν θα χρεωθείς ξανά. Το έμβλημά σου θα αφαιρεθεί από το προφίλ σου στο τέλος της περιόδου για την οποία έχεις χρεωθεί.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Δεν θα χρεωθείς ξανά. Το σήμα σου θα αφαιρεθεί από το προφίλ σου στο τέλος της περιόδου για την οποία έχεις χρεωθεί.";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Επιβεβαίωση ακύρωσης;";
@@ -6581,7 +6602,7 @@
 "SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Λήγει %1$@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Ανανεώνεται %1$@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Ανανέωση: %1$@";
 
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Επεξεργασία πληρωμής…";
@@ -6589,11 +6610,8 @@
 /* Status text while processing a badge redemption */
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Επεξεργασία συναλλαγής…";
 
-/* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Διάβασε περισσότερα.";
-
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Ανανεώνεται %1$@";
+"SUSTAINER_VIEW_RENEWAL" = "Ανανέωση: %1$@";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Η πληρωμή σου βρίσκεται ακόμα σε επεξεργασία. Μπορεί να πάρει ακόμα μερικά λεπτά, ανάλογα με τη σύνδεσή σου.";
@@ -6604,9 +6622,6 @@
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Όχι τώρα";
 
-/* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Το Signal στηρίζεται σε άτομα σαν κι εσένα.";
-
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Θα χρεωθείς το πλήρες ποσό (%1$@) της τιμής νέας συνδρομής σήμερα. Η συνδρομή σου θα ανανεώνεται μηνιαία.";
 
@@ -6615,9 +6630,6 @@
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Ενημέρωση";
-
-/* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Κάνε μια επαναλαμβανόμενη μηνιαία δωρεά στο Signal, για να υποστηρίξεις τη τεχνολογία που φτιάχνεται για σένα, όχι για τα δεδομένα σου.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Ανενεργό";

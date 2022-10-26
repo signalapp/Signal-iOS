@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Om meldingsforespørsler";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "Alle kontakter";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Svar";
@@ -1411,9 +1411,6 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Kontaktdetaljer";
 
-/* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Del profil";
-
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Legg til i kontakter";
 
@@ -1784,13 +1781,13 @@
 "DONATE_MEGAPHONE_ACTION" = "Donér";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal drives av folk som deg. Gi månedlige donasjoner og få et giveremblem.";
+"DONATE_MEGAPHONE_BODY" = "Signal is funded by your donations. Privacy over profit.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Ikke nå";
 
 /* Title for donate megaphone */
-"DONATE_MEGAPHONE_TITLE" = "Donér til Signal";
+"DONATE_MEGAPHONE_TITLE" = "Gi penger til Signal";
 
 /* Donation payment error for decline failures where authentication is required. */
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Prøv en annen betalingsmåte, eller ta kontakt med banken din.";
@@ -1831,6 +1828,18 @@
 /* Donation payment error for decline failures where the payment cannot be authorized. */
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Dobbeltsjekk at betalingsinformasjonen din er oppdatert i Apple Pay. Hvis den ikke er det, må du oppdatere den og prøve på nytt.";
 
+/* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "If you can, please donate today to keep Signal fun, dependable, and available for everyone.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal is different.";
+
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Beløp";
 
@@ -1867,8 +1876,17 @@
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Kvitteringer for tidligere pengebeløp vil ikke være tilgjengelig hvis du har lastet ned Signal-appen på nytt.";
 
+/* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
+
+/* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
+"DONATION_SCREENS_HEADER_READ_MORE" = "Read more";
+
+/* On donation screens, a small amount of information text is shown. This is the title for that text. */
+"DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
+
 /* Text of the 'donate to signal' button on the donation screen */
-"DONATION_VIEW_DONATE_TO_SIGNAL" = "Donér til Signal";
+"DONATION_VIEW_DONATE_TO_SIGNAL" = "Gi penger til Signal";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Donasjon til Signal";
@@ -1910,7 +1928,7 @@
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "Vanlige spørsmål om abonnement";
 
 /* Title on the 'Donate to Signal' screen */
-"DONATION_VIEW_TITLE" = "Donér til Signal";
+"DONATION_VIEW_TITLE" = "Gi penger til Signal";
 
 /* Label for the currency picker button in donation views */
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Velg valuta";
@@ -3311,7 +3329,7 @@
 "KEY_COMMAND_UNARCHIVE" = "Hent frem samtale fra arkiv";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "Lær mer";
+"LEARN_MORE" = "Les mer";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Forlat";
@@ -3803,7 +3821,7 @@
 "MY_STORY_SETTINGS_TITLE" = "Min story";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "Trykk for å legge til";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Endret nylig profilnavn fra %1$@ til %2$@.";
@@ -3840,9 +3858,6 @@
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Klarte ikke opprette ny gruppe. Sjekk din internettforbindelse og prøv på nytt.";
-
-/* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Støtter ikke nye grupper";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Gruppenavn påkrevd.";
@@ -3893,7 +3908,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Navn på story mangler";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Navnet på storyen vises bare for deg.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Navn på story (obligatorisk)";
@@ -3905,13 +3920,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Seere";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Ny";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Kun synlig for utvalgte personer";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Ny egendefinert story";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Del med en eksisterende gruppe";
@@ -4013,7 +4028,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "Feil PIN-kode";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Hopp over og lag ny PIN-kode";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New PIN";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Hvis du ikke kan huske PIN-koden din, kan du opprette en ny. Du kan registrere og bruke kontoen din, men du vil miste noen lagrede innstillinger som profilinformasjonen din.";
@@ -4161,6 +4176,12 @@
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal opplever tekniske problemer. Vi jobber for å løse problemet.";
+
+/* Label for action link when the user has an outdated payment client */
+"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Update Now";
+
+/* Label warning the user that they should update Signal to continue using payments. */
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "Du ringte %1$@";
@@ -4742,7 +4763,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Legg til seere";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Slett egendefinert story";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Er du sikker på at du vil slette alle «%1$@»? Oppdateringene knyttet til denne storyen, slettes også.";
@@ -5480,7 +5501,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Sett standard utløpstid for tidsavgrensede meldinger, for nye samtaler startet av deg.";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Donér til Signal";
+"SETTINGS_DONATE" = "Gi penger til Signal";
 
 /* Title for help button and help pages in app settings. */
 "SETTINGS_HELP" = "Hjelp";
@@ -5766,6 +5787,18 @@
 
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Betalinger er deaktivert";
+
+/* Button for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Update Signal";
+
+/* Message for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
+
+/* Title for payments outdated sheet saying cant send. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Can't Send Payment";
+
+/* Title for payments outdated sheet saying update required. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Alle";
@@ -6287,10 +6320,10 @@
 "STORIES_SAVE_STORY_ACTION" = "Lagre";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "Storyer forsvinner automatisk etter 24 timer. Velg hvem som kan se storyen din, eller del nye storyer med utvalgte personer og grupper.";
 
 /* Header for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
+"STORIES_SETTINGS_STORIES_HEADER" = "Storyer";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Du vil ikke lenger kunne dele eller se storyer. Oppdateringer av storyer som du nylig har delt, slettes også.";
@@ -6311,10 +6344,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Slå på storyer";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "Visningsbekreftelser";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Se og del når storyene dine blir sett av andre. Hvis dette er deaktivert, kan du ikke vite når andre ser storyen din.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Del";
@@ -6332,7 +6365,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Storyen er ikke skjult lenger";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Aktiver visningsbekreftelser for å finne ut hvem som har sett storyene dine.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Visninger";
@@ -6365,7 +6398,7 @@
 "STORY_PRIVACY_SETTINGS" = "Personvern";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "Personvern for storyer";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reagerte med %1$@ på storyen din";
@@ -6437,7 +6470,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal-kontaktene dine</bold> er personer som du stoler på, enten ved å:";
 
 /* Label for the stories section of the settings view */
-"STORY_SETTINGS_TITLE" = "Stories";
+"STORY_SETTINGS_TITLE" = "Storyer";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Velg hvilke Signal-kontakter som kan se storyen din. Storyer som allerede er sendt ut, blir ikke påvirket.";
@@ -6526,18 +6559,6 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Laster inn";
 
-/* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal er en ideell organisasjon uten annonsører og investorer som drives kun av folk som bruker appen og setter pris på den. Gi et månedlig pengebeløp og få et profilmerke som viser at du er en av Signals støttespillere.";
-
-/* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal er opptatt av å utvikle personvernsteknologi med åpen kilde som gjør det mulig å uttrykke seg fritt og trygt på global skala.\n\nPengebeløpet ditt styrker denne saken og hjelper oss med å betale for utviklingen og driften av en app som millioner av mennesker bruker for å kommunisere privat. Ingen annonser. Ingen sporing. Ingen spøk.";
-
-/* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Støtt teknologi som er utviklet for deg, og ikke opplysningene dine, ved å bli en av Signals støttespillere.";
-
-/* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Hvorfor donere?";
-
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Under behandling";
 
@@ -6554,7 +6575,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Betalingen vil ikke trekkes igjen. Merket fjernes fra profilen din på slutten av faktureringsperioden.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Bekrefte kanselleringen?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Vil du bekrefte kanselleringen?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Kunne ikke legge til merket. %1$@";
@@ -6589,9 +6610,6 @@
 /* Status text while processing a badge redemption */
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Transaksjonen behandles ...";
 
-/* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Finn ut mer.";
-
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Fornyes %1$@";
 
@@ -6604,9 +6622,6 @@
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Ikke nå";
 
-/* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Signal drives av folk som deg.";
-
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Hele prisen for abonnementet (%1$@) vil trekkes i dag. Abonnementet ditt vil fornyes månedlig.";
 
@@ -6615,9 +6630,6 @@
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Oppdater";
-
-/* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Sett opp en månedlig pengebeløp til Signal for å støtte teknologi som er utviklet for deg, ikke opplysningene dine.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Av";

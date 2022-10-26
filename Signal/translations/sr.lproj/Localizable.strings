@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "O захтевима за разговор";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "Све везе";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Јави се";
@@ -362,7 +362,7 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Постати одрживач";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Додај Signal-у подстицај";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Пружите подршку Signal-у";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "Vaša značka podrške je istekla i više nije dostupna za prikaz na vašem profilu.";
@@ -515,7 +515,7 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Показати на профил";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Направити истакнуту значку";
+"BADGE_THANKS_MAKE_FEATURED" = "Поставите као истакнуту значку";
 
 /* Title for subscription on the thank you sheet. */
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "Хвала вам на подршци!";
@@ -602,13 +602,13 @@
 "BLUR_TOOLTIP" = "Ново: замутите лица и друге делове фотографије.";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "радите један допринос и зарадите Boost значку за 30 дана.";
+"BOOST_VIEW_BODY" = "Донирајте једном и имаћете значку подршке 30 дана.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Ваша Boost значка истиће %1$@.";
 
 /* Default text for the custom amount field of the boost view. */
-"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Унети износ";
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Унесите износ";
 
 /* Text explaining there are other ways to donate on the boost view. */
 "BOOST_VIEW_OTHER_WAYS" = "Више опција плаћања";
@@ -623,7 +623,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Изаберите износ да бисте донирали";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Додај Signal-у подстицај";
+"BOOST_VIEW_TITLE" = "Пружите подршку Signal-у";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Додај";
@@ -1411,9 +1411,6 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Детаљи контакта";
 
-/* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Подели профил";
-
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Додај у именик";
 
@@ -1445,7 +1442,7 @@
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Помери и промени величину";
 
 /* Title for the 'currency picker' view in the app settings. */
-"CURRENCY_PICKER_VIEW_TITLE" = "Поставити валуту";
+"CURRENCY_PICKER_VIEW_TITLE" = "Подесите валуту";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "Градијент";
@@ -1772,7 +1769,7 @@
 "DISMISS_CONTEXT_MENU" = "Одбаците контекстни мени";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Показати значке на прифилу";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Прикажи значке на профилу";
 
 /* Title for the proxy confirmation */
 "DO_YOU_WANT_TO_USE_PROXY" = "Желите ли да користите ову прокси адресу?";
@@ -1784,13 +1781,13 @@
 "DONATE_MEGAPHONE_ACTION" = "Донирајте";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal покрећу људи као Ви. Донирајте сваког месеца и добићете значку.";
+"DONATE_MEGAPHONE_BODY" = "Signal is funded by your donations. Privacy over profit.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Не сада";
 
 /* Title for donate megaphone */
-"DONATE_MEGAPHONE_TITLE" = "Донирајте услузи Signal";
+"DONATE_MEGAPHONE_TITLE" = "Донирајте Signal-у";
 
 /* Donation payment error for decline failures where authentication is required. */
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Покушајте са другим начином плаћања или контактирајте своју банку за више информација.";
@@ -1831,6 +1828,18 @@
 /* Donation payment error for decline failures where the payment cannot be authorized. */
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Proverite da li je vaš način plaćanja ažuriran u Apple Pay-u. Ako nije, ažurirajte ga i probajte ponovo.";
 
+/* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "If you can, please donate today to keep Signal fun, dependable, and available for everyone.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal is different.";
+
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Сума";
 
@@ -1867,8 +1876,17 @@
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Ако сте поново инсталирали Signal, потврде о претходним донацијама неће бити доступне.";
 
+/* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
+
+/* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
+"DONATION_SCREENS_HEADER_READ_MORE" = "Read more";
+
+/* On donation screens, a small amount of information text is shown. This is the title for that text. */
+"DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
+
 /* Text of the 'donate to signal' button on the donation screen */
-"DONATION_VIEW_DONATE_TO_SIGNAL" = "Донирајте услузи Signal";
+"DONATION_VIEW_DONATE_TO_SIGNAL" = "Донирајте Signal-у";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Донација Signal-у";
@@ -1910,10 +1928,10 @@
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "FAQ претплате";
 
 /* Title on the 'Donate to Signal' screen */
-"DONATION_VIEW_TITLE" = "Донирајте услузи Signal";
+"DONATION_VIEW_TITLE" = "Донирајте Signal-у";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Поставити валуту";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Подесите валуту";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Приступ можете омогућити у iOS апликацији за подешавања.";
@@ -2135,7 +2153,7 @@
 "FEATURED_BADGE_SECTION_HEADER" = "Одабрати значку";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Способности значке";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Истакнута значка";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Означи овереним";
@@ -3311,7 +3329,7 @@
 "KEY_COMMAND_UNARCHIVE" = "Одархивирај ћаскање";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "Сазнај више";
+"LEARN_MORE" = "Сазнајте више";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Напусти";
@@ -3803,7 +3821,7 @@
 "MY_STORY_SETTINGS_TITLE" = "Моја прича";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "Додирните да додате";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Недавно су променили име профила од %1$@ на %2$@.";
@@ -3840,9 +3858,6 @@
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Није могуће направити нову групу. Проверите да ли сте повезани на интернет и покушајте поново.";
-
-/* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Не подржава Нове Групе";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Назив групе је обавезан.";
@@ -3893,7 +3908,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Nedostaje naziv priče";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Само ви можете да видите назив ове приче.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Naziv priče (obavezno)";
@@ -3905,13 +3920,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Gledaoci";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Нова";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Видљиво само одређеним људима";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Нова прича";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Делити са целом групом";
@@ -4013,7 +4028,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "Нетачан PIN";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Прескочи и направи нови PIN";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New PIN";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Ако се не сећате вашег PIN-а, можете направити нови. Регистрација новог налогa је дозвољена, али ћете изгубити нека подешавања као што су личне информације профила.";
@@ -4161,6 +4176,12 @@
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal тренутно има техничких потешкоћа. Трудимо се да што пре повратимо услугу.";
+
+/* Label for action link when the user has an outdated payment client */
+"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Update Now";
+
+/* Label warning the user that they should update Signal to continue using payments. */
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "Позвали сте %1$@";
@@ -4742,7 +4763,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Dodajte gledaoce";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Избриши причу";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Желите ли сигурно да избришете причу „%1$@“? Све што сте поделили у овој причи такође ће бити избрисано.";
@@ -5480,7 +5501,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Подесите подразумевани тајмер нестајања поруке за све нове преписке које сте започели.";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Донирајте услузи Signal";
+"SETTINGS_DONATE" = "Донирајте Signal-у";
 
 /* Title for help button and help pages in app settings. */
 "SETTINGS_HELP" = "Помоћ";
@@ -5766,6 +5787,18 @@
 
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Уплате деактивиране.";
+
+/* Button for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Update Signal";
+
+/* Message for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
+
+/* Title for payments outdated sheet saying cant send. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Can't Send Payment";
+
+/* Title for payments outdated sheet saying update required. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Сви";
@@ -6287,10 +6320,10 @@
 "STORIES_SAVE_STORY_ACTION" = "Сачувај";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "Садржај приче аутоматски нестаје након 24 сата. Одаберите ко може да види вашу причу или да креира нове приче са одређеним гледаоцима или групама.";
 
 /* Header for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
+"STORIES_SETTINGS_STORIES_HEADER" = "Приче";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Више нећете моћи да делите или видите приче. Све што сте недавно поделили у причама ће такође бити избрисано.";
@@ -6311,10 +6344,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "Потврде о гледању";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Видите када неко погледа приче и поделите то са другима. Ако деактивирате ову опцију, нећете знати када су други видели вашу причу.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Поделите";
@@ -6332,7 +6365,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Priča je ponovo prikazana";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Активирајте потврде о гледању да бисте знали ко је видео ваше приче.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Прегледа";
@@ -6365,7 +6398,7 @@
 "STORY_PRIVACY_SETTINGS" = "Приватност";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "Privatnost priča";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
@@ -6437,7 +6470,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal везе</bold> су људи којима верујете и које сте одабрали на неки од следећих начина:";
 
 /* Label for the stories section of the settings view */
-"STORY_SETTINGS_TITLE" = "Stories";
+"STORY_SETTINGS_TITLE" = "Приче";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
@@ -6526,35 +6559,23 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Учитавам";
 
-/* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal је непрофитна без оглашивача или инвеститора, што је одржило само људи који га користе и цене. Направите понављајући месечни допринос и примите значку профила да бисте поделили своју подршку.";
-
-/* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal je posvećen razvoju tehnologije otvorenog koda za zaštitu privatnosti koja štiti slobodno izražavanje i omogućava bezbednu globalnu komunikaciju.\n\nVaša donacija doprinosi ostvarivanju ovog cilja i koristi se za razvoj i rad aplikacije koju milioni koriste za privatnu komunikaciju. Bez oglasa. Bez praćenja. Bez zezanja.";
-
-/* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Подржите технологију која је изграђена за вас - не за ваше податке - придруживањем заједници људи који је издржавају.";
-
-/* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Зашто донирати?";
-
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "У обраду";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Добити значку %1$@";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Набавите значку – %1$@";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Отказати претплату";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Откажи претплату";
 
 /* Confirm Cancellation? Action sheet confirm button */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Потврди";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Потврдите";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Неће вам се поново наплаћивати. Ваша значка ће бити уклоњена са вашег профила на крају вашег обрачунског периода.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Неће вам бити поново наплаћено. Значка ће бити уклоњена са вашег профила на крају обрачунског периода.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Потврдити отказивање?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Желите ли да потврдите отказивање?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Не могу да додам значку. %1$@";
@@ -6575,13 +6596,13 @@
 "SUSTAINER_VIEW_PAYMENT_ERROR" = "Грешка при обради уплате. %1$@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%1$@/месечно";
+"SUSTAINER_VIEW_PRICING" = "%1$@ месечно";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
 "SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Истиче %1$@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Обнавља %1$@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Обнавља се на дан %1$@";
 
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Обрађујем уплату...";
@@ -6589,11 +6610,8 @@
 /* Status text while processing a badge redemption */
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Обрађујем транзакцију...";
 
-/* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Прочитајте више";
-
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Обнавља %1$@";
+"SUSTAINER_VIEW_RENEWAL" = "Обнавља се на дан %1$@";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Ваша уплата се и даље обрађује. Ово може потрајати неколико минута у зависности од ваше везе.";
@@ -6604,9 +6622,6 @@
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Не сада";
 
-/* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Signal покрећу особе попут Вас.";
-
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Биће вам данас наплаћен пуни износ (%1$@) нове цене претплате. Ваша претплата ће се обнављати месечно.";
 
@@ -6615,9 +6630,6 @@
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Сачувај";
-
-/* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Дајте периодичне месечне донације за Signal да подржите технологију направљену за вас, а не за ваше податке.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Искључено";

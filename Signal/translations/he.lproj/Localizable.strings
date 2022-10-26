@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "על אודות בקשות הודעה";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "כל חברי ה–Signal";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "ענה";
@@ -362,7 +362,7 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "הפוך אל מחזיק";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "תן אל Signal תמריץ";
+"BADGE_DETAILS_GIVE_A_BOOST" = "נותנים בוסט ל–Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "תג הבוסט שלך פג תוקף והוא לא זמין יותר לתצוגה בפרופיל שלך.";
@@ -515,7 +515,7 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "הצג בפרופיל";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "עשה תג בולט";
+"BADGE_THANKS_MAKE_FEATURED" = "הוספת תג לפרופיל";
 
 /* Title for subscription on the thank you sheet. */
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "תודה על התמיכה שלך!";
@@ -602,13 +602,13 @@
 "BLUR_TOOLTIP" = "חדש: טשטש פרצופים או צייר בכל מקום כדי לטשטש.";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "בצע תרומה חד־פעמית והרווח תג תמריץ למשך 30 ימים.";
+"BOOST_VIEW_BODY" = "מבצעים תרומה חד־פעמית ומרוויחים תג בוסט למשך 30 ימים.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "תג התמריץ שלך יפוג בתאריך %1$@.";
 
 /* Default text for the custom amount field of the boost view. */
-"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "הכנס סכום מותאם אישית";
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "הכנסת סכום מותאם אישית";
 
 /* Text explaining there are other ways to donate on the boost view. */
 "BOOST_VIEW_OTHER_WAYS" = "עוד אפשרויות תשלום";
@@ -623,7 +623,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "בחר סכום לתרום";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "תן אל Signal תמריץ";
+"BOOST_VIEW_TITLE" = "נותנים בוסט ל–Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "הוסף";
@@ -1411,9 +1411,6 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "פרטי איש קשר";
 
-/* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "שתף פרופיל";
-
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "הוסף אל אנשי קשר";
 
@@ -1445,7 +1442,7 @@
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "הזז ושנה גודל";
 
 /* Title for the 'currency picker' view in the app settings. */
-"CURRENCY_PICKER_VIEW_TITLE" = "הגדר מטבע";
+"CURRENCY_PICKER_VIEW_TITLE" = "הגדרת מטבע";
 
 /* Label for the 'gradient' mode in the custom chat color settings view. */
 "CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT" = "שיפוע";
@@ -1772,7 +1769,7 @@
 "DISMISS_CONTEXT_MENU" = "השמט תפריט הקשר";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "הצג תגים בפרופיל שלי";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "הצגת תגים בפרופיל שלי";
 
 /* Title for the proxy confirmation */
 "DO_YOU_WANT_TO_USE_PROXY" = "האם אתה רוצה להשתמש בכתובת יפוי כוח זו?";
@@ -1784,13 +1781,13 @@
 "DONATE_MEGAPHONE_ACTION" = "תרום";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal ממונע על ידי אנשים כמוך. תרום מדי חודש וקבל תג.";
+"DONATE_MEGAPHONE_BODY" = "Signal is funded by your donations. Privacy over profit.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "לא עכשיו";
 
 /* Title for donate megaphone */
-"DONATE_MEGAPHONE_TITLE" = "תרום אל Signal";
+"DONATE_MEGAPHONE_TITLE" = "תרומה ל–Signal";
 
 /* Donation payment error for decline failures where authentication is required. */
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "נסה שיטת תשלום אחרת או צור קשר עם הבנק שלך בשביל עוד מידע.";
@@ -1831,6 +1828,18 @@
 /* Donation payment error for decline failures where the payment cannot be authorized. */
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "בדוק ששיטת התשלום שלך מעודכנת ב־Apple Pay. אם היא לא, עדכן אותה ונסה שוב.";
 
+/* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "If you can, please donate today to keep Signal fun, dependable, and available for everyone.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal is different.";
+
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "סכום";
 
@@ -1867,8 +1876,17 @@
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "אם התקנת מחדש את Signal, קבלות מתרומות קודמות לא יהיו זמינות.";
 
+/* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
+
+/* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
+"DONATION_SCREENS_HEADER_READ_MORE" = "Read more";
+
+/* On donation screens, a small amount of information text is shown. This is the title for that text. */
+"DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
+
 /* Text of the 'donate to signal' button on the donation screen */
-"DONATION_VIEW_DONATE_TO_SIGNAL" = "תרום אל Signal";
+"DONATION_VIEW_DONATE_TO_SIGNAL" = "תרומה ל–Signal";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "תרומה אל Signal";
@@ -1910,10 +1928,10 @@
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "שאלות נפוצות של מינוי";
 
 /* Title on the 'Donate to Signal' screen */
-"DONATION_VIEW_TITLE" = "תרום אל Signal";
+"DONATION_VIEW_TITLE" = "תרומה ל–Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "הגדר מטבע";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "הגדרת מטבע";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "אתה יכול לאפשר גישה ביישום הגדרות של iOS.";
@@ -2135,7 +2153,7 @@
 "FEATURED_BADGE_SECTION_HEADER" = "בחר תג";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "תג בולט";
+"FEATURED_BADGE_SETTINGS_TITLE" = "תג בפרופיל";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "סמן כמוודא";
@@ -3311,7 +3329,7 @@
 "KEY_COMMAND_UNARCHIVE" = "הוצא התכתבות מארכיון";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "למד עוד";
+"LEARN_MORE" = "למידע נוסף";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "עזוב";
@@ -3803,7 +3821,7 @@
 "MY_STORY_SETTINGS_TITLE" = "הסטורי שלי";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "אפשר ללחוץ כדי להוסיף";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "שינה/שינתה לאחרונה את שם הפרופיל מן %1$@ אל %2$@.";
@@ -3840,9 +3858,6 @@
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "קבוצה חדשה לא יכלה להיווצר. בדוק את חיבור האינטרנט שלך ונסה שוב.";
-
-/* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "לא תומך/ת בקבוצות חדשות";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "שם קבוצה דרוש.";
@@ -3893,7 +3908,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "שם סטורי חסר";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "שם הסטורי הזה גלוי רק לך.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "שם סטורי (חובה)";
@@ -3905,13 +3920,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "צופים";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "חדש";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "גלוי רק אל אנשים מסוימים";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "סטורי מותאם אישית חדש";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "שתף אל קבוצה קיימת";
@@ -4013,7 +4028,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "PIN שגוי";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "דלג וצור PIN חדש";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New PIN";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "אם אתה לא זוכר את ה־PIN שלך, אתה יכול ליצור אחד חדש. אתה יכול להירשם ולהשתמש בחשבון שלך אבל תאבד מספר הגדרות מסוימות כמו מידע הפרופיל שלך.";
@@ -4161,6 +4176,12 @@
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal חווה קשיים טכניים. אנו עובדים קשות כדי לשחזר את השירות מהר ככל האפשר.";
+
+/* Label for action link when the user has an outdated payment client */
+"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Update Now";
+
+/* Label warning the user that they should update Signal to continue using payments. */
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "התקשרת אל %1$@";
@@ -4742,7 +4763,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "הוספת צופים";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "מחיקת סטורי מותאם אישית";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "בטוח שבא לך למחוק את ״%1$@״? עדכונים שישותפו לסטורי הזה ימחקו גם הם.";
@@ -5480,7 +5501,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "הגדר קוצב זמן ברירת מחדל של הודעות נעלמות עבור כל ההתכתבויות החדשות שהותחלו על ידך.";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "תרום אל Signal";
+"SETTINGS_DONATE" = "תרומה ל–Signal";
 
 /* Title for help button and help pages in app settings. */
 "SETTINGS_HELP" = "עזרה";
@@ -5766,6 +5787,18 @@
 
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "הפעלת תשלומים בוטלה.";
+
+/* Button for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Update Signal";
+
+/* Message for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
+
+/* Title for payments outdated sheet saying cant send. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Can't Send Payment";
+
+/* Title for payments outdated sheet saying update required. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "הכול";
@@ -6287,10 +6320,10 @@
 "STORIES_SAVE_STORY_ACTION" = "שמור";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "עדכוני סטורי נעלמים אוטומטית אחרי 24 שעות. אפשר לבחור מי יכול לראות את הסטורי שלך או ליצור סטוריז חדשים עם קבוצות או צופים ספציפיים.";
 
 /* Header for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
+"STORIES_SETTINGS_STORIES_HEADER" = "סטוריז";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "לא תהיה לך יותר אפשרות לשתף או לצפות בסטוריז. עדכוני סטורי ששיתפת לאחרונה ימחקו גם הם.";
@@ -6311,10 +6344,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "הפעלת סטוריז";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "אישורי צפייה";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "רואים ומשתפים כשיש צפיות בסטוריז. אם אפשרות זו מושבתת, אי אפשר לראות כשאחרים צופים בסטורי שלך.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "שתף";
@@ -6332,7 +6365,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "הסתרת סטורי בוטלה";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "אפשר להפעיל אישורי צפייה כדי לראות מי צפה בסטוריז שלך.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "צפיות";
@@ -6365,7 +6398,7 @@
 "STORY_PRIVACY_SETTINGS" = "פרטיות";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "פרטיות של סטורי";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "הגיב/ה %1$@ לסטורי שלך";
@@ -6437,7 +6470,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>חברי Signal</bold> הם אנשים שבחרת לבטוח בהם, באמצעות אחת מהפעולות הבאות:";
 
 /* Label for the stories section of the settings view */
-"STORY_SETTINGS_TITLE" = "Stories";
+"STORY_SETTINGS_TITLE" = "סטוריז";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "אפשר לבחור אילו חברי Signal יוכלו לצפות בסטורי שלך. השינויים לא ישפיעו על סטוריז שכבר שלחת.";
@@ -6526,32 +6559,20 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "טוען";
 
-/* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal הוא ללא מטרות רווח בלי מפרסמים או משקיעים, מוחזק רק ע״י האנשים שמשתמשים בו ומעריכים אותו. בצע תרומה חודשית חוזרת וקבל תג פרופיל כדי לשתף את התמיכה שלך.";
-
-/* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal מחויב אל פיתוח טכנולוגית פרטיות בקוד פתוח שמגינה על חופשי ביטוי ומאפשרת תקשורת עולמית מאובטחת.\n\nהתרומה שלך מתדלקת את המטרה הזאת ומשלמת עבור הפיתוח והפעולות של יישום שנמצא בשימוש ע״י מיליוני אנשים ברחבי העולם למען תקשורת פרטית. ללא פרסומות. ללא עוקבנים. ללא שטויות.";
-
-/* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "תמוך בטכנולוגיה שנבנתה עבורך—לא עבור הנתונים שלך—ע״י הצטרפות אל הקהילה שמחזיקה אותה.";
-
-/* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "למה לתרום?";
-
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "עדין מעבד";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "קבל תג %1$@";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "קבלת תג %1$@";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "בטל מינוי";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "ביטול מנוי";
 
 /* Confirm Cancellation? Action sheet confirm button */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "אשר";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "אישור";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "לא תחויב שוב. התג שלך יוסר מהפרופיל שלך בסוף תקופת החיוב שלך.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "לא נחייב אותך שוב. התג שלך יוסר מהפרופיל שלך בסוף תקופת החיוב שלך.";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "לאשר ביטול?";
@@ -6581,7 +6602,7 @@
 "SUSTAINER_VIEW_PRICING_EXPIRATION" = " · פג %1$@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · מתחדש %1$@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · מתחדש ב–%1$@";
 
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "מעבד תשלום…";
@@ -6589,11 +6610,8 @@
 /* Status text while processing a badge redemption */
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "מעבד עסקה…";
 
-/* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "קרא עוד.";
-
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "מתחדש %1$@";
+"SUSTAINER_VIEW_RENEWAL" = "מתחדש ב–%1$@";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "התשלום שלך עדין מעובד. זה יכול לקחת מספר דקות בהתאם לחיבור שלך.";
@@ -6604,9 +6622,6 @@
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "לא עכשיו";
 
-/* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Signal ממונע על ידי אנשים כמוך.";
-
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "תחויב בסכום המלא (%1$@) של המחיר של המינוי החדש. המינוי החדש שלך יחודש באופן חודשי.";
 
@@ -6615,9 +6630,6 @@
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "עדכן";
-
-/* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "בצע תרומה חודשית מחזורית אל Signal כדי לתמוך בטכנולוגיה שנבנתה עבורך, לא עבור הנתונים שלך.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "כבוי";

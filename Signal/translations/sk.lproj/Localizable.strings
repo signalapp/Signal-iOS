@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "O žiadostiach o správy";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "Všetky spojenia";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Odpovedať";
@@ -362,7 +362,7 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Staňte sa Sustainerom";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Začať podporovať Signal";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Podporte Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "Platnosť vášho odznaku Boost vypršala, nebude sa preto naďalej zobrazovať vo vašom profile.";
@@ -515,7 +515,7 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Zobraziť v profile";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Vytvorte odznak Odporúčaný";
+"BADGE_THANKS_MAKE_FEATURED" = "Zobraziť odznak v profile";
 
 /* Title for subscription on the thank you sheet. */
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "Ďakujem za tvoju podporu!";
@@ -602,13 +602,13 @@
 "BLUR_TOOLTIP" = "Nové: Rozmažte tváre alebo kreslite kdekoľvek pre rozmazanie.";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Pošlite jednorázový príspevok a získajte odznak Boost na 30 dní.";
+"BOOST_VIEW_BODY" = "Pošlite jednorazový príspevok a na 30 dní získate odznak Boost.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Váš odznak podporovateľa vyprší %1$@.";
 
 /* Default text for the custom amount field of the boost view. */
-"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Zadajte vlastnú čiastku";
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Zadať vlastnú čiastku";
 
 /* Text explaining there are other ways to donate on the boost view. */
 "BOOST_VIEW_OTHER_WAYS" = "Viac platobných možností";
@@ -623,7 +623,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Vyberte čiastku, ktorú chcete venovať";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Začať podporovať Signal";
+"BOOST_VIEW_TITLE" = "Podporte Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Pridať";
@@ -1411,9 +1411,6 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Podrobnosti kontaktu";
 
-/* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Zdieľať profil";
-
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Pridať ku kontaktom";
 
@@ -1784,7 +1781,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Prispieť";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal poháňajú ľudia ako vy. Prispievajte mesačne a získajte odznak.";
+"DONATE_MEGAPHONE_BODY" = "Signal is funded by your donations. Privacy over profit.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Teraz nie";
@@ -1831,6 +1828,18 @@
 /* Donation payment error for decline failures where the payment cannot be authorized. */
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Skontrolujte, či je váš spôsob platby v službe Apple Pay aktuálny. Ak nie je, aktualizujte ho a skúste to znovu.";
 
+/* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "If you can, please donate today to keep Signal fun, dependable, and available for everyone.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal is different.";
+
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Suma";
 
@@ -1866,6 +1875,15 @@
 
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Ak ste preinštalovali Signal, potvrdenky z predchádzajúcich darov nebudú k dispozícii.";
+
+/* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
+
+/* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
+"DONATION_SCREENS_HEADER_READ_MORE" = "Read more";
+
+/* On donation screens, a small amount of information text is shown. This is the title for that text. */
+"DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "Prispieť na Signal";
@@ -1913,7 +1931,7 @@
 "DONATION_VIEW_TITLE" = "Prispieť na Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Nastavte menu";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Nastaviť menu";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Prístup môžete povoliť v aplikácii Nastavenia iOS.";
@@ -2135,7 +2153,7 @@
 "FEATURED_BADGE_SECTION_HEADER" = "Vyberte odznak";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Odporúčaný odznak";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Zobrazený odznak";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Označiť ako overené";
@@ -3311,7 +3329,7 @@
 "KEY_COMMAND_UNARCHIVE" = "Vyňať chat z archívu";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "Dozvedieť sa viac";
+"LEARN_MORE" = "Zistiť viac";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Opustiť";
@@ -3803,7 +3821,7 @@
 "MY_STORY_SETTINGS_TITLE" = "Môj príbeh";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "Pridajte ťuknutím";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Nedávno zmenil/a názov svojho profilu z %1$@ na %2$@.";
@@ -3840,9 +3858,6 @@
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Nepodarilo sa vytvoriť novú skupinu. Skontrolujte si vaše pripojenie na internet a skúste to znovu.";
-
-/* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Nepodporuje Nové skupiny";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Vyžaduje sa názov skupiny.";
@@ -3893,7 +3908,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Chýba názov príbehu";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Názov tohto príbehu môžete vidieť len vy.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Názov príbehu (Povinné)";
@@ -3905,13 +3920,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Sledujúci";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Nový";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Viditeľné iba pre konkrétnych ľudí";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Nový prispôsobený príbeh";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Zdieľať s existujúcou skupinou";
@@ -4013,7 +4028,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "Nesprávny PIN";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Preskočiť a vytvoriť nový PIN";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New PIN";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Ak si na svoj PIN nedokážete spomenúť, môžete si vytvoriť nový. Môžete sa zaregistrovať a používať svoj účet, ale prídete o niektoré uložené nastavenia, ako sú informácie o vašom profile.";
@@ -4161,6 +4176,12 @@
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal má technické ťažkosti. Pracujeme na tom, aby sme čo najskôr obnovili našu službu.";
+
+/* Label for action link when the user has an outdated payment client */
+"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Update Now";
+
+/* Label warning the user that they should update Signal to continue using payments. */
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "Volali ste používateľovi %1$@";
@@ -4742,7 +4763,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Pridať sledovateľov";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Vymazať prispôsobený príbeh";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Naozaj chcete odstrániť „%1$@“? Budú tiež odstránené aktualizácie zdieľané s týmto príbehom.";
@@ -5767,6 +5788,18 @@
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Platby sú deaktivované.";
 
+/* Button for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Update Signal";
+
+/* Message for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
+
+/* Title for payments outdated sheet saying cant send. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Can't Send Payment";
+
+/* Title for payments outdated sheet saying update required. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";
+
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Všetko";
 
@@ -6287,10 +6320,10 @@
 "STORIES_SAVE_STORY_ACTION" = "Uložiť";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "Aktualizácie príbehov automaticky zmiznú po 24 hodinách. Vyberte, komu sa môže zobraziť váš príbeh, alebo vytvorte nové príbehy s konkrétnymi sledovateľmi či skupinami.";
 
 /* Header for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
+"STORIES_SETTINGS_STORIES_HEADER" = "Príbehy";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Už nebudete môcť zdieľať ani prezerať príbehy. Budú tiež odstránené aktualizácie príbehov, ktoré ste nedávno zdieľali.";
@@ -6311,10 +6344,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Zapnúť príbehy";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "Potvrdenia o pozretí";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Majte prehľad o tom, keď si ostatní pozrú vaše príbehy. Ak je táto možnosť vypnutá, nezobrazia sa informácie o pozretiach.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Zdieľať";
@@ -6332,7 +6365,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Príbeh bol odkrytý";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Povoľte potvrdenia o pozretí a zistite, kto si prezeral vaše príbehy.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Pozretia";
@@ -6365,7 +6398,7 @@
 "STORY_PRIVACY_SETTINGS" = "Súkromie";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "Súkromie príbehu";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reagoval/a %1$@ na váš príbeh";
@@ -6437,7 +6470,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal spojenia</bold> sú ľudia, ktorým ste sa rozhodli dôverovať jedným z nasledujúcich spôsobov:";
 
 /* Label for the stories section of the settings view */
-"STORY_SETTINGS_TITLE" = "Stories";
+"STORY_SETTINGS_TITLE" = "Príbehy";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Vyberte, ktoré Signal spojenia si môžu pozrieť váš príbeh. Zmeny neovplyvnia príbehy, ktoré ste už odoslali.";
@@ -6526,26 +6559,14 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Načítava sa";
 
-/* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal je nezisková organizácia bez inzerentov, alebo investorov, ktorú podporujú iba ľudia, ktorí ju využívajú a oceňujú. Poskytnite pravidelný mesačný dar a získajte odznak profilu, aby ste mohli zdieľať svoju podporu.";
-
-/* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal je zaviazaný vývoju technológie zameranej na súkromie s otvoreným zdrojovým kódom chrániacej slobodu vyjadrovania a umožňujúcej bezpečnú globálnu komunikáciu.\n\nVáš príspevok poháňa toto poslanie a hradí výdavky spojené s vývojom a prevádzkou aplikácie používanej miliónmi ľudí na súkromnú komunikáciu. Žiadne reklamy. Žiadne sledovanie. Žiadne vtipy.";
-
-/* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Podporte technológiu vyvíjanú pre vás—nie pre vaše údaje—pripojením sa ku komunite, ktorá ju podporuje.";
-
-/* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Prečo podporiť?";
-
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Stále sa spracováva";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Získajte %1$@ odznak";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Získate odznak %1$@";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Zrušiť prispievanie";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Zrušiť predplatné";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Potvrdiť";
@@ -6581,7 +6602,7 @@
 "SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Platnosť vyprší %1$@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Obnovuje %1$@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Obnoví sa %1$@";
 
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Prebieha spracovanie platby...";
@@ -6589,11 +6610,8 @@
 /* Status text while processing a badge redemption */
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Prebieha spracovanie transakcie...";
 
-/* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Čítaj viac.";
-
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Obnovuje %1$@";
+"SUSTAINER_VIEW_RENEWAL" = "Obnoví sa %1$@";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Vaša platba sa stále spracováva. V závislosti od vášho pripojenia to môže trvať niekoľko minút.";
@@ -6604,9 +6622,6 @@
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Teraz nie";
 
-/* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Signal používajú ľudia ako vy.";
-
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Dnes vám bude účtovaná celá suma (%1$@) novej ceny príspevného. Vaše nové prispievanie sa bude obnovovať mesačne.";
 
@@ -6615,9 +6630,6 @@
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Aktualizovať";
-
-/* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Poskytujte pravidelný mesačný dar spoločnosti Signal na podporu technológie vytvorenej pre vás, nie pre vaše dáta.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Vypnuté";

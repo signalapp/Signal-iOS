@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "دربارهٔ درخواست‌های تبادل پیام";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "تمام آشنایان";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "پاسخ دادن";
@@ -602,7 +602,7 @@
 "BLUR_TOOLTIP" = "جدید: چهره‌ها را محو کنید یا روی هر ناحیه‌‌ای برای محو کردن بکشید.";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "یک حمایت مالی یک‌باره کنید و نشان تقویت را برای 30 روز بدست آورید.";
+"BOOST_VIEW_BODY" = "با یک اهدای یک‌باره، نشان تقویت را برای ۳۰ روز به‌دست آورید.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "نشان تقویت شمادر %1$@ منقضی خواهد شد.";
@@ -1411,9 +1411,6 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "جزئیات مخاطب";
 
-/* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "اشتراک گذاری پروفایل";
-
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "اضافه کردن به مخاطبین";
 
@@ -1784,7 +1781,7 @@
 "DONATE_MEGAPHONE_ACTION" = "حمایت کنید";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal با کمک افرادی مانند شما به فعالیت خود ادامه می‌دهد. با اعطای ماهیانه‌ی کمک‌های مالی یک نشان افتخار دریافت کنید!";
+"DONATE_MEGAPHONE_BODY" = "Signal is funded by your donations. Privacy over profit.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "حالا نه";
@@ -1831,6 +1828,18 @@
 /* Donation payment error for decline failures where the payment cannot be authorized. */
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "بررسی کنید که روش پرداخت شما در Apple Pay به‌روز باشد. اگر به‌روز نیست، آن را به‌روزرسانی و دوباره امتحان کنید.";
 
+/* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "If you can, please donate today to keep Signal fun, dependable, and available for everyone.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal is different.";
+
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "مبلغ";
 
@@ -1866,6 +1875,15 @@
 
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "اگر سیگنال را مجدداً نصب کرده باشید، رسید حمایت‌های مالی قبلی در دسترس نخواهد بود.";
+
+/* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
+
+/* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
+"DONATION_SCREENS_HEADER_READ_MORE" = "Read more";
+
+/* On donation screens, a small amount of information text is shown. This is the title for that text. */
+"DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "حمایت از سیگنال";
@@ -3803,7 +3821,7 @@
 "MY_STORY_SETTINGS_TITLE" = "استوری من";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "برای افزودن ضربه بزنید";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "به‌تازگی نام پروفایل خود را از %1$@ به %2$@ تغییر دادند";
@@ -3840,9 +3858,6 @@
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "امکان ایجاد گروه جدید نیست. اتصال اینترنت خود را بررسی و دوباره امتحان کنید.";
-
-/* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "از گروه‌های جدید پشتیبانی نمی‌کند";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "یک نام برای گروه ضروری است.";
@@ -3893,7 +3908,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "استوری بدون نام";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "فقط شما می‌توانید نام این استوری را ببینید.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "نام استوری (الزامی)";
@@ -3905,13 +3920,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "بازدیدکنندگان";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "جدید";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "فقط قابل مشاهده برای افرادی خاص";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "استوری سفارشی جدید";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "اشتراک‌گذاری برای یکی از گروه‌های موجود";
@@ -4013,7 +4028,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "پین نادرست است";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "رد شدن و ایجاد یک رمز جدید";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New PIN";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "اگر نمی‌توانید پین را به یاد بیاورید، یک پین جدید ایجاد کنید. شما می‌توانید ثبت‌نام و از حساب‌تان استفاده کنید اما تنظیمات ذخیره‌ شده مانند اطلاعت پروفایل‌تان را از دست می‌دهید.";
@@ -4161,6 +4176,12 @@
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "سیگنال با مشکلات فنی روبروست. به سختی تلاش میکنیم تا سرویس را تا حد ممکن سریعا برگردانیم.";
+
+/* Label for action link when the user has an outdated payment client */
+"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Update Now";
+
+/* Label warning the user that they should update Signal to continue using payments. */
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "شما با %1$@ تماس گرفتید";
@@ -4742,7 +4763,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "افزودن بازدیدکنندگان";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "حذف استوری سفارشی";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "آیا مطمئن هستید که می‌خواهید \"%1$@\" را پاک کنید؟ به‌روزرسانی‌های همرسانی شده در این استوری نیز حذف خواهند شد.";
@@ -5767,6 +5788,18 @@
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "پرداخت‌ها غیرفعال شدند";
 
+/* Button for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Update Signal";
+
+/* Message for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
+
+/* Title for payments outdated sheet saying cant send. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Can't Send Payment";
+
+/* Title for payments outdated sheet saying update required. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";
+
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "همه";
 
@@ -6287,10 +6320,10 @@
 "STORIES_SAVE_STORY_ACTION" = "ذخیره";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "به‌روزرسانی استوری به‌طور خودکار پس از ۲۴ ساعت ناپدید می‌شود. انتخاب کنید چه کسی بتواند استوری شما را مشاهده کند یا استوری‌های جدید با بازدیدکنندگان یا گروه‌های خاص ایجاد کند.";
 
 /* Header for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
+"STORIES_SETTINGS_STORIES_HEADER" = "استوری‌ها";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "دیگر نمی‌توانید استوری‌ها را هم‌رسانی یا مشاهده کنید. به‌روزرسانی‌های استوری‌هایی که اخیراً همرسانی کرده‌اید نیز حذف خواهند شد.";
@@ -6311,10 +6344,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "استوری‌ها روشن شود";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "مشاهده رسیدها";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "بازدید استوری‌ها را ببینید و به اشتراک بگذارید. اگر غیرفعال باشد، بازدید استوری‌ها را نخواهید دید.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "اشتراک‌گذاری";
@@ -6332,7 +6365,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "استوری نمایان شد";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "رسیدهای بازدید را فعال کنید تا بتوانید ببینید چه کسی از استوری‌های شما بازدید کرده است.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "بازدیدها";
@@ -6365,7 +6398,7 @@
 "STORY_PRIVACY_SETTINGS" = "حریم خصوصی";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "حریم شخصی استوری";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "با %1$@ به استوری شما واکنش نشان داد";
@@ -6437,7 +6470,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<strong>آشنایان در سیگنال</strong> افرادی هستند که به طرق مختلف تصمیم گرفته‌اید به آن‌ها اعتماد کنید، یعنی با:";
 
 /* Label for the stories section of the settings view */
-"STORY_SETTINGS_TITLE" = "Stories";
+"STORY_SETTINGS_TITLE" = "استوری‌ها";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "انتخاب کنید که کدام‌یک از آشنایان در سیگنال بتواند استوری شما را مشاهده کند. تغییرات روی استوری‌هایی که قبلاً ارسال کرده‌اید تأثیر نمی‌گذارد.";
@@ -6526,18 +6559,6 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "در حال بارگذاری";
 
-/* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "سیگنال یک سازمان غیرانتفاعی بدون تبلیغ‌کننده یا سرمایه‌گذار است و تنها توسط افرادی که از آن استفاده می‌کنند و برای آن ارزش قائل هستند، پشتیبانی می‌شود. یک کمک مالی مکرر ماهانه اهدا کنید و یک نشان پروفایل بابت به اشتراک گذاشتن حمایت خود دریافت کنید.";
-
-/* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "تیم سیگنال متعهد به مأموریت توسعه فناوری حریم خصوصی متن‌باز است که از آزادی بیان محافظت می‌کند و ارتباطات جهانی ایمن را برای میلیون‌ها نفر در سراسر جهان ممکن می‌کند. \n\nحمایت مالی شما در پیشبرد این امر کمک می‌کند و هزینه توسعه و عملیات برنامه‌ای را می پردازد که میلیون‌ها نفر برای ارتباطات خصوصی از آن استفاده می‌کنند. بدون تبلیغات. بدون ردیاب. بدون شوخی.";
-
-/* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "با پیوستن به جمعی از مردم که سیگنال را تداوم می‌بخشند، از این فن‌آوری که برای شما ساخته شده است، نه برای پشتیبانی از داده‌های شما، پشتیبانی کنید.";
-
-/* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "چرا حمایت کنیم؟";
-
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "هنوز در حال پردازش";
 
@@ -6548,10 +6569,10 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "لغو اشتراک";
 
 /* Confirm Cancellation? Action sheet confirm button */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "تأیید کنید";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "تأیید";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "از شما دیگر هزینه‌ای کسر نخواهد شد. نشان شما از پروفایل شما در انتهای دورهٔ پرداخت شما حذف خواهد شد.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "از شما دیگر هزینه‌ای کسر نخواهد شد. نشان شما در انتهای دوره پرداختتان از نمایه‌تان حذف خواهد شد.";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "تأیید لغو اشتراک؟";
@@ -6575,13 +6596,13 @@
 "SUSTAINER_VIEW_PAYMENT_ERROR" = "خطا در پردازش پرداخت. %1$@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%1$@/ماه";
+"SUSTAINER_VIEW_PRICING" = "%1$@ در ماه";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
 "SUSTAINER_VIEW_PRICING_EXPIRATION" = " · انقضاء: %1$@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · تمدید: %1$@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · %1$@ تمدید می‌شود";
 
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "در حال پردازش پرداخت...";
@@ -6589,11 +6610,8 @@
 /* Status text while processing a badge redemption */
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "در حال پردازش تراکنش...";
 
-/* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "بیشتر بخوانید.";
-
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "تمدید: %1$@";
+"SUSTAINER_VIEW_RENEWAL" = "%1$@ تمدید می‌شود";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "پرداخت شما هنوز در حال پردازش است. این فرآیند بسته به اتصال اینترنت شما ممکن است چند دقیقه به طول بیانجامد.";
@@ -6604,9 +6622,6 @@
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "حالا نه";
 
-/* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "سیگنال با کمک افرادی همانند شما پشتیبانی می‌شود.";
-
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "از شما امروز کل مبلغ (%1$@) هزینهٔ اشتراک جدید کسر خواهد شد. اشتراک جدید شما به صورت ماهانه تمدید خواهد شد.";
 
@@ -6615,9 +6630,6 @@
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "به‌روزرسانی";
-
-/* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "برای پشتیبانی از این فناوری که برای شما ساخته شده است، نه داده‌های شما، یک کمک مالی مکرر ماهیانه به سیگنال اهدا کنید.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "خاموش";

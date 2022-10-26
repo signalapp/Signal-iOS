@@ -2,28 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CAMERA_VO_N_ITEMS</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 cheann</string>
-			<key>two</key>
-			<string>%1$d cheann</string>
-			<key>few</key>
-			<string>%1$d cinn</string>
-			<key>many</key>
-			<string>%1$d gcinn</string>
-			<key>other</key>
-			<string>%1$d ceann</string>
-		</dict>
-	</dict>
 	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -35,7 +13,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Glórphost 1 soicind</string>
+			<string>Glórphost %1$d soicind</string>
 			<key>two</key>
 			<string>Glórphost %1$d shoicind</string>
 			<key>few</key>
@@ -44,6 +22,28 @@
 			<string>Glórphost %1$d soicind</string>
 			<key>other</key>
 			<string>Glórphost %1$d soicind</string>
+		</dict>
+	</dict>
+	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Cuir Ball Leis</string>
+			<key>two</key>
+			<string>Cuir Baill Leis</string>
+			<key>few</key>
+			<string>Cuir Baill Leis</string>
+			<key>many</key>
+			<string>Cuir Baill Leis</string>
+			<key>other</key>
+			<string>Cuir Baill Leis</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -90,7 +90,7 @@
 			<string>Cuir Baill Nua Leis</string>
 		</dict>
 	</dict>
-	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
+	<key>CAMERA_VO_N_ITEMS</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -101,15 +101,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Cuir Ball Leis</string>
+			<string>1 cheann</string>
 			<key>two</key>
-			<string>Cuir Baill Leis</string>
+			<string>%1$d cheann</string>
 			<key>few</key>
-			<string>Cuir Baill Leis</string>
+			<string>%1$d cinn</string>
 			<key>many</key>
-			<string>Cuir Baill Leis</string>
+			<string>%1$d gcinn</string>
 			<key>other</key>
-			<string>Cuir Baill Leis</string>
+			<string>%1$d ceann</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -123,7 +123,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá an dath saincheaptha seo á úsáid in 1 chomhrá. An mian leat é a scriosadh?</string>
+			<string>Tá an dath saincheaptha seo á úsáid in %1$d chomhrá. An mian leat é a scriosadh?</string>
 			<key>two</key>
 			<string>Tá an dath saincheaptha seo á úsáid in %1$d chomhrá. An mian leat é a scriosadh do gach comhrá?</string>
 			<key>few</key>
@@ -145,7 +145,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá an dath seo á úsáid in 1 chomhrá. An mian leat athruithe a shábháil do gach comhrá?</string>
+			<string>Tá an dath seo á úsáid in %1$d chomhrá. An mian leat athruithe a shábháil do gach comhrá?</string>
 			<key>two</key>
 			<string>Tá an dath seo á úsáid in %1$d chomhrá. An mian leat athruithe a shábháil do gach comhrá?</string>
 			<key>few</key>
@@ -167,7 +167,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Scrios Comhrá?</string>
+			<string>Scrios%1$d Comhrá?</string>
 			<key>two</key>
 			<string>Scrios %1$d Chomhrá?</string>
 			<key>few</key>
@@ -211,7 +211,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ní féidir leat níos mó ná 1 chomhrá a roghnú.</string>
+			<string>Ní féidir leat níos mó ná %1$d chomhrá a roghnú.</string>
 			<key>two</key>
 			<string>Ní féidir leat níos mó ná %1$d chomhrá a roghnú.</string>
 			<key>few</key>
@@ -233,7 +233,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 %2$#@total@</string>
+			<string>%1$d %2$#@total@</string>
 			<key>two</key>
 			<string>%1$d %2$#@total@</string>
 			<key>few</key>
@@ -272,7 +272,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Bhall</string>
+			<string>%1$d Bhall</string>
 			<key>two</key>
 			<string>%1$d Bhall</string>
 			<key>few</key>
@@ -294,7 +294,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Ghrúpa i bPáirt</string>
+			<string>%1$d Ghrúpa i bPáirt</string>
 			<key>two</key>
 			<string>%1$d Ghrúpa i bPáirt</string>
 			<key>few</key>
@@ -338,7 +338,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>nóiméad ó shin</string>
+			<string>%1$d nóiméad ó shin</string>
 			<key>two</key>
 			<string>%1$d nóiméad ó shin</string>
 			<key>few</key>
@@ -404,7 +404,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Rachaidh do leagan Signal as feidhm i gceann 1 lae. Tapáil chun nuashonrú chuig an leagan is déanaí.</string>
+			<string>Rachaidh do leagan Signal as feidhm i gceann %1$d lae. Tapáil chun nuashonrú chuig an leagan is déanaí.</string>
 			<key>two</key>
 			<string>Rachaidh do leagan Signal as feidhm i gceann %1$d lá. Tapáil chun nuashonrú chuig an leagan is déanaí.</string>
 			<key>few</key>
@@ -437,6 +437,50 @@
 			<string>Seol %1$d teachtaireacht</string>
 		</dict>
 	</dict>
+	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua athuair. An mian leat an duine sin a chur leis anois?</string>
+			<key>two</key>
+			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua athuair. An mian leat iad a chur leis anois?</string>
+			<key>few</key>
+			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua athuair. An mian leat iad a chur leis anois?</string>
+			<key>many</key>
+			<string>Níorbh fhéidir %1$d mball a chur leis an nGrúpa Nua athuair. An mian leat iad a chur leis anois?</string>
+			<key>other</key>
+			<string>Níorbh fhéidir %1$d ball a chur leis an nGrúpa Nua athuair. An mian leat iad a chur leis anois?</string>
+		</dict>
+	</dict>
+	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Is fearr a fheidhmíonn grúpaí Signal ina bhfuil %1$d bhall nó níos lú. Má chuirtear tuilleadh ball leo cuirfear moill ar sheoladh agus ar fháil teachtaireachtaí.</string>
+			<key>two</key>
+			<string>Is fearr a fheidhmíonn grúpaí Signal ina bhfuil %1$d bhall nó níos lú. Má chuirtear tuilleadh ball leo cuirfear moill ar sheoladh agus ar fháil teachtaireachtaí.</string>
+			<key>few</key>
+			<string>Is fearr a fheidhmíonn grúpaí Signal ina bhfuil %1$d bhall nó níos lú. Má chuirtear tuilleadh ball leo cuirfear moill ar sheoladh agus ar fháil teachtaireachtaí.</string>
+			<key>many</key>
+			<string>Is fearr a fheidhmíonn grúpaí Signal ina bhfuil %1$d mball nó níos lú. Má chuirtear tuilleadh ball leo cuirfear moill ar sheoladh agus ar fháil teachtaireachtaí.</string>
+			<key>other</key>
+			<string>Is fearr a fheidhmíonn grúpaí Signal ina bhfuil %1$d ball nó níos lú. Má chuirtear tuilleadh ball leo cuirfear moill ar sheoladh agus ar fháil teachtaireachtaí.</string>
+		</dict>
+	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -448,7 +492,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá uaslíon 1 rannpháirtí bainte amach don ghlao seo. Triail arís ar ball.</string>
+			<string>Tá uaslíon %1$d rannpháirtí bainte amach don ghlao seo. Triail arís ar ball.</string>
 			<key>two</key>
 			<string>Tá uaslíon %1$d rannpháirtí bainte amach don ghlao seo. Triail arís ar ball.</string>
 			<key>few</key>
@@ -470,7 +514,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sa ghlao seo · 1 duine</string>
+			<string>Sa ghlao seo · %1$d duine</string>
 			<key>two</key>
 			<string>Sa ghlao seo · %1$d dhuine</string>
 			<key>few</key>
@@ -479,182 +523,6 @@
 			<string>Sa ghlao seo · %1$d nduine</string>
 			<key>other</key>
 			<string>Sa ghlao seo · %1$d duine</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 amharc</string>
-			<key>two</key>
-			<string>%1$d amharc</string>
-			<key>few</key>
-			<string>%1$d amharc</string>
-			<key>many</key>
-			<string>%1$d n-amharc</string>
-			<key>other</key>
-			<string>%1$d amharc</string>
-		</dict>
-	</dict>
-	<key>PRIVATE_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Custom Story · 1 Viewer</string>
-			<key>two</key>
-			<string>Custom Story · %1$d Viewers</string>
-			<key>few</key>
-			<string>Custom Story · %1$d Viewers</string>
-			<key>many</key>
-			<string>Custom Story · %1$d Viewers</string>
-			<key>other</key>
-			<string>Custom Story · %1$d Viewers</string>
-		</dict>
-	</dict>
-	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Gach Teagmhálaí Signal · 1 Amharcóir</string>
-			<key>two</key>
-			<string>Gach Teagmhálaí Signal · %1$d Amharcóir</string>
-			<key>few</key>
-			<string>Gach Teagmhálaí Signal · %1$d Amharcóir</string>
-			<key>many</key>
-			<string>Gach Teagmhálaí Signal · %1$d nAmharcóir</string>
-			<key>other</key>
-			<string>Gach Teagmhálaí Signal · %1$d Amharcóir</string>
-		</dict>
-	</dict>
-	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Gach Teagmhálaí Signal · 1 as an áireamh</string>
-			<key>two</key>
-			<string>Gach Teagmhálaí Signal · %1$d as an áireamh</string>
-			<key>few</key>
-			<string>Gach Teagmhálaí Signal · %1$d as an áireamh</string>
-			<key>many</key>
-			<string>Gach Teagmhálaí Signal · %1$d as an áireamh</string>
-			<key>other</key>
-			<string>Gach Teagmhálaí Signal · %1$d as an áireamh</string>
-		</dict>
-	</dict>
-	<key>MY_STORY_VIEWERS_ONLY_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Ná Comhroinn Ach Le · 1 Amharcóir</string>
-			<key>two</key>
-			<string>Ná Comhroinn Ach Le · %1$d Amharcóir</string>
-			<key>few</key>
-			<string>Ná Comhroinn Ach Le · %1$d Amharcóir</string>
-			<key>many</key>
-			<string>Ná Comhroinn Ach Le · %1$d nAmharcóir</string>
-			<key>other</key>
-			<string>Ná Comhroinn Ach Le · %1$d Amharcóir</string>
-		</dict>
-	</dict>
-	<key>GROUP_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Scéal Grúpa · 1 Amharcóir</string>
-			<key>two</key>
-			<string>Scéal Grúpa · %1$d Amharcóir</string>
-			<key>few</key>
-			<string>Scéal Grúpa · %1$d Amharcóir</string>
-			<key>many</key>
-			<string>Scéal Grúpa · %1$d nAmharcóir</string>
-			<key>other</key>
-			<string>Scéal Grúpa · %1$d Amharcóir</string>
-		</dict>
-	</dict>
-	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar 1 duine eile</string>
-			<key>two</key>
-			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar %1$d dhuine eile</string>
-			<key>few</key>
-			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar %1$d dhuine eile</string>
-			<key>many</key>
-			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar %1$d nduine eile</string>
-			<key>other</key>
-			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar %1$d duine eile</string>
-		</dict>
-	</dict>
-	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Cuirfear %2$@, %3$@ agus 1 duine eile ar an eolas</string>
-			<key>two</key>
-			<string>Cuirfear %2$@, %3$@ agus %1$d dhuine eile ar an eolas</string>
-			<key>few</key>
-			<string>Cuirfear %2$@, %3$@ agus %1$d dhuine eile ar an eolas</string>
-			<key>many</key>
-			<string>Cuirfear %2$@, %3$@ agus %1$d nduine eile ar an eolas</string>
-			<key>other</key>
-			<string>Cuirfear %2$@, %3$@ agus %1$d duine eile ar an eolas</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
@@ -668,7 +536,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Glao á chur ar %2$@, %3$@, agus ar 1 duine eile…</string>
+			<string>Glao á chur ar %2$@, %3$@, agus ar %1$d duine eile…</string>
 			<key>two</key>
 			<string>Glao á chur ar %2$@, %3$@, agus ar %1$d dhuine eile…</string>
 			<key>few</key>
@@ -690,7 +558,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá %2$@, %3$@ agus 1 duine eile sa ghlao seo</string>
+			<string>Tá %2$@, %3$@ agus %1$d duine eile sa ghlao seo</string>
 			<key>two</key>
 			<string>Tá %2$@, %3$@ agus %1$d dhuine eile sa ghlao seo</string>
 			<key>few</key>
@@ -712,7 +580,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Chuaigh %2$@, %3$@ agus 1 duine eile isteach sa ghlao</string>
+			<string>Chuaigh %2$@, %3$@ agus %1$d duine eile isteach sa ghlao</string>
 			<key>two</key>
 			<string>Chuaigh %2$@, %3$@ agus %1$d dhuine eile isteach sa ghlao</string>
 			<key>few</key>
@@ -734,7 +602,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>D&apos;imigh %2$@, %3$@ agus 1 duine eile as an nglao</string>
+			<string>D&apos;imigh %2$@, %3$@ agus %1$d duine eile as an nglao</string>
 			<key>two</key>
 			<string>D&apos;imigh %2$@, %3$@ agus %1$d dhuine eile as an nglao</string>
 			<key>few</key>
@@ -743,6 +611,50 @@
 			<string>D&apos;imigh %2$@, %3$@ agus %1$d nduine eile as an nglao</string>
 			<key>other</key>
 			<string>D&apos;imigh %2$@, %3$@ agus %1$d duine eile as an nglao</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Cuirfear %2$@, %3$@ agus %1$d duine eile ar an eolas</string>
+			<key>two</key>
+			<string>Cuirfear %2$@, %3$@ agus %1$d dhuine eile ar an eolas</string>
+			<key>few</key>
+			<string>Cuirfear %2$@, %3$@ agus %1$d dhuine eile ar an eolas</string>
+			<key>many</key>
+			<string>Cuirfear %2$@, %3$@ agus %1$d nduine eile ar an eolas</string>
+			<key>other</key>
+			<string>Cuirfear %2$@, %3$@ agus %1$d duine eile ar an eolas</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar %1$d duine eile</string>
+			<key>two</key>
+			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar %1$d dhuine eile</string>
+			<key>few</key>
+			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar %1$d dhuine eile</string>
+			<key>many</key>
+			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar %1$d nduine eile</string>
+			<key>other</key>
+			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar %1$d duine eile</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -767,50 +679,6 @@
 			<string>%1$d Cuireadh Seolta</string>
 		</dict>
 	</dict>
-	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 bhall</string>
-			<key>two</key>
-			<string>%1$d bhall</string>
-			<key>few</key>
-			<string>%1$d bhall</string>
-			<key>many</key>
-			<string>%1$d mball</string>
-			<key>other</key>
-			<string>%1$d ball</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 Bhall</string>
-			<key>two</key>
-			<string>%1$d Bhall</string>
-			<key>few</key>
-			<string>%1$d Bhall</string>
-			<key>many</key>
-			<string>%1$d mBall</string>
-			<key>other</key>
-			<string>%1$d Ball</string>
-		</dict>
-	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -822,7 +690,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá ainm comhchosúil ag 1 bhall den ghrúpa.</string>
+			<string>Tá ainm comhchosúil ag %1$d bhall den ghrúpa.</string>
 			<key>two</key>
 			<string>Tá ainmneacha comhchosúla ag %1$d bhall den ghrúpa.</string>
 			<key>few</key>
@@ -844,7 +712,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá ainm comhchosúil ag 1 bhall den ghrúpa, athbhreithnigh an ball thíos nó roghnaigh gníomh.</string>
+			<string>Tá ainm comhchosúil ag %1$d bhall den ghrúpa, athbhreithnigh an ball thíos nó roghnaigh gníomh.</string>
 			<key>two</key>
 			<string>Tá ainmneacha comhchosúla ag %1$d bhall den ghrúpa, athbhreithnigh na baill thíos nó roghnaigh gníomh.</string>
 			<key>few</key>
@@ -866,7 +734,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá an t-ainm céanna ag 1 bhall den ghrúpa, athbhreithnigh an ball thíos nó roghnaigh gníomh.</string>
+			<string>Tá an t-ainm céanna ag %1$d bhall den ghrúpa, athbhreithnigh an ball thíos nó roghnaigh gníomh.</string>
 			<key>two</key>
 			<string>Tá an t-ainm céanna ag %1$d bhall den ghrúpa, athbhreithnigh na baill thíos nó roghnaigh gníomh.</string>
 			<key>few</key>
@@ -877,7 +745,7 @@
 			<string>Tá an t-ainm céanna ag %1$d ball den ghrúpa, athbhreithnigh na baill thíos nó roghnaigh gníomh.</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
+	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -888,21 +756,21 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Cealaíodh cuireadh chuig 1 duine chun dul isteach sa ghrúpa.</string>
+			<string>%1$d bhall</string>
 			<key>two</key>
-			<string>Cealaíodh cuirí chuig %1$d dhuine chun dul isteach sa ghrúpa.</string>
+			<string>%1$d bhall</string>
 			<key>few</key>
-			<string>Cealaíodh cuirí chuig %1$d dhuine chun dul isteach sa ghrúpa.</string>
+			<string>%1$d bhall</string>
 			<key>many</key>
-			<string>Cealaíodh cuirí chuig %1$d nduine chun dul isteach sa ghrúpa.</string>
+			<string>%1$d mball</string>
 			<key>other</key>
-			<string>Cealaíodh cuirí chuig %1$d duine chun dul isteach sa ghrúpa.</string>
+			<string>%1$d ball</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
+	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
+		<string>%#@text@</string>
 		<key>text</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
@@ -910,15 +778,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Chealaigh %2$@ cuireadh chuig 1 duine chun dul isteach sa ghrúpa.</string>
+			<string>%1$d Bhall</string>
 			<key>two</key>
-			<string>Chealaigh %2$@ cuireadh chuig %1$d dhuine chun dul isteach sa ghrúpa.</string>
+			<string>%1$d Bhall</string>
 			<key>few</key>
-			<string>Chealaigh %2$@ cuireadh chuig %1$d dhuine chun dul isteach sa ghrúpa.</string>
+			<string>%1$d Bhall</string>
 			<key>many</key>
-			<string>Chealaigh %2$@ cuireadh chuig %1$d nduine chun dul isteach sa ghrúpa.</string>
+			<string>%1$d mBall</string>
 			<key>other</key>
-			<string>Chealaigh %2$@ cuireadh chuig %1$d duine chun dul isteach sa ghrúpa.</string>
+			<string>%1$d Ball</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -932,7 +800,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tugadh cuireadh do 1 duine chun dul isteach sa ghrúpa.</string>
+			<string>Tugadh cuireadh do %1$d duine chun dul isteach sa ghrúpa.</string>
 			<key>two</key>
 			<string>Tugadh cuireadh do %1$d dhuine chun dul isteach sa ghrúpa.</string>
 			<key>few</key>
@@ -954,7 +822,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Thug %2$@ cuireadh do 1 duine chun dul isteach sa ghrúpa.</string>
+			<string>Thug %2$@ cuireadh do %1$d duine chun dul isteach sa ghrúpa.</string>
 			<key>two</key>
 			<string>Thug %2$@ cuireadh do %1$d dhuine chun dul isteach sa ghrúpa.</string>
 			<key>few</key>
@@ -963,6 +831,50 @@
 			<string>Thug %2$@ cuireadh do %1$d nduine chun dul isteach sa ghrúpa.</string>
 			<key>other</key>
 			<string>Thug %2$@ cuireadh do %1$d duine chun dul isteach sa ghrúpa.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Cealaíodh cuireadh chuig %1$d duine chun dul isteach sa ghrúpa.</string>
+			<key>two</key>
+			<string>Cealaíodh cuirí chuig %1$d dhuine chun dul isteach sa ghrúpa.</string>
+			<key>few</key>
+			<string>Cealaíodh cuirí chuig %1$d dhuine chun dul isteach sa ghrúpa.</string>
+			<key>many</key>
+			<string>Cealaíodh cuirí chuig %1$d nduine chun dul isteach sa ghrúpa.</string>
+			<key>other</key>
+			<string>Cealaíodh cuirí chuig %1$d duine chun dul isteach sa ghrúpa.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Chealaigh %2$@ cuireadh chuig %1$d duine chun dul isteach sa ghrúpa.</string>
+			<key>two</key>
+			<string>Chealaigh %2$@ cuireadh chuig %1$d dhuine chun dul isteach sa ghrúpa.</string>
+			<key>few</key>
+			<string>Chealaigh %2$@ cuireadh chuig %1$d dhuine chun dul isteach sa ghrúpa.</string>
+			<key>many</key>
+			<string>Chealaigh %2$@ cuireadh chuig %1$d nduine chun dul isteach sa ghrúpa.</string>
+			<key>other</key>
+			<string>Chealaigh %2$@ cuireadh chuig %1$d duine chun dul isteach sa ghrúpa.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
@@ -985,6 +897,28 @@
 			<string>Rinne %2$@ %1$d n-iarratas chun dul isteach tríd an nasc grúpa agus chuir ar ceal iad.</string>
 			<key>other</key>
 			<string>Rinne %2$@ %1$d iarratas chun dul isteach tríd an nasc grúpa agus chuir ar ceal iad.</string>
+		</dict>
+	</dict>
+	<key>GROUP_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Scéal Grúpa · %1$d Amharcóir</string>
+			<key>two</key>
+			<string>Scéal Grúpa · %1$d Amharcóir</string>
+			<key>few</key>
+			<string>Scéal Grúpa · %1$d Amharcóir</string>
+			<key>many</key>
+			<string>Scéal Grúpa · %1$d nAmharcóir</string>
+			<key>other</key>
+			<string>Scéal Grúpa · %1$d Amharcóir</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -1031,94 +965,6 @@
 			<string>Níorbh fhéidir %1$d ball a chur leis an nGrúpa Nua agus tugadh cuireadh dóibh chun dul isteach ann.</string>
 		</dict>
 	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Ní féidir an grúpa seo a chruthú toisc go bhfuil seanleagan de Signal á úsáid ag 1 duine. Is féidir leat Grúpa ar Stíl Nua a chruthú leis an duine tar éis dó/di Signal a uasdátú, nó an duine sin a bhaint roimh an ngrúpa a chruthú. %2$@</string>
-			<key>two</key>
-			<string>Ní féidir an grúpa seo a chruthú toisc go bhfuil seanleagan de Signal á úsáid ag %1$d dhuine. Is féidir leat Grúpa ar Stíl Nua a chruthú leo tar éis dóibh Signal a uasdátú, nó iad a bhaint roimh an ngrúpa a chruthú. %2$@</string>
-			<key>few</key>
-			<string>Ní féidir an grúpa seo a chruthú toisc go bhfuil seanleagan de Signal á úsáid ag %1$d dhuine. Is féidir leat Grúpa ar Stíl Nua a chruthú leo tar éis dóibh Signal a uasdátú, nó iad a bhaint roimh an ngrúpa a chruthú. %2$@</string>
-			<key>many</key>
-			<string>Ní féidir an grúpa seo a chruthú toisc go bhfuil seanleagan de Signal á úsáid ag %1$d nduine. Is féidir leat Grúpa ar Stíl Nua a chruthú leo tar éis dóibh Signal a uasdátú, nó iad a bhaint roimh an ngrúpa a chruthú. %2$@</string>
-			<key>other</key>
-			<string>Ní féidir an grúpa seo a chruthú toisc go bhfuil seanleagan de Signal á úsáid ag %1$d duine. Is féidir leat Grúpa ar Stíl Nua a chruthú leo tar éis dóibh Signal a uasdátú, nó iad a bhaint roimh an ngrúpa a chruthú.%2$@</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Ní féidir an grúpa seo a chruthú toisc go bhfuil seanleagan de Signal á úsáid ag 1 duine. Is féidir leat Grúpa ar Stíl Nua a chruthú leis an duine tar éis dó/di Signal a uasdátú, nó an duine sin a bhaint roimh an ngrúpa a chruthú.</string>
-			<key>two</key>
-			<string>Ní féidir an grúpa seo a chruthú toisc go bhfuil seanleagan de Signal á úsáid ag %1$d dhuine. Is féidir leat Grúpa ar Stíl Nua a chruthú leo tar éis dóibh Signal a uasdátú, nó iad a bhaint roimh an ngrúpa a chruthú.</string>
-			<key>few</key>
-			<string>Ní féidir an grúpa seo a chruthú toisc go bhfuil seanleagan de Signal á úsáid ag %1$d dhuine. Is féidir leat Grúpa ar Stíl Nua a chruthú leo tar éis dóibh Signal a uasdátú, nó iad a bhaint roimh an ngrúpa a chruthú.</string>
-			<key>many</key>
-			<string>Ní féidir an grúpa seo a chruthú toisc go bhfuil seanleagan de Signal á úsáid ag %1$d nduine. Is féidir leat Grúpa ar Stíl Nua a chruthú leo tar éis dóibh Signal a uasdátú, nó iad a bhaint roimh an ngrúpa a chruthú.</string>
-			<key>other</key>
-			<string>Ní féidir an grúpa seo a chruthú toisc go bhfuil seanleagan de Signal á úsáid ag %1$d duine. Is féidir leat Grúpa ar Stíl Nua a chruthú leo tar éis dóibh Signal a uasdátú, nó iad a bhaint roimh an ngrúpa a chruthú.</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Níorbh fhéidir 1 bhall a chur leis an nGrúpa Nua athuair. An mian leat an duine sin a chur leis anois?</string>
-			<key>two</key>
-			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua athuair. An mian leat iad a chur leis anois?</string>
-			<key>few</key>
-			<string>Níorbh fhéidir %1$d bhall a chur leis an nGrúpa Nua athuair. An mian leat iad a chur leis anois?</string>
-			<key>many</key>
-			<string>Níorbh fhéidir %1$d mball a chur leis an nGrúpa Nua athuair. An mian leat iad a chur leis anois?</string>
-			<key>other</key>
-			<string>Níorbh fhéidir %1$d ball a chur leis an nGrúpa Nua athuair. An mian leat iad a chur leis anois?</string>
-		</dict>
-	</dict>
-	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Is fearr a fheidhmíonn grúpaí Signal ina bhfuil 1 bhall nó níos lú. Má chuirtear tuilleadh ball leo cuirfear moill ar sheoladh agus ar fháil teachtaireachtaí.</string>
-			<key>two</key>
-			<string>Is fearr a fheidhmíonn grúpaí Signal ina bhfuil %1$d bhall nó níos lú. Má chuirtear tuilleadh ball leo cuirfear moill ar sheoladh agus ar fháil teachtaireachtaí.</string>
-			<key>few</key>
-			<string>Is fearr a fheidhmíonn grúpaí Signal ina bhfuil %1$d bhall nó níos lú. Má chuirtear tuilleadh ball leo cuirfear moill ar sheoladh agus ar fháil teachtaireachtaí.</string>
-			<key>many</key>
-			<string>Is fearr a fheidhmíonn grúpaí Signal ina bhfuil %1$d mball nó níos lú. Má chuirtear tuilleadh ball leo cuirfear moill ar sheoladh agus ar fháil teachtaireachtaí.</string>
-			<key>other</key>
-			<string>Is fearr a fheidhmíonn grúpaí Signal ina bhfuil %1$d ball nó níos lú. Má chuirtear tuilleadh ball leo cuirfear moill ar sheoladh agus ar fháil teachtaireachtaí.</string>
-		</dict>
-	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1152,7 +998,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 ghrúpa i bpáirt</string>
+			<string>%1$d ghrúpa i bpáirt</string>
 			<key>two</key>
 			<string>%1$d ghrúpa i bpáirt</string>
 			<key>few</key>
@@ -1174,15 +1020,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Scrios 1 Teachtaireacht?</string>
+			<string>Scrios %1$d Teachtaireacht</string>
 			<key>two</key>
-			<string>Scrios %1$d Theachtaireacht?</string>
+			<string>Scrios %1$d Theachtaireacht</string>
 			<key>few</key>
-			<string>Scrios %1$d Theachtaireacht?</string>
+			<string>Scrios %1$d Theachtaireacht</string>
 			<key>many</key>
-			<string>Scrios %1$d dTeachtaireacht?</string>
+			<string>Scrios %1$d dTeachtaireacht</string>
 			<key>other</key>
-			<string>Scrios %1$d Teachtaireacht?</string>
+			<string>Scrios %1$d Teachtaireacht</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -1196,7 +1042,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Ghrianghraf</string>
+			<string>%1$d Ghrianghraf</string>
 			<key>two</key>
 			<string>%1$d Ghrianghraf</string>
 			<key>few</key>
@@ -1218,7 +1064,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Mhír</string>
+			<string>%1$d Mhír</string>
 			<key>two</key>
 			<string>%1$d Mhír</string>
 			<key>few</key>
@@ -1227,28 +1073,6 @@
 			<string>%1$d Mír</string>
 			<key>other</key>
 			<string>%1$d Mír</string>
-		</dict>
-	</dict>
-	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 Roghnaithe</string>
-			<key>two</key>
-			<string>%1$d Roghnaithe</string>
-			<key>few</key>
-			<string>%1$d Roghnaithe</string>
-			<key>many</key>
-			<string>%1$d Roghnaithe</string>
-			<key>other</key>
-			<string>%1$d Roghnaithe</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
@@ -1262,7 +1086,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Chuir tú Bac ar 1 Bhall den Ghrúpa Seo</string>
+			<string>Chuir tú Bac ar %1$d Bhall den Ghrúpa Seo</string>
 			<key>two</key>
 			<string>Chuir tú Bac ar %1$d Bhall den Ghrúpa Seo</string>
 			<key>few</key>
@@ -1273,26 +1097,26 @@
 			<string>Chuir tú Bac ar %1$d Ball den Ghrúpa Seo</string>
 		</dict>
 	</dict>
-	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>
+	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>%1$d Roghnaithe</string>
 			<key>two</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d Roghnaithe</string>
 			<key>few</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d Roghnaithe</string>
 			<key>many</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d Roghnaithe</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d Roghnaithe</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -1306,7 +1130,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 as an áireamh</string>
+			<string>%1$d as an áireamh</string>
 			<key>two</key>
 			<string>%1$d as an áireamh</string>
 			<key>few</key>
@@ -1315,6 +1139,28 @@
 			<string>%1$d as an áireamh</string>
 			<key>other</key>
 			<string>%1$d as an áireamh</string>
+		</dict>
+	</dict>
+	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d amharcóir</string>
+			<key>two</key>
+			<string>%1$d Amharcóir</string>
+			<key>few</key>
+			<string>%1$d Amharcóir</string>
+			<key>many</key>
+			<string>%1$d nAmharcóir</string>
+			<key>other</key>
+			<string>%1$d Amharcóir</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -1339,6 +1185,72 @@
 			<string>%1$d Amharcóir</string>
 		</dict>
 	</dict>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Gach Teagmhálaí Signal · %1$d Amharcóir</string>
+			<key>two</key>
+			<string>Gach Teagmhálaí Signal · %1$d Amharcóir</string>
+			<key>few</key>
+			<string>Gach Teagmhálaí Signal · %1$d Amharcóir</string>
+			<key>many</key>
+			<string>Gach Teagmhálaí Signal · %1$d nAmharcóir</string>
+			<key>other</key>
+			<string>Gach Teagmhálaí Signal · %1$d Amharcóir</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Gach Teagmhálaí Signal · %1$d as an áireamh</string>
+			<key>two</key>
+			<string>Gach Teagmhálaí Signal · %1$d as an áireamh</string>
+			<key>few</key>
+			<string>Gach Teagmhálaí Signal · %1$d as an áireamh</string>
+			<key>many</key>
+			<string>Gach Teagmhálaí Signal · %1$d as an áireamh</string>
+			<key>other</key>
+			<string>Gach Teagmhálaí Signal · %1$d as an áireamh</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ONLY_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Ná Comhroinn Ach Le · %1$d Amharcóir</string>
+			<key>two</key>
+			<string>Ná Comhroinn Ach Le · %1$d Amharcóir</string>
+			<key>few</key>
+			<string>Ná Comhroinn Ach Le · %1$d Amharcóir</string>
+			<key>many</key>
+			<string>Ná Comhroinn Ach Le · %1$d nAmharcóir</string>
+			<key>other</key>
+			<string>Ná Comhroinn Ach Le · %1$d Amharcóir</string>
+		</dict>
+	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1350,15 +1262,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d bhall</string>
+			<string>%1$d Bhall</string>
 			<key>two</key>
-			<string>%1$d bhall</string>
+			<string>%1$d Bhall</string>
 			<key>few</key>
-			<string>%1$d bhall</string>
+			<string>%1$d Bhall</string>
 			<key>many</key>
-			<string>%1$d mball</string>
+			<string>%1$d mBall</string>
 			<key>other</key>
-			<string>%1$d ball</string>
+			<string>%1$d Ball</string>
 		</dict>
 	</dict>
 	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>
@@ -1372,7 +1284,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Amharcóir</string>
+			<string>%1$d Amharcóir</string>
 			<key>two</key>
 			<string>%1$d Amharcóir</string>
 			<key>few</key>
@@ -1394,7 +1306,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>UAP mhícheart. 1 iarracht fágtha.</string>
+			<string>UAP mhícheart. %1$d iarracht fágtha.</string>
 			<key>two</key>
 			<string>UAP mhícheart. %1$d iarracht fágtha.</string>
 			<key>few</key>
@@ -1416,7 +1328,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Thug %2$@ cuireadh do 1 duine</string>
+			<string>Thug %2$@ cuireadh do %1$d duine</string>
 			<key>two</key>
 			<string>Thug %2$@ cuireadh do %1$d dhuine</string>
 			<key>few</key>
@@ -1438,7 +1350,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 iarratas ar bhallraíocht ar feitheamh.</string>
+			<string>%1$d iarratas ar bhallraíocht ar feitheamh.</string>
 			<key>two</key>
 			<string>%1$d iarratas ar bhallraíocht ar feitheamh.</string>
 			<key>few</key>
@@ -1471,28 +1383,6 @@
 			<string>Cealaigh %1$d cuireadh neamhbhailí</string>
 		</dict>
 	</dict>
-	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Cealaigh cuireadh grúpa a sheol “%2$@”?</string>
-			<key>two</key>
-			<string>Cealaigh %1$d chuireadh a sheol “%2$@”?</string>
-			<key>few</key>
-			<string>Cealaigh %1$d chuireadh a sheol “%2$@”?</string>
-			<key>many</key>
-			<string>Cealaigh %1$d gcuireadh a sheol “%2$@”?</string>
-			<key>other</key>
-			<string>Cealaigh %1$d cuireadh a sheol “%2$@”?</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1515,6 +1405,50 @@
 			<string>Cealaigh na Cuirí</string>
 		</dict>
 	</dict>
+	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Cealaigh cuireadh grúpa a sheol “%2$@”?</string>
+			<key>two</key>
+			<string>Cealaigh %1$d chuireadh a sheol “%2$@”?</string>
+			<key>few</key>
+			<string>Cealaigh %1$d chuireadh a sheol “%2$@”?</string>
+			<key>many</key>
+			<string>Cealaigh %1$d gcuireadh a sheol “%2$@”?</string>
+			<key>other</key>
+			<string>Cealaigh %1$d cuireadh a sheol “%2$@”?</string>
+		</dict>
+	</dict>
+	<key>PRIVATE_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Scéal saincheaptha · %1$d Amharcóir</string>
+			<key>two</key>
+			<string>Scéal Saincheaptha · %1$d Amharcóir</string>
+			<key>few</key>
+			<string>Scéal Saincheaptha · %1$d Amharcóir</string>
+			<key>many</key>
+			<string>Scéal Saincheaptha · %1$d nAmharcóir</string>
+			<key>other</key>
+			<string>Scéal Saincheaptha · %1$d Amharcóir</string>
+		</dict>
+	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1526,7 +1460,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá 1 iarracht fágtha agat. Má úsáideann tú gach iarracht, is féidir leat UAP nua a chruthú. Is féidir leat clárú agus do chuntas a úsáid ach caillfidh tú socruithe áirithe sábháilte, amhail an fhaisnéis i do phróifíl.</string>
+			<string>Tá %1$d iarracht fágtha agat. Má úsáideann tú gach iarracht, is féidir leat UAP nua a chruthú. Is féidir leat clárú agus do chuntas a úsáid ach caillfidh tú socruithe áirithe sábháilte, amhail an fhaisnéis i do phróifíl.</string>
 			<key>two</key>
 			<string>Tá %1$d iarracht fágtha agat. Má úsáideann tú gach iarracht, is féidir leat UAP nua a chruthú. Is féidir leat clárú agus do chuntas a úsáid ach caillfidh tú socruithe áirithe sábháilte, amhail an fhaisnéis i do phróifíl.</string>
 			<key>few</key>
@@ -1548,7 +1482,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tá 1 iarracht fágtha agat. Má úsáideann tú gach iarracht, glasálfar do chuntas. Tar éis 7 lá neamhghníomhaíochta is féidir leat athchlárú gan d&apos;UAP. Glanfar do chuntas agus scriosfar an t-ábhar atá istigh ann.</string>
+			<string>Tá %1$d iarracht fágtha agat. Má úsáideann tú gach iarracht, glasálfar do chuntas. Tar éis 7 lá neamhghníomhaíochta is féidir leat athchlárú gan d&apos;UAP. Glanfar do chuntas agus scriosfar an t-ábhar atá istigh ann.</string>
 			<key>two</key>
 			<string>Tá %1$d iarracht fágtha agat. Má úsáideann tú gach iarracht, glasálfar do chuntas. Tar éis 7 lá neamhghníomhaíochta is féidir leat athchlárú gan d&apos;UAP. Glanfar do chuntas agus scriosfar an t-ábhar atá istigh ann.</string>
 			<key>few</key>
@@ -1570,7 +1504,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; freagra</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; fhreagra</string>
 			<key>two</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; fhreagra</string>
 			<key>few</key>
@@ -1592,7 +1526,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Amharcóir</string>
+			<string>%1$d Amharcóir</string>
 			<key>two</key>
 			<string>%1$d Amharcóir</string>
 			<key>few</key>
@@ -1614,7 +1548,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 as an áireamh</string>
+			<string>%1$d as an áireamh</string>
 			<key>two</key>
 			<string>%1$d as an áireamh</string>
 			<key>few</key>
@@ -1647,6 +1581,67 @@
 			<string>%1$d ceann á seoladh...</string>
 		</dict>
 	</dict>
+	<key>STORY_VIEWS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d amharc</string>
+			<key>two</key>
+			<string>%1$d amharc</string>
+			<key>few</key>
+			<string>%1$d amharc</string>
+			<key>many</key>
+			<string>%1$d n-amharc</string>
+			<key>other</key>
+			<string>%1$d amharc</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@views@  %2$#@replies@</string>
+		<key>replies</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; fhreagra</string>
+			<key>two</key>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; fhreagra</string>
+			<key>few</key>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; fhreagra</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; bhfreagra</string>
+			<key>other</key>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; freagra</string>
+		</dict>
+		<key>views</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; amharc</string>
+			<key>two</key>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; amharc</string>
+			<key>few</key>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; amharc</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; n-amharc</string>
+			<key>other</key>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; amharc</string>
+		</dict>
+	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1658,7 +1653,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; amharc</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; amharc</string>
 			<key>two</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; amharc</string>
 			<key>few</key>
@@ -1667,309 +1662,6 @@
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; n-amharc</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; amharc</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@views@  %2$#@replies@</string>
-		<key>views</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; amharc</string>
-			<key>two</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; amharc</string>
-			<key>few</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; amharc</string>
-			<key>many</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; n-amharc</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; amharc</string>
-		</dict>
-		<key>replies</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; fhreagra</string>
-			<key>two</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; fhreagra</string>
-			<key>few</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; fhreagra</string>
-			<key>many</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; bhfreagra</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; freagra</string>
-		</dict>
-	</dict>
-	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Ball de %2$@, %3$@ agus 1 ghrúpa sa bhreis</string>
-			<key>two</key>
-			<string>Ball de %2$@, %3$@ agus %1$d ghrúpa sa bhreis</string>
-			<key>few</key>
-			<string>Ball de %2$@, %3$@ agus %1$d ghrúpa sa bhreis</string>
-			<key>many</key>
-			<string>Ball de %2$@, %3$@ agus %1$d ngrúpa sa bhreis</string>
-			<key>other</key>
-			<string>Ball de %2$@, %3$@ agus %1$d grúpa sa bhreis</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_DAYS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 lá</string>
-			<key>two</key>
-			<string>%1$d lá</string>
-			<key>few</key>
-			<string>%1$d lá</string>
-			<key>many</key>
-			<string>%1$d lá</string>
-			<key>other</key>
-			<string>%1$d lá</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_DAYS_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1l</string>
-			<key>two</key>
-			<string>%1$dl</string>
-			<key>few</key>
-			<string>%1$dl</string>
-			<key>many</key>
-			<string>%1$dl</string>
-			<key>other</key>
-			<string>%1$dl</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_HOURS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 uair an chloig</string>
-			<key>two</key>
-			<string>%1$d uair an chloig</string>
-			<key>few</key>
-			<string>%1$d uair an chloig</string>
-			<key>many</key>
-			<string>%1$d n-uair an chloig</string>
-			<key>other</key>
-			<string>%1$d uair an chloig</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_HOURS_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1u</string>
-			<key>two</key>
-			<string>%1$du</string>
-			<key>few</key>
-			<string>%1$du</string>
-			<key>many</key>
-			<string>%1$du</string>
-			<key>other</key>
-			<string>%1$du</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_MINUTES_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%1$dnóiméad amháin</string>
-			<key>two</key>
-			<string>%1$d nóiméad </string>
-			<key>few</key>
-			<string>%1$dnóiméad</string>
-			<key>many</key>
-			<string>%1$dnóiméid</string>
-			<key>other</key>
-			<string>%1$d nóiméad</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1n</string>
-			<key>two</key>
-			<string>%1$dn</string>
-			<key>few</key>
-			<string>%1$dn</string>
-			<key>many</key>
-			<string>%1$dn</string>
-			<key>other</key>
-			<string>%1$dn</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_SECONDS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 soicind</string>
-			<key>two</key>
-			<string>%1$d shoicind</string>
-			<key>few</key>
-			<string>%1$d shoicind</string>
-			<key>many</key>
-			<string>%1$d soicind</string>
-			<key>other</key>
-			<string>%1$d soicind</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1s</string>
-			<key>two</key>
-			<string>%1$ds</string>
-			<key>few</key>
-			<string>%1$ds</string>
-			<key>many</key>
-			<string>%1$ds</string>
-			<key>other</key>
-			<string>%1$ds</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_WEEKS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 seachtain</string>
-			<key>two</key>
-			<string>%1$d sheachtain</string>
-			<key>few</key>
-			<string>%1$d seachtaine</string>
-			<key>many</key>
-			<string>%1$d seachtaine</string>
-			<key>other</key>
-			<string>%1$d seachtain</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1sn</string>
-			<key>two</key>
-			<string>%1$dsn</string>
-			<key>few</key>
-			<string>%1$dsn</string>
-			<key>many</key>
-			<string>%1$dsn</string>
-			<key>other</key>
-			<string>%1$dsn</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_YEARS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 bhliain</string>
-			<key>two</key>
-			<string>%1$d bhliain</string>
-			<key>few</key>
-			<string>%1$d bliana</string>
-			<key>many</key>
-			<string>%1$d mbliana</string>
-			<key>other</key>
-			<string>%1$d bliain</string>
 		</dict>
 	</dict>
 </dict>

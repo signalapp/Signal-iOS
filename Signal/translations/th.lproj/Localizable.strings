@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "เกี่ยวกับคำขอส่งข้อความ";
 
 /* Title for the view of all your signal connections */
-"ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "เครือข่ายทั้งหมด";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "รับสาย";
@@ -356,13 +356,13 @@
 "BADGE_CONFIGURATION_BADGE_SECTION_TITLE" = "โล่ของฉัน";
 
 /* The title for the badge configuration page */
-"BADGE_CONFIGURATION_TITLE" = "เครื่องหมาย";
+"BADGE_CONFIGURATION_TITLE" = "โล่";
 
 /* Text prompting the user to become a signal sustainer */
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "เป็นผู้สนับสนุน";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "มอบ Boost ให้ Signal";
+"BADGE_DETAILS_GIVE_A_BOOST" = "บูสต์ Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "โล่บูสต์ของคุณหมดอายุแล้ว และจะไม่ปรากฏบนโปรไฟล์คุณอีกต่อไป";
@@ -515,7 +515,7 @@
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "แสดงบนโปรไฟล์";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "สร้างโล่ที่โดดเด่น";
+"BADGE_THANKS_MAKE_FEATURED" = "ใช้เป็นโล่ติดโปรไฟล์";
 
 /* Title for subscription on the thank you sheet. */
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "ขอบคุณสำหรับการสนับสนุน!";
@@ -602,7 +602,7 @@
 "BLUR_TOOLTIP" = "ใหม่: มัวหน้าหรือวาดที่ใดก็ได้เพื่อทำให้มัว";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "บริจาคหนึ่งครั้งแล้วรับโล่ Boost เป็นเวลา 30 วัน";
+"BOOST_VIEW_BODY" = "บริจาคแบบครั้งเดียวแล้วรับโล่บูสต์เป็นเวลา 30 วัน";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "โล่ Boost ของคุณจะหมดอายุ %1$@";
@@ -623,7 +623,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "เลือกจำนวนที่จะบริจาค";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "มอบ Boost ให้ Signal";
+"BOOST_VIEW_TITLE" = "บูสต์ Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "เพิ่ม";
@@ -1256,7 +1256,7 @@
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "รับโล่สำหรับโปรไฟล์คุณด้วยการสนับสนุน Signal แตะที่โล่เพื่อดูข้อมูลเพิ่มเติม";
 
 /* Header title for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_HEADER" = "เครื่องหมาย";
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "โล่";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "คุณจะไม่ได้รับข้อความหรือความเคลื่อนไหวจากผู้ใช้นี้อีกต่อไป";
@@ -1410,9 +1410,6 @@
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "รายละเอียดผู้ติดต่อ";
-
-/* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "แบ่งปันโปรไฟล์";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "เพิ่มลงในรายชื่อผู้ติดต่อ";
@@ -1784,7 +1781,7 @@
 "DONATE_MEGAPHONE_ACTION" = "บริจาค";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal ขับเคลื่อนโดยผู้ใช้เช่นคุณ ร่วมบริจาคแบบรายเดือนกับเรา พร้อมรับโล่ติดโปรไฟล์";
+"DONATE_MEGAPHONE_BODY" = "Signal is funded by your donations. Privacy over profit.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "ไม่ใช่ตอนนี้";
@@ -1831,6 +1828,18 @@
 /* Donation payment error for decline failures where the payment cannot be authorized. */
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "ตรวจสอบวิธีการชำระเงินใน Apple Pay ว่ามีการอัปเดตแล้วหรือไม่ ถ้ายัง ให้อัปเดตแล้วลองอีกครั้ง";
 
+/* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "If you can, please donate today to keep Signal fun, dependable, and available for everyone.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal is different.";
+
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "ยอดเงิน";
 
@@ -1867,6 +1876,15 @@
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "ถ้าคุณติดตั้ง Signal ใหม่ ใบเสร็จจากการบริจาคก่อนหน้านี้จะไม่สามารถใช้งานได้";
 
+/* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
+
+/* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
+"DONATION_SCREENS_HEADER_READ_MORE" = "Read more";
+
+/* On donation screens, a small amount of information text is shown. This is the title for that text. */
+"DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
+
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "บริจาคให้ Signal";
 
@@ -1883,7 +1901,7 @@
 "DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "บริจาครายเดือน";
 
 /* Title for the 'Badges' button on the donation screen */
-"DONATION_VIEW_MANAGE_BADGES" = "เครื่องหมาย";
+"DONATION_VIEW_MANAGE_BADGES" = "โล่";
 
 /* Title for the 'Manage Subscription' button on the donation screen */
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "จัดการการเป็นสมาชิก";
@@ -1913,7 +1931,7 @@
 "DONATION_VIEW_TITLE" = "บริจาคให้ Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "ตั้งสกุลเงิน";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "เลือกสกุลเงิน";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "คุณสามารถเปิดการเข้าถึงได้ในการตั้งค่าของ iOS";
@@ -2135,7 +2153,7 @@
 "FEATURED_BADGE_SECTION_HEADER" = "เลือกโล่";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "โล่ที่น่าสนใจ";
+"FEATURED_BADGE_SETTINGS_TITLE" = "โล่ติดโปรไฟล์";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "ทำเครื่องหมายว่าตรวจยืนยันแล้ว";
@@ -3803,7 +3821,7 @@
 "MY_STORY_SETTINGS_TITLE" = "สตอรี่ของฉัน";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tap to add";
+"MY_STORY_TAP_TO_ADD" = "แตะเพื่อเพิ่ม";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "เพิ่งเปลี่ยนชื่อของเขาจาก %1$@ เป็น %2$@";
@@ -3840,9 +3858,6 @@
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "ไม่สามารถสร้างกลุ่มใหม่ ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตของคุณและลองอีกครั้ง";
-
-/* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "ไม่รองรับกลุ่มแบบใหม่";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "ต้องมีชื่อกลุ่ม";
@@ -3893,7 +3908,7 @@
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "ไม่พบชื่อสตอรี่";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Only you can see the name of this story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "มีแค่คุณเท่านั้นที่เห็นชื่อของสตอรี่นี้";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "ชื่อสตอรี่ (ต้องระบุ)";
@@ -3905,13 +3920,13 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "ผู้ชม";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "ใหม่";
 
 /* Subtitle for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "เห็นได้เป็นบางคนเท่านั้น";
 
 /* Title for create custom story row on the 'new story sheet' */
-"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "New Custom Story";
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "สตอรี่ที่กำหนดเองใหม่";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "แชร์ไปยังกลุ่มที่มีอยู่";
@@ -4013,7 +4028,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "PIN ไม่ถูกต้อง";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "ข้ามและสร้างรหัส PIN ใหม่";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New PIN";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "ถ้าคุณจำรหัส PIN ไม่ได้ คุณสามารถสร้างมันใหม่ คุณสามารถลงทะเบียนและใช้บัญชีของคุณได้ แต่คุณจะสูญเสียการตั้งค่าเดิมอย่างข้อมูลโปรไฟล์ของคุณ";
@@ -4161,6 +4176,12 @@
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal กำลังพบกับอุปสรรคทางเทคนิค เรากำลังทำงานอย่างหนักเพื่อให้สามารถกลับมาให้บริการได้โดยเร็วที่สุดเท่าที่จะเป็นไปได้";
+
+/* Label for action link when the user has an outdated payment client */
+"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Update Now";
+
+/* Label warning the user that they should update Signal to continue using payments. */
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "คุณได้โทรหา %1$@";
@@ -4742,7 +4763,7 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "เพิ่มผู้ชม";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Custom Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "ลบสตอรี่ที่กำหนดเอง";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "คุณแน่ใจหรือไม่ว่าต้องการลบ “%1$@” การอัปเดตต่างๆ ที่แชร์ในสตอรี่นี้จะถูกลบด้วยเช่นกัน";
@@ -5767,6 +5788,18 @@
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "การชำระเงินถูกปิดใช้งานแล้ว";
 
+/* Button for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Update Signal";
+
+/* Message for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
+
+/* Title for payments outdated sheet saying cant send. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Can't Send Payment";
+
+/* Title for payments outdated sheet saying update required. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";
+
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "ทั้งหมด";
 
@@ -6287,10 +6320,10 @@
 "STORIES_SAVE_STORY_ACTION" = "บันทึก";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Story updates automatically disappear after 24 hours. Choose who can view your story or create new stories with specific viewers or groups.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "การอัปเดตสตอรี่จะหายไปโดยอัตโนมัติหลังจากครบ 24 ชั่วโมง เลือกได้ว่าจะให้ใครเห็นสตอรี่ของคุณ หรือสร้างสตอรี่ใหม่พร้อมกำหนดผู้ชมหรือกลุ่มเฉพาะ";
 
 /* Header for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_HEADER" = "Stories";
+"STORIES_SETTINGS_STORIES_HEADER" = "สตอรี่";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "คุณจะไม่สามารถแชร์หรือดูสตอรี่ได้อีกต่อไป การอัปเดตสตอรี่ที่คุณเพิ่งแชร์จะถูกลบด้วยเช่นกัน";
@@ -6311,10 +6344,10 @@
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "เปิดใช้งานสตอรี่";
 
 /* Title for the 'view receipts' setting in stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS" = "View Receipts";
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "ตัวแจ้งการรับชมสตอรี่";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "See and share when stories are viewed. If disabled, you won’t see when others view your stories.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "ดูและแชร์เมื่อมีผู้ชมสตอรี่ หากปิดใช้งาน คุณจะไม่เห็นเมื่อมีผู้ชมสตอรี่ของคุณ";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "แบ่งปัน";
@@ -6332,7 +6365,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "ยกเลิกการซ่อนสตอรี่แล้ว";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable view receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "เปิดใช้ตัวเลือกการแจ้งว่าอ่านแล้ว เพื่อแสดงว่าใครดูสตอรี่ของคุณ";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "รับชม";
@@ -6365,7 +6398,7 @@
 "STORY_PRIVACY_SETTINGS" = "ความเป็นส่วนตัว";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Story Privacy";
+"STORY_PRIVACY_TITLE" = "ความเป็นส่วนตัวของสตอรี่";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "แสดงความรู้สึกต่อสตอรี่ของคุณด้วย %1$@";
@@ -6437,7 +6470,7 @@
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>เครือข่าย Signal</bold> คือคนที่คุณเลือกที่จะไว้ใจ ด้วยการ:";
 
 /* Label for the stories section of the settings view */
-"STORY_SETTINGS_TITLE" = "Stories";
+"STORY_SETTINGS_TITLE" = "สตอรี่";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "เลือกว่าจะให้เครือข่าย Signal คนไหนเห็นสตอรี่ของคุณบ้าง การเปลี่ยนแปลงจะไม่ส่งผลต่อสตอรี่ที่ส่งไปแล้ว";
@@ -6526,18 +6559,6 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "กำลังโหลด";
 
-/* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal เป็นแอปที่ไม่แสวงผลกำไรที่ไม่มีโฆษณาหรือผู้ลงทุน สนับสนุนจากคนที่ใช้และเห็นคุณค่าของแอปเท่านั้น บริจาครายเดือนแล้วรับโล่โปรไฟล์เพื่อแสดงการสนับสนุนของคุณ";
-
-/* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal มุ่งมั่นทุ่มเทในภารกิจการพัฒนาความเป็นส่วนตัวแบบโอเพนซอร์ส ซึ่งปกป้องการแสดงออกอย่างอิสระ และมอบการสื่อสารทั่วโลกที่ปลอดภัย \n\nเงินบริจาคของคุณช่วยจ่ายค่าพัฒนาและค่าดำเนินการของแอปที่ใช้โดยผู้คนนับล้านทั่วโลก เพื่อการสื่อสารพร้อมกันที่เป็นส่วนตัว ไม่มีโฆษณา ไม่มีการติดตาม ไม่ได้มาเล่นๆ";
-
-/* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "สนับสนุนเทคโนโลยีที่สร้างมาเพื่อคุณ ไม่เพื่อข้อมูลของคุณ ด้วยการเข้าร่วมชุมชนของผู้คนที่สนับสนุน Signal";
-
-/* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "บริจาคไปทำไม?";
-
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "ยังดำเนินการอยู่";
 
@@ -6551,10 +6572,10 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "ยืนยัน";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "คุณจะไม่ถูกเรียกเก็บเงินอีก โล่ของคุณจะถูกลบออกจากโปรไฟล์เมื่อสิ้นสุดรอบเรียกเก็บเงิน";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "คุณจะไม่ถูกเรียกเก็บเงินอีก โล่ของคุณจะถูกลบออกจากโปรไฟล์เมื่อสิ้นสุดรอบการเรียกเก็บเงิน";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "ยืนยันการยกเลิก";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "ยืนยันการยกเลิกใช่ไหม";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "ไม่สามารถเพิ่มโล่ %1$@";
@@ -6589,9 +6610,6 @@
 /* Status text while processing a badge redemption */
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "กำลังดำเนินการธุรกรรม...";
 
-/* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "อ่านเพิ่มเติม";
-
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "ต่ออายุ %1$@";
 
@@ -6604,9 +6622,6 @@
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "ไม่ใช่ตอนนี้";
 
-/* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Signal ขับเคลื่อนโดยผู้คนเช่นคุณ";
-
 /* Update Subscription? Action sheet message, embeds {{Price}} */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "คุณจะถูกเรียกเก็บเงินเป็นจำนวนเต็ม  (%1$@) ของราคาสามาชิกใหม่ในปัจจุบัน แล้วการเป็นสมาชิกของคุณจะต่ออายุแบบรายเดือน";
 
@@ -6615,9 +6630,6 @@
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "ปรับรุ่น";
-
-/* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "บริจาครายเดือนให้กับ Signal เพื่อสนับสนุนเทคโนโลยีที่สร้างมาเพื่่อคุณ ไม่ใช่เพื่อข้อมูลของคุณ";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "ปิด";
