@@ -100,6 +100,9 @@ message ContactRecord {
   uint64        mutedUntilTimestamp     = 13;
   bool          hideStory               = 14;
   uint64        unregisteredAtTimestamp = 16;
+  string        systemGivenName         = 17;
+  string        systemFamilyName        = 18;
+  string        systemNickname          = 19;
 }
 
 message GroupV1Record {

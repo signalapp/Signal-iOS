@@ -23,9 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #if TARGET_OS_IOS
 
-- (BOOL)isFromContactSync
+- (BOOL)isFromLocalAddressBook
 {
-    return self.cnContactId == nil;
+    return self.cnContactId != nil;
 }
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId

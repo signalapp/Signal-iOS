@@ -343,35 +343,95 @@ struct StorageServiceProtos_ContactRecord {
   // methods supported on all messages.
 
   /// @trustedMapping
-  var serviceUuid: String = String()
+  var serviceUuid: String {
+    get {return _storage._serviceUuid}
+    set {_uniqueStorage()._serviceUuid = newValue}
+  }
 
-  var serviceE164: String = String()
+  var serviceE164: String {
+    get {return _storage._serviceE164}
+    set {_uniqueStorage()._serviceE164 = newValue}
+  }
 
-  var profileKey: Data = Data()
+  var profileKey: Data {
+    get {return _storage._profileKey}
+    set {_uniqueStorage()._profileKey = newValue}
+  }
 
-  var identityKey: Data = Data()
+  var identityKey: Data {
+    get {return _storage._identityKey}
+    set {_uniqueStorage()._identityKey = newValue}
+  }
 
-  var identityState: StorageServiceProtos_ContactRecord.IdentityState = .default
+  var identityState: StorageServiceProtos_ContactRecord.IdentityState {
+    get {return _storage._identityState}
+    set {_uniqueStorage()._identityState = newValue}
+  }
 
-  var givenName: String = String()
+  var givenName: String {
+    get {return _storage._givenName}
+    set {_uniqueStorage()._givenName = newValue}
+  }
 
-  var familyName: String = String()
+  var familyName: String {
+    get {return _storage._familyName}
+    set {_uniqueStorage()._familyName = newValue}
+  }
 
-  var username: String = String()
+  var username: String {
+    get {return _storage._username}
+    set {_uniqueStorage()._username = newValue}
+  }
 
-  var blocked: Bool = false
+  var blocked: Bool {
+    get {return _storage._blocked}
+    set {_uniqueStorage()._blocked = newValue}
+  }
 
-  var whitelisted: Bool = false
+  var whitelisted: Bool {
+    get {return _storage._whitelisted}
+    set {_uniqueStorage()._whitelisted = newValue}
+  }
 
-  var archived: Bool = false
+  var archived: Bool {
+    get {return _storage._archived}
+    set {_uniqueStorage()._archived = newValue}
+  }
 
-  var markedUnread: Bool = false
+  var markedUnread: Bool {
+    get {return _storage._markedUnread}
+    set {_uniqueStorage()._markedUnread = newValue}
+  }
 
-  var mutedUntilTimestamp: UInt64 = 0
+  var mutedUntilTimestamp: UInt64 {
+    get {return _storage._mutedUntilTimestamp}
+    set {_uniqueStorage()._mutedUntilTimestamp = newValue}
+  }
 
-  var hideStory: Bool = false
+  var hideStory: Bool {
+    get {return _storage._hideStory}
+    set {_uniqueStorage()._hideStory = newValue}
+  }
 
-  var unregisteredAtTimestamp: UInt64 = 0
+  var unregisteredAtTimestamp: UInt64 {
+    get {return _storage._unregisteredAtTimestamp}
+    set {_uniqueStorage()._unregisteredAtTimestamp = newValue}
+  }
+
+  var systemGivenName: String {
+    get {return _storage._systemGivenName}
+    set {_uniqueStorage()._systemGivenName = newValue}
+  }
+
+  var systemFamilyName: String {
+    get {return _storage._systemFamilyName}
+    set {_uniqueStorage()._systemFamilyName = newValue}
+  }
+
+  var systemNickname: String {
+    get {return _storage._systemNickname}
+    set {_uniqueStorage()._systemNickname = newValue}
+  }
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -407,6 +467,8 @@ struct StorageServiceProtos_ContactRecord {
   }
 
   init() {}
+
+  fileprivate var _storage = _StorageClass.defaultInstance
 }
 
 #if swift(>=4.2)
@@ -1308,99 +1370,183 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     13: .same(proto: "mutedUntilTimestamp"),
     14: .same(proto: "hideStory"),
     16: .same(proto: "unregisteredAtTimestamp"),
+    17: .same(proto: "systemGivenName"),
+    18: .same(proto: "systemFamilyName"),
+    19: .same(proto: "systemNickname"),
   ]
 
+  fileprivate class _StorageClass {
+    var _serviceUuid: String = String()
+    var _serviceE164: String = String()
+    var _profileKey: Data = Data()
+    var _identityKey: Data = Data()
+    var _identityState: StorageServiceProtos_ContactRecord.IdentityState = .default
+    var _givenName: String = String()
+    var _familyName: String = String()
+    var _username: String = String()
+    var _blocked: Bool = false
+    var _whitelisted: Bool = false
+    var _archived: Bool = false
+    var _markedUnread: Bool = false
+    var _mutedUntilTimestamp: UInt64 = 0
+    var _hideStory: Bool = false
+    var _unregisteredAtTimestamp: UInt64 = 0
+    var _systemGivenName: String = String()
+    var _systemFamilyName: String = String()
+    var _systemNickname: String = String()
+
+    static let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _serviceUuid = source._serviceUuid
+      _serviceE164 = source._serviceE164
+      _profileKey = source._profileKey
+      _identityKey = source._identityKey
+      _identityState = source._identityState
+      _givenName = source._givenName
+      _familyName = source._familyName
+      _username = source._username
+      _blocked = source._blocked
+      _whitelisted = source._whitelisted
+      _archived = source._archived
+      _markedUnread = source._markedUnread
+      _mutedUntilTimestamp = source._mutedUntilTimestamp
+      _hideStory = source._hideStory
+      _unregisteredAtTimestamp = source._unregisteredAtTimestamp
+      _systemGivenName = source._systemGivenName
+      _systemFamilyName = source._systemFamilyName
+      _systemNickname = source._systemNickname
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.serviceUuid) }()
-      case 2: try { try decoder.decodeSingularStringField(value: &self.serviceE164) }()
-      case 3: try { try decoder.decodeSingularBytesField(value: &self.profileKey) }()
-      case 4: try { try decoder.decodeSingularBytesField(value: &self.identityKey) }()
-      case 5: try { try decoder.decodeSingularEnumField(value: &self.identityState) }()
-      case 6: try { try decoder.decodeSingularStringField(value: &self.givenName) }()
-      case 7: try { try decoder.decodeSingularStringField(value: &self.familyName) }()
-      case 8: try { try decoder.decodeSingularStringField(value: &self.username) }()
-      case 9: try { try decoder.decodeSingularBoolField(value: &self.blocked) }()
-      case 10: try { try decoder.decodeSingularBoolField(value: &self.whitelisted) }()
-      case 11: try { try decoder.decodeSingularBoolField(value: &self.archived) }()
-      case 12: try { try decoder.decodeSingularBoolField(value: &self.markedUnread) }()
-      case 13: try { try decoder.decodeSingularUInt64Field(value: &self.mutedUntilTimestamp) }()
-      case 14: try { try decoder.decodeSingularBoolField(value: &self.hideStory) }()
-      case 16: try { try decoder.decodeSingularUInt64Field(value: &self.unregisteredAtTimestamp) }()
-      default: break
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularStringField(value: &_storage._serviceUuid) }()
+        case 2: try { try decoder.decodeSingularStringField(value: &_storage._serviceE164) }()
+        case 3: try { try decoder.decodeSingularBytesField(value: &_storage._profileKey) }()
+        case 4: try { try decoder.decodeSingularBytesField(value: &_storage._identityKey) }()
+        case 5: try { try decoder.decodeSingularEnumField(value: &_storage._identityState) }()
+        case 6: try { try decoder.decodeSingularStringField(value: &_storage._givenName) }()
+        case 7: try { try decoder.decodeSingularStringField(value: &_storage._familyName) }()
+        case 8: try { try decoder.decodeSingularStringField(value: &_storage._username) }()
+        case 9: try { try decoder.decodeSingularBoolField(value: &_storage._blocked) }()
+        case 10: try { try decoder.decodeSingularBoolField(value: &_storage._whitelisted) }()
+        case 11: try { try decoder.decodeSingularBoolField(value: &_storage._archived) }()
+        case 12: try { try decoder.decodeSingularBoolField(value: &_storage._markedUnread) }()
+        case 13: try { try decoder.decodeSingularUInt64Field(value: &_storage._mutedUntilTimestamp) }()
+        case 14: try { try decoder.decodeSingularBoolField(value: &_storage._hideStory) }()
+        case 16: try { try decoder.decodeSingularUInt64Field(value: &_storage._unregisteredAtTimestamp) }()
+        case 17: try { try decoder.decodeSingularStringField(value: &_storage._systemGivenName) }()
+        case 18: try { try decoder.decodeSingularStringField(value: &_storage._systemFamilyName) }()
+        case 19: try { try decoder.decodeSingularStringField(value: &_storage._systemNickname) }()
+        default: break
+        }
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.serviceUuid.isEmpty {
-      try visitor.visitSingularStringField(value: self.serviceUuid, fieldNumber: 1)
-    }
-    if !self.serviceE164.isEmpty {
-      try visitor.visitSingularStringField(value: self.serviceE164, fieldNumber: 2)
-    }
-    if !self.profileKey.isEmpty {
-      try visitor.visitSingularBytesField(value: self.profileKey, fieldNumber: 3)
-    }
-    if !self.identityKey.isEmpty {
-      try visitor.visitSingularBytesField(value: self.identityKey, fieldNumber: 4)
-    }
-    if self.identityState != .default {
-      try visitor.visitSingularEnumField(value: self.identityState, fieldNumber: 5)
-    }
-    if !self.givenName.isEmpty {
-      try visitor.visitSingularStringField(value: self.givenName, fieldNumber: 6)
-    }
-    if !self.familyName.isEmpty {
-      try visitor.visitSingularStringField(value: self.familyName, fieldNumber: 7)
-    }
-    if !self.username.isEmpty {
-      try visitor.visitSingularStringField(value: self.username, fieldNumber: 8)
-    }
-    if self.blocked != false {
-      try visitor.visitSingularBoolField(value: self.blocked, fieldNumber: 9)
-    }
-    if self.whitelisted != false {
-      try visitor.visitSingularBoolField(value: self.whitelisted, fieldNumber: 10)
-    }
-    if self.archived != false {
-      try visitor.visitSingularBoolField(value: self.archived, fieldNumber: 11)
-    }
-    if self.markedUnread != false {
-      try visitor.visitSingularBoolField(value: self.markedUnread, fieldNumber: 12)
-    }
-    if self.mutedUntilTimestamp != 0 {
-      try visitor.visitSingularUInt64Field(value: self.mutedUntilTimestamp, fieldNumber: 13)
-    }
-    if self.hideStory != false {
-      try visitor.visitSingularBoolField(value: self.hideStory, fieldNumber: 14)
-    }
-    if self.unregisteredAtTimestamp != 0 {
-      try visitor.visitSingularUInt64Field(value: self.unregisteredAtTimestamp, fieldNumber: 16)
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      if !_storage._serviceUuid.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._serviceUuid, fieldNumber: 1)
+      }
+      if !_storage._serviceE164.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._serviceE164, fieldNumber: 2)
+      }
+      if !_storage._profileKey.isEmpty {
+        try visitor.visitSingularBytesField(value: _storage._profileKey, fieldNumber: 3)
+      }
+      if !_storage._identityKey.isEmpty {
+        try visitor.visitSingularBytesField(value: _storage._identityKey, fieldNumber: 4)
+      }
+      if _storage._identityState != .default {
+        try visitor.visitSingularEnumField(value: _storage._identityState, fieldNumber: 5)
+      }
+      if !_storage._givenName.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._givenName, fieldNumber: 6)
+      }
+      if !_storage._familyName.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._familyName, fieldNumber: 7)
+      }
+      if !_storage._username.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._username, fieldNumber: 8)
+      }
+      if _storage._blocked != false {
+        try visitor.visitSingularBoolField(value: _storage._blocked, fieldNumber: 9)
+      }
+      if _storage._whitelisted != false {
+        try visitor.visitSingularBoolField(value: _storage._whitelisted, fieldNumber: 10)
+      }
+      if _storage._archived != false {
+        try visitor.visitSingularBoolField(value: _storage._archived, fieldNumber: 11)
+      }
+      if _storage._markedUnread != false {
+        try visitor.visitSingularBoolField(value: _storage._markedUnread, fieldNumber: 12)
+      }
+      if _storage._mutedUntilTimestamp != 0 {
+        try visitor.visitSingularUInt64Field(value: _storage._mutedUntilTimestamp, fieldNumber: 13)
+      }
+      if _storage._hideStory != false {
+        try visitor.visitSingularBoolField(value: _storage._hideStory, fieldNumber: 14)
+      }
+      if _storage._unregisteredAtTimestamp != 0 {
+        try visitor.visitSingularUInt64Field(value: _storage._unregisteredAtTimestamp, fieldNumber: 16)
+      }
+      if !_storage._systemGivenName.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._systemGivenName, fieldNumber: 17)
+      }
+      if !_storage._systemFamilyName.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._systemFamilyName, fieldNumber: 18)
+      }
+      if !_storage._systemNickname.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._systemNickname, fieldNumber: 19)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: StorageServiceProtos_ContactRecord, rhs: StorageServiceProtos_ContactRecord) -> Bool {
-    if lhs.serviceUuid != rhs.serviceUuid {return false}
-    if lhs.serviceE164 != rhs.serviceE164 {return false}
-    if lhs.profileKey != rhs.profileKey {return false}
-    if lhs.identityKey != rhs.identityKey {return false}
-    if lhs.identityState != rhs.identityState {return false}
-    if lhs.givenName != rhs.givenName {return false}
-    if lhs.familyName != rhs.familyName {return false}
-    if lhs.username != rhs.username {return false}
-    if lhs.blocked != rhs.blocked {return false}
-    if lhs.whitelisted != rhs.whitelisted {return false}
-    if lhs.archived != rhs.archived {return false}
-    if lhs.markedUnread != rhs.markedUnread {return false}
-    if lhs.mutedUntilTimestamp != rhs.mutedUntilTimestamp {return false}
-    if lhs.hideStory != rhs.hideStory {return false}
-    if lhs.unregisteredAtTimestamp != rhs.unregisteredAtTimestamp {return false}
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._serviceUuid != rhs_storage._serviceUuid {return false}
+        if _storage._serviceE164 != rhs_storage._serviceE164 {return false}
+        if _storage._profileKey != rhs_storage._profileKey {return false}
+        if _storage._identityKey != rhs_storage._identityKey {return false}
+        if _storage._identityState != rhs_storage._identityState {return false}
+        if _storage._givenName != rhs_storage._givenName {return false}
+        if _storage._familyName != rhs_storage._familyName {return false}
+        if _storage._username != rhs_storage._username {return false}
+        if _storage._blocked != rhs_storage._blocked {return false}
+        if _storage._whitelisted != rhs_storage._whitelisted {return false}
+        if _storage._archived != rhs_storage._archived {return false}
+        if _storage._markedUnread != rhs_storage._markedUnread {return false}
+        if _storage._mutedUntilTimestamp != rhs_storage._mutedUntilTimestamp {return false}
+        if _storage._hideStory != rhs_storage._hideStory {return false}
+        if _storage._unregisteredAtTimestamp != rhs_storage._unregisteredAtTimestamp {return false}
+        if _storage._systemGivenName != rhs_storage._systemGivenName {return false}
+        if _storage._systemFamilyName != rhs_storage._systemFamilyName {return false}
+        if _storage._systemNickname != rhs_storage._systemNickname {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -7,7 +7,6 @@ import Foundation
 
 public struct ContactDetails {
     public let address: SignalServiceAddress
-    public let name: String?
     public let verifiedProto: SSKProtoVerified?
     public let profileKey: Data?
     public let isBlocked: Bool
@@ -52,7 +51,6 @@ public class ContactsInputStream {
         }
 
         return ContactDetails(address: address,
-                              name: contactDetails.name,
                               verifiedProto: contactDetails.verified,
                               profileKey: contactDetails.profileKey,
                               isBlocked: contactDetails.blocked,

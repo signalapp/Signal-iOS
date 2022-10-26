@@ -258,6 +258,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_removeGroupStoryRepliesFromSearchIndex
         case dataMigration_populateStoryContextAssociatedDataLastReadTimestamp
         case dataMigration_indexPrivateStoryThreadNames
+        case dataMigration_scheduleStorageServiceUpdateForSystemContacts
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -2594,7 +2595,39 @@ public class GRDBSchemaMigrator: NSObject {
             } catch {
                 owsFail("Error: \(error)")
             }
+        }
 
+        migrator.registerMigration(.dataMigration_scheduleStorageServiceUpdateForSystemContacts) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            // We've added fields on the StorageService ContactRecord proto for
+            // their "system name", or the name of their associated system
+            // contact, if present. Consequently, for all Signal contacts with
+            // a system contact, we should schedule a StorageService update.
+            //
+            // We only want to do this if we are the primary device, since only
+            // the primary device's system contacts are synced.
+
+            guard tsAccountManager.isPrimaryDevice else {
+                return
+            }
+
+            var accountsToRemove: Set<SignalAccount> = []
+
+            SignalAccount.anyEnumerate(transaction: transaction.asAnyRead) { account, _ in
+                guard
+                    let contact = account.contact,
+                    contact.isFromLocalAddressBook
+                else {
+                    // Skip any accounts that do not have a system contact
+                    return
+                }
+
+                accountsToRemove.insert(account)
+            }
+
+            storageServiceManager.recordPendingUpdates(updatedAddresses: accountsToRemove.map { $0.recipientAddress })
         }
 
         // MARK: - Data Migration Insertion Point

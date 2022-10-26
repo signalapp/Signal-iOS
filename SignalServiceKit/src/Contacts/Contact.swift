@@ -5,17 +5,16 @@
 
 import Foundation
 
-extension Contact {
-    public func isEqualForCache(_ other: Contact) -> Bool {
-        guard self.firstName == other.firstName,
-              self.lastName == other.lastName,
-              self.nickname == other.nickname,
-              self.fullName == other.fullName,
+// MARK: - Equality
+
+public extension Contact {
+    func isEqualForCache(_ other: Contact) -> Bool {
+        guard namesAreEqual(toOther: other),
               self.comparableNameFirstLast == other.comparableNameFirstLast,
               self.comparableNameLastFirst == other.comparableNameLastFirst,
               self.uniqueId == other.uniqueId,
               self.cnContactId == other.cnContactId,
-              self.isFromContactSync == other.isFromContactSync,
+              self.isFromLocalAddressBook == other.isFromLocalAddressBook,
               self.phoneNumberNameMap == other.phoneNumberNameMap else {
                   return false
               }
@@ -35,5 +34,85 @@ extension Contact {
         }
 
         return true
+    }
+
+    func namesAreEqual(toOther other: Contact) -> Bool {
+        guard
+            self.firstName == other.firstName,
+            self.lastName == other.lastName,
+            self.nickname == other.nickname,
+            self.fullName == other.fullName
+        else {
+            return false
+        }
+
+        return true
+    }
+}
+
+// MARK: - Convenience init
+
+public extension Contact {
+    convenience init(
+        address: SignalServiceAddress,
+        addressServiceIdentifier: String,
+        phoneNumberLabel: String,
+        givenName: String?,
+        familyName: String?,
+        nickname: String?,
+        fullName: String
+    ) {
+        var userTextPhoneNumbers: [String] = []
+        var phoneNumberNameMap: [String: String] = [:]
+        var parsedPhoneNumbers: [PhoneNumber] = []
+        if
+            let phoneNumber = address.phoneNumber,
+            let parsedPhoneNumber = PhoneNumber(fromE164: phoneNumber)
+        {
+            userTextPhoneNumbers.append(phoneNumber)
+            parsedPhoneNumbers.append(parsedPhoneNumber)
+            phoneNumberNameMap[parsedPhoneNumber.toE164()] = phoneNumberLabel
+        }
+
+        self.init(
+            uniqueId: addressServiceIdentifier,
+            cnContactId: nil,
+            firstName: givenName,
+            lastName: familyName,
+            nickname: nickname,
+            fullName: fullName,
+            userTextPhoneNumbers: userTextPhoneNumbers,
+            phoneNumberNameMap: phoneNumberNameMap,
+            parsedPhoneNumbers: parsedPhoneNumbers,
+            emails: []
+        )
+    }
+}
+
+// MARK: - Names
+
+public extension Contact {
+    static func fullName(
+        fromGivenName givenName: String?,
+        familyName: String?,
+        nickname: String?
+    ) -> String? {
+        if
+            givenName == nil,
+            familyName == nil,
+            nickname == nil
+        {
+            return nil
+        }
+
+        var components = PersonNameComponents()
+        components.givenName = givenName
+        components.familyName = familyName
+        components.nickname = nickname
+
+        return PersonNameComponentsFormatter.localizedString(
+            from: components,
+            style: .default
+        )
     }
 }

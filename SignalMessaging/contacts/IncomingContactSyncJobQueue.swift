@@ -157,41 +157,6 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         }
     }
 
-    private func buildContact(_ contactDetails: ContactDetails, transaction: SDSAnyWriteTransaction) throws -> Contact {
-
-        var userTextPhoneNumbers: [String] = []
-        var phoneNumberNameMap: [String: String] = [:]
-        var parsedPhoneNumbers: [PhoneNumber] = []
-        if let phoneNumber = contactDetails.address.phoneNumber,
-            let parsedPhoneNumber = PhoneNumber(fromE164: phoneNumber) {
-            userTextPhoneNumbers.append(phoneNumber)
-            parsedPhoneNumbers.append(parsedPhoneNumber)
-            phoneNumberNameMap[parsedPhoneNumber.toE164()] = CommonStrings.mainPhoneNumberLabel
-        }
-
-        let fullName: String
-        if let name: String = contactDetails.name {
-            fullName = name
-        } else {
-            fullName = self.contactsManager.displayName(for: contactDetails.address, transaction: transaction)
-        }
-
-        guard let serviceIdentifier = contactDetails.address.serviceIdentifier else {
-            throw IncomingContactSyncError.malformed("serviceIdentifier was unexpectedly nil")
-        }
-
-        return Contact(uniqueId: serviceIdentifier,
-                       cnContactId: nil,
-                       firstName: nil,
-                       lastName: nil,
-                       nickname: nil,
-                       fullName: fullName,
-                       userTextPhoneNumbers: userTextPhoneNumbers,
-                       phoneNumberNameMap: phoneNumberNameMap,
-                       parsedPhoneNumbers: parsedPhoneNumbers,
-                       emails: [])
-    }
-
     private func process(attachmentStream: TSAttachmentStream) throws {
         guard let fileUrl = attachmentStream.originalMediaURL else {
             throw OWSAssertionError("fileUrl was unexpectedly nil")
@@ -208,7 +173,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
                 while try processBatch(contactStream: contactStream, processedAddresses: &allSignalServiceAddresses) {}
 
                 if jobRecord.isCompleteContactSync {
-                    pruneContacts(except: allSignalServiceAddresses)
+                    pruneContacts(exceptThoseReceivedFromCompleteSync: allSignalServiceAddresses)
                 }
 
                 databaseStorage.write { transaction in
@@ -260,26 +225,6 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
 
         // Mark as registered, since we trust the contact information sent from our other devices.
         SignalRecipient.mark(asRegisteredAndGet: contactDetails.address, trustLevel: .high, transaction: transaction)
-
-        if let existingAccount = self.contactsManagerImpl.fetchSignalAccount(for: contactDetails.address,
-                                                                             transaction: transaction) {
-            if existingAccount.contact == nil {
-                owsFailDebug("Persisted account missing contact.")
-            }
-            if let contact = existingAccount.contact,
-                contact.isFromContactSync {
-                let contact = try self.buildContact(contactDetails, transaction: transaction)
-                existingAccount.updateWithContact(contact, transaction: transaction)
-            }
-        } else {
-            let contact = try self.buildContact(contactDetails, transaction: transaction)
-            let newAccount = SignalAccount(contact: contact,
-                                           contactAvatarHash: nil,
-                                           multipleAccountLabelText: "",
-                                           recipientPhoneNumber: contactDetails.address.phoneNumber,
-                                           recipientUUID: contactDetails.address.uuidString)
-            newAccount.anyInsert(transaction: transaction)
-        }
 
         let contactThread: TSContactThread
         let isNewThread: Bool
@@ -337,7 +282,15 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         }
     }
 
-    private func pruneContacts(except addresses: [SignalServiceAddress]) {
+    /// Clear all persisted ``SignalAccount``s other than the given set,
+    /// received during a complete sync.
+    ///
+    /// Although "system contact" details (represented by a ``SignalAccount``)
+    /// are synced via StorageService rather than contact sync messages, any
+    /// contacts not included in a complete contact sync are not present on the
+    /// primary device and therefore should be in neither StorageService nor on
+    /// this linked device.
+    private func pruneContacts(exceptThoseReceivedFromCompleteSync addresses: [SignalServiceAddress]) {
         let setOfAddresses = Set(addresses)
         self.databaseStorage.write { transaction in
             // Rather than collecting SignalAccount objects, collect their unique IDs.
@@ -345,7 +298,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             // bit of speed to save memory.
             var uniqueIdsToRemove = [String]()
             SignalAccount.anyEnumerate(transaction: transaction, batchSize: 8) { signalAccount, _ in
-                guard let contact = signalAccount.contact, contact.isFromContactSync else {
+                guard let contact = signalAccount.contact, !contact.isFromLocalAddressBook else {
                     // This only cleans up contacts from a contact sync.
                     return
                 }

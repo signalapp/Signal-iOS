@@ -11,40 +11,46 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalRecipient;
 @class SignalServiceAddress;
 
-// This class represents a single valid Signal account.
-//
-// * Contacts with multiple signal accounts will correspond to
-//   multiple instances of SignalAccount.
-// * For non-contacts, the contact property will be nil.
+/// A ``SignalAccount`` represents a "system contact" that is also a registered
+/// Signal user. The system contact may be from the local device's address book,
+/// or synced to a linked device from the primary device's address book.
+///
+/// System contacts with multiple Signal accounts (e.g., multiple registered
+/// phone numbers) will correspond to multiple instances of ``SignalAccount``.
+///
+/// Note that this description applies to _persisted_ ``SignalAccount``s, which
+/// will always be backed by a non-`nil` ``Contact``. In-memory
+/// ``SignalAccount``s may be created for other purposes, and will not contain
+/// a ``Contact``.
 @interface SignalAccount : BaseModel
 
-/// An E164 value identifying the signal account.
+/// An E164 value identifying the Signal account.
 @property (nullable, nonatomic, readonly) NSString *recipientPhoneNumber;
 
-/// A UUID identifying the signal account.
+/// A UUID identifying the Signal account.
 @property (nullable, nonatomic, readonly) NSString *recipientUUID;
 
-/// An address representing the signal account. This will be
+/// An address representing the Signal account. This will be
 /// the UUID, if defined, otherwise it will be the E164 number.
 @property (nonatomic, readonly) SignalServiceAddress *recipientAddress;
 
-// This property is optional and will not be set for
-// non-contact account.
+/// This property is non-`nil` for persisted ``SignalAccount``s. It may be
+/// `nil` for in-memory accounts.
 @property (nonatomic, nullable, readonly) Contact *contact;
 
-// contactAvatarHash is the hash of the original avatar
-// data (if any) from the system contact.  We use it for
-// change detection.
-//
-// This property is optional and will not be set for
-// non-contact account.
+/// ``contactAvatarHash`` is the hash of the original avatar
+/// data (if any) from the system contact.  We use it for
+/// change detection.
+///
+/// This property is optional and will not be set for
+/// non-contact account.
 @property (nonatomic, nullable, readonly) NSData *contactAvatarHash;
 
-// This property is obsolete.
+/// This property is obsolete.
 @property (nonatomic, nullable, readonly) NSData *contactAvatarJpegDataObsolete;
 
-// For contacts with more than one signal account,
-// this is a label for the account.
+/// For contacts with more than one signal account,
+/// this is a label for the account.
 @property (nonatomic, readonly) NSString *multipleAccountLabelText;
 
 - (nullable NSString *)contactPreferredDisplayName;

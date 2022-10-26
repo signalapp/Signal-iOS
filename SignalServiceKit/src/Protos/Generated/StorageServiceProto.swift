@@ -1434,6 +1434,36 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
         return true
     }
 
+    public var systemGivenName: String? {
+        guard hasSystemGivenName else {
+            return nil
+        }
+        return proto.systemGivenName
+    }
+    public var hasSystemGivenName: Bool {
+        return !proto.systemGivenName.isEmpty
+    }
+
+    public var systemFamilyName: String? {
+        guard hasSystemFamilyName else {
+            return nil
+        }
+        return proto.systemFamilyName
+    }
+    public var hasSystemFamilyName: Bool {
+        return !proto.systemFamilyName.isEmpty
+    }
+
+    public var systemNickname: String? {
+        guard hasSystemNickname else {
+            return nil
+        }
+        return proto.systemNickname
+    }
+    public var hasSystemNickname: Bool {
+        return !proto.systemNickname.isEmpty
+    }
+
     public var hasValidService: Bool {
         return serviceAddress != nil
     }
@@ -1575,6 +1605,15 @@ extension StorageServiceProtoContactRecord {
         if hasUnregisteredAtTimestamp {
             builder.setUnregisteredAtTimestamp(unregisteredAtTimestamp)
         }
+        if let _value = systemGivenName {
+            builder.setSystemGivenName(_value)
+        }
+        if let _value = systemFamilyName {
+            builder.setSystemFamilyName(_value)
+        }
+        if let _value = systemNickname {
+            builder.setSystemNickname(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -1696,6 +1735,36 @@ public struct StorageServiceProtoContactRecordBuilder {
 
     public mutating func setUnregisteredAtTimestamp(_ valueParam: UInt64) {
         proto.unregisteredAtTimestamp = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setSystemGivenName(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.systemGivenName = valueParam
+    }
+
+    public mutating func setSystemGivenName(_ valueParam: String) {
+        proto.systemGivenName = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setSystemFamilyName(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.systemFamilyName = valueParam
+    }
+
+    public mutating func setSystemFamilyName(_ valueParam: String) {
+        proto.systemFamilyName = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setSystemNickname(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.systemNickname = valueParam
+    }
+
+    public mutating func setSystemNickname(_ valueParam: String) {
+        proto.systemNickname = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

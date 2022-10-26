@@ -397,11 +397,16 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                 OWSFailDebug(@"Error: %@", error);
                 return;
             }
-            [OWSContactsManager buildSignalAccountsForContacts:contactsMaps.allContacts
-                                                    completion:^(NSArray<SignalAccount *> *signalAccounts) {
-                                                        [self updateSignalAccountsForSystemContactsFetch:signalAccounts
-                                                                        shouldSetHasLoadedSystemContacts:didLoad];
-                                                    }];
+            [OWSContactsManager
+                buildSignalAccountsAndUpdatePersistedStateForFetchedSystemContacts:contactsMaps.allContacts
+                                                                        completion:^(
+                                                                            NSArray<SignalAccount *> *signalAccounts) {
+                                                                            [self
+                                                                                updateSignalAccountsForSystemContactsFetch:
+                                                                                    signalAccounts
+                                                                                          shouldSetHasLoadedSystemContacts:
+                                                                                              didLoad];
+                                                                        }];
         }];
     });
 }

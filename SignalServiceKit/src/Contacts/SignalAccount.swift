@@ -11,7 +11,7 @@ extension SignalAccount {
         guard let contact = self.contact else {
             return nil
         }
-        guard !contact.isFromContactSync else {
+        guard contact.isFromLocalAddressBook else {
             return nil
         }
         guard let cnContactId: String = contact.cnContactId else {

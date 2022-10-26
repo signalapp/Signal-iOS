@@ -76,6 +76,40 @@ extension StorageServiceProtoContactRecord: Dependencies {
             builder.setFamilyName(profileFamilyName)
         }
 
+        if
+            let account = contactsManagerImpl.fetchSignalAccount(for: address, transaction: transaction),
+            let contact = account.contact
+        {
+            // We have a contact for this address, whose name we may want to
+            // add to this ContactRecord. We should add it if:
+            //
+            // - We are a primary device, and this contact is from our local
+            //   address book. In this case, we want to let linked devices
+            //   know about our "system contact".
+            //
+            // - We are a linked device, and this is a contact we synced from
+            //   the primary device (via a previous ContactRecord). In this
+            //   case, we want to preserve the name the primary device
+            //   originally uploaded.
+
+            let isPrimaryAndHasLocalContact = tsAccountManager.isPrimaryDevice && contact.isFromLocalAddressBook
+            let isLinkedAndHasSyncedContact = !tsAccountManager.isPrimaryDevice && !contact.isFromLocalAddressBook
+
+            if isPrimaryAndHasLocalContact || isLinkedAndHasSyncedContact {
+                if let systemGivenName = contact.firstName {
+                    builder.setSystemGivenName(systemGivenName)
+                }
+
+                if let systemFamilyName = contact.lastName {
+                    builder.setSystemFamilyName(systemFamilyName)
+                }
+
+                if let systemNickname = contact.nickname {
+                    builder.setSystemNickname(systemNickname)
+                }
+            }
+        }
+
         if let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
             let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
 
@@ -176,6 +210,8 @@ extension StorageServiceProtoContactRecord: Dependencies {
             mergeState = .needsUpdate(recipient.accountId)
         }
 
+        mergeLocalContactSystemNames(address: address, transaction: transaction)
+
         // If our local identity differs from the service, use the service's value.
         if let identityKeyWithType = identityKey, let identityState = identityState?.verificationState,
             let identityKey = try? identityKeyWithType.removeKeyType(),
@@ -242,6 +278,102 @@ extension StorageServiceProtoContactRecord: Dependencies {
         }
 
         return mergeState
+    }
+
+    /// Merge system contact names from this ContactRecord with local state.
+    ///
+    /// Does nothing on primary devices. On linked devices, system contact data
+    /// in this ContactRecord will supercede any existing contact data for the
+    /// given address.
+    private func mergeLocalContactSystemNames(
+        address: SignalServiceAddress,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        if tsAccountManager.isPrimaryDevice {
+            // If we are a primary device, we should never be syncing system
+            // contacts from another device.
+            return
+        }
+
+        let maybeExistingAccount = contactsManagerImpl.fetchSignalAccount(for: address, transaction: transaction)
+
+        if
+            hasSystemGivenName || hasSystemFamilyName || hasSystemNickname,
+            let systemFullName = Contact.fullName(
+                fromGivenName: systemGivenName,
+                familyName: systemFamilyName,
+                nickname: systemNickname
+            )
+        {
+            // If we have a system contact in StorageService, save it. Any
+            // pre-existing data should be superceded by these values, since
+            // these represent a system contact from the primary device.
+
+            guard let addressServiceIdentifier = address.serviceIdentifier else {
+                owsFailDebug("Address unexpectedly missing service identifier!")
+                return
+            }
+
+            if let existingAccount = maybeExistingAccount {
+                existingAccount.anyRemove(transaction: transaction)
+            }
+
+            let newContact = Contact(
+                address: address,
+                addressServiceIdentifier: addressServiceIdentifier,
+                phoneNumberLabel: CommonStrings.mainPhoneNumberLabel,
+                givenName: systemGivenName,
+                familyName: systemFamilyName,
+                nickname: systemNickname,
+                fullName: systemFullName
+            )
+
+            // TODO: we should find a way to fill in `multipleAccountLabelText`.
+            // This is the string that helps disambiguate when multiple
+            // `SignalAccount`s are associated with the same system contact.
+            // For example, Alice may have a work and mobile number, both of
+            // of which are registered with Signal. This text could be (work)
+            // or (mobile), to help disambiguate - otherwise, both Signal
+            // accounts will present as just "Alice".
+            let multipleAccountLabelText = ""
+
+            let newAccount = SignalAccount(
+                contact: newContact,
+                contactAvatarHash: nil,
+                multipleAccountLabelText: multipleAccountLabelText,
+                recipientPhoneNumber: address.phoneNumber,
+                recipientUUID: address.uuidString
+            )
+
+            newAccount.anyInsert(transaction: transaction)
+        } else if
+            let existingAccount = maybeExistingAccount,
+            let existingContact = existingAccount.contact
+        {
+            if !existingContact.isFromLocalAddressBook {
+                // If we got here, we know:
+                // - This ContactRecord does _not_ contain a system contact.
+                // - We have an existing contact for this address, and they
+                //   are one we previously synced from the primary (rather
+                //   than one from our local address book).
+                //
+                // Consequently, we should remove our persisted copy of the
+                // contact we synced from the primary, since that contact has
+                // since been removed from the primary's address book (hence
+                // they are missing from this ContactRecord).
+                //
+                // If we _also_ have a local address-book contact for this
+                // address, it would have previously been superceded by the
+                // synced contact that we're now removing. Since we no longer
+                // have a synced contact, our local address-book contact will
+                // be loaded during the next regularly-scheduled address-book
+                // load.
+
+                existingAccount.anyRemove(transaction: transaction)
+            } else {
+                Logger.debug("No system contact found in contact record, keeping existing local address book contact!")
+            }
+        }
     }
 }
 

@@ -37,6 +37,10 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoContactDetailsBuilder *contactBuilder = [SSKProtoContactDetails builder];
     [contactBuilder setContactE164:signalAccount.recipientAddress.phoneNumber];
     [contactBuilder setContactUuid:signalAccount.recipientAddress.uuidString];
+
+    // TODO: this should be removed after a 90-day timer from when Desktop stops
+    // relying on names in contact sync messages, and is instead using the
+    // `system[Given|Family]Name` fields from StorageService ContactRecords.
     [contactBuilder setName:signalAccount.contact.fullName];
 
     if (isArchived != nil) {

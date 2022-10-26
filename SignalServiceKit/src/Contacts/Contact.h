@@ -32,7 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) NSArray<NSString *> *emails;
 @property (readonly, nonatomic) NSString *uniqueId;
 @property (nonatomic, readonly, nullable) NSString *cnContactId;
-@property (nonatomic, readonly) BOOL isFromContactSync;
+
+@property (nonatomic, readonly) BOOL isFromLocalAddressBook;
 
 // This property should only be accessed from Swift.
 @property (nonatomic, readonly) NSDictionary<NSString *, NSString *> *phoneNumberNameMap;
