@@ -228,7 +228,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             if let responseData = responseData,
                let maxResponseSize = self.maxResponseSize {
                 guard responseData.count <= maxResponseSize else {
-                    self.taskDidFail(requestConfig.task, error: OWSAssertionError("Oversize download."))
+                    self.taskDidFail(requestConfig.task, error: OWSGenericError("Oversize download."))
                     return
                 }
             }
