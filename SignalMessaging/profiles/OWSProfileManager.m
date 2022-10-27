@@ -1782,28 +1782,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     }
 }
 
-- (BOOL)isNullableDataEqual:(NSData *_Nullable)left toData:(NSData *_Nullable)right
-{
-    if (left == nil && right == nil) {
-        return YES;
-    } else if (left == nil || right == nil) {
-        return YES;
-    } else {
-        return [left isEqual:right];
-    }
-}
-
-- (BOOL)isNullableStringEqual:(NSString *_Nullable)left toString:(NSString *_Nullable)right
-{
-    if (left == nil && right == nil) {
-        return YES;
-    } else if (left == nil || right == nil) {
-        return YES;
-    } else {
-        return [left isEqualToString:right];
-    }
-}
-
 #pragma mark - Profile Encryption
 
 - (BOOL)isProfileNameTooLong:(nullable NSString *)profileName
