@@ -145,9 +145,11 @@ class ExperienceUpgradeManager: NSObject {
                 .contactPermissionReminder,
                 .subscriptionMegaphone:
             return true
-        case .remoteMegaphone(let megaphone):
-            // TODO: add a megaphone view
-            return false
+        case .remoteMegaphone:
+            // Remote megaphones are always presentable. We filter out any with
+            // unpresentable fields (e.g., unrecognized actions) before we get
+            // out of the `ExperienceUpgradeFinder`.
+            return true
         case .unrecognized:
             return false
         }
@@ -166,8 +168,11 @@ class ExperienceUpgradeManager: NSObject {
         case .subscriptionMegaphone:
             return DonationMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .remoteMegaphone(let megaphone):
-            // TODO: add a megaphone view
-            return nil
+            return RemoteMegaphone(
+                experienceUpgrade: experienceUpgrade,
+                remoteMegaphoneModel: megaphone,
+                fromViewController: fromViewController
+            )
         case .unrecognized:
             return nil
         }

@@ -128,16 +128,22 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
 
         guard !hasPresented else { return owsFailDebug("can only present once") }
 
-        guard titleText != nil, bodyText != nil, (imageName != nil || image != nil || animation != nil) else {
+        guard titleText != nil, bodyText != nil else {
             return owsFailDebug("megaphone is not prepared for presentation")
         }
 
         // Top section
 
         let labelStack = createLabelStack()
-        let imageContainer = createImageContainer()
 
-        let topStackView = UIStackView(arrangedSubviews: [imageContainer, labelStack])
+        let topStackSubviews: [UIView]
+        if imageName != nil || image != nil || animation != nil {
+            topStackSubviews = [createImageContainer(), labelStack]
+        } else {
+            topStackSubviews = [labelStack]
+        }
+
+        let topStackView = UIStackView(arrangedSubviews: topStackSubviews)
 
         switch imageSize {
         case .small:

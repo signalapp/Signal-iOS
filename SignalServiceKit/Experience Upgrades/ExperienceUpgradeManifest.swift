@@ -418,7 +418,7 @@ extension ExperienceUpgradeManifest {
         case .subscriptionMegaphone:
             return checkPreconditionsForSubscriptionMegaphone(transaction: transaction)
         case .remoteMegaphone(let megaphone):
-            return checkPreconditionsForRemoteMegaphone(withManifest: megaphone.manifest)
+            return checkPreconditionsForRemoteMegaphone(megaphone)
         case .pinReminder:
             return checkPreconditionsForPinReminder(transaction: transaction)
         case .contactPermissionReminder:
@@ -480,32 +480,32 @@ extension ExperienceUpgradeManifest {
         return timeSinceExpiration > (2 * kWeekInterval)
     }
 
-    private static func checkPreconditionsForRemoteMegaphone(withManifest manifest: RemoteMegaphoneModel.Manifest) -> Bool {
+    private static func checkPreconditionsForRemoteMegaphone(_ megaphone: RemoteMegaphoneModel) -> Bool {
         guard
             AppVersion.compare(
-                manifest.minAppVersion,
+                megaphone.manifest.minAppVersion,
                 with: appVersion.currentAppVersion4
             ) != .orderedDescending
         else {
-            Logger.debug("App version \(appVersion.currentAppVersion4) lower than required \(manifest.minAppVersion)!")
+            Logger.debug("App version \(appVersion.currentAppVersion4) lower than required \(megaphone.manifest.minAppVersion)!")
             return false
         }
 
-        guard Date().timeIntervalSince1970 > TimeInterval(manifest.dontShowBefore) else {
+        guard Date().timeIntervalSince1970 > TimeInterval(megaphone.manifest.dontShowBefore) else {
             Logger.debug("Remote megaphone should not be shown until later!")
             return false
         }
 
         guard RemoteConfig.isCountryCodeBucketEnabled(
-            csvString: manifest.countries,
-            key: manifest.id,
-            csvDescription: "remoteMegaphoneCountries_\(manifest.id)"
+            csvString: megaphone.manifest.countries,
+            key: megaphone.manifest.id,
+            csvDescription: "remoteMegaphoneCountries_\(megaphone.manifest.id)"
         ) else {
             Logger.debug("Remote megaphone not enabled for this user, by country code!")
             return false
         }
 
-        if let conditionalCheck = manifest.conditionalCheck {
+        if let conditionalCheck = megaphone.manifest.conditionalCheck {
             switch conditionalCheck {
             case .unrecognized(let conditionalId):
                 Logger.warn("Found unrecognized conditional check with ID \(conditionalId), bailing.")
@@ -513,9 +513,31 @@ extension ExperienceUpgradeManifest {
             }
         }
 
-        // Hard-coding to `false` since we don't yet have UI to show megaphones.
-        // TODO: once we have UI to show remote megaphones, toggle this to `true`.
-        return false
+        if let primaryAction = megaphone.manifest.primaryAction {
+            guard megaphone.translation.primaryActionText != nil else {
+                Logger.warn("Missing primary action text for action \(primaryAction)")
+                return false
+            }
+
+            guard primaryAction.isRecognized else {
+                Logger.warn("Found unrecognized primary action \(primaryAction), bailing.")
+                return false
+            }
+        }
+
+        if let secondaryAction = megaphone.manifest.secondaryAction {
+            guard megaphone.translation.secondaryActionText != nil else {
+                Logger.warn("Missing secondary action text for action \(secondaryAction)")
+                return false
+            }
+
+            guard secondaryAction.isRecognized else {
+                Logger.warn("Found unrecognized secondary action \(secondaryAction), bailing.")
+                return false
+            }
+        }
+
+        return true
     }
 
     private static func checkPreconditionsForPinReminder(transaction: SDSAnyReadTransaction) -> Bool {

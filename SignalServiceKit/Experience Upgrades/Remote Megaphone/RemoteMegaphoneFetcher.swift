@@ -325,18 +325,29 @@ private extension RemoteMegaphoneFetcher {
             }
 
             return imageFileUrl
-        }.recover(on: .global()) { error in
-            guard
+        }.recover(on: .global()) { error -> Promise<URL?> in
+            if
                 error.isNetworkFailureOrTimeout,
                 remainingRetries > 0
-            else {
-                throw error
+            {
+                return self.downloadImageIfNecessary(
+                    forTranslation: translation,
+                    remainingRetries: remainingRetries - 1
+                )
+            } else if let httpStatusCode = error.httpStatusCode {
+                switch httpStatusCode {
+                case 404:
+                    owsFailDebug("Unexpectedly got 404 while fetching remote megaphone image for ID \(translation.id)!")
+                    return .value(nil)
+                case 500..<600:
+                    owsFailDebug("Encountered server error with status \(httpStatusCode) while fetching remote megaphone image!")
+                    return .value(nil)
+                default:
+                    owsFailDebug("Unexpectedly got error status code \(httpStatusCode) while fetching remote megaphone image for ID \(translation.id)!")
+                }
             }
 
-            return self.downloadImageIfNecessary(
-                forTranslation: translation,
-                remainingRetries: remainingRetries - 1
-            )
+            throw error
         }
     }
 }
@@ -498,12 +509,11 @@ private extension RemoteMegaphoneModel.Translation {
             throw OWSAssertionError("Translation had UUID that is illegal filename: \(representation.uuid)")
         }
 
-        return RemoteMegaphoneModel.Translation(
+        return RemoteMegaphoneModel.Translation.makeWithoutLocalImage(
             id: representation.uuid,
             title: representation.title,
             body: representation.body,
             imageRemoteUrlPath: representation.imageUrl,
-            imageLocalUrl: nil,
             primaryActionText: representation.primaryCtaText,
             secondaryActionText: representation.primaryCtaText
         )

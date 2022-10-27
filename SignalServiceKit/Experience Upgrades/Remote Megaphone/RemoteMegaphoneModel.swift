@@ -11,10 +11,10 @@ public struct RemoteMegaphoneModel: Codable {
         case translation
     }
 
-    private(set) var manifest: Manifest
-    private(set) var translation: Translation
+    public private(set) var manifest: Manifest
+    public private(set) var translation: Translation
 
-    var id: String {
+    public var id: String {
         manifest.id
     }
 
@@ -73,7 +73,7 @@ public struct RemoteMegaphoneModel: Codable {
 extension RemoteMegaphoneModel {
     /// Represents metadata about this megaphone, such as when it should be
     /// presented and what actions it should support.
-    struct Manifest: Codable {
+    public struct Manifest: Codable {
         typealias EpochSeconds = UInt64
 
         /// A unique ID for this manifest.
@@ -111,11 +111,11 @@ extension RemoteMegaphoneModel {
 
         /// Represents an action to be performed in response to user selection
         /// of the "primary" call-to-action in the presented megaphone.
-        let primaryAction: Action?
+        public let primaryAction: Action?
 
         /// Represents an action to be performed in response to user selection
         /// of the "secondary" call-to-action in the presented megaphone.
-        let secondaryAction: Action?
+        public let secondaryAction: Action?
 
         init(
             id: String,
@@ -220,6 +220,15 @@ extension RemoteMegaphoneModel.Manifest {
             }
         }
 
+        var isRecognized: Bool {
+            switch self {
+            case .unrecognized:
+                return false
+            }
+        }
+
+        // MARK: Codable
+
         private enum CodingKeys: String, CodingKey {
             case conditionalId
         }
@@ -244,7 +253,7 @@ extension RemoteMegaphoneModel.Manifest {
 extension RemoteMegaphoneModel.Manifest {
     /// Identifies a known action to take in response to a known user
     /// interaction with this megaphone.
-    enum Action: Codable {
+    public enum Action: Codable, CustomStringConvertible {
         case unrecognized(actionId: String)
 
         var actionId: String {
@@ -261,18 +270,36 @@ extension RemoteMegaphoneModel.Manifest {
             }
         }
 
+        var isRecognized: Bool {
+            switch self {
+            case .unrecognized:
+                return false
+            }
+        }
+
+        // MARK: CustomStringConvertible
+
+        public var description: String {
+            switch self {
+            case .unrecognized(let actionId):
+                return ".unrecognized(\(actionId))"
+            }
+        }
+
+        // MARK: Codable
+
         private enum CodingKeys: String, CodingKey {
             case actionId
         }
 
-        init(from decoder: Decoder) throws {
+        public init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
 
             let actionId = try container.decode(String.self, forKey: .actionId)
             self.init(fromActionId: actionId)
         }
 
-        func encode(to encoder: Encoder) throws {
+        public func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
 
             try container.encode(actionId, forKey: .actionId)
@@ -284,33 +311,33 @@ extension RemoteMegaphoneModel.Manifest {
 
 extension RemoteMegaphoneModel {
     /// Represents a localized, user-presentable description of this megaphone.
-    struct Translation: Codable {
+    public struct Translation: Codable {
         /// A unique ID for the megaphone this translation corresponds to.
         /// Should match the ID for this translation's manifest, and must be a
         /// permissible file name.
         let id: String
 
         /// Localized title for this megaphone.
-        fileprivate(set) var title: String
+        public fileprivate(set) var title: String
 
         /// Localized body for this megaphone.
-        fileprivate(set) var body: String
+        public fileprivate(set) var body: String
 
         /// Path to a remote image asset for this megaphone.
         let imageRemoteUrlPath: String?
 
         /// File URL to a locally-stored image asset for this megaphone.
-        private(set) var imageLocalUrl: URL?
+        public private(set) var imageLocalUrl: URL?
 
         /// Localized text to display on the "primary" call-to-action when this
         /// megaphone is presented.
-        fileprivate(set) var primaryActionText: String?
+        public fileprivate(set) var primaryActionText: String?
 
         /// Localized text to display on the "secondary" call-to-action when this
         /// megaphone is presented.
-        fileprivate(set) var secondaryActionText: String?
+        public fileprivate(set) var secondaryActionText: String?
 
-        init(
+        private init(
             id: String,
             title: String,
             body: String,
@@ -330,6 +357,27 @@ extension RemoteMegaphoneModel {
 
         mutating func setImageLocalUrl(_ url: URL) {
             imageLocalUrl = url
+        }
+
+        // MARK: Factories
+
+        public static func makeWithoutLocalImage(
+            id: String,
+            title: String,
+            body: String,
+            imageRemoteUrlPath: String?,
+            primaryActionText: String?,
+            secondaryActionText: String?
+        ) -> Translation {
+            Translation(
+                id: id,
+                title: title,
+                body: body,
+                imageRemoteUrlPath: imageRemoteUrlPath,
+                imageLocalUrl: nil,
+                primaryActionText: primaryActionText,
+                secondaryActionText: secondaryActionText
+            )
         }
 
         // MARK: Codable
