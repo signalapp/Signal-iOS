@@ -142,8 +142,7 @@ class ExperienceUpgradeManager: NSObject {
                 .introducingPins,
                 .pinReminder,
                 .notificationPermissionReminder,
-                .contactPermissionReminder,
-                .subscriptionMegaphone:
+                .contactPermissionReminder:
             return true
         case .remoteMegaphone:
             // Remote megaphones are always presentable. We filter out any with
@@ -165,8 +164,6 @@ class ExperienceUpgradeManager: NSObject {
             return NotificationPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .contactPermissionReminder:
             return ContactPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .subscriptionMegaphone:
-            return DonationMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .remoteMegaphone(let megaphone):
             return RemoteMegaphone(
                 experienceUpgrade: experienceUpgrade,

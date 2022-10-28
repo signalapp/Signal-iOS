@@ -230,11 +230,6 @@ class BadgeThanksSheet: OWSTableSheetViewController {
 
             if state == .redeemed {
                 self.receiptManager.incomingGiftWasRedeemed(incomingMessage, transaction: transaction)
-
-                ExperienceUpgradeManager.snoozeExperienceUpgrade(
-                    .subscriptionMegaphone,
-                    transaction: transaction.unwrapGrdbWrite
-                )
             }
         }
     }

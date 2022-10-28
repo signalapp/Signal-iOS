@@ -95,7 +95,6 @@ extension ExperienceUpgrade {
         case
                 .introducingPins,
                 .notificationPermissionReminder,
-                .subscriptionMegaphone,
                 .pinReminder,
                 .contactPermissionReminder,
                 .unrecognized:

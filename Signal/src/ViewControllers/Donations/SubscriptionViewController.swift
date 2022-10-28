@@ -884,18 +884,6 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
                 progressView.removeFromSuperview()
 
                 self.navigationController?.popViewController(animated: true)
-
-                // We can't use a sneaky transaction here, because the
-                // subscription's existence means that the experience
-                // upgrade is no longer "active" and won't be found
-                // in the unsnoozed list.
-                self.databaseStorage.write { transaction in
-                    ExperienceUpgradeManager.snoozeExperienceUpgrade(
-                        .subscriptionMegaphone,
-                        transaction: transaction.unwrapGrdbWrite
-                    )
-                }
-
                 self.navigationController?.topViewController?.present(BadgeThanksSheet(badge: newSubscriptionLevel.badge, type: .subscription), animated: true)
             }
         }.catch { error in

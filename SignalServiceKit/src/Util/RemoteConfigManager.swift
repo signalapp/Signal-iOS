@@ -13,7 +13,6 @@ public class RemoteConfig: BaseFlags {
     // into a getter below...
     fileprivate let isEnabledFlags: [String: Bool]
     fileprivate let valueFlags: [String: AnyObject]
-    private let subscriptionMegaphone: Bool
     private let storiesRegional: Bool
     private let standardMediaQualityLevel: ImageQualityLevel?
     private let paymentsDisabledRegions: [String]
@@ -22,7 +21,6 @@ public class RemoteConfig: BaseFlags {
          valueFlags: [String: AnyObject]) {
         self.isEnabledFlags = isEnabledFlags
         self.valueFlags = valueFlags
-        self.subscriptionMegaphone = Self.isCountryCodeBucketEnabled(flag: .donationMegaphone, valueFlags: valueFlags)
         self.storiesRegional = Self.isCountryCodeBucketEnabled(flag: .storiesRegional, valueFlags: valueFlags)
         self.standardMediaQualityLevel = Self.determineStandardMediaQualityLevel(valueFlags: valueFlags)
         self.paymentsDisabledRegions = Self.parsePaymentsDisabledRegions(valueFlags: valueFlags)
@@ -113,17 +111,6 @@ public class RemoteConfig: BaseFlags {
     @objc
     public static var reactiveProfileKeyAttemptInterval: TimeInterval {
         interval(.reactiveProfileKeyAttemptInterval, defaultInterval: kHourInterval)
-    }
-
-    @objc
-    public static var subscriptionMegaphone: Bool {
-        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return false }
-        return DebugFlags.forceSubscriptionMegaphone || remoteConfig.subscriptionMegaphone
-    }
-
-    @objc
-    public static var subscriptionMegaphoneSnoozeInterval: TimeInterval {
-        interval(.donationMegaphoneSnoozeInterval, defaultInterval: kMonthInterval * 6)
     }
 
     @objc
@@ -477,8 +464,6 @@ private struct Flags {
         case automaticSessionResetAttemptInterval
         case reactiveProfileKeyAttemptInterval
         case paymentsDisabledRegions
-        case donationMegaphone
-        case donationMegaphoneSnoozeInterval
         case maxGroupCallRingSize
         case storiesRegional
     }
@@ -498,8 +483,6 @@ private struct Flags {
         case replaceableInteractionExpiration
         case messageSendLogEntryLifetime
         case paymentsDisabledRegions
-        case donationMegaphone
-        case donationMegaphoneSnoozeInterval
         case maxGroupCallRingSize
         case storiesRegional
     }

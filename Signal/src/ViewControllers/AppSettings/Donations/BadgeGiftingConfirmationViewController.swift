@@ -643,10 +643,6 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                     throw SendGiftBadgeError.recipientIsBlocked
                 }
 
-                // If we've gotten this far, we want to snooze the megaphone.
-                ExperienceUpgradeManager.snoozeExperienceUpgrade(.subscriptionMegaphone,
-                                                                 transaction: transaction.unwrapGrdbWrite)
-
                 DonationUtilities.sendGiftBadgeJobQueue.addJob(jobRecord, transaction: transaction)
             }
 

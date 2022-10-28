@@ -627,13 +627,6 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
 
                     self.state = .donatedSuccessfully
 
-                    self.databaseStorage.write { transaction in
-                        ExperienceUpgradeManager.snoozeExperienceUpgrade(
-                            .subscriptionMegaphone,
-                            transaction: transaction.unwrapGrdbWrite
-                        )
-                    }
-
                     guard let boostBadge = self.boostBadge else {
                         return owsFailDebug("Missing boost badge!")
                     }

@@ -17,9 +17,6 @@ public enum ExperienceUpgradeManifest: Dependencies {
     /// Prompts the user to enable notifications permissions.
     case notificationPermissionReminder
 
-    /// Prompts the user to donate :)
-    case subscriptionMegaphone
-
     /// Prompts the user according to the contained ``RemoteMegaphoneModel``.
     ///
     /// Remote megaphones are fetched from the service, and expected to change
@@ -95,8 +92,6 @@ extension ExperienceUpgradeManifest {
                 return .introducingPins
             case Self.notificationPermissionReminder.uniqueId:
                 return .notificationPermissionReminder
-            case Self.subscriptionMegaphone.uniqueId:
-                return .subscriptionMegaphone
             case Self.pinReminder.uniqueId:
                 return .pinReminder
             case Self.contactPermissionReminder.uniqueId:
@@ -124,7 +119,6 @@ extension ExperienceUpgradeManifest {
     static let wellKnownLocalUpgradeManifests: Set<ExperienceUpgradeManifest> = [
         .introducingPins,
         .notificationPermissionReminder,
-        .subscriptionMegaphone,
         .pinReminder,
         .contactPermissionReminder
     ]
@@ -142,8 +136,6 @@ extension ExperienceUpgradeManifest {
             return "009"
         case .notificationPermissionReminder:
             return "notificationPermissionReminder"
-        case .subscriptionMegaphone:
-            return "subscriptionMegaphone"
         case .remoteMegaphone(let megaphone):
             return megaphone.id
         case .pinReminder:
@@ -204,16 +196,14 @@ extension ExperienceUpgradeManifest: ExperienceUpgradeSortable {
             return (0, 0)
         case .notificationPermissionReminder:
             return (1, 0)
-        case .subscriptionMegaphone:
-            return (2, 0)
         case .remoteMegaphone(let megaphone):
             // Remote megaphone manifests use higher numbers to indicate higher
             // priority, so we should invert their priority here.
-            return (3, -1 * megaphone.manifest.priority)
+            return (2, -1 * megaphone.manifest.priority)
         case .pinReminder:
-            return (4, 0)
+            return (3, 0)
         case .contactPermissionReminder:
-            return (5, 0)
+            return (4, 0)
         case .unrecognized:
             return (Int.max, Int.max)
         }
@@ -234,7 +224,6 @@ extension ExperienceUpgradeManifest {
         switch self {
         case
                 .introducingPins,
-                .subscriptionMegaphone,
                 .remoteMegaphone:
             return false
         case
@@ -258,7 +247,6 @@ extension ExperienceUpgradeManifest {
             return false
         case
                 .notificationPermissionReminder,
-                .subscriptionMegaphone,
                 .remoteMegaphone,
                 .contactPermissionReminder:
             return true
@@ -274,7 +262,6 @@ extension ExperienceUpgradeManifest {
         case
                 .introducingPins,
                 .notificationPermissionReminder,
-                .subscriptionMegaphone,
                 .pinReminder,
                 .contactPermissionReminder,
                 .unrecognized:
@@ -293,8 +280,6 @@ extension ExperienceUpgradeManifest {
             return 2 * kDayInterval
         case .notificationPermissionReminder:
             return 3 * kDayInterval
-        case .subscriptionMegaphone:
-            return RemoteConfig.subscriptionMegaphoneSnoozeInterval
         case .remoteMegaphone:
             // TODO: this property will be stored on the remote megaphone, eventually
             return kDayInterval
@@ -312,7 +297,6 @@ extension ExperienceUpgradeManifest {
         case
                 .introducingPins,
                 .notificationPermissionReminder,
-                .subscriptionMegaphone,
                 .pinReminder,
                 .contactPermissionReminder:
             return Int.max
@@ -333,8 +317,6 @@ extension ExperienceUpgradeManifest {
             return kDayInterval
         case .introducingPins:
             return 2 * kHourInterval
-        case .subscriptionMegaphone:
-            return 5 * kDayInterval
         case .remoteMegaphone:
             // Controlled via conditional check
             return 0
@@ -351,7 +333,6 @@ extension ExperienceUpgradeManifest {
         case
                 .introducingPins,
                 .notificationPermissionReminder,
-                .subscriptionMegaphone,
                 .pinReminder,
                 .contactPermissionReminder:
             return Date.distantFuture
@@ -372,7 +353,6 @@ extension ExperienceUpgradeManifest {
             return false
         case
                 .notificationPermissionReminder,
-                .subscriptionMegaphone,
                 .contactPermissionReminder:
             return true
         case
@@ -415,8 +395,6 @@ extension ExperienceUpgradeManifest {
             return checkPreconditionsForIntroducingPins(transaction: transaction)
         case .notificationPermissionReminder:
             return checkPreconditionsForNotificationsPermissionsReminder()
-        case .subscriptionMegaphone:
-            return checkPreconditionsForSubscriptionMegaphone(transaction: transaction)
         case .remoteMegaphone(let megaphone):
             return checkPreconditionsForRemoteMegaphone(megaphone)
         case .pinReminder:
@@ -464,20 +442,6 @@ extension ExperienceUpgradeManifest {
             Logger.warn("failed to query notification permission")
             return false
         }
-    }
-
-    private static func checkPreconditionsForSubscriptionMegaphone(transaction: SDSAnyReadTransaction) -> Bool {
-        // Show the subscription megaphone IFF:
-        // - It's remotely enabled
-        // - The user has no / an expired subscription
-        // - Their last subscription has been expired for more than 2 weeks
-
-        guard RemoteConfig.subscriptionMegaphone else {
-            return false
-        }
-
-        let timeSinceExpiration = subscriptionManager.timeSinceLastSubscriptionExpiration(transaction: transaction)
-        return timeSinceExpiration > (2 * kWeekInterval)
     }
 
     private static func checkPreconditionsForRemoteMegaphone(_ megaphone: RemoteMegaphoneModel) -> Bool {
