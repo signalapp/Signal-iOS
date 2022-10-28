@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Maximum number of failures while updating signed prekeys
 // before the message sending is disabled.
-static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
+static const NSInteger kMaxPrekeyUpdateFailureCount = 5;
 
 // Maximum amount of time that can elapse without updating signed prekeys
 // before the message sending is disabled.

@@ -309,7 +309,7 @@ static SSKEnvironment *sharedSSKEnvironment;
         ^{ [StoryManager setup]; }
     ];
 
-    for (int i = 0; i < specs.count / 2; i++) {
+    for (unsigned i = 0; i < specs.count / 2; i++) {
         [InstrumentsMonitor measureWithCategory:@"appstart"
                                          parent:@"caches"
                                            name:[specs objectAtIndex:2 * i]

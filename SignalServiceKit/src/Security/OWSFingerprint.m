@@ -253,7 +253,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     if (!digestData) {
         @throw [NSException exceptionWithName:NSGenericException reason:@"Couldn't allocate buffer." userInfo:nil];
     }
-    for (int i = 0; i < self.hashIterations; i++) {
+    for (unsigned i = 0; i < self.hashIterations; i++) {
         [hash appendData:publicKey];
 
         if (hash.length >= UINT32_MAX) {

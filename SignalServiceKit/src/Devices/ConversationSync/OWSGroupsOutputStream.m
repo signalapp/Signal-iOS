@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     [groupBuilder setArchived:associatedData.isArchived];
     NSNumber *_Nullable sortIndex = [[AnyThreadFinder new] sortIndexObjcWithThread:groupThread transaction:transaction];
     if (sortIndex != nil) {
-        [groupBuilder setInboxPosition:sortIndex.intValue];
+        [groupBuilder setInboxPosition:sortIndex.unsignedIntValue];
     }
 
     // TODO setActive based on soft delete?

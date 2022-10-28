@@ -1087,7 +1087,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         if (self.storyReactionEmoji) {
             SSKProtoDataMessageReactionBuilder *reactionBuilder =
                 [SSKProtoDataMessageReaction builderWithEmoji:self.storyReactionEmoji
-                                                    timestamp:self.storyTimestamp.longLongValue];
+                                                    timestamp:self.storyTimestamp.unsignedLongLongValue];
             [reactionBuilder setAuthorUuid:self.storyAuthorUuidString];
 
             NSError *error;
@@ -1105,7 +1105,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
         SSKProtoDataMessageStoryContextBuilder *storyContextBuilder = [SSKProtoDataMessageStoryContext builder];
         [storyContextBuilder setAuthorUuid:self.storyAuthorUuidString];
-        [storyContextBuilder setSentTimestamp:self.storyTimestamp.longLongValue];
+        [storyContextBuilder setSentTimestamp:self.storyTimestamp.unsignedLongLongValue];
 
         NSError *error;
         SSKProtoDataMessageStoryContext *_Nullable storyContext = [storyContextBuilder buildAndReturnError:&error];

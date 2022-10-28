@@ -1257,7 +1257,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // We should ignore typing indicator messages.
     if (envelope.hasServerTimestamp && envelope.serverTimestamp > 0 && serverDeliveryTimestamp > 0) {
-        uint64_t relevancyCutoff = serverDeliveryTimestamp - (5 * kMinuteInterval);
+        uint64_t relevancyCutoff = serverDeliveryTimestamp - (uint64_t)(5 * kMinuteInterval);
         if (envelope.serverTimestamp < relevancyCutoff) {
             OWSLogInfo(@"Discarding obsolete typing indicator message.");
             return;

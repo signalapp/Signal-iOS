@@ -128,7 +128,7 @@ static NSString *const kUniversalTimerThreadId = @"kUniversalTimerThreadId";
 
 + (uint32_t)maxDurationSeconds
 {
-    return kYearInterval;
+    return (uint32_t)kYearInterval;
 }
 
 - (NSString *)durationString

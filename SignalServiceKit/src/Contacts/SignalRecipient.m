@@ -564,10 +564,10 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     // (Note that we don't check for PNI sessions; we always prefer the ACI session there.)
     SSKSessionStore *sessionStore = [self signalProtocolStoreForIdentity:OWSIdentityACI].sessionStore;
     BOOL hasSessionForUuid = [sessionStore containsActiveSessionForAccountId:uuidInstance.accountId
-                                                                    deviceId:OWSDevicePrimaryDeviceId
+                                                                    deviceId:(int32_t)OWSDevicePrimaryDeviceId
                                                                  transaction:transaction];
     BOOL hasSessionForPhoneNumber = [sessionStore containsActiveSessionForAccountId:phoneNumberInstance.accountId
-                                                                           deviceId:OWSDevicePrimaryDeviceId
+                                                                           deviceId:(int32_t)OWSDevicePrimaryDeviceId
                                                                         transaction:transaction];
 
     if (SSKDebugFlags.verboseSignalRecipientLogging) {
