@@ -35,7 +35,14 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     fileprivate static let maxHistoryCount: Int = 4
 
-    fileprivate let reminderStackView = UIStackView()
+    private let topHeaderStackView = {
+        let result = UIStackView()
+        result.axis = .vertical
+        result.spacing = 0
+        return result
+    }()
+
+    private var outdatedClientReminderView: ReminderView?
 
     @objc
     public required init(mode: PaymentsSettingsMode) {
@@ -43,7 +50,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
         super.init()
 
-        self.topHeader = reminderStackView
+        self.topHeader = topHeaderStackView
     }
 
     // MARK: - Update Balance Timer
@@ -148,20 +155,27 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     // MARK: - Outdated Client Banner
 
     private func createOutdatedClientReminderView() {
+        guard outdatedClientReminderView == nil else {
+            return
+        }
 
-        reminderStackView.isHidden = true
-        reminderStackView.axis = .vertical
-        reminderStackView.spacing = 0
-        let outdatedClientView = ReminderView.nag(text: NSLocalizedString("OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT",
-                                                                        comment: "Label warning the user that they should update Signal to continue using payments."),
-                                            tapAction: { [weak self] in
-                                                self?.didTapOutdatedPaymentClientReminder()
-                                            },
-                                            actionTitle: NSLocalizedString("OUTDATED_PAYMENT_CLIENT_ACTION_TITLE",
-                                                                         comment: "Label for action link when the user has an outdated payment client"))
-        reminderStackView.addArrangedSubview(outdatedClientView)
-        outdatedClientView.accessibilityIdentifier = "outdatedClientView"
+        let reminderView = ReminderView.nag(
+            text: NSLocalizedString(
+                "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT",
+                comment: "Label warning the user that they should update Signal to continue using payments."
+            ),
+            tapAction: { [weak self] in
+                self?.didTapOutdatedPaymentClientReminder()
+            },
+            actionTitle: NSLocalizedString(
+                "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE",
+                comment: "Label for action link when the user has an outdated payment client"
+            )
+        )
+        reminderView.accessibilityIdentifier = "outdatedClientView"
+        topHeaderStackView.addArrangedSubview(reminderView)
 
+        outdatedClientReminderView = reminderView
     }
 
     private func didTapOutdatedPaymentClientReminder() {
@@ -185,8 +199,6 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         }
 
         addListeners()
-
-        createOutdatedClientReminderView()
 
         updateTableContents()
 
@@ -225,7 +237,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
         startUpdateBalanceTimer()
         let clientOutdated = OWSActionSheets.showPaymentsOutdatedClientSheetIfNeeded(title: .updateRequired)
-        reminderStackView.isHidden = !clientOutdated
+        if clientOutdated { createOutdatedClientReminderView() }
+        outdatedClientReminderView?.isHidden = !clientOutdated
     }
 
     public override func viewDidDisappear(_ animated: Bool) {
