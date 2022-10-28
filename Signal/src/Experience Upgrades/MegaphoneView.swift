@@ -10,12 +10,6 @@ import SignalMessaging
 class MegaphoneView: UIView, ExperienceUpgradeView {
     let experienceUpgrade: ExperienceUpgrade
 
-    enum ImageSize {
-        case large, small
-    }
-    var imageSize: ImageSize = .small {
-        willSet { assert(!hasPresented) }
-    }
     var imageName: String? {
         didSet {
             if imageName != nil { image = nil }
@@ -144,19 +138,10 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         }
 
         let topStackView = UIStackView(arrangedSubviews: topStackSubviews)
-
-        switch imageSize {
-        case .small:
-            topStackView.axis = .horizontal
-            topStackView.spacing = 8
-            topStackView.isLayoutMarginsRelativeArrangement = true
-            topStackView.layoutMargins = UIEdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-        case .large:
-            topStackView.axis = .vertical
-            topStackView.spacing = 10
-            labelStack.isLayoutMarginsRelativeArrangement = true
-            labelStack.layoutMargins = UIEdgeInsets(top: 0, leading: 12, bottom: 12, trailing: 12)
-        }
+        topStackView.axis = .horizontal
+        topStackView.spacing = 8
+        topStackView.isLayoutMarginsRelativeArrangement = true
+        topStackView.layoutMargins = UIEdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
 
         stackView.addArrangedSubview(topStackView)
 
@@ -243,7 +228,8 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
             imageView.contentMode = .scaleAspectFit
             container.addSubview(imageView)
             imageView.autoPinWidthToSuperview()
-            imageView.autoPinEdge(toSuperviewEdge: .top)
+            imageView.autoPinToSquareAspectRatio()
+            imageView.autoVCenterInSuperview()
         } else if let animation = animation {
             container = UIView()
 
@@ -270,15 +256,8 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
             container = UIView()
         }
 
-        container.clipsToBounds = true
-
-        switch imageSize {
-        case .small:
-            container.autoSetDimension(.width, toSize: 64)
-            container.autoSetDimension(.height, toSize: 64, relation: .greaterThanOrEqual)
-        case .large:
-            container.autoSetDimension(.height, toSize: 128)
-        }
+        container.autoSetDimension(.width, toSize: 64)
+        container.autoSetDimension(.height, toSize: 64, relation: .greaterThanOrEqual)
 
         return container
     }
