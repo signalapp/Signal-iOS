@@ -180,7 +180,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
     NS_SWIFT_NAME(thumbnailImageSync(quality:));
 
 // This method should only be invoked by OWSThumbnailService.
-- (NSString *)pathForThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints;
+- (NSString *)pathForThumbnailDimensionPoints:(CGFloat)thumbnailDimensionPoints;
 
 #pragma mark - Validation
 

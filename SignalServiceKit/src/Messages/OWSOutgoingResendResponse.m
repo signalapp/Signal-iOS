@@ -19,7 +19,7 @@
 
 - (nullable instancetype)initWithAddress:(SignalServiceAddress *)address
                                 deviceId:(int64_t)deviceId
-                         failedTimestamp:(int64_t)failedTimestamp
+                         failedTimestamp:(uint64_t)failedTimestamp
                          didResetSession:(BOOL)didPerformSessionReset
                              transaction:(SDSAnyWriteTransaction *)transaction
 {

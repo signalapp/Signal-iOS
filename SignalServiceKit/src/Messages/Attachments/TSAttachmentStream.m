@@ -384,7 +384,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     return [OWSFileSystem.cachesDirectoryPath stringByAppendingPathComponent:dirName];
 }
 
-- (NSString *)pathForThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
+- (NSString *)pathForThumbnailDimensionPoints:(CGFloat)thumbnailDimensionPoints
 {
     NSString *fileExtension = [OWSThumbnailService thumbnailFileExtensionForContentType:self.contentType];
     NSString *filename =
@@ -838,7 +838,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
                            failure:(OWSThumbnailFailure)failure
 {
     CGFloat maxDimensionHint = MAX(sizeHint.width, sizeHint.height);
-    NSUInteger thumbnailDimensionPoints;
+    CGFloat thumbnailDimensionPoints;
     if (maxDimensionHint <= TSAttachmentStream.thumbnailDimensionPointsSmall) {
         thumbnailDimensionPoints = TSAttachmentStream.thumbnailDimensionPointsSmall;
     } else if (maxDimensionHint <= TSAttachmentStream.thumbnailDimensionPointsMedium) {
@@ -854,11 +854,11 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
                           success:(OWSThumbnailSuccess)success
                           failure:(OWSThumbnailFailure)failure
 {
-    NSUInteger thumbnailDimensionPoints = [TSAttachmentStream thumbnailDimensionPointsForThumbnailQuality:quality];
+    CGFloat thumbnailDimensionPoints = [TSAttachmentStream thumbnailDimensionPointsForThumbnailQuality:quality];
     [self thumbnailImageWithThumbnailDimensionPoints:thumbnailDimensionPoints success:success failure:failure];
 }
 
-- (void)thumbnailImageWithThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
+- (void)thumbnailImageWithThumbnailDimensionPoints:(CGFloat)thumbnailDimensionPoints
                                            success:(OWSThumbnailSuccess)success
                                            failure:(OWSThumbnailFailure)failure
 {
@@ -867,7 +867,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
         failure:^{ DispatchMainThreadSafe(^{ failure(); }); }];
 }
 
-- (void)loadedThumbnailWithThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
+- (void)loadedThumbnailWithThumbnailDimensionPoints:(CGFloat)thumbnailDimensionPoints
                                             success:(OWSLoadedThumbnailSuccess)success
                                             failure:(OWSThumbnailFailure)failure
 {

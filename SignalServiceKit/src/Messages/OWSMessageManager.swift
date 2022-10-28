@@ -224,7 +224,7 @@ extension OWSMessageManager {
             let resendResponse = OWSOutgoingResendResponse(
                 address: sourceAddress,
                 deviceId: Int64(sourceDeviceId),
-                failedTimestamp: Int64(errorMessage.timestamp),
+                failedTimestamp: errorMessage.timestamp,
                 didResetSession: didPerformSessionReset,
                 transaction: writeTx
             )
