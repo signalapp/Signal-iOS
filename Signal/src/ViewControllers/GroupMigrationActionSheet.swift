@@ -642,21 +642,10 @@ public extension GroupMigrationActionSheet {
         guard groupThread.isLocalUserFullMember else {
             return nil
         }
-
-        var addableMembers = Set<SignalServiceAddress>()
-        Self.databaseStorage.read { transaction in
-            for address in groupModel.droppedMembers {
-                guard address.uuid != nil else {
-                    continue
-                }
-                addableMembers.insert(address)
-            }
-        }
+        let addableMembers = Set(groupModel.droppedMembers.lazy.filter { $0.uuid != nil })
         guard !addableMembers.isEmpty else {
             return nil
         }
-        let droppedMembersInfo = DroppedMembersInfo(groupThread: groupThread,
-                                                    addableMembers: addableMembers)
-        return droppedMembersInfo
+        return DroppedMembersInfo(groupThread: groupThread, addableMembers: addableMembers)
     }
 }
