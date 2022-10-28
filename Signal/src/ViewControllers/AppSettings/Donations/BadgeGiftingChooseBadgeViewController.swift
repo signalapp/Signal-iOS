@@ -69,10 +69,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
         firstly { () -> Promise<(ProfileBadge, [Currency.Code: FiatMoney])> in
             Logger.info("[Gifting] Fetching badge data...")
             return Promise.when(fulfilled: SubscriptionManager.getGiftBadge(), SubscriptionManager.getGiftBadgePricesByCurrencyCode())
-        }.then { (
-            giftBadge: ProfileBadge,
-            pricesByCurrencyCode: [Currency.Code: FiatMoney]
-        ) -> Promise<(ProfileBadge, [Currency.Code: FiatMoney])> in
+        }.then { (giftBadge: ProfileBadge, pricesByCurrencyCode: [Currency.Code: FiatMoney]) -> Promise<(ProfileBadge, [Currency.Code: FiatMoney])> in
             Logger.info("[Gifting] Populating badge assets...")
             return self.profileManager.badgeStore.populateAssetsOnBadge(giftBadge).map { (giftBadge, pricesByCurrencyCode) }
         }.then { (giftBadge: ProfileBadge, pricesByCurrencyCode: [Currency.Code: FiatMoney]) -> Guarantee<State> in

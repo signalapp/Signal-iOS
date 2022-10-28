@@ -209,7 +209,8 @@ open class OWSViewController: UIViewController {
 
     }
 
-    @objc private func handleKeyboardNotificationBase(_ notification: NSNotification) {
+    @objc
+    private func handleKeyboardNotificationBase(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
         guard !shouldIgnoreKeyboardChanges else {

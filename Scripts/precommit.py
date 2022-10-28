@@ -257,14 +257,11 @@ def lint_swift_files(file_paths: set[str]) -> None:
         lint_output = error.output
     print(lint_output)
 
-    try:
-        lint_output = subprocess.check_output(
-            ["swiftlint", "lint", "--strict", "--use-script-input-files"],
-            env=env,
-            text=True,
-        )
-    except subprocess.CalledProcessError as error:
-        lint_output = error.output
+    lint_output = subprocess.check_output(
+        ["swiftlint", "lint", "--strict", "--use-script-input-files"],
+        env=env,
+        text=True,
+    )
     print(lint_output)
 
 
