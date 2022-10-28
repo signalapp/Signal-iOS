@@ -19,6 +19,7 @@ public class PaymentsQRScanViewController: OWSViewController {
 
     public required init(delegate: PaymentsQRScanDelegate) {
         self.delegate = delegate
+        super.init()
     }
 
     public override func viewDidLoad() {

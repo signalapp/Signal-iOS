@@ -4,7 +4,7 @@
 //
 
 #import "ConversationViewController.h"
-#import <SignalUI/OWSViewController.h>
+#import <SignalUI/OWSViewControllerObjc.h>
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class CLVViewState;
 @class TSThread;
 
-@interface ChatListViewController : OWSViewController
+@interface ChatListViewController : OWSViewControllerObjc
 
 - (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action animated:(BOOL)isAnimated;
 

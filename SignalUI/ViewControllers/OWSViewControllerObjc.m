@@ -3,14 +3,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import "OWSViewController.h"
+#import "OWSViewControllerObjc.h"
 #import "Theme.h"
 #import "UIView+SignalUI.h"
 #import <SignalUI/SignalUI-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSViewController ()
+@interface OWSViewControllerObjc ()
 
 @property (nonatomic, nullable, weak) UIView *bottomLayoutView;
 @property (nonatomic, nullable) NSLayoutConstraint *bottomLayoutConstraint;
@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation OWSViewController
+@implementation OWSViewControllerObjc
 
 - (void)dealloc
 {
@@ -239,9 +239,10 @@ NS_ASSUME_NONNULL_BEGIN
     // Adjust the position of the bottom view to account for the keyboard's
     // intrusion into the view.
     //
-    // On iPhones with no physical home button, when no keyboard is present, we include a buffer at the bottom of the screen so the bottom view
-    // clears the floating "home button". But because the keyboard includes it's own buffer, we subtract the size of bottom "safe area",
-    // else we'd have an unnecessary buffer between the popped keyboard and the input bar.
+    // On iPhones with no physical home button, when no keyboard is present, we include a buffer at the bottom of the
+    // screen so the bottom view clears the floating "home button". But because the keyboard includes it's own buffer,
+    // we subtract the size of bottom "safe area", else we'd have an unnecessary buffer between the popped keyboard and
+    // the input bar.
     CGFloat newInset = MAX(0,
         (self.view.height + self.keyboardAdjustmentOffsetForAutoPinnedToBottomView - self.view.safeAreaInsets.bottom
             - keyboardEndFrameConverted.origin.y));

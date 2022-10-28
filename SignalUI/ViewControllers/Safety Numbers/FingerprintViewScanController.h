@@ -3,13 +3,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <SignalUI/OWSViewController.h>
+#import <SignalUI/OWSViewControllerObjc.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class SignalServiceAddress;
 
-@interface FingerprintViewScanController : OWSViewController
+@interface FingerprintViewScanController : OWSViewControllerObjc
 
 - (void)configureWithRecipientAddress:(SignalServiceAddress *)address NS_SWIFT_NAME(configure(recipientAddress:));
 

@@ -94,6 +94,7 @@ public class QRCodeScanViewController: OWSViewController {
     @objc
     public required init(appearance: Appearance) {
         self.appearance = appearance
+        super.init()
     }
 
     deinit {

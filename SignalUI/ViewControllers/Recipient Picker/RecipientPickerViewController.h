@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <SignalUI/OWSViewController.h>
+#import <SignalUI/OWSViewControllerObjc.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,7 +17,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, RecipientPickerViewControllerGroupsToShow) {
 
 @class PickedRecipient;
 
-@interface RecipientPickerViewController : OWSViewController
+@interface RecipientPickerViewController : OWSViewControllerObjc
 
 @property (nonatomic, weak) id<RecipientPickerDelegate> delegate;
 

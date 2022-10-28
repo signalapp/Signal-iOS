@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSViewController : UIViewController
+@interface OWSViewControllerObjc : UIViewController
 
 @property (nonatomic) BOOL shouldIgnoreKeyboardChanges;
 

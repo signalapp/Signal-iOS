@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <SignalUI/OWSViewController.h>
+#import <SignalUI/OWSViewControllerObjc.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSLinkDeviceViewController : OWSViewController
+@interface OWSLinkDeviceViewController : OWSViewControllerObjc
 
 @property (nonatomic, weak) id<OWSLinkDeviceViewControllerDelegate> delegate;
 

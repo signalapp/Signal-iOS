@@ -23,6 +23,7 @@ class ChangePhoneNumberConfirmViewController: OWSViewController {
         self.changePhoneNumberController = changePhoneNumberController
         self.oldPhoneNumber = oldPhoneNumber
         self.newPhoneNumber = newPhoneNumber
+        super.init()
     }
 
     override func viewDidLoad() {

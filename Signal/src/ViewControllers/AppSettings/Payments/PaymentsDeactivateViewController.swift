@@ -14,6 +14,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
         owsAssertDebug(paymentBalance.amount.isValidAmount(canBeEmpty: false))
 
         self.paymentBalance = paymentBalance
+        super.init()
     }
 
     public override func viewDidLoad() {

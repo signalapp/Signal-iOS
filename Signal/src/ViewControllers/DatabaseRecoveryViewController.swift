@@ -17,6 +17,7 @@ class DatabaseRecoveryViewController: OWSViewController {
     ) {
         self.setupSskEnvironment = setupSskEnvironment
         self.launchApp = launchApp
+        super.init()
     }
 
     // MARK: - State

@@ -17,6 +17,7 @@ class ChangePhoneNumberSplashViewController: OWSViewController {
 
     public init(changePhoneNumberController: ChangePhoneNumberController) {
         self.changePhoneNumberController = changePhoneNumberController
+        super.init()
     }
 
     override func viewDidLoad() {

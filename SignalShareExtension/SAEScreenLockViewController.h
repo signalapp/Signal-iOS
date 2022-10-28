@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <SignalUI/OWSViewController.h>
+#import <SignalUI/OWSViewControllerObjc.h>
 #import <SignalUI/ScreenLockViewController.h>
 
 NS_ASSUME_NONNULL_BEGIN
