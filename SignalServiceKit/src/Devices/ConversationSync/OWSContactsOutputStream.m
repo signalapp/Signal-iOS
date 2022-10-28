@@ -48,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (inboxPosition != nil) {
-        [contactBuilder setInboxPosition:inboxPosition.intValue];
+        [contactBuilder setInboxPosition:inboxPosition.unsignedIntValue];
     }
 
     if (recipientIdentity != nil) {

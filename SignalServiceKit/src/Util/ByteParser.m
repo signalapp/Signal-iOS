@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     uint8_t bytes[length];
     [subdata getBytes:bytes range:NSMakeRange(0, length)];
-    for (int i = 0; i < length; i++) {
+    for (unsigned i = 0; i < length; i++) {
         if (bytes[i] != 0) {
             return NO;
         }

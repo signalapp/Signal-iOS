@@ -107,7 +107,7 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
     ECKeyPair *keyPair = [Curve25519 generateKeyPair];
 
     // Signed prekey ids must be > 0.
-    int preKeyId = 1 + arc4random_uniform(INT32_MAX - 1);
+    int preKeyId = 1 + (int)arc4random_uniform(INT32_MAX - 1);
     ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager shared] identityKeyPairForIdentity:_identity];
     OWSAssert(identityKeyPair);
 
@@ -335,7 +335,7 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
         __block int i = 0;
 
         NSDate *firstPrekeyUpdateFailureDate = [self firstPrekeyUpdateFailureDateWithTransaction:transaction];
-        NSUInteger prekeyUpdateFailureCount = [self prekeyUpdateFailureCountWithTransaction:transaction];
+        NSInteger prekeyUpdateFailureCount = [self prekeyUpdateFailureCountWithTransaction:transaction];
 
         OWSLogInfo(@"%@ SignedPreKeys Report:", tag);
         OWSLogInfo(@"%@   currentId: %@", tag, currentId);

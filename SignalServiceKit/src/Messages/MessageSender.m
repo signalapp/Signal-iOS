@@ -1066,7 +1066,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                 OWSFailDebug(@"Sync device message missing destination device id: %@", deviceMessage);
                 continue;
             }
-            if (destinationDeviceId.intValue != self.tsAccountManager.storedDeviceId) {
+            if (destinationDeviceId.unsignedIntValue != self.tsAccountManager.storedDeviceId) {
                 hasDeviceMessages = YES;
                 break;
             }
