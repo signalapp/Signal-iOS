@@ -29,4 +29,8 @@ class TSContactThreadTest: SSKBaseTestSwift {
 
         XCTAssert(contactThread.hasSafetyNumbers())
     }
+
+    func testCanSendChatMessagesToThread() {
+        XCTAssertTrue(contactThread().canSendChatMessagesToThread())
+    }
 }
