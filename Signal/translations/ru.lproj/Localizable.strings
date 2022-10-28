@@ -1880,7 +1880,7 @@
 "DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
-"DONATION_SCREENS_HEADER_READ_MORE" = "Read more";
+"DONATION_SCREENS_HEADER_READ_MORE" = "Читать далее";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
 "DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
@@ -4028,7 +4028,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "Неверный PIN-код";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New PIN";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Пропустить и создать новый PIN-код";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Если вы не можете вспомнить свой PIN-код, вы можете создать новый. Вы сможете зарегистрироваться и использовать свою учётную запись, но потеряете некоторые сохранённые настройки, например информацию вашего профиля.";
@@ -4178,7 +4178,7 @@
 "OUTAGE_WARNING" = "У Signal возникли технические неполадки. Мы прилагаем все усилия, чтобы как можно быстрее восстановить обслуживание.";
 
 /* Label for action link when the user has an outdated payment client */
-"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Update Now";
+"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Обновиться";
 
 /* Label warning the user that they should update Signal to continue using payments. */
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
@@ -5789,13 +5789,13 @@
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Платежи деактивированы.";
 
 /* Button for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Update Signal";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Обновить Signal";
 
 /* Message for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
 
 /* Title for payments outdated sheet saying cant send. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Can't Send Payment";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Невозможно отправить платёж";
 
 /* Title for payments outdated sheet saying update required. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";

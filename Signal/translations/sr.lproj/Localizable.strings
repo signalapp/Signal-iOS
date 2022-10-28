@@ -1781,7 +1781,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Донирајте";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is funded by your donations. Privacy over profit.";
+"DONATE_MEGAPHONE_BODY" = "Signal се финансира кроз донације. Приватност испред профита.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Не сада";
@@ -1829,16 +1829,16 @@
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Proverite da li je vaš način plaćanja ažuriran u Apple Pay-u. Ako nije, ažurirajte ga i probajte ponovo.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Приватно дописивање. Без огласа, без праћења, без надзора.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal функционише кроз донације, што значи да је ваша приватност у центру свега што радимо. Signal је изграђен за вас, не због ваших података и не за профит.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "If you can, please donate today to keep Signal fun, dependable, and available for everyone.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Ако можете, донирајте данас да бисмо одржали Signal забавним, поузданим и доступним свима.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
-"DONATION_READ_MORE_SCREEN_TITLE" = "Signal is different.";
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal је другачији.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Сума";
@@ -1877,13 +1877,13 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Ако сте поново инсталирали Signal, потврде о претходним донацијама неће бити доступне.";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Приватно дописивање које ви финансирате. Без огласа, без праћења, без компромиса. Донирајте сада да подржите Signal.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
-"DONATION_SCREENS_HEADER_READ_MORE" = "Read more";
+"DONATION_SCREENS_HEADER_READ_MORE" = "Прочитајте више";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
+"DONATION_SCREENS_HEADER_TITLE" = "Приватност испред профита";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "Донирајте Signal-у";
@@ -4028,7 +4028,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "Нетачан PIN";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New PIN";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Прескочи и направи нови PIN";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Ако се не сећате вашег PIN-а, можете направити нови. Регистрација новог налогa је дозвољена, али ћете изгубити нека подешавања као што су личне информације профила.";
@@ -4178,10 +4178,10 @@
 "OUTAGE_WARNING" = "Signal тренутно има техничких потешкоћа. Трудимо се да што пре повратимо услугу.";
 
 /* Label for action link when the user has an outdated payment client */
-"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Update Now";
+"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Ажурирај сада";
 
 /* Label warning the user that they should update Signal to continue using payments. */
-"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Ажурирајте Signal да бисте наставили да користите плаћања. Ваш износ новца на налогу можда није ажуран.";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "Позвали сте %1$@";
@@ -5789,16 +5789,16 @@
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Уплате деактивиране.";
 
 /* Button for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Update Signal";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Ажурирајте Signal";
 
 /* Message for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "Потребно је да ажурирате апликацију да бисте наставили са слањем и примањем новца, као и да бисте видели ажуриран износ новца на налогу.";
 
 /* Title for payments outdated sheet saying cant send. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Can't Send Payment";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Не може да се пошаље уплата";
 
 /* Title for payments outdated sheet saying update required. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Неопходно је ажурирање апликације";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Сви";

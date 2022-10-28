@@ -1880,7 +1880,7 @@
 "DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
-"DONATION_SCREENS_HEADER_READ_MORE" = "Read more";
+"DONATION_SCREENS_HEADER_READ_MORE" = "阅读全文";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
 "DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
@@ -4028,7 +4028,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "PIN 错误";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New PIN";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "跳过并新建 PIN 码";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "如果你忘记了你的 PIN 码，你可以重新创建一个。你可以注册并继续使用你的账户，但你会丢失一些个人设置——如你的个人资料。";
@@ -4178,7 +4178,7 @@
 "OUTAGE_WARNING" = "Signal 遇到了一些技术故障。我们正努力使服务尽快恢复。";
 
 /* Label for action link when the user has an outdated payment client */
-"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Update Now";
+"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "现在升级";
 
 /* Label warning the user that they should update Signal to continue using payments. */
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
@@ -5789,13 +5789,13 @@
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "付款已停用。";
 
 /* Button for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Update Signal";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "升级 Signal";
 
 /* Message for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
 
 /* Title for payments outdated sheet saying cant send. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Can't Send Payment";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "无法发送付款";
 
 /* Title for payments outdated sheet saying update required. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";

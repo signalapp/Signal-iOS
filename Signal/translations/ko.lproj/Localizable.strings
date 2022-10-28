@@ -1880,7 +1880,7 @@
 "DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
-"DONATION_SCREENS_HEADER_READ_MORE" = "Read more";
+"DONATION_SCREENS_HEADER_READ_MORE" = "더 읽기";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
 "DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
@@ -4028,7 +4028,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "올바르지 않은 PIN";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New PIN";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "건너뛴 후 새 PIN 만들기";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "PIN을 잊어버렸다면 새로 만들 수 있습니다. 등록 후 계정을 사용할 수 있으나 프로필 정보 등 일부 저장되어 있던 설정은 삭제됩니다.";
@@ -4178,7 +4178,7 @@
 "OUTAGE_WARNING" = "Signal에 기술적 문제가 발생했습니다. 문제를 최대한 신속하게 처리하겠습니다.";
 
 /* Label for action link when the user has an outdated payment client */
-"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Update Now";
+"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "지금 업데이트하세요.";
 
 /* Label warning the user that they should update Signal to continue using payments. */
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
@@ -5789,13 +5789,13 @@
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "결제가 비활성화되었습니다.";
 
 /* Button for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Update Signal";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "시그널 최신 버전으로 업데이트";
 
 /* Message for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
 
 /* Title for payments outdated sheet saying cant send. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Can't Send Payment";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "송금할 수 없음";
 
 /* Title for payments outdated sheet saying update required. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";
