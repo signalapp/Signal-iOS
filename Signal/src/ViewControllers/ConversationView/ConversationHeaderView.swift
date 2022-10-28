@@ -75,6 +75,13 @@ public class ConversationHeaderView: UIView {
 
         let titleColumns = UIStackView(arrangedSubviews: [titleLabel, titleIconView])
         titleColumns.spacing = 5
+        // There is a strange bug where an initial height of 0
+        // breaks the layout, so set an initial height.
+        titleColumns.autoSetDimension(
+            .height,
+            toSize: titleLabel.font.lineHeight,
+            relation: .greaterThanOrEqual
+        )
 
         subtitleLabel = UILabel()
         subtitleLabel.textColor = Theme.navbarTitleColor
