@@ -938,7 +938,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     return operationQueue;
 }
 
-- (nullable OWSLoadedThumbnail *)loadedThumbnailSyncWithDimensionPoints:(NSUInteger)thumbnailDimensionPoints
+- (nullable OWSLoadedThumbnail *)loadedThumbnailSyncWithDimensionPoints:(CGFloat)thumbnailDimensionPoints
 {
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
@@ -960,7 +960,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (nullable UIImage *)thumbnailImageSyncWithQuality:(AttachmentThumbnailQuality)quality
 {
-    NSUInteger thumbnailDimensionPoints = [TSAttachmentStream thumbnailDimensionPointsForThumbnailQuality:quality];
+    CGFloat thumbnailDimensionPoints = [TSAttachmentStream thumbnailDimensionPointsForThumbnailQuality:quality];
     OWSLoadedThumbnail *_Nullable loadedThumbnail =
         [self loadedThumbnailSyncWithDimensionPoints:thumbnailDimensionPoints];
     if (!loadedThumbnail) {
