@@ -330,64 +330,6 @@ extension CVViewState {
     }
 }
 
-// MARK: - Banner Hiding
-
-public extension CVViewState {
-
-    // We hide banners for an hour.
-    private class BannerHiding {
-        let unfairLock = UnfairLock()
-        var hiddenDateMap = [String: Date]()
-
-        func isHidden(_ threadUniqueId: String) -> Bool {
-            let hiddenDate = unfairLock.withLock {
-                hiddenDateMap[threadUniqueId]
-            }
-            guard let date = hiddenDate else {
-                return false
-            }
-            let hiddenDurationInterval = kHourInterval * 1
-            return abs(date.timeIntervalSinceNow) < hiddenDurationInterval
-        }
-
-        func hide(_ threadUniqueId: String) {
-            unfairLock.withLock {
-                hiddenDateMap[threadUniqueId] = Date()
-            }
-        }
-    }
-
-    private static let isPendingMemberRequestsBannerHiding = BannerHiding()
-    private static let isDroppedGroupMembersBannerHiding = BannerHiding()
-    private static let isMessageRequestNameCollisionBannerHiding = BannerHiding()
-
-    var threadUniqueId: String { threadViewModel.threadRecord.uniqueId }
-
-    var isPendingMemberRequestsBannerHidden: Bool {
-        Self.isPendingMemberRequestsBannerHiding.isHidden(threadUniqueId)
-    }
-
-    func hidePendingMemberRequestsBanner() {
-        Self.isPendingMemberRequestsBannerHiding.hide(threadUniqueId)
-    }
-
-    var isDroppedGroupMembersBannerHidden: Bool {
-        Self.isDroppedGroupMembersBannerHiding.isHidden(threadUniqueId)
-    }
-
-    func hideDroppedGroupMembersBanner() {
-        Self.isDroppedGroupMembersBannerHiding.hide(threadUniqueId)
-    }
-
-    var isMessageRequestNameCollisionBannerHidden: Bool {
-        Self.isMessageRequestNameCollisionBannerHiding.isHidden(threadUniqueId)
-    }
-
-    func hideMessageRequestNameCollisionBanner() {
-        Self.isMessageRequestNameCollisionBannerHiding.hide(threadUniqueId)
-    }
-}
-
 // MARK: -
 
 // Accessors for the non-@objc properties.

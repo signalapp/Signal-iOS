@@ -42,19 +42,29 @@ public extension ConversationViewController {
 
     // MARK: - Pending Join Requests Banner
 
-    func createPendingJoinRequestBanner(viewState: CVViewState,
-                                        count pendingMemberRequestCount: Int,
-                                        viewMemberRequestsBlock: @escaping () -> Void) -> UIView {
-        owsAssertDebug(pendingMemberRequestCount > 0)
+    func createPendingJoinRequestBanner(
+        viewState: CVViewState,
+        pendingMemberRequests: Set<SignalServiceAddress>,
+        viewMemberRequestsBlock: @escaping () -> Void
+    ) -> UIView {
+        owsAssertDebug(!pendingMemberRequests.isEmpty)
 
         let format = NSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d", tableName: "PluralAware",
                                        comment: "Format for banner indicating that there are pending member requests to join the group. Embeds {{ the number of pending member requests }}.")
-        let title = String.localizedStringWithFormat(format, pendingMemberRequestCount)
+        let title = String.localizedStringWithFormat(format, pendingMemberRequests.count)
 
         let dismissButton = OWSButton(title: CommonStrings.dismissButton) { [weak self] in
+            guard let self = self else { return }
             AssertIsOnMainThread()
-            viewState.hidePendingMemberRequestsBanner()
-            self?.ensureBannerState()
+
+            self.databaseStorage.write { transaction in
+                viewState.hidePendingMemberRequestsBanner(
+                    currentPendingMembers: pendingMemberRequests,
+                    transaction: transaction
+                )
+            }
+
+            self.ensureBannerState()
         }
         dismissButton.titleLabel?.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
         let viewRequestsLabel = NSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS",
@@ -80,14 +90,24 @@ public extension ConversationViewController {
     // MARK: - Name collision banners
 
     func createMessageRequestNameCollisionBannerIfNecessary(viewState: CVViewState) -> UIView? {
-        guard !viewState.isMessageRequestNameCollisionBannerHidden else { return nil }
         guard let contactThread = thread as? TSContactThread else { return nil }
 
-        let collisionFinder = ContactThreadNameCollisionFinder(thread: contactThread)
-        let collisionCount = databaseStorage.read { readTx in
-            collisionFinder.findCollisions(transaction: readTx).count
+        let collisionFinder = ContactThreadNameCollisionFinder
+            .makeToCheckMessageRequestNameCollisions(forContactThread: contactThread)
+
+        let collisionCount = databaseStorage.read { transaction -> Int in
+            guard viewState.shouldShowMessageRequestNameCollisionBanner(transaction: transaction) else {
+                // The banner should not be shown, so let's pretend we have no
+                // collisions.
+                return 0
+            }
+
+            return collisionFinder.findCollisions(transaction: transaction).count
         }
-        guard collisionCount > 0 else { return nil }
+
+        guard collisionCount > 0 else {
+            return nil
+        }
 
         let banner = NameCollisionBanner()
         banner.labelText = NSLocalizedString(
@@ -98,8 +118,9 @@ public extension ConversationViewController {
             comment: "Button to allow user to review known name collisions with an incoming message request")
 
         banner.closeAction = { [weak self] in
-            viewState.hideMessageRequestNameCollisionBanner()
-            self?.ensureBannerState()
+            guard let self = self else { return }
+            self.databaseStorage.write { viewState.hideMessageRequestNameCollisionBanner(transaction: $0) }
+            self.ensureBannerState()
         }
 
         banner.reviewAction = { [weak self] in
@@ -212,9 +233,10 @@ fileprivate extension ConversationViewController {
         let title = String.localizedStringWithFormat(titleFormat, droppedMembersInfo.addableMembers.count)
 
         let notNowButton = OWSButton(title: CommonStrings.notNowButton) { [weak self] in
+            guard let self = self else { return }
             AssertIsOnMainThread()
-            viewState.hideDroppedGroupMembersBanner()
-            self?.ensureBannerState()
+            self.databaseStorage.write { viewState.hideDroppedGroupMembersBanner(transaction: $0) }
+            self.ensureBannerState()
         }
         notNowButton.titleLabel?.font = UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold
 
@@ -532,19 +554,35 @@ extension ConversationViewController {
                 banners.append(banner)
             }
 
-            let pendingMemberRequestCount = self.pendingMemberRequestCount
-            if pendingMemberRequestCount > 0,
-               self.canApprovePendingMemberRequests,
-               !viewState.isPendingMemberRequestsBannerHidden {
-                let banner = self.createPendingJoinRequestBanner(viewState: viewState,
-                                                                 count: pendingMemberRequestCount) { [weak self] in
+            let pendingMemberRequests = self.pendingMemberRequests
+            if
+                !pendingMemberRequests.isEmpty,
+                self.canApprovePendingMemberRequests,
+                databaseStorage.read(block: { transaction in
+                    // We will skip this read if the above checks fail, which
+                    // will be most of the time.
+                    viewState.shouldShowPendingMemberRequestsBanner(
+                        currentPendingMembers: pendingMemberRequests,
+                        transaction: transaction
+                    )
+                }) {
+                let banner = self.createPendingJoinRequestBanner(
+                    viewState: viewState,
+                    pendingMemberRequests: pendingMemberRequests
+                ) { [weak self] in
                     self?.showConversationSettingsAndShowMemberRequests()
                 }
+
                 banners.append(banner)
             }
 
-            if let banner = createDroppedGroupMembersBannerIfNecessary(viewState: viewState),
-               !viewState.isDroppedGroupMembersBannerHidden {
+            if
+                let banner = createDroppedGroupMembersBannerIfNecessary(viewState: viewState),
+                databaseStorage.read(block: {
+                    // We will skip this read if the above check fails, which
+                    // will be most of the time.
+                    viewState.shouldShowDroppedGroupMembersBanner(transaction: $0)
+                }) {
                 banners.append(banner)
             }
         }
@@ -579,11 +617,11 @@ extension ConversationViewController {
         }
     }
 
-    private var pendingMemberRequestCount: Int {
+    private var pendingMemberRequests: Set<SignalServiceAddress> {
         if let groupThread = thread as? TSGroupThread {
-            return groupThread.groupMembership.requestingMembers.count
+            return groupThread.groupMembership.requestingMembers
         } else {
-            return 0
+            return []
         }
     }
 
