@@ -70,7 +70,7 @@ PODS:
     - SQLCipher/common
   - SSZipArchive (2.1.4)
   - Starscream (3.1.1)
-  - SwiftProtobuf (1.15.0)
+  - SwiftProtobuf (1.20.2)
   - YYImage (1.0.4):
     - YYImage/Core (= 1.0.4)
   - YYImage/Core (1.0.4)
@@ -232,7 +232,7 @@ SPEC CHECKSUMS:
   SQLCipher: 712e8416685e8e575b9b0706ffee71678b2fdcf8
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Starscream: 4bb2f9942274833f7b4d296a55504dcfc7edb7b0
-  SwiftProtobuf: 3320217e9d8fb75f36b40282e78c482640fd75dd
+  SwiftProtobuf: 9f458aaa7844a2fc0b910053e66578bc4e2da9c1
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
 PODFILE CHECKSUM: 6bbf58906bd535896e1c76b388c54055aa01ba6e
