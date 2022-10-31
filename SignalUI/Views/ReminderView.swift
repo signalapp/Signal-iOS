@@ -7,9 +7,11 @@ import Foundation
 
 open class ReminderView: UIView {
 
-    let label = UILabel()
+    private let label = UILabel()
 
-    let actionLabel = UILabel()
+    private let actionLabel = UILabel()
+
+    private var disclosureImageView: UIImageView?
 
     public typealias Action = () -> Void
 
@@ -63,6 +65,8 @@ open class ReminderView: UIView {
         self.actionTitle = actionTitle
 
         setupSubviews()
+        applyTheme()
+        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
     }
 
     @objc
@@ -80,20 +84,7 @@ open class ReminderView: UIView {
         return ReminderView(mode: .explanation, text: text, tapAction: nil)
     }
 
-    func setupSubviews() {
-        let textColor: UIColor
-        let iconColor: UIColor
-        switch mode {
-        case .nag:
-            self.backgroundColor = UIColor.ows_reminderYellow
-            textColor = UIColor.ows_gray90
-            iconColor = UIColor.ows_gray60
-        case .explanation:
-            // TODO: Theme, review with design.
-            self.backgroundColor = Theme.washColor
-            textColor = Theme.primaryTextColor
-            iconColor = Theme.secondaryTextAndIconColor
-        }
+    private func setupSubviews() {
         self.clipsToBounds = true
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(gestureRecognizer:)))
@@ -118,7 +109,6 @@ open class ReminderView: UIView {
         // Label
         label.font = UIFont.ows_dynamicTypeSubheadline
         container.addArrangedSubview(label)
-        label.textColor = textColor
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
 
@@ -132,19 +122,38 @@ open class ReminderView: UIView {
             }
             let iconView = UIImageView(image: iconImage.withRenderingMode(.alwaysTemplate))
             iconView.contentMode = .scaleAspectFit
-            iconView.tintColor = iconColor
             iconView.autoSetDimension(.width, toSize: 13)
             container.addArrangedSubview(iconView)
+            disclosureImageView = iconView
         case (.some, .some):
             // Show the disclosure indicator if this nag has a tap action and an action title
             actionLabel.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
             container.addArrangedSubview(actionLabel)
-            actionLabel.textColor = textColor
             actionLabel.numberOfLines = 1
             actionLabel.textAlignment = .right
         default:
             {}()
         }
+    }
+
+    @objc
+    private func applyTheme() {
+        let textColor: UIColor
+        let iconColor: UIColor
+        switch mode {
+        case .nag:
+            self.backgroundColor = UIColor.ows_reminderYellow
+            textColor = UIColor.ows_gray90
+            iconColor = UIColor.ows_gray60
+        case .explanation:
+            // TODO: Theme, review with design.
+            self.backgroundColor = Theme.washColor
+            textColor = Theme.primaryTextColor
+            iconColor = Theme.secondaryTextAndIconColor
+        }
+        label.textColor = textColor
+        actionLabel.textColor = textColor
+        disclosureImageView?.tintColor = iconColor
     }
 
     @objc
