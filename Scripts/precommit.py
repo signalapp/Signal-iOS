@@ -257,12 +257,17 @@ def lint_swift_files(file_paths: set[str]) -> None:
         lint_output = error.output
     print(lint_output)
 
-    lint_output = subprocess.check_output(
-        ["swiftlint", "lint", "--strict", "--use-script-input-files"],
-        env=env,
-        text=True,
-    )
-    print(lint_output)
+    try:
+        lint_output = subprocess.check_output(
+            ["swiftlint", "lint", "--strict", "--use-script-input-files"],
+            env=env,
+            text=True,
+        )
+        print(lint_output)
+    except subprocess.CalledProcessError as error:
+        print(error.output)
+        print("Please fix the above lint errors before committing your changes")
+        sys.exit(1)
 
 
 def check_diff_for_keywords():
