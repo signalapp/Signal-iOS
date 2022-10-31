@@ -28,11 +28,6 @@ public class BlurHash: NSObject {
         return blurHash.unicodeScalars.allSatisfy { validCharacterSet.contains($0) }
     }
 
-    public class func isDarkBlurHash(_ blurHash: String?) -> Bool? {
-        guard isValidBlurHash(blurHash) else { return nil }
-        return blurHash?.isDarkBlurHash
-    }
-
     @objc(ensureBlurHashForAttachmentStream:)
     public class func ensureBlurHashObjc(for attachmentStream: TSAttachmentStream) -> AnyPromise {
         return AnyPromise(ensureBlurHash(for: attachmentStream))
