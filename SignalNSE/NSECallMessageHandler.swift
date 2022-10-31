@@ -51,9 +51,33 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
             return .ignore
         }
 
-        // TODO: check opaque messages as well if group ringing is enabled.
+        if let opaqueMessage = callMessage.opaque {
+            func validateGroupRing(groupId: Data, ringId: Int64) -> Bool {
+                databaseStorage.read { transaction in
+                    guard let sender = envelope.sourceAddress else {
+                        owsFailDebug("shouldn't have gotten here with no sender")
+                        return false
+                    }
+                    return GroupsV2MessageProcessor.discardMode(forMessageFrom: sender,
+                                                                groupId: groupId,
+                                                                transaction: transaction) == .doNotDiscard
+                }
+            }
 
-        NSELogger.uncorrelated.info("Ignoring call message. Not an offer message.")
+            if opaqueMessage.urgency == .handleImmediately,
+               let opaqueData = opaqueMessage.data,
+               RemoteConfig.groupRings,
+               isValidOpaqueRing(opaqueCallMessage: opaqueData,
+                                 messageAgeSec: messageAgeForRingRtc,
+                                 validateGroupRing: validateGroupRing) {
+                return .handoff
+            }
+
+            NSELogger.uncorrelated.info("Ignoring opaque message; not a valid ring according to RingRTC.")
+            return .ignore
+        }
+
+        NSELogger.uncorrelated.info("Ignoring call message. Not an offer or urgent opaque message.")
         return .ignore
     }
 
