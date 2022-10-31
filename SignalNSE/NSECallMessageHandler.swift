@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalRingRTC
 import SignalServiceKit
 import SignalMessaging
 import CallKit
@@ -26,23 +27,34 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         callMessage: SSKProtoCallMessage,
         serverDeliveryTimestamp: UInt64
     ) -> OWSCallMessageAction {
-        // We can skip call messages that are significantly old. They won't trigger a ring anyway
+        let bufferSecondsForMainAppToAnswerRing: UInt64 = 10
+
         let serverReceivedTimestamp = envelope.serverTimestamp > 0 ? envelope.serverTimestamp : envelope.timestamp
         let approxMessageAge = (serverDeliveryTimestamp - serverReceivedTimestamp)
-        guard approxMessageAge < 5 * kMinuteInMs else {
-            NSELogger.uncorrelated.info(
-                "Discarding very old call message \(envelope.timestamp). No longer relevant. Server delivery: \(serverDeliveryTimestamp). Server received: \(serverReceivedTimestamp)"
-            )
+        let messageAgeForRingRtc = approxMessageAge / kSecondInMs + bufferSecondsForMainAppToAnswerRing
+
+        if let offer = callMessage.offer {
+            let callType: CallMediaType
+            switch offer.type ?? .offerAudioCall {
+            case .offerAudioCall: callType = .audioCall
+            case .offerVideoCall: callType = .videoCall
+            }
+
+            if let offerData = offer.opaque,
+               isValidOfferMessage(opaque: offerData,
+                                   messageAgeSec: messageAgeForRingRtc,
+                                   callMediaType: callType) {
+                return .handoff
+            }
+
+            NSELogger.uncorrelated.info("Ignoring offer message; invalid according to RingRTC (likely expired).")
             return .ignore
         }
 
-        // Only offer messages (TODO: and urgent opaque messages) will trigger a ring.
-        if callMessage.offer != nil {
-            return .handoff
-        } else {
-            NSELogger.uncorrelated.info("Ignoring call message. Not an offer.")
-            return .ignore
-        }
+        // TODO: check opaque messages as well if group ringing is enabled.
+
+        NSELogger.uncorrelated.info("Ignoring call message. Not an offer message.")
+        return .ignore
     }
 
     public func externallyHandleCallMessage(
