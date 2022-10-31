@@ -406,6 +406,8 @@ extension ExperienceUpgradeManifest {
         }
     }
 
+    // MARK: Local megaphone preconditions
+
     private static func checkPreconditionsForIntroducingPins(transaction: SDSAnyReadTransaction) -> Bool {
         // The PIN setup flow requires an internet connection and you to not already have a PIN
         if
@@ -443,6 +445,16 @@ extension ExperienceUpgradeManifest {
             return false
         }
     }
+
+    private static func checkPreconditionsForPinReminder(transaction: SDSAnyReadTransaction) -> Bool {
+        return OWS2FAManager.shared.isDueForV2Reminder(transaction: transaction)
+    }
+
+    private static func checkPreconditionsForContactsPermissionReminder() -> Bool {
+        return CNContactStore.authorizationStatus(for: CNEntityType.contacts) != .authorized
+    }
+
+    // MARK: Remote megaphone preconditions
 
     private static func checkPreconditionsForRemoteMegaphone(_ megaphone: RemoteMegaphoneModel) -> Bool {
         guard
@@ -502,13 +514,5 @@ extension ExperienceUpgradeManifest {
         }
 
         return true
-    }
-
-    private static func checkPreconditionsForPinReminder(transaction: SDSAnyReadTransaction) -> Bool {
-        return OWS2FAManager.shared.isDueForV2Reminder(transaction: transaction)
-    }
-
-    private static func checkPreconditionsForContactsPermissionReminder() -> Bool {
-        return CNContactStore.authorizationStatus(for: CNEntityType.contacts) != .authorized
     }
 }

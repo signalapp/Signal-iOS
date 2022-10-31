@@ -31,16 +31,6 @@ public class ExperienceUpgradeFinder: NSObject {
         experienceUpgrade.markAsViewed(transaction: transaction.asAnyWrite)
     }
 
-    public class func markAsSnoozed(
-        experienceUpgradeManifest: ExperienceUpgradeManifest,
-        transaction: GRDBWriteTransaction
-    ) {
-        markAsSnoozed(
-            experienceUpgrade: ExperienceUpgrade.makeNew(withManifest: experienceUpgradeManifest),
-            transaction: transaction
-        )
-    }
-
     public class func markAsSnoozed(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
         Logger.info("marking experience upgrade as snoozed \(experienceUpgrade.uniqueId)")
 

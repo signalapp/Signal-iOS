@@ -93,15 +93,6 @@ class ExperienceUpgradeManager: NSObject {
         }
     }
 
-    /// Snoozes the given upgrade, and dismisses it if currently presented.
-    static func snoozeExperienceUpgrade(_ manifest: ExperienceUpgradeManifest, transaction: GRDBWriteTransaction) {
-        ExperienceUpgradeFinder.markAsSnoozed(experienceUpgradeManifest: manifest, transaction: transaction)
-
-        transaction.addAsyncCompletion(queue: .main) {
-            dismissLastPresented(ifMatching: manifest)
-        }
-    }
-
     private static func dismissLastPresented(ifMatching manifest: ExperienceUpgradeManifest? = nil) {
         guard let lastPresented = lastPresented else {
             return
