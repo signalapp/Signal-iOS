@@ -37,8 +37,11 @@ class StoryPageViewController: UIPageViewController {
 
     private let audioActivity = AudioActivity(audioDescription: "StoriesViewer", behavior: .playbackMixWithOthers)
 
-    private var isDraggingScrollView: Bool {
-        return viewIfLoaded?.subviews.compactMap({ $0 as? UIScrollView }).first?.isDragging ?? false
+    private var isUserDraggingScrollView: Bool {
+        guard let scrollView = viewIfLoaded?.subviews.compactMap({ $0 as? UIScrollView }).first else {
+            return false
+        }
+        return scrollView.isDragging || scrollView.isDecelerating
     }
 
     private var isTransitioningByScroll = false
@@ -162,7 +165,7 @@ class StoryPageViewController: UIPageViewController {
         if
             pendingTransitionViewControllers.isEmpty.negated,
             isTransitioningByScroll,
-            !isDraggingScrollView
+            !isUserDraggingScrollView
         {
             didFinishTransitioning(completed: false)
             return
