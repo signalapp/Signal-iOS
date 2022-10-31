@@ -1781,7 +1781,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Tabhair airgead";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is funded by your donations. Privacy over profit.";
+"DONATE_MEGAPHONE_BODY" = "Do chuid tabhartas a mhaoiníonn Signal. Príobháideachas chun tosaigh ar bhrabús.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Ná bac leis anois";
@@ -1829,16 +1829,16 @@
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Teachtaireachtaí príobháideacha. Gan aon fhógraí, gan aon rianairí, gan aon fhaireachas.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Tacaíonn síntiúis le Signal, rud a chiallaíonn go mbíonn do phríobháideachas i gcroílár gach a ndéanaimid. Tógadh Signal duitse; ní do do shonraí agus ní ar mhaithe le brabús.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "If you can, please donate today to keep Signal fun, dependable, and available for everyone.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Más féidir leat, bronn airgead ar Signal inniu ionas go leanfaidh sé de bheith spraíúil, iontaofa agus inrochtana ag cách.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
-"DONATION_READ_MORE_SCREEN_TITLE" = "Signal is different.";
+"DONATION_READ_MORE_SCREEN_TITLE" = "Tá Signal difriúil.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Amount";
@@ -1877,13 +1877,13 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "If you have reinstalled Signal, receipts from previous donations will not be available.";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Teachtaireachtaí príobháideacha, maoinithe agatsa. Gan aon fhógraí, gan aon rianairí, gan aon chomhghéilleadh. Bronn airgead ar Signal anois chun tacú leis.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "Léigh a thuilleadh";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
+"DONATION_SCREENS_HEADER_TITLE" = "Príobháideachas chun tosaigh ar bhrabús";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "Bronn airgead ar Signal";
@@ -4181,7 +4181,7 @@
 "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Nuashonraigh anois é";
 
 /* Label warning the user that they should update Signal to continue using payments. */
-"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Nuashonraigh Signal chun leanúint d'íocaíochtaí a úsáid. Seans nach bhfuil d’iarmhéid cothrom le dáta.";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "Chuir tú glao ar %1$@";
@@ -5792,13 +5792,13 @@
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Nuashonraigh Signal";
 
 /* Message for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "Tá nuashonrú ag teastáil chun leanúint ar aghaidh ag seoladh agus ag fáil íocaíochtaí, agus chun féachaint ar d'iarmhéid íocaíochta atá cothrom le dáta.";
 
 /* Title for payments outdated sheet saying cant send. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Ní féidir an íocaíocht a sheoladh";
 
 /* Title for payments outdated sheet saying update required. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Nuashonrú De Dhíth";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Uile";

@@ -1781,7 +1781,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Donar";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is funded by your donations. Privacy over profit.";
+"DONATE_MEGAPHONE_BODY" = "Signal se mantiene con tus donaciones. Privacidad por encima de los beneficios.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Ahora no";
@@ -1829,16 +1829,16 @@
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Comprueba que tu método de pago está actualizado en Apple Pay. Si no es el caso, actualízalo e inténtalo de nuevo.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Mensajería privada. Sin anuncios, ni rastreos, ni vigilancia.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal se mantiene con tus donaciones, con lo que tu privacidad es nuestra máxima prioridad. Signal está diseñada para ti; no para tus datos o para obtener beneficios.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "If you can, please donate today to keep Signal fun, dependable, and available for everyone.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Si puedes, dona hoy para que Signal siga siendo un lugar divertido, fiable y disponible para todos.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
-"DONATION_READ_MORE_SCREEN_TITLE" = "Signal is different.";
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal es diferente.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Cantidad";
@@ -1877,13 +1877,13 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Si has vuelto a instalar Signal, los justificantes de donaciones pasadas no están disponibles.";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Mensajería privada, financiada por ti. Sin anuncios, ni rastreos, ni compromiso. Haz una donación ya para ayudar a Signal.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "Leer más";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
+"DONATION_SCREENS_HEADER_TITLE" = "Privacidad por encima de los beneficios";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "Donar a Signal";
@@ -4181,7 +4181,7 @@
 "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Actualizar ahora";
 
 /* Label warning the user that they should update Signal to continue using payments. */
-"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Actualiza Signal para continuar usando pagos. Es posible que tu saldo no esté actualizado.";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "Has llamado a %1$@";
@@ -5792,13 +5792,13 @@
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Actualizar Signal";
 
 /* Message for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "Se requiere una actualización para seguir enviando y recibiendo pagos, y para ver tu saldo de pago actualizado.";
 
 /* Title for payments outdated sheet saying cant send. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Imposible enviar el pago";
 
 /* Title for payments outdated sheet saying update required. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Actualización requerida";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Todos";

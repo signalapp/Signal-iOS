@@ -1,3 +1,5 @@
-Stories are now in Signal! Share disappearing text, images, and video updates with select friends or groups that automatically disappear after 24 hours.
+Signal 现在推出动态功能啦！
 
-For everyone who loves sharing stories, here’s a way to do it privately and without seeing any ads. If you don’t want to see or share stories, you can opt out of it all in your Settings.
+您现在可以给选定的好友或群组分享限时文本、图片和视频动态。这些动态将会在 24 小时后自动消失。
+
+喜欢分享动态的用户可以进行私密分享，并且不会看到任何广告。如果您不想浏览其他人的动态，也不想分享动态，您可以在设置中选择退出此功能。

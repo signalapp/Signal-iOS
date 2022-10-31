@@ -1781,7 +1781,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Doniraj";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is funded by your donations. Privacy over profit.";
+"DONATE_MEGAPHONE_BODY" = "Signal financiraju vaše donacije. Privatnost prije profita.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Ne sada";
@@ -1829,16 +1829,16 @@
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Provjerite je li vaš način plaćanja u Apple Payu ažuriran. U slučaju da nije, ažurirajte ga i pokušajte ponovno.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Privatna razmjena poruka. Bez oglasa, bez pratitelja i bez nadzora.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal podržavaju donacije, što znači da je vaša privatnost u središtu svega što radimo. Signal je stvoren za vas; ne za vaše podatke niti radi zarade.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "If you can, please donate today to keep Signal fun, dependable, and available for everyone.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Ako možete, donirajte već danas kako bi Signal ostao zabavan, pouzdan i dostupan svima.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
-"DONATION_READ_MORE_SCREEN_TITLE" = "Signal is different.";
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal nije kao ostali.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Količina";
@@ -1877,13 +1877,13 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Ako ste ponovno instalirali Signal, potvrde o prijašnjim donacijama neće biti dostupne.";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Privatna razmjena poruka koju financirate vi. Bez oglasa, bez praćenja, bez kompromisa. Donirajte odmah i podržite Signal.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "Pročitaj više";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
+"DONATION_SCREENS_HEADER_TITLE" = "Privatnost prije profita";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "Donirajte Signalu";
@@ -4181,7 +4181,7 @@
 "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Ažuriraj sada";
 
 /* Label warning the user that they should update Signal to continue using payments. */
-"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Ažurirajte Signal da biste nastavili koristiti uslugu plaćanja. Vaše stanje računa možda nije ažurno.";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "Vi ste zvali %1$@";
@@ -5792,13 +5792,13 @@
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Ažuriraj Signal";
 
 /* Message for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "Za nastavak slanja i primanja uplata te za pregled vašeg trenutnog stanja računa potrebno je ažurirati aplikaciju.";
 
 /* Title for payments outdated sheet saying cant send. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Neuspješno slanje uplate";
 
 /* Title for payments outdated sheet saying update required. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Potrebno je ažuriranje";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Sve";

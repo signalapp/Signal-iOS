@@ -1781,7 +1781,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Sponzorujte";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is funded by your donations. Privacy over profit.";
+"DONATE_MEGAPHONE_BODY" = "Signal je financován z vašich darů. Soukromí má přednost před ziskem.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Nyní ne";
@@ -1829,16 +1829,16 @@
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Zkontrolujte, zda je vaše platební metoda v Apple Pay aktuální. Pokud není, aktualizujte ji a zkuste to znovu.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Soukromé zasílání zpráv. Žádné reklamy, žádné sledování, žádný dohled.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal je podporován finančními příspěvky, což znamená, že vaše soukromí je středobodem všeho, co děláme. Signal je vytvořený pro vás, ne pro vaše údaje a ne pro zisk.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "If you can, please donate today to keep Signal fun, dependable, and available for everyone.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Pokud můžete, přispějte ještě dnes, aby byl Signal zábavný, spolehlivý a dostupný pro všechny.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
-"DONATION_READ_MORE_SCREEN_TITLE" = "Signal is different.";
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal je jiný.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Částka";
@@ -1877,13 +1877,13 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Pokud jste znovu nainstalovali aplikaci Signal, účtenky za předchozí dary nebudou k dispozici.";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Soukromé zasílání zpráv financované vámi. Žádné reklamy, žádné sledování, žádné kompromisy. Přispějte nyní na podporu služby Signal.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "Číst dále";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
+"DONATION_SCREENS_HEADER_TITLE" = "Soukromí má přednost před ziskem";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "Podpořte Signal finančně";
@@ -4181,7 +4181,7 @@
 "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Aktualizovat nyní";
 
 /* Label warning the user that they should update Signal to continue using payments. */
-"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Aktualizací aplikace Signal můžete pokračovat v používání plateb. Váš zůstatek nemusí být aktuální.";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "Volali jste %1$@";
@@ -5792,13 +5792,13 @@
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Aktualizovat Signal";
 
 /* Message for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "Aktualizace je nutná pro další odesílání a přijímání plateb a pro zobrazení aktuálního zůstatku.";
 
 /* Title for payments outdated sheet saying cant send. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Nelze odeslat platbu";
 
 /* Title for payments outdated sheet saying update required. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Je nutná aktualizace";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Všichni";

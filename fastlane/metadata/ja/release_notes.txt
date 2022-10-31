@@ -1,3 +1,5 @@
-Stories are now in Signal! Share disappearing text, images, and video updates with select friends or groups that automatically disappear after 24 hours.
+Signalにストーリーが登場しました！！
 
-For everyone who loves sharing stories, here’s a way to do it privately and without seeing any ads. If you don’t want to see or share stories, you can opt out of it all in your Settings.
+24時間後に自動的に消えるテキスト、画像、動画などのアップデートを、選択した友達やグループと共有できます。
+
+ストーリーの共有が大好きな皆様のために、広告なしにプライベートで共有する方法をご紹介します。ストーリーの表示や共有をしたくない場合は、そのように設定も可能です。

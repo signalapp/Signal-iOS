@@ -1,3 +1,3 @@
-Stories are now in Signal! Share disappearing text, images, and video updates with select friends or groups that automatically disappear after 24 hours.
+Тепер у Signal є сторіз! Діліться оновленнями з текстом, зображеннями і відео з обраними друзями чи групами. Сторіз зникатимуть автоматично через 24 години.
 
-For everyone who loves sharing stories, here’s a way to do it privately and without seeing any ads. If you don’t want to see or share stories, you can opt out of it all in your Settings.
+Для всіх, хто полюбляє ділитися сторіз: тепер ви можете поширювати їх конфіденційно і без реклами. А якщо ви не хочете ділитися сторіз і переглядати їх, цю функцію можна просто вимкнути в налаштуваннях.

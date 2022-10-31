@@ -1781,7 +1781,7 @@
 "DONATE_MEGAPHONE_ACTION" = "บริจาค";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is funded by your donations. Privacy over profit.";
+"DONATE_MEGAPHONE_BODY" = "Signal ได้รับทุนสนับสนุนจากการบริจาคของคุณ เพราะความเป็นส่วนตัวสำคัญกว่าผลกำไรใดๆ";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "ไม่ใช่ตอนนี้";
@@ -1829,16 +1829,16 @@
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "ตรวจสอบวิธีการชำระเงินใน Apple Pay ว่ามีการอัปเดตแล้วหรือไม่ ถ้ายัง ให้อัปเดตแล้วลองอีกครั้ง";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "ส่งข้อความอย่างเป็นส่วนตัว ไม่มีโฆษณา ไม่มีการติดตาม ไม่มีการเก็บข้อมูล";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal ได้รับการสนับสนุนจากการบริจาค ความเป็นส่วนตัวของคุณจึงสำคัญที่สุดสำหรับเรา Signal ถูกสร้างมาเพื่อคุณ ไม่ใช่เพื่อข้อมูลของคุณหรือผลกำไรใดๆ";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "If you can, please donate today to keep Signal fun, dependable, and available for everyone.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "ร่วมบริจาคเพื่อสนับสนุนให้ Signal เป็นแอปที่ใช้งานสะดวก สนุก เชื่อถือได้ และเข้าถึงทุกคน";
 
 /* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
-"DONATION_READ_MORE_SCREEN_TITLE" = "Signal is different.";
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal นั้นแตกต่าง";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "ยอดเงิน";
@@ -1877,13 +1877,13 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "ถ้าคุณติดตั้ง Signal ใหม่ ใบเสร็จจากการบริจาคก่อนหน้านี้จะไม่สามารถใช้งานได้";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "ส่งข้อความอย่างเป็นส่วนตัว เป็นไปได้ด้วยทุนสนับสนุนจากคุณ ไม่มีโฆษณา ไม่มีการติดตาม ไม่มีทางเปลี่ยนแปลง บริจาควันนี้เพื่อร่วมสนับสนุน Signal";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "อ่านเพิ่มเติม";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
+"DONATION_SCREENS_HEADER_TITLE" = "เพราะความเป็นส่วนตัวสำคัญกว่าผลกำไรใดๆ";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "บริจาคให้ Signal";
@@ -4181,7 +4181,7 @@
 "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "ปรับปรุงเดี๋ยวนี้";
 
 /* Label warning the user that they should update Signal to continue using payments. */
-"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "อัปเดต Signal เพื่อใช้งานการชำระเงินต่อ ยอดเงินของคุณอาจยังไม่ได้รับการอัปเดต";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "คุณได้โทรหา %1$@";
@@ -5792,13 +5792,13 @@
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "ปรับปรุง Signal";
 
 /* Message for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "จำเป็นต้องอัปเดตจึงจะส่งและรับเงินต่อได้ รวมถึงเพื่อดูยอดคงเหลือที่อัปเดตแล้วด้วย";
 
 /* Title for payments outdated sheet saying cant send. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "ไม่สามารถส่งการชำระเงินได้";
 
 /* Title for payments outdated sheet saying update required. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "จำเป็นต้องอัปเดต";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "ทั้งหมด";

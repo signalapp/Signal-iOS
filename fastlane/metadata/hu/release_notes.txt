@@ -1,3 +1,3 @@
-Stories are now in Signal! Share disappearing text, images, and video updates with select friends or groups that automatically disappear after 24 hours.
+Megérkeztek a Történetek a Signalba! Ossz meg szövegeket, képeket és videókat az általad kiválasztott ismerőseiddel vagy csoportjaiddal, amelyek aztán 24 óra elteltével automatikusan eltűnnek.
 
-For everyone who loves sharing stories, here’s a way to do it privately and without seeing any ads. If you don’t want to see or share stories, you can opt out of it all in your Settings.
+Mindenki számára, aki szeret Történeteket megosztani, itt a módja annak, hogy privátban, hirdetések nélkül tegye meg. Ha nem szeretnél Történeteket látni vagy megosztani, a Beállításokban kikapcsolhatod a funkciót.

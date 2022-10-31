@@ -1,3 +1,3 @@
-Stories are now in Signal! Share disappearing text, images, and video updates with select friends or groups that automatically disappear after 24 hours.
+Signal 現已推出限時動態功能！與選定的好友或群組分享自動銷毀訊息、圖像和影片更新，這些內容會在 24 小時後自動消失。
 
-For everyone who loves sharing stories, here’s a way to do it privately and without seeing any ads. If you don’t want to see or share stories, you can opt out of it all in your Settings.
+喜歡分享限時動態的你，可以透過這種方法私下分享，而無需看到任何廣告。如果你不想瀏覽或分享限時動態，你可以在「設定」中關閉所有相關功能。

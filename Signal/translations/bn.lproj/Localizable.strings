@@ -1781,7 +1781,7 @@
 "DONATE_MEGAPHONE_ACTION" = "অনুদান";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is funded by your donations. Privacy over profit.";
+"DONATE_MEGAPHONE_BODY" = "আপনার অনুদানের মাধ্যমেই Signal-এর অর্থায়ন হয়। ব্যবসায়িক লাভের চেয়ে গোপনীয়তার প্রাধান্য বেশি।";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "এখন নয়";
@@ -1829,16 +1829,16 @@
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Apple Pay-তে আপনার পেমেন্ট পদ্ধতি আপ টু ডেট আছে কিনা দেখুন। যদি না থাকে তবে আপডেট করে আবার চেষ্টা করুন।";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "ব্যক্তিগত ম্যাসেজিং। নেই কোনো বিজ্ঞাপন, নেই কোনো ট্র্যাকার, নেই কোনো নজরদারি।";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal অনুদান দ্বারা সমর্থিত, যার অর্থ হলো আপনার গোপনীয়তা আমাদের সকল কাজের গুরুত্বের কেন্দ্রস্থলে থাকে। Signal আপনার জন্য তৈরি; আপনার ডেটা কিংবা ব্যবসায়িক লাভের উদ্দেশ্যে নয়।";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "If you can, please donate today to keep Signal fun, dependable, and available for everyone.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "আপনি যদি পারেন, তবে Signal-কে আনন্দময়, নির্ভরযোগ্য এবং সবার জন্য নিবেদিত করে রাখতে অনুগ্রহ করে আজই দান করুন।";
 
 /* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
-"DONATION_READ_MORE_SCREEN_TITLE" = "Signal is different.";
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal ব্যতিক্রমধর্মী।";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "পরিমাণ";
@@ -1877,13 +1877,13 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "আপনি যদি Signal পুনরায় ইনস্টল করে থাকেন, তবে পূর্ববর্তী ডোনেশনের রিসিপ্ট পাওয়া যাবে না।";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "ব্যক্তিগত ম্যাসেজিং, আপনার দ্বারাই অর্থায়িত। নেই কোনো বিজ্ঞাপন, নেই কোনো ট্র্যাকিং, নেই কোনো আপোষ। Signal-কে সমর্থন করতে এখনই অনুদান দিন।";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "আরও পড়ুন";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
+"DONATION_SCREENS_HEADER_TITLE" = "ব্যবসায়িক লাভের চেয়ে গোপনীয়তার প্রাধান্য বেশি";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "Signal-এ ডোনেট করুন";
@@ -4181,7 +4181,7 @@
 "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "আপডেট করুন";
 
 /* Label warning the user that they should update Signal to continue using payments. */
-"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "পেমেন্ট ব্যবহার চালিয়ে যেতে Signal আপডেট করুন। আপনার ব্যালেন্স আপ-টু-ডেট নাও থাকতে পারে।";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "আপনি %1$@-কে কল করেছেন";
@@ -5792,13 +5792,13 @@
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Signal আপডেট করুন";
 
 /* Message for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "পেমেন্ট পাঠানো এবং সংগ্রহ করা চালিয়ে যেতে এবং আপনার আপ-টু-ডেট পেমেন্ট ব্যালেন্স দেখতে আপডেট করা প্রয়োজন।";
 
 /* Title for payments outdated sheet saying cant send. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "পেমেন্ট পাঠানো যাবে না";
 
 /* Title for payments outdated sheet saying update required. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "আপডেট করা প্রয়োজন";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "সমস্ত";

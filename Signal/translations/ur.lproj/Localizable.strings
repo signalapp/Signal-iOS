@@ -1781,7 +1781,7 @@
 "DONATE_MEGAPHONE_ACTION" = "عطیہ کریں";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is funded by your donations. Privacy over profit.";
+"DONATE_MEGAPHONE_BODY" = "Signal کو آپ کے عطیات سے فنڈ کیا جاتا ہے۔ پرائیویسی کی ترجیح منافع سے زیادہ ہے۔";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "ابھی نہیں";
@@ -1829,16 +1829,16 @@
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "یہ دیکھنے کے لیے چیک کریں کہ آیا آپ کا ادائیگی کا طریقہ Apple Pay میں اپ ٹو ڈیٹ ہے۔ اگر ایسا نہیں ہے، تو اسے اپ ڈیٹ کریں اور دوبارہ کوشش کریں۔";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "پرائیوٹ میسجنگ۔ کوئی اشتہارات نہیں، کوئی ٹریکرز نہیں، کوئی نگرانی نہیں۔";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal کو عطیات سپورٹ کرتے ہیں، مطلب یہ کہ آپ کی پرائیویسی ہر اس کام کا محور ہے جو ہم انجام دیتے ہیں۔ Signal کو آپ کے ڈیٹا اور منافع کے لیے نہیں؛ بلکہ آپ کے لیے بنایا گیا ہے۔";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "If you can, please donate today to keep Signal fun, dependable, and available for everyone.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "اگر آپ کر سکیں، تو براہ کرم Signal کو پُرتفریح، قابل اعتماد، اور ہر کسی کے لیے دستیاب بنائے رکھنے کے لیے آج ہی عطیہ دیں۔";
 
 /* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
-"DONATION_READ_MORE_SCREEN_TITLE" = "Signal is different.";
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal مختلف ہے۔";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "رقم";
@@ -1877,13 +1877,13 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "اگر آپ نے Signal دوبارہ انسٹال کیا ہے، تو گزشتہ عطیات کی رسیدیں دستیاب نہیں ہوں گی۔";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "پرائیوٹ میسجنگ، جسے آپ فنڈ کرتے ہیں۔ کوئی اشتہارات نہیں، کوئی ٹریکنگ نہیں، کوئی سمجھوتہ نہیں۔ Signal کو سپورٹ کرنے کے لیے ابھی عطیہ کریں۔";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "مزید پڑھیں";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Privacy over profit";
+"DONATION_SCREENS_HEADER_TITLE" = "پرائیویسی کی ترجیح منافع سے زیادہ ہے";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "Signal کے لئے عطیہ کریں";
@@ -4181,7 +4181,7 @@
 "OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "تازہ ترین کریں.";
 
 /* Label warning the user that they should update Signal to continue using payments. */
-"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "پیمنٹس استعمال کرنا جاری رکھنے کے لیے Signal کو اپ ڈیٹ کریں۔ ہو سکتا ہے آپ کا بیلنس اپ ٹو ڈیٹ نہ ہو۔";
 
 /* info message text in conversation view. {embeds callee name} */
 "OUTGOING_CALL_FORMAT" = "آپ نے %1$@ کو فون کیا";
@@ -5792,13 +5792,13 @@
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Signal اپ ڈیٹ کریں";
 
 /* Message for payments outdated sheet. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "An update is required to continue sending and receiving payments, and to view your up-to-date payment balance.";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "پیمنٹس بھیجنا اور وصول کرنا جاری رکھنے کے لیے، اور اپنا اپ ٹو ڈیٹ پیمنٹ بیلنس دیکھنے کے لیے اپ ڈیٹ درکار ہوتی ہے۔";
 
 /* Title for payments outdated sheet saying cant send. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "ادائیگی نہیں بھیج سکتے";
 
 /* Title for payments outdated sheet saying update required. */
-"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Update Required";
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "اپ ڈیٹ درکار ہے";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "تمام";

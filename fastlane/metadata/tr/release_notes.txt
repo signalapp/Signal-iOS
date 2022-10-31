@@ -1,3 +1,5 @@
-Stories are now in Signal! Share disappearing text, images, and video updates with select friends or groups that automatically disappear after 24 hours.
+Hikayeler artık Signal'da!
 
-For everyone who loves sharing stories, here’s a way to do it privately and without seeing any ads. If you don’t want to see or share stories, you can opt out of it all in your Settings.
+ 24 saat sonra otomatik olarak kaybolan metin, resim ve videoları belirli arkadaşlarınla veya gruplarınla paylaş.
+
+Gizli ve herhangi bir reklamla karşılaşmadan hikaye paylaşmanın bir yolu var. Hikayeleri görmek veya paylaşmak istemiyorsan, Ayarlarından tüm hikayeleri devre dışı bırakabilirsin.
