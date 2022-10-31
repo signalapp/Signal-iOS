@@ -79,7 +79,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             options.insert(.canToggleViewOnce)
         }
 
-        if ImageQualityLevel.max == .high && attachmentApprovalItemCollection.attachmentApprovalItems.filter({ $0.attachment.isValidImage }).count > 0 {
+        if
+            ImageQualityLevel.max == .high,
+            attachmentApprovalItemCollection.attachmentApprovalItems.contains(where: { $0.attachment.isValidImage }) {
             options.insert(.canChangeQualityLevel)
         }
 
