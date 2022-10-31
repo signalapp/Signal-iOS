@@ -14,7 +14,6 @@ public class RemoteConfig: BaseFlags {
     fileprivate let isEnabledFlags: [String: Bool]
     fileprivate let valueFlags: [String: AnyObject]
     private let subscriptionMegaphone: Bool
-    private let storiesRegional: Bool
     private let standardMediaQualityLevel: ImageQualityLevel?
     private let paymentsDisabledRegions: [String]
 
@@ -23,7 +22,6 @@ public class RemoteConfig: BaseFlags {
         self.isEnabledFlags = isEnabledFlags
         self.valueFlags = valueFlags
         self.subscriptionMegaphone = Self.isCountryCodeBucketEnabled(.donationMegaphone, valueFlags: valueFlags)
-        self.storiesRegional = Self.isCountryCodeBucketEnabled(.storiesRegional, valueFlags: valueFlags)
         self.standardMediaQualityLevel = Self.determineStandardMediaQualityLevel(valueFlags: valueFlags)
         self.paymentsDisabledRegions = Self.parsePaymentsDisabledRegions(valueFlags: valueFlags)
     }
@@ -214,7 +212,13 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var stories: Bool {
-        DebugFlags.forceStories || isEnabled(.stories) || Self.remoteConfigManager.cachedConfig?.storiesRegional == true
+        if DebugFlags.forceStories {
+            return true
+        }
+        if isEnabled(.storiesKillSwitch) {
+            return false
+        }
+        return true
     }
 
     @objc
@@ -435,7 +439,7 @@ private struct Flags {
         case keepMutedChatsArchivedOption
         case canReceiveGiftBadges
         case groupRings
-        case stories
+        case storiesKillSwitch
     }
 
     // Values defined in this array remain set once they are
@@ -457,7 +461,6 @@ private struct Flags {
         case donationMegaphone
         case donationMegaphoneSnoozeInterval
         case maxGroupCallRingSize
-        case storiesRegional
     }
 
     // We filter the received config down to just the supported values.
@@ -478,7 +481,6 @@ private struct Flags {
         case donationMegaphone
         case donationMegaphoneSnoozeInterval
         case maxGroupCallRingSize
-        case storiesRegional
     }
 }
 
