@@ -237,7 +237,7 @@ public class PinConfirmationViewController: OWSViewController {
         Logger.info("")
 
         // We only check > 0 here rather than > 3 because legacy pins may be less than 4 characters
-        guard let pin = pin?.ows_stripped(), pin.count > 0 else {
+        guard let pin = pin?.ows_stripped(), !pin.isEmpty else {
             validationState = .tooShort
             return
         }

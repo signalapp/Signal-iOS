@@ -19,7 +19,7 @@ public extension OWSDisappearingConfigurationUpdateInfoMessage {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> OWSDisappearingConfigurationUpdateInfoMessage? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {

@@ -1593,7 +1593,7 @@ public extension %(class_name)s {
     // Fetches a single model by "unique id".
     class func anyFetch(uniqueId: String,
                         transaction: SDSAnyReadTransaction) -> %(class_name)s? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 ''' % { "class_name": str(clazz.name), "record_name": record_name, "record_identifier": record_identifier(clazz.name) }
 
         cache_code = cache_get_code_for_class(clazz)
@@ -1606,7 +1606,7 @@ public extension %(class_name)s {
     class func anyFetch(uniqueId: String,
                         transaction: SDSAnyReadTransaction,
                         ignoreCache: Bool) -> %(class_name)s? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         if !ignoreCache,
             let cachedCopy = %(cache_code)s {
@@ -1784,7 +1784,7 @@ public extension %(class_name)s {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> Bool {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
@@ -1823,7 +1823,7 @@ public extension %(class_name)s {
     class func grdbFetchOne(sql: String,
                             arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> %s? {
-        assert(sql.count > 0)
+        assert(!sql.isEmpty)
 
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
@@ -1866,7 +1866,7 @@ public extension %s {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> %s? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {

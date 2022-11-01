@@ -107,10 +107,7 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
     }
 
     private func parseOptionalString(_ value: String?) -> String? {
-        guard let value = value?.ows_stripped(), value.count > 0 else {
-            return nil
-        }
-        return value
+        value?.ows_stripped().nilIfEmpty
     }
 
     private func parsePackItem(_ proto: SSKProtoPackSticker?) -> StickerPackItem? {

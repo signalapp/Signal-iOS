@@ -19,7 +19,7 @@ public extension TSInvalidIdentityKeyReceivingErrorMessage {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> TSInvalidIdentityKeyReceivingErrorMessage? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {

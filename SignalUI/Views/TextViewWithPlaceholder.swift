@@ -226,7 +226,7 @@ extension TextViewWithPlaceholder: UITextViewDelegate {
     }
 
     public func textViewDidChange(_ textView: UITextView) {
-        let showPlaceholder = (textView.text.count == 0)
+        let showPlaceholder = textView.text.isEmpty
         placeholderTextView.isHidden = !showPlaceholder
 
         delegate?.textViewDidUpdateText(self)

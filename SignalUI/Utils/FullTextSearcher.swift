@@ -971,7 +971,7 @@ public class FullTextSearcher: NSObject {
 
     @objc(filterThreads:withSearchText:transaction:)
     public func filterThreads(_ threads: [TSThread], searchText: String, transaction: SDSAnyReadTransaction) -> [TSThread] {
-        guard searchText.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 else {
+        if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return threads
         }
 
@@ -990,7 +990,7 @@ public class FullTextSearcher: NSObject {
 
     @objc(filterGroupThreads:withSearchText:transaction:)
     public func filterGroupThreads(_ groupThreads: [TSGroupThread], searchText: String, transaction: SDSAnyReadTransaction) -> [TSGroupThread] {
-        guard searchText.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 else {
+        if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return groupThreads
         }
 
@@ -1001,7 +1001,7 @@ public class FullTextSearcher: NSObject {
 
     @objc(filterSignalAccounts:withSearchText:transaction:)
     public func filterSignalAccounts(_ signalAccounts: [SignalAccount], searchText: String, transaction: SDSAnyReadTransaction) -> [SignalAccount] {
-        guard searchText.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 else {
+        if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return signalAccounts
         }
 

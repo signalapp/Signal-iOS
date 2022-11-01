@@ -45,7 +45,7 @@ class EmojiPickerCollectionView: UICollectionView {
     private var emojiSearchIndex: [String: [String]]?
 
     public var isSearching: Bool {
-        if let searchText = searchText, searchText.count != 0 {
+        if let searchText = searchText, !searchText.isEmpty {
             return true
         }
 

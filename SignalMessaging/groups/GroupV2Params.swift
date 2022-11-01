@@ -57,7 +57,7 @@ public extension GroupV2Params {
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: groupSecretParams)
         let ciphertext = try clientZkGroupCipher.encryptBlob(plaintext: [UInt8](plaintext)).asData
         assert(ciphertext != plaintext)
-        assert(ciphertext.count > 0)
+        assert(!ciphertext.isEmpty)
 
         if plaintext.count <= Self.decryptedBlobCacheMaxItemSize {
             let cacheKey = (ciphertext + groupSecretParamsData)

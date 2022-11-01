@@ -78,7 +78,7 @@ public extension SDSCodableModel where Columns.RawValue == String {
 
 public extension SDSCodableModel {
     static func anyFetch(uniqueId: String, transaction: SDSAnyReadTransaction) -> Self? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):

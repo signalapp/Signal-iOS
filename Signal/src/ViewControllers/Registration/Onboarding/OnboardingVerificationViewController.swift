@@ -75,7 +75,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         AssertIsOnMainThread()
 
         let filteredCode = verificationCode.digitsOnly
-        guard filteredCode.count > 0 else {
+        if filteredCode.isEmpty {
             owsFailDebug("Invalid code: \(verificationCode)")
             return
         }

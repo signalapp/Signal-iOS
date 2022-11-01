@@ -29,8 +29,10 @@ public class RegistrationCountryState: NSObject {
         AssertIsOnMainThread()
 
         var countryCode: String = PhoneNumber.defaultCountryCode()
-        if let lastRegisteredCountryCode = RegistrationValues.lastRegisteredCountryCode(),
-           lastRegisteredCountryCode.count > 0 {
+        if
+            let lastRegisteredCountryCode = RegistrationValues.lastRegisteredCountryCode(),
+            !lastRegisteredCountryCode.isEmpty
+        {
             countryCode = lastRegisteredCountryCode
         }
 

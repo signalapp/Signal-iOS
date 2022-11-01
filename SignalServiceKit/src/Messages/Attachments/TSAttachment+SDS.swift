@@ -746,7 +746,7 @@ public extension TSAttachment {
     // Fetches a single model by "unique id".
     class func anyFetch(uniqueId: String,
                         transaction: SDSAnyReadTransaction) -> TSAttachment? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         return anyFetch(uniqueId: uniqueId, transaction: transaction, ignoreCache: false)
     }
@@ -755,7 +755,7 @@ public extension TSAttachment {
     class func anyFetch(uniqueId: String,
                         transaction: SDSAnyReadTransaction,
                         ignoreCache: Bool) -> TSAttachment? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         if !ignoreCache,
             let cachedCopy = Self.modelReadCaches.attachmentReadCache.getAttachment(uniqueId: uniqueId, transaction: transaction) {
@@ -917,7 +917,7 @@ public extension TSAttachment {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> Bool {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
@@ -948,7 +948,7 @@ public extension TSAttachment {
     class func grdbFetchOne(sql: String,
                             arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> TSAttachment? {
-        assert(sql.count > 0)
+        assert(!sql.isEmpty)
 
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)

@@ -974,7 +974,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     // passed through URL.
     private func isVideoNeedingRelocation(itemProvider: NSItemProvider, itemUrl: URL) -> Bool {
         let pathExtension = itemUrl.pathExtension
-        guard pathExtension.count > 0 else {
+        if pathExtension.isEmpty {
             Logger.verbose("item URL has no file extension: \(itemUrl).")
             return false
         }

@@ -372,8 +372,7 @@ extension LinkPreviewViewAdapter {
 
     func sentDomainLabelConfig(state: LinkPreviewState) -> CVLabelConfig {
         var labelText: String
-        if let displayDomain = state.displayDomain(),
-           displayDomain.count > 0 {
+        if let displayDomain = state.displayDomain()?.nilIfEmpty {
             labelText = displayDomain.lowercased()
         } else {
             labelText = OWSLocalizedString("LINK_PREVIEW_UNKNOWN_DOMAIN", comment: "Label for link previews with an unknown host.").uppercased()

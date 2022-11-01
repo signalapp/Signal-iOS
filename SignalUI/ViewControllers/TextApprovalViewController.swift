@@ -89,11 +89,10 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
     }
 
     private func updateSendButton() {
-        guard textView.text.count > 0 else {
-            footerView.isHidden = true
-            return
-        }
-        guard let recipientsDescription = delegate?.textApprovalRecipientsDescription(self) else {
+        guard
+            !textView.text.isEmpty,
+            let recipientsDescription = delegate?.textApprovalRecipientsDescription(self)
+        else {
             footerView.isHidden = true
             return
         }

@@ -514,7 +514,7 @@ class GRDBFullTextSearchFinder: NSObject {
 
         let query = FullTextSearchFinder.query(searchText: searchText)
 
-        guard query.count > 0 else {
+        if query.isEmpty {
             // FullTextSearchFinder.query filters some characters, so query
             // may now be empty.
             Logger.warn("Empty query.")
@@ -548,10 +548,9 @@ class GRDBFullTextSearchFinder: NSObject {
                 let collection: String = row[collectionColumn]
                 let uniqueId: String = row[uniqueIdColumn]
                 let snippet: String = row[matchSnippet]
-                guard collection.count > 0,
-                    uniqueId.count > 0 else {
-                        owsFailDebug("Invalid match: collection: \(collection), uniqueId: \(uniqueId).")
-                        continue
+                guard !collection.isEmpty, !uniqueId.isEmpty else {
+                    owsFailDebug("Invalid match: collection: \(collection), uniqueId: \(uniqueId).")
+                    continue
                 }
                 guard let model = modelForFTSMatch(collection: collection,
                                                    uniqueId: uniqueId,

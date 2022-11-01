@@ -19,7 +19,7 @@ public extension OWSIncomingContactSyncJobRecord {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> OWSIncomingContactSyncJobRecord? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {

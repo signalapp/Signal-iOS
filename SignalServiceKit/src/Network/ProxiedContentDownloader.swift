@@ -765,8 +765,10 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
                                                                 self.assetRequestDidFail(assetRequest: assetRequest)
                                                                 return
         }
-        guard contentLengthString.count > 0,
-            let contentLength = Int(contentLengthString) else {
+        guard
+            !contentLengthString.isEmpty,
+            let contentLength = Int(contentLengthString)
+        else {
             owsFailDebug("Asset size response has unparsable content length.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)

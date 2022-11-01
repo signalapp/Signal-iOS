@@ -19,7 +19,7 @@ public extension TSErrorMessage {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> TSErrorMessage? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {

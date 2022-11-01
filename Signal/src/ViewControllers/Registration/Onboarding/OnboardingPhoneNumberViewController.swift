@@ -346,7 +346,7 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
             isReregistering = true
 
         } else if let lastRegisteredPhoneNumber = OnboardingController.lastRegisteredPhoneNumber(),
-                  lastRegisteredPhoneNumber.count > 0 {
+                  !lastRegisteredPhoneNumber.isEmpty {
             phoneNumber = lastRegisteredPhoneNumber
 
         } else if let existingNumber = onboardingController.phoneNumber {
@@ -364,7 +364,7 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
             owsFailDebug("Could not resume re-registration; missing phone number.")
             return nil
         }
-        guard phoneNumberE164.count > 0 else {
+        if phoneNumberE164.isEmpty {
             owsFailDebug("Could not resume re-registration; invalid phoneNumberE164.")
             return nil
         }
@@ -389,15 +389,15 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
         }
         let phoneNumberWithoutCallingCode = phoneNumberE164.substring(from: callingCode.count)
 
-        guard countryCode.count > 0 else {
+        if countryCode.isEmpty {
             owsFailDebug("Invalid country code.")
             return nil
         }
-        guard countryName.count > 0 else {
+        if countryName.isEmpty {
             owsFailDebug("Invalid country name.")
             return nil
         }
-        guard callingCode.count > 0 else {
+        if callingCode.isEmpty {
             owsFailDebug("Invalid calling code.")
             return nil
         }
@@ -554,9 +554,7 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
     // MARK: - Register
 
     private func parseAndTryToRegister() {
-        guard let phoneNumberText = phoneNumber?.ows_stripped(),
-              phoneNumberText.count > 0 else {
-
+        guard let phoneNumberText = phoneNumber?.ows_stripped(), !phoneNumberText.isEmpty else {
             phoneNumberError = .invalidNumber
             OWSActionSheets.showActionSheet(
                 title: NSLocalizedString(
@@ -568,11 +566,14 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
             return
         }
 
-        guard let localNumber = PhoneNumber.tryParsePhoneNumber(
-            fromUserSpecifiedText: phoneNumberText,
-            callingCode: callingCode),
-              localNumber.toE164().count > 0,
-              PhoneNumberValidator().isValidForRegistration(phoneNumber: localNumber) else {
+        guard
+            let localNumber = PhoneNumber.tryParsePhoneNumber(
+                fromUserSpecifiedText: phoneNumberText,
+                callingCode: callingCode
+            ),
+            !localNumber.toE164().isEmpty,
+            PhoneNumberValidator().isValidForRegistration(phoneNumber: localNumber)
+        else {
 
             phoneNumberError = .invalidNumber
             OWSActionSheets.showActionSheet(

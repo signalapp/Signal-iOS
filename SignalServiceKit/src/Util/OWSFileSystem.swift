@@ -63,7 +63,7 @@ public extension OWSFileSystem {
     }
 
     class func recursiveFilesInDirectory(_ dirPath: String) throws -> [String] {
-        owsAssertDebug(dirPath.count > 0)
+        owsAssertDebug(!dirPath.isEmpty)
 
         do {
             return try FileManager.default.subpathsOfDirectory(atPath: dirPath)

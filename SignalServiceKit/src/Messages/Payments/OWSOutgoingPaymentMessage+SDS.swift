@@ -19,7 +19,7 @@ public extension OWSOutgoingPaymentMessage {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> OWSOutgoingPaymentMessage? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {

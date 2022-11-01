@@ -140,7 +140,7 @@ class SecondaryLinkingSetDeviceNameViewController: OnboardingBaseViewController 
     }
 
     func validateDeviceName() -> String? {
-        guard let deviceName = textField.text?.filterStringForDisplay(), deviceName.count > 0 else {
+        guard let deviceName = textField.text?.filterStringForDisplay(), !deviceName.isEmpty else {
             textFieldValidationError = .empty
             return nil
         }

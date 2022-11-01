@@ -484,7 +484,7 @@ extension SendMessageFlow: ConversationPickerDelegate {
 
 extension SendMessageFlow: TextApprovalViewControllerDelegate {
     func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?, linkPreviewDraft: OWSLinkPreviewDraft?) {
-        assert(messageBody?.text.count ?? 0 > 0)
+        assert(messageBody?.text.nilIfEmpty != nil)
 
         guard let messageBody = messageBody else {
             owsFailDebug("Missing messageBody.")

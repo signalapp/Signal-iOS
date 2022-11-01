@@ -531,7 +531,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             }
             self.pendingViewController = pendingViewController
 
-            if let pendingCaptionText = pendingViewController.galleryItem.captionForDisplay, pendingCaptionText.count > 0 {
+            if
+                let pendingCaptionText = pendingViewController.galleryItem.captionForDisplay,
+                !pendingCaptionText.isEmpty {
                 self.captionContainerView.pendingText = pendingCaptionText
             } else {
                 self.captionContainerView.pendingText = nil
@@ -815,12 +817,12 @@ extension MediaPageViewController: CaptionContainerViewDelegate {
     // MARK: Helpers
 
     func updateCaptionContainerVisibility() {
-        if let currentText = captionContainerView.currentText, currentText.count > 0 {
+        if let currentText = captionContainerView.currentText, !currentText.isEmpty {
             captionContainerView.isHidden = false
             return
         }
 
-        if let pendingText = captionContainerView.pendingText, pendingText.count > 0 {
+        if let pendingText = captionContainerView.pendingText, !pendingText.isEmpty {
             captionContainerView.isHidden = false
             return
         }

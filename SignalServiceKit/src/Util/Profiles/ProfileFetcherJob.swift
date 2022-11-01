@@ -537,11 +537,11 @@ public class ProfileFetcherJob: NSObject {
             let profileKeyDescription = profileKey?.keyData.hexadecimalString ?? "None"
             let hasAvatar = profile.avatarUrlPath != nil
             let hasProfileNameEncrypted = profile.profileNameEncrypted != nil
-            let hasGivenName = givenName?.count ?? 0 > 0
-            let hasFamilyName = familyName?.count ?? 0 > 0
-            let hasBio = bio?.count ?? 0 > 0
-            let hasBioEmoji = bioEmoji?.count ?? 0 > 0
-            let hasUsername = username?.count ?? 0 > 0
+            let hasGivenName = givenName?.nilIfEmpty != nil
+            let hasFamilyName = familyName?.nilIfEmpty != nil
+            let hasBio = bio?.nilIfEmpty != nil
+            let hasBioEmoji = bioEmoji?.nilIfEmpty != nil
+            let hasUsername = username?.nilIfEmpty != nil
             let hasPaymentAddress = paymentAddress != nil
             let badges = fetchedProfile.profile.badges.map { "\"\($0.0.description)\"" }.joined(separator: "; ")
 

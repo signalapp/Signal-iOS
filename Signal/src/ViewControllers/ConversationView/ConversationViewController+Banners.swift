@@ -11,7 +11,7 @@ public extension ConversationViewController {
     static func createBanner(title: String,
                              bannerColor: UIColor,
                              tapBlock: @escaping () -> Void) -> UIView {
-        owsAssertDebug(title.count > 0)
+        owsAssertDebug(!title.isEmpty)
 
         let bannerView = GestureView()
         bannerView.addTap(block: tapBlock)

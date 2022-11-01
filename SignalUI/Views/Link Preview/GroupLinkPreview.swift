@@ -55,11 +55,7 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
     }
 
     public func title() -> String? {
-        guard let value = groupInviteLinkPreview?.title.filterForDisplay,
-            value.count > 0 else {
-                return nil
-        }
-        return value
+        groupInviteLinkPreview?.title.filterForDisplay?.nilIfEmpty
     }
 
     public func imageState() -> LinkPreviewImageState {

@@ -229,8 +229,8 @@ public class OWSHttpHeaders: NSObject {
             .joined(separator: ", ")
 
         return "<\(super.description)"
-            .appending(loggedPairsString.count > 0 ? " (\(loggedPairsString))" : "")
-            .appending(leftoverKeysString.count > 0 ? " (\(leftoverKeysString))" : "")
+            .appending(loggedPairsString.isEmpty ? "" : "\(loggedPairsString)")
+            .appending(leftoverKeysString.isEmpty ? "" : "\(leftoverKeysString)")
             .appending(">")
     }
 }

@@ -30,7 +30,7 @@ public extension OWSTableItem {
     }
 
     static func buildCell(name: String, iconView: UIView, iconSpacing: CGFloat) -> UITableViewCell {
-        assert(name.count > 0)
+        assert(!name.isEmpty)
 
         let cell = OWSTableItem.newCell()
         cell.preservesSuperviewLayoutMargins = true

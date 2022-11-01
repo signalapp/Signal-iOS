@@ -143,8 +143,7 @@ public struct TSGroupModelBuilder: Dependencies {
         }
 
         var name: String?
-        if let strippedName = self.name?.stripped,
-           strippedName.count > 0 {
+        if let strippedName = self.name?.stripped.nilIfEmpty {
             name = strippedName
         }
 
@@ -170,8 +169,7 @@ public struct TSGroupModelBuilder: Dependencies {
             owsAssertDebug(addedByAddress == nil)
 
             var descriptionText: String?
-            if let strippedDescriptionText = self.descriptionText?.stripped,
-               strippedDescriptionText.count > 0 {
+            if let strippedDescriptionText = self.descriptionText?.stripped.nilIfEmpty {
                 descriptionText = strippedDescriptionText
             }
 

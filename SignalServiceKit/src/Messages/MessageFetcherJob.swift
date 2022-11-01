@@ -656,7 +656,7 @@ private class MessageAckOperation: OWSOperation {
         Logger.debug("")
 
         let request: TSRequest
-        if let serverGuid = envelopeInfo.serverGuid, serverGuid.count > 0 {
+        if let serverGuid = envelopeInfo.serverGuid, !serverGuid.isEmpty {
             request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid)
         } else if let sourceAddress = envelopeInfo.sourceAddress, sourceAddress.isValid, envelopeInfo.timestamp > 0 {
             request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(with: sourceAddress, timestamp: envelopeInfo.timestamp)

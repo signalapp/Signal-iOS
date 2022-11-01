@@ -129,7 +129,7 @@ class EmojiPickerSheet: InteractiveSheetViewController {
 
 extension EmojiPickerSheet: EmojiPickerSectionToolbarDelegate {
     func emojiPickerSectionToolbar(_ sectionToolbar: EmojiPickerSectionToolbar, didSelectSection section: Int) {
-        if let searchText = collectionView.searchText, searchText.count > 0 {
+        if let searchText = collectionView.searchText, !searchText.isEmpty {
             searchBar.text = nil
             collectionView.searchText = nil
 

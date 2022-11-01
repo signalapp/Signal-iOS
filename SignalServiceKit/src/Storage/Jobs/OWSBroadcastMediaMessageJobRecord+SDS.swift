@@ -19,7 +19,7 @@ public extension OWSBroadcastMediaMessageJobRecord {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> OWSBroadcastMediaMessageJobRecord? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {

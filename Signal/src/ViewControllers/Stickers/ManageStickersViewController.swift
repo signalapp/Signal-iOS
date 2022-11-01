@@ -373,8 +373,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
         iconView.autoSetDimensions(to: CGSize(square: iconSize))
 
         let title: String
-        if let titleValue = titleValue?.ows_stripped(),
-            titleValue.count > 0 {
+        if let titleValue = titleValue?.ows_stripped(), !titleValue.isEmpty {
             title = titleValue
         } else {
             title = NSLocalizedString("STICKERS_PACK_DEFAULT_TITLE", comment: "Default title for sticker packs.")
@@ -407,8 +406,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
             authorViews.append(builtInPackView)
         }
 
-        if let authorName = authorNameValue?.ows_stripped(),
-            authorName.count > 0 {
+        if let authorName = authorNameValue?.ows_stripped(), !authorName.isEmpty {
             let authorLabel = UILabel()
             authorLabel.text = authorName
             authorLabel.font = isDefaultStickerPack ? UIFont.ows_dynamicTypeCaption1.ows_semibold : UIFont.ows_dynamicTypeCaption1

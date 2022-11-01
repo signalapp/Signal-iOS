@@ -677,9 +677,7 @@ extension RegistrationVerificationCodeView: UITextFieldDelegate {
 
 extension RegistrationVerificationCodeView: RegistrationVerificationCodeTextFieldDelegate {
     public func textFieldDidDeletePrevious() {
-        guard digitText.count > 0 else {
-            return
-        }
+        if digitText.isEmpty { return }
         digitText = digitText.substring(to: currentDigitIndex - 1)
 
         updateViewState()

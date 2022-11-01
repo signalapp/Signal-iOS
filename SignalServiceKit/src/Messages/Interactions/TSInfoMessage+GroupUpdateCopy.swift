@@ -381,10 +381,7 @@ extension GroupUpdateCopy {
     mutating func addAttributesUpdates(oldGroupModel: TSGroupModel) {
 
         let groupName = { (groupModel: TSGroupModel) -> String? in
-            if let name = groupModel.groupName?.stripped, name.count > 0 {
-                return name
-            }
-            return nil
+            groupModel.groupName?.stripped.nilIfEmpty
         }
         let oldGroupName = groupName(oldGroupModel)
         let newGroupName = groupName(newGroupModel)

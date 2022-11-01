@@ -19,7 +19,7 @@ public extension TSOutgoingMessage {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> TSOutgoingMessage? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {

@@ -133,8 +133,10 @@ public class SendPaymentMemoViewController: OWSViewController {
     // MARK: -
 
     fileprivate func updateMemoCharacterCount() {
-        guard let strippedMemoMessage = memoTextField.text,
-              strippedMemoMessage.count > 0 else {
+        guard
+            let strippedMemoMessage = memoTextField.text,
+            !strippedMemoMessage.isEmpty
+        else {
             // Use whitespace to reserve space in the layout
             // to avoid jitter.
             memoCharacterCountLabel.text = " "

@@ -45,7 +45,7 @@ public class GiphyImageInfo: NSObject {
 
         super.init()
 
-        guard giphyId.count > 0 else {
+        if giphyId.isEmpty {
             Logger.error("Invalid id when parsing image info")
             return nil
         }

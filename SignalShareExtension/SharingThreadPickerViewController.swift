@@ -199,7 +199,7 @@ extension SharingThreadPickerViewController {
         outgoingMessages.removeAll()
 
         if isTextMessage {
-            guard let body = approvalMessageBody, body.text.count > 0 else {
+            guard let body = approvalMessageBody, !body.text.isEmpty else {
                 return Promise(error: OWSAssertionError("Missing body."))
             }
 
@@ -566,7 +566,7 @@ extension SharingThreadPickerViewController: ConversationPickerDelegate {
 
 extension SharingThreadPickerViewController: TextApprovalViewControllerDelegate {
     func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?, linkPreviewDraft: OWSLinkPreviewDraft?) {
-        assert(messageBody?.text.count ?? 0 > 0)
+        assert(messageBody?.text.nilIfEmpty != nil)
 
         approvalMessageBody = messageBody
         approvalLinkPreviewDraft = linkPreviewDraft

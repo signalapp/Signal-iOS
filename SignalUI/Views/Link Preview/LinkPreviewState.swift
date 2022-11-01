@@ -156,11 +156,7 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
     }
 
     public func title() -> String? {
-        guard let value = linkPreviewDraft.title,
-            value.count > 0 else {
-                return nil
-        }
-        return value
+        linkPreviewDraft.title?.nilIfEmpty
     }
 
     public func imageState() -> LinkPreviewImageState {
@@ -281,11 +277,7 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
     }
 
     public func title() -> String? {
-        guard let value = linkPreview.title?.filterForDisplay,
-            value.count > 0 else {
-                return nil
-        }
-        return value
+        linkPreview.title?.filterForDisplay?.nilIfEmpty
     }
 
     public func imageState() -> LinkPreviewImageState {

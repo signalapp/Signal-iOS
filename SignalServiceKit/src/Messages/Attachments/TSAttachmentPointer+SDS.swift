@@ -19,7 +19,7 @@ public extension TSAttachmentPointer {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> TSAttachmentPointer? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {

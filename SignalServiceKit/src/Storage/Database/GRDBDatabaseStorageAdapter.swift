@@ -268,7 +268,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     @objc
     public static var isKeyAccessible: Bool {
         do {
-            return try keyspec.fetchString().count > 0
+            return try !keyspec.fetchString().isEmpty
         } catch {
             owsFailDebug("Key not accessible: \(error)")
             return false

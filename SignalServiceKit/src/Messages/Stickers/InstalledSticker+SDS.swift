@@ -381,7 +381,7 @@ public extension InstalledSticker {
     // Fetches a single model by "unique id".
     class func anyFetch(uniqueId: String,
                         transaction: SDSAnyReadTransaction) -> InstalledSticker? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         return anyFetch(uniqueId: uniqueId, transaction: transaction, ignoreCache: false)
     }
@@ -390,7 +390,7 @@ public extension InstalledSticker {
     class func anyFetch(uniqueId: String,
                         transaction: SDSAnyReadTransaction,
                         ignoreCache: Bool) -> InstalledSticker? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         if !ignoreCache,
             let cachedCopy = Self.modelReadCaches.installedStickerCache.getInstalledSticker(uniqueId: uniqueId, transaction: transaction) {
@@ -552,7 +552,7 @@ public extension InstalledSticker {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> Bool {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
@@ -583,7 +583,7 @@ public extension InstalledSticker {
     class func grdbFetchOne(sql: String,
                             arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> InstalledSticker? {
-        assert(sql.count > 0)
+        assert(!sql.isEmpty)
 
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)

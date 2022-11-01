@@ -243,8 +243,10 @@ class PhotoCollection {
     }
 
     func localizedTitle() -> String {
-        guard let localizedTitle = collection.localizedTitle?.stripped,
-            localizedTitle.count > 0 else {
+        guard
+            let localizedTitle = collection.localizedTitle?.stripped,
+            !localizedTitle.isEmpty
+        else {
             return NSLocalizedString("PHOTO_PICKER_UNNAMED_COLLECTION", comment: "label for system photo collections which have no name.")
         }
         return localizedTitle

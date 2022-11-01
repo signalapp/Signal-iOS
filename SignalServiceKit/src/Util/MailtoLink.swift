@@ -36,7 +36,7 @@ public struct MailtoLink {
             ("body", escapeString(body))
         ]
         let cleanedQueryItems = rawQueryItems
-            .filter { $0.1.count > 0 }
+            .filter { !$0.1.isEmpty }
             .map { URLQueryItem(name: $0.0, value: $0.1) }
 
         componentsBuilder.percentEncodedQueryItems = cleanedQueryItems

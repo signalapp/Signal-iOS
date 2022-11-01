@@ -19,7 +19,7 @@ public extension OWSAddToProfileWhitelistOfferMessage {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> OWSAddToProfileWhitelistOfferMessage? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {

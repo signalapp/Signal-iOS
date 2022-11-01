@@ -19,7 +19,7 @@ public extension TSPrivateStoryThread {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> TSPrivateStoryThread? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {

@@ -13,8 +13,7 @@ public class PaymentsViewUtils: NSObject {
     private override init() {}
 
     public static func buildMemoLabel(memoMessage: String?) -> UIView? {
-        guard let memoMessage = memoMessage?.ows_stripped(),
-              memoMessage.count > 0 else {
+        guard let memoMessage = memoMessage?.ows_stripped().nilIfEmpty else {
             return nil
         }
 

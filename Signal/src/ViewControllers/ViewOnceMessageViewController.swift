@@ -115,9 +115,9 @@ class ViewOnceMessageViewController: OWSViewController {
                 return
             }
             let contentType = attachmentStream.contentType
-            guard contentType.count > 0 else {
+            if contentType.isEmpty {
                 owsFailDebug("Missing content type.")
-                    return
+                return
             }
 
             let viewOnceType: Content.ContentType

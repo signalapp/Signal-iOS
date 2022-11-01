@@ -51,7 +51,7 @@ public class OWSActionSheets: NSObject {
 
     @objc
     public class func showConfirmationAlert(title: String, message: String? = nil, proceedTitle: String? = nil, proceedStyle: ActionSheetAction.Style = .default, proceedAction: @escaping ActionSheetAction.Handler) {
-        assert(title.count > 0)
+        assert(!title.isEmpty)
 
         let actionSheet = ActionSheetController(title: title, message: message)
         actionSheet.addAction(self.cancelAction)
@@ -70,7 +70,7 @@ public class OWSActionSheets: NSObject {
 
     @objc
     public class func showConfirmationWithNotNowAlert(title: String, message: String? = nil, proceedTitle: String? = nil, proceedStyle: ActionSheetAction.Style = .default, proceedAction: @escaping ActionSheetAction.Handler) {
-        assert(title.count > 0)
+        assert(!title.isEmpty)
 
         let actionSheet = ActionSheetController(title: title, message: message)
         actionSheet.addAction(self.notNowAction)

@@ -618,8 +618,11 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     private func loadTrending() {
         assert(progressiveSearchTimer == nil)
-        assert(searchBar.text == nil || searchBar.text?.count == 0)
         assert(lastQuery == nil)
+        assert({
+            guard let searchText = searchBar.text else { return true }
+            return searchText.isEmpty
+        }())
 
         firstly {
             GiphyAPI.trending()

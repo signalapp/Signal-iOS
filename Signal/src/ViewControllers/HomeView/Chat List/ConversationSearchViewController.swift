@@ -535,7 +535,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
     private func updateSearchResults(searchText rawSearchText: String) {
 
         let searchText = rawSearchText.stripped
-        guard searchText.count > 0 else {
+        if searchText.isEmpty {
             searchResultSet = HomeScreenSearchResultSet.empty
             lastSearchText = nil
             reloadTableData()

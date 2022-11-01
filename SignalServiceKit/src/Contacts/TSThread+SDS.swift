@@ -849,7 +849,7 @@ public extension TSThread {
     // Fetches a single model by "unique id".
     class func anyFetch(uniqueId: String,
                         transaction: SDSAnyReadTransaction) -> TSThread? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         return anyFetch(uniqueId: uniqueId, transaction: transaction, ignoreCache: false)
     }
@@ -858,7 +858,7 @@ public extension TSThread {
     class func anyFetch(uniqueId: String,
                         transaction: SDSAnyReadTransaction,
                         ignoreCache: Bool) -> TSThread? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         if !ignoreCache,
             let cachedCopy = Self.modelReadCaches.threadReadCache.getThread(uniqueId: uniqueId, transaction: transaction) {
@@ -1020,7 +1020,7 @@ public extension TSThread {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> Bool {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
@@ -1051,7 +1051,7 @@ public extension TSThread {
     class func grdbFetchOne(sql: String,
                             arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> TSThread? {
-        assert(sql.count > 0)
+        assert(!sql.isEmpty)
 
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)

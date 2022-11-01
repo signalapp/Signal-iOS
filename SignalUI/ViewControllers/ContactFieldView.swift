@@ -157,7 +157,7 @@ public class ContactFieldView: UIView {
             guard let propertyValue = propertyValue else {
                 return
             }
-            guard propertyValue.count > 0 else {
+            if propertyValue.isEmpty {
                 return
             }
 

@@ -56,7 +56,7 @@ public class OWSLinkPreviewDraft: NSObject {
     fileprivate func isValid() -> Bool {
         var hasTitle = false
         if let titleValue = title {
-            hasTitle = titleValue.count > 0
+            hasTitle = !titleValue.isEmpty
         }
         let hasImage = imageData != nil && imageMimeType != nil
         return hasTitle || hasImage
@@ -157,13 +157,13 @@ public class OWSLinkPreview: MTLModel, Codable {
         var previewDescription: String?
         if let rawTitle = proto.title {
             let normalizedTitle = normalizeString(rawTitle, maxLines: 2)
-            if normalizedTitle.count > 0 {
+            if !normalizedTitle.isEmpty {
                 title = normalizedTitle
             }
         }
         if let rawDescription = proto.previewDescription, proto.title != proto.previewDescription {
             let normalizedDescription = normalizeString(rawDescription, maxLines: 3)
-            if normalizedDescription.count > 0 {
+            if !normalizedDescription.isEmpty {
                 previewDescription = normalizedDescription
             }
         }
@@ -475,8 +475,7 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
                 Logger.warn("Invalid response: \(statusCode).")
                 throw LinkPreviewError.fetchFailure
             }
-            guard let string = response.responseBodyString,
-                  string.count > 0 else {
+            guard let string = response.responseBodyString, !string.isEmpty else {
                 Logger.warn("Response object could not be parsed")
                 throw LinkPreviewError.invalidPreview
             }
@@ -689,7 +688,7 @@ fileprivate extension URL {
     private static let urlDelimeters: Set<Character> = Set(":/?#[]@")
 
     var mimeType: String? {
-        guard pathExtension.count > 0 else {
+        if pathExtension.isEmpty {
             return nil
         }
         guard let mimeType = MIMETypeUtil.mimeType(forFileExtension: pathExtension) else {
@@ -727,7 +726,7 @@ fileprivate extension URL {
     /// If no sourceString is provided, the validated host will be whatever is returned from `host`, which will always
     /// be ASCII.
     func isPermittedLinkPreviewUrl(parsedFrom sourceString: String? = nil) -> Bool {
-        guard let scheme = scheme?.lowercased(), scheme.count > 0 else { return false }
+        guard let scheme = scheme?.lowercased().nilIfEmpty else { return false }
         guard user == nil else { return false }
         guard password == nil else { return false }
         let rawHostname: String?

@@ -561,7 +561,7 @@ public class GroupsV2Protos {
                 avatarUrlPaths += self.collectAvatarUrlPaths(changeActionsProto: changeActionsProto)
             }
             // Discard empty avatar urls.
-            return avatarUrlPaths.filter { $0.count > 0 }
+            return avatarUrlPaths.filter { !$0.isEmpty }
         }
     }
 

@@ -171,7 +171,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
             guard let caption = item.caption else {
                 continue
             }
-            guard caption.count > 0 else {
+            if caption.isEmpty {
                 continue
             }
             guard let icon = UIImage(named: "media_album_caption") else {

@@ -347,12 +347,12 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 //                                   action:#selector(didPressShareContact)))
 //        }
 
-        if let organizationName = contactShare.name.organizationName?.ows_stripped() {
-            if contactShare.name.hasAnyNamePart() &&
-                organizationName.count > 0 {
-                rows.append(ContactFieldView.contactFieldView(forOrganizationName: organizationName,
-                                                              layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin)))
-            }
+        if
+            let organizationName = contactShare.name.organizationName?.ows_stripped().nilIfEmpty,
+            contactShare.name.hasAnyNamePart()
+        {
+            rows.append(ContactFieldView.contactFieldView(forOrganizationName: organizationName,
+                                                          layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin)))
         }
 
         for phoneNumber in contactShare.phoneNumbers {
@@ -639,7 +639,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             guard let part = part else {
                 return
             }
-            guard part.count > 0 else {
+            if part.isEmpty {
                 return
             }
             addressParts.append(part)
