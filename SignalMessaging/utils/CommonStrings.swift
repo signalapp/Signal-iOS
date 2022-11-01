@@ -275,6 +275,12 @@ public class CommonStrings: NSObject {
     }
 
     @objc
+    static public var attachmentTypeAnimated: String {
+        OWSLocalizedString("ATTACHMENT_TYPE_ANIMATED",
+                          comment: "Short text label for an animated attachment, used for thread preview and on the lock screen")
+    }
+
+    @objc
     static public var searchBarPlaceholder: String {
         OWSLocalizedString("INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER", comment: "Search")
     }

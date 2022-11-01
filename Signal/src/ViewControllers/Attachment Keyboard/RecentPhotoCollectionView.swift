@@ -340,8 +340,8 @@ class RecentPhotoCell: UICollectionViewCell {
         contentTypeBadgeView?.sizeToFit()
     }
 
-    private func setMedia(duration: TimeInterval) {
-        guard duration > 0 else {
+    private func setMedia(itemType: PhotoGridItemType) {
+        guard case .video(let duration) = itemType else {
             durationLabel?.isHidden = true
             durationLabelBackground?.isHidden = true
             return
@@ -398,7 +398,7 @@ class RecentPhotoCell: UICollectionViewCell {
             self.image = image
         }
 
-        setMedia(duration: item.duration)
+        setMedia(itemType: item.type)
 
         switch item.type {
         case .animated:
