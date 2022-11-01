@@ -1549,7 +1549,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
         let (fontPointSize, textAlignment) = sizeAndAlignment(forText: text)
         textView.updateWith(
             textForegroundColor: textForegroundColor,
-            font: font(for: textStyle, withPointSize: fontPointSize),
+            font: .font(for: textStyle, withPointSize: fontPointSize),
             textAlignment: textAlignment,
             textDecorationColor: nil,
             decorationStyle: .none)

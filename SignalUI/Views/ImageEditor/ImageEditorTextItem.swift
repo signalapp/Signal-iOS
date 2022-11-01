@@ -18,7 +18,7 @@ class ImageEditorTextItem: ImageEditorItem {
     let fontSize: CGFloat
     static let defaultFontSize: CGFloat = 36
     var font: UIFont {
-        MediaTextView.font(forTextStyle: textStyle, pointSize: fontSize)
+        MediaTextView.font(for: textStyle, withPointSize: fontSize)
     }
 
     var textForegroundColor: UIColor {

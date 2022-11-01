@@ -754,7 +754,7 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
         // We need to adjust the font size to reflect the current output scale,
         // using the image width as reference.
         let fontSize = item.fontSize * imageFrame.size.width / item.fontReferenceImageWidth
-        let font = MediaTextView.font(forTextStyle: item.textStyle, pointSize: fontSize)
+        let font = MediaTextView.font(for: item.textStyle, withPointSize: fontSize)
 
         let text = item.text.filterForDisplay ?? ""
         let attributedString = NSMutableAttributedString(

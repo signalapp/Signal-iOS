@@ -279,7 +279,7 @@ open class TextAttachmentView: UIView {
         let (fontPointSize, textAlignment) = sizeAndAlignment(forText: text)
         textLabel.text = transformedText(text, for: textStyle)
         textLabel.textAlignment = textAlignment
-        textLabel.font = font(for: textStyle, withPointSize: fontPointSize)
+        textLabel.font = .font(for: textStyle, withPointSize: fontPointSize)
         textLabel.textColor = textForegroundColor
 
         if let textBackgroundColor = textBackgroundColor {
@@ -301,33 +301,6 @@ open class TextAttachmentView: UIView {
     public func transformedText(_ text: String, for textStyle: TextAttachment.TextStyle) -> String {
         guard case .condensed = textStyle else { return text }
         return text.uppercased()
-    }
-
-    public func font(for textStyle: TextAttachment.TextStyle, withPointSize pointSize: CGFloat) -> UIFont {
-        let attributes: [UIFontDescriptor.AttributeName: Any]
-
-        switch textStyle {
-        case .regular:
-            attributes = [.name: "Inter-Regular_Medium"]
-        case .bold:
-            attributes = [.name: "Inter-Regular_Black"]
-        case .serif:
-            attributes = [.name: "EBGaramond-Regular"]
-        case .script:
-            attributes = [.name: "Parisienne-Regular"]
-        case .condensed:
-            // TODO: Ideally we could set an attribute to make this font
-            // all caps, but iOS deprecated that ability and didn't add
-            // a new equivalent function.
-            attributes = [.name: "BarlowCondensed-Medium"]
-        }
-
-        // TODO: Eventually we'll want to provide a cascadeList here to fallback
-        // to different fonts for different scripts rather than just relying on
-        // the built in OS fallbacks that don't tend to match the desired style.
-        let descriptor = UIFontDescriptor(fontAttributes: attributes)
-
-        return UIFont(descriptor: descriptor, size: pointSize)
     }
 
     open func updateVisibilityOfComponents(animated: Bool) {

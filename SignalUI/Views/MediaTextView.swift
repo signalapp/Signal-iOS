@@ -24,32 +24,17 @@ public class MediaTextView: UITextView {
         case condensed
     }
 
-    class func font(forTextStyle textStyle: TextStyle, pointSize: CGFloat) -> UIFont {
-        // TODO: this is a copy-paste code from TextAttachmentView that needs to be consolidated in one place.
-        let attributes: [UIFontDescriptor.AttributeName: Any]
-
-        switch textStyle {
-        case .regular:
-            attributes = [.name: "Inter-Regular_Medium"]
-        case .bold:
-            attributes = [.name: "Inter-Regular_Black"]
-        case .serif:
-            attributes = [.name: "EBGaramond-Regular"]
-        case .script:
-            attributes = [.name: "Parisienne-Regular"]
-        case .condensed:
-            // TODO: Ideally we could set an attribute to make this font
-            // all caps, but iOS deprecated that ability and didn't add
-            // a new equivalent function.
-            attributes = [.name: "BarlowCondensed-Medium"]
-        }
-
-        // TODO: Eventually we'll want to provide a cascadeList here to fallback
-        // to different fonts for different scripts rather than just relying on
-        // the built in OS fallbacks that don't tend to match the desired style.
-        let descriptor = UIFontDescriptor(fontAttributes: attributes)
-
-        return UIFont(descriptor: descriptor, size: pointSize)
+    class func font(for textStyle: TextStyle, withPointSize pointSize: CGFloat) -> UIFont {
+        let style: TextAttachment.TextStyle = {
+            switch textStyle {
+            case .regular: return .regular
+            case .bold: return .bold
+            case .serif: return .serif
+            case .script: return .script
+            case .condensed: return .condensed
+            }
+        }()
+        return UIFont.font(for: style, withPointSize: pointSize)
     }
 
     private var kvoObservation: NSKeyValueObservation?
@@ -83,7 +68,7 @@ public class MediaTextView: UITextView {
     public func update(using textStylingToolbar: TextStylingToolbar,
                        fontPointSize: CGFloat,
                        textAlignment: NSTextAlignment = .center) {
-        let font = MediaTextView.font(forTextStyle: textStylingToolbar.textStyle, pointSize: fontPointSize)
+        let font = MediaTextView.font(for: textStylingToolbar.textStyle, withPointSize: fontPointSize)
         updateWith(textForegroundColor: textStylingToolbar.textForegroundColor,
                    font: font,
                    textAlignment: textAlignment,
