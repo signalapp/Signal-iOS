@@ -76,7 +76,7 @@ target 'Signal' do
   project 'Signal.xcodeproj', 'Debug' => :debug, 'Release' => :release
 
   # Pods only available inside the main Signal app
-  pod 'SSZipArchive', :inhibit_warnings => true
+  pod 'SSZipArchive', podspec: 'ThirdParty/SSZipArchive.podspec'
   ui_pods
 
   target 'SignalTests' do
