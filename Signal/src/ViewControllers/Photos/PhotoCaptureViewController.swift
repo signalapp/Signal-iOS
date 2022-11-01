@@ -855,19 +855,22 @@ extension PhotoCaptureViewController {
         guard let userInfo = notification.userInfo,
               let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
 
-        let iPhoneInset = textEditorToolbar.convert(endFrame, from: nil).minY - textEditorToolbar.bounds.maxY
-        var iPadInset: CGFloat = 0
+        // Detect floating keyboards - those should not adjust bottom inset for text input area.
+        // Note that floating keyboard could co-exist with iPhone-like layouts.
+        let keyboardFrame = textStoryComposerView.convert(endFrame, from: nil)
+        let isNonFloatingKeyboardVisible = keyboardFrame.height > 0 &&
+            keyboardFrame.minX <= textStoryComposerView.bounds.minX &&
+            keyboardFrame.maxX >= textStoryComposerView.bounds.maxX
 
-        if isIPadUIInRegularMode {
-            // Detection of the floating keyboard.
-            let keyboardFrame = textStoryComposerView.convert(endFrame, from: nil)
-            if  keyboardFrame.height > 0 &&
-                keyboardFrame.minX <= textStoryComposerView.bounds.minX &&
-                keyboardFrame.maxX >= textStoryComposerView.bounds.maxX {
-                iPadInset = keyboardFrame.minY - textStoryComposerView.bounds.maxY
-            } else {
-                iPadInset = 0
-            }
+        let iPhoneInset: CGFloat
+        let iPadInset: CGFloat
+        if isNonFloatingKeyboardVisible {
+            let convertedKeyboardFrame = textEditorToolbar.convert(keyboardFrame, from: textStoryComposerView)
+            iPhoneInset = convertedKeyboardFrame.minY - textEditorToolbar.bounds.maxY
+            iPadInset = keyboardFrame.minY - textStoryComposerView.bounds.maxY
+        } else {
+            iPhoneInset = textEditorToolbar.bounds.height
+            iPadInset = 0
         }
 
         let layoutUpdateBlock = {
