@@ -233,7 +233,11 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
 
         var actions: [CVAccessibilityCustomAction] = []
         for messageAction in messageActions {
-            let action = CVAccessibilityCustomAction(name: messageAction.accessibilityIdentifier, target: self, selector: #selector(handleCustomAccessibilityActionInvoked(sender:)))
+            let action = CVAccessibilityCustomAction(
+                name: messageAction.accessibilityLabel ?? messageAction.accessibilityIdentifier,
+                target: self,
+                selector: #selector(handleCustomAccessibilityActionInvoked(sender:))
+            )
             action.messageAction = messageAction
             actions.append(action)
         }
