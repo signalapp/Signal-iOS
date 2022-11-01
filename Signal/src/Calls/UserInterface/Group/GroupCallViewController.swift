@@ -94,6 +94,11 @@ class GroupCallViewController: UIViewController {
         } completion: {
             self.updateSwipeToastView()
         }
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didBecomeActive),
+                                               name: UIApplication.didBecomeActiveNotification,
+                                               object: nil)
     }
 
     @discardableResult
@@ -286,6 +291,14 @@ class GroupCallViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        if hasUnresolvedSafetyNumberMismatch && CurrentAppContext().isAppForegroundAndActive() {
+            // If we're not active yet, this will be handled by the `didBecomeActive` callback.
+            resolveSafetyNumberMismatch()
+        }
+    }
+
+    @objc
+    private func didBecomeActive() {
         if hasUnresolvedSafetyNumberMismatch {
             resolveSafetyNumberMismatch()
         }
@@ -688,6 +701,12 @@ extension GroupCallViewController: CallViewControllerWindowReference {
 
         // There are no unverified addresses that we're currently concerned about. No need to show a sheet
         guard addressesToAlert.count > 0 else { return completion(true) }
+
+        if let existingSheet = presentedViewController as? SafetyNumberConfirmationSheet {
+            // The set of untrusted addresses may have changed.
+            // It's a bit clunky, but we'll just dismiss the existing sheet before putting up a new one.
+            existingSheet.dismiss(animated: false)
+        }
 
         let startCallString = NSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
         let joinCallString = NSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
