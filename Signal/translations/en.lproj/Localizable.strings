@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Clear Chat History";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Data Usage";
