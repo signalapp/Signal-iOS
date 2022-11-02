@@ -86,7 +86,7 @@ class NotificationService: UNNotificationServiceExtension {
 
         let content = UNMutableNotificationContent()
         content.badge = {
-            if environment.hasAppContent, let nseContext = CurrentAppContext() as? NSEContext {
+            if let nseContext = CurrentAppContext() as? NSEContext {
                 if !timeHasExpired {
                     // If we have time, we might as well get the current up-to-date badge count
                     let freshCount = databaseStorage.read { InteractionFinder.unreadCountInAllThreads(transaction: $0.unwrapGrdbRead) }
@@ -100,6 +100,7 @@ class NotificationService: UNNotificationServiceExtension {
                 }
             } else {
                 // We never set up an NSEContext. Let's leave things as-is:
+                owsFailDebug("Missing NSE context!")
                 return nil
             }
         }()
@@ -133,22 +134,21 @@ class NotificationService: UNNotificationServiceExtension {
         _ request: UNNotificationRequest,
         withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void
     ) {
-        let logger = NSELogger()
+        environment.ensureGlobalState()
 
-        // This should be the first thing we do.
-        environment.ensureAppContext(logger: logger)
+        let logger = NSELogger()
 
         // Detect and handle "no GRDB file" and "no keychain access; device
         // not yet unlocked for first time" cases _before_ calling
         // setupIfNecessary().
         if let errorContent = NSEEnvironment.verifyDBKeysAvailable(logger: logger) {
             if hasShownFirstUnlockError.tryToSetFlag() {
-                logger.error("DB Keys not accessible; showing error.")
+                logger.error("DB Keys not accessible; showing error.", flushImmediately: true)
                 contentHandler(errorContent)
             } else {
                 // Only show a single error if we receive multiple pushes
                 // before first device unlock.
-                logger.error("DB Keys not accessible; completing silently.")
+                logger.error("DB Keys not accessible; completing silently.", flushImmediately: true)
                 let emptyContent = UNMutableNotificationContent()
                 contentHandler(emptyContent)
             }
@@ -160,8 +160,7 @@ class NotificationService: UNNotificationServiceExtension {
             // point, the NSEEnvironment.isSetup flag is already set,
             // but the environment has _not_ been setup successfully.
             // We need to terminate the NSE to return to a good state.
-            logger.warn("Posting error notification and skipping processing.")
-            logger.flush()
+            logger.warn("Posting error notification and skipping processing.", flushImmediately: true)
             contentHandler(errorContent)
             fatalError("Posting error notification and skipping processing.")
         }

@@ -21,6 +21,7 @@ class NSELogger {
 
     func debug(
         _ logString: @autoclosure () -> String,
+        flushImmediately: Bool = false,
         file: String = #file,
         function: String = #function,
         line: Int = #line
@@ -29,10 +30,13 @@ class NSELogger {
             makeLogString(logString()),
             file: file, function: function, line: line
         )
+
+        if flushImmediately { flush() }
     }
 
     func info(
         _ logString: @autoclosure () -> String,
+        flushImmediately: Bool = false,
         file: String = #file,
         function: String = #function,
         line: Int = #line
@@ -41,10 +45,13 @@ class NSELogger {
             makeLogString(logString()),
             file: file, function: function, line: line
         )
+
+        if flushImmediately { flush() }
     }
 
     func warn(
         _ logString: @autoclosure () -> String,
+        flushImmediately: Bool = false,
         file: String = #file,
         function: String = #function,
         line: Int = #line
@@ -53,10 +60,13 @@ class NSELogger {
             makeLogString(logString()),
             file: file, function: function, line: line
         )
+
+        if flushImmediately { flush() }
     }
 
     func error(
         _ logString: @autoclosure () -> String,
+        flushImmediately: Bool = false,
         file: String = #file,
         function: String = #function,
         line: Int = #line
@@ -65,6 +75,8 @@ class NSELogger {
             makeLogString(logString()),
             file: file, function: function, line: line
         )
+
+        if flushImmediately { flush() }
     }
 
     func flush() {

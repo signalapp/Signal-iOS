@@ -16,6 +16,8 @@ public class AtomicLock {
     // The default lock shared by _all_ atomics.
     fileprivate static let shared = AtomicLock()
 
+    public init() {}
+
     private let unfairLock = UnfairLock()
 
     fileprivate func perform<T>(_ block: () throws -> T) rethrows -> T {

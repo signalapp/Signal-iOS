@@ -67,12 +67,12 @@ class NSEContext: NSObject, AppContext {
         queue: .global()
     )
 
-    init(logger: NSELogger) {
+    override init() {
         super.init()
 
-        logger.info("NSEContext init()")
-
         memoryPressureSource.setEventHandler { [weak self] in
+            let logger: NSELogger = .uncorrelated
+
             if let self = self {
                 logger.warn("Memory pressure event: \(self.memoryPressureSource.memoryEventDescription)")
             } else {
