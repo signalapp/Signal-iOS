@@ -97,6 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
     id<SubscriptionManagerProtocol> subscriptionManager = [MockSubscriptionManager new];
     SystemStoryManagerMock *systemStoryManager = [SystemStoryManagerMock new];
     RemoteMegaphoneFetcher *remoteMegaphoneFetcher = [RemoteMegaphoneFetcher new];
+    LocalUserLeaveGroupJobQueue *localUserLeaveGroupJobQueue = [LocalUserLeaveGroupJobQueue new];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
@@ -153,7 +154,8 @@ NS_ASSUME_NONNULL_BEGIN
                         changePhoneNumber:changePhoneNumber
                       subscriptionManager:subscriptionManager
                        systemStoryManager:systemStoryManager
-                   remoteMegaphoneFetcher:remoteMegaphoneFetcher];
+                   remoteMegaphoneFetcher:remoteMegaphoneFetcher
+              localUserLeaveGroupJobQueue:localUserLeaveGroupJobQueue];
 
     if (!self) {
         return nil;

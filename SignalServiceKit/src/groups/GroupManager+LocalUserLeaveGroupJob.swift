@@ -128,6 +128,7 @@ public final class LocalUserLeaveGroupOperation: OWSOperation, DurableOperation 
     }
 }
 
+@objc
 public class LocalUserLeaveGroupJobQueue: NSObject, JobQueue {
     public typealias DurableOperationType = LocalUserLeaveGroupOperation
 

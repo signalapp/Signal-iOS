@@ -133,6 +133,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                     subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager
                      systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager
                  remoteMegaphoneFetcher:(RemoteMegaphoneFetcher *)remoteMegaphoneFetcher
+            localUserLeaveGroupJobQueue:(LocalUserLeaveGroupJobQueue *)localUserLeaveGroupJobQueue
 {
     self = [super init];
     if (!self) {
@@ -195,6 +196,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _subscriptionManagerRef = subscriptionManager;
     _systemStoryManagerRef = systemStoryManager;
     _remoteMegaphoneFetcherRef = remoteMegaphoneFetcher;
+    _localUserLeaveGroupJobQueue = localUserLeaveGroupJobQueue;
 
     return self;
 }

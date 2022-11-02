@@ -122,6 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
         SubscriptionManager *subscriptionManager = [SubscriptionManager new];
         SystemStoryManager *systemStoryManager = [SystemStoryManager new];
         RemoteMegaphoneFetcher *remoteMegaphoneFetcher = [RemoteMegaphoneFetcher new];
+        LocalUserLeaveGroupJobQueue *localUserLeaveGroupJobQueue = [LocalUserLeaveGroupJobQueue new];
 
         [Environment setShared:[[Environment alloc] initWithIncomingContactSyncJobQueue:incomingContactSyncJobQueue
                                                               incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
@@ -188,7 +189,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 changePhoneNumber:changePhoneNumber
                                                               subscriptionManager:subscriptionManager
                                                                systemStoryManager:systemStoryManager
-                                                           remoteMegaphoneFetcher:remoteMegaphoneFetcher]];
+                                                           remoteMegaphoneFetcher:remoteMegaphoneFetcher
+                                                      localUserLeaveGroupJobQueue:localUserLeaveGroupJobQueue]];
 
         appSpecificSingletonBlock();
 

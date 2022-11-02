@@ -14,6 +14,7 @@ extern NSNotificationName const WarmCachesNotification;
 @class ChangePhoneNumber;
 @class EarlyMessageManager;
 @class GroupsV2MessageProcessor;
+@class LocalUserLeaveGroupJobQueue;
 @class MessageFetcherJob;
 @class MessageProcessor;
 @class MessageSender;
@@ -128,7 +129,9 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                       changePhoneNumber:(ChangePhoneNumber *)changePhoneNumber
                     subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager
                      systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager
-                 remoteMegaphoneFetcher:(RemoteMegaphoneFetcher *)remoteMegaphoneFetcher NS_DESIGNATED_INITIALIZER;
+                 remoteMegaphoneFetcher:(RemoteMegaphoneFetcher *)remoteMegaphoneFetcher
+            localUserLeaveGroupJobQueue:(LocalUserLeaveGroupJobQueue *)localUserLeaveGroupJobQueue
+    NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -190,6 +193,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 @property (nonatomic, readonly) id<SubscriptionManagerProtocol> subscriptionManagerRef;
 @property (nonatomic, readonly) id<SystemStoryManagerProtocolObjc> systemStoryManagerRef;
 @property (nonatomic, readonly) RemoteMegaphoneFetcher *remoteMegaphoneFetcherRef;
+@property (nonatomic, readonly) LocalUserLeaveGroupJobQueue *localUserLeaveGroupJobQueue;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandlerRef;
