@@ -714,7 +714,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             builder.setFamilyName(profileFamilyName)
         }
 
-        if let profileAvatarUrlPath = profileManager.profileAvatarURLPath(for: localAddress, transaction: transaction) {
+        if let profileAvatarUrlPath = profileManager.profileAvatarURLPath(for: localAddress, downloadIfMissing: true, transaction: transaction) {
             Logger.info("profileAvatarUrlPath: yes")
             builder.setAvatarURL(profileAvatarUrlPath)
         } else {
@@ -821,7 +821,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         let localProfileKey = profileManager.profileKey(for: localAddress, transaction: transaction)
         let localGivenName = profileManagerImpl.unfilteredGivenName(for: localAddress, transaction: transaction)
         let localFamilyName = profileManagerImpl.unfilteredFamilyName(for: localAddress, transaction: transaction)
-        let localAvatarUrl = profileManager.profileAvatarURLPath(for: localAddress, transaction: transaction)
+        let localAvatarUrl = profileManager.profileAvatarURLPath(for: localAddress, downloadIfMissing: true, transaction: transaction)
 
         // On the primary device, we only ever want to
         // take the profile key from storage service if

@@ -344,6 +344,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address
+                                    downloadIfMissing:(BOOL)downloadIfMissing
                                           transaction:(SDSAnyReadTransaction *)transaction
 {
     return nil;

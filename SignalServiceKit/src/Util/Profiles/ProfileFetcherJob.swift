@@ -439,7 +439,7 @@ public class ProfileFetcherJob: NSObject {
         }
         let profileAddress = fetchedProfile.profile.address
         let didAlreadyDownloadAvatar = databaseStorage.read { transaction -> Bool in
-            let oldAvatarUrlPath = profileManager.profileAvatarURLPath(for: profileAddress, transaction: transaction)
+            let oldAvatarUrlPath = profileManager.profileAvatarURLPath(for: profileAddress, downloadIfMissing: true, transaction: transaction)
             return (
                 oldAvatarUrlPath == newAvatarUrlPath
                 && profileManager.hasProfileAvatarData(profileAddress, transaction: transaction)

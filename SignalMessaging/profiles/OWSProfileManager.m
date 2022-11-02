@@ -1441,6 +1441,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 }
 
 - (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
+                            downloadIfMissing:(BOOL)downloadIfMissing
                                   transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
@@ -1451,7 +1452,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
         return [self loadProfileAvatarWithFilename:userProfile.avatarFileName];
     }
 
-    if (userProfile.avatarUrlPath.length > 0) {
+    if (downloadIfMissing && (userProfile.avatarUrlPath.length > 0)) {
         // Try to fill in missing avatar.
         [self downloadAvatarForUserProfile:userProfile];
     }
@@ -1490,13 +1491,14 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 }
 
 - (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address
+                                    downloadIfMissing:(BOOL)downloadIfMissing
                                           transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
 
     OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
 
-    if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length == 0) {
+    if (downloadIfMissing && userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length == 0) {
         // Try to fill in missing avatar.
         [self downloadAvatarForUserProfile:userProfile];
     }
