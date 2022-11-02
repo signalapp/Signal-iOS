@@ -188,7 +188,8 @@ extension ImageEditorViewController {
         let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewBounds.size,
                                                           imageSize: model.srcImageSizePixels,
                                                           transform: model.currentTransform())
-        let unitWidth = textViewWrapperView.width / imageFrame.width
+        // 12 is the sum of horizontal insets around textView as set in `initializeTextUIIfNecessary`.
+        let unitWidth = (textViewWrapperView.width - 12) / imageFrame.width
         textItem = textItem.copy(unitWidth: unitWidth)
 
         // Ensure continuity of the new text item's location with its apparent location in this text editor.
