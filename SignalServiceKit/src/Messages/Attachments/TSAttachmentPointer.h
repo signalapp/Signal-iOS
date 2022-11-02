@@ -19,7 +19,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerType) {
     TSAttachmentPointerTypeRestoring = 2,
 };
 
-typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
+typedef NS_CLOSED_ENUM(NSUInteger, TSAttachmentPointerState) {
     TSAttachmentPointerStateEnqueued = 0,
     TSAttachmentPointerStateDownloading = 1,
     TSAttachmentPointerStateFailed = 2,
