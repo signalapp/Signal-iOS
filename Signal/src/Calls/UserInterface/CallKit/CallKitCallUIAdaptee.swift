@@ -124,20 +124,37 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
     }
 
+    private func endCallOnceReported(_ call: SignalCall, reason: CXCallEndedReason) {
+        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
+            guard call.systemState != .pending else {
+                // Try again soon, but give up if the call ends some other way and is destroyed.
+                DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), qos: .userInitiated) { [weak call] in
+                    guard let call = call else {
+                        return
+                    }
+                    self.endCallOnceReported(call, reason: reason)
+                }
+                return
+            }
+
+            self.provider.reportCall(with: call.localId, endedAt: nil, reason: reason)
+            self.callManager.removeCall(call)
+        }
+    }
+
     // Called from CallService after call has ended to clean up any remaining CallKit call state.
     func failCall(_ call: SignalCall, error: SignalCall.CallError) {
         AssertIsOnMainThread()
         Logger.info("")
 
-        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
-            switch error {
-            case .timeout(description: _):
-                self.provider.reportCall(with: call.localId, endedAt: Date(), reason: CXCallEndedReason.unanswered)
-            default:
-                self.provider.reportCall(with: call.localId, endedAt: Date(), reason: CXCallEndedReason.failed)
-            }
-            self.callManager.removeCall(call)
+        let reason: CXCallEndedReason
+        switch error {
+        case .timeout(description: _):
+            reason = .unanswered
+        default:
+            reason = .failed
         }
+        self.endCallOnceReported(call, reason: reason)
     }
 
     func reportIncomingCall(_ call: SignalCall, completion: @escaping (Error?) -> Void) {
@@ -164,6 +181,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         disableUnsupportedFeatures(callUpdate: update)
 
         Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
+            call.markPendingReportToSystem()
+
             // Report the incoming call to the system
             self.provider.reportNewIncomingCall(with: call.localId, update: update) { error in
                 /*
@@ -249,52 +268,32 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     func remoteDidHangupCall(_ call: SignalCall) {
         AssertIsOnMainThread()
         Logger.info("")
-
-        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
-            self.provider.reportCall(with: call.localId, endedAt: nil, reason: CXCallEndedReason.remoteEnded)
-            self.callManager.removeCall(call)
-        }
+        endCallOnceReported(call, reason: .remoteEnded)
     }
 
     func remoteBusy(_ call: SignalCall) {
         AssertIsOnMainThread()
         Logger.info("")
-
-        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
-            self.provider.reportCall(with: call.localId, endedAt: nil, reason: CXCallEndedReason.unanswered)
-            self.callManager.removeCall(call)
-        }
+        endCallOnceReported(call, reason: .unanswered)
     }
 
     func didAnswerElsewhere(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.info("")
-
-        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
-            self.provider.reportCall(with: call.localId, endedAt: nil, reason: .answeredElsewhere)
-            self.callManager.removeCall(call)
-        }
+        endCallOnceReported(call, reason: .answeredElsewhere)
     }
 
     func didDeclineElsewhere(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.info("")
-
-        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
-            self.provider.reportCall(with: call.localId, endedAt: nil, reason: .declinedElsewhere)
-            self.callManager.removeCall(call)
-        }
+        endCallOnceReported(call, reason: .declinedElsewhere)
     }
 
     func wasBusyElsewhere(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.info("")
-
-        Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
-            // Callkit doesn't have a reason for "busy elsewhere", .declinedElsewhere is close enough.
-            self.provider.reportCall(with: call.localId, endedAt: nil, reason: .declinedElsewhere)
-            self.callManager.removeCall(call)
-        }
+        // CallKit doesn't have a reason for "busy elsewhere", .declinedElsewhere is close enough.
+        endCallOnceReported(call, reason: .declinedElsewhere)
     }
 
     func setIsMuted(call: SignalCall, isMuted: Bool) {

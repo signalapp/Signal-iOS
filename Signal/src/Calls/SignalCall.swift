@@ -60,6 +60,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
     private(set) var systemState: SystemState = .notReported
     enum SystemState {
         case notReported
+        case pending
         case reported
         case removed
     }
@@ -375,8 +376,14 @@ public class SignalCall: NSObject, CallManagerCallReference {
         return -connectedDate.timeIntervalSinceNow
     }
 
-    func markReportedToSystem() {
+    func markPendingReportToSystem() {
         owsAssertDebug(systemState == .notReported, "call \(localId) had unexpected system state: \(systemState)")
+        systemState = .pending
+    }
+
+    func markReportedToSystem() {
+        owsAssertDebug(systemState == .notReported || systemState == .pending,
+                       "call \(localId) had unexpected system state: \(systemState)")
         systemState = .reported
     }
 
