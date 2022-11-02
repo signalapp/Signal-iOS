@@ -1862,6 +1862,13 @@ public class GroupManager: NSObject {
         profileManager.fillInMissingProfileKeys(profileKeysByAddress, userProfileWriter: .groupState)
     }
 
+    /// Ensure that we have a profile key commitment for our local profile
+    /// available on the service.
+    ///
+    /// We (and other clients) need profile key credentials for group members in
+    /// order to perform GV2 operations. However, other clients can't request
+    /// our profile key credential from the service until we've uploaded a profile
+    /// key commitment to the service.
     public static func ensureLocalProfileHasCommitmentIfNecessary() -> Promise<Void> {
         guard tsAccountManager.isOnboarded() else {
             return Promise.value(())
@@ -1875,27 +1882,35 @@ public class GroupManager: NSObject {
                                                               transaction: transaction)
         }.then(on: .global()) { hasLocalCredential -> Promise<Void> in
             guard !hasLocalCredential else {
-                return Promise.value(())
-            }
-            guard tsAccountManager.isRegisteredPrimaryDevice else {
-                // On secondary devices, just re-fetch the local
-                // profile.
-                return self.profileManager.fetchLocalUsersProfilePromise().asVoid()
+                return .value(())
             }
 
-            // We (and other clients) need a profile key credential for
-            // all group members to use groups v2.  Other clients can't
-            // request our profile key credential from the service until
-            // until we've uploaded a profile key commitment to the service.
-            //
-            // If we've never done a versioned profile update, try to do so now.
-            // This step might or might not be necessary. It's simpler and safer
-            // to always do it. It won't amount to much extra work and we'll
-            // probably do it at most once.  Once we have a profile key credential
-            // for the local user (which should last forever) we'll abort above.
-            // Group v2 actions will use tryToEnsureProfileKeyCredentials()
-            // and we want to set them up to succeed.
-            Logger.info("Re-uploading local profile to update profile credential.")
+            // If we don't have a local profile key credential we should first
+            // check if it is simply expired, by asking for a new one (which we
+            // would get as part of fetching our local profile).
+            return self.profileManager.fetchLocalUsersProfilePromise().asVoid()
+        }.then(on: .global()) { () -> Promise<Void> in
+            let hasProfileKeyCredentialAfterRefresh = databaseStorage.read { transaction in
+                self.groupsV2Swift.hasProfileKeyCredential(for: localAddress, transaction: transaction)
+            }
+
+            if hasProfileKeyCredentialAfterRefresh {
+                // We successfully refreshed our profile key credential, which
+                // means we have previously uploaded a commitment, and all is
+                // well.
+                return .value(())
+            }
+
+            guard
+                tsAccountManager.isRegisteredPrimaryDevice,
+                CurrentAppContext().isMainApp
+            else {
+                Logger.warn("Skipping upload of local profile key commitment, not in main app!")
+                return .value(())
+            }
+
+            // We've never uploaded a profile key commitment - do so now.
+            Logger.info("No profile key credential available for local account - uploading local profile!")
             return self.groupsV2Swift.reuploadLocalProfilePromise()
         }
     }
