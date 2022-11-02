@@ -28,7 +28,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     // Instantiating more than one CXProvider can cause us to miss call transactions, so
     // we maintain the provider across Adaptees using a singleton pattern
-    static private let providerReadyFlag: ReadyFlag = ReadyFlag(name: "CallKitCXProviderReady", queueMode: .mainThread)
+    static private let providerReadyFlag: ReadyFlag = ReadyFlag(name: "CallKitCXProviderReady")
     private static var _sharedProvider: CXProvider?
     class func sharedProvider(useSystemCallLog: Bool) -> CXProvider {
         let configuration = buildProviderConfiguration(useSystemCallLog: useSystemCallLog)

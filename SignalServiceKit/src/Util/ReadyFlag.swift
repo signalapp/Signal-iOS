@@ -26,11 +26,6 @@ import Foundation
 @objc
 public class ReadyFlag: NSObject {
 
-    // All instances can share a single queue.
-    private static let serialQueue = DispatchQueue(label: "ReadyFlag",
-                                                   qos: .utility,
-                                                   autoreleaseFrequency: .workItem)
-
     private let unfairLock = UnfairLock()
 
     public typealias ReadyBlock = () -> Void
@@ -55,39 +50,6 @@ public class ReadyFlag: NSObject {
 
     private static let defaultPriority: Priority = 0
 
-    // This class supports two thread modes.
-    // The mode determines which queue the tasks are
-    // performed on.
-    // the local properties _and_ which queue the blocks
-    // are performed on.
-    @objc
-    public enum QueueMode: UInt {
-        // Like the "app is ready" flag:
-        //
-        // * The flag should only be set on the main thread.
-        // * All blocks are performed on the main thread.
-        // * The sync blocks are performed sync when the flag is set.
-        // * The async blocks are performed async after the flag is set.
-        case mainThread
-        // * The flag can be set from any thread.
-        // * Sync blocks are performed on the thread on which the flag is set.
-        // * Async blocks are performed on the serial queue.
-        // * The sync blocks are performed sync when the flag is set.
-        // * The async blocks are performed async after the flag is set.
-        case serialQueue
-
-        fileprivate var dispatchQueue: DispatchQueue {
-            switch self {
-            case .mainThread:
-                return .main
-            case .serialQueue:
-                return ReadyFlag.serialQueue
-            }
-        }
-    }
-
-    private let queueMode: QueueMode
-
     private let name: String
 
     private static let blockLogDuration: TimeInterval = 0.01
@@ -107,9 +69,8 @@ public class ReadyFlag: NSObject {
     private var didBecomeReadyAsyncTasks = [ReadyTask]()
 
     @objc
-    public required init(name: String, queueMode: QueueMode) {
+    public required init(name: String) {
         self.name = name
-        self.queueMode = queueMode
     }
 
     @objc
@@ -120,9 +81,7 @@ public class ReadyFlag: NSObject {
     public func runNowOrWhenWillBecomeReady(_ readyBlock: @escaping ReadyBlock,
                                             label: String? = nil,
                                             priority: Priority? = nil) {
-        if queueMode == .mainThread {
-            AssertIsOnMainThread()
-        }
+        AssertIsOnMainThread()
 
         let priority = priority ?? Self.defaultPriority
         let task = ReadyTask(label: label, priority: priority, block: readyBlock)
@@ -152,9 +111,7 @@ public class ReadyFlag: NSObject {
     public func runNowOrWhenDidBecomeReadySync(_ readyBlock: @escaping ReadyBlock,
                                                label: String? = nil,
                                                priority: Priority? = nil) {
-        if queueMode == .mainThread {
-            AssertIsOnMainThread()
-        }
+        AssertIsOnMainThread()
 
         let priority = priority ?? Self.defaultPriority
         let task = ReadyTask(label: label, priority: priority, block: readyBlock)
@@ -184,9 +141,7 @@ public class ReadyFlag: NSObject {
     public func runNowOrWhenDidBecomeReadyAsync(_ readyBlock: @escaping ReadyBlock,
                                                 label: String? = nil,
                                                 priority: Priority? = nil) {
-        if queueMode == .mainThread {
-            AssertIsOnMainThread()
-        }
+        AssertIsOnMainThread()
 
         let priority = priority ?? Self.defaultPriority
         let task = ReadyTask(label: label, priority: priority, block: readyBlock)
@@ -205,8 +160,7 @@ public class ReadyFlag: NSObject {
             // We perform the block outside unfairLock to avoid deadlock.
             //
             // Always perform async blocks async.
-            let dispatchQueue = queueMode.dispatchQueue
-            dispatchQueue.async { () -> Void in
+            DispatchQueue.main.async { () -> Void in
                 BenchManager.bench(title: self.name + ".didBecomeReadyPolite " + task.displayLabel,
                                    logIfLongerThan: Self.blockLogDuration,
                                    logInProduction: true) {
@@ -220,9 +174,7 @@ public class ReadyFlag: NSObject {
 
     @objc
     public func setIsReady() {
-        if queueMode == .mainThread {
-            AssertIsOnMainThread()
-        }
+        AssertIsOnMainThread()
 
         guard let tasksToPerform = tryToSetFlag() else {
             return
@@ -292,8 +244,7 @@ public class ReadyFlag: NSObject {
     }
 
     private func performDidBecomeReadyAsyncTasks(_ tasks: [ReadyTask]) {
-        let dispatchQueue = queueMode.dispatchQueue
-        dispatchQueue.asyncAfter(deadline: DispatchTime.now() + 0.025) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.025) { [weak self] in
             guard let self = self else {
                 return
             }

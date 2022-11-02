@@ -18,8 +18,8 @@ public class AppReadiness: NSObject {
         SwiftSingletons.register(self)
     }
 
-    private let readyFlag = ReadyFlag(name: "AppReadiness", queueMode: .mainThread)
-    private let readyFlagUI = ReadyFlag(name: "AppReadinessUI", queueMode: .mainThread)
+    private let readyFlag = ReadyFlag(name: "AppReadiness")
+    private let readyFlagUI = ReadyFlag(name: "AppReadinessUI")
 
     @objc
     public static var isAppReady: Bool { shared.readyFlag.isSet }
