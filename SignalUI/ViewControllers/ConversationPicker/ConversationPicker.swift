@@ -1355,7 +1355,7 @@ public class ConversationPickerSelection: Dependencies {
 // MARK: -
 
 private enum ConversationPickerSection: Int, CaseIterable {
-    case mediaPreview, stories, recents, signalContacts, groups
+    case mediaPreview, stories, recents, signalContacts, groups, emptySearchResults
 }
 
 // MARK: -
@@ -1387,6 +1387,8 @@ private struct ConversationCollection {
             return groupConversations
         case .stories:
             return storyConversations
+        case .emptySearchResults:
+            return []
         case .mediaPreview:
             owsFailDebug("Should not be fetching conversations for media preview section")
             return []
@@ -1431,7 +1433,7 @@ private struct ConversationCollection {
             owsFailDebug("section was unexpectedly nil")
             return nil
         }
-        return conversations(section: section)[indexPath.row]
+        return conversations(section: section)[safe: indexPath.row]
     }
 
     fileprivate func conversation(for thread: TSThread) -> ConversationItem? {

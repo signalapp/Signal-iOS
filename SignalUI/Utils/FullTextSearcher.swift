@@ -587,6 +587,11 @@ public class FullTextSearcher: NSObject {
                 }
 
             case let storyThread as TSPrivateStoryThread:
+                guard storyThread.storyViewMode != .disabled else {
+                    // Don't show disabled private story threads; these are queued up
+                    // to be deleted.
+                    break
+                }
                 let sortKey = ConversationSortKey(
                     isContactThread: false,
                     creationDate: storyThread.creationDate,
