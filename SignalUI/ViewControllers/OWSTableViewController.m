@@ -4,7 +4,6 @@
 //
 
 #import "OWSTableViewController.h"
-#import "OWSNavigationController.h"
 #import "Theme.h"
 #import "UIFont+OWS.h"
 #import "UIView+SignalUI.h"

@@ -38,7 +38,6 @@
 #import <SignalServiceKit/StickerInfo.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
-#import <SignalUI/OWSNavigationController.h>
 #import <SignalUI/ViewControllerUtils.h>
 #import <UserNotifications/UserNotifications.h>
 #import <WebRTC/WebRTC.h>

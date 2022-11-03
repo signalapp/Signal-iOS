@@ -95,12 +95,12 @@
 		3402AA55271D9DCD0084CBAE /* AttachmentTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95597271B510500B05242 /* AttachmentTextView.swift */; };
 		3402AA56271D9DCD0084CBAE /* FindByPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9557D271B510500B05242 /* FindByPhoneNumberViewController.swift */; };
 		3402AA57271D9DCD0084CBAE /* MediaMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95578271B510500B05242 /* MediaMessageView.swift */; };
-		3402AA58271D9DCD0084CBAE /* OWSNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A9556B271B510500B05242 /* OWSNavigationController.m */; };
+		3402AA58271D9DCD0084CBAE /* OWSNavigationControllerBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A9556B271B510500B05242 /* OWSNavigationControllerBase.m */; };
 		3402AA59271D9DCD0084CBAE /* OWSViewControllerObjc.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A95575271B510500B05242 /* OWSViewControllerObjc.m */; };
 		3402AA5A271D9DCD0084CBAE /* OWSTableViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9558B271B510500B05242 /* OWSTableViewController2.swift */; };
 		3402AA5B271D9DCD0084CBAE /* StickerPackCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95570271B510500B05242 /* StickerPackCollectionView.swift */; };
 		3402AA5C271D9DCD0084CBAE /* UIViewController+Permissions.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A95583271B510500B05242 /* UIViewController+Permissions.m */; };
-		3402AA5D271D9DCD0084CBAE /* OWSNavigationController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95582271B510500B05242 /* OWSNavigationController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3402AA5D271D9DCD0084CBAE /* OWSNavigationControllerBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95582271B510500B05242 /* OWSNavigationControllerBase.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AA62271D9DEC0084CBAE /* ThreadUtil+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402A9FC271D9CB80084CBAE /* ThreadUtil+SignalUI.swift */; };
 		3402AA63271D9DEC0084CBAE /* ContactShareViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955A5271B510500B05242 /* ContactShareViewModel.swift */; };
 		3402AA64271D9DEC0084CBAE /* CVItemViewModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A955A4271B510500B05242 /* CVItemViewModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -775,6 +775,7 @@
 		66586D3829005A1B00DDA9B9 /* story_viewer_onboarding_1.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3529005A1B00DDA9B9 /* story_viewer_onboarding_1.json */; };
 		66586D3929005A1B00DDA9B9 /* story_viewer_onboarding_3.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3629005A1B00DDA9B9 /* story_viewer_onboarding_3.json */; };
 		66586D4129009C0000DDA9B9 /* TextAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66586D4029009C0000DDA9B9 /* TextAttachment.swift */; };
+		665EF86D290C385B00F490D2 /* OWSNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EF86C290C385B00F490D2 /* OWSNavigationController.swift */; };
 		667E90D028E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667E90CF28E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift */; };
 		667EDE6428F8D6B7001FB487 /* YYAnimatedImage+Duration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */; };
 		667EDE6628FA0372001FB487 /* StoryBadgeCountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667EDE6528FA0372001FB487 /* StoryBadgeCountManager.swift */; };
@@ -2649,7 +2650,7 @@
 		34A95567271B510500B05242 /* OWSWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSWindow.swift; sourceTree = "<group>"; };
 		34A95569271B510500B05242 /* ActionSheetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSheetController.swift; sourceTree = "<group>"; };
 		34A9556A271B510500B05242 /* UIViewController+Permissions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Permissions.h"; sourceTree = "<group>"; };
-		34A9556B271B510500B05242 /* OWSNavigationController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSNavigationController.m; sourceTree = "<group>"; };
+		34A9556B271B510500B05242 /* OWSNavigationControllerBase.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSNavigationControllerBase.m; sourceTree = "<group>"; };
 		34A9556E271B510500B05242 /* LinearHorizontalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinearHorizontalLayout.swift; sourceTree = "<group>"; };
 		34A9556F271B510500B05242 /* StickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerView.swift; sourceTree = "<group>"; };
 		34A95570271B510500B05242 /* StickerPackCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPackCollectionView.swift; sourceTree = "<group>"; };
@@ -2666,7 +2667,7 @@
 		34A9557E271B510500B05242 /* SpamCaptchaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamCaptchaViewController.swift; sourceTree = "<group>"; };
 		34A9557F271B510500B05242 /* TextApprovalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextApprovalViewController.swift; sourceTree = "<group>"; };
 		34A95580271B510500B05242 /* ScreenLockViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScreenLockViewController.m; sourceTree = "<group>"; };
-		34A95582271B510500B05242 /* OWSNavigationController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSNavigationController.h; sourceTree = "<group>"; };
+		34A95582271B510500B05242 /* OWSNavigationControllerBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSNavigationControllerBase.h; sourceTree = "<group>"; };
 		34A95583271B510500B05242 /* UIViewController+Permissions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Permissions.m"; sourceTree = "<group>"; };
 		34A95586271B510500B05242 /* ViewControllerUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerUtils.m; sourceTree = "<group>"; };
 		34A95588271B510500B05242 /* OWSViewControllerObjc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSViewControllerObjc.h; sourceTree = "<group>"; };
@@ -3037,6 +3038,7 @@
 		66586D3529005A1B00DDA9B9 /* story_viewer_onboarding_1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = story_viewer_onboarding_1.json; sourceTree = "<group>"; };
 		66586D3629005A1B00DDA9B9 /* story_viewer_onboarding_3.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = story_viewer_onboarding_3.json; sourceTree = "<group>"; };
 		66586D4029009C0000DDA9B9 /* TextAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAttachment.swift; sourceTree = "<group>"; };
+		665EF86C290C385B00F490D2 /* OWSNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSNavigationController.swift; sourceTree = "<group>"; };
 		667E90CF28E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyStorySettingsLearnMoreSheetViewController.swift; sourceTree = "<group>"; };
 		667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "YYAnimatedImage+Duration.swift"; sourceTree = "<group>"; };
 		667EDE6528FA0372001FB487 /* StoryBadgeCountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryBadgeCountManager.swift; sourceTree = "<group>"; };
@@ -5348,8 +5350,9 @@
 				880C2E01262A19DE006650B6 /* InteractiveSheetViewController.swift */,
 				34A95578271B510500B05242 /* MediaMessageView.swift */,
 				34A95591271B510500B05242 /* ModalActivityIndicatorViewController.swift */,
-				34A95582271B510500B05242 /* OWSNavigationController.h */,
-				34A9556B271B510500B05242 /* OWSNavigationController.m */,
+				665EF86C290C385B00F490D2 /* OWSNavigationController.swift */,
+				34A95582271B510500B05242 /* OWSNavigationControllerBase.h */,
+				34A9556B271B510500B05242 /* OWSNavigationControllerBase.m */,
 				8868A08B287F4F81000E74A5 /* OWSTableSheetViewController.swift */,
 				34A95577271B510500B05242 /* OWSTableViewController.h */,
 				34A95590271B510500B05242 /* OWSTableViewController.m */,
@@ -8343,7 +8346,7 @@
 				3402AAC2271DA6100084CBAE /* OWSAudioPlayer.h in Headers */,
 				88B9870828808A2100F8C74D /* OWSBezierPathView.h in Headers */,
 				3402AAA1271D9E180084CBAE /* OWSBubbleView.h in Headers */,
-				3402AA5D271D9DCD0084CBAE /* OWSNavigationController.h in Headers */,
+				3402AA5D271D9DCD0084CBAE /* OWSNavigationControllerBase.h in Headers */,
 				3402AA66271D9DEC0084CBAE /* OWSQuotedReplyModel.h in Headers */,
 				3402AA85271D9E180084CBAE /* OWSSearchBar.h in Headers */,
 				3402AA4C271D9DCD0084CBAE /* OWSTableViewController.h in Headers */,
@@ -9788,7 +9791,8 @@
 				3402AA83271D9E180084CBAE /* OWSFlatButton.swift in Sources */,
 				3402AA71271D9E180084CBAE /* OWSLayerView.swift in Sources */,
 				3402AAB1271D9E180084CBAE /* OWSNavigationBar.swift in Sources */,
-				3402AA58271D9DCD0084CBAE /* OWSNavigationController.m in Sources */,
+				665EF86D290C385B00F490D2 /* OWSNavigationController.swift in Sources */,
+				3402AA58271D9DCD0084CBAE /* OWSNavigationControllerBase.m in Sources */,
 				3402AA69271D9DEC0084CBAE /* OWSQuotedReplyModel.m in Sources */,
 				3402AA6E271D9E180084CBAE /* OWSSearchBar.m in Sources */,
 				342FFE57271DA8C9000AC89F /* OWSSounds+SignalUI.swift in Sources */,

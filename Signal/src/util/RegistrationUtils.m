@@ -10,7 +10,6 @@
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
-#import <SignalUI/OWSNavigationController.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -19,7 +19,6 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
-#import <SignalUI/OWSNavigationController.h>
 #import <SignalUI/Theme.h>
 #import <SignalUI/UIUtil.h>
 #import <SignalUI/ViewControllerUtils.h>
