@@ -86,25 +86,6 @@ NS_ASSUME_NONNULL_BEGIN
     return r;
 }
 
-- (NSDictionary *)groupBy:(id (^)(id value))keySelector {
-    tskit_require(keySelector != nil);
-
-    NSMutableDictionary *result = [NSMutableDictionary dictionary];
-
-    for (id item in self) {
-        id key = keySelector(item);
-
-        NSMutableArray *group = result[key];
-        if (group == nil) {
-            group       = [NSMutableArray array];
-            result[key] = group;
-        }
-        [group addObject:item];
-    }
-
-    return result;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -59,14 +59,4 @@
     XCTAssert([[(@[ @1, @2 ]) filter:^BOOL(NSNumber *x) { return x.intValue == 2; }] isEqualToArray:(@[ @2 ])]);
 }
 
-- (void)testGroupBy
-{
-    XCTAssert([[@[] groupBy:^id(id value) { return @true; }] isEqual:@{}]);
-    XCTAssert([[@[ @1 ] groupBy:^id(id value) { return @true; }] isEqual:@{ @true : @[ @1 ] }]);
-    XCTAssert([[(@[ @1, @2 ]) groupBy:^id(id value) { return @true; }] isEqual:@{ @true : (@[ @1, @2 ]) }]);
-    XCTAssert([[(@[ @1, @2 ]) groupBy:^id(id value) { return value; }] isEqual:(@{ @1 : @[ @1 ], @2 : @[ @2 ] })]);
-    XCTAssert([[(@[ @1, @1, @2, @3, @5 ]) groupBy:^id(NSNumber *value) { return @(value.intValue / 2); }]
-        isEqual:(@{ @0 : @[ @1, @1 ], @1 : @[ @2, @3 ], @2 : @[ @5 ] })]);
-}
-
 @end

@@ -22,8 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// Returns an array of all the results of passing items from this array through the given projection function.
 - (NSArray<ObjectType> *)filter:(BOOL (^)(ObjectType item))predicate;
 
-- (NSDictionary<id, NSArray<ObjectType> *> *)groupBy:(id (^)(id value))keySelector;
-
 @end
 
 NS_ASSUME_NONNULL_END
