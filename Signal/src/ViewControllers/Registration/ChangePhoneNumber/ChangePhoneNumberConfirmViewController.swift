@@ -44,13 +44,13 @@ class ChangePhoneNumberConfirmViewController: OWSViewController {
         rootView.autoPinEdge(toSuperviewSafeArea: .leading)
         rootView.autoPinEdge(toSuperviewSafeArea: .trailing)
         rootView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        self.autoPinView(toBottomOfViewControllerOrKeyboard: rootView, avoidNotch: true)
+        rootView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
         updateContents()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateContents()
     }

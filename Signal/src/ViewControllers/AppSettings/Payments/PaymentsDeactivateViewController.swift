@@ -45,8 +45,8 @@ public class PaymentsDeactivateViewController: OWSViewController {
         updateContents()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateContents()
     }

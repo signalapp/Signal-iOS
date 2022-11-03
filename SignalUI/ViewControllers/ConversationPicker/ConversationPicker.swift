@@ -225,8 +225,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         presentationTime = presentationTime ?? Date()
     }
 
-    open override func applyTheme() {
-        super.applyTheme()
+    open override func themeDidChange() {
+        super.themeDidChange()
 
         searchBar.searchFieldBackgroundColorOverride = Theme.searchFieldElevatedBackgroundColor
         updateTableContents(shouldReload: false)

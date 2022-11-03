@@ -45,8 +45,8 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
         updateTableContents()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateTableContents()
     }

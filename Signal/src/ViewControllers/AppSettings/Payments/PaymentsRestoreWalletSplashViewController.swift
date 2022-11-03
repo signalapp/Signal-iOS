@@ -37,8 +37,8 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
         createContents()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateContents()
     }

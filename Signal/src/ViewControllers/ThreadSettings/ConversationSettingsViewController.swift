@@ -181,6 +181,11 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         updateNavigationBar()
     }
 
+    override func themeDidChange() {
+        super.themeDidChange()
+        updateTableContents()
+    }
+
     func updateNavigationBar() {
         guard canEditConversationAttributes else {
             navigationItem.rightBarButtonItem = nil

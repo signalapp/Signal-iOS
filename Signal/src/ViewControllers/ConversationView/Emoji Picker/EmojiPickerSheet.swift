@@ -90,10 +90,13 @@ class EmojiPickerSheet: InteractiveSheetViewController {
         collectionView.pickerDelegate = self
         collectionView.alwaysBounceVertical = true
 
-        contentView.addSubview(sectionToolbar)
-        sectionToolbar.autoPinWidthToSuperview()
-        let offset: CGFloat = UIDevice.current.hasIPhoneXNotch ? 32 : 0
-        autoPinView(toBottomOfViewControllerOrKeyboard: sectionToolbar, avoidNotch: false, adjustmentWithKeyboardPresented: offset)
+        // NOTE: the toolbar is a subview of the keyboard layout view so it
+        // properly animates as the keyboard rises. making it part of the content view
+        // cancels those animations and makes it pop into place which looks bad.
+        // might be worth ripping apart at some point.
+        keyboardLayoutGuideView.addSubview(sectionToolbar)
+        sectionToolbar.autoPinWidth(toWidthOf: contentView)
+        sectionToolbar.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideView)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

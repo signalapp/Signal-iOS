@@ -73,8 +73,8 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
         textfield.becomeFirstResponder()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateContents()
     }
@@ -86,7 +86,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
         rootView.alignment = .fill
         view.addSubview(rootView)
         rootView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        autoPinView(toBottomOfViewControllerOrKeyboard: rootView, avoidNotch: true)
+        rootView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
         rootView.autoPinWidthToSuperviewMargins()
 
         updateContents()

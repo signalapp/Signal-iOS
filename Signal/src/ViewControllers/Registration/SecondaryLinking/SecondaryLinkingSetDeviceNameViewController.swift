@@ -84,7 +84,7 @@ class SecondaryLinkingSetDeviceNameViewController: OnboardingBaseViewController 
         // Because of the keyboard, vertical spacing can get pretty cramped,
         // so we have custom spacer logic.
         stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
-        autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
+        stackView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
     }
 
     // MARK: -

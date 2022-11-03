@@ -60,8 +60,8 @@ public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
         return textField
     }()
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         nameTextField.textColor = Theme.primaryTextColor
     }

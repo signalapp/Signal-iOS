@@ -145,8 +145,8 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
             }))
     }
 
-    override func applyTheme() {
-        super.applyTheme()
+    override func themeDidChange() {
+        super.themeDidChange()
         updateTableContents()
     }
 

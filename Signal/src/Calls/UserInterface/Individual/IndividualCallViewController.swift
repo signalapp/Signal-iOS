@@ -218,8 +218,6 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
         allAudioSources = Set(callService.audioService.availableInputs)
 
-        self.shouldUseTheme = false
-
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateOrientationForPhone),
                                                name: CallService.phoneOrientationDidChange,

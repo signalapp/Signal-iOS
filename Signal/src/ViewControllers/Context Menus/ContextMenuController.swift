@@ -466,8 +466,8 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
         // We can't use `viewWillTransition(to:with:)` here because we're added directly to the window
     }
 
-    override func applyTheme() {
-        super.applyTheme()
+    override func themeDidChange() {
+        super.themeDidChange()
         delegate?.contextMenuControllerRequestsDismissal(self)
 
         // TODO: Support theme changes

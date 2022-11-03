@@ -168,9 +168,12 @@ final class ContactSupportViewController: OWSTableViewController2 {
         navigationItem.rightBarButtonItem?.isEnabled = ((descriptionField.text?.count ?? 0) > 10) && selectedFilter != nil
     }
 
-    override func applyTheme() {
-        super.applyTheme()
+    override func themeDidChange() {
+        super.themeDidChange()
+        applyTheme()
+    }
 
+    private func applyTheme() {
         navigationItem.rightBarButtonItem?.tintColor = Theme.accentBlueColor
 
         // Rebuild the contents to force them to update their theme

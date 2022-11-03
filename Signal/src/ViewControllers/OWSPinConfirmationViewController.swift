@@ -87,7 +87,7 @@ public class PinConfirmationViewController: OWSViewController {
 
         view.addSubview(containerView)
         containerView.autoPinWidthToSuperview()
-        autoPinView(toBottomOfViewControllerOrKeyboard: containerView, avoidNotch: true)
+        containerView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
         // We want the background to extend to the bottom of the screen
         // behind the safe area, so we add that inset to our bottom inset

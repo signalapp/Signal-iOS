@@ -169,6 +169,30 @@ open class OWSTableViewController2: OWSViewController {
                                                object: nil)
     }
 
+    open override func themeDidChange() {
+        super.themeDidChange()
+
+        applyTheme()
+        applyContents()
+    }
+
+    private func applyTheme() {
+        applyTheme(to: self)
+
+        tableView.backgroundColor = self.tableBackgroundColor
+        tableView.sectionIndexColor = forceDarkMode ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
+
+        updateNavbarStyling()
+
+        if useNewStyle {
+            tableView.separatorColor = .clear
+            tableView.separatorInset = .zero
+            tableView.separatorStyle = .none
+        } else {
+            tableView.separatorColor = Theme.cellSeparatorColor
+        }
+    }
+
     public var shouldHideBottomFooter = false {
         didSet {
             let didChange = oldValue != shouldHideBottomFooter
@@ -183,18 +207,17 @@ open class OWSTableViewController2: OWSViewController {
     private func updateBottomConstraint() {
         bottomFooterConstraint?.autoRemove()
         bottomFooterConstraint = nil
-        self.removeBottomLayout()
 
         // Pin bottom edge of tableView.
         if !shouldHideBottomFooter,
            let bottomFooter = bottomFooter {
             if shouldAvoidKeyboard {
-                bottomFooterConstraint = autoPinView(toBottomOfViewControllerOrKeyboard: bottomFooter, avoidNotch: true)
+                bottomFooterConstraint = bottomFooter.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
             } else {
                 bottomFooterConstraint = bottomFooter.autoPinEdge(toSuperviewEdge: .bottom)
             }
         } else if shouldAvoidKeyboard {
-            bottomFooterConstraint = autoPinView(toBottomOfViewControllerOrKeyboard: tableView, avoidNotch: true)
+            bottomFooterConstraint = tableView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
         } else {
             bottomFooterConstraint = tableView.autoPinEdge(toSuperviewEdge: .bottom)
         }
@@ -969,15 +992,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     // MARK: - Theme
 
     @objc
-    open override func themeDidChange() {
-        AssertIsOnMainThread()
-
-        super.themeDidChange()
-
-        applyContents()
-    }
-
-    @objc
     open var tableBackgroundColor: UIColor {
         AssertIsOnMainThread()
 
@@ -1049,26 +1063,6 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             return forceDarkMode ? Theme.darkThemeTableView2PresentedSeparatorColor : Theme.tableView2PresentedSeparatorColor
         } else {
             return forceDarkMode ? Theme.darkThemeTableView2SeparatorColor : Theme.tableView2SeparatorColor
-        }
-    }
-
-    @objc
-    open override func applyTheme() {
-        AssertIsOnMainThread()
-
-        applyTheme(to: self)
-
-        tableView.backgroundColor = self.tableBackgroundColor
-        tableView.sectionIndexColor = forceDarkMode ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
-
-        updateNavbarStyling()
-
-        if useNewStyle {
-            tableView.separatorColor = .clear
-            tableView.separatorInset = .zero
-            tableView.separatorStyle = .none
-        } else {
-            tableView.separatorColor = Theme.cellSeparatorColor
         }
     }
 

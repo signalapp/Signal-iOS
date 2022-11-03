@@ -72,8 +72,8 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    override func applyTheme() {
-        super.applyTheme()
+    override func themeDidChange() {
+        super.themeDidChange()
 
         helper.descriptionTextView.linkTextAttributes = [
             .foregroundColor: Theme.primaryTextColor,

@@ -252,8 +252,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         stopUpdateBalanceTimer()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateTableContents()
     }

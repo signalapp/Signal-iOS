@@ -46,8 +46,8 @@ class PaymentsHistoryViewController: OWSTableViewController2 {
         )
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateTableContents()
     }

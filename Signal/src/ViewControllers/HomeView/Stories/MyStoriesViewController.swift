@@ -64,9 +64,12 @@ class MyStoriesViewController: OWSViewController {
         applyTheme()
     }
 
-    override func applyTheme() {
-        super.applyTheme()
+    override func themeDidChange() {
+        super.themeDidChange()
+        applyTheme()
+    }
 
+    private func applyTheme() {
         emptyStateLabel.textColor = Theme.secondaryTextAndIconColor
 
         tableView.reloadData()

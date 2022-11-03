@@ -66,8 +66,8 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
         return textField
     }()
 
-    override func applyTheme() {
-        super.applyTheme()
+    override func themeDidChange() {
+        super.themeDidChange()
 
         updateTableContents()
     }

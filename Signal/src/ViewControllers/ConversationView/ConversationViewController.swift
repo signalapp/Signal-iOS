@@ -486,6 +486,7 @@ public class ConversationViewController: OWSViewController {
     public override func themeDidChange() {
         super.themeDidChange()
 
+        applyTheme()
         self.updateThemeIfNecessary()
     }
 
@@ -502,11 +503,7 @@ public class ConversationViewController: OWSViewController {
         self.applyTheme()
     }
 
-    public override func applyTheme() {
-        AssertIsOnMainThread()
-
-        super.applyTheme()
-
+    private func applyTheme() {
         guard hasViewWillAppearEverBegun else {
             owsFailDebug("Not yet ready.")
             return

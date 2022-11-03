@@ -640,13 +640,16 @@ private class NoSelectedConversationViewController: OWSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.applyTheme), name: .ThemeDidChange, object: nil)
-
         applyTheme()
     }
 
     @objc
-    override func applyTheme() {
+    override func themeDidChange() {
+        super.themeDidChange()
+        applyTheme()
+    }
+
+    private func applyTheme() {
         view.backgroundColor = Theme.backgroundColor
         logoImageView.tintColor = Theme.isDarkThemeEnabled ? UIColor.white.withAlphaComponent(0.12) : UIColor.black.withAlphaComponent(0.12)
     }

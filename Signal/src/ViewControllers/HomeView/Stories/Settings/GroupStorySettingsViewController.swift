@@ -24,8 +24,8 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    override func applyTheme() {
-        super.applyTheme()
+    override func themeDidChange() {
+        super.themeDidChange()
 
         contextButton.tintColor = Theme.primaryIconColor
     }

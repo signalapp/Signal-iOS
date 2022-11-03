@@ -56,8 +56,8 @@ class ChangePhoneNumberInputViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateTableContents()
     }

@@ -65,7 +65,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
 
         view.addSubview(tableView)
         tableView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-        autoPinView(toBottomOfViewControllerOrKeyboard: tableView, avoidNotch: true)
+        tableView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
         tableView.delegate = self
         tableView.dataSource = self
 
@@ -195,9 +195,12 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         }
     }
 
-    override func applyTheme() {
-        super.applyTheme()
+    override func themeDidChange() {
+        super.themeDidChange()
+        applyTheme()
+    }
 
+    private func applyTheme() {
         emptyStateLabel.textColor = Theme.secondaryTextAndIconColor
 
         for indexPath in self.tableView.indexPathsForVisibleRows ?? [] {

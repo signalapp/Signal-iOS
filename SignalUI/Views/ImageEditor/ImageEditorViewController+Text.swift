@@ -72,7 +72,12 @@ extension ImageEditorViewController {
         textViewContainer.autoPinEdge(toSuperviewEdge: .top)
         textViewContainer.autoPinWidthToSuperview()
         NSLayoutConstraint.autoSetPriority(.defaultHigh) {
-            autoPinView(toBottomOfViewControllerOrKeyboard: textViewContainer, avoidNotch: false)
+            textViewContainer.autoPinEdge(
+                .bottom,
+                to: .bottom,
+                of: keyboardLayoutGuideView,
+                withOffset: textViewAccessoryToolbar.height
+            )
         }
         textViewContainer.autoPinEdge(.bottom, to: .top, of: textToolbar, withOffset: 0, relation: .lessThanOrEqual)
 
@@ -113,16 +118,12 @@ extension ImageEditorViewController {
         textViewBackgroundView.backgroundColor = textToolbar.textBackgroundColor
     }
 
-    override func updateBottomLayoutConstraint(fromInset before: CGFloat, toInset after: CGFloat) {
+    func updateBottomLayoutConstraint(forKeyboardFrame keyboardFrame: CGRect) {
         guard mode == .text, textUIInitialized else {
-            super.updateBottomLayoutConstraint(fromInset: before, toInset: after)
             return
         }
 
-        let accessoryViewHeight = textViewAccessoryToolbar.height
-        super.updateBottomLayoutConstraint(fromInset: before, toInset: after - accessoryViewHeight)
-
-        let onScreenKeyboardVisible = after > 150
+        let onScreenKeyboardVisible = keyboardFrame.height > 150
         textViewAccessoryToolbar.alpha = onScreenKeyboardVisible ? 1 : 0
     }
 

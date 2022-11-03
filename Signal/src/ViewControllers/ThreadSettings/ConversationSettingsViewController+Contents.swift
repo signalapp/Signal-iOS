@@ -36,11 +36,6 @@ extension ConversationSettingsViewController {
 
     // MARK: - Table
 
-    override func themeDidChange() {
-        super.themeDidChange()
-        updateTableContents()
-    }
-
     @objc
     func updateTableContents(shouldReload: Bool = true) {
 

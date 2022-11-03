@@ -153,7 +153,6 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        applyTheme()
         ensureBottomFooterVisibility()
     }
 
@@ -171,8 +170,6 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         let navView = forwardNavigationViewController.view!
         self.contentView.addSubview(navView)
         navView.autoPinEdgesToSuperviewEdges()
-
-        applyTheme()
     }
 
     fileprivate func selectSearchBar() {

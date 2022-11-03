@@ -49,13 +49,13 @@ class ChangePhoneNumberSplashViewController: OWSViewController {
         bottomContainer.autoPinEdge(toSuperviewSafeArea: .leading)
         bottomContainer.autoPinEdge(toSuperviewSafeArea: .trailing)
         bottomContainer.autoPinEdge(.top, to: .bottom, of: scrollView)
-        autoPinView(toBottomOfViewControllerOrKeyboard: bottomContainer, avoidNotch: true)
+        bottomContainer.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
         updateContents()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateContents()
     }

@@ -343,8 +343,8 @@ public class SendPaymentViewController: OWSViewController {
         helper?.refreshObservedValues()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateContents()
     }
@@ -659,7 +659,7 @@ public class SendPaymentViewController: OWSViewController {
         rootStack.autoPinEdge(toSuperviewMargin: .leading)
         rootStack.autoPinEdge(toSuperviewMargin: .trailing)
         rootStack.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        autoPinView(toBottomOfViewControllerOrKeyboard: rootStack, avoidNotch: true)
+        rootStack.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
         bigAmountLabel.font = UIFont.ows_dynamicTypeLargeTitle1Clamped.withSize(60)
         bigAmountLabel.textAlignment = .center

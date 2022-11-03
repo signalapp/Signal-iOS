@@ -5,68 +5,101 @@
 
 import Foundation
 
+public enum ViewControllerLifecycle: Equatable {
+    /// `viewDidLoad` hasn't happened yet.
+    case notLoaded
+    /// Prior to `viewWillAppear` and after `viewDidDisappear`.
+    case notAppeared
+    /// After `viewWillAppear` and before `viewDidAppear`.
+    case willAppear
+    /// After `viewDidAppear` and before `viewWillDisappear`.
+    case appeared
+    /// After `viewWillDisappear` and before `viewDidDisappear`.
+    case willDisappear
+
+    var isLoaded: Bool {
+        return self != .notLoaded
+    }
+
+    var isVisible: Bool {
+        switch self {
+        case .willAppear, .appeared, .willDisappear:
+            return true
+        default:
+            return false
+        }
+    }
+}
+
 @objc
 open class OWSViewController: UIViewController {
 
-    /// If observing keyboard events is unecessary, override this to true to just drop them for a slight performance gain.
-    public var shouldIgnoreKeyboardChanges = false
-
-    // If true, the bottom view never "reclaims" layout space if the keyboard is dismissed.
-    // Defaults to false.
-    public var shouldBottomViewReserveSpaceForKeyboard = false
-
-    /// If true, sets the root view's background color to `Theme.background` on load.
-    public var shouldUseTheme: Bool = false
-
-    @discardableResult
-    public final func autoPinView(
-        toBottomOfViewControllerOrKeyboard view: UIView,
-        avoidNotch: Bool,
-        adjustmentWithKeyboardPresented adjustment: CGFloat = 0
-    ) -> NSLayoutConstraint {
-        owsAssertDebug(self.bottomLayoutConstraint == nil)
-
-        self.observeNotificationsForBottomView()
-
-        self.bottomLayoutView = view
-        self.keyboardAdjustmentOffsetForAutoPinnedToBottomView = adjustment
-        if avoidNotch {
-            self.bottomLayoutConstraint = view.autoPin(toBottomLayoutGuideOf: self, withInset: self.lastBottomLayoutInset)
-        } else {
-            self.bottomLayoutConstraint = view.autoPinEdge(
-                .bottom,
-                to: .bottom,
-                of: self.view,
-                withOffset: self.lastBottomLayoutInset
-            )
+    /// Current state of the view lifecycle.
+    /// Note changes are triggered by the lifecycle methods `viewDidLoad` `viewWillAppear` `viewDidAppear`
+    /// `viewWillDisappear` `viewDidDisappear`; those can be overriden to get state change hooks as per normal.
+    public private(set) final var lifecycle = ViewControllerLifecycle.notLoaded {
+        didSet {
+            achievedLifecycleStates.insert(lifecycle)
         }
-        return self.bottomLayoutConstraint!
     }
 
-    public final func removeBottomLayout() {
-        bottomLayoutConstraint?.autoRemove()
-        bottomLayoutView = nil
-        bottomLayoutConstraint = nil
+    /// All lifecycle states achieved so far in the lifetime of this view controller.
+    public private(set) final var achievedLifecycleStates = Set<ViewControllerLifecycle>()
+
+    // MARK: - Keyboard handling
+
+    public enum KeyboardObservationBehavior {
+        /// Don't observe keyboard frame changes.
+        /// WARNING: makes `keyboardFrameDidChange` non-functional.
+        case never
+        /// Only observe keyboard frame changes while the view is between `willAppear` and `didDisappear`.
+        case whileLifecycleVisible
+        /// Always observe keyboard frame changes.
+        case always
     }
 
+    public final var keyboardObservationBehavior: KeyboardObservationBehavior = .always {
+        didSet {
+            observeKeyboardNotificationsIfNeeded()
+        }
+    }
+
+    /// Subclasses can override this method for a hook on keyboard frame changes.
+    /// NOTE: overrides _must_ call the superclass version of this method, similarly to other view lifecycle methods.
+    /// - Parameter newFrame: The frame of the keyboard _after_ any animations, in the view controller's view's coordinates.
+    open func keyboardFrameDidChange(
+        _ newFrame: CGRect,
+        animationDuration: TimeInterval,
+        animationOptions: UIView.AnimationOptions
+    ) {
+        self.handleKeyboardFrameChange(newFrame, animationDuration, animationOptions)
+    }
+
+    /// A non-rendering spacer view that tracks the space _not_ covered by the keyboard.
+    /// When the keyboard is collapsed, the bottom of this view is the bottom of the root view _not_ respecting safe area.
+    public final var keyboardLayoutGuideView: SpacerView { getOrCreateKeyboardLayoutView(safeArea: false) }
+
+    /// A non-rendering spacer view that tracks the space _not_ covered by the keyboard.
+    /// When the keyboard is collapsed, the bottom of this view is the bottom of the root view respecting safe area.
+    public final var keyboardLayoutGuideViewSafeArea: SpacerView { getOrCreateKeyboardLayoutView(safeArea: true) }
+
+    // MARK: - Themeing
+
+    /// Subclasses can override to respond to theme changes.
+    /// NOTE: overrides _must_ call the superclass version of this method, similarly to other view lifecycle methods.
     @objc
-    open dynamic func themeDidChange() {
+    open func themeDidChange() {
         AssertIsOnMainThread()
 
-        applyTheme()
+        // Do nothing; just serves as a hook for subclasses.
     }
 
-    @objc
-    open dynamic func applyTheme() {
-        AssertIsOnMainThread()
-
-        // Do nothing; this is a convenience hook for subclasses.
-    }
+    // MARK: - Init
 
     public init() {
         super.init(nibName: nil, bundle: nil)
 
-        self.observeActivation()
+        self.observeAppState()
     }
 
     deinit {
@@ -79,12 +112,40 @@ open class OWSViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // MARK: - Lifecycle
+
+    /// Subclasses can override to respond to application state changes.
+    /// NOTE: overrides _must_ call the superclass version of this method, similarly to other view lifecycle methods.
+    @objc
+    open func appWillEnterForeground() {
+        // Do nothing; just a hook for subclasses
+    }
+
+    /// Subclasses can override to respond to application state changes.
+    /// NOTE: overrides _must_ call the superclass version of this method, similarly to other view lifecycle methods.
+    @objc
+    open func appDidBecomeActive() {
+        setNeedsStatusBarAppearanceUpdate()
+    }
+
+    /// Subclasses can override to respond to application state changes.
+    /// NOTE: overrides _must_ call the superclass version of this method, similarly to other view lifecycle methods.
+    @objc
+    open func appWillResignActive() {
+        // Do nothing; just a hook for subclasses
+    }
+
+    /// Subclasses can override to respond to application state changes.
+    /// NOTE: overrides _must_ call the superclass version of this method, similarly to other view lifecycle methods.
+    @objc
+    open func appDidEnterBackground() {
+        // Do nothing; just a hook for subclasses
+    }
+
     open override func viewDidLoad() {
         super.viewDidLoad()
 
-        if shouldUseTheme {
-            view.backgroundColor = Theme.backgroundColor
-        }
+        self.lifecycle = .notAppeared
 
         NotificationCenter.default.addObserver(
             self,
@@ -94,20 +155,42 @@ open class OWSViewController: UIViewController {
         )
     }
 
+    open override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        self.lifecycle = .willAppear
+
+        observeKeyboardNotificationsIfNeeded()
+    }
+
     open override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        shouldAnimateBottomLayout = true
+        self.lifecycle = .appeared
 
         #if DEBUG
         ensureNavbarAccessibilityIds()
         #endif
     }
 
+    open override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        self.lifecycle = .willDisappear
+    }
+
     open override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        shouldAnimateBottomLayout = false
+        self.lifecycle = .notAppeared
+
+        observeKeyboardNotificationsIfNeeded()
+    }
+
+    open override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+
+        updateKeyboardLayoutOffsets()
     }
 
     #if DEBUG
@@ -138,11 +221,29 @@ open class OWSViewController: UIViewController {
 
     // MARK: - Activation
 
-    private func observeActivation() {
+    private func observeAppState() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(owsViewControllerApplicationDidBecomeActive),
+            selector: #selector(appWillEnterForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidBecomeActive),
             name: UIApplication.didBecomeActiveNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appWillResignActive),
+            name: UIApplication.willResignActiveNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidEnterBackground),
+            name: UIApplication.didEnterBackgroundNotification,
             object: nil
         )
     }
@@ -154,69 +255,63 @@ open class OWSViewController: UIViewController {
 
     // MARK: - Keyboard Layout
 
-    private var lastBottomLayoutInset: CGFloat = 0
-    private var bottomLayoutView: UIView?
-    private var bottomLayoutConstraint: NSLayoutConstraint?
-    private var shouldAnimateBottomLayout = false
-    private var keyboardAdjustmentOffsetForAutoPinnedToBottomView: CGFloat = 0
+    private var isObservingKeyboardNotifications = false
 
-    private var hasObservedNotifications = false
+    static var keyboardNotificationNames: [Notification.Name] = [
+        UIResponder.keyboardWillShowNotification,
+        UIResponder.keyboardDidShowNotification,
+        UIResponder.keyboardWillHideNotification,
+        UIResponder.keyboardDidHideNotification,
+        UIResponder.keyboardWillChangeFrameNotification,
+        UIResponder.keyboardDidChangeFrameNotification
+    ]
 
-    private func observeNotificationsForBottomView() {
-        AssertIsOnMainThread()
-
-        guard !hasObservedNotifications else {
+    private func observeKeyboardNotificationsIfNeeded() {
+        switch keyboardObservationBehavior {
+        case .always:
+            break
+        case .never:
+            stopObservingKeyboardNotifications()
             return
+        case .whileLifecycleVisible:
+            if !lifecycle.isVisible {
+                stopObservingKeyboardNotifications()
+                return
+            }
         }
-        self.hasObservedNotifications = true
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleKeyboardNotificationBase),
-            name: UIResponder.keyboardWillShowNotification,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleKeyboardNotificationBase),
-            name: UIResponder.keyboardDidShowNotification,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleKeyboardNotificationBase),
-            name: UIResponder.keyboardWillHideNotification,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleKeyboardNotificationBase),
-            name: UIResponder.keyboardDidHideNotification,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleKeyboardNotificationBase),
-            name: UIResponder.keyboardWillChangeFrameNotification,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleKeyboardNotificationBase),
-            name: UIResponder.keyboardDidChangeFrameNotification,
-            object: nil
-        )
+        if isObservingKeyboardNotifications { return }
+        isObservingKeyboardNotifications = true
 
+        Self.keyboardNotificationNames.forEach {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(handleKeyboardNotificationBase(_:)),
+                name: $0,
+                object: nil
+            )
+        }
     }
+
+    private func stopObservingKeyboardNotifications() {
+        Self.keyboardNotificationNames.forEach {
+            NotificationCenter.default.removeObserver(self, name: $0, object: nil)
+        }
+        isObservingKeyboardNotifications = false
+    }
+
+    private lazy var lastKnownKeyboardFrame: CGRect = {
+        let deviceBounds = CurrentAppContext().frame
+        return CGRect(
+            x: deviceBounds.minX,
+            y: deviceBounds.maxY,
+            width: deviceBounds.width,
+            height: 0
+        )
+    }()
 
     @objc
     private func handleKeyboardNotificationBase(_ notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        guard !shouldIgnoreKeyboardChanges else {
-            return
-        }
-
         let userInfo = notification.userInfo
 
         guard var keyboardEndFrame = (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
@@ -229,73 +324,110 @@ open class OWSViewController: UIViewController {
             // of CGRect zero. This breaks the math below.
             //
             // If our keyboard end frame is CGRectZero, build a fake rect that's translated off the bottom edge.
-            let deviceBounds = UIScreen.main.bounds
-            keyboardEndFrame = deviceBounds.offsetBy(dx: 0, dy: deviceBounds.height)
+            let deviceBounds = CurrentAppContext().frame
+            keyboardEndFrame = CGRect(
+                x: deviceBounds.minX,
+                y: deviceBounds.maxY,
+                width: deviceBounds.width,
+                height: 0
+            )
         }
 
         let keyboardEndFrameConverted = self.view.convert(keyboardEndFrame, from: nil)
-        // Adjust the position of the bottom view to account for the keyboard's
-        // intrusion into the view.
-        //
-        // On iPhones with no physical home button, when no keyboard is present,
-        // we include a buffer at the bottom of the screen so the bottom view
-        // clears the floating "home button". But because the keyboard includes it's own buffer,
-        // we subtract the size of bottom "safe area",
-        // else we'd have an unnecessary buffer between the popped keyboard and the input bar.
-        let newInset = max(
-            0,
-            self.view.height
-            + self.keyboardAdjustmentOffsetForAutoPinnedToBottomView
-            - self.view.safeAreaInsets.bottom
-            - keyboardEndFrameConverted.origin.y
-        )
-        self.lastBottomLayoutInset = newInset
 
-        let rawCurve = userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int
-        let curve = UIView.AnimationCurve(rawValue: rawCurve ?? 0) ?? .easeInOut
+        guard keyboardEndFrameConverted != lastKnownKeyboardFrame else {
+            // No change.
+            return
+        }
+        lastKnownKeyboardFrame = keyboardEndFrameConverted
+
+        let animationOptions: UIView.AnimationOptions
+        if let rawCurve = userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt {
+            animationOptions = .init(rawValue: rawCurve << 16)
+        } else {
+            animationOptions = .curveEaseInOut
+        }
         let duration = userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval ?? 0
         // Should we ignore keyboard changes if they're coming from somewhere out-of-process?
         // BOOL isOurKeyboard = [notification.userInfo[UIKeyboardIsLocalUserInfoKey] boolValue];
 
-        let updateLayout = {
-            if self.shouldBottomViewReserveSpaceForKeyboard, newInset == 0 {
-                // To avoid unnecessary animations / layout jitter,
-                // some views never reclaim layout space when the keyboard is dismissed.
-                //
-                // They _do_ need to relayout if the user switches keyboards.
-                return
-            }
-            self.updateBottomLayoutConstraint(
-                fromInset: -1 * (self.bottomLayoutConstraint?.constant ?? 0),
-                toInset: newInset
-            )
+        keyboardFrameDidChange(keyboardEndFrameConverted, animationDuration: duration, animationOptions: animationOptions)
+    }
+
+    // This should be able to be a UILayoutGuide instead, but alas, PureLayout doesn't support those.
+    private var _keyboardLayoutView: SpacerView?
+    private var keyboardLayoutViewBottomConstraint: NSLayoutConstraint?
+    private var _keyboardLayoutViewSafeArea: SpacerView?
+    private var keyboardLayoutViewSafeAreaBottomConstraint: NSLayoutConstraint?
+
+    private func getOrCreateKeyboardLayoutView(safeArea: Bool) -> SpacerView {
+        if let keyboardLayoutView = safeArea ? _keyboardLayoutViewSafeArea : _keyboardLayoutView {
+            return keyboardLayoutView
         }
-        if self.shouldAnimateBottomLayout, duration > 0, !UIAccessibility.isReduceMotionEnabled {
-            UIView.beginAnimations("keyboardStateChange", context: nil)
-            UIView.setAnimationBeginsFromCurrentState(true)
-            UIView.setAnimationCurve(curve)
-            UIView.setAnimationDuration(duration)
-            updateLayout()
-            UIView.commitAnimations()
+        let view = PassthroughTouchSpacerView()
+        self.view.addSubview(view)
+        if safeArea {
+            view.autoPinEdgesToSuperviewSafeArea(with: .zero, excludingEdge: .bottom)
+            keyboardLayoutViewSafeAreaBottomConstraint = view.autoPinEdge(toSuperviewSafeArea: .bottom)
+            _keyboardLayoutViewSafeArea = view
         } else {
+            view.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+            keyboardLayoutViewBottomConstraint = view.autoPinEdge(.bottom, to: .bottom, of: self.view)
+            _keyboardLayoutView = view
+        }
+        updateKeyboardLayoutOffsets()
+        return view
+    }
+
+    private func handleKeyboardFrameChange(_ keyboardEndFrame: CGRect, _ duration: TimeInterval, _ animationOptions: UIView.AnimationOptions) {
+        guard lifecycle.isVisible, duration > 0, !UIAccessibility.isReduceMotionEnabled else {
             // UIKit by default (sometimes? never?) animates all changes in response to keyboard events.
             // We want to suppress those animations if the view isn't visible,
             // otherwise presentation animations don't work properly.
             UIView.performWithoutAnimation {
-                updateLayout()
+                self.updateKeyboardLayoutOffsets()
             }
+            return
         }
+        updateKeyboardLayoutOffsets()
+        UIView.animate(
+            withDuration: duration,
+            delay: 0,
+            options: animationOptions,
+            animations: {
+                self.view.layoutIfNeeded()
+            }
+        )
     }
 
-    @objc
-    open dynamic func updateBottomLayoutConstraint(fromInset before: CGFloat, toInset after: CGFloat) {
-        self.bottomLayoutConstraint?.constant = -after
-        self.bottomLayoutView?.superview?.layoutIfNeeded()
+    private func updateKeyboardLayoutOffsets() {
+        if let keyboardLayoutViewBottomConstraint = self.keyboardLayoutViewBottomConstraint {
+            keyboardLayoutViewBottomConstraint.constant = lastKnownKeyboardFrame.minY - view.bounds.height
+        }
+        if let keyboardLayoutViewSafeAreaBottomConstraint = self.keyboardLayoutViewSafeAreaBottomConstraint {
+            if lastKnownKeyboardFrame.minY < view.height - view.safeAreaInsets.bottom {
+                keyboardLayoutViewSafeAreaBottomConstraint.constant =
+                    lastKnownKeyboardFrame.minY - (view.bounds.height - view.safeAreaInsets.bottom)
+            } else {
+                keyboardLayoutViewSafeAreaBottomConstraint.constant = 0
+            }
+        }
     }
 
     // MARK: - Orientation
 
     open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return UIDevice.current.defaultSupportedOrientations
+    }
+}
+
+private class PassthroughTouchSpacerView: SpacerView {
+
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let view = super.hitTest(point, with: event)
+        if view == self {
+            return nil
+        }
+        return view
     }
 }

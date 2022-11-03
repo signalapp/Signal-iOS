@@ -10,8 +10,8 @@ open class RecipientPickerContainerViewController: OWSViewController {
 
     private var didApplyTheme = false
 
-    public override func applyTheme() {
-        super.applyTheme()
+    open override func themeDidChange() {
+        super.themeDidChange()
         if didApplyTheme {
             recipientPicker.applyTheme(to: self)
         }

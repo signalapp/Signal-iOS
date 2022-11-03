@@ -72,7 +72,7 @@ public class SendPaymentMemoViewController: OWSViewController {
         rootStack.autoPinEdge(toSuperviewMargin: .leading)
         rootStack.autoPinEdge(toSuperviewMargin: .trailing)
         rootStack.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        autoPinView(toBottomOfViewControllerOrKeyboard: rootStack, avoidNotch: true)
+        rootStack.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
         updateContents()
     }
@@ -124,8 +124,8 @@ public class SendPaymentMemoViewController: OWSViewController {
         ])
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateContents()
     }

@@ -160,19 +160,13 @@ public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController 
         // Because of the keyboard, vertical spacing can get pretty cramped,
         // so we have custom spacer logic.
         stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
-        autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
+        stackView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
         // Ensure whitespace is balanced, so inputs are vertically centered.
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
 
         updateValidationWarnings()
         updatePinType()
-    }
-
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-
-        shouldBottomViewReserveSpaceForKeyboard = false
     }
 
     public override func viewDidAppear(_ animated: Bool) {

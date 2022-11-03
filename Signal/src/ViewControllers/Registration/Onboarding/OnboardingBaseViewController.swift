@@ -16,8 +16,6 @@ public class OnboardingBaseViewController: RegistrationBaseViewController {
         self.onboardingController = onboardingController
 
         super.init()
-
-        self.shouldUseTheme = false
     }
 
     func shouldShowBackButton() -> Bool {

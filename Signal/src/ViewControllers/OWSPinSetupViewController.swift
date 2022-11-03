@@ -223,6 +223,8 @@ public class PinSetupViewController: OWSViewController {
         if case .confirming = self.initialMode {
             owsFailDebug("pin setup flow should never start in the confirming state")
         }
+
+        super.keyboardObservationBehavior = .whileLifecycleVisible
     }
 
     @objc
@@ -247,7 +249,6 @@ public class PinSetupViewController: OWSViewController {
 
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        shouldIgnoreKeyboardChanges = false
 
         if let navigationBar = navigationController?.navigationBar as? OWSNavigationBar {
             navigationBar.navbarBackgroundColorOverride = backgroundColor
@@ -289,7 +290,6 @@ public class PinSetupViewController: OWSViewController {
 
     override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        shouldIgnoreKeyboardChanges = true
 
         if let navigationBar = navigationController?.navigationBar as? OWSNavigationBar {
             navigationBar.switchToStyle(.default, animated: true)
@@ -341,7 +341,7 @@ public class PinSetupViewController: OWSViewController {
         view.addSubview(stackView)
 
         stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
-        autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
+        stackView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
         [pinTextField, validationWarningLabel, recommendationLabel].forEach {
             $0.autoSetDimension(.width, toSize: 227)

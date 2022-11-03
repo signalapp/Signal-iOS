@@ -40,8 +40,8 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         paymentsSwift.updateCurrentPaymentBalance()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateTableContents()
     }

@@ -235,7 +235,7 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
         stackView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 0, relation: .greaterThanOrEqual)
         stackView.autoPinEdge(toSuperviewMargin: .top).priority = .defaultHigh
         stackView.autoPinWidthToSuperviewMargins()
-        keyboardBottomConstraint = autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
+        keyboardBottomConstraint = stackView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
         progressSpinner.autoCenterInSuperview()
 
         // For when things get *really* cramped, here's what's required:
@@ -277,6 +277,8 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+        super.keyboardObservationBehavior = .whileLifecycleVisible
+
         phoneNumberTextField.delegate = self
         phoneNumberTextField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         populateDefaults()
@@ -285,7 +287,6 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
     var isAppearing = false
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        shouldIgnoreKeyboardChanges = false
         isAppearing = true
 
         updateViewState(animated: false)
@@ -296,34 +297,21 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
         phoneNumberTextField.becomeFirstResponder()
     }
 
-    public override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        shouldIgnoreKeyboardChanges = true
-    }
-
     public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         updateViewState(animated: !isAppearing)
         isAppearing = false
     }
 
-    public override func updateBottomLayoutConstraint(fromInset before: CGFloat, toInset after: CGFloat) {
+    public override func keyboardFrameDidChange(_ newFrame: CGRect, animationDuration: TimeInterval, animationOptions: UIView.AnimationOptions) {
+        super.keyboardFrameDidChange(newFrame, animationDuration: animationDuration, animationOptions: animationOptions)
         var needsLayout = false
 
-        let isDismissing = (after == 0)
+        let isDismissing = (newFrame.height == 0)
         if isDismissing, equalSpacerHeightConstraint?.isActive == true {
             pinnedSpacerHeightConstraint?.constant = titleSpacer?.height ?? 0
             equalSpacerHeightConstraint?.isActive = false
             pinnedSpacerHeightConstraint?.isActive = true
-            needsLayout = true
-        }
-
-        // Ignore any minor decreases in height. We want to grow to accommodate the
-        // QuickType bar, but shrinking in response to its dismissal is a bit much.
-        let isKeyboardGrowing = after > -(keyboardBottomConstraint?.constant ?? 0.0)
-        let isSignificantlyShrinking = ((before - after) / UIScreen.main.bounds.height) > 0.1
-        if isKeyboardGrowing || isSignificantlyShrinking || isDismissing {
-            super.updateBottomLayoutConstraint(fromInset: before, toInset: after)
             needsLayout = true
         }
 

@@ -289,6 +289,12 @@ class ImageEditorViewController: OWSViewController {
         updateContentLayoutMargins()
     }
 
+    override func keyboardFrameDidChange(_ newFrame: CGRect, animationDuration: TimeInterval, animationOptions: UIView.AnimationOptions) {
+        super.keyboardFrameDidChange(newFrame, animationDuration: animationDuration, animationOptions: animationOptions)
+
+        updateBottomLayoutConstraint(forKeyboardFrame: newFrame)
+    }
+
     override var prefersStatusBarHidden: Bool {
         !UIDevice.current.hasIPhoneXNotch && !UIDevice.current.isIPad && !CurrentAppContext().hasActiveCall
     }

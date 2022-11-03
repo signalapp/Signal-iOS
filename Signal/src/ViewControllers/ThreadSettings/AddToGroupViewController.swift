@@ -87,13 +87,9 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
     // MARK: Helpers
 
-    public override func applyTheme() {
-        super.applyTheme()
-        self.tableView.sectionIndexColor = Theme.primaryTextColor
-    }
-
     public override func themeDidChange() {
         super.themeDidChange()
+        self.tableView.sectionIndexColor = Theme.primaryTextColor
         updateTableContents()
     }
 

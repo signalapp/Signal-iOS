@@ -177,7 +177,7 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
 
         primaryView.addSubview(contentScrollView)
         contentScrollView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
-        autoPinView(toBottomOfViewControllerOrKeyboard: contentScrollView, avoidNotch: true)
+        contentScrollView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
         contentScrollView.preservesSuperviewLayoutMargins = true
 
         // Build stacks
@@ -231,11 +231,6 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
         saveButtonBackdrop.autoPinEdge(.bottom, to: .bottom, of: contentScrollView)
     }
 
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-        shouldBottomViewReserveSpaceForKeyboard = false
-    }
-
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateAvatarView()
@@ -261,22 +256,13 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
         }
     }
 
-    public override func updateBottomLayoutConstraint(fromInset before: CGFloat, toInset after: CGFloat) {
-        // Ignore any minor decreases in height. We want to grow to accommodate the
-        // QuickType bar, but shrinking in response to its dismissal is a bit much.
-        let isKeyboardDismissing = (after == 0)
-        let isKeyboardGrowing = after > before
-        let isKeyboardSignificantlyShrinking = ((before - after) / UIScreen.main.bounds.height) > 0.1
-
-        if isKeyboardGrowing || isKeyboardSignificantlyShrinking || isKeyboardDismissing {
-            super.updateBottomLayoutConstraint(fromInset: before, toInset: after)
-        }
+    @objc
+    public override func themeDidChange() {
+        super.themeDidChange()
+        applyTheme()
     }
 
-    @objc
-    public override func applyTheme() {
-        super.applyTheme()
-
+    private func applyTheme() {
         UIView.transition(with: view, duration: 0.25, options: .transitionCrossDissolve) {
             self.view.backgroundColor = Theme.backgroundColor
 

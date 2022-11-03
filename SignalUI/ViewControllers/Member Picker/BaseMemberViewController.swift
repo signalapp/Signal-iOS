@@ -95,7 +95,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
         recipientPicker.view.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         recipientPicker.view.autoPinEdge(toSuperviewSafeArea: .leading)
         recipientPicker.view.autoPinEdge(toSuperviewSafeArea: .trailing)
-        autoPinView(toBottomOfViewControllerOrKeyboard: recipientPicker.view, avoidNotch: false)
+        recipientPicker.view.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideView)
 
         updateMemberCount()
     }

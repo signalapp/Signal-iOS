@@ -128,8 +128,8 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         helper?.refreshObservedValues()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateContentsForMode()
     }
