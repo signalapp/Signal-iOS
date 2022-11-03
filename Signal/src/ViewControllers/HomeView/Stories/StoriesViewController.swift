@@ -365,6 +365,8 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
     private var scrollTarget: ScrollTarget?
 
     public func tableViewDidUpdate() {
+        emptyStateLabel.isHidden = !dataSource.isEmpty
+        tableView.isScrollEnabled = !dataSource.isEmpty
         guard let scrollTarget = scrollTarget else {
             return
         }
@@ -620,8 +622,6 @@ extension StoriesViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        emptyStateLabel.isHidden = !dataSource.allStories.isEmpty || dataSource.myStory?.messages.isEmpty == false
-
         switch Section(rawValue: section) {
         case .myStory:
             return dataSource.shouldDisplayMyStory ? 1 : 0

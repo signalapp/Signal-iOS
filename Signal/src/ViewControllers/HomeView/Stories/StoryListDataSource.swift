@@ -40,6 +40,10 @@ class StoryListDataSource: NSObject, Dependencies {
 
     // MARK: - Getting Data
 
+    var isEmpty: Bool {
+        return allStories.isEmpty && (myStory?.messages.isEmpty ?? true)
+    }
+
     var myStory: MyStoryViewModel? {
         return syncingModels.exposedModel.myStory
     }
