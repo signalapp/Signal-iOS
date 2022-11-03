@@ -59,6 +59,8 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     public func recordPendingDeletions(deletedAccountIds: [AccountId]) {
+        Logger.info("Recording pending deletions for account IDs: \(deletedAccountIds)")
+
         let operation = StorageServiceOperation.recordPendingDeletions(deletedAccountIds: deletedAccountIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
@@ -67,6 +69,8 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     public func recordPendingDeletions(deletedAddresses: [SignalServiceAddress]) {
+        Logger.info("Recording pending deletions for addresses: \(deletedAddresses)")
+
         let operation = StorageServiceOperation.recordPendingDeletions(deletedAddresses: deletedAddresses)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
@@ -99,6 +103,8 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     public func recordPendingUpdates(updatedAccountIds: [AccountId]) {
+        Logger.info("Recording pending update for account IDs: \(updatedAccountIds)")
+
         let operation = StorageServiceOperation.recordPendingUpdates(updatedAccountIds: updatedAccountIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
@@ -107,6 +113,8 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     public func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {
+        Logger.info("Recording pending update for adresses: \(updatedAddresses)")
+
         let operation = StorageServiceOperation.recordPendingUpdates(updatedAddresses: updatedAddresses)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
@@ -159,6 +167,8 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     }
 
     public func recordPendingLocalAccountUpdates() {
+        Logger.info("Recording pending local account updates")
+
         let operation = StorageServiceOperation.recordPendingLocalAccountUpdates()
         StorageServiceOperation.operationQueue.addOperation(operation)
 
