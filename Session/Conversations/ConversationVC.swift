@@ -54,9 +54,10 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     var scrollDistanceToBottomBeforeUpdate: CGFloat?
     var baselineKeyboardHeight: CGFloat = 0
     
-    /// This flag is true between `viewDidAppear` and `viewWillDisappear` and is used to prevent keyboard changes
-    /// from trying to animate (as the animations can cause staggering with push transitions)
-    var viewIsFocussed = false
+    /// These flags are true between `viewDid/Will Appear/Disappear` and is used to prevent keyboard changes
+    /// from trying to animate (as the animations can cause buggy transitions)
+    var viewIsDisappearing = false
+    var viewIsAppearing = false
     
     // Reaction
     var currentReactionListSheet: ReactionListSheet?
@@ -399,6 +400,8 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         super.viewWillAppear(animated)
         
         startObservingChanges()
+        
+        viewIsAppearing = true
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -407,7 +410,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         // Flag that the initial layout has been completed (the flag blocks and unblocks a number
         // of different behaviours)
         didFinishInitialLayout = true
-        viewIsFocussed = true
+        viewIsAppearing = false
         
         if delayFirstResponder || isShowingSearchUI {
             delayFirstResponder = false
@@ -426,7 +429,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        viewIsFocussed = false
+        viewIsDisappearing = true
         
         // Don't set the draft or resign the first responder if we are replacing the thread (want the keyboard
         // to appear to remain focussed)
@@ -442,6 +445,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         
         mediaCache.removeAllObjects()
         hasReloadedThreadDataAfterDisappearance = false
+        viewIsDisappearing = false
     }
     
     @objc func applicationDidBecomeActive(_ notification: Notification) {
@@ -1067,7 +1071,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     // MARK: - Notifications
 
     @objc func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
-        guard viewIsFocussed || !didFinishInitialLayout else { return }
+        guard !viewIsDisappearing else { return }
         
         // Please refer to https://github.com/mapbox/mapbox-navigation-ios/issues/1600
         // and https://stackoverflow.com/a/25260930 to better understand what we are
@@ -1115,7 +1119,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         }
 
         // Perform the changes (don't animate if the initial layout hasn't been completed)
-        guard hasDoneLayout && didFinishInitialLayout else {
+        guard hasDoneLayout && didFinishInitialLayout && !viewIsAppearing else {
             UIView.performWithoutAnimation {
                 changes()
             }
@@ -1132,8 +1136,6 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     }
 
     @objc func handleKeyboardWillHideNotification(_ notification: Notification) {
-        guard viewIsFocussed else { return }
-        
         // Please refer to https://github.com/mapbox/mapbox-navigation-ios/issues/1600
         // and https://stackoverflow.com/a/25260930 to better understand what we are
         // doing with the UIViewAnimationOptions

@@ -214,8 +214,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             
             BackgroundPoller.isValid = false
             
-            // Suspend database
-            NotificationCenter.default.post(name: Database.suspendNotification, object: self)
+            if CurrentAppContext().isInBackground() {
+                // Suspend database
+                NotificationCenter.default.post(name: Database.suspendNotification, object: self)
+            }
             
             SNLog("Background poll failed due to manual timeout")
             completionHandler(.failed)
@@ -233,8 +235,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 
                 BackgroundPoller.isValid = false
                 
-                // Suspend database
-                NotificationCenter.default.post(name: Database.suspendNotification, object: self)
+                if CurrentAppContext().isInBackground() {
+                    // Suspend database
+                    NotificationCenter.default.post(name: Database.suspendNotification, object: self)
+                }
                 
                 cancelTimer.invalidate()
                 completionHandler(result)
