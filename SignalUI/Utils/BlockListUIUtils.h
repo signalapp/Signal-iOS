@@ -30,10 +30,6 @@ typedef void (^BlockActionCompletionBlock)(BOOL isBlocked);
                  fromViewController:(UIViewController *)fromViewController
                     completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
 
-+ (void)showBlockSignalAccountActionSheet:(SignalAccount *)signalAccount
-                       fromViewController:(UIViewController *)fromViewController
-                          completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
-
 #pragma mark - Unblock
 
 + (void)showUnblockThreadActionSheet:(TSThread *)thread
@@ -43,10 +39,6 @@ typedef void (^BlockActionCompletionBlock)(BOOL isBlocked);
 + (void)showUnblockAddressActionSheet:(SignalServiceAddress *)address
                    fromViewController:(UIViewController *)fromViewController
                       completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
-
-+ (void)showUnblockSignalAccountActionSheet:(SignalAccount *)signalAccount
-                         fromViewController:(UIViewController *)fromViewController
-                            completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
 
 + (void)showUnblockGroupActionSheet:(TSGroupModel *)groupModel
                  fromViewController:(UIViewController *)fromViewController

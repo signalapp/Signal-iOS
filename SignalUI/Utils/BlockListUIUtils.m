@@ -51,17 +51,6 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
                         completionBlock:completionBlock];
 }
 
-+ (void)showBlockSignalAccountActionSheet:(SignalAccount *)signalAccount
-                       fromViewController:(UIViewController *)fromViewController
-                          completionBlock:(nullable BlockActionCompletionBlock)completionBlock
-{
-    NSString *displayName = [self.contactsManagerImpl displayNameForSignalAccountWithSneakyTransaction:signalAccount];
-    [self showBlockAddressesActionSheet:@[ signalAccount.recipientAddress ]
-                            displayName:displayName
-                     fromViewController:fromViewController
-                        completionBlock:completionBlock];
-}
-
 + (void)showBlockAddressesActionSheet:(NSArray<SignalServiceAddress *> *)addresses
                           displayName:(NSString *)displayName
                    fromViewController:(UIViewController *)fromViewController
@@ -281,17 +270,6 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 {
     NSString *displayName = [self.contactsManager displayNameForAddress:address];
     [self showUnblockAddressesActionSheet:@[ address ]
-                              displayName:displayName
-                       fromViewController:fromViewController
-                          completionBlock:completionBlock];
-}
-
-+ (void)showUnblockSignalAccountActionSheet:(SignalAccount *)signalAccount
-                         fromViewController:(UIViewController *)fromViewController
-                            completionBlock:(nullable BlockActionCompletionBlock)completionBlock
-{
-    NSString *displayName = [self.contactsManagerImpl displayNameForSignalAccountWithSneakyTransaction:signalAccount];
-    [self showUnblockAddressesActionSheet:@[ signalAccount.recipientAddress ]
                               displayName:displayName
                        fromViewController:fromViewController
                           completionBlock:completionBlock];
