@@ -1666,7 +1666,11 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
         delegate?.textStoryComposerDidEndEditing(self)
     }
 
+    private var updatingTextViewText = false
+
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText: String) -> Bool {
+
+        guard !updatingTextViewText else { return false }
 
         let originalInput = text ?? ""
         let (shouldChange, changedString) = TextHelper.shouldChangeCharactersInRange(
@@ -1689,10 +1693,17 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
 
         text = (originalInput as NSString).replacingCharacters(in: range, with: replacementText)
 
-        let transformedReplacementText = transformedText(replacementText, for: textStyle)
-        guard transformedReplacementText == replacementText else {
-            textView.text = transformedText(text ?? "", for: textStyle)
+        let transformedText = transformedText(text ?? "", for: textStyle)
+        guard text == transformedText else {
+            // If this method is called as a result of using apple's autocomplete suggestion bar
+            // there is a bug where setting the UITextView's text will trigger another call of this delegate
+            // method. Inputting text any other way suppresses calls to this delegate method as a result
+            // of changes to the text within the method itself. To work around this apple bug, keep track of
+            // re-entrancy manually and suppress it ourselves.
+            updatingTextViewText = true
+            textView.text = transformedText
             textView.delegate?.textViewDidChange?(textView)
+            updatingTextViewText = false
             return false
         }
 
