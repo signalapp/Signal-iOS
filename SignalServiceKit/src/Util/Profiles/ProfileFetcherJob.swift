@@ -356,8 +356,12 @@ public class ProfileFetcherJob: NSObject {
     private func requestProfileAttempt(address: SignalServiceAddress) -> Promise<FetchedProfile> {
         Logger.verbose("address: \(address)")
 
-        let shouldUseVersionedFetch = (shouldUseVersionedFetchForUuids
-                                       && address.uuid != nil)
+        // If we don't have a UUID, the request will fail, so bail out early.
+        guard address.uuid != nil else {
+            return Promise(error: ProfileFetchError.missing)
+        }
+
+        let shouldUseVersionedFetch = shouldUseVersionedFetchForUuids
 
         let udAccess: OWSUDAccess?
         if address.isLocalAddress {

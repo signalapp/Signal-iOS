@@ -115,8 +115,9 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
                                            udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
 {
     OWSAssertDebug(address.isValid);
+    OWSAssertDebug(address.uuid != nil);
 
-    NSString *path = [NSString stringWithFormat:@"v1/profile/%@", address.serviceIdentifier];
+    NSString *path = [NSString stringWithFormat:@"v1/profile/%@", address.uuidString];
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     if (udAccessKey != nil) {
         [self useUDAuthWithRequest:request accessKey:udAccessKey];
