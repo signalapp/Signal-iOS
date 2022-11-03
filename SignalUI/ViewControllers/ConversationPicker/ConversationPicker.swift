@@ -135,6 +135,10 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
+    public override var preferredNavigationBarStyle: OWSNavigationBarStyle {
+        return .solid
+    }
+
     public struct SectionOptions: OptionSet {
         public let rawValue: Int
 

@@ -1312,18 +1312,18 @@ const NSUInteger kMinimumSearchLength = 1;
     [super applyTheme];
 
     [self.tableViewController applyThemeToViewController:self];
+    self.preferredNavigationBarStyle = OWSNavigationBarStyleClear;
+    self.navbarBackgroundColorOverride = Theme.searchFieldElevatedBackgroundColor;
     self.searchBar.searchFieldBackgroundColorOverride = Theme.searchFieldElevatedBackgroundColor;
     self.tableViewController.tableView.sectionIndexColor = Theme.primaryTextColor;
+    if ([self.navigationController isKindOfClass:[OWSNavigationController class]]) {
+        [(OWSNavigationController *)self.navigationController updateNavbarAppearanceWithAnimated:NO];
+    }
 }
 
 - (void)applyThemeToViewController:(UIViewController *)viewController
 {
     [self.tableViewController applyThemeToViewController:viewController];
-}
-
-- (void)removeThemeFromViewController:(UIViewController *)viewController
-{
-    [self.tableViewController removeThemeFromViewController:viewController];
 }
 
 @end

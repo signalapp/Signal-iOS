@@ -32,7 +32,7 @@ protocol PhotoCaptureViewControllerDataSource: AnyObject {
     func addMedia(attachment: SignalAttachment)
 }
 
-class PhotoCaptureViewController: OWSViewController {
+class PhotoCaptureViewController: OWSViewController, OWSNavigationChildController {
 
     weak var delegate: PhotoCaptureViewControllerDelegate?
     weak var dataSource: PhotoCaptureViewControllerDataSource?
@@ -140,6 +140,10 @@ class PhotoCaptureViewController: OWSViewController {
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         .lightContent
+    }
+
+    var prefersNavigationBarHidden: Bool {
+        return true
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask { .portrait }

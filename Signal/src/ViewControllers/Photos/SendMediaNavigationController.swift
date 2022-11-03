@@ -73,12 +73,6 @@ class SendMediaNavigationController: OWSNavigationController {
         topViewController
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        self.delegate = self
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         DispatchQueue.main.async {
@@ -227,53 +221,7 @@ class SendMediaNavigationController: OWSNavigationController {
     }
 }
 
-extension SendMediaNavigationController: UINavigationControllerDelegate {
-
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        updateNavbarTheme(for: viewController, animated: animated)
-    }
-
-    // In case back navigation was canceled, we re-apply whatever is showing.
-    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        updateNavbarTheme(for: viewController, animated: animated)
-    }
-
-    func navigationControllerSupportedInterfaceOrientations(_ navigationController: UINavigationController) -> UIInterfaceOrientationMask {
-        return navigationController.topViewController?.supportedInterfaceOrientations ?? UIDevice.current.defaultSupportedOrientations
-    }
-
-    // MARK: - Helpers
-
-    private func updateNavbarTheme(for viewController: UIViewController, animated: Bool) {
-        let showNavbar: (OWSNavigationBar.NavigationBarStyle) -> Void = { navigationBarStyle in
-            if self.isNavigationBarHidden {
-                self.setNavigationBarHidden(false, animated: animated)
-            }
-            guard let owsNavBar = self.navigationBar as? OWSNavigationBar else {
-                owsFailDebug("unexpected navigationBar: \(self.navigationBar)")
-                return
-            }
-            owsNavBar.switchToStyle(navigationBarStyle)
-        }
-
-        switch viewController {
-        case is PhotoCaptureViewController:
-            if !isNavigationBarHidden {
-                setNavigationBarHidden(true, animated: animated)
-            }
-        case is AttachmentApprovalViewController:
-            if !isNavigationBarHidden {
-                setNavigationBarHidden(true, animated: animated)
-            }
-        case is ImagePickerGridController:
-            showNavbar(.alwaysDark)
-        case is ConversationPickerViewController:
-            showNavbar(.default)
-        default:
-            owsFailDebug("unexpected viewController: \(viewController)")
-            return
-        }
-    }
+extension SendMediaNavigationController {
 
     // MARK: - Too Many
 
@@ -336,10 +284,6 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
 
             BenchEventStart(title: "Show-Media-Library", eventId: "Show-Media-Library")
             let presentedViewController = OWSNavigationController(rootViewController: self.mediaLibraryViewController)
-            if let owsNavBar = presentedViewController.navigationBar as? OWSNavigationBar {
-                owsNavBar.switchToStyle(.alwaysDark)
-            }
-            presentedViewController.ows_preferredStatusBarStyle = .lightContent
             self.presentFullScreen(presentedViewController, animated: true)
         }
     }

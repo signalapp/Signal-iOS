@@ -170,9 +170,9 @@ class GroupAttributesViewController: OWSTableViewController2 {
 
 // MARK: -
 
-extension GroupAttributesViewController: OWSNavigationView {
+extension GroupAttributesViewController {
 
-    public func shouldCancelNavigationBack() -> Bool {
+    public var shouldCancelNavigationBack: Bool {
         let result = hasUnsavedChanges
         if result {
             GroupAttributesViewController.showUnsavedGroupChangesActionSheet(from: self,

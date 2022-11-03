@@ -11,7 +11,7 @@ import SignalUI
 import UIKit
 
 @objc(OWSPinSetupViewController)
-public class PinSetupViewController: OWSViewController {
+public class PinSetupViewController: OWSViewController, OWSNavigationChildController {
 
     lazy private var titleLabel: UILabel = {
         let label = UILabel()
@@ -247,16 +247,21 @@ public class PinSetupViewController: OWSViewController {
         return .init(mode: .changing, completionHandler: completionHandler)
     }
 
+    public var preferredNavigationBarStyle: OWSNavigationBarStyle {
+        return .solid
+    }
+
+    public var navbarBackgroundColorOverride: UIColor? {
+        return backgroundColor
+    }
+
+    public var prefersNavigationBarHidden: Bool {
+        !initialMode.isChanging
+    }
+
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if let navigationBar = navigationController?.navigationBar as? OWSNavigationBar {
-            navigationBar.navbarBackgroundColorOverride = backgroundColor
-            navigationBar.switchToStyle(.solid, animated: true)
-        }
-
-        // Hide the nav bar when not changing.
-        navigationController?.setNavigationBarHidden(!initialMode.isChanging, animated: false)
         title = titleText
 
         let topMargin: CGFloat = navigationController?.isNavigationBarHidden == false ? 0 : 32
@@ -286,16 +291,6 @@ public class PinSetupViewController: OWSViewController {
 
     private var backgroundColor: UIColor {
         presentingViewController == nil ? Theme.backgroundColor : Theme.tableView2PresentedBackgroundColor
-    }
-
-    override public func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        if let navigationBar = navigationController?.navigationBar as? OWSNavigationBar {
-            navigationBar.switchToStyle(.default, animated: true)
-        }
-
-        navigationController?.setNavigationBarHidden(false, animated: false)
     }
 
     override public var preferredStatusBarStyle: UIStatusBarStyle {

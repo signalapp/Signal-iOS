@@ -438,9 +438,9 @@ extension BaseMemberViewController: RecipientPickerDelegate {
 
 // MARK: -
 
-extension BaseMemberViewController: OWSNavigationView {
+extension BaseMemberViewController {
 
-    public func shouldCancelNavigationBack() -> Bool {
+    public var shouldCancelNavigationBack: Bool {
         let hasUnsavedChanges = self.hasUnsavedChanges
         if hasUnsavedChanges {
             backButtonPressed()

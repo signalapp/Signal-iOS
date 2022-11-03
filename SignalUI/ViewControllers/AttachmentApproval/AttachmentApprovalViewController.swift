@@ -61,7 +61,7 @@ public struct AttachmentApprovalViewControllerOptions: OptionSet {
 // MARK: -
 
 @objc
-public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSNavigationChildController {
 
     // MARK: - Properties
 
@@ -201,6 +201,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     public override var preferredStatusBarStyle: UIStatusBarStyle {
         .lightContent
+    }
+
+    public var prefersNavigationBarHidden: Bool {
+        return true
     }
 
     public override func viewDidLoad() {

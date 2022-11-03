@@ -7,12 +7,27 @@ import Foundation
 import UIKit
 
 @objc
-public class OWSNavigationBar: UINavigationBar {
+public enum OWSNavigationBarStyle: Int {
+    case clear, solid, alwaysDarkAndClear, alwaysDark, `default`
 
-    @objc
-    public var statusBarHeight: CGFloat {
-        return CurrentAppContext().statusBarHeight
+    var forcedStatusBarStyle: UIStatusBarStyle? {
+        switch self {
+        case .clear:
+            return nil
+        case .solid:
+            return nil
+        case .alwaysDarkAndClear:
+            return nil
+        case .alwaysDark:
+            return .lightContent
+        case .default:
+            return nil
+        }
     }
+}
+
+@objc
+public class OWSNavigationBar: UINavigationBar {
 
     @objc
     public var fullWidth: CGFloat {
@@ -31,26 +46,60 @@ public class OWSNavigationBar: UINavigationBar {
         super.init(frame: frame)
 
         applyTheme()
+    }
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(themeDidChange),
-                                               name: .ThemeDidChange,
-                                               object: nil)
+    public override var barPosition: UIBarPosition {
+        return .topAttached
+    }
+
+    private var barBackgroundView: UIView?
+
+    public override func didAddSubview(_ subview: UIView) {
+        super.didAddSubview(subview)
+
+        // The most consistent way to keep the blur view pinned to the top of the screen is
+        // to pin it to the UIBarBackground view with UIBarPosition.topPinned.
+        // Other methods result in a gap because the root bar view itself never reaches the top of
+        // the screen and its position relative to the top of the screen as queried by UIKit methods
+        // sometimes behaves weirdly.
+        if NSStringFromClass(subview.classForCoder) == "_UIBarBackground" {
+            barBackgroundView = subview
+            constrainBlurEffectView()
+        }
+    }
+
+    public override var frame: CGRect {
+        didSet {
+            let top = self.convert(CGPoint.zero, from: nil).y
+            blurEffectView?.frame = CGRect(
+                x: 0,
+                y: top,
+                width: bounds.width,
+                height: bounds.height - top
+            )
+        }
     }
 
     // MARK: Theme
 
-    public var navbarBackgroundColorOverride: UIColor? {
+    internal var navbarBackgroundColorOverride: UIColor? {
         didSet { applyTheme() }
     }
 
-    var navbarBackgroundColor: UIColor {
-        if let navbarBackgroundColorOverride = navbarBackgroundColorOverride { return navbarBackgroundColorOverride }
-        return Theme.navbarBackgroundColor
+    private var navbarBackgroundColor: UIColor {
+        return navbarBackgroundColorOverride ?? Theme.navbarBackgroundColor
     }
 
-    private func applyTheme() {
+    internal func applyTheme() {
+        switch currentStyle {
+        case .solid, .default, .alwaysDark, .none:
+            self.isTranslucent = !UIAccessibility.isReduceTransparencyEnabled
+        case .clear, .alwaysDarkAndClear:
+            self.isTranslucent = true
+        }
+
         guard respectsTheme else {
+            blurEffectView?.isHidden = true
             return
         }
 
@@ -76,18 +125,7 @@ public class OWSNavigationBar: UINavigationBar {
                 self.blurEffectView = blurEffectView
                 self.insertSubview(blurEffectView, at: 0)
 
-                // navbar frame doesn't account for statusBar, so, same as the built-in navbar background, we need to exceed
-                // the navbar bounds to have the blur extend up and behind the status bar.
-                var topInset = -statusBarHeight
-                if UIDevice.current.hasDynamicIsland && statusBarHeight == 44 {
-                    // If we are on Xcode <=13.X and using a 14 pro device, we misreport the status bar height,
-                    // as 44, so we end up with a little area peeking out the top. Adjust to compensate.
-                    // If we were on xcode >=14.0, the statusBarHeight wouldn't be 44 for 14 pros,
-                    // so the second condition essentially acts as a "are we on Xcode 13 or earlier" check.
-                    // TODO: remove this after we move to Xcode 14.
-                    topInset = -59
-                }
-                blurEffectView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: topInset, left: 0, bottom: 0, right: 0))
+                self.constrainBlurEffectView()
 
                 return blurEffectView
             }()
@@ -123,33 +161,32 @@ public class OWSNavigationBar: UINavigationBar {
         }
     }
 
-    @objc
-    public func themeDidChange() {
-        Logger.debug("")
-        applyTheme()
+    private func constrainBlurEffectView() {
+        guard let blurEffectView = blurEffectView, let barBackgroundView = barBackgroundView else {
+            return
+        }
+        blurEffectView.autoPin(toEdgesOf: barBackgroundView)
     }
 
-    @objc
-    public var respectsTheme: Bool = true {
-        didSet {
-            themeDidChange()
+    private var respectsTheme: Bool {
+        switch currentStyle {
+        case .none, .default, .solid:
+            return true
+        case .clear, .alwaysDark, .alwaysDarkAndClear:
+            return false
         }
     }
 
     // MARK: Override Theme
 
-    @objc
-    public enum NavigationBarStyle: Int {
-        case clear, solid, alwaysDarkAndClear, alwaysDark, `default`
-    }
-
-    private var currentStyle: NavigationBarStyle?
+    public private(set) var currentStyle: OWSNavigationBarStyle?
+    private var wasDarkTheme: Bool?
 
     @objc
-    public func switchToStyle(_ style: NavigationBarStyle, animated: Bool = false) {
+    internal func setStyle(_ style: OWSNavigationBarStyle, animated: Bool = false) {
         AssertIsOnMainThread()
 
-        guard currentStyle != style else { return }
+        guard currentStyle != style || wasDarkTheme != Theme.isDarkThemeEnabled else { return }
 
         if animated {
             let animation = CATransition()
@@ -204,31 +241,30 @@ public class OWSNavigationBar: UINavigationBar {
         }
 
         currentStyle = style
+        wasDarkTheme = Theme.isDarkThemeEnabled
 
         switch style {
         case .clear:
-            respectsTheme = false
             removeSecondaryAndSolidBarOverride()
             removeDarkThemeOverride()
             applyTransparentBarOverride()
+            applyTheme()
         case .alwaysDarkAndClear:
-            respectsTheme = false
             removeSecondaryAndSolidBarOverride()
             applyDarkThemeOverride()
             applyTransparentBarOverride()
+            applyTheme()
         case .alwaysDark:
-            respectsTheme = false
             removeSecondaryAndSolidBarOverride()
             removeTransparentBarOverride()
             applyDarkThemeOverride()
+            applyTheme()
         case .default:
-            respectsTheme = true
             removeDarkThemeOverride()
             removeTransparentBarOverride()
             removeSecondaryAndSolidBarOverride()
             applyTheme()
         case .solid:
-            respectsTheme = true
             removeDarkThemeOverride()
             removeTransparentBarOverride()
             applySolidBarOverride()

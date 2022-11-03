@@ -8,11 +8,47 @@ import UIKit
 
 /// Any view controller which wants to be able cancel back button
 /// presses and back gestures should implement this protocol.
-public protocol OWSNavigationView: AnyObject {
+public protocol OWSNavigationChildController: AnyObject {
+
+    /// If non-nil, will use the provided child (should be a child view controller) for
+    /// all other protocol methods.
+    var childForOWSNavigationConfiguration: OWSNavigationChildController? { get }
+
+    /// If non-nil, will use the provided child (should be a child view controller) for
+    /// all other protocol methods.
+    var objcChildForOWSNavigationConfiguration: OWSViewControllerObjc? { get }
 
     /// Will be called if the back button was pressed or if a back gesture
     /// was performed but not if the view is popped programmatically.
-    func shouldCancelNavigationBack() -> Bool
+    /// Default false.
+    var shouldCancelNavigationBack: Bool { get }
+
+    /// The style to apply to the nav bar on view appearance in the navigation stack.
+    /// Defaults to `default`.
+    var preferredNavigationBarStyle: OWSNavigationBarStyle { get }
+
+    /// A background color to use for the navbar in certain styles.
+    /// Defaults to nil (default color for style)
+    var navbarBackgroundColorOverride: UIColor? { get }
+
+    /// Whether the navigation bar should show or hide when this view controller appears.
+    /// Defaults to false.
+    var prefersNavigationBarHidden: Bool { get }
+}
+
+extension OWSNavigationChildController {
+
+    public var childForOWSNavigationConfiguration: OWSNavigationChildController? { nil }
+
+    public var objcChildForOWSNavigationConfiguration: OWSViewControllerObjc? { nil }
+
+    public var shouldCancelNavigationBack: Bool { false }
+
+    public var preferredNavigationBarStyle: OWSNavigationBarStyle { .default }
+
+    public var navbarBackgroundColorOverride: UIColor? { nil }
+
+    public var prefersNavigationBarHidden: Bool { false }
 }
 
 /// This navigation controller subclass should be used anywhere we might
@@ -21,25 +57,29 @@ public protocol OWSNavigationView: AnyObject {
 @objc
 open class OWSNavigationController: OWSNavigationControllerBase {
 
-    /// If set, this property lets us override prefersStatusBarHidden behavior.
-    /// This is useful for suppressing the status bar while a modal is presented,
-    /// regardless of which view is currently visible.
-    public var ows_prefersStatusBarHidden: Bool = false
+    private var owsNavigationBar: OWSNavigationBar {
+        return navigationBar as! OWSNavigationBar
+    }
 
-    /// This is the property to use when the whole navigation stack
-    /// needs to have status bar in a fixed style, e.g. when presenting
-    /// a view controller modally in a fixed dark or light style.
-    public var ows_preferredStatusBarStyle: UIStatusBarStyle?
+    private weak var externalDelegate: UINavigationControllerDelegate?
 
-    public override var prefersStatusBarHidden: Bool {
-        if ows_prefersStatusBarHidden {
-            return true
+    public override var delegate: UINavigationControllerDelegate? {
+        get {
+            return externalDelegate
         }
-        return super.prefersStatusBarHidden
+        set {
+            if newValue === self {
+                owsFailDebug("Self is already the delegate! Override methods instead.")
+                return
+            }
+            externalDelegate = newValue
+        }
     }
 
     public init() {
         super.init(navigationBarClass: OWSNavigationBar.self, toolbarClass: nil)
+
+        super.delegate = self
 
         NotificationCenter.default.addObserver(
             self,
@@ -59,24 +99,6 @@ open class OWSNavigationController: OWSNavigationControllerBase {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override var preferredStatusBarStyle: UIStatusBarStyle {
-        if let ows_preferredStatusBarStyle = ows_preferredStatusBarStyle {
-            return ows_preferredStatusBarStyle
-        }
-        if !CurrentAppContext().isMainApp {
-            return super.preferredStatusBarStyle
-        } else if
-            let presentedViewController = self.presentedViewController,
-            !presentedViewController.isBeingDismissed
-        {
-            return presentedViewController.preferredStatusBarStyle
-        } else if #available(iOS 13, *) {
-            return Theme.isDarkThemeEnabled ? .lightContent : .darkContent
-        } else {
-            return Theme.isDarkThemeEnabled ? .lightContent : super.preferredStatusBarStyle
-        }
-    }
-
     open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if let delegateOrientations = self.delegate?.navigationControllerSupportedInterfaceOrientations?(self) {
             return delegateOrientations
@@ -93,26 +115,106 @@ open class OWSNavigationController: OWSNavigationControllerBase {
         interactivePopGestureRecognizer?.delegate = self
     }
 
+    // MARK: - Theme and Style
+
     @objc
     private func themeDidChange() {
-        navigationBar.barTintColor = UINavigationBar.appearance().barTintColor
-        navigationBar.tintColor = UINavigationBar.appearance().tintColor
-        navigationBar.titleTextAttributes = UINavigationBar.appearance().titleTextAttributes
+        updateNavbarAppearance()
+        owsNavigationBar.barTintColor = UINavigationBar.appearance().barTintColor
+        owsNavigationBar.tintColor = UINavigationBar.appearance().tintColor
+        owsNavigationBar.titleTextAttributes = UINavigationBar.appearance().titleTextAttributes
+        owsNavigationBar.applyTheme()
+    }
+
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
+        if let forcedStyle = owsNavigationBar.currentStyle?.forcedStatusBarStyle {
+            return forcedStyle
+        }
+        if !CurrentAppContext().isMainApp {
+            return super.preferredStatusBarStyle
+        } else if let presentedViewController = self.presentedViewController {
+            return presentedViewController.preferredStatusBarStyle
+        } else if #available(iOS 13, *) {
+            return Theme.isDarkThemeEnabled ? .lightContent : .darkContent
+        } else {
+            return Theme.isDarkThemeEnabled ? .lightContent : super.preferredStatusBarStyle
+        }
+    }
+
+    /// Apply any changes to navbar appearance from the top view controller in the stack.
+    /// Changes will be automatically applied when a view controller is pushed or popped;
+    /// this method is just for use if state changes while the view is on screen.
+    @objc
+    public func updateNavbarAppearance(animated: Bool = false) {
+        if let topViewController = topViewController {
+            updateNavbarAppearance(for: topViewController, fromViewControllerTransition: false, animated: animated)
+        }
+    }
+
+    private func updateNavbarAppearance(
+        for viewController: UIViewController,
+        fromViewControllerTransition: Bool,
+        animated: Bool
+    ) {
+        // If currently presenting or dismissing, animating these changes looks off.
+        // In these cases, force the changes to apply un-animated.
+        let animated = animated && !(self.isBeingPresented || self.isBeingDismissed)
+        let navChildController = viewController.getFinalNavigationChildController()
+        let shouldHideNavbar = navChildController?.prefersNavigationBarHidden ?? false
+
+        if !shouldHideNavbar {
+            // Only update visible attributes if we aren't hiding; if its hidden anyway
+            // they won't matter and seeing them blink then hide is weird.
+            owsNavigationBar.setStyle(navChildController?.preferredNavigationBarStyle ?? .default, animated: animated)
+            owsNavigationBar.navbarBackgroundColorOverride = navChildController?.navbarBackgroundColorOverride
+        }
+
+        // Don't do our custom shenanigans if we are changing the hidden state
+        // as a result of view controler transitions.
+        if fromViewControllerTransition {
+            super.setNavigationBarHidden(shouldHideNavbar, animated: animated)
+        } else {
+            self.setNavigationBarHidden(shouldHideNavbar, animated: animated)
+        }
+    }
+
+    override open func setNavigationBarHidden(_ hidden: Bool, animated: Bool) {
+        guard animated else {
+            super.setNavigationBarHidden(hidden, animated: false)
+            return
+        }
+        if !hidden {
+            // When showing, immediately show it first so the sizing of child views works,
+            // then apply transition animations.
+            super.setNavigationBarHidden(hidden, animated: false)
+        }
+        UIView.transition(
+            with: self.view,
+            duration: Self.hideShowBarDuration,
+            options: .transitionCrossDissolve,
+            animations: {
+                super.setNavigationBarHidden(hidden, animated: false)
+            }
+        )
     }
 }
+
+// MARK: - UIGestureRecognizerDelegate
 
 extension OWSNavigationController: UIGestureRecognizerDelegate {
 
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         owsAssertDebug(gestureRecognizer === self.interactivePopGestureRecognizer)
 
-        if let navigationView = topViewController as? OWSNavigationView {
-            return !navigationView.shouldCancelNavigationBack()
+        if let child = topViewController?.getFinalNavigationChildController() {
+            return !child.shouldCancelNavigationBack
         } else {
             return topViewController != viewControllers.first
         }
     }
 }
+
+// MARK: - UINavigationBarDelegate
 
 extension OWSNavigationController: UINavigationBarDelegate {
 
@@ -127,8 +229,8 @@ extension OWSNavigationController: UINavigationBarDelegate {
         let wasBackButtonClicked = topViewController?.navigationItem == item
         var result = true
         if wasBackButtonClicked {
-            if let navView = topViewController as? OWSNavigationView {
-                result = !navView.shouldCancelNavigationBack()
+            if let child = topViewController?.getFinalNavigationChildController() {
+                result = !child.shouldCancelNavigationBack
             }
         }
 
@@ -143,4 +245,122 @@ extension OWSNavigationController: UINavigationBarDelegate {
 
         return result
     }
+}
+
+// MARK: - UINavigationControllerDelegate
+
+extension OWSNavigationController: UINavigationControllerDelegate {
+
+    public func navigationController(
+        _ navigationController: UINavigationController,
+        willShow viewController: UIViewController,
+        animated: Bool
+    ) {
+        updateNavbarAppearance(for: viewController, fromViewControllerTransition: true, animated: animated)
+        externalDelegate?.navigationController?(navigationController, willShow: viewController, animated: animated)
+    }
+
+    public func navigationController(
+        _ navigationController: UINavigationController,
+        didShow viewController: UIViewController,
+        animated: Bool
+    ) {
+        externalDelegate?.navigationController?(navigationController, didShow: viewController, animated: animated)
+    }
+
+    public func navigationController(
+        navigationController: UINavigationController,
+        animationControllerFor operation: UINavigationController.Operation,
+        from fromVC: UIViewController,
+        to toVC: UIViewController
+    ) -> UIViewControllerAnimatedTransitioning? {
+        return externalDelegate?.navigationController?(
+            navigationController,
+            animationControllerFor: operation,
+            from: fromVC,
+            to: toVC
+        )
+    }
+
+    public func navigationController(
+        _ navigationController: UINavigationController,
+        interactionControllerFor animationController: UIViewControllerAnimatedTransitioning
+    ) -> UIViewControllerInteractiveTransitioning? {
+        return externalDelegate?.navigationController?(
+            navigationController,
+            interactionControllerFor: animationController
+        )
+    }
+
+    public func navigationControllerPreferredInterfaceOrientationForPresentation(
+        _ navigationController: UINavigationController
+    ) -> UIInterfaceOrientation {
+        return externalDelegate?.navigationControllerPreferredInterfaceOrientationForPresentation?(
+            navigationController
+        ) ?? .portrait
+    }
+
+    public func navigationControllerSupportedInterfaceOrientations(
+        _ navigationController: UINavigationController
+    ) -> UIInterfaceOrientationMask {
+        return externalDelegate?.navigationControllerSupportedInterfaceOrientations?(
+            navigationController
+        ) ?? supportedInterfaceOrientations
+    }
+}
+
+// MARK: - OWSNavigationChildController children
+
+extension UIViewController {
+
+    func getFinalNavigationChildController() -> OWSNavigationChildController? {
+        let child: OWSNavigationChildController
+        if let vc = self as? OWSViewControllerObjc {
+            child = ObjcControllerWrapper(vc)
+        } else if let vc = self as? OWSNavigationChildController {
+            child = vc
+        } else {
+            return nil
+        }
+        return child.getFinalChild()
+    }
+}
+
+extension OWSNavigationChildController {
+
+    func getFinalChild() -> OWSNavigationChildController {
+        if let child = self.objcChildForOWSNavigationConfiguration {
+            return ObjcControllerWrapper(child)
+        } else if let child = self.childForOWSNavigationConfiguration {
+            return child.getFinalChild()
+        }
+        return self
+    }
+}
+
+private class ObjcControllerWrapper: OWSNavigationChildController {
+
+    private let objcController: OWSViewControllerObjc
+
+    init(_ objcController: OWSViewControllerObjc) {
+        self.objcController = objcController
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    var childForOWSNavigationConfiguration: OWSNavigationChildController? { nil }
+
+    var objcChildForOWSNavigationConfiguration: OWSViewControllerObjc? { nil }
+
+    var shouldCancelNavigationBack: Bool { objcController.shouldCancelNavigationBack }
+
+    var preferredNavigationBarStyle: OWSNavigationBarStyle {
+        OWSNavigationBarStyle(rawValue: objcController.preferredNavigationBarStyle) ?? .default
+    }
+
+    var navbarBackgroundColorOverride: UIColor? { objcController.navbarBackgroundColorOverride }
+
+    var prefersNavigationBarHidden: Bool { objcController.prefersNavigationBarHidden }
 }

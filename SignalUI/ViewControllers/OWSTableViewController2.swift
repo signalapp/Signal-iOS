@@ -259,6 +259,18 @@ open class OWSTableViewController2: OWSViewController {
         applyContents()
     }
 
+    private var usesSolidNavbarStyle: Bool {
+        return tableView.contentOffset.y <= (defaultSpacingBetweenSections ?? 0) - tableView.adjustedContentInset.top
+    }
+
+    open var preferredNavigationBarStyle: OWSNavigationBarStyle {
+        return usesSolidNavbarStyle ? .solid : .default
+    }
+
+    open var navbarBackgroundColorOverride: UIColor? {
+        return usesSolidNavbarStyle ? tableBackgroundColor : nil
+    }
+
     private var hasViewAppeared = false
 
     open override func viewWillAppear(_ animated: Bool) {
@@ -269,12 +281,6 @@ open class OWSTableViewController2: OWSViewController {
         tableView.tableFooterView = UIView()
 
         hasViewAppeared = true
-    }
-
-    open override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        removeTheme(from: self)
     }
 
     private func section(for index: Int) -> OWSTableSection? {
@@ -346,7 +352,7 @@ open class OWSTableViewController2: OWSViewController {
 
 // MARK: -
 
-extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
+extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, OWSNavigationChildController {
 
     public func tableView(_ tableView: UITableView, numberOfRowsInSection sectionIndex: Int) -> Int {
         guard let section = self.section(for: sectionIndex) else {
@@ -1072,8 +1078,11 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
         viewController.view.backgroundColor = self.tableBackgroundColor
 
-        if let navigationBar = viewController.navigationController?.navigationBar as? OWSNavigationBar {
-            navigationBar.navbarBackgroundColorOverride = tableBackgroundColor
+        if
+            let owsNavigationController = viewController.owsNavigationController,
+            ((viewController as? OWSViewController)?.lifecycle ?? .appeared) == .appeared
+        {
+            owsNavigationController.updateNavbarAppearance()
         }
 
         Self.removeBackButtonText(viewController: viewController)
@@ -1087,34 +1096,9 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         viewController.navigationItem.backBarButtonItem = .init(title: "   ", style: .plain, target: nil, action: nil)
     }
 
-    @objc(removeThemeFromViewController:)
-    public func removeTheme(from viewController: UIViewController) {
-        AssertIsOnMainThread()
-
-        // We don't want to remove the theme if we're being dismissed,
-        // as it causes a jarring transition. We must test this on the
-        // navigation controller, otherwise it may be set when pushing
-        // or popping a view, where we *do* want to remove the theme.
-        guard viewController.navigationController?.isBeingDismissed != true else { return }
-
-        if let navigationBar = viewController.navigationController?.navigationBar as? OWSNavigationBar {
-            navigationBar.navbarBackgroundColorOverride = nil
-            navigationBar.switchToStyle(.default, animated: true)
-        }
-    }
-
     func updateNavbarStyling() {
-        guard let navigationBar = navigationController?.navigationBar as? OWSNavigationBar else { return }
-
-        if tableView.contentOffset.y <= (defaultSpacingBetweenSections ?? 0) - tableView.adjustedContentInset.top {
-            navigationBar.switchToStyle(.solid, animated: true)
-
-            // We always want to treat the bar as translucent, regardless of
-            // whether the background image is actually translucent. Otherwise,
-            // it messes weirdly with safe area insets.
-            navigationBar.isTranslucent = true
-        } else {
-            navigationBar.switchToStyle(.default, animated: true)
+        if lifecycle == .appeared {
+            owsNavigationController?.updateNavbarAppearance(animated: true)
         }
     }
 

@@ -6,7 +6,7 @@
 import Foundation
 import SignalMessaging
 
-class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
+class ProxySettingsViewController: OWSTableViewController2 {
     private var useProxy = SignalProxy.useProxy
 
     override func viewDidLoad() {
@@ -221,7 +221,7 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
         }
     }
 
-    func shouldCancelNavigationBack() -> Bool {
+    var shouldCancelNavigationBack: Bool {
         if hasPendingChanges {
             OWSActionSheets.showPendingChangesActionSheet { [weak self] in
                 self?.navigationController?.popViewController(animated: true)

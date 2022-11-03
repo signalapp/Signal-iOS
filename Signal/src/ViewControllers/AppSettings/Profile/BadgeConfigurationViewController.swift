@@ -18,7 +18,7 @@ protocol BadgeConfigurationDelegate: AnyObject {
     func badgeConfirmationDidCancel(_: BadgeConfigurationViewController)
 }
 
-class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollectionDataSource, OWSNavigationView {
+class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollectionDataSource {
     private weak var badgeConfigDelegate: BadgeConfigurationDelegate?
 
     let availableBadges: [OWSUserProfileBadgeInfo]
@@ -215,7 +215,7 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
         displayBadgeOnProfile = sender.isOn
     }
 
-    func shouldCancelNavigationBack() -> Bool {
+    var shouldCancelNavigationBack: Bool {
         if hasUnsavedChanges {
             didTapCancel()
             return true

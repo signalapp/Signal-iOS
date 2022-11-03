@@ -45,6 +45,10 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
+    override var preferredNavigationBarStyle: OWSNavigationBarStyle {
+        return .clear
+    }
+
     private var fullName: String? {
         guard givenName?.isEmpty == false || familyName?.isEmpty == false else { return nil }
         var nameComponents = PersonNameComponents()
@@ -348,7 +352,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     }
 }
 
-extension ProfileSettingsViewController: OWSNavigationView {
+extension ProfileSettingsViewController {
 
     @available(iOS 13, *)
     override public var isModalInPresentation: Bool {
@@ -356,7 +360,7 @@ extension ProfileSettingsViewController: OWSNavigationView {
         set { /* noop superclass requirement */ }
     }
 
-    public func shouldCancelNavigationBack() -> Bool {
+    public var shouldCancelNavigationBack: Bool {
         let result = hasUnsavedChanges
         if result {
             leaveViewCheckingForUnsavedChanges()

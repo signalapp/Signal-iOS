@@ -24,7 +24,6 @@ class GifPickerNavigationViewController: OWSNavigationController {
         self.initialMessageBody = initialMessageBody
         super.init()
         pushViewController(gifPickerViewController, animated: false)
-        delegate = self
     }
 }
 
@@ -87,34 +86,12 @@ extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDat
     }
 }
 
-// MARK: -
-
-extension GifPickerNavigationViewController: UINavigationControllerDelegate {
-
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        updateNavigationBarVisibility(for: viewController, animated: animated)
-    }
-
-    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        updateNavigationBarVisibility(for: viewController, animated: animated)
-    }
-
-    private func updateNavigationBarVisibility(for viewController: UIViewController, animated: Bool) {
-        switch viewController {
-        case is AttachmentApprovalViewController:
-            setNavigationBarHidden(true, animated: animated)
-        default:
-            setNavigationBarHidden(false, animated: animated)
-        }
-    }
-}
-
 protocol GifPickerViewControllerDelegate: AnyObject {
     func gifPickerDidSelect(attachment: SignalAttachment)
     func gifPickerDidCancel()
 }
 
-class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate {
+class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate, OWSNavigationChildController {
 
     // MARK: Properties
 
@@ -226,16 +203,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         loadTrending()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        guard let navigationBar = navigationController?.navigationBar as? OWSNavigationBar else {
-            owsFailDebug("navigationBar was nil or unexpected class")
-            return
-        }
-        navigationBar.switchToStyle(.default)
-    }
-
     var hasEverAppeared = false
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -251,6 +218,14 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         progressiveSearchTimer?.invalidate()
         progressiveSearchTimer = nil
+    }
+
+    public var preferredNavigationBarStyle: OWSNavigationBarStyle { .clear }
+
+    public override func themeDidChange() {
+        super.themeDidChange()
+
+        view.backgroundColor = Theme.backgroundColor
     }
 
     // MARK: Views

@@ -8,7 +8,7 @@ import SignalServiceKit
 import UIKit
 import SignalMessaging
 
-class ChangePhoneNumberSplashViewController: OWSViewController {
+class ChangePhoneNumberSplashViewController: OWSViewController, OWSNavigationChildController {
 
     private let changePhoneNumberController: ChangePhoneNumberController
 
@@ -27,6 +27,10 @@ class ChangePhoneNumberSplashViewController: OWSViewController {
                                   comment: "Title for the 'change phone number' views in settings.")
 
         createContents()
+    }
+
+    public var preferredNavigationBarStyle: OWSNavigationBarStyle {
+        return .clear
     }
 
     private func createContents() {

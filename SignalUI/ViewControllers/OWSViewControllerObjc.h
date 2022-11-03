@@ -13,6 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL shouldUseTheme;
 
+@property (nonatomic, nullable) UIColor *navbarBackgroundColorOverride;
+@property (nonatomic) NSInteger preferredNavigationBarStyle;
+@property (nonatomic) BOOL prefersNavigationBarHidden;
+@property (nonatomic) BOOL shouldCancelNavigationBack;
+
 
 // We often want to pin one view to the bottom of a view controller
 // BUT adjust its location upward if the keyboard appears.

@@ -449,6 +449,10 @@ public extension UIViewController {
         }
         present(viewControllerToPresent, animated: animated, completion: completion)
     }
+
+    var owsNavigationController: OWSNavigationController? {
+        return navigationController as? OWSNavigationController
+    }
 }
 
 // MARK: -

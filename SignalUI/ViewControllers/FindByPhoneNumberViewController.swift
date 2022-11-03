@@ -12,7 +12,7 @@ public protocol FindByPhoneNumberDelegate: AnyObject {
 }
 
 @objc
-public class FindByPhoneNumberViewController: OWSViewController {
+public class FindByPhoneNumberViewController: OWSViewController, OWSNavigationChildController {
     weak var delegate: FindByPhoneNumberDelegate?
     let buttonText: String?
     let requiresRegisteredNumber: Bool
@@ -37,22 +37,12 @@ public class FindByPhoneNumberViewController: OWSViewController {
         presentingViewController == nil ? Theme.backgroundColor : Theme.tableView2PresentedBackgroundColor
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        if let navigationBar = navigationController?.navigationBar as? OWSNavigationBar {
-            navigationBar.navbarBackgroundColorOverride = backgroundColor
-            navigationBar.switchToStyle(.solid, animated: true)
-        }
+    public var preferredNavigationBarStyle: OWSNavigationBarStyle {
+        return .solid
     }
 
-    public override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        if let navigationBar = navigationController?.navigationBar as? OWSNavigationBar {
-            navigationBar.navbarBackgroundColorOverride = nil
-            navigationBar.switchToStyle(.default, animated: true)
-        }
+    public var navbarBackgroundColorOverride: UIColor? {
+        return backgroundColor
     }
 
     override public func viewDidLoad() {

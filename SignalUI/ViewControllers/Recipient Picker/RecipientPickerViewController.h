@@ -49,7 +49,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, RecipientPickerViewControllerGroupsToShow) {
 - (void)clearSearchText;
 
 - (void)applyThemeToViewController:(UIViewController *)viewController;
-- (void)removeThemeFromViewController:(UIViewController *)viewController;
 
 @end
 

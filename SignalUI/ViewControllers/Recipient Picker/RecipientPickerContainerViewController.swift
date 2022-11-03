@@ -5,14 +5,12 @@
 
 import Foundation
 
-open class RecipientPickerContainerViewController: OWSViewController {
+open class RecipientPickerContainerViewController: OWSViewController, OWSNavigationChildController {
     public let recipientPicker = RecipientPickerViewController()
-
-    private var didApplyTheme = false
 
     open override func themeDidChange() {
         super.themeDidChange()
-        if didApplyTheme {
+        if lifecycle == .willAppear || lifecycle == .appeared {
             recipientPicker.applyTheme(to: self)
         }
     }
@@ -20,12 +18,13 @@ open class RecipientPickerContainerViewController: OWSViewController {
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         recipientPicker.applyTheme(to: self)
-        didApplyTheme = true
     }
 
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        recipientPicker.removeTheme(from: self)
-        didApplyTheme = false
+    }
+
+    public var objcChildForOWSNavigationConfiguration: OWSViewControllerObjc? {
+        return recipientPicker
     }
 }

@@ -24,7 +24,7 @@ protocol ImagePickerGridControllerDataSource: AnyObject {
     var numberOfMediaItems: Int { get }
 }
 
-class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegate, PhotoCollectionPickerDelegate {
+class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegate, PhotoCollectionPickerDelegate, OWSNavigationChildController {
 
     weak var delegate: ImagePickerGridControllerDelegate?
     weak var dataSource: ImagePickerGridControllerDataSource?
@@ -60,6 +60,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
+    }
+
+    var preferredNavigationBarStyle: OWSNavigationBarStyle {
+        return .alwaysDark
     }
 
     override func viewDidLoad() {
