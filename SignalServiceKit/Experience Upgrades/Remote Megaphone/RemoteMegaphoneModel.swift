@@ -235,12 +235,15 @@ extension RemoteMegaphoneModel.Manifest {
     /// for this megaphone to be shown.
     enum ConditionalCheck: Codable {
         case standardDonate
+        case internalUser
         case unrecognized(conditionalId: String)
 
         var conditionalId: String {
             switch self {
             case .standardDonate:
                 return "standard_donate"
+            case .internalUser:
+                return "internal_user"
             case .unrecognized(let conditionalId):
                 return conditionalId
             }
@@ -250,6 +253,8 @@ extension RemoteMegaphoneModel.Manifest {
             switch conditionalId {
             case Self.standardDonate.conditionalId:
                 self = .standardDonate
+            case Self.internalUser.conditionalId:
+                self = .internalUser
             default:
                 self = .unrecognized(conditionalId: conditionalId)
             }

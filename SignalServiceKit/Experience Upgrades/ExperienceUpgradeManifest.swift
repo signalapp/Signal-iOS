@@ -362,6 +362,8 @@ extension ExperienceUpgradeManifest {
             switch conditionalCheck {
             case .standardDonate:
                 return 7 * kDayInterval
+            case .internalUser:
+                return 0
             case .unrecognized:
                 return .infinity
             }
@@ -566,6 +568,10 @@ extension ExperienceUpgradeManifest {
             }
 
             return true
+        case .internalUser:
+            // Show this megaphone to all internal users, even if they already
+            // have a badge.
+            return DebugFlags.internalMegaphoneEligible
         case .unrecognized(let conditionalId):
             Logger.warn("Found unrecognized conditional check with ID \(conditionalId), bailing.")
             return false

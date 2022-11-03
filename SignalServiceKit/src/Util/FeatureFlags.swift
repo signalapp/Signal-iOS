@@ -214,6 +214,8 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let internalSettings = build.includes(.qa)
 
+    public static let internalMegaphoneEligible = build.includes(.qa)
+
     // This can be used to shut down various background operations.
     @objc
     public static let suppressBackgroundActivity = false
