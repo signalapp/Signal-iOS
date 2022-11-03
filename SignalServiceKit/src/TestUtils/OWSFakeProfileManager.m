@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *localFullName;
 @property (nonatomic, nullable) NSString *localUsername;
 @property (nonatomic, nullable) NSData *localProfileAvatarData;
+@property (nonatomic, nullable) NSArray<OWSUserProfileBadgeInfo *> *localProfileBadgeInfo;
 
 @end
 

@@ -857,6 +857,7 @@ CREATE
             ,"lastSnoozedTimestamp" DOUBLE NOT NULL
             ,"isComplete" BOOLEAN NOT NULL
             ,"manifest" BLOB
+            ,"snoozeCount" INTEGER NOT NULL DEFAULT 0
         )
 ;
 

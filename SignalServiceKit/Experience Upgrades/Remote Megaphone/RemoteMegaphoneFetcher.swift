@@ -47,8 +47,6 @@ public class RemoteMegaphoneFetcher: NSObject, Dependencies {
         Logger.info("Beginning remote megaphone fetch.")
 
         return fetchRemoteMegaphones().map(on: .global()) { megaphones -> Void in
-            self.isSyncInFlight.set(false)
-
             Logger.info("Syncing \(megaphones.count) fetched remote megaphones with local state.")
 
             self.databaseStorage.write { transaction in
@@ -59,6 +57,8 @@ public class RemoteMegaphoneFetcher: NSObject, Dependencies {
 
                 self.recordCompletedSync(transaction: transaction)
             }
+        }.ensure {
+            self.isSyncInFlight.set(false)
         }
     }
 }
@@ -185,11 +185,11 @@ private extension RemoteMegaphoneFetcher {
                 method: .get
             )
         }.map(on: .global()) { response throws -> [RemoteMegaphoneModel.Manifest] in
-            guard let bodyData = response.responseBodyData else {
-                throw OWSAssertionError("Missing body data for manifest!")
+            guard let responseJson = response.responseBodyJson else {
+                throw OWSAssertionError("Missing body JSON for manifest!")
             }
 
-            return try RemoteMegaphoneModel.Manifest.parseFrom(jsonData: bodyData)
+            return try RemoteMegaphoneModel.Manifest.parseFrom(responseJson: responseJson)
         }.recover(on: .global()) { error in
             guard
                 error.isNetworkFailureOrTimeout,
@@ -270,11 +270,11 @@ private extension RemoteMegaphoneFetcher {
 
             return getUrlSession().dataTaskPromise(translationUrlPath, method: .get)
         }.map(on: .global()) { response throws in
-            guard let bodyData = response.responseBodyData else {
-                throw OWSAssertionError("Missing body data for translation!")
+            guard let responseJson = response.responseBodyJson else {
+                throw OWSAssertionError("Missing body JSON for translation!")
             }
 
-            return try RemoteMegaphoneModel.Translation.parseFrom(jsonData: bodyData)
+            return try RemoteMegaphoneModel.Translation.parseFrom(responseJson: responseJson)
         }.recover(on: .global()) { error in
             guard
                 error.isNetworkFailureOrTimeout,
@@ -408,72 +408,87 @@ private extension String {
 // MARK: - Parsing manifests
 
 private extension RemoteMegaphoneModel.Manifest {
-    private struct JsonRepresentationFromService: Decodable {
-        struct IndividualManifestRepresentationFromService: Decodable {
-            /// Generated UUID for this manifest.
-            let uuid: String
-            /// Integer representing the priority of this manifest.
-            let priority: Int
-            /// CSV string of format `country\_code:PPM` like in remote config, using the manifest's ID as the key.
-            let countries: String
-            /// Minimum app version on which this megaphone should be shown.
-            let iosMinVersion: String?
-            /// Unix timestamp after which this megaphone can be shown.
-            let dontShowBeforeEpochSeconds: UInt64
-            /// Unix timestamp after which this megaphone can no longer be shown.
-            let dontShowAfterEpochSeconds: UInt64
-            /// Number of days for which to show this megaphone.
-            let showForNumberOfDays: Int
-            /// Known identifier to perform some conditional check before showing this megaphone.
-            let conditionalId: String?
-            /// Known identifier to perform some action on the megaphone's primary button.
-            let primaryCtaId: String?
-            /// Known identifier to perform some action on the megaphone's secondary button.
-            let secondaryCtaId: String?
+    private static let megaphonesKey = "megaphones"
+    private static let uuidKey = "uuid"
+    private static let priorityKey = "priority"
+    private static let iosMinVersionKey = "iosMinVersion"
+    private static let countriesKey = "countries"
+    private static let dontShowBeforeEpochSecondsKey = "dontShowBeforeEpochSeconds"
+    private static let dontShowAfterEpochSecondsKey = "dontShowAfterEpochSeconds"
+    private static let showForNumberOfDaysKey = "showForNumberOfDays"
+    private static let conditionalIdKey = "conditionalId"
+    private static let primaryCtaIdKey = "primaryCtaId"
+    private static let primaryCtaDataKey = "primaryCtaData"
+    private static let secondaryCtaIdKey = "secondaryCtaId"
+    private static let secondaryCtaDataKey = "secondaryCtaData"
+
+    static func parseFrom(responseJson: Any?) throws -> [Self] {
+        guard let megaphonesArrayParser = ParamParser(responseObject: responseJson) else {
+            throw OWSAssertionError("Failed to create parser from response JSON!")
         }
 
-        let megaphones: [IndividualManifestRepresentationFromService]
-    }
+        let individualMegaphones: [[String: Any]] = try megaphonesArrayParser.required(key: Self.megaphonesKey)
 
-    static func parseFrom(jsonData: Data) throws -> [Self] {
-        let megaphones: [JsonRepresentationFromService.IndividualManifestRepresentationFromService]
-        do {
-            megaphones = try JSONDecoder().decode(JsonRepresentationFromService.self, from: jsonData).megaphones
-        } catch let error {
-            throw OWSAssertionError("Failed to decode remote megaphone manifest JSON: \(error)")
-        }
+        return try individualMegaphones.compactMap { megaphoneObject throws -> Self? in
+            guard let megaphoneParser = ParamParser(responseObject: megaphoneObject) else {
+                throw OWSAssertionError("Failed to create parser from individual megaphone JSON!")
+            }
 
-        return megaphones.compactMap { representation in
-            guard let iosMinVersion = representation.iosMinVersion else {
+            guard let iosMinVersion: String = try megaphoneParser.optional(key: Self.iosMinVersionKey) else {
                 return nil
             }
 
+            let uuid: String = try megaphoneParser.required(key: Self.uuidKey)
+            let priority: Int = try megaphoneParser.required(key: Self.priorityKey)
+            let countries: String = try megaphoneParser.required(key: Self.countriesKey)
+            let dontShowBeforeEpochSeconds: UInt64 = try megaphoneParser.required(key: Self.dontShowBeforeEpochSecondsKey)
+            let dontShowAfterEpochSeconds: UInt64 = try megaphoneParser.required(key: Self.dontShowAfterEpochSecondsKey)
+            let showForNumberOfDays: Int = try megaphoneParser.required(key: Self.showForNumberOfDaysKey)
+
+            let conditionalId: String? = try megaphoneParser.optional(key: Self.conditionalIdKey)
+            let primaryCtaId: String? = try megaphoneParser.optional(key: Self.primaryCtaIdKey)
+            let primaryCtaDataJson: [String: Any]? = try megaphoneParser.optional(key: Self.primaryCtaDataKey)
+            let secondaryCtaId: String? = try megaphoneParser.optional(key: Self.secondaryCtaIdKey)
+            let secondaryCtaDataJson: [String: Any]? = try megaphoneParser.optional(key: Self.secondaryCtaDataKey)
+
             var conditionalCheck: ConditionalCheck?
-            if let conditionalId = representation.conditionalId {
+            if let conditionalId = conditionalId {
                 conditionalCheck = ConditionalCheck(fromConditionalId: conditionalId)
             }
 
             var primaryAction: Action?
-            if let primaryCtaId = representation.primaryCtaId {
+            if let primaryCtaId = primaryCtaId {
                 primaryAction = Action(fromActionId: primaryCtaId)
             }
 
+            var primaryActionData: ActionData?
+            if let primaryCtaDataJson = primaryCtaDataJson {
+                primaryActionData = try ActionData.parse(fromJson: primaryCtaDataJson)
+            }
+
             var secondaryAction: Action?
-            if let secondaryCtaId = representation.secondaryCtaId {
+            if let secondaryCtaId = secondaryCtaId {
                 secondaryAction = Action(fromActionId: secondaryCtaId)
             }
 
+            var secondaryActionData: ActionData?
+            if let secondaryCtaDataJson = secondaryCtaDataJson {
+                secondaryActionData = try ActionData.parse(fromJson: secondaryCtaDataJson)
+            }
+
             return RemoteMegaphoneModel.Manifest(
-                id: representation.uuid,
-                priority: representation.priority,
+                id: uuid,
+                priority: priority,
                 minAppVersion: iosMinVersion,
-                countries: representation.countries,
-                dontShowBefore: representation.dontShowBeforeEpochSeconds,
-                dontShowAfter: representation.dontShowAfterEpochSeconds,
-                showForNumberOfDays: representation.showForNumberOfDays,
+                countries: countries,
+                dontShowBefore: dontShowBeforeEpochSeconds,
+                dontShowAfter: dontShowAfterEpochSeconds,
+                showForNumberOfDays: showForNumberOfDays,
                 conditionalCheck: conditionalCheck,
                 primaryAction: primaryAction,
-                secondaryAction: secondaryAction
+                primaryActionData: primaryActionData,
+                secondaryAction: secondaryAction,
+                secondaryActionData: secondaryActionData
             )
         }
     }
@@ -482,40 +497,36 @@ private extension RemoteMegaphoneModel.Manifest {
 // MARK: - Parsing translations
 
 private extension RemoteMegaphoneModel.Translation {
-    private struct JsonRepresentationFromService: Decodable {
-        /// UUID, corresponding to the manifest.
-        let uuid: String
-        /// URL to image asset.
-        let imageUrl: String?
-        /// Title of announcement
-        let title: String
-        /// Body of announcement
-        let body: String
-        /// Text for primary action
-        let primaryCtaText: String?
-        /// Text for secondary action
-        let secondaryCtaText: String?
-    }
+    private static let uuidKey = "uuid"
+    private static let imageUrlKey = "imageUrl"
+    private static let titleKey = "title"
+    private static let bodyKey = "body"
+    private static let primaryCtaTextKey = "primaryCtaText"
+    private static let secondaryCtaTextKey = "secondaryCtaText"
 
-    static func parseFrom(jsonData: Data) throws -> Self {
-        let representation: JsonRepresentationFromService
-        do {
-            representation = try JSONDecoder().decode(JsonRepresentationFromService.self, from: jsonData)
-        } catch let error {
-            throw OWSAssertionError("Failed to decode remote megaphone translation JSON: \(error)")
+    static func parseFrom(responseJson: Any?) throws -> Self {
+        guard let parser = ParamParser(responseObject: responseJson) else {
+            throw OWSAssertionError("Failed to create parser from response JSON!")
         }
 
-        guard representation.uuid.isPermissibleAsFilename else {
-            throw OWSAssertionError("Translation had UUID that is illegal filename: \(representation.uuid)")
+        let uuid: String = try parser.required(key: Self.uuidKey)
+        let imageUrl: String? = try parser.optional(key: Self.imageUrlKey)
+        let title: String = try parser.required(key: Self.titleKey)
+        let body: String = try parser.required(key: Self.bodyKey)
+        let primaryCtaText: String? = try parser.optional(key: Self.primaryCtaTextKey)
+        let secondaryCtaText: String? = try parser.optional(key: Self.secondaryCtaTextKey)
+
+        guard uuid.isPermissibleAsFilename else {
+            throw OWSAssertionError("Translation had UUID that is illegal filename: \(uuid)")
         }
 
         return RemoteMegaphoneModel.Translation.makeWithoutLocalImage(
-            id: representation.uuid,
-            title: representation.title,
-            body: representation.body,
-            imageRemoteUrlPath: representation.imageUrl,
-            primaryActionText: representation.primaryCtaText,
-            secondaryActionText: representation.primaryCtaText
+            id: uuid,
+            title: title,
+            body: body,
+            imageRemoteUrlPath: imageUrl,
+            primaryActionText: primaryCtaText,
+            secondaryActionText: secondaryCtaText
         )
     }
 }

@@ -343,6 +343,11 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     return [self loadProfileAvatarDataWithFilename:filename];
 }
 
+- (nullable NSArray<OWSUserProfileBadgeInfo *> *)localProfileBadgeInfo
+{
+    return self.localUserProfile.profileBadgeInfo;
+}
+
 - (nullable NSString *)localUsername
 {
     return self.localUserProfile.username;

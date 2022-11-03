@@ -11,7 +11,7 @@ class RemoteMegaphone: MegaphoneView {
     init(
         experienceUpgrade: ExperienceUpgrade,
         remoteMegaphoneModel: RemoteMegaphoneModel,
-        fromViewController _: UIViewController
+        fromViewController: UIViewController
     ) {
         megaphoneModel = remoteMegaphoneModel
 
@@ -29,23 +29,31 @@ class RemoteMegaphone: MegaphoneView {
         }
 
         if let primary = megaphoneModel.presentablePrimaryAction {
-            let primaryButton = MegaphoneView.Button(title: primary.presentableText) { [weak self] in
-                switch primary.action {
-                case .unrecognized(let actionId):
-                    owsFailDebug("Unrecognized primary action with ID \(actionId) should never have made it into a button!")
-                }
+            let primaryButton = MegaphoneView.Button(title: primary.presentableText) { [weak self, weak fromViewController] in
+                guard
+                    let self = self,
+                    let fromViewController = fromViewController
+                else { return }
 
-                self?.dismiss()
+                self.performAction(
+                    primary.action,
+                    fromViewController: fromViewController,
+                    buttonDescriptor: "primary"
+                )
             }
 
             if let secondary = megaphoneModel.presentableSecondaryAction {
-                let secondaryButton = MegaphoneView.Button(title: secondary.presentableText) { [weak self] in
-                    switch secondary.action {
-                    case .unrecognized(let actionId):
-                        owsFailDebug("Unrecognized secondary action with ID \(actionId) should never have made it into a button!")
-                    }
+                let secondaryButton = MegaphoneView.Button(title: secondary.presentableText) { [weak self, weak fromViewController] in
+                    guard
+                        let self = self,
+                        let fromViewController = fromViewController
+                    else { return }
 
-                    self?.dismiss()
+                    self.performAction(
+                        secondary.action,
+                        fromViewController: fromViewController,
+                        buttonDescriptor: "secondary"
+                    )
                 }
 
                 setButtons(primary: primaryButton, secondary: secondaryButton)
@@ -58,9 +66,41 @@ class RemoteMegaphone: MegaphoneView {
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    // MARK: Perform actions
+
+    /// Perform the given action.
+    private func performAction(
+        _ action: RemoteMegaphoneModel.Manifest.Action,
+        fromViewController: UIViewController,
+        buttonDescriptor: String
+    ) {
+        switch action {
+        case .snooze:
+            markAsSnoozedWithSneakyTransaction()
+            dismiss()
+        case .finish:
+            markAsCompleteWithSneakyTransaction()
+            dismiss()
+        case .donate:
+            let navController = OWSNavigationController(rootViewController: DonationSettingsViewController())
+            fromViewController.present(navController, animated: true) { [weak self] in
+                guard let self = self else { return }
+
+                // Snooze regardless of outcome from donation screen.
+                self.markAsSnoozedWithSneakyTransaction()
+                self.dismiss(animated: false)
+            }
+        case .unrecognized(let actionId):
+            owsFailDebug("Unrecognized action with ID \(actionId) should never have made it into \(buttonDescriptor) button!")
+            dismiss()
+        }
+    }
 }
 
-extension RemoteMegaphoneModel {
+// MARK: - Presentable actions
+
+private extension RemoteMegaphoneModel {
     struct PresentableAction {
         let action: Manifest.Action
         let presentableText: String

@@ -272,7 +272,12 @@ extension ExperienceUpgradeManifest {
     }
 
     /// The interval after snoozing during which we should not show the upgrade.
-    var snoozeDuration: TimeInterval {
+    func snoozeDuration(forSnoozeCount snoozeCount: UInt) -> TimeInterval {
+        guard snoozeCount > 0 else {
+            owsFailDebug("Asking for snooze duration, but snooze count is zero!")
+            return 0
+        }
+
         switch self {
         case
                 .introducingPins,
@@ -280,9 +285,41 @@ extension ExperienceUpgradeManifest {
             return 2 * kDayInterval
         case .notificationPermissionReminder:
             return 3 * kDayInterval
-        case .remoteMegaphone:
-            // TODO: this property will be stored on the remote megaphone, eventually
-            return kDayInterval
+        case .remoteMegaphone(let megaphone):
+            let daysToSnooze: UInt = {
+                // If we have snooze duration days as action data, get the
+                // appropriate number of days from there based on our snooze
+                // count. Otherwise, return a default value.
+
+                let snoozeDurationDays: [UInt]? = {
+                    if
+                        let primaryActionData = megaphone.manifest.primaryActionData,
+                        case .snoozeDurationDays(let days) = primaryActionData
+                    {
+                        return days
+                    } else if
+                        let secondaryActionData = megaphone.manifest.secondaryActionData,
+                        case .snoozeDurationDays(let days) = secondaryActionData
+                    {
+                        return days
+                    }
+
+                    return nil
+                }()
+
+                if
+                    let snoozeDurationDays = snoozeDurationDays,
+                    let lastDurationDays = snoozeDurationDays.last
+                {
+                    // Safe to subtract from `snoozeCount`, since we checked for 0 above.
+                    let snoozeDurationDaysIndex = snoozeCount - 1
+                    return snoozeDurationDays[safe: Int(snoozeDurationDaysIndex)] ?? lastDurationDays
+                }
+
+                return 3
+            }()
+
+            return Double(daysToSnooze) * kDayInterval
         case .contactPermissionReminder:
             return 30 * kDayInterval
         case .unrecognized:
@@ -317,9 +354,17 @@ extension ExperienceUpgradeManifest {
             return kDayInterval
         case .introducingPins:
             return 2 * kHourInterval
-        case .remoteMegaphone:
-            // Controlled via conditional check
-            return 0
+        case .remoteMegaphone(let megaphone):
+            guard let conditionalCheck = megaphone.manifest.conditionalCheck else {
+                return 0
+            }
+
+            switch conditionalCheck {
+            case .standardDonate:
+                return 7 * kDayInterval
+            case .unrecognized:
+                return .infinity
+            }
         case .pinReminder:
             return 8 * kHourInterval
         case .unrecognized:
@@ -481,36 +526,81 @@ extension ExperienceUpgradeManifest {
             return false
         }
 
-        if let conditionalCheck = megaphone.manifest.conditionalCheck {
-            switch conditionalCheck {
-            case .unrecognized(let conditionalId):
-                Logger.warn("Found unrecognized conditional check with ID \(conditionalId), bailing.")
-                return false
-            }
+        guard validateRemoteMegaphone(conditionalCheck: megaphone.manifest.conditionalCheck) else {
+            return false
         }
 
-        if let primaryAction = megaphone.manifest.primaryAction {
-            guard megaphone.translation.primaryActionText != nil else {
-                Logger.warn("Missing primary action text for action \(primaryAction)")
-                return false
-            }
-
-            guard primaryAction.isRecognized else {
-                Logger.warn("Found unrecognized primary action \(primaryAction), bailing.")
-                return false
-            }
+        guard validateRemoteMegaphone(
+            action: megaphone.manifest.primaryAction,
+            withText: megaphone.translation.primaryActionText
+        ) else {
+            return false
         }
 
-        if let secondaryAction = megaphone.manifest.secondaryAction {
-            guard megaphone.translation.secondaryActionText != nil else {
-                Logger.warn("Missing secondary action text for action \(secondaryAction)")
+        guard validateRemoteMegaphone(
+            action: megaphone.manifest.secondaryAction,
+            withText: megaphone.translation.secondaryActionText
+        ) else {
+            return false
+        }
+
+        return true
+    }
+
+    private static func validateRemoteMegaphone(
+        conditionalCheck: RemoteMegaphoneModel.Manifest.ConditionalCheck?
+    ) -> Bool {
+        guard let conditionalCheck = conditionalCheck else {
+            // Having no conditional check is valid.
+            return true
+        }
+
+        switch conditionalCheck {
+        case .standardDonate:
+            if
+                let localProfileBadgeInfo = profileManager.localProfileBadgeInfo(),
+                !localProfileBadgeInfo.isEmpty
+            {
+                // Fail the check if we currently have a badge.
                 return false
             }
 
-            guard secondaryAction.isRecognized else {
-                Logger.warn("Found unrecognized secondary action \(secondaryAction), bailing.")
-                return false
-            }
+            return true
+        case .unrecognized(let conditionalId):
+            Logger.warn("Found unrecognized conditional check with ID \(conditionalId), bailing.")
+            return false
+        }
+    }
+
+    private static func validateRemoteMegaphone(
+        action: RemoteMegaphoneModel.Manifest.Action?,
+        withText text: String?
+    ) -> Bool {
+        guard let action = action else {
+            // Having no action is valid...
+            return true
+        }
+
+        guard action.isRecognized else {
+            // ...but we need to recognize it...
+            Logger.warn("Found unrecognized action with ID \(action.actionId), bailing.")
+            return false
+        }
+
+        guard text != nil else {
+            // ...and have text for it.
+            Logger.warn("Missing action text for action \(action.actionId)")
+            return false
+        }
+
+        return true
+    }
+}
+
+private extension RemoteMegaphoneModel.Manifest.Action {
+    var isRecognized: Bool {
+        if case .unrecognized = self {
+            return false
         }
 
         return true

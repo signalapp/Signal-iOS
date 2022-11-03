@@ -17,6 +17,7 @@ public class ExperienceUpgrade: SDSCodableModel {
 
         case firstViewedTimestamp
         case lastSnoozedTimestamp
+        case snoozeCount
         case isComplete
         case manifest
     }
@@ -26,8 +27,16 @@ public class ExperienceUpgrade: SDSCodableModel {
         manifest.uniqueId
     }
 
+    /// Timestamp when this upgrade was first viewed.
     public private(set) var firstViewedTimestamp: TimeInterval
+
+    /// Timestamp when this upgrade was last snoozed.
     public private(set) var lastSnoozedTimestamp: TimeInterval
+
+    /// Number of times this upgrade has been snoozed.
+    public private(set) var snoozeCount: UInt
+
+    /// Whether this upgrade should be considered fully complete.
     public private(set) var isComplete: Bool
 
     /// Identifies and holds metadata about this ``ExperienceUpgrade``.
@@ -36,6 +45,7 @@ public class ExperienceUpgrade: SDSCodableModel {
     private init(manifest: ExperienceUpgradeManifest) {
         self.firstViewedTimestamp = 0
         self.lastSnoozedTimestamp = 0
+        self.snoozeCount = 0
         self.isComplete = false
 
         self.manifest = manifest
@@ -57,6 +67,7 @@ public class ExperienceUpgrade: SDSCodableModel {
 
         firstViewedTimestamp = try container.decode(TimeInterval.self, forKey: .firstViewedTimestamp)
         lastSnoozedTimestamp = try container.decode(TimeInterval.self, forKey: .lastSnoozedTimestamp)
+        snoozeCount = try container.decode(UInt.self, forKey: .snoozeCount)
         isComplete = try container.decode(Bool.self, forKey: .isComplete)
 
         let persistedUniqueId = try container.decode(String.self, forKey: .uniqueId)
@@ -81,6 +92,7 @@ public class ExperienceUpgrade: SDSCodableModel {
 
         try container.encode(firstViewedTimestamp, forKey: .firstViewedTimestamp)
         try container.encode(lastSnoozedTimestamp, forKey: .lastSnoozedTimestamp)
+        try container.encode(snoozeCount, forKey: .snoozeCount)
         try container.encode(isComplete, forKey: .isComplete)
 
         try container.encode(manifest, forKey: .manifest)
@@ -117,7 +129,10 @@ extension ExperienceUpgrade {
 
 extension ExperienceUpgrade {
     public func markAsSnoozed(transaction: SDSAnyWriteTransaction) {
-        upsert(withTransaction: transaction) { $0.lastSnoozedTimestamp = Date().timeIntervalSince1970 }
+        upsert(withTransaction: transaction) { upgrade in
+            upgrade.lastSnoozedTimestamp = Date().timeIntervalSince1970
+            upgrade.snoozeCount += 1
+        }
     }
 
     public func markAsComplete(transaction: SDSAnyWriteTransaction) {

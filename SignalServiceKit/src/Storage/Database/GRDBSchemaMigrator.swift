@@ -206,6 +206,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addColumnForExperienceUpgradeManifest
         case addStoryContextAssociatedDataReadTimestampColumn
         case addIsCompleteToContactSyncJob
+        case addSnoozeCountToExperienceUpgrade
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -262,7 +263,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 51
+    public static let grdbSchemaVersionLatest: UInt = 52
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2178,6 +2179,25 @@ public class GRDBSchemaMigrator: NSObject {
                 owsFail("Error: \(error)")
             }
         } // end: .addIsCompleteToContactSyncJob
+
+        migrator.registerMigration(.addSnoozeCountToExperienceUpgrade) { db in
+            do {
+                try db.alter(table: "model_ExperienceUpgrade") { (table: TableAlteration) in
+                    table.add(column: "snoozeCount", .integer)
+                        .notNull()
+                        .defaults(to: 0)
+                }
+
+                let populateSql = """
+                    UPDATE model_ExperienceUpgrade
+                    SET snoozeCount = 1
+                    WHERE lastSnoozedTimestamp > 0
+                """
+                try db.execute(sql: populateSql)
+            } catch let error {
+                owsFail("Error: \(error)")
+            }
+        }
 
         // MARK: - Schema Migration Insertion Point
     }

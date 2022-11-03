@@ -55,6 +55,7 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 - (nullable NSString *)localUsername;
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
+- (nullable NSArray<OWSUserProfileBadgeInfo *> *)localProfileBadgeInfo;
 
 - (nullable NSString *)fullNameForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction;

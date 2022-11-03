@@ -72,6 +72,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (nullable NSString *)localUsername;
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
+- (nullable NSArray<OWSUserProfileBadgeInfo *> *)localProfileBadgeInfo;
 
 - (OWSProfileSnapshot *)localProfileSnapshotWithShouldIncludeAvatar:(BOOL)shouldIncludeAvatar
     NS_SWIFT_NAME(localProfileSnapshot(shouldIncludeAvatar:));

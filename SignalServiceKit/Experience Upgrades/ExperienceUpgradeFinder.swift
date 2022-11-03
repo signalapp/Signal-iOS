@@ -102,11 +102,16 @@ public class ExperienceUpgradeFinder: NSObject {
 
 public extension ExperienceUpgrade {
     var isSnoozed: Bool {
-        guard lastSnoozedTimestamp > 0 else { return false }
+        guard
+            lastSnoozedTimestamp > 0,
+            snoozeCount > 0
+        else {
+            return false
+        }
 
         // Check if enough time has passed since the last snooze date.
         let timeSinceLastSnooze = -Date(timeIntervalSince1970: lastSnoozedTimestamp).timeIntervalSinceNow
-        return timeSinceLastSnooze <= manifest.snoozeDuration
+        return timeSinceLastSnooze <= manifest.snoozeDuration(forSnoozeCount: snoozeCount)
     }
 
     var hasPassedNumberOfDaysToShow: Bool {

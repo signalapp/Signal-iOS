@@ -45,6 +45,12 @@ public struct RemoteMegaphoneModel: Codable {
         manifest.priority = newMegaphone.manifest.priority
         manifest.countries = newMegaphone.manifest.countries
 
+        manifest.conditionalCheck = newMegaphone.manifest.conditionalCheck
+        manifest.primaryAction = newMegaphone.manifest.primaryAction
+        manifest.primaryActionData = newMegaphone.manifest.primaryActionData
+        manifest.secondaryAction = newMegaphone.manifest.secondaryAction
+        manifest.secondaryActionData = newMegaphone.manifest.secondaryActionData
+
         translation.title = newMegaphone.translation.title
         translation.body = newMegaphone.translation.body
         translation.primaryActionText = newMegaphone.translation.primaryActionText
@@ -107,15 +113,23 @@ extension RemoteMegaphoneModel {
 
         /// Represents a condition that must be satisfied in order for this
         /// megaphone to be presented.
-        let conditionalCheck: ConditionalCheck?
+        fileprivate(set) var conditionalCheck: ConditionalCheck?
 
         /// Represents an action to be performed in response to user selection
         /// of the "primary" call-to-action in the presented megaphone.
-        public let primaryAction: Action?
+        public fileprivate(set) var primaryAction: Action?
+
+        /// Represents data associated with the performance of the primary
+        /// action.
+        fileprivate(set) var primaryActionData: ActionData?
 
         /// Represents an action to be performed in response to user selection
         /// of the "secondary" call-to-action in the presented megaphone.
-        public let secondaryAction: Action?
+        public fileprivate(set) var secondaryAction: Action?
+
+        /// Represents data associated with the performance of the seocndary
+        /// action.
+        fileprivate(set) var secondaryActionData: ActionData?
 
         init(
             id: String,
@@ -127,7 +141,9 @@ extension RemoteMegaphoneModel {
             showForNumberOfDays: Int,
             conditionalCheck: ConditionalCheck?,
             primaryAction: Action?,
-            secondaryAction: Action?
+            primaryActionData: ActionData?,
+            secondaryAction: Action?,
+            secondaryActionData: ActionData?
         ) {
             self.id = id
             self.priority = priority
@@ -138,7 +154,9 @@ extension RemoteMegaphoneModel {
             self.showForNumberOfDays = showForNumberOfDays
             self.conditionalCheck = conditionalCheck
             self.primaryAction = primaryAction
+            self.primaryActionData = primaryActionData
             self.secondaryAction = secondaryAction
+            self.secondaryActionData = secondaryActionData
         }
 
         // MARK: Codable
@@ -153,7 +171,9 @@ extension RemoteMegaphoneModel {
             case showForNumberOfDays
             case conditionalCheck
             case primaryAction
+            case primaryActionData
             case secondaryAction
+            case secondaryActionData
         }
 
         public init(from decoder: Decoder) throws {
@@ -169,7 +189,9 @@ extension RemoteMegaphoneModel {
 
             conditionalCheck = try container.decodeIfPresent(ConditionalCheck.self, forKey: .conditionalCheck)
             primaryAction = try container.decodeIfPresent(Action.self, forKey: .primaryAction)
+            primaryActionData = try container.decodeIfPresent(ActionData.self, forKey: .primaryActionData)
             secondaryAction = try container.decodeIfPresent(Action.self, forKey: .secondaryAction)
+            secondaryActionData = try container.decodeIfPresent(ActionData.self, forKey: .secondaryActionData)
         }
 
         public func encode(to encoder: Encoder) throws {
@@ -191,8 +213,16 @@ extension RemoteMegaphoneModel {
                 try container.encode(primaryAction, forKey: .primaryAction)
             }
 
+            if let primaryActionData = primaryActionData {
+                try container.encode(primaryActionData, forKey: .primaryActionData)
+            }
+
             if let secondaryAction = secondaryAction {
                 try container.encode(secondaryAction, forKey: .secondaryAction)
+            }
+
+            if let secondaryActionData = secondaryActionData {
+                try container.encode(secondaryActionData, forKey: .secondaryActionData)
             }
         }
     }
@@ -204,10 +234,13 @@ extension RemoteMegaphoneModel.Manifest {
     /// Identifies a known conditional check that must be satisfied in order
     /// for this megaphone to be shown.
     enum ConditionalCheck: Codable {
+        case standardDonate
         case unrecognized(conditionalId: String)
 
         var conditionalId: String {
             switch self {
+            case .standardDonate:
+                return "standard_donate"
             case .unrecognized(let conditionalId):
                 return conditionalId
             }
@@ -215,15 +248,10 @@ extension RemoteMegaphoneModel.Manifest {
 
         init(fromConditionalId conditionalId: String) {
             switch conditionalId {
+            case Self.standardDonate.conditionalId:
+                self = .standardDonate
             default:
                 self = .unrecognized(conditionalId: conditionalId)
-            }
-        }
-
-        var isRecognized: Bool {
-            switch self {
-            case .unrecognized:
-                return false
             }
         }
 
@@ -253,37 +281,38 @@ extension RemoteMegaphoneModel.Manifest {
 extension RemoteMegaphoneModel.Manifest {
     /// Identifies a known action to take in response to a known user
     /// interaction with this megaphone.
-    public enum Action: Codable, CustomStringConvertible {
+    public enum Action: Codable {
+        case finish
+        case donate
+        case snooze
         case unrecognized(actionId: String)
 
         var actionId: String {
             switch self {
+            case .finish:
+                return "finish"
+            case .donate:
+                return "donate"
+            case .snooze:
+                return "snooze"
             case .unrecognized(let conditionalId):
                 return conditionalId
             }
         }
 
         init(fromActionId actionId: String) {
-            switch actionId {
-            default:
-                self = .unrecognized(actionId: actionId)
-            }
-        }
-
-        var isRecognized: Bool {
-            switch self {
-            case .unrecognized:
-                return false
-            }
-        }
-
-        // MARK: CustomStringConvertible
-
-        public var description: String {
-            switch self {
-            case .unrecognized(let actionId):
-                return ".unrecognized(\(actionId))"
-            }
+            self = {
+                switch actionId {
+                case Self.finish.actionId:
+                    return .finish
+                case Self.donate.actionId:
+                    return .donate
+                case Self.snooze.actionId:
+                    return .snooze
+                default:
+                    return .unrecognized(actionId: actionId)
+                }
+            }()
         }
 
         // MARK: Codable
@@ -303,6 +332,69 @@ extension RemoteMegaphoneModel.Manifest {
             var container = encoder.container(keyedBy: CodingKeys.self)
 
             try container.encode(actionId, forKey: .actionId)
+        }
+    }
+}
+
+// MARK: - ActionData
+
+extension RemoteMegaphoneModel.Manifest {
+    enum ActionData: Codable {
+        case snoozeDurationDays(days: [UInt])
+        case unrecognized(actionDataId: String)
+
+        private static let snoozeDurationDaysId: String = "snoozeDurationDays"
+
+        static func parse(fromJson jsonObject: [String: Any]) throws -> Self? {
+            let parser = ParamParser(dictionary: jsonObject)
+
+            if let snoozeDurationDays: [UInt] = try parser.optional(key: snoozeDurationDaysId) {
+                return .snoozeDurationDays(days: snoozeDurationDays)
+            }
+
+            return nil
+        }
+
+        // MARK: Codable
+
+        private enum CodingKeys: String, CodingKey {
+            case actionDataId
+            case associatedData
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+
+            let actionDataId = try container.decode(String.self, forKey: .actionDataId)
+
+            self = try { () throws in
+                switch actionDataId {
+                case Self.snoozeDurationDaysId:
+                    let days = try container.decode([UInt].self, forKey: .associatedData)
+                    return .snoozeDurationDays(days: days)
+                default:
+                    return .unrecognized(actionDataId: actionDataId)
+                }
+            }()
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+
+            let (actionDataId, associatedData): (String, Encodable?) = {
+                switch self {
+                case .snoozeDurationDays(let days):
+                    return (Self.snoozeDurationDaysId, days)
+                case .unrecognized(let actionDataId):
+                    return (actionDataId, nil)
+                }
+            }()
+
+            try container.encode(actionDataId, forKey: .actionDataId)
+
+            if let associatedData = associatedData {
+                try container.encode(associatedData, forKey: .associatedData)
+            }
         }
     }
 }
