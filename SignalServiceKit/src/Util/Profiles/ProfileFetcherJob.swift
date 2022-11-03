@@ -412,82 +412,73 @@ public class ProfileFetcherJob: NSObject {
     }
 
     private func updateProfile(fetchedProfile: FetchedProfile) -> Promise<Void> {
-        // Before we update the profile, try to download and decrypt
-        // the avatar data, if necessary.
-
-        let profileAddress = fetchedProfile.profile.address
-        guard let profileKey = fetchedProfile.profileKey else {
-            // If we don't have a profile key for this user, don't bother
-            // downloading their avatar - we can't decrypt it.
-            return updateProfile(fetchedProfile: fetchedProfile,
-                                 profileKey: nil,
-                                 optionalAvatarData: nil)
+        firstly {
+            // Before we update the profile, try to download and decrypt the avatar
+            // data, if necessary.
+            downloadAvatarIfNeeded(fetchedProfile)
+        }.then(on: Self.queueCluster.next()) { localAvatarUrlIfDownloaded in
+            self.updateProfile(
+                fetchedProfile: fetchedProfile, localAvatarUrlIfDownloaded: localAvatarUrlIfDownloaded
+            )
         }
+    }
 
-        guard let avatarUrlPath = fetchedProfile.profile.avatarUrlPath else {
+    private func downloadAvatarIfNeeded(_ fetchedProfile: FetchedProfile) -> Promise<URL?> {
+        guard let newAvatarUrlPath = fetchedProfile.profile.avatarUrlPath else {
             // If profile has no avatar, we don't need to download the avatar.
-            return updateProfile(fetchedProfile: fetchedProfile,
-                                 profileKey: profileKey,
-                                 optionalAvatarData: nil)
+            return Promise.value(nil)
         }
-
-        let hasExistingAvatarData = databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in
-            guard let oldAvatarURLPath = self.profileManager.profileAvatarURLPath(for: profileAddress,
-                                                                                     transaction: transaction),
-                  oldAvatarURLPath == avatarUrlPath else {
-                      return false
-                  }
-            return self.profileManager.hasProfileAvatarData(profileAddress, transaction: transaction)
+        guard let profileKey = fetchedProfile.profileKey else {
+            // If we don't have a profile key for this user, don't bother downloading
+            // their avatar - we can't decrypt it.
+            return Promise.value(nil)
         }
-        if hasExistingAvatarData {
+        let profileAddress = fetchedProfile.profile.address
+        let didAlreadyDownloadAvatar = databaseStorage.read { transaction -> Bool in
+            let oldAvatarUrlPath = profileManager.profileAvatarURLPath(for: profileAddress, transaction: transaction)
+            return (
+                oldAvatarUrlPath == newAvatarUrlPath
+                && profileManager.hasProfileAvatarData(profileAddress, transaction: transaction)
+            )
+        }
+        if didAlreadyDownloadAvatar {
             Logger.verbose("Skipping avatar data download; already downloaded.")
-            return updateProfile(fetchedProfile: fetchedProfile,
-                                 profileKey: profileKey,
-                                 optionalAvatarData: nil)
+            return Promise.value(nil)
         }
-
-        return firstly { () -> AnyPromise in
-            profileManager.downloadAndDecryptProfileAvatar(forProfileAddress: profileAddress,
-                                                           avatarUrlPath: avatarUrlPath,
-                                                           profileKey: profileKey)
-        }.map(on: Self.queueCluster.next()) { (result: Any?) throws -> Data in
-            guard let avatarData = result as? Data else {
-                Logger.verbose("Unexpected result: \(String(describing: result))")
+        return firstly {
+            profileManager.downloadAndDecryptProfileAvatar(
+                forProfileAddress: profileAddress, avatarUrlPath: newAvatarUrlPath, profileKey: profileKey
+            )
+        }.map(on: Self.queueCluster.next()) { (anyAvatarData: Any?) in
+            guard let avatarData = anyAvatarData as? Data else {
                 throw OWSAssertionError("Unexpected result.")
             }
             return avatarData
-        }.then(on: Self.queueCluster.next()) { (avatarData: Data) -> Promise<Void> in
-            self.updateProfile(fetchedProfile: fetchedProfile,
-                               profileKey: profileKey,
-                               optionalAvatarData: avatarData)
-        }.recover(on: Self.queueCluster.next()) { (error: Error) -> Promise<Void> in
-            if error.isNetworkFailureOrTimeout {
-                Logger.warn("Error: \(error)")
-
-                if profileAddress.isLocalAddress {
-                    // Fetches and local profile updates can conflict.
-                    // To avoid these conflicts we treat "partial"
-                    // profile fetches (where we download the profile
-                    // but not the associated avatar) as failures.
-                    throw SSKUnretryableError.partialLocalProfileFetch
-                }
+        }.map(on: .global()) { (avatarData: Data) -> URL? in
+            if avatarData.isEmpty {
+                return nil
             } else {
-                // This should be very rare. It might reflect:
-                //
-                // * A race around rotating profile keys which would cause a
-                //   decryption error.
-                // * An incomplete profile update (profile updated but
-                //   avatar not uploaded afterward). This might be due to
-                //   a race with an update that is in flight.
-                //   We should eventually recover since profile updates are
-                //   durable.
-                Logger.warn("Error: \(error)")
+                return self.profileManager.writeAvatarDataToFile(avatarData)
             }
-            // We made a best effort to download the avatar
-            // before updating the profile.
-            return self.updateProfile(fetchedProfile: fetchedProfile,
-                                      profileKey: profileKey,
-                                      optionalAvatarData: nil)
+        }.recover(on: Self.queueCluster.next()) { error -> Promise<URL?> in
+            Logger.warn("Error: \(error)")
+            if error.isNetworkFailureOrTimeout, profileAddress.isLocalAddress {
+                // Fetches and local profile updates can conflict. To avoid these conflicts
+                // we treat "partial" profile fetches (where we download the profile but
+                // not the associated avatar) as failures.
+                throw SSKUnretryableError.partialLocalProfileFetch
+            }
+            // Reaching this point with anything other than a network failure or
+            // timeout should be very rare. It might reflect:
+            //
+            // * A race around rotating profile keys which would cause a decryption
+            //   error.
+            //
+            // * An incomplete profile update (profile updated but avatar not uploaded
+            //   afterward). This might be due to a race with an update that is in
+            //   flight. We should eventually recover since profile updates are
+            //   durable.
+            return Promise.value(nil)
         }
     }
 
@@ -512,9 +503,7 @@ public class ProfileFetcherJob: NSObject {
 
     // TODO: This method can cause many database writes.
     //       Perhaps we can use a single transaction?
-    private func updateProfile(fetchedProfile: FetchedProfile,
-                               profileKey: OWSAES256Key?,
-                               optionalAvatarData: Data?) -> Promise<Void> {
+    private func updateProfile(fetchedProfile: FetchedProfile, localAvatarUrlIfDownloaded: URL?) -> Promise<Void> {
         let profile = fetchedProfile.profile
         let address = profile.address
 
@@ -534,7 +523,7 @@ public class ProfileFetcherJob: NSObject {
 
         if DebugFlags.internalLogging {
             let isVersionedProfile = fetchedProfile.versionedProfileRequest != nil
-            let profileKeyDescription = profileKey?.keyData.hexadecimalString ?? "None"
+            let profileKeyDescription = fetchedProfile.profileKey?.keyData.hexadecimalString ?? "None"
             let hasAvatar = profile.avatarUrlPath != nil
             let hasProfileNameEncrypted = profile.profileNameEncrypted != nil
             let hasGivenName = givenName?.nilIfEmpty != nil
@@ -573,67 +562,59 @@ public class ProfileFetcherJob: NSObject {
             hasUnrestrictedAccess: profile.hasUnrestrictedUnidentifiedAccess
         )
 
-        return firstly(on: .global()) { () -> URL? in
-            if let avatarData = optionalAvatarData, avatarData.count > 0 {
-                return self.profileManager.writeAvatarDataToFile(avatarData)
-            } else {
-                return nil
+        return databaseStorage.write(.promise) { transaction in
+            // First, we add ensure we have a copy of any new badge in our badge store
+            let badgeModels = fetchedProfile.profile.badges.map { $0.1 }
+            let persistedBadgeIds: [String] = badgeModels.compactMap {
+                do {
+                    try self.profileManager.badgeStore.createOrUpdateBadge($0, transaction: transaction)
+                    return $0.id
+                } catch {
+                    owsFailDebug("Failed to save badgeId: \($0.id). \(error)")
+                    return nil
+                }
             }
-        }.then(on: .global()) { (avatarUrl: URL?) in
-            self.databaseStorage.write(.promise) { transaction in
-                // First, we add ensure we have a copy of any new badge in our badge store
-                let badgeModels = fetchedProfile.profile.badges.map { $0.1 }
-                let persistedBadgeIds: [String] = badgeModels.compactMap {
-                    do {
-                        try self.profileManager.badgeStore.createOrUpdateBadge($0, transaction: transaction)
-                        return $0.id
-                    } catch {
-                        owsFailDebug("Failed to save badgeId: \($0.id). \(error)")
-                        return nil
-                    }
-                }
 
-                // Then, we update the profile. `profileBadges` will contain the badgeId of
-                // badges in the badge store
-                let profileBadgeMetadata = fetchedProfile.profile.badges
-                    .map { $0.0 }
-                    .filter { persistedBadgeIds.contains($0.badgeId) }
+            // Then, we update the profile. `profileBadges` will contain the badgeId of
+            // badges in the badge store
+            let profileBadgeMetadata = fetchedProfile.profile.badges
+                .map { $0.0 }
+                .filter { persistedBadgeIds.contains($0.badgeId) }
 
-                self.profileManager.updateProfile(
-                    for: address,
-                    givenName: givenName,
-                    familyName: familyName,
-                    bio: bio,
-                    bioEmoji: bioEmoji,
-                    username: profile.username,
-                    isStoriesCapable: profile.isStoriesCapable,
-                    avatarUrlPath: profile.avatarUrlPath,
-                    optionalAvatarFileUrl: avatarUrl,
-                    profileBadges: profileBadgeMetadata,
-                    canReceiveGiftBadges: profile.canReceiveGiftBadges,
-                    lastFetch: Date(),
-                    userProfileWriter: .profileFetch,
+            self.profileManager.updateProfile(
+                for: address,
+                givenName: givenName,
+                familyName: familyName,
+                bio: bio,
+                bioEmoji: bioEmoji,
+                username: profile.username,
+                isStoriesCapable: profile.isStoriesCapable,
+                avatarUrlPath: profile.avatarUrlPath,
+                optionalAvatarFileUrl: localAvatarUrlIfDownloaded,
+                profileBadges: profileBadgeMetadata,
+                canReceiveGiftBadges: profile.canReceiveGiftBadges,
+                lastFetch: Date(),
+                userProfileWriter: .profileFetch,
+                transaction: transaction
+            )
+
+            self.verifyIdentityUpToDate(
+                address: address,
+                latestIdentityKey: profile.identityKey,
+                transaction: transaction
+            )
+
+            self.paymentsHelper.setArePaymentsEnabled(
+                for: address,
+                hasPaymentsEnabled: paymentAddress != nil,
+                transaction: transaction
+            )
+
+            if address.isLocalAddress {
+                ChangePhoneNumber.setLocalUserSupportsChangePhoneNumber(
+                    profile.supportsChangeNumber,
                     transaction: transaction
                 )
-
-                self.verifyIdentityUpToDate(
-                    address: address,
-                    latestIdentityKey: profile.identityKey,
-                    transaction: transaction
-                )
-
-                self.paymentsHelper.setArePaymentsEnabled(
-                    for: address,
-                    hasPaymentsEnabled: paymentAddress != nil,
-                    transaction: transaction
-                )
-
-                if address.isLocalAddress {
-                    ChangePhoneNumber.setLocalUserSupportsChangePhoneNumber(
-                        profile.supportsChangeNumber,
-                        transaction: transaction
-                    )
-                }
             }
         }
     }
