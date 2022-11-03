@@ -139,7 +139,7 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
             actionBlock: { [weak self] in
                 guard let self = self else { return }
                 guard !self.notifyForInvalidHostIfNecessary() else { return }
-                AttachmentSharing.showShareUI(for: URL(string: "https://signal.tube#\(self.host ?? "")")!, sender: self.view)
+                AttachmentSharing.showShareUI(for: URL(string: "https://signal.tube/#\(self.host ?? "")")!, sender: self.view)
             }
         ))
         contents.addSection(shareSection)
