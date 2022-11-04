@@ -451,12 +451,12 @@ class MediaGallerySectionsTest: SignalBaseTest {
             XCTAssertNil(sections.resolveNaiveStartIndex(-3, relativeToSection: 1))
 
             // Load January
-            XCTAssertEqual(IndexPath(item: 2, section: 0),
-                           sections.resolveNaiveStartIndex(-3, relativeToSection: 1) { sections in
-                XCTAssertEqual(1, sections.loadEarlierSections(batchSize: 1, transaction: transaction))
-                XCTAssertFalse(sections.hasFetchedOldest)
-                return 1
-            })
+            do {
+                let actual = sections.resolveNaiveStartIndex(-3, relativeToSection: 1, batchSize: 1, transaction: transaction)
+                XCTAssertEqual(IndexPath(item: 2, section: 0), actual.path)
+                XCTAssertEqual(1, actual.numberOfSectionsLoaded)
+            }
+            XCTAssertFalse(sections.hasFetchedOldest)
 
             XCTAssertEqual(IndexPath(item: 2, section: 0),
                            sections.resolveNaiveStartIndex(-3, relativeToSection: 2))
@@ -465,12 +465,13 @@ class MediaGallerySectionsTest: SignalBaseTest {
             XCTAssertNil(sections.resolveNaiveStartIndex(-6, relativeToSection: 2))
 
             // Find out that January was the earliest section.
-            XCTAssertEqual(IndexPath(item: 0, section: 0),
-                           sections.resolveNaiveStartIndex(-6, relativeToSection: 2) { sections in
-                XCTAssertEqual(0, sections.loadEarlierSections(batchSize: 1, transaction: transaction))
-                XCTAssertTrue(sections.hasFetchedOldest)
-                return 0
-            })
+            do {
+                let actual = sections.resolveNaiveStartIndex(-6, relativeToSection: 2, batchSize: 1, transaction: transaction)
+                XCTAssertEqual(IndexPath(item: 0, section: 0), actual.0)
+                XCTAssertEqual(0, actual.1)
+            }
+
+            XCTAssertTrue(sections.hasFetchedOldest)
 
             XCTAssertEqual(IndexPath(item: 0, section: 0),
                            sections.resolveNaiveStartIndex(-6, relativeToSection: 2))
