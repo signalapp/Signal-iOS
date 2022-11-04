@@ -498,7 +498,7 @@ private extension RemoteMegaphoneModel.Manifest {
 
 private extension RemoteMegaphoneModel.Translation {
     private static let uuidKey = "uuid"
-    private static let imageUrlKey = "imageUrl"
+    private static let imageUrlKey = "image"
     private static let titleKey = "title"
     private static let bodyKey = "body"
     private static let primaryCtaTextKey = "primaryCtaText"
