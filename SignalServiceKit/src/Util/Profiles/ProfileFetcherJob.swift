@@ -330,15 +330,8 @@ public class ProfileFetcherJob: NSObject {
         return firstly { () -> Promise<HTTPResponse> in
             networkManager.makePromise(request: request)
         }.map(on: Self.queueCluster.next()) { response in
-            guard let json = response.responseBodyJson else {
-                throw OWSAssertionError("Missing or invalid JSON.")
-            }
-            let profile = try SignalServiceProfile(address: nil, responseObject: json)
-            let profileKey = self.profileKey(forProfile: profile,
-                                             versionedProfileRequest: nil)
-            return FetchedProfile(profile: profile,
-                                  versionedProfileRequest: nil,
-                                  profileKey: profileKey)
+            let profile = try SignalServiceProfile(address: nil, responseObject: response.responseBodyJson)
+            return self.fetchedProfile(for: profile, profileKeyFromVersionedRequest: nil)
         }
     }
 
@@ -407,12 +400,39 @@ public class ProfileFetcherJob: NSObject {
             return requestMaker.makeRequest()
         }.map(on: Self.queueCluster.next()) { (result: RequestMakerResult) -> FetchedProfile in
             let profile = try SignalServiceProfile(address: address, responseObject: result.responseJson)
-            let profileKey = self.profileKey(forProfile: profile,
-                                             versionedProfileRequest: currentVersionedProfileRequest)
-            return FetchedProfile(profile: profile,
-                                  versionedProfileRequest: currentVersionedProfileRequest,
-                                  profileKey: profileKey)
+
+            // If we sent a versioned request, store the credential that was returned.
+            if let versionedProfileRequest = currentVersionedProfileRequest {
+                // This calls databaseStorage.write { }
+                self.versionedProfiles.didFetchProfile(profile: profile, profileRequest: versionedProfileRequest)
+            }
+
+            return self.fetchedProfile(
+                for: profile,
+                profileKeyFromVersionedRequest: currentVersionedProfileRequest?.profileKey
+            )
         }
+    }
+
+    private func fetchedProfile(
+        for profile: SignalServiceProfile,
+        profileKeyFromVersionedRequest: OWSAES256Key?
+    ) -> FetchedProfile {
+        let profileKey: OWSAES256Key?
+        if let profileKeyFromVersionedRequest {
+            // We sent a versioned request, so use the corresponding profile key for
+            // decryption. If we don't, we might try to decrypt an old profile with a
+            // new key, and that won't work.
+            profileKey = profileKeyFromVersionedRequest
+        } else {
+            // We sent an unversioned request, so just use any profile key that's
+            // available. If we explicitly sent an unversioned request, we may have a
+            // key available locally. If we wanted a versioned request but ended up
+            // with an unversioned request, we may have received a key while the
+            // profile fetch was in flight.
+            profileKey = databaseStorage.read { profileManager.profileKey(for: profile.address, transaction: $0) }
+        }
+        return FetchedProfile(profile: profile, profileKey: profileKey)
     }
 
     private func updateProfile(fetchedProfile: FetchedProfile) -> Promise<Void> {
@@ -486,25 +506,6 @@ public class ProfileFetcherJob: NSObject {
         }
     }
 
-    private func profileKey(forProfile profile: SignalServiceProfile,
-                            versionedProfileRequest: VersionedProfileRequest?) -> OWSAES256Key? {
-        if let profileKey = versionedProfileRequest?.profileKey {
-            return profileKey
-        }
-        Logger.warn("Missing profileKey used in versioned profile request.")
-        let profileAddress = profile.address
-        if let profileKey = (databaseStorage.read { transaction in
-            self.profileManager.profileKey(for: profileAddress,
-                                              transaction: transaction)
-        }) {
-            if DebugFlags.internalLogging {
-                Logger.info("Using profileKey from database.")
-            }
-            return profileKey
-        }
-        return nil
-    }
-
     // TODO: This method can cause many database writes.
     //       Perhaps we can use a single transaction?
     private func updateProfile(fetchedProfile: FetchedProfile, localAvatarUrlIfDownloaded: URL?) -> Promise<Void> {
@@ -526,7 +527,6 @@ public class ProfileFetcherJob: NSObject {
         let username = profile.username
 
         if DebugFlags.internalLogging {
-            let isVersionedProfile = fetchedProfile.versionedProfileRequest != nil
             let profileKeyDescription = fetchedProfile.profileKey?.keyData.hexadecimalString ?? "None"
             let hasAvatar = profile.avatarUrlPath != nil
             let hasProfileNameEncrypted = profile.profileNameEncrypted != nil
@@ -540,7 +540,6 @@ public class ProfileFetcherJob: NSObject {
 
             Logger.info(
                 "address: \(address), " +
-                "isVersionedProfile: \(isVersionedProfile), " +
                 "hasAvatar: \(hasAvatar), " +
                 "hasProfileNameEncrypted: \(hasProfileNameEncrypted), " +
                 "hasGivenName: \(hasGivenName), " +
@@ -552,11 +551,6 @@ public class ProfileFetcherJob: NSObject {
                 "profileKey: \(profileKeyDescription), " +
                 "badges: \(badges)"
             )
-        }
-
-        // This calls databaseStorage.write { }
-        if let profileRequest = fetchedProfile.versionedProfileRequest {
-            self.versionedProfiles.didFetchProfile(profile: profile, profileRequest: profileRequest)
         }
 
         // This calls databaseStorage.asyncWrite { }
@@ -735,24 +729,16 @@ public struct DecryptedProfile: Dependencies {
 
 public struct FetchedProfile {
     let profile: SignalServiceProfile
-    let versionedProfileRequest: VersionedProfileRequest?
     let profileKey: OWSAES256Key?
     public let decryptedProfile: DecryptedProfile?
 
-    init(profile: SignalServiceProfile,
-         versionedProfileRequest: VersionedProfileRequest?,
-         profileKey: OWSAES256Key?) {
+    init(profile: SignalServiceProfile, profileKey: OWSAES256Key?) {
         self.profile = profile
-        self.versionedProfileRequest = versionedProfileRequest
         self.profileKey = profileKey
-        self.decryptedProfile = Self.decrypt(profile: profile,
-                                             versionedProfileRequest: versionedProfileRequest,
-                                             profileKey: profileKey)
+        self.decryptedProfile = Self.decrypt(profile: profile, profileKey: profileKey)
     }
 
-    private static func decrypt(profile: SignalServiceProfile,
-                                versionedProfileRequest: VersionedProfileRequest?,
-                                profileKey: OWSAES256Key?) -> DecryptedProfile? {
+    private static func decrypt(profile: SignalServiceProfile, profileKey: OWSAES256Key?) -> DecryptedProfile? {
         guard let profileKey = profileKey else {
             return nil
         }
