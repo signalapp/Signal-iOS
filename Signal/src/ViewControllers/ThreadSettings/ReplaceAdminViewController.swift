@@ -51,25 +51,26 @@ class ReplaceAdminViewController: OWSTableViewController2 {
             self.contactsManagerImpl.sortSignalServiceAddresses(Array(self.candidates), transaction: transaction)
         }
         for address in sortedCandidates {
-            section.add(OWSTableItem(dequeueCellBlock: { tableView in
-                guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
-                    owsFailDebug("Missing cell.")
-                    return UITableViewCell()
-                }
+            section.add(OWSTableItem(
+                dequeueCellBlock: { tableView in
+                    guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
+                        owsFailDebug("Missing cell.")
+                        return UITableViewCell()
+                    }
 
-                Self.databaseStorage.read { transaction in
-                    let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
-                    let imageView = CVImageView()
-                    imageView.setTemplateImageName("empty-circle-outline-24", tintColor: .ows_gray25)
-                    configuration.accessoryView = ContactCellAccessoryView(accessoryView: imageView, size: .square(24))
+                    Self.databaseStorage.read { transaction in
+                        let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
+                        let imageView = CVImageView()
+                        imageView.setTemplateImageName("empty-circle-outline-24", tintColor: .ows_gray25)
+                        configuration.accessoryView = ContactCellAccessoryView(accessoryView: imageView, size: .square(24))
 
-                    cell.configure(configuration: configuration, transaction: transaction)
-                }
+                        cell.configure(configuration: configuration, transaction: transaction)
+                    }
 
-                return cell
+                    return cell
                 },
-                                     actionBlock: { [weak self] in
-                                        self?.candidateWasSelected(candidate: address)
+                actionBlock: { [weak self] in
+                    self?.candidateWasSelected(candidate: address)
                 }
             ))
         }
