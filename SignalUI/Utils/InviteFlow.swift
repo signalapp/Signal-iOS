@@ -34,6 +34,15 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
         Logger.verbose("deinit")
     }
 
+    // MARK: - Localized Strings
+
+    public static var unsupportedFeatureMessage: String {
+        OWSLocalizedString(
+            "UNSUPPORTED_FEATURE_ERROR",
+            comment: "When inviting contacts to use Signal, this error is shown if the device doesn't support SMS or if there aren't any registered email accounts."
+        )
+    }
+
     // MARK: -
 
     @objc

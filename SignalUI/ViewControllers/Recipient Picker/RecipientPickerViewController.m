@@ -5,13 +5,10 @@
 
 #import "RecipientPickerViewController.h"
 #import "SignalApp.h"
-#import <MessageUI/MessageUI.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/SignalCoreKit-Swift.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/AppVersion.h>
-#import <SignalServiceKit/PhoneNumberUtil.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -43,8 +40,7 @@ const NSUInteger kMinimumSearchLength = 1;
 @interface RecipientPickerViewController () <UISearchBarDelegate,
     ContactsViewHelperObserver,
     OWSTableViewControllerDelegate,
-    FindByPhoneNumberDelegate,
-    MFMessageComposeViewControllerDelegate>
+    FindByPhoneNumberDelegate>
 
 @property (nonatomic, readonly) UIStackView *signalContactsStackView;
 
@@ -57,15 +53,6 @@ const NSUInteger kMinimumSearchLength = 1;
 @property (nonatomic, nullable, readonly) OWSSearchBar *searchBar;
 @property (nonatomic, nullable) ComposeScreenSearchResultSet *searchResults;
 @property (nonatomic, nullable) NSString *lastSearchText;
-@property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
-
-// A list of possible phone numbers parsed from the search text as
-// E164 values.
-@property (nonatomic) NSArray<NSString *> *searchPhoneNumbers;
-
-// This set is used to cache the set of non-contact phone numbers
-// which are known to correspond to Signal accounts.
-@property (nonatomic, readonly) NSMutableSet<SignalServiceAddress *> *nonContactAccountSet;
 
 @property (nonatomic) BOOL isNoContactsModeActive;
 
@@ -86,7 +73,7 @@ const NSUInteger kMinimumSearchLength = 1;
 
     _allowsAddByPhoneNumber = YES;
     _shouldHideLocalRecipient = YES;
-    _allowsSelectingUnregisteredPhoneNumbers = YES;
+    _selectionMode = RecipientPickerViewControllerSelectionModeDefault;
     _groupsToShow = RecipientPickerViewControllerGroupsToShow_ShowGroupsThatUserIsMemberOfWhenSearching;
     _shouldShowInvites = NO;
     _shouldShowAlphabetSlider = YES;
@@ -106,7 +93,6 @@ const NSUInteger kMinimumSearchLength = 1;
 
     _searchResults = nil;
     [self.contactsViewHelper addObserver:self];
-    _nonContactAccountSet = [NSMutableSet set];
     _collation = [UILocalizedIndexedCollation currentCollation];
 
     // Search
@@ -144,6 +130,8 @@ const NSUInteger kMinimumSearchLength = 1;
     [self.tableViewController.view setContentHuggingVerticalLow];
     [self.tableViewController.tableView registerClass:[ContactTableViewCell class]
                                forCellReuseIdentifier:ContactTableViewCell.reuseIdentifier];
+    [self.tableViewController.tableView registerClass:[NonContactTableViewCell class]
+                               forCellReuseIdentifier:NonContactTableViewCell.reuseIdentifier];
 
     _noSignalContactsView = [self createNoSignalContactsView];
     self.noSignalContactsView.hidden = YES;
@@ -437,8 +425,8 @@ const NSUInteger kMinimumSearchLength = 1;
                                             [[FindByPhoneNumberViewController alloc]
                                                         initWithDelegate:strongSelf
                                                               buttonText:strongSelf.findByPhoneNumberButtonTitle
-                                                requiresRegisteredNumber:!strongSelf
-                                                                              .allowsSelectingUnregisteredPhoneNumbers];
+                                                requiresRegisteredNumber:strongSelf.selectionMode !=
+                                                RecipientPickerViewControllerSelectionModeBlocklist];
                                         [strongSelf.navigationController pushViewController:viewController
                                                                                    animated:YES];
                                     }]];
@@ -676,8 +664,6 @@ const NSUInteger kMinimumSearchLength = 1;
 
 - (NSArray<OWSTableSection *> *)contactsSectionsForSearchResults:(ComposeScreenSearchResultSet *)searchResults
 {
-    __weak __typeof(self) weakSelf = self;
-
     NSMutableArray<OWSTableSection *> *sections = [NSMutableArray new];
 
     // Contacts, filtered with the search text.
@@ -685,7 +671,6 @@ const NSUInteger kMinimumSearchLength = 1;
     __block BOOL hasSearchResults = NO;
 
     NSMutableSet<NSString *> *matchedAccountPhoneNumbers = [NSMutableSet new];
-    NSMutableSet<NSString *> *matchedAccountUsernames = [NSMutableSet new];
 
     OWSTableSection *contactsSection =
         [self buildSectionWithTitle:OWSLocalizedString(@"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
@@ -705,12 +690,6 @@ const NSUInteger kMinimumSearchLength = 1;
                 [matchedAccountPhoneNumbers addObject:phoneNumber];
             }
 
-            NSString *_Nullable username = [self.profileManagerImpl usernameForAddress:signalAccount.recipientAddress
-                                                                           transaction:transaction];
-            if (username) {
-                [matchedAccountUsernames addObject:username];
-            }
-
             PickedRecipient *recipient = [PickedRecipient forAddress:signalAccount.recipientAddress];
             [contactsSection addItem:[self itemForRecipient:recipient]];
         }
@@ -726,120 +705,17 @@ const NSUInteger kMinimumSearchLength = 1;
         [sections addObject:groupSection];
     }
 
-    OWSTableSection *phoneNumbersSection =
-        [self buildSectionWithTitle:OWSLocalizedString(@"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE",
-                                        @"Table section header for phone number search when composing a new message")];
-
-    NSArray<NSString *> *searchPhoneNumbers = [self parsePossibleSearchPhoneNumbers];
-    for (NSString *phoneNumber in searchPhoneNumbers) {
-        OWSAssertDebug(phoneNumber.length > 0);
-
-        // We're already showing this user, skip it.
-        if ([matchedAccountPhoneNumbers containsObject:phoneNumber]) {
-            continue;
-        }
-
-        SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
-
-        BOOL isRegistered = [self.nonContactAccountSet containsObject:address];
-        PickedRecipient *recipient = [PickedRecipient forAddress:address];
-
-        if (self.shouldShowInvites) {
-            [phoneNumbersSection
-                addItem:[OWSTableItem
-                            itemWithCustomCellBlock:^{
-                                NonContactTableViewCell *cell = [NonContactTableViewCell new];
-
-                                __strong typeof(self) strongSelf = weakSelf;
-                                if (!strongSelf) {
-                                    return cell;
-                                }
-
-                                if (![strongSelf.delegate recipientPicker:strongSelf getRecipientState:recipient]) {
-                                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                                }
-
-                                [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-                                    cell.accessoryMessage = [strongSelf.delegate recipientPicker:strongSelf
-                                                                    accessoryMessageForRecipient:recipient
-                                                                                     transaction:transaction];
-                                }];
-
-                                [cell configureWithPhoneNumber:phoneNumber
-                                                  isRegistered:isRegistered
-                                               hideHeaderLabel:!strongSelf.shouldShowInvites];
-
-                                NSString *cellName = [NSString stringWithFormat:@"phone_number.%@", phoneNumber];
-                                cell.accessibilityIdentifier
-                                    = ACCESSIBILITY_IDENTIFIER_WITH_NAME(RecipientPickerViewController, cellName);
-
-                                return cell;
-                            }
-                            actionBlock:^{
-                                [weakSelf tryToSelectRecipient:recipient];
-                            }]];
-        } else if (isRegistered || self.allowsSelectingUnregisteredPhoneNumbers) {
-            [phoneNumbersSection addItem:[self itemForRecipient:recipient]];
-        }
-    }
-
-    if (phoneNumbersSection.itemCount > 0) {
+    OWSTableSection *findByNumberSection = [self findByNumberSectionForSearchResults:searchResults
+                                                                skippingPhoneNumbers:matchedAccountPhoneNumbers];
+    if (findByNumberSection != nil) {
         hasSearchResults = YES;
-        [sections addObject:phoneNumbersSection];
+        [sections addObject:findByNumberSection];
     }
 
-    // Username lookup
-    if (SSKFeatureFlags.usernames) {
-        NSString *usernameMatch = self.searchText;
-        NSString *_Nullable localUsername = self.profileManager.localUsername;
-
-        NSError *error;
-        NSRegularExpression *startsWithNumberRegex = [[NSRegularExpression alloc] initWithPattern:@"^[0-9]+"
-                                                                                          options:0
-                                                                                            error:&error];
-        if (!startsWithNumberRegex || error) {
-            OWSFailDebug(@"Unexpected error creating regex %@", error.userErrorDescription);
-        }
-        BOOL startsWithNumber = [startsWithNumberRegex hasMatchWithInput:usernameMatch];
-        // If user searches for e164 starting with +, don't treat that as a
-        // username search.
-        BOOL startsWithPlus = [usernameMatch hasPrefix:@"+"];
-        // TODO: Should we use validUsernameRegex?
-
-        if (usernameMatch.length > 0 && !startsWithNumber && !startsWithPlus
-            && ![NSObject isNullableObject:usernameMatch equalTo:localUsername]
-            && ![matchedAccountUsernames containsObject:usernameMatch]) {
-            hasSearchResults = YES;
-
-            OWSTableSection *usernameSection = [self
-                buildSectionWithTitle:OWSLocalizedString(@"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE",
-                                          @"Table section header for username search when composing a new message")];
-
-            [usernameSection addItem:[OWSTableItem
-                                         itemWithCustomCellBlock:^{
-                                             NonContactTableViewCell *cell = [NonContactTableViewCell new];
-
-                                             __strong typeof(self) strongSelf = weakSelf;
-                                             if (!strongSelf) {
-                                                 return cell;
-                                             }
-
-                                             [cell configureWithUsername:usernameMatch
-                                                         hideHeaderLabel:!strongSelf.shouldShowInvites];
-
-                                             NSString *cellName =
-                                                 [NSString stringWithFormat:@"username.%@", usernameMatch];
-                                             cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                 RecipientPickerViewController, cellName);
-
-                                             return cell;
-                                         }
-                                         actionBlock:^{
-                                             [weakSelf lookupUsername:usernameMatch];
-                                         }]];
-
-            [sections addObject:usernameSection];
-        }
+    OWSTableSection *usernameSection = [self findByUsernameSectionForSearchResults:searchResults];
+    if (usernameSection != nil) {
+        hasSearchResults = YES;
+        [sections addObject:usernameSection];
     }
 
     if (!hasSearchResults) {
@@ -934,144 +810,6 @@ const NSUInteger kMinimumSearchLength = 1;
     [self searchTextDidChange];
 }
 
-#pragma mark - Send Invite By SMS
-
-- (void)sendTextToPhoneNumber:(NSString *)phoneNumber
-{
-    OWSInviteFlow *inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
-    self.inviteFlow = inviteFlow;
-
-    OWSAssertDebug([phoneNumber length] > 0);
-    NSString *confirmMessage = OWSLocalizedString(@"SEND_SMS_CONFIRM_TITLE", @"");
-    if ([phoneNumber length] > 0) {
-        confirmMessage = [[OWSLocalizedString(@"SEND_SMS_INVITE_TITLE", @"") stringByAppendingString:phoneNumber]
-            stringByAppendingString:OWSLocalizedString(@"QUESTIONMARK_PUNCTUATION", @"")];
-    }
-
-    ActionSheetController *alert =
-        [[ActionSheetController alloc] initWithTitle:OWSLocalizedString(@"CONFIRMATION_TITLE", @"")
-                                             message:confirmMessage];
-
-    ActionSheetAction *okAction = [[ActionSheetAction alloc]
-                  initWithTitle:CommonStrings.okButton
-        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
-                          style:ActionSheetActionStyleDefault
-                        handler:^(ActionSheetAction *action) {
-                            [self.searchBar resignFirstResponder];
-                            if ([MFMessageComposeViewController canSendText]) {
-                                [inviteFlow sendSMSToPhoneNumbers:@[ phoneNumber ]];
-                            } else {
-                                [OWSActionSheets
-                                    showErrorAlertWithMessage:OWSLocalizedString(@"UNSUPPORTED_FEATURE_ERROR", @"")];
-                            }
-                        }];
-
-    [alert addAction:[OWSActionSheets cancelAction]];
-    [alert addAction:okAction];
-    [self clearSearchText];
-
-    // must dismiss search controller before presenting alert.
-    if ([self presentedViewController]) {
-        [self dismissViewControllerAnimated:YES
-                                 completion:^{
-                                     [self presentActionSheet:alert];
-                                 }];
-    } else {
-        [self presentActionSheet:alert];
-    }
-}
-
-#pragma mark - SMS Composer Delegate
-
-// called on completion of message screen
-- (void)messageComposeViewController:(MFMessageComposeViewController *)controller
-                 didFinishWithResult:(MessageComposeResult)result
-{
-    switch (result) {
-        case MessageComposeResultCancelled:
-            break;
-        case MessageComposeResultFailed: {
-            [OWSActionSheets showErrorAlertWithMessage:OWSLocalizedString(@"SEND_INVITE_FAILURE", @"")];
-            break;
-        }
-        case MessageComposeResultSent: {
-            [self dismissViewControllerAnimated:NO
-                                     completion:^{
-                                         OWSLogDebug(@"view controller dismissed");
-                                     }];
-            [OWSActionSheets showActionSheetWithTitle:OWSLocalizedString(@"SEND_INVITE_SUCCESS",
-                                                          @"Alert body after invite succeeded")];
-            break;
-        }
-        default:
-            break;
-    }
-
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark - Methods
-
-- (void)lookupUsername:(NSString *)username
-{
-    OWSAssertDebug(username.length > 0);
-
-    __weak __typeof(self) weakSelf = self;
-
-    [ModalActivityIndicatorViewController
-        presentFromViewController:self
-                        canCancel:YES
-                  backgroundBlock:^(ModalActivityIndicatorViewController *modal) {
-                      [self.profileManagerImpl fetchProfileForUsername:username
-                          success:^(SignalServiceAddress *address) {
-                              if (modal.wasCancelled) {
-                                  return;
-                              }
-
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  [modal dismissWithCompletion:^{
-                                      [weakSelf tryToSelectRecipient:[PickedRecipient forAddress:address]];
-                                  }];
-                              });
-                          }
-                          notFound:^{
-                              if (modal.wasCancelled) {
-                                  return;
-                              }
-
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  [modal dismissWithCompletion:^{
-                                      NSString *usernameNotFoundFormat = OWSLocalizedString(@"USERNAME_NOT_FOUND_FORMAT",
-                                          @"A message indicating that the given username is not a registered signal "
-                                          @"account. Embeds "
-                                          @"{{username}}");
-                                      [OWSActionSheets
-                                          showActionSheetWithTitle:
-                                           OWSLocalizedString(@"USERNAME_NOT_FOUND_TITLE",
-                                                  @"A message indicating that the given username was not "
-                                                  @"registered with signal.")
-                                                           message:[[NSString alloc]
-                                                                       initWithFormat:usernameNotFoundFormat,
-                                                                       [CommonFormats formatUsername:username]]];
-                                  }];
-                              });
-                          }
-                          failure:^(NSError *error) {
-                              if (modal.wasCancelled) {
-                                  return;
-                              }
-
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  [modal dismissWithCompletion:^{
-                                      [OWSActionSheets showErrorAlertWithMessage:
-                                       OWSLocalizedString(@"USERNAME_LOOKUP_ERROR",
-                                                               @"A message indicating that username lookup failed.")];
-                                  }];
-                              });
-                          }];
-                  }];
-}
-
 #pragma mark - OWSTableViewControllerDelegate
 
 - (void)tableViewWillBeginDragging
@@ -1145,7 +883,6 @@ const NSUInteger kMinimumSearchLength = 1;
     if (![NSObject isNullableObject:_searchResults equalTo:searchResults]) {
         OWSLogVerbose(@"showing search results for term: %@", searchResults.searchText);
         _searchResults = searchResults;
-        [self updateSearchPhoneNumbers];
         [self updateTableContents];
     }
 }
@@ -1194,113 +931,10 @@ const NSUInteger kMinimumSearchLength = 1;
 
 #pragma mark -
 
-- (NSDictionary<NSString *, NSString *> *)callingCodesToCountryCodeMap
-{
-    static NSDictionary<NSString *, NSString *> *result = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NSMutableDictionary *map = [NSMutableDictionary new];
-        for (NSString *countryCode in [PhoneNumberUtil countryCodesForSearchTerm:nil]) {
-            OWSAssertDebug(countryCode.length > 0);
-            NSString *callingCode = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
-            OWSAssertDebug(callingCode.length > 0);
-            OWSAssertDebug([callingCode hasPrefix:@"+"]);
-            OWSAssertDebug(![callingCode isEqualToString:@"+0"]);
-
-            map[callingCode] = countryCode;
-        }
-        result = [map copy];
-    });
-    return result;
-}
-
-- (nullable NSString *)callingCodeForPossiblePhoneNumber:(NSString *)phoneNumber
-{
-    OWSAssertDebug([phoneNumber hasPrefix:@"+"]);
-
-    for (NSString *callingCode in [self callingCodesToCountryCodeMap].allKeys) {
-        if ([phoneNumber hasPrefix:callingCode]) {
-            return callingCode;
-        }
-    }
-    return nil;
-}
-
 - (NSString *)searchText
 {
     NSString *rawText = self.searchBar.text;
     return rawText.ows_stripped ?: @"";
-}
-
-- (NSArray<NSString *> *)parsePossibleSearchPhoneNumbers
-{
-    NSString *searchText = self.searchText;
-
-    if (searchText.length < 8) {
-        return @[];
-    }
-
-    NSMutableSet<NSString *> *parsedPhoneNumbers = [NSMutableSet new];
-    for (PhoneNumber *phoneNumber in
-        [PhoneNumber tryParsePhoneNumbersFromUserSpecifiedText:searchText
-                                              clientPhoneNumber:[TSAccountManager localNumber]]) {
-
-        NSString *phoneNumberString = phoneNumber.toE164;
-
-        // Ignore phone numbers with an unrecognized calling code.
-        NSString *_Nullable callingCode = [self callingCodeForPossiblePhoneNumber:phoneNumberString];
-        if (!callingCode) {
-            continue;
-        }
-
-        // Ignore phone numbers which are too long.
-        NSString *phoneNumberWithoutCallingCode = [phoneNumberString substringFromIndex:callingCode.length];
-        if (phoneNumberWithoutCallingCode.length < 1 || phoneNumberWithoutCallingCode.length > 15) {
-            continue;
-        }
-        [parsedPhoneNumbers addObject:phoneNumberString];
-    }
-
-    return [parsedPhoneNumbers.allObjects sortedArrayUsingSelector:@selector(compare:)];
-}
-
-- (void)updateSearchPhoneNumbers
-{
-    [self checkForAccountsForPhoneNumbers:[self parsePossibleSearchPhoneNumbers]];
-}
-
-- (void)checkForAccountsForPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
-{
-    NSMutableSet<NSString *> *unknownPhoneNumbers = [NSMutableSet new];
-    for (NSString *phoneNumber in phoneNumbers) {
-        if (!
-            [self.nonContactAccountSet containsObject:[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]]) {
-            [unknownPhoneNumbers addObject:phoneNumber];
-        }
-    }
-    if ([unknownPhoneNumbers count] < 1) {
-        return;
-    }
-
-    __weak RecipientPickerViewController *weakSelf = self;
-    [self discoverWithPhoneNumbers:unknownPhoneNumbers success:^(NSSet<SignalRecipient *> * _Nonnull resultSet) {
-        [weakSelf updateNonContactAccountSet:[resultSet allObjects]];
-    }];
-}
-
-- (void)updateNonContactAccountSet:(NSArray<SignalRecipient *> *)recipients
-{
-    BOOL didUpdate = NO;
-    for (SignalRecipient *recipient in recipients) {
-        if ([self.nonContactAccountSet containsObject:recipient.address]) {
-            continue;
-        }
-        [self.nonContactAccountSet addObject:recipient.address];
-        didUpdate = YES;
-    }
-    if (didUpdate) {
-        [self updateTableContents];
-    }
 }
 
 #pragma mark - Theme

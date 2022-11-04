@@ -13,8 +13,22 @@ typedef NS_CLOSED_ENUM(NSUInteger, RecipientPickerViewControllerGroupsToShow) {
     RecipientPickerViewControllerGroupsToShow_ShowAllGroupsWhenSearching,
 };
 
+typedef NS_CLOSED_ENUM(NSUInteger, RecipientPickerViewControllerSelectionMode) {
+    RecipientPickerViewControllerSelectionModeDefault = 1,
+
+    /// The .blocklist selection mode changes the behavior in a few ways:
+    ///
+    /// - If numbers aren't registered, allow them to be chosen. You may want to
+    ///   block someone even if they aren't registered.
+    ///
+    /// - If numbers aren't registered, don't offer to invite them to Signal. If
+    ///   you want to block someone, you probably don't want to invite them.
+    RecipientPickerViewControllerSelectionModeBlocklist = 2,
+};
+
 @protocol RecipientPickerDelegate;
 
+@class OWSInviteFlow;
 @class PickedRecipient;
 
 @interface RecipientPickerViewController : OWSViewControllerObjc
@@ -25,8 +39,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, RecipientPickerViewControllerGroupsToShow) {
 @property (nonatomic) BOOL allowsAddByPhoneNumber;
 /// Defaults to `YES`
 @property (nonatomic) BOOL shouldHideLocalRecipient;
-/// Defaults to `YES`
-@property (nonatomic) BOOL allowsSelectingUnregisteredPhoneNumbers;
+/// Defaults to `RecipientPickerViewControllerSelectionModeDefault`
+@property (nonatomic) RecipientPickerViewControllerSelectionMode selectionMode;
 /// Defaults to `RecipientPickerViewControllerGroupsToShow_ShowGroupsThatUserIsMemberOfWhenSearching`
 @property (nonatomic) RecipientPickerViewControllerGroupsToShow groupsToShow;
 /// Defaults to `NO`
@@ -49,6 +63,10 @@ typedef NS_CLOSED_ENUM(NSUInteger, RecipientPickerViewControllerGroupsToShow) {
 - (void)clearSearchText;
 
 - (void)applyThemeToViewController:(UIViewController *)viewController;
+
+// Swift interop
+
+@property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
 
 @end
 

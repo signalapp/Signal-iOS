@@ -123,6 +123,23 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         }
     }
 
+    /// A helper for a common dismissal pattern.
+    ///
+    /// This can be invoked on any queue, and it'll switch to the main queue if
+    /// needed. The completion block will be invoked on the main queue.
+    ///
+    /// - Parameter completionIfNotCanceled:
+    ///     If the modal hasn't been canceled, dismiss it and then call this
+    ///     block. Note: If the modal was canceled, the block isn't invoked.
+    public func dismissIfNotCanceled(completionIfNotCanceled: @escaping () -> Void) {
+        if wasCancelled {
+            return
+        }
+        DispatchQueue.main.async {
+            self.dismiss(completion: completionIfNotCanceled)
+        }
+    }
+
     public override func loadView() {
         super.loadView()
 

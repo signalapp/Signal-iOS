@@ -79,7 +79,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
         guard MFMessageComposeViewController.canSendText() else {
             Logger.info("Device cannot send text")
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("UNSUPPORTED_FEATURE_ERROR", comment: ""))
+            OWSActionSheets.showErrorAlert(message: InviteFlow.unsupportedFeatureMessage)
             return
         }
         let phoneNumbers = contactShare.e164PhoneNumbers()

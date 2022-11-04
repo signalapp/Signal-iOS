@@ -15,7 +15,6 @@ class ComposeViewController: RecipientPickerContainerViewController {
 
         view.backgroundColor = Theme.backgroundColor
 
-        recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.shouldShowInvites = true
         recipientPicker.shouldShowNewGroup = true
         recipientPicker.groupsToShow = .showGroupsThatUserIsMemberOfWhenSearching
