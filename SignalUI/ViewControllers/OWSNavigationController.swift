@@ -169,12 +169,21 @@ open class OWSNavigationController: OWSNavigationControllerBase {
             owsNavigationBar.navbarBackgroundColorOverride = navChildController?.navbarBackgroundColorOverride
         }
 
-        // Don't do our custom shenanigans if we are changing the hidden state
-        // as a result of view controler transitions.
-        if fromViewControllerTransition {
-            super.setNavigationBarHidden(shouldHideNavbar, animated: animated)
-        } else {
-            self.setNavigationBarHidden(shouldHideNavbar, animated: animated)
+        // NOTE: UIKit sets isNavigationBarHidden immediately at the start of
+        // setNavigationBarHidden, without waiting for the animation to complete.
+        // If UIKit didn't do that, we'd have a race condition where we hide it,
+        // then unhide before the animation finishes, but get stale state.
+        // UIKit saves us this headache.
+
+        // Only update when necessary to preserve performance and safe area changes.
+        if shouldHideNavbar != isNavigationBarHidden {
+            // Don't do our custom shenanigans if we are changing the hidden state
+            // as a result of view controler transitions.
+            if fromViewControllerTransition {
+                super.setNavigationBarHidden(shouldHideNavbar, animated: animated)
+            } else {
+                self.setNavigationBarHidden(shouldHideNavbar, animated: animated)
+            }
         }
     }
 
@@ -269,7 +278,7 @@ extension OWSNavigationController: UINavigationControllerDelegate {
     }
 
     public func navigationController(
-        navigationController: UINavigationController,
+        _ navigationController: UINavigationController,
         animationControllerFor operation: UINavigationController.Operation,
         from fromVC: UIViewController,
         to toVC: UIViewController
