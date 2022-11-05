@@ -52,32 +52,16 @@ public class OWSNavigationBar: UINavigationBar {
         return .topAttached
     }
 
-    private var barBackgroundView: UIView?
+    public override func didMoveToSuperview() {
+        super.didMoveToSuperview()
 
-    public override func didAddSubview(_ subview: UIView) {
-        super.didAddSubview(subview)
-
-        // The most consistent way to keep the blur view pinned to the top of the screen is
-        // to pin it to the UIBarBackground view with UIBarPosition.topPinned.
-        // Other methods result in a gap because the root bar view itself never reaches the top of
-        // the screen and its position relative to the top of the screen as queried by UIKit methods
-        // sometimes behaves weirdly.
-        if NSStringFromClass(subview.classForCoder) == "_UIBarBackground" {
-            barBackgroundView = subview
-            constrainBlurEffectView()
-        }
+        constrainBlurEffectView()
     }
 
-    public override var frame: CGRect {
-        didSet {
-            let top = self.convert(CGPoint.zero, from: nil).y
-            blurEffectView?.frame = CGRect(
-                x: 0,
-                y: top,
-                width: bounds.width,
-                height: bounds.height - top
-            )
-        }
+    public override func didMoveToWindow() {
+        super.didMoveToWindow()
+
+        constrainBlurEffectView()
     }
 
     // MARK: Theme
@@ -124,6 +108,7 @@ public class OWSNavigationBar: UINavigationBar {
 
                 self.blurEffectView = blurEffectView
                 self.insertSubview(blurEffectView, at: 0)
+                blurEffectView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
 
                 self.constrainBlurEffectView()
 
@@ -161,11 +146,14 @@ public class OWSNavigationBar: UINavigationBar {
         }
     }
 
+    private var blurEffectViewTopConstraint: NSLayoutConstraint?
+
     private func constrainBlurEffectView() {
-        guard let blurEffectView = blurEffectView, let barBackgroundView = barBackgroundView else {
+        blurEffectViewTopConstraint?.isActive = false
+        guard let blurEffectView = blurEffectView, let superview = superview else {
             return
         }
-        blurEffectView.autoPin(toEdgesOf: barBackgroundView)
+        blurEffectViewTopConstraint = blurEffectView.autoPinEdge(.top, to: .top, of: superview)
     }
 
     private var respectsTheme: Bool {
