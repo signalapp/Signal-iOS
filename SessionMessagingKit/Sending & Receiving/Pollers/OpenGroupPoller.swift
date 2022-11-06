@@ -221,6 +221,7 @@ extension OpenGroupAPI {
                     OpenGroupAPI.capabilities(
                         db,
                         server: server,
+                        forceBlinded: true,
                         using: dependencies
                     )
                 }
