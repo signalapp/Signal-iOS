@@ -16,6 +16,9 @@ public enum OnionRequestAPIError: LocalizedError {
         switch self {
             case .httpRequestFailedAtDestination(let statusCode, let data, let destination):
                 if statusCode == 429 { return "Rate limited." }
+                if let processedResponseBodyData: Data = OnionRequestAPI.process(bencodedData: data)?.body, let errorResponse: String = String(data: processedResponseBodyData, encoding: .utf8) {
+                    return "HTTP request failed at destination (\(destination)) with status code: \(statusCode), error body: \(errorResponse)."
+                }
                 if let errorResponse: String = String(data: data, encoding: .utf8) {
                     return "HTTP request failed at destination (\(destination)) with status code: \(statusCode), error body: \(errorResponse)."
                 }
