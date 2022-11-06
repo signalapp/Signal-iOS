@@ -84,7 +84,7 @@ extension OpenGroupAPI {
             let (promise, seal) = Promise<Void>.pending()
             promise.retainUntilComplete()
             
-            Threading.pollerQueue.async {
+            let pollingLogic: () -> Void = {
                 dependencies.storage
                     .read { db -> Promise<(Int64, PollResponse)> in
                         let failureCount: Int64 = (try? OpenGroup
@@ -150,7 +150,7 @@ extension OpenGroupAPI {
                             error: error
                         )
                         .done(on: OpenGroupAPI.workQueue) { [weak self] didHandleError in
-                            if !didHandleError {
+                            if !didHandleError && isBackgroundPollerValid() {
                                 // Increase the failure count
                                 let pollFailureCount: Int64 = Storage.shared
                                     .read { db in
@@ -179,6 +179,14 @@ extension OpenGroupAPI {
                         }
                         .retainUntilComplete()
                     }
+            }
+            
+            // If this was run via the background poller then don't run on the pollerQueue
+            if calledFromBackgroundPoller {
+                pollingLogic()
+            }
+            else {
+                Threading.pollerQueue.async { pollingLogic() }
             }
             
             return promise
@@ -213,11 +221,12 @@ extension OpenGroupAPI {
                     OpenGroupAPI.capabilities(
                         db,
                         server: server,
+                        forceBlinded: true,
                         using: dependencies
                     )
                 }
                 .then(on: OpenGroupAPI.workQueue) { [weak self] _, responseBody -> Promise<Void> in
-                    guard let strongSelf = self else { return Promise.value(()) }
+                    guard let strongSelf = self, isBackgroundPollerValid() else { return Promise.value(()) }
                     
                     // Handle the updated capabilities and re-trigger the poll
                     strongSelf.isPolling = false
