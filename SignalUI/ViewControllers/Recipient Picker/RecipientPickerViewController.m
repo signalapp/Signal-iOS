@@ -39,8 +39,7 @@ const NSUInteger kMinimumSearchLength = 1;
 
 @interface RecipientPickerViewController () <UISearchBarDelegate,
     ContactsViewHelperObserver,
-    OWSTableViewControllerDelegate,
-    FindByPhoneNumberDelegate>
+    OWSTableViewControllerDelegate>
 
 @property (nonatomic, readonly) UIStackView *signalContactsStackView;
 
@@ -825,16 +824,6 @@ const NSUInteger kMinimumSearchLength = 1;
     [self updateTableContents];
 
     [self showContactAppropriateViews];
-}
-
-#pragma mark - FindByPhoneNumberDelegate
-
-- (void)findByPhoneNumber:(FindByPhoneNumberViewController *)findByPhoneNumber
-         didSelectAddress:(SignalServiceAddress *)address
-{
-    OWSAssertDebug(address.isValid);
-
-    [self tryToSelectRecipient:[PickedRecipient forAddress:address]];
 }
 
 #pragma mark - UISearchBarDelegate

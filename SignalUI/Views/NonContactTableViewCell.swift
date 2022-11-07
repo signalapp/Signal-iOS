@@ -7,9 +7,9 @@ import Foundation
 import SignalMessaging
 
 @objc
-public final class NonContactTableViewCell: UITableViewCell {
+public final class NonContactTableViewCell: UITableViewCell, ReusableTableViewCell {
     @objc
-    static let reuseIdentifier = "NonContactTableViewCell"
+    public static let reuseIdentifier = "NonContactTableViewCell"
 
     private let iconView: UIImageView = {
         let avatarSize = CGFloat(AvatarBuilder.smallAvatarSizePoints)

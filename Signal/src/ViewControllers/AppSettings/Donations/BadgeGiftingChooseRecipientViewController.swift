@@ -24,7 +24,6 @@ class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewCon
         recipientPicker.allowsAddByPhoneNumber = false
         recipientPicker.shouldHideLocalRecipient = true
         recipientPicker.groupsToShow = .showNoGroups
-        recipientPicker.shouldUseAsyncSelection = false
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)

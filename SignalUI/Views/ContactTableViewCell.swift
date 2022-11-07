@@ -7,7 +7,7 @@ import Foundation
 import SignalMessaging
 
 @objc
-open class ContactTableViewCell: UITableViewCell {
+open class ContactTableViewCell: UITableViewCell, ReusableTableViewCell {
 
     @objc
     open class var reuseIdentifier: String { "ContactTableViewCell" }

@@ -86,7 +86,6 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
         memberCountWrapper.layoutMargins = UIEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12)
 
         recipientPicker.groupsToShow = .showNoGroups
-        recipientPicker.shouldUseAsyncSelection = true
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)

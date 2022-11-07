@@ -757,6 +757,7 @@
 		4CD675C522E7CF22008010D2 /* ConversationViewController+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */; };
 		4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD675C622E7D393008010D2 /* MediaPresentationContext.swift */; };
 		4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF115223A9C2130007F9D7 /* UnreadIndicatorInteraction.swift */; };
+		500FB6182915B86D00257951 /* UITableView+ReusableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */; };
 		500FE490288615BA00FA090C /* CachedBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE48E2886148800FA090C /* CachedBadge.swift */; };
 		500FE4E0288A11B000FA090C /* ConversationViewController+GiftBadges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */; };
 		500FE4E2288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */; };
@@ -3017,6 +3018,7 @@
 		500049CA28330184006A7466 /* mr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = mr; path = translations/mr.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		500049CB28330185006A7466 /* nb */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = nb; path = translations/nb.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		500049CD28330189006A7466 /* fa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fa; path = translations/fa.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+ReusableCell.swift"; sourceTree = "<group>"; };
 		500FE48E2886148800FA090C /* CachedBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedBadge.swift; sourceTree = "<group>"; };
 		500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+GiftBadges.swift"; sourceTree = "<group>"; };
 		500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingAlreadyRedeemedSheet.swift; sourceTree = "<group>"; };
@@ -5152,6 +5154,7 @@
 				34A954F4271B4FB000B05242 /* UIFont+OWS.h */,
 				34A954F1271B4FB000B05242 /* UIFont+OWS.m */,
 				76E54D68290B4E7800D03BA8 /* UIFont+TextStyle.swift */,
+				500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */,
 				3402A9E6271D97090084CBAE /* UIView+SignalUI.h */,
 				3402A9E7271D97090084CBAE /* UIView+SignalUI.m */,
 				3402A9E5271D97090084CBAE /* UIView+SignalUI.swift */,
@@ -9863,6 +9866,7 @@
 				8803C2F628B02FDB00183D2B /* TSOutgoingMessage+AttachmentMultisend.swift in Sources */,
 				34A954FC271B4FB000B05242 /* UIFont+OWS.m in Sources */,
 				76E54D69290B4E7800D03BA8 /* UIFont+TextStyle.swift in Sources */,
+				500FB6182915B86D00257951 /* UITableView+ReusableCell.swift in Sources */,
 				3402A9F5271D9A060084CBAE /* UIUtil.m in Sources */,
 				3402A9EA271D97090084CBAE /* UIView+SignalUI.m in Sources */,
 				3402A9E8271D97090084CBAE /* UIView+SignalUI.swift in Sources */,

@@ -53,6 +53,12 @@ public class BaseGroupMemberViewController: BaseMemberViewController {
         memberViewDelegate = self
     }
 
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+
+        recipientPicker.shouldUseAsyncSelection = true
+    }
+
     private func showGroupFullAlert_HardLimit() {
         let format = NSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d", tableName: "PluralAware",
                                        comment: "Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}.")

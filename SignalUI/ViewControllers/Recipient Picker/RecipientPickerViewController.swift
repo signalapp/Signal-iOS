@@ -35,18 +35,150 @@ extension RecipientPickerViewController {
             }
         )
     }
+}
 
-    private func dequeueNonContactTableViewCell(tableView: UITableView) -> NonContactTableViewCell? {
-        guard
-            let tableViewCell = tableView.dequeueReusableCell(
-                withIdentifier: NonContactTableViewCell.reuseIdentifier
-            ),
-            let nonContactTableViewCell = tableViewCell as? NonContactTableViewCell
-        else {
-            owsFailDebug("cell was unexpectedly nil")
-            return nil
+// MARK: - Selecting Recipients
+
+private extension RecipientPickerViewController {
+    func tryToSelectRecipient(_ recipient: PickedRecipient) {
+        if let address = recipient.address, address.isLocalAddress, shouldHideLocalRecipient {
+            owsFailDebug("Trying to select recipient that shouldn't be visible")
+            return
         }
-        return nonContactTableViewCell
+        if shouldUseAsyncSelection {
+            prepareToSelectRecipient(recipient)
+        } else {
+            didPrepareToSelectRecipient(recipient)
+        }
+    }
+
+    private func prepareToSelectRecipient(_ recipient: PickedRecipient) {
+        guard let delegate = delegate else { return }
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
+            firstly {
+                delegate.recipientPicker(self, prepareToSelectRecipient: recipient)
+            }.done(on: .main) { [weak self] _ in
+                modal.dismiss {
+                    self?.didPrepareToSelectRecipient(recipient)
+                }
+            }.catch(on: .main) { error in
+                owsFailDebugUnlessNetworkFailure(error)
+                modal.dismiss {
+                    OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
+                }
+            }
+        }
+    }
+
+    private func didPrepareToSelectRecipient(_ recipient: PickedRecipient) {
+        AssertIsOnMainThread()
+
+        guard let delegate = delegate else { return }
+
+        let recipientPickerRecipientState = delegate.recipientPicker(self, getRecipientState: recipient)
+        guard recipientPickerRecipientState == .canBeSelected else {
+            showErrorAlert(recipientPickerRecipientState: recipientPickerRecipientState)
+            return
+        }
+
+        delegate.recipientPicker(self, didSelectRecipient: recipient)
+    }
+
+    private func showErrorAlert(recipientPickerRecipientState: RecipientPickerRecipientState) {
+        let errorMessage: String
+        switch recipientPickerRecipientState {
+        case .duplicateGroupMember:
+            errorMessage = OWSLocalizedString(
+                "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP",
+                comment: "Error message indicating that a member can't be added to a group because they are already in the group."
+            )
+        case .userAlreadyInBlocklist:
+            errorMessage = OWSLocalizedString(
+                "BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST",
+                comment: "Error message indicating that a user can't be blocked because they are already blocked."
+            )
+        case .conversationAlreadyInBlocklist:
+            errorMessage = OWSLocalizedString(
+                "BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST",
+                comment: "Error message indicating that a conversation can't be blocked because they are already blocked."
+            )
+        case .canBeSelected, .unknownError:
+            owsFailDebug("Unexpected value.")
+            errorMessage = OWSLocalizedString(
+                "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED",
+                comment: "Error message indicating that a user can't be selected."
+            )
+        }
+        OWSActionSheets.showErrorAlert(message: errorMessage)
+    }
+}
+
+// MARK: - Contacts, Connections, & Groups
+
+extension RecipientPickerViewController {
+    @objc
+    func item(forRecipient recipient: PickedRecipient) -> OWSTableItem {
+        switch recipient.identifier {
+        case .address(let address):
+            return OWSTableItem(
+                dequeueCellBlock: { [weak self] tableView in
+                    self?.addressCell(for: address, recipient: recipient, tableView: tableView) ?? UITableViewCell()
+                },
+                actionBlock: { [weak self] in
+                    self?.tryToSelectRecipient(recipient)
+                }
+            )
+        case .group(let groupThread):
+            return OWSTableItem(
+                customCellBlock: { [weak self] in
+                    self?.groupCell(for: groupThread, recipient: recipient) ?? UITableViewCell()
+                },
+                actionBlock: { [weak self] in
+                    self?.tryToSelectRecipient(recipient)
+                }
+            )
+        }
+    }
+
+    private func addressCell(for address: SignalServiceAddress, recipient: PickedRecipient, tableView: UITableView) -> UITableViewCell? {
+        guard let cell = tableView.dequeueReusableCell(ContactTableViewCell.self) else { return nil }
+        if let delegate, delegate.recipientPicker(self, getRecipientState: recipient) != .canBeSelected {
+            cell.selectionStyle = .none
+        }
+        databaseStorage.read { transaction in
+            let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .noteToSelf)
+            if let delegate {
+                if let accessoryView = delegate.recipientPicker?(self, accessoryViewForRecipient: recipient, transaction: transaction) {
+                    configuration.accessoryView = accessoryView
+                } else {
+                    let accessoryMessage = delegate.recipientPicker(self, accessoryMessageForRecipient: recipient, transaction: transaction)
+                    configuration.accessoryMessage = accessoryMessage
+                }
+                if let attributedSubtitle = delegate.recipientPicker?(self, attributedSubtitleForRecipient: recipient, transaction: transaction) {
+                    configuration.attributedSubtitle = attributedSubtitle
+                }
+            }
+            cell.configure(configuration: configuration, transaction: transaction)
+        }
+        return cell
+    }
+
+    private func groupCell(for groupThread: TSGroupThread, recipient: PickedRecipient) -> UITableViewCell? {
+        let cell = GroupTableViewCell()
+
+        if let delegate {
+            if delegate.recipientPicker(self, getRecipientState: recipient) != .canBeSelected {
+                cell.selectionStyle = .none
+            }
+
+            cell.accessoryMessage = databaseStorage.read {
+                delegate.recipientPicker(self, accessoryMessageForRecipient: recipient, transaction: $0)
+            }
+        }
+
+        cell.configure(thread: groupThread)
+
+        return cell
     }
 }
 
@@ -232,7 +364,7 @@ struct PhoneNumberFinder {
 extension RecipientPickerViewController {
 
     private func findByNumberCell(for phoneNumber: String, tableView: UITableView) -> UITableViewCell? {
-        guard let cell = dequeueNonContactTableViewCell(tableView: tableView) else { return nil }
+        guard let cell = tableView.dequeueReusableCell(NonContactTableViewCell.self) else { return nil }
         cell.configureWithPhoneNumber(phoneNumber)
         return cell
     }
@@ -295,7 +427,7 @@ extension RecipientPickerViewController {
                     guard let self = self else { return }
                     self.handlePhoneNumberLookupResult(lookupResult)
                 }
-            }.`catch`(on: .main) { error in
+            }.catch(on: .main) { error in
                 modal.dismissIfNotCanceled {
                     OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
                 }
@@ -380,6 +512,20 @@ extension RecipientPickerViewController {
     }
 }
 
+// MARK: - FindByPhoneNumberDelegate
+// ^^ This refers to the *separate* "Find by Phone Number" row that you can tap.
+
+extension RecipientPickerViewController: FindByPhoneNumberDelegate {
+    public func findByPhoneNumber(
+        _ findByPhoneNumber: FindByPhoneNumberViewController,
+        didSelectAddress address: SignalServiceAddress
+    ) {
+        owsAssertDebug(address.isValid)
+
+        tryToSelectRecipient(.for(address: address))
+    }
+}
+
 // MARK: - Find by Username
 
 extension RecipientPickerViewController {
@@ -408,7 +554,7 @@ extension RecipientPickerViewController {
     }
 
     private func findByUsernameCell(for username: String, tableView: UITableView) -> UITableViewCell? {
-        guard let cell = dequeueNonContactTableViewCell(tableView: tableView) else { return nil }
+        guard let cell = tableView.dequeueReusableCell(NonContactTableViewCell.self) else { return nil }
         cell.configureWithUsername(username)
         return cell
     }
