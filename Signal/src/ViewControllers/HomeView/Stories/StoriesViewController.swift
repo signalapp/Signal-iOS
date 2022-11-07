@@ -91,8 +91,13 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
 
         searchBarSizingView.addSubview(searchBarContainer)
         searchBarContainer.autoPinHorizontalEdges(toEdgesOf: view)
-        self.searchBarScrollingConstraint = searchBarContainer.autoPinEdge(.top, to: .top, of: searchBarSizingView)
+        self.searchBarScrollingConstraint = searchBarContainer.autoPinEdge(
+            .bottom,
+            to: .bottom,
+            of: searchBarSizingView
+        )
         self.searchBarPinnedConstraint = searchBarContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+        searchBarPinnedConstraint?.priority = .defaultLow
 
         view.insertSubview(searchBarBackdropView, aboveSubview: tableView)
         searchBarBackdropView.isHidden = true

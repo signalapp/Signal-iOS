@@ -110,6 +110,15 @@ open class OWSViewController: UIViewController {
         shouldAnimateBottomLayout = false
     }
 
+    open override func viewWillTransition(
+        to size: CGSize,
+        with coordinator: UIViewControllerTransitionCoordinator
+    ) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        updateKeyboardLayoutOffsets()
+    }
+
     #if DEBUG
     func ensureNavbarAccessibilityIds() {
         guard let navigationBar = navigationController?.navigationBar else {
