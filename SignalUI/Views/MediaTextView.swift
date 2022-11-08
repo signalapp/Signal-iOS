@@ -133,27 +133,12 @@ public class MediaTextView: UITextView {
 
 public class TextStylingToolbar: UIControl {
 
-    public enum Layout {
-        case photoOverlay
-        case textStory
-    }
-    let layout: Layout
-
     private let colorPickerView: ColorPickerBarView
 
     // Photo Editor operates with ColorPickerBarColor hence the need to expose this value.
     public var currentColorPickerValue: ColorPickerBarColor {
         get { colorPickerView.selectedValue }
         set { colorPickerView.selectedValue = newValue }
-    }
-
-    public static func defaultColor(forLayout layout: Layout) -> ColorPickerBarColor {
-        switch layout {
-        case .photoOverlay:
-            return ColorPickerBarColor.defaultColor()
-        case .textStory:
-            return ColorPickerBarColor.white
-        }
     }
 
     public let textStyleButton = RoundMediaButton(image: TextStylingToolbar.buttonImage(forTextStyle: .regular),
@@ -209,11 +194,17 @@ public class TextStylingToolbar: UIControl {
     public lazy var doneButton = RoundMediaButton(image: UIImage(imageLiteralResourceName: "check-24"), backgroundStyle: .blur)
 
     public private(set) var contentWidthConstraint: NSLayoutConstraint?
-    private var stackView = UIStackView()
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [ textStyleButton, decorationStyleButton, colorPickerView, doneButton ])
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.alignment = .center
+        stackView.spacing = 8
+        stackView.setCustomSpacing(0, after: textStyleButton)
+        return stackView
+    }()
 
-    public init(layout: Layout, currentColor: ColorPickerBarColor? = nil) {
-        self.layout = layout
-        colorPickerView = ColorPickerBarView(currentColor: currentColor ?? TextStylingToolbar.defaultColor(forLayout: layout))
+    public init(currentColor: ColorPickerBarColor? = nil) {
+        colorPickerView = ColorPickerBarView(currentColor: currentColor ?? ColorPickerBarColor.white)
 
         super.init(frame: .zero)
 
@@ -243,29 +234,16 @@ public class TextStylingToolbar: UIControl {
 
         // I had to use a custom layout guide because stack view isn't centered
         // but instead has slight offset towards the trailing edge.
-        let stackViewSubviews: [UIView] = {
-            switch layout {
-            case .photoOverlay:
-                return [ colorPickerView, textStyleButton, decorationStyleButton ]
-            case .textStory:
-                return [ textStyleButton, decorationStyleButton, colorPickerView, doneButton ]
-            }
-        }()
-        stackView.addArrangedSubviews(stackViewSubviews)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.alignment = .center
-        stackView.spacing = 8
-        stackView.setCustomSpacing(0, after: textStyleButton)
         addSubview(stackView)
 
         // Round buttons have no-zero layout margins. Use values of those margins
         // to offset button positions so that they appear properly aligned.
         var leadingMargin: CGFloat = 0
         var trailingMargin: CGFloat = 0
-        if let button = stackViewSubviews.first as? RoundMediaButton {
+        if let button = stackView.arrangedSubviews.first as? RoundMediaButton {
             leadingMargin = button.layoutMargins.leading
         }
-        if let button = stackViewSubviews.last as? RoundMediaButton {
+        if let button = stackView.arrangedSubviews.last as? RoundMediaButton {
             trailingMargin = button.layoutMargins.trailing
         }
         addConstraints([

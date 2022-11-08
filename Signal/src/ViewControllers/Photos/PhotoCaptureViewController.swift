@@ -1379,7 +1379,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
         super.init(
             text: text,
             textStyle: .regular,
-            textForegroundColor: TextStylingToolbar.defaultColor(forLayout: .textStory).color,
+            textForegroundColor: .white,
             textBackgroundColor: nil,
             background: TextStoryComposerView.defaultBackground,
             linkPreview: nil
@@ -1515,7 +1515,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
     private let textViewBackgroundView = UIView()
 
     private lazy var textViewAccessoryToolbar: TextStylingToolbar = {
-        let toolbar = TextStylingToolbar(layout: .textStory)
+        let toolbar = TextStylingToolbar()
         toolbar.preservesSuperviewLayoutMargins = true
         toolbar.addTarget(self, action: #selector(didChangeTextColor), for: .valueChanged)
         toolbar.textStyleButton.addTarget(self, action: #selector(didTapTextStyleButton), for: .touchUpInside)
