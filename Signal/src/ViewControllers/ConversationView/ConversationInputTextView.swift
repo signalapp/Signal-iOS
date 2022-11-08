@@ -3,11 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
-@objc
-public protocol ConversationInputTextViewDelegate {
+public protocol ConversationInputTextViewDelegate: AnyObject {
     func didPasteAttachment(_ attachment: SignalAttachment?)
     func inputTextViewSendMessagePressed()
     func textViewDidChange(_ textView: UITextView)
@@ -15,8 +14,7 @@ public protocol ConversationInputTextViewDelegate {
 
 // MARK: -
 
-@objc
-protocol ConversationTextViewToolbarDelegate {
+protocol ConversationTextViewToolbarDelegate: AnyObject {
     func textViewDidChange(_ textView: UITextView)
     func textViewDidChangeSelection(_ textView: UITextView)
     func textViewDidBecomeFirstResponder(_ textView: UITextView)
@@ -24,7 +22,6 @@ protocol ConversationTextViewToolbarDelegate {
 
 // MARK: -
 
-@objcMembers
 class ConversationInputTextView: MentionTextView {
 
     private lazy var placeholderView = UILabel()
@@ -232,12 +229,14 @@ class ConversationInputTextView: MentionTextView {
         ]
     }
 
-    func unmodifiedReturnPressed(_ sender: UIKeyCommand) {
+    @objc
+    private func unmodifiedReturnPressed(_ sender: UIKeyCommand) {
         Logger.info("unmodifedReturnPressed: \(String(describing: sender.input))")
         inputTextViewDelegate?.inputTextViewSendMessagePressed()
     }
 
-    func modifiedReturnPressed(_ sender: UIKeyCommand) {
+    @objc
+    private func modifiedReturnPressed(_ sender: UIKeyCommand) {
         Logger.info("modifedReturnPressed: \(String(describing: sender.input))")
 
         replace(selectedTextRange ?? UITextRange(), withText: "\n")

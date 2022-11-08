@@ -5,8 +5,8 @@
 
 import Foundation
 
-@objc
 public protocol TextApprovalViewControllerDelegate: AnyObject {
+
     func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?, linkPreviewDraft: OWSLinkPreviewDraft?)
 
     func textApprovalDidCancel(_ textApproval: TextApprovalViewController)
@@ -20,9 +20,8 @@ public protocol TextApprovalViewControllerDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 public class TextApprovalViewController: OWSViewController, MentionTextViewDelegate {
-    @objc
+
     public weak var delegate: TextApprovalViewControllerDelegate?
 
     // MARK: - Properties
@@ -49,7 +48,6 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
 
     // MARK: - Initializers
 
-    @objc
     required public init(messageBody: MessageBody) {
         self.initialMessageBody = messageBody
 
@@ -186,7 +184,7 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
     // MARK: - Event Handlers
 
     @objc
-    func cancelPressed(sender: UIButton) {
+    private func cancelPressed(sender: UIButton) {
         delegate?.textApprovalDidCancel(self)
     }
 

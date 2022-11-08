@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import UIKit
 
-@objc
 public class VoiceMemoLockView: UIView {
 
     private var offsetConstraint: NSLayoutConstraint!
@@ -16,7 +15,6 @@ public class VoiceMemoLockView: UIView {
         return -1 * (backgroundViewInitialHeight - 50)
     }
 
-    @objc
     public override init(frame: CGRect) {
         super.init(frame: frame)
         addSubview(backgroundView)
@@ -42,7 +40,6 @@ public class VoiceMemoLockView: UIView {
 
     // MARK: -
 
-    @objc
     public func update(ratioComplete: CGFloat) {
         offsetConstraint.constant = CGFloatLerp(0, chevronTravel, ratioComplete)
     }

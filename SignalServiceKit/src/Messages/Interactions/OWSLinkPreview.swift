@@ -5,7 +5,6 @@
 
 import Foundation
 
-@objc
 public enum LinkPreviewError: Int, Error {
     /// A preview could not be generated from available input
     case noPreview
@@ -21,27 +20,15 @@ public enum LinkPreviewError: Int, Error {
 
 // This contains the info for a link preview "draft".
 public class OWSLinkPreviewDraft: NSObject {
-    @objc
-    public var url: URL
 
-    @objc
+    public var url: URL
     public var urlString: String {
         return url.absoluteString
     }
-
-    @objc
     public var title: String?
-
-    @objc
     public var imageData: Data?
-
-    @objc
     public var imageMimeType: String?
-
-    @objc
     public var previewDescription: String?
-
-    @objc
     public var date: Date?
 
     public init(url: URL, title: String?, imageData: Data? = nil, imageMimeType: String? = nil) {
@@ -49,8 +36,6 @@ public class OWSLinkPreviewDraft: NSObject {
         self.title = title
         self.imageData = imageData
         self.imageMimeType = imageMimeType
-
-        super.init()
     }
 
     fileprivate func isValid() -> Bool {
@@ -62,9 +47,8 @@ public class OWSLinkPreviewDraft: NSObject {
         return hasTitle || hasImage
     }
 
-    @objc
-    public func displayDomain() -> String? {
-        return OWSLinkPreviewManager.displayDomain(forUrl: urlString)
+    public var displayDomain: String? {
+        OWSLinkPreviewManager.displayDomain(forUrl: urlString)
     }
 }
 
@@ -88,7 +72,6 @@ public class OWSLinkPreview: MTLModel, Codable {
     @objc
     public var date: Date?
 
-    @objc
     public init(urlString: String, title: String?, imageAttachmentId: String?) {
         self.urlString = urlString
         self.title = title
@@ -97,17 +80,14 @@ public class OWSLinkPreview: MTLModel, Codable {
         super.init()
     }
 
-    @objc
     public override init() {
         super.init()
     }
 
-    @objc
     public required init!(coder: NSCoder) {
         super.init(coder: coder)
     }
 
-    @objc
     public required init(dictionary dictionaryValue: [String: Any]!) throws {
         try super.init(dictionary: dictionaryValue)
     }
@@ -141,7 +121,6 @@ public class OWSLinkPreview: MTLModel, Codable {
        return try buildValidatedLinkPreview(proto: previewProto, transaction: transaction)
     }
 
-    @objc
     public class func buildValidatedLinkPreview(
         proto: SSKProtoPreview,
         transaction: SDSAnyWriteTransaction
@@ -190,7 +169,6 @@ public class OWSLinkPreview: MTLModel, Codable {
         return linkPreview
     }
 
-    @objc
     public class func buildValidatedLinkPreview(fromInfo info: OWSLinkPreviewDraft,
                                                 transaction: SDSAnyWriteTransaction) throws -> OWSLinkPreview {
         guard SSKPreferences.areLinkPreviewsEnabled(transaction: transaction) else {
@@ -270,7 +248,6 @@ public class OWSLinkPreview: MTLModel, Codable {
         }
     }
 
-    @objc
     public func removeAttachment(transaction: SDSAnyWriteTransaction) {
         guard let imageAttachmentId = imageAttachmentId else {
             owsFailDebug("No attachment id.")
@@ -283,9 +260,8 @@ public class OWSLinkPreview: MTLModel, Codable {
         attachment.anyRemove(transaction: transaction)
     }
 
-    @objc
-    public func displayDomain() -> String? {
-        return OWSLinkPreviewManager.displayDomain(forUrl: urlString)
+    public var displayDomain: String? {
+        OWSLinkPreviewManager.displayDomain(forUrl: urlString)
     }
 
     // MARK: - Codable
@@ -336,7 +312,6 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
 
     // MARK: - Public
 
-    @objc(findFirstValidUrlInSearchString:bypassSettingsCheck:)
     public func findFirstValidUrl(in searchString: String, bypassSettingsCheck: Bool) -> URL? {
         guard bypassSettingsCheck || areLinkPreviewsEnabledWithSneakyTransaction() else { return nil }
         guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
@@ -356,13 +331,6 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
             }
         }
         return result
-    }
-
-    @objc(fetchLinkPreviewForUrl:)
-    @available(swift, obsoleted: 1.0)
-    public func fetchLinkPreview(for url: URL) -> AnyPromise {
-        let promise: Promise<OWSLinkPreviewDraft> = fetchLinkPreview(for: url)
-        return AnyPromise(promise)
     }
 
     public func fetchLinkPreview(for url: URL) -> Promise<OWSLinkPreviewDraft> {
@@ -762,7 +730,7 @@ fileprivate extension HTMLMetadata {
 // Everything after this line should find a new home at some point
 
 public extension OWSLinkPreviewManager {
-    @objc
+
     class func displayDomain(forUrl urlString: String?) -> String? {
         guard let urlString = urlString else {
             owsFailDebug("Missing url.")

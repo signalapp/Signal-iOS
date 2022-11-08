@@ -8,7 +8,6 @@
 #import "BlockListViewController.h"
 #import "ChatListViewController.h"
 #import "ConversationCollectionView.h"
-#import "ConversationScrollButton.h"
 #import "ConversationViewController.h"
 #import "DebugContactsUtils.h"
 #import "DebugUIMessages.h"

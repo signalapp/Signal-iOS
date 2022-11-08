@@ -9,9 +9,7 @@ import SignalServiceKit
 
 open class TextAttachmentView: UIView {
 
-    private var linkPreviewUrlString: String? {
-        return linkPreview?.urlString()
-    }
+    private var linkPreviewUrlString: String? { linkPreview?.urlString }
 
     public let contentLayoutGuide = UILayoutGuide()
 
@@ -449,8 +447,8 @@ open class TextAttachmentView: UIView {
             let backgroundColor: UIColor = isDraft ? Theme.darkThemeTableView2PresentedBackgroundColor : .ows_gray02
             let backgroundView = addBackgroundView(withBackgroundColor: backgroundColor)
 
-            let title = linkPreview.title()
-            let description = linkPreview.previewDescription()
+            let title = linkPreview.title
+            let description = linkPreview.previewDescription
             let hasTitleOrDescription = title != nil || description != nil
             if isDraft {
                 layout = .draft
@@ -462,7 +460,7 @@ open class TextAttachmentView: UIView {
 
             let thumbnailImageView = UIImageView()
             thumbnailImageView.clipsToBounds = true
-            if layout != .domainOnly && linkPreview.imageState() == .loaded {
+            if layout != .domainOnly && linkPreview.imageState == .loaded {
                 thumbnailImageView.contentMode = .scaleAspectFill
 
                 // Downgrade "regular" to "compact" if thumbnail is too small.
@@ -566,7 +564,7 @@ open class TextAttachmentView: UIView {
             previewVStack.addArrangedSubview(footerLabel)
 
             var footerText: String
-            if let displayDomain = OWSLinkPreviewManager.displayDomain(forUrl: linkPreview.urlString()) {
+            if let displayDomain = OWSLinkPreviewManager.displayDomain(forUrl: linkPreview.urlString) {
                 footerText = displayDomain.lowercased()
             } else {
                 footerText = NSLocalizedString(
@@ -574,7 +572,7 @@ open class TextAttachmentView: UIView {
                     comment: "Label for link previews with an unknown host."
                 ).uppercased()
             }
-            if let date = linkPreview.date() {
+            if let date = linkPreview.date {
                 footerText.append(" ⋅ \(Self.dateFormatter.string(from: date))")
             }
             footerLabel.text = footerText

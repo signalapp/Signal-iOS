@@ -3,37 +3,32 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import UIKit
 
 public class SelectionHapticFeedback {
-    let selectionFeedbackGenerator: UISelectionFeedbackGenerator
+    private let feedbackGenerator = UISelectionFeedbackGenerator()
 
     public init() {
         AssertIsOnMainThread()
-
-        selectionFeedbackGenerator = UISelectionFeedbackGenerator()
-        selectionFeedbackGenerator.prepare()
+        feedbackGenerator.prepare()
     }
 
     public func selectionChanged() {
         DispatchQueue.main.async {
-            self.selectionFeedbackGenerator.selectionChanged()
-            self.selectionFeedbackGenerator.prepare()
+            self.feedbackGenerator.selectionChanged()
+            self.feedbackGenerator.prepare()
         }
     }
 }
 
-@objc
-public class NotificationHapticFeedback: NSObject {
-    let feedbackGenerator = UINotificationFeedbackGenerator()
+public class NotificationHapticFeedback {
+    private let feedbackGenerator = UINotificationFeedbackGenerator()
 
-    public override init() {
+    public init() {
         AssertIsOnMainThread()
-
         feedbackGenerator.prepare()
     }
 
-    @objc
     public func notificationOccurred(_ notificationType: UINotificationFeedbackGenerator.FeedbackType) {
         DispatchQueue.main.async {
             self.feedbackGenerator.notificationOccurred(notificationType)
@@ -42,9 +37,8 @@ public class NotificationHapticFeedback: NSObject {
     }
 }
 
-@objc
-public class ImpactHapticFeedback: NSObject {
-    @objc
+public class ImpactHapticFeedback {
+
     public class func impactOccured(style: UIImpactFeedbackGenerator.FeedbackStyle) {
         DispatchQueue.main.async {
             let generator = UIImpactFeedbackGenerator(style: style)
@@ -53,7 +47,6 @@ public class ImpactHapticFeedback: NSObject {
         }
     }
 
-    @objc
     public class func impactOccured(style: UIImpactFeedbackGenerator.FeedbackStyle, intensity: CGFloat) {
         DispatchQueue.main.async {
             let generator = UIImpactFeedbackGenerator(style: style)

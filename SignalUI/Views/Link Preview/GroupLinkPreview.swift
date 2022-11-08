@@ -3,12 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
 // MARK: -
 
-@objc
-public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
+public class LinkPreviewGroupLink: LinkPreviewState {
 
     private let linkPreview: OWSLinkPreview
     public let linkType: LinkPreviewLinkType
@@ -23,7 +22,6 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
         _conversationStyle
     }
 
-    @objc
     public required init(linkType: LinkPreviewLinkType,
                          linkPreview: OWSLinkPreview,
                          groupInviteLinkViewModel: GroupInviteLinkViewModel,
@@ -34,11 +32,9 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
         _conversationStyle = conversationStyle
     }
 
-    public func isLoaded() -> Bool {
-        groupInviteLinkPreview != nil
-    }
+    public var isLoaded: Bool { groupInviteLinkPreview != nil }
 
-    public func urlString() -> String? {
+    public var urlString: String? {
         guard let urlString = linkPreview.urlString else {
             owsFailDebug("Missing url")
             return nil
@@ -46,19 +42,19 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
         return urlString
     }
 
-    public func displayDomain() -> String? {
-        guard let displayDomain = linkPreview.displayDomain() else {
+    public var displayDomain: String? {
+        guard let displayDomain = linkPreview.displayDomain else {
             Logger.error("Missing display domain")
             return nil
         }
         return displayDomain
     }
 
-    public func title() -> String? {
+    public var title: String? {
         groupInviteLinkPreview?.title.filterForDisplay?.nilIfEmpty
     }
 
-    public func imageState() -> LinkPreviewImageState {
+    public var imageState: LinkPreviewImageState {
         if let avatar = groupInviteLinkViewModel.avatar {
             if avatar.isValid {
                 return .loaded
@@ -74,7 +70,7 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
 
     public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
                            completion: @escaping (UIImage) -> Void) {
-        owsAssertDebug(imageState() == .loaded)
+        owsAssertDebug(imageState == .loaded)
 
         let groupInviteLinkViewModel = self.groupInviteLinkViewModel
         DispatchQueue.global().async {
@@ -97,7 +93,6 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
 
     private let imagePixelSizeCache = AtomicOptional<CGSize>(nil)
 
-    @objc
     public var imagePixelSize: CGSize {
         if let cachedValue = imagePixelSizeCache.get() {
             return cachedValue
@@ -110,7 +105,7 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
         return result
     }
 
-    public func previewDescription() -> String? {
+    public var previewDescription: String? {
         guard let groupInviteLinkPreview = groupInviteLinkPreview else {
             Logger.warn("Missing groupInviteLinkPreview.")
             return nil
@@ -121,9 +116,7 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
         return groupIndicator + " | " + memberCount
     }
 
-    public func date() -> Date? {
-        linkPreview.date
-    }
+    public var date: Date? { linkPreview.date }
 
     public let isGroupInviteLink = true
 
@@ -141,19 +134,12 @@ public class LinkPreviewGroupLink: NSObject, LinkPreviewState {
 
 // MARK: -
 
-@objc
-public class GroupInviteLinkViewModel: NSObject {
-    @objc
+public class GroupInviteLinkViewModel: Equatable {
+
     public let url: URL
-
     public let groupInviteLinkPreview: GroupInviteLinkPreview?
-
     public let avatar: GroupInviteLinkCachedAvatar?
-
-    @objc
     public let isExpired: Bool
-
-    @objc
     public var isLoaded: Bool {
         groupInviteLinkPreview != nil
     }
@@ -170,21 +156,17 @@ public class GroupInviteLinkViewModel: NSObject {
         self.isExpired = isExpired
     }
 
-    @objc
-    public override func isEqual(_ object: Any!) -> Bool {
-        guard let other = object as? GroupInviteLinkViewModel else {
-            return false
-        }
-        return (self.url == other.url &&
-            self.groupInviteLinkPreview == other.groupInviteLinkPreview &&
-            self.avatar == other.avatar)
+    public static func == (lhs: GroupInviteLinkViewModel, rhs: GroupInviteLinkViewModel) -> Bool {
+        return lhs.url == rhs.url &&
+        lhs.groupInviteLinkPreview == rhs.groupInviteLinkPreview &&
+        lhs.avatar == rhs.avatar
     }
 }
 
 // MARK: -
 
-@objcMembers
-public class GroupInviteLinkCachedAvatar: NSObject {
+public class GroupInviteLinkCachedAvatar: Equatable {
+
     public let cacheFileUrl: URL
     public let imageSizePixels: CGSize
     public let isValid: Bool
@@ -199,12 +181,9 @@ public class GroupInviteLinkCachedAvatar: NSObject {
         self.isValid = isValid
     }
 
-    public override func isEqual(_ object: Any!) -> Bool {
-        guard let other = object as? GroupInviteLinkCachedAvatar else {
-            return false
-        }
-        return (self.cacheFileUrl == other.cacheFileUrl &&
-            self.imageSizePixels == other.imageSizePixels &&
-            self.isValid == other.isValid)
+    public static func == (lhs: GroupInviteLinkCachedAvatar, rhs: GroupInviteLinkCachedAvatar) -> Bool {
+        return lhs.cacheFileUrl == rhs.cacheFileUrl &&
+        lhs.imageSizePixels == rhs.imageSizePixels &&
+        lhs.isValid == rhs.isValid
     }
 }

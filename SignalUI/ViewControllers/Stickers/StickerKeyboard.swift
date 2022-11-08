@@ -3,20 +3,17 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
-@objc
-public protocol StickerKeyboardDelegate {
+public protocol StickerKeyboardDelegate: AnyObject {
     func didSelectSticker(stickerInfo: StickerInfo)
     func presentManageStickersView()
 }
 
 // MARK: -
 
-@objc
 public class StickerKeyboard: CustomKeyboard {
 
-    @objc
     public weak var delegate: StickerKeyboardDelegate?
 
     private let mainStackView = UIStackView()
@@ -30,7 +27,6 @@ public class StickerKeyboard: CustomKeyboard {
         }
     }
 
-    @objc
     public override init() {
         super.init()
 
@@ -493,13 +489,11 @@ extension StickerKeyboard: StickerPackCollectionViewDelegate {
 
 // MARK: -
 
-@objc
-public class StickerViewCache: NSObject {
+public class StickerViewCache {
 
     private typealias CacheType = LRUCache<StickerInfo, ThreadSafeCacheHandle<StickerReusableView>>
     private let backingCache: CacheType
 
-    @objc
     public init(maxSize: Int) {
         // Always use a nseMaxSize of zero.
         backingCache = LRUCache(maxSize: maxSize,
@@ -507,44 +501,36 @@ public class StickerViewCache: NSObject {
                                 shouldEvacuateInBackground: true)
     }
 
-    @objc
     public func get(key: StickerInfo) -> StickerReusableView? {
         self.backingCache.get(key: key)?.value
     }
 
-    @objc
     public func set(key: StickerInfo, value: StickerReusableView) {
         self.backingCache.set(key: key, value: ThreadSafeCacheHandle(value))
     }
 
-    @objc
     public func remove(key: StickerInfo) {
         self.backingCache.remove(key: key)
     }
 
-    @objc
     public func clear() {
         self.backingCache.clear()
     }
 
     // MARK: - NSCache Compatibility
 
-    @objc
     public func setObject(_ value: StickerReusableView, forKey key: StickerInfo) {
         set(key: key, value: value)
     }
 
-    @objc
     public func object(forKey key: StickerInfo) -> StickerReusableView? {
         self.get(key: key)
     }
 
-    @objc
     public func removeObject(forKey key: StickerInfo) {
         remove(key: key)
     }
 
-    @objc
     public func removeAllObjects() {
         clear()
     }

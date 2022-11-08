@@ -267,7 +267,6 @@
 		3437F63A2512835300AC1767 /* LinkedDevicesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3437F6392512835200AC1767 /* LinkedDevicesTableViewController.swift */; };
 		34386A51207D0C01009F5D9C /* ChatListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34386A4D207D0C01009F5D9C /* ChatListViewController.m */; };
 		343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 343A65941FC47D5E000477A1 /* DebugUISyncMessages.m */; };
-		343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */; };
 		3440426B273AB186008C9FA4 /* RegistrationUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3440426A273AB186008C9FA4 /* RegistrationUtils.swift */; };
 		34404271273AFBBE008C9FA4 /* ChangePhoneNumber2FAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34404270273AFBBE008C9FA4 /* ChangePhoneNumber2FAViewController.swift */; };
 		34404275273C0E41008C9FA4 /* RegistrationPinAttemptsExhaustedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34404274273C0E41008C9FA4 /* RegistrationPinAttemptsExhaustedViewController.swift */; };
@@ -829,6 +828,7 @@
 		76C87FE128BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76C87FE028BE8E2400BD8709 /* LinkPreviewAttachmentViewController.swift */; };
 		76E54D69290B4E7800D03BA8 /* UIFont+TextStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E54D68290B4E7800D03BA8 /* UIFont+TextStyle.swift */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
+		76ECBA922915B5BB00676507 /* ConversationScrollButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76ECBA912915B5BB00676507 /* ConversationScrollButton.swift */; };
 		76FCCDBC27AB8FBE00BAA7F0 /* MediaControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76FCCDBB27AB8FBE00BAA7F0 /* MediaControls.swift */; };
 		83B9573927C9A1FA00A678FD /* CaptchaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B9573827C9A1FA00A678FD /* CaptchaView.swift */; };
 		8803C2F528B02FDB00183D2B /* OutgoingStoryMessage+AttachmentMultisend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8803C2F328B02FDB00183D2B /* OutgoingStoryMessage+AttachmentMultisend.swift */; };
@@ -2346,8 +2346,6 @@
 		34386A4F207D0C01009F5D9C /* ChatListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatListViewController.h; sourceTree = "<group>"; };
 		343A65931FC47D5D000477A1 /* DebugUISyncMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUISyncMessages.h; sourceTree = "<group>"; };
 		343A65941FC47D5E000477A1 /* DebugUISyncMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUISyncMessages.m; sourceTree = "<group>"; };
-		343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationScrollButton.m; sourceTree = "<group>"; };
-		343A65971FC4CFE7000477A1 /* ConversationScrollButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationScrollButton.h; sourceTree = "<group>"; };
 		3440426A273AB186008C9FA4 /* RegistrationUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationUtils.swift; sourceTree = "<group>"; };
 		34404270273AFBBE008C9FA4 /* ChangePhoneNumber2FAViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumber2FAViewController.swift; sourceTree = "<group>"; };
 		34404274273C0E41008C9FA4 /* RegistrationPinAttemptsExhaustedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationPinAttemptsExhaustedViewController.swift; sourceTree = "<group>"; };
@@ -3098,6 +3096,7 @@
 		76E54D68290B4E7800D03BA8 /* UIFont+TextStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+TextStyle.swift"; sourceTree = "<group>"; };
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		76ECBA912915B5BB00676507 /* ConversationScrollButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationScrollButton.swift; sourceTree = "<group>"; };
 		76FCCDBB27AB8FBE00BAA7F0 /* MediaControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaControls.swift; sourceTree = "<group>"; };
 		7856A9F703AAD99E22B75A9B /* Pods-SignalShareExtension.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.profiling.xcconfig"; sourceTree = "<group>"; };
 		7B9401D018105363CB9BC4CA /* Pods-SignalServiceKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.debug.xcconfig"; sourceTree = "<group>"; };
@@ -4821,8 +4820,7 @@
 				45DDA6232090CEB500DE97F8 /* ConversationHeaderView.swift */,
 				8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */,
 				76725D2C29143CEC000E8AE1 /* ConversationInputToolbar.swift */,
-				343A65971FC4CFE7000477A1 /* ConversationScrollButton.h */,
-				343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */,
+				76ECBA912915B5BB00676507 /* ConversationScrollButton.swift */,
 				3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */,
 				34E93F9126668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift */,
 				347342F62548587800D440CD /* ConversationViewController+BottomBar.swift */,
@@ -10119,7 +10117,7 @@
 				8851DB4324CCF0EB001EACD2 /* ConversationInputTextView.swift in Sources */,
 				76725D2D29143CEC000E8AE1 /* ConversationInputToolbar.swift in Sources */,
 				34EB0DF52628D3B300B62DC3 /* ConversationInternalViewController.swift in Sources */,
-				343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */,
+				76ECBA922915B5BB00676507 /* ConversationScrollButton.swift in Sources */,
 				342FFE6A271EF502000AC89F /* ConversationSearch.swift in Sources */,
 				4C20B2B920CA10DE001BAC90 /* ConversationSearchViewController.swift in Sources */,
 				34E20D4E2425672B002C011E /* ConversationSettingsViewController+Contents.swift in Sources */,

@@ -6,7 +6,6 @@
 import Foundation
 import SignalServiceKit
 
-@objc
 public protocol ContactShareApprovalViewControllerDelegate: AnyObject {
     func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
                              didApproveContactShare contactShare: ContactShareViewModel)
@@ -213,7 +212,7 @@ class ContactShareFieldView: UIStackView {
     }
 
     @objc
-    func wasTapped(sender: UIGestureRecognizer) {
+    private func wasTapped(sender: UIGestureRecognizer) {
         Logger.info("")
 
         guard sender.state == .recognized else {
@@ -228,10 +227,8 @@ class ContactShareFieldView: UIStackView {
 
 // MARK: -
 
-@objc
 public class ContactShareApprovalViewController: OWSViewController, EditContactShareNameViewControllerDelegate, ContactShareFieldViewDelegate {
 
-    @objc
     public weak var delegate: ContactShareApprovalViewControllerDelegate?
 
     var contactShare: ContactShareViewModel
@@ -269,7 +266,6 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
 
     // MARK: Initializers
 
-    @objc
     required public init(contactShare: ContactShareViewModel) {
         self.contactShare = contactShare
 
@@ -490,7 +486,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
     // MARK: -
 
     @objc
-    func didPressSendButton() {
+    private func didPressSendButton() {
         AssertIsOnMainThread()
 
         guard isAtLeastOneFieldSelected() else {
@@ -519,7 +515,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
     }
 
     @objc
-    func didPressCancel() {
+    private func didPressCancel() {
         Logger.info("")
 
         guard let delegate = self.delegate else {
@@ -530,7 +526,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         delegate.approveContactShare(self, didCancelContactShare: contactShare)
     }
 
-    func didPressEditName() {
+    private func didPressEditName() {
         Logger.info("")
 
         let view = EditContactShareNameViewController(contactShare: contactShare, delegate: self)

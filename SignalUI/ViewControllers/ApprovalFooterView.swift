@@ -7,7 +7,6 @@ import Foundation
 import SignalMessaging
 
 // Outgoing message approval can be a multi-step process.
-@objc
 public enum ApprovalMode: UInt {
     // This is the final step of approval; continuing will send.
     case send

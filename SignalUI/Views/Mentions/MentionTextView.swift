@@ -3,10 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 
-@objc
 public protocol MentionTextViewDelegate: UITextViewDelegate {
     func textViewDidBeginTypingMention(_ textView: MentionTextView)
     func textViewDidEndTypingMention(_ textView: MentionTextView)
@@ -20,9 +18,8 @@ public protocol MentionTextViewDelegate: UITextViewDelegate {
     func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style
 }
 
-@objc
 open class MentionTextView: OWSTextView {
-    @objc
+
     public weak var mentionDelegate: MentionTextViewDelegate? {
         didSet { updateMentionState() }
     }
@@ -173,7 +170,6 @@ open class MentionTextView: OWSTextView {
         return defaultAttributes
     }
 
-    @objc
     public var messageBody: MessageBody? {
         get { MessageBody(attributedString: attributedText) }
         set {
@@ -192,12 +188,10 @@ open class MentionTextView: OWSTextView {
         }
     }
 
-    @objc
     public func stopTypingMention() {
         state = .notTypingMention
     }
 
-    @objc
     public func reloadMentionState() {
         stopTypingMention()
         updateMentionState()
@@ -499,7 +493,6 @@ extension MentionTextView {
         replaceCharacters(in: selectedRange, with: "")
     }
 
-    @objc
     public class func copyAttributedStringToPasteboard(_ attributedString: NSAttributedString) {
         guard let plaintextData = attributedString.string.data(using: .utf8) else {
             return owsFailDebug("Failed to calculate plaintextData on copy")

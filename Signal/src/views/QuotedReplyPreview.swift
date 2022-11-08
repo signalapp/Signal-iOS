@@ -3,16 +3,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
-@objc
 protocol QuotedReplyPreviewDelegate: AnyObject {
     func quotedReplyPreviewDidPressCancel(_ preview: QuotedReplyPreview)
 }
 
-@objc
 class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate {
-    @objc
+
     public weak var delegate: QuotedReplyPreviewDelegate?
 
     private let quotedReply: OWSQuotedReplyModel
@@ -30,7 +28,6 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate {
         fatalError("init(frame:) has not been implemented")
     }
 
-    @objc
     init(quotedReply: OWSQuotedReplyModel, conversationStyle: ConversationStyle) {
         self.quotedReply = quotedReply
         self.conversationStyle = conversationStyle

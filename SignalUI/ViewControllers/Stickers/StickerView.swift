@@ -3,15 +3,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import YYImage
 import Lottie
+import SignalServiceKit
+import YYImage
 
-@objc
-public class StickerView: NSObject {
+public class StickerView {
 
     // Never instantiate this class.
-    private override init() {}
+    private init() {}
 
     public static func stickerView(forStickerInfo stickerInfo: StickerInfo,
                                    dataSource: StickerPackDataSource,
@@ -114,7 +113,6 @@ public class StickerPlaceholderView: UIView {
     }
 }
 
-@objc
 public class StickerReusableView: UIView {
     public var hasStickerView: Bool { stickerView != nil }
 

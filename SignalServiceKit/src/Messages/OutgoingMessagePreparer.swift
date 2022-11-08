@@ -5,7 +5,7 @@
 
 @objc
 public class OutgoingMessagePreparer: NSObject {
-    @objc
+
     public let message: TSOutgoingMessage
     private let unsavedAttachmentInfos: [OutgoingAttachmentInfo]
     private var didCompletePrep = false
@@ -13,7 +13,6 @@ public class OutgoingMessagePreparer: NSObject {
     @objc
     public var savedAttachmentIds: [String]?
 
-    @objc
     public var unpreparedMessage: TSOutgoingMessage {
         assert(!didCompletePrep)
         return message
@@ -30,7 +29,6 @@ public class OutgoingMessagePreparer: NSObject {
         self.unsavedAttachmentInfos = unsavedAttachmentInfos
     }
 
-    @objc
     public func insertMessage(linkPreviewDraft: OWSLinkPreviewDraft? = nil,
                               transaction: SDSAnyWriteTransaction) {
         unpreparedMessage.anyInsert(transaction: transaction)

@@ -3,12 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Photos
 import SignalMessaging
+import SignalUI
 
-@objc
-protocol AttachmentKeyboardDelegate {
+protocol AttachmentKeyboardDelegate: AnyObject {
     func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment)
     func didTapGalleryButton()
     func didTapCamera()
@@ -21,7 +20,6 @@ protocol AttachmentKeyboardDelegate {
 }
 
 class AttachmentKeyboard: CustomKeyboard {
-    @objc
     weak var delegate: AttachmentKeyboardDelegate?
 
     private let mainStackView = UIStackView()

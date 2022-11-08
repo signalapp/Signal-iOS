@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalServiceKit
 
-@objc
 public protocol StickerHorizontalListViewItem {
     var view: UIView { get }
     var didSelectBlock: () -> Void { get }
@@ -15,22 +14,19 @@ public protocol StickerHorizontalListViewItem {
 
 // MARK: -
 
-@objc
-public class StickerHorizontalListViewItemSticker: NSObject, StickerHorizontalListViewItem {
+public class StickerHorizontalListViewItemSticker: StickerHorizontalListViewItem {
     private let stickerInfo: StickerInfo
     public let didSelectBlock: () -> Void
     public let isSelectedBlock: () -> Bool
     private weak var cache: StickerViewCache?
 
     // This initializer can be used for cells which are never selected.
-    @objc
     public convenience init(stickerInfo: StickerInfo,
                             didSelectBlock: @escaping () -> Void,
                             cache: StickerViewCache? = nil) {
         self.init(stickerInfo: stickerInfo, didSelectBlock: didSelectBlock, isSelectedBlock: { false }, cache: cache)
     }
 
-    @objc
     public init(stickerInfo: StickerInfo,
                 didSelectBlock: @escaping () -> Void,
                 isSelectedBlock: @escaping () -> Bool,
@@ -76,12 +72,11 @@ public class StickerHorizontalListViewItemSticker: NSObject, StickerHorizontalLi
 
 // MARK: -
 
-@objc
-public class StickerHorizontalListViewItemRecents: NSObject, StickerHorizontalListViewItem {
+public class StickerHorizontalListViewItemRecents: StickerHorizontalListViewItem {
+
     public let didSelectBlock: () -> Void
     public let isSelectedBlock: () -> Bool
 
-    @objc
     public init(didSelectBlock: @escaping () -> Void, isSelectedBlock: @escaping () -> Bool) {
         self.didSelectBlock = didSelectBlock
         self.isSelectedBlock = isSelectedBlock
@@ -104,7 +99,6 @@ public class StickerHorizontalListViewItemRecents: NSObject, StickerHorizontalLi
 
 // MARK: -
 
-@objc
 public class StickerHorizontalListView: UICollectionView {
 
     private let cellSize: CGFloat
@@ -112,7 +106,6 @@ public class StickerHorizontalListView: UICollectionView {
 
     public typealias Item = StickerHorizontalListViewItem
 
-    @objc
     public var items = [Item]() {
         didSet {
             AssertIsOnMainThread()
@@ -124,7 +117,6 @@ public class StickerHorizontalListView: UICollectionView {
 
     private let cellReuseIdentifier = "cellReuseIdentifier"
 
-    @objc
     public required init(cellSize: CGFloat, cellInset: CGFloat, spacing: CGFloat) {
         self.cellSize = cellSize
         self.cellInset = cellInset
@@ -157,6 +149,7 @@ public class StickerHorizontalListView: UICollectionView {
 // MARK: - UICollectionViewDelegate
 
 extension StickerHorizontalListView: UICollectionViewDelegate {
+
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         Logger.debug("")
 
