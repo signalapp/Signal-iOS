@@ -14,8 +14,8 @@ protocol BadgeExpirationSheetDelegate: AnyObject {
 
 public enum BadgeExpirationSheetAction {
     case dismiss
-    case openBoostView
-    case openSubscriptionsView
+    case openOneTimeDonationView
+    case openMonthlyDonationView
 }
 
 public class BadgeExpirationSheetState {
@@ -182,20 +182,17 @@ public class BadgeExpirationSheetState {
         case .subscriptionExpiredBecauseNotRenewed:
             let text = NSLocalizedString("BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON",
                                          comment: "Button text when a badge expires, asking you to renew your subscription")
-            return ActionButton(action: .openSubscriptionsView, text: text, hasNotNow: true)
+            return ActionButton(action: .openMonthlyDonationView, text: text, hasNotNow: true)
         case let .boostExpired(hasCurrentSubscription):
-            let action: BadgeExpirationSheetAction
             let text: String
             if hasCurrentSubscription {
-                action = .openBoostView
                 text = NSLocalizedString("BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER",
                                          comment: "Button title for boost on the badge expiration sheet, used if the user is already a sustainer.")
             } else {
-                action = .openSubscriptionsView
                 text = NSLocalizedString("BADGE_EXPIRED_BOOST_RENEWAL_BUTTON",
                                          comment: "Button title for boost on the badge expiration sheet, used if the user is not already a sustainer.")
             }
-            return ActionButton(action: action, text: text, hasNotNow: true)
+            return ActionButton(action: .openOneTimeDonationView, text: text, hasNotNow: true)
         case let .giftBadgeExpired(hasCurrentSubscription):
             if hasCurrentSubscription {
                 return ActionButton(action: .dismiss, text: CommonStrings.okButton)
@@ -205,7 +202,7 @@ public class BadgeExpirationSheetState {
                     value: "Make a Monthly Donation",
                     comment: "Button title to donate monthly on the badge expiration sheet."
                 )
-                return ActionButton(action: .openSubscriptionsView, text: text, hasNotNow: true)
+                return ActionButton(action: .openMonthlyDonationView, text: text, hasNotNow: true)
             }
         case .giftNotRedeemed:
             return ActionButton(action: .dismiss, text: CommonStrings.okButton)

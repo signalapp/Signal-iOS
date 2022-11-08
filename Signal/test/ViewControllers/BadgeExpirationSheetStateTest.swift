@@ -227,28 +227,28 @@ class BadgeExpirationSheetStateTest: XCTestCase {
             ),
             (
                 State(badge: getSubscriptionBadge(), mode: .subscriptionExpiredBecauseNotRenewed),
-                State.ActionButton(action: .openSubscriptionsView,
+                State.ActionButton(action: .openMonthlyDonationView,
                                    text: NSLocalizedString("BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON",
                                                            comment: "Button text when a badge expires, asking you to renew your subscription"),
                                    hasNotNow: true)
             ),
             (
                 State(badge: getSubscriptionBadge(), mode: .boostExpired(hasCurrentSubscription: false)),
-                State.ActionButton(action: .openSubscriptionsView,
+                State.ActionButton(action: .openOneTimeDonationView,
                                    text: NSLocalizedString("BADGE_EXPIRED_BOOST_RENEWAL_BUTTON",
                                                            comment: "Button title for boost on the badge expiration sheet, used if the user is not already a sustainer."),
                                    hasNotNow: true)
             ),
             (
                 State(badge: getSubscriptionBadge(), mode: .boostExpired(hasCurrentSubscription: true)),
-                State.ActionButton(action: .openBoostView,
+                State.ActionButton(action: .openOneTimeDonationView,
                                    text: NSLocalizedString("BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER",
                                                            comment: "Button title for boost on the badge expiration sheet, used if the user is already a sustainer."),
                                    hasNotNow: true)
             ),
             (
                 State(badge: getGiftBadge(), mode: .giftBadgeExpired(hasCurrentSubscription: false)),
-                State.ActionButton(action: .openSubscriptionsView,
+                State.ActionButton(action: .openMonthlyDonationView,
                                    text: NSLocalizedString("BADGE_EXPIRED_RENEWAL_MONTHLY",
                                                            value: "Make a Monthly Donation",
                                                            comment: "Button title to donate monthly on the badge expiration sheet."),

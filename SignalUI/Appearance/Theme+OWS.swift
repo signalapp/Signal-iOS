@@ -49,7 +49,6 @@ public enum ThemeIcon: UInt {
     case settingsAbout
     case settingsPayments
     case settingsBadges
-    case settingsBoost
     case settingsReceipts
     case settingsGift
 
@@ -290,8 +289,6 @@ public extension Theme {
             return isDarkThemeEnabled ? "payments-solid-24" : "payments-outline-24"
         case .settingsBadges:
             return isDarkThemeEnabled ? "badge-solid-24" : "badge-outline-24"
-        case .settingsBoost:
-            return isDarkThemeEnabled ? "boost-solid-24" : "boost-outline-24"
         case .settingsReceipts:
             return isDarkThemeEnabled ? "receipts-solid-24" : "receipts-outline-24"
         case .settingsGift:

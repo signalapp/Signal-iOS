@@ -95,6 +95,36 @@ public class DonationUtilities {
         }
     }
 
+    /// Given a list of currencies in preference order and a collection of
+    /// supported ones, pick a default currency.
+    ///
+    /// For example, we might want to use EUR with a USD fallback if EUR is
+    /// unsupported.
+    ///
+    /// ```
+    /// DonationUtilities.chooseDefaultCurrency(
+    ///     preferred: ["EUR", "USD"],
+    ///     supported: ["USD"]
+    /// )
+    /// // => "USD"
+    /// ```
+    ///
+    /// - Parameter preferred: A list of currencies in preference order.
+    ///   As a convenience, can contain `nil`, which is ignored.
+    /// - Parameter supported: A collection of supported currencies.
+    /// - Returns: The first supported currency code, or `nil` if none are found.
+    public static func chooseDefaultCurrency(
+        preferred: [Currency.Code?],
+        supported: any Collection<Currency.Code>
+    ) -> Currency.Code? {
+        for currency in preferred {
+            if let currency = currency, supported.contains(currency) {
+                return currency
+            }
+        }
+        return nil
+    }
+
     private static func donationToSignal() -> String {
         OWSLocalizedString(
             "DONATION_VIEW_DONATION_TO_SIGNAL",

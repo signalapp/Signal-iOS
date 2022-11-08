@@ -355,8 +355,8 @@ public enum ShowAppSettingsMode {
     case paymentsTransferIn
     case appearance
     case avatarBuilder
-    case subscriptions
-    case boost
+    case donateMonthly
+    case donateOneTime
     case proxy
 }
 
@@ -463,6 +463,20 @@ public extension ChatListViewController {
 
         var completion: (() -> Void)?
 
+        let onDonationFinished = { [weak self] (finishResult: DonateViewController.FinishResult) in
+            switch finishResult {
+            case let .completedDonation(donateSheet, thanksSheet):
+                donateSheet.dismiss(animated: true) { [weak self] in
+                    self?.present(thanksSheet, animated: true)
+                }
+            case let .monthlySubscriptionCancelled(donateSheet, toastText):
+                donateSheet.dismiss(animated: true) { [weak self] in
+                    guard let self = self else { return }
+                    self.view.presentToast(text: toastText, fromViewController: self)
+                }
+            }
+        }
+
         var viewControllers = navigationController.viewControllers
         switch mode {
         case .none:
@@ -485,12 +499,16 @@ public extension ChatListViewController {
             let profile = ProfileSettingsViewController()
             viewControllers += [ profile ]
             completion = { profile.presentAvatarSettingsView() }
-        case .subscriptions:
-            let subscriptions = SubscriptionViewController()
-            viewControllers += [ subscriptions ]
-        case .boost:
-            let boost = BoostViewController()
-            viewControllers += [ boost ]
+        case .donateMonthly:
+            viewControllers += [DonateViewController(
+                startingDonationMode: .monthly,
+                onFinished: onDonationFinished
+            )]
+        case .donateOneTime:
+            viewControllers += [DonateViewController(
+                startingDonationMode: .oneTime,
+                onFinished: onDonationFinished
+            )]
         case .proxy:
             viewControllers += [ PrivacySettingsViewController(), AdvancedPrivacySettingsViewController(), ProxySettingsViewController() ]
         }
@@ -530,10 +548,10 @@ extension ChatListViewController: BadgeExpirationSheetDelegate {
         switch action {
         case .dismiss:
             break
-        case .openBoostView:
-            showAppSettings(mode: .boost)
-        case .openSubscriptionsView:
-            showAppSettings(mode: .subscriptions)
+        case .openOneTimeDonationView:
+            showAppSettings(mode: .donateOneTime)
+        case .openMonthlyDonationView:
+            showAppSettings(mode: .donateMonthly)
         }
     }
 }

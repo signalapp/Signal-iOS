@@ -16,7 +16,15 @@ public class OWSButton: UIButton {
         didSet { updateAlpha() }
     }
 
+    public var dimsWhenDisabled = false {
+        didSet { updateAlpha() }
+    }
+
     public override var isHighlighted: Bool {
+        didSet { updateAlpha() }
+    }
+
+    public override var isEnabled: Bool {
         didSet { updateAlpha() }
     }
 
@@ -120,7 +128,10 @@ public class OWSButton: UIButton {
     }
 
     private func updateAlpha() {
-        let isDimmed = dimsWhenHighlighted && isHighlighted
+        let isDimmed = (
+            (dimsWhenHighlighted && isHighlighted) ||
+            (dimsWhenDisabled && !isEnabled)
+        )
         alpha = isDimmed ? 0.4 : 1
     }
 }

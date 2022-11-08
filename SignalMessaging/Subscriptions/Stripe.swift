@@ -43,10 +43,6 @@ public struct Stripe: Dependencies {
                 throw OWSAssertionError("Amount too large")
             }
 
-            guard supportedCurrencyCodes.contains(amount.currencyCode.uppercased()) else {
-                throw OWSAssertionError("Unexpected currency code")
-            }
-
             // The description is never translated as it's populated into an
             // english only receipt by Stripe.
             let request = OWSRequestFactory.boostCreatePaymentIntent(
@@ -295,152 +291,6 @@ fileprivate extension Stripe {
 // See https://stripe.com/docs/currencies
 
 public extension Stripe {
-    /// A list of supported currencies, [according to Stripe][0].
-    ///
-    /// [0]: https://stripe.com/docs/currencies?presentment-currency=US#presentment-currencies
-    static let supportedCurrencyCodes: [Currency.Code] = [
-        "AED",
-        "AFN",
-        "ALL",
-        "AMD",
-        "ANG",
-        "AOA",
-        "ARS",
-        "AUD",
-        "AWG",
-        "AZN",
-        "BAM",
-        "BBD",
-        "BDT",
-        "BGN",
-        "BIF",
-        "BMD",
-        "BND",
-        "BOB",
-        "BRL",
-        "BSD",
-        "BWP",
-        "BYN",
-        "BZD",
-        "CAD",
-        "CDF",
-        "CHF",
-        "CLP",
-        "CNY",
-        "COP",
-        "CRC",
-        "CVE",
-        "CZK",
-        "DJF",
-        "DKK",
-        "DOP",
-        "DZD",
-        "EGP",
-        "ETB",
-        "EUR",
-        "FJD",
-        "FKP",
-        "GBP",
-        "GEL",
-        "GIP",
-        "GMD",
-        "GNF",
-        "GTQ",
-        "GYD",
-        "HKD",
-        "HNL",
-        "HRK",
-        "HTG",
-        "HUF",
-        "IDR",
-        "ILS",
-        "INR",
-        "ISK",
-        "JMD",
-        "JPY",
-        "KES",
-        "KGS",
-        "KHR",
-        "KMF",
-        "KRW",
-        "KYD",
-        "KZT",
-        "LAK",
-        "LBP",
-        "LKR",
-        "LRD",
-        "LSL",
-        "MAD",
-        "MDL",
-        "MGA",
-        "MKD",
-        "MMK",
-        "MNT",
-        "MOP",
-        "MRO",
-        "MUR",
-        "MVR",
-        "MWK",
-        "MXN",
-        "MYR",
-        "MZN",
-        "NAD",
-        "NGN",
-        "NIO",
-        "NOK",
-        "NPR",
-        "NZD",
-        "PAB",
-        "PEN",
-        "PGK",
-        "PHP",
-        "PKR",
-        "PLN",
-        "PYG",
-        "QAR",
-        "RON",
-        "RSD",
-        "RUB",
-        "RWF",
-        "SAR",
-        "SBD",
-        "SCR",
-        "SEK",
-        "SGD",
-        "SHP",
-        "SLE",
-        "SLL",
-        "SOS",
-        "SRD",
-        "STD",
-        "SZL",
-        "THB",
-        "TJS",
-        "TOP",
-        "TRY",
-        "TTD",
-        "TWD",
-        "TZS",
-        "UAH",
-        "UGX",
-        "USD",
-        "UYU",
-        "UZS",
-        "VND",
-        "VUV",
-        "WST",
-        "XAF",
-        "XCD",
-        "XOF",
-        "XPF",
-        "YER",
-        "ZAR",
-        "ZMW"
-    ]
-    static let supportedCurrencyInfos: [Currency.Info] = {
-        Currency.infos(for: supportedCurrencyCodes, ignoreMissingNames: false, shouldSort: true)
-    }()
-
     static let preferredCurrencyCodes: [Currency.Code] = [
         "USD",
         "AUD",
@@ -505,12 +355,4 @@ public extension Stripe {
         "SEK": 300,
         "SGD": 50
     ]
-
-    static let defaultCurrencyCode: Currency.Code = {
-        if let localeCurrencyCode = Locale.current.currencyCode?.uppercased(), supportedCurrencyCodes.contains(localeCurrencyCode) {
-            return localeCurrencyCode
-        }
-
-        return "USD"
-    }()
 }

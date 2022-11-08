@@ -138,14 +138,27 @@ extension ConversationViewController: BadgeExpirationSheetDelegate {
         switch action {
         case .dismiss:
             break
-        case .openSubscriptionsView:
+        case .openMonthlyDonationView:
             let appSettings = AppSettingsViewController.inModalNavigationController()
+            let donateViewController = DonateViewController(startingDonationMode: .monthly) { [weak self] finishResult in
+                switch finishResult {
+                case let .completedDonation(donateSheet, thanksSheet):
+                    donateSheet.dismiss(animated: true) { [weak self] in
+                        self?.present(thanksSheet, animated: true)
+                    }
+                case let .monthlySubscriptionCancelled(donateSheet, toastText):
+                    donateSheet.dismiss(animated: true) { [weak self] in
+                        guard let self = self else { return }
+                        self.view.presentToast(text: toastText, fromViewController: self)
+                    }
+                }
+            }
             appSettings.viewControllers += [
                 DonationSettingsViewController(),
-                SubscriptionViewController()
+                donateViewController
             ]
             self.presentFormSheet(appSettings, animated: true, completion: nil)
-        case .openBoostView:
+        case .openOneTimeDonationView:
             owsFailDebug("Not supported")
         }
     }

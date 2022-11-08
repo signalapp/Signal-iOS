@@ -40,7 +40,7 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
         receiptCredentailRequest: Data,
         subscriberID: Data,
         targetSubscriptionLevel: UInt,
-        priorSubscriptionLevel: UInt,
+        priorSubscriptionLevel: UInt?,
         boostPaymentIntentID: String,
         transaction: SDSAnyWriteTransaction
     ) {
@@ -50,7 +50,7 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
             receiptCredentailRequest: receiptCredentailRequest,
             subscriberID: subscriberID,
             targetSubscriptionLevel: targetSubscriptionLevel,
-            priorSubscriptionLevel: priorSubscriptionLevel,
+            priorSubscriptionLevel: priorSubscriptionLevel ?? 0,
             isBoost: false,
             amount: nil,
             currencyCode: nil,

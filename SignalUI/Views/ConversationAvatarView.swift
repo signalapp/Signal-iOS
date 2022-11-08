@@ -121,8 +121,10 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
             case circular
         }
 
-        /// The preferred size class of the avatar. Used for avatar generation and autolayout (if enabled)
-        /// If a predefined size class is used, a badge can optionally be placed by specifying `addBadgeIfApplicable`
+        /// The preferred size class of the avatar. Used for avatar generation and autolayout (if enabled).
+        ///
+        /// If a predefined size class is used, a badge can optionally be placed by
+        /// specifying `addBadgeIfApplicable` or `fallbackBadge`.
         public var sizeClass: SizeClass
 
         fileprivate var avatarSizeClass: SizeClass {
@@ -141,6 +143,10 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         public var localUserDisplayMode: LocalUserDisplayMode
         /// Places the user's badge (if they have one) over the avatar. Only supported for predefined size classes
         public var addBadgeIfApplicable: Bool
+        /// If the user has no badge, this one will be shown instead.
+        /// Useful for previewing badges without them actually being on your profile.
+        /// Expects the badge image to already be loaded.
+        public var fallbackBadge: ProfileBadge?
 
         /// Adjusts the mask of the avatar view
         public var shape: Shape
@@ -228,12 +234,21 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         let dataSourceDidChange = configuration.dataSource != oldValue.dataSource
         let localUserDisplayModeDidChange = configuration.localUserDisplayMode != oldValue.localUserDisplayMode
         let shouldShowBadgeDidChange = configuration.addBadgeIfApplicable != oldValue.addBadgeIfApplicable
+        let fallbackBadgeDidChange = configuration.fallbackBadge != oldValue.fallbackBadge
         let shapeDidChange = configuration.shape != oldValue.shape
         let autolayoutDidChange = configuration.useAutolayout != oldValue.useAutolayout
         let storyStateDidChange = configuration.storyConfiguration != oldValue.storyConfiguration
 
         // Any changes to avatar size or provider will trigger a model update
-        if sizeClassDidChange || avatarSizeClassDidChange || dataSourceDidChange || localUserDisplayModeDidChange || shouldShowBadgeDidChange {
+        let needsModelUpdate: Bool = (
+            sizeClassDidChange ||
+            avatarSizeClassDidChange ||
+            dataSourceDidChange ||
+            localUserDisplayModeDidChange ||
+            shouldShowBadgeDidChange ||
+            fallbackBadgeDidChange
+        )
+        if needsModelUpdate {
             setNeedsModelUpdate()
         }
 
@@ -289,7 +304,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
         guard nextModelGeneration.get() > currentModelGeneration else { return }
         Logger.debug("Updating model using dataSource: \(configuration.dataSource?.description ?? "nil")")
         guard let dataSource = configuration.dataSource else {
-            updateViewContent(avatarImage: nil, badgeImage: nil)
+            updateViewContent(avatarImage: nil, primaryBadgeImage: nil)
             return
         }
 
@@ -307,17 +322,26 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
                 avatarImage = UIImage(named: Theme.iconName(.profilePlaceholder))
             }
         }
-        updateViewContent(avatarImage: avatarImage, badgeImage: badgeImage)
+        updateViewContent(avatarImage: avatarImage, primaryBadgeImage: badgeImage)
         if !updateSynchronously {
             enqueueAsyncModelUpdate()
         }
     }
 
-    private func updateViewContent(avatarImage: UIImage?, badgeImage: UIImage?) {
+    private func updateViewContent(avatarImage: UIImage?, primaryBadgeImage: UIImage?) {
         AssertIsOnMainThread()
 
         avatarView.image = avatarImage
-        badgeView.image = badgeImage
+        badgeView.image = {
+            if let primaryBadgeImage = primaryBadgeImage {
+                return primaryBadgeImage
+            } else if let fallbackAssets = configuration.fallbackBadge?.assets {
+                return configuration.sizeClass.fetchImageFromBadgeAssets(fallbackAssets)
+            } else {
+                return nil
+            }
+        }()
+
         currentModelGeneration = self.nextModelGeneration.get()
         setNeedsLayout()
     }
@@ -370,7 +394,7 @@ public class ConversationAvatarView: UIView, CVView, PrimaryImageView {
                     Logger.info("Model generation updated while performing async model update. Dropping results.")
                     return
                 }
-                self.updateViewContent(avatarImage: updatedAvatar, badgeImage: updatedBadge)
+                self.updateViewContent(avatarImage: updatedAvatar, primaryBadgeImage: updatedBadge)
             }
         }
     }

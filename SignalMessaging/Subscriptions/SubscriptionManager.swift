@@ -59,7 +59,7 @@ public enum SubscriptionRedemptionFailureReason: Int {
     case paymentIntentRedeemed = 409
 }
 
-public class SubscriptionLevel: Comparable {
+public class SubscriptionLevel: Comparable, Equatable {
     public let level: UInt
     public let name: String
     public let badge: ProfileBadge
@@ -101,8 +101,8 @@ public class SubscriptionLevel: Comparable {
     }
 }
 
-public struct Subscription {
-    public struct ChargeFailure {
+public struct Subscription: Equatable {
+    public struct ChargeFailure: Equatable {
         /// The error code reported by the server.
         ///
         /// If nil, we know there was a charge failure but don't know the code. This is unusual,
@@ -594,9 +594,11 @@ public class SubscriptionManager: NSObject {
         }
     }
 
-    public class func requestAndRedeemReceiptsIfNecessary(for subscriberID: Data,
-                                                          subscriptionLevel: UInt,
-                                                          priorSubscriptionLevel: UInt = 0) throws {
+    public class func requestAndRedeemReceiptsIfNecessary(
+        for subscriberID: Data,
+        subscriptionLevel: UInt,
+        priorSubscriptionLevel: UInt?
+    ) throws {
         let request = try generateReceiptRequest()
 
         // Remove prior operations if one exists (allow prior job to complete)
@@ -850,7 +852,11 @@ public class SubscriptionManager: NSObject {
                 // Re-kick
                 let newDate = Date(timeIntervalSince1970: subscription.endOfCurrentPeriod)
                 Logger.info("[Donations] Triggering receipt redemption job during heartbeat, last expiration \(lastSubscriptionExpiration), new expiration \(newDate)")
-                try self.requestAndRedeemReceiptsIfNecessary(for: subscriberID, subscriptionLevel: subscription.level)
+                try self.requestAndRedeemReceiptsIfNecessary(
+                    for: subscriberID,
+                    subscriptionLevel: subscription.level,
+                    priorSubscriptionLevel: nil
+                )
 
                 // Save last expiration
                 databaseStorage.write { transaction in

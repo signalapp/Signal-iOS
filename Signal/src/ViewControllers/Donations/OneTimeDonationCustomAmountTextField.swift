@@ -28,8 +28,11 @@ class OneTimeDonationCustomAmountTextField: UIView {
     override var canResignFirstResponder: Bool { textField.canResignFirstResponder }
     override var isFirstResponder: Bool { textField.isFirstResponder }
 
-    init() {
+    init(currencyCode: Currency.Code) {
+        self.currencyCode = currencyCode
+
         super.init(frame: .zero)
+
         textField.autocorrectionType = .no
         textField.spellCheckingType = .no
         textField.keyboardType = .decimalPad
@@ -66,13 +69,13 @@ class OneTimeDonationCustomAmountTextField: UIView {
         }
     }
 
-    var amount: FiatMoney? {
+    var amount: FiatMoney {
         guard
             let string = valueString(for: text),
             let value = Decimal(string: string, locale: Locale.current),
             value.isFinite
         else {
-            return nil
+            return FiatMoney(currencyCode: currencyCode, value: 0)
         }
         return FiatMoney(currencyCode: currencyCode, value: value)
     }
@@ -100,7 +103,7 @@ class OneTimeDonationCustomAmountTextField: UIView {
         set { placeholderLabel.text = newValue }
     }
 
-    private lazy var currencyCode = Stripe.defaultCurrencyCode
+    private var currencyCode: Currency.Code
 
     func setCurrencyCode(_ currencyCode: Currency.Code) {
         self.currencyCode = currencyCode

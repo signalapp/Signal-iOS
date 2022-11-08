@@ -40,6 +40,17 @@ class DonationHeroView: UIStackView {
         self.addArrangedSubview(titleLabel)
         self.setCustomSpacing(20, after: titleLabel)
 
+        descriptionTextView.delegate = self
+        self.addArrangedSubview(descriptionTextView)
+
+        rerender()
+    }
+
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    public func rerender() {
         let descriptionBodyText = NSLocalizedString(
             "DONATION_SCREENS_HEADER_DESCRIPTION",
             value: "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.",
@@ -59,18 +70,12 @@ class DonationHeroView: UIStackView {
             " ",
             readMoreText
         ]).styled(with: .color(Theme.primaryTextColor), .font(.ows_dynamicTypeBody))
-        descriptionTextView.textAlignment = .center
         descriptionTextView.linkTextAttributes = [
             .foregroundColor: Theme.accentBlueColor,
             .underlineColor: UIColor.clear,
             .underlineStyle: NSUnderlineStyle.single.rawValue
         ]
-        descriptionTextView.delegate = self
-        self.addArrangedSubview(descriptionTextView)
-    }
-
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        descriptionTextView.textAlignment = .center
     }
 }
 

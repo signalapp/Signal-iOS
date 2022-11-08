@@ -73,18 +73,22 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             Logger.info("[Gifting] Populating badge assets...")
             return self.profileManager.badgeStore.populateAssetsOnBadge(giftBadge).map { (giftBadge, pricesByCurrencyCode) }
         }.then { (giftBadge: ProfileBadge, pricesByCurrencyCode: [Currency.Code: FiatMoney]) -> Guarantee<State> in
-            let selectedCurrencyCode: Currency.Code
-            if pricesByCurrencyCode[Stripe.defaultCurrencyCode] != nil {
-                selectedCurrencyCode = Stripe.defaultCurrencyCode
-            } else if pricesByCurrencyCode["USD"] != nil {
-                Logger.warn("Could not find the desired currency code. Falling back to USD")
-                selectedCurrencyCode = "USD"
-            } else {
-                owsFail("Could not pick a currency, even USD")
+            let defaultCurrencyCode = DonationUtilities.chooseDefaultCurrency(
+                preferred: [
+                    Locale.current.currencyCode?.uppercased(),
+                    "USD",
+                    pricesByCurrencyCode.keys.first
+                ],
+                supported: pricesByCurrencyCode.keys
+            )
+            guard let defaultCurrencyCode = defaultCurrencyCode else {
+                // This indicates a bug, either in the iOS app or the server.
+                owsFailDebug("[Gifting] Successfully loaded data, but a preferred currency could not be found")
+                return Guarantee.value(.loadFailed)
             }
 
             return Guarantee.value(.loaded(
-                selectedCurrencyCode: selectedCurrencyCode,
+                selectedCurrencyCode: defaultCurrencyCode,
                 badge: giftBadge,
                 pricesByCurrencyCode: pricesByCurrencyCode
             ))
@@ -244,7 +248,10 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             guard let self = self else { return UITableViewCell() }
             let cell = AppSettingsViewsUtil.newCell(cellOuterInsets: self.cellOuterInsets)
 
-            let currencyPickerButton = DonationCurrencyPickerButton(currentCurrencyCode: selectedCurrencyCode) { [weak self] in
+            let currencyPickerButton = DonationCurrencyPickerButton(
+                currentCurrencyCode: selectedCurrencyCode,
+                hasLabel: true
+            ) { [weak self] in
                 guard let self = self else { return }
                 let vc = CurrencyPickerViewController(
                     dataSource: StripeCurrencyPickerDataSource(currentCurrencyCode: selectedCurrencyCode,

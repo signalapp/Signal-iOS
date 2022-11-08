@@ -101,63 +101,32 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
 
         switch focusedBadge.rawCategory.lowercased() {
         case "donor":
-            if DonationUtilities.isApplePayAvailable {
-                if BoostBadgeIds.contains(focusedBadge.id) {
-                    let boostButtonSection = OWSTableSection()
-                    boostButtonSection.hasBackground = false
-                    contents.addSection(boostButtonSection)
-                    boostButtonSection.add(.init(customCellBlock: { [weak self] in
-                        let cell = OWSTableItem.newCell()
-                        cell.selectionStyle = .none
-                        guard let self = self else { return cell }
+            let buttonSection = OWSTableSection(items: [.init(customCellBlock: { [weak self] in
+                let cell = OWSTableItem.newCell()
+                cell.selectionStyle = .none
 
-                        let boostButton = OWSFlatButton.button(
-                            title: NSLocalizedString(
-                                "BADGE_DETAILS_GIVE_A_BOOST",
-                                comment: "Text prompting the user to boost"),
-                            font: UIFont.ows_dynamicTypeBody.ows_semibold,
-                            titleColor: .white,
-                            backgroundColor: .ows_accentBlue,
-                            target: self,
-                            selector: #selector(self.didTapBoost)
-                        )
-                        boostButton.autoSetHeightUsingFont()
-                        boostButton.cornerRadius = 8
-                        cell.contentView.addSubview(boostButton)
-                        boostButton.autoPinEdgesToSuperviewMargins()
+                guard let self = self else { return cell }
+                let button = OWSFlatButton.button(
+                    title: NSLocalizedString(
+                        "BADGE_DETAILS_DONATE_TO_SIGNAL",
+                        value: "Donate Now",
+                        comment: "When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button."
+                    ),
+                    font: UIFont.ows_dynamicTypeBody.ows_semibold,
+                    titleColor: .white,
+                    backgroundColor: .ows_accentBlue,
+                    target: self,
+                    selector: #selector(self.didTapDonate)
+                )
+                button.autoSetHeightUsingFont()
+                button.cornerRadius = 8
+                cell.contentView.addSubview(button)
+                button.autoPinEdgesToSuperviewMargins()
 
-                        return cell
-                    }, actionBlock: nil))
-                } else if SubscriptionBadgeIds.contains(focusedBadge.id) {
-                    let subscribeButtonSection = OWSTableSection()
-                    subscribeButtonSection.hasBackground = false
-                    contents.addSection(subscribeButtonSection)
-                    subscribeButtonSection.add(.init(customCellBlock: { [weak self] in
-                        let cell = OWSTableItem.newCell()
-                        cell.selectionStyle = .none
-                        guard let self = self else { return cell }
-
-                        let subscribeButton = OWSFlatButton.button(
-                            title: NSLocalizedString(
-                                "BADGE_DETAILS_BECOME_A_SUSTAINER",
-                                comment: "Text prompting the user to become a signal sustainer"),
-                            font: UIFont.ows_dynamicTypeBody.ows_semibold,
-                            titleColor: .white,
-                            backgroundColor: .ows_accentBlue,
-                            target: self,
-                            selector: #selector(self.didTapSubscribe)
-                        )
-                        subscribeButton.autoSetHeightUsingFont()
-                        subscribeButton.cornerRadius = 8
-                        cell.contentView.addSubview(subscribeButton)
-                        subscribeButton.autoPinEdgesToSuperviewMargins()
-
-                        return cell
-                    }, actionBlock: nil))
-                }
-            } else {
-                // TODO: Show generic donation link
-            }
+                return cell
+            })])
+            buttonSection.hasBackground = false
+            contents.addSection(buttonSection)
         default:
             break
         }
@@ -165,16 +134,27 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
     }
 
     @objc
-    func didTapSubscribe() {
+    private func didTapDonate() {
         dismiss(animated: true) {
-            CurrentAppContext().frontmostViewController()?.present(OWSNavigationController(rootViewController: SubscriptionViewController()), animated: true)
-        }
-    }
+            if DonationUtilities.isApplePayAvailable {
+                let frontVc = { CurrentAppContext().frontmostViewController() }
 
-    @objc
-    func didTapBoost() {
-        dismiss(animated: true) {
-            CurrentAppContext().frontmostViewController()?.present(BoostSheetView(), animated: true)
+                let donateVc = DonateViewController(startingDonationMode: .oneTime) { finishResult in
+                    switch finishResult {
+                    case let .completedDonation(donateSheet, thanksSheet):
+                        donateSheet.dismiss(animated: true) {
+                            frontVc()?.present(thanksSheet, animated: true)
+                        }
+                    case let .monthlySubscriptionCancelled(donateSheet, toastText):
+                        donateSheet.dismiss(animated: true) {
+                            frontVc()?.presentToast(text: toastText)
+                        }
+                    }
+                }
+                frontVc()?.present(donateVc, animated: true)
+            } else {
+                DonationViewsUtil.openDonateWebsite()
+            }
         }
     }
 }

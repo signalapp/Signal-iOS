@@ -243,7 +243,11 @@ struct StripeCurrencyPickerDataSource: CurrencyPickerDataSource {
 
         func isSupported(_ info: Currency.Info) -> Bool { supportedCurrencyCodes.contains(info.code) }
         self.preferredCurrencyInfos = Stripe.preferredCurrencyInfos.filter(isSupported)
-        self.supportedCurrencyInfos = Stripe.supportedCurrencyInfos.filter(isSupported)
+        self.supportedCurrencyInfos = Currency.infos(
+            for: supportedCurrencyCodes,
+            ignoreMissingNames: false,
+            shouldSort: true
+        )
     }
 }
 

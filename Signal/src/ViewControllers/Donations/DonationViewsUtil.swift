@@ -57,22 +57,28 @@ public class ProfileBadgeLookup {
 // MARK: - Currency picker view
 
 public class DonationCurrencyPickerButton: UIStackView {
-    init(currentCurrencyCode: Currency.Code, block: @escaping () -> Void) {
+    init(
+        currentCurrencyCode: Currency.Code,
+        hasLabel: Bool,
+        block: @escaping () -> Void
+    ) {
         super.init(frame: .zero)
 
         self.axis = .horizontal
         self.alignment = .center
         self.spacing = 8
 
-        let label = UILabel()
-        label.font = .ows_dynamicTypeBodyClamped
-        label.textColor = Theme.primaryTextColor
-        label.text = NSLocalizedString(
-            "DONATIONS_CURRENCY_PICKER_LABEL",
-            value: "Currency",
-            comment: "Label for the currency picker button in donation views"
-        )
-        self.addArrangedSubview(label)
+        if hasLabel {
+            let label = UILabel()
+            label.font = .ows_dynamicTypeBodyClamped
+            label.textColor = Theme.primaryTextColor
+            label.text = NSLocalizedString(
+                "DONATIONS_CURRENCY_PICKER_LABEL",
+                value: "Currency",
+                comment: "Label for the currency picker button in donation views"
+            )
+            self.addArrangedSubview(label)
+        }
 
         let picker = OWSButton(block: block)
         picker.setAttributedTitle(NSAttributedString.composed(of: [
@@ -212,8 +218,13 @@ public class GiftBadgeCellView: BadgeCellView {
 
 public final class DonationViewsUtil {
     public static let bubbleBorderWidth: CGFloat = 1.5
-    public static var bubbleBorderColor: UIColor { Theme.isDarkThemeEnabled ? UIColor.ows_gray65 : UIColor(rgbHex: 0xdedede) }
+    fileprivate static var bubbleBorderColor: UIColor { Theme.isDarkThemeEnabled ? UIColor.ows_gray65 : UIColor(rgbHex: 0xdedede) }
     public static var bubbleBackgroundColor: UIColor { Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white }
+
+    public static func avatarView() -> ConversationAvatarView {
+        let sizeClass = ConversationAvatarView.Configuration.SizeClass.eightyEight
+        return ConversationAvatarView(sizeClass: sizeClass, localUserDisplayMode: .asUser)
+    }
 
     public static func loadSubscriptionLevels(badgeStore: BadgeStore) -> Promise<[SubscriptionLevel]> {
         firstly {
@@ -239,10 +250,10 @@ public final class DonationViewsUtil {
 
     public static func getMySupportCurrentSubscriptionTableItem(subscriptionLevel: SubscriptionLevel?,
                                                                 currentSubscription: Subscription,
+                                                                isSubscriptionRedemptionPending isPending: Bool,
                                                                 subscriptionRedemptionFailureReason: SubscriptionRedemptionFailureReason,
                                                                 statusLabelToModify: LinkingTextView) -> OWSTableItem {
         OWSTableItem.init(customCellBlock: {
-            let isPending = isSubscriptionRedemptionPending()
             let didFail = subscriptionRedemptionFailureReason != .none
             if subscriptionLevel == nil {
                 owsFailDebug("A subscription level should be provided. We'll do our best without one")
@@ -335,14 +346,6 @@ public final class DonationViewsUtil {
 
             return cell
         })
-    }
-
-    private static func isSubscriptionRedemptionPending() -> Bool {
-        var hasPendingJobs: Bool = SDSDatabaseStorage.shared.read { transaction in
-            SubscriptionManager.subscriptionJobQueue.hasPendingJobs(transaction: transaction)
-        }
-        hasPendingJobs = hasPendingJobs || SubscriptionManager.subscriptionJobQueue.runningOperations.get().count != 0
-        return hasPendingJobs
     }
 
     public static func getSubscriptionRedemptionFailureReason(subscription: Subscription?) -> SubscriptionRedemptionFailureReason {
