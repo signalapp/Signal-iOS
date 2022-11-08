@@ -555,7 +555,6 @@
 		34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */; };
 		34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */; };
 		34D1F0501F7D45A60066283D /* GifPickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F04F1F7D45A60066283D /* GifPickerCell.swift */; };
-		34D1F0841F8678AA0066283D /* ConversationInputToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F06A1F8678AA0066283D /* ConversationInputToolbar.m */; };
 		34D1F0B41F86D31D0066283D /* ConversationCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0B31F86D31D0066283D /* ConversationCollectionView.m */; };
 		34D1F0C01F8EC1760066283D /* MessageRecipientStatusUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0BF1F8EC1760066283D /* MessageRecipientStatusUtils.swift */; };
 		34D21DA227297FBF00D891F4 /* DebugLogger+Payments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D21DA127297FBE00D891F4 /* DebugLogger+Payments.swift */; };
@@ -817,6 +816,7 @@
 		7666D54428331E1100A3BDB9 /* ImageEditorViewController+Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54328331E1100A3BDB9 /* ImageEditorViewController+Draw.swift */; };
 		7666D54628331E4800A3BDB9 /* ImageEditorViewController+Blur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */; };
 		7666D54828331E6900A3BDB9 /* ImageEditorViewController+Text.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */; };
+		76725D2D29143CEC000E8AE1 /* ConversationInputToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76725D2C29143CEC000E8AE1 /* ConversationInputToolbar.swift */; };
 		76896BF828415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BF728415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift */; };
 		76896BFA28415B6B00F6C8D2 /* VideoTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BF928415B6B00F6C8D2 /* VideoTimelineView.swift */; };
 		76896BFC2841A84D00F6C8D2 /* ImageAttachmentPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76896BFB2841A84D00F6C8D2 /* ImageAttachmentPrepViewController.swift */; };
@@ -2774,8 +2774,6 @@
 		34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = ringback_tone_ansi.caf; path = Signal/AudioFiles/ringback_tone_ansi.caf; sourceTree = SOURCE_ROOT; };
 		34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = end_call_tone_cept.caf; path = Signal/AudioFiles/end_call_tone_cept.caf; sourceTree = SOURCE_ROOT; };
 		34D1F04F1F7D45A60066283D /* GifPickerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerCell.swift; sourceTree = "<group>"; };
-		34D1F0691F8678AA0066283D /* ConversationInputToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationInputToolbar.h; sourceTree = "<group>"; };
-		34D1F06A1F8678AA0066283D /* ConversationInputToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationInputToolbar.m; sourceTree = "<group>"; };
 		34D1F06D1F8678AA0066283D /* ConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationViewController.h; sourceTree = "<group>"; };
 		34D1F0B21F86D31D0066283D /* ConversationCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationCollectionView.h; sourceTree = "<group>"; };
 		34D1F0B31F86D31D0066283D /* ConversationCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationCollectionView.m; sourceTree = "<group>"; };
@@ -3086,6 +3084,7 @@
 		7666D54328331E1100A3BDB9 /* ImageEditorViewController+Draw.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Draw.swift"; sourceTree = "<group>"; };
 		7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Blur.swift"; sourceTree = "<group>"; };
 		7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Text.swift"; sourceTree = "<group>"; };
+		76725D2C29143CEC000E8AE1 /* ConversationInputToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationInputToolbar.swift; sourceTree = "<group>"; };
 		76896BF728415ABA00F6C8D2 /* VideoAttachmentPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoAttachmentPrepViewController.swift; sourceTree = "<group>"; };
 		76896BF928415B6B00F6C8D2 /* VideoTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTimelineView.swift; sourceTree = "<group>"; };
 		76896BFB2841A84D00F6C8D2 /* ImageAttachmentPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAttachmentPrepViewController.swift; sourceTree = "<group>"; };
@@ -4821,8 +4820,7 @@
 				3457794226828A9A00732869 /* ConversationCollectionView.swift */,
 				45DDA6232090CEB500DE97F8 /* ConversationHeaderView.swift */,
 				8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */,
-				34D1F0691F8678AA0066283D /* ConversationInputToolbar.h */,
-				34D1F06A1F8678AA0066283D /* ConversationInputToolbar.m */,
+				76725D2C29143CEC000E8AE1 /* ConversationInputToolbar.swift */,
 				343A65971FC4CFE7000477A1 /* ConversationScrollButton.h */,
 				343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */,
 				3405C06D25435048008B24EF /* ConversationViewController+Banners.swift */,
@@ -10119,7 +10117,7 @@
 				34E20D4C24256563002C011E /* ConversationHeaderBuilder.swift in Sources */,
 				45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */,
 				8851DB4324CCF0EB001EACD2 /* ConversationInputTextView.swift in Sources */,
-				34D1F0841F8678AA0066283D /* ConversationInputToolbar.m in Sources */,
+				76725D2D29143CEC000E8AE1 /* ConversationInputToolbar.swift in Sources */,
 				34EB0DF52628D3B300B62DC3 /* ConversationInternalViewController.swift in Sources */,
 				343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */,
 				342FFE6A271EF502000AC89F /* ConversationSearch.swift in Sources */,

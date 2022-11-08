@@ -68,7 +68,7 @@ extension ConversationViewController {
 
         clearVoiceMessageDraft()
         viewState.currentVoiceMessageModel = nil
-        inputToolbar?.hideVoiceMemoUI(true)
+        inputToolbar?.hideVoiceMemoUI(animated: true)
         configureScrollDownButtons()
     }
 
@@ -102,7 +102,7 @@ extension ConversationViewController {
     }
 
     func sendVoiceMessageModel(_ voiceMessageModel: VoiceMessageModel) {
-        inputToolbar?.hideVoiceMemoUI(true)
+        inputToolbar?.hideVoiceMemoUI(animated: true)
         configureScrollDownButtons()
 
         do {

@@ -389,7 +389,7 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
         }
 
         let isAnimatingQuotedReply = viewState.inputToolbar?.isAnimatingQuotedReply ?? false
-        let duration = isAnimatingQuotedReply ? ConversationInputToolbar.quotedReplyAnimationDuration() : animationDuration
+        let duration = isAnimatingQuotedReply ? ConversationInputToolbar.quotedReplyAnimationDuration : animationDuration
 
         if shouldAnimateKeyboardChanges, duration > 0 {
             if hasViewDidAppearEverCompleted {

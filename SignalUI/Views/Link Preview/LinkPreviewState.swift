@@ -60,7 +60,7 @@ public class LinkPreviewLoading: NSObject, LinkPreviewState {
     public let linkType: LinkPreviewLinkType
 
     @objc
-    required init(linkType: LinkPreviewLinkType) {
+    public required init(linkType: LinkPreviewLinkType) {
         self.linkType = linkType
     }
 

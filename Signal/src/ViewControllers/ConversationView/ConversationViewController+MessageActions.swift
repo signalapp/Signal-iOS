@@ -10,7 +10,7 @@ extension ConversationViewController {
     func presentContextMenu(with messageActions: [MessageAction],
                             focusedOn cell: UICollectionViewCell,
                             andModel model: CVItemViewModelImpl) {
-        let keyboardActive = inputToolbar?.isInputViewFirstResponder() ?? false
+        let keyboardActive = inputToolbar?.isInputViewFirstResponder ?? false
         let interaction = ChatHistoryContextMenuInteraction(delegate: self, itemViewModel: model, thread: thread, messageActions: messageActions, initiatingGestureRecognizer: collectionViewContextMenuGestureRecognizer, keyboardWasActive: keyboardActive)
         collectionViewActiveContextMenuInteraction = interaction
         cell.addInteraction(interaction)

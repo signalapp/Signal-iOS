@@ -36,7 +36,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         inputToolbar.acceptAutocorrectSuggestion()
 
-        guard let messageBody = inputToolbar.messageBody() else {
+        guard let messageBody = inputToolbar.messageBody else {
             return
         }
 
@@ -248,7 +248,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         if !inputToolbar.isHidden {
             let thread = self.thread
-            let currentDraft = inputToolbar.messageBody()
+            let currentDraft = inputToolbar.messageBody
             let quotedReply = inputToolbar.quotedReply
             Self.databaseStorage.asyncWrite { transaction in
                 // Reload a fresh instance of the thread model; our models are not
@@ -499,7 +499,7 @@ public extension ConversationViewController {
         }
 
         let modal = AttachmentApprovalViewController.wrappedInNavController(attachments: attachments,
-                                                                            initialMessageBody: inputToolbar.messageBody(),
+                                                                            initialMessageBody: inputToolbar.messageBody,
                                                                             approvalDelegate: self,
                                                                             approvalDataSource: self)
         presentFullScreen(modal, animated: true)
@@ -612,7 +612,7 @@ fileprivate extension ConversationViewController {
 
 public extension ConversationViewController {
     func showGifPicker() {
-        let gifModal = GifPickerNavigationViewController(initialMessageBody: inputToolbar?.messageBody())
+        let gifModal = GifPickerNavigationViewController(initialMessageBody: inputToolbar?.messageBody)
         gifModal.approvalDelegate = self
         gifModal.approvalDataSource = self
         dismissKeyBoard()
@@ -854,7 +854,7 @@ extension ConversationViewController: SendMediaNavDelegate {
 extension ConversationViewController: SendMediaNavDataSource {
 
     func sendMediaNavInitialMessageBody(_ sendMediaNavigationController: SendMediaNavigationController) -> MessageBody? {
-        inputToolbar?.messageBody()
+        inputToolbar?.messageBody
     }
 
     var sendMediaNavTextInputContextIdentifier: String? { textInputContextIdentifier }

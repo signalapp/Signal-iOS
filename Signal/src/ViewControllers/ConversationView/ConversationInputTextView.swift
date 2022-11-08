@@ -7,7 +7,7 @@ import Foundation
 import SignalMessaging
 
 @objc
-protocol ConversationInputTextViewDelegate {
+public protocol ConversationInputTextViewDelegate {
     func didPasteAttachment(_ attachment: SignalAttachment?)
     func inputTextViewSendMessagePressed()
     func textViewDidChange(_ textView: UITextView)
