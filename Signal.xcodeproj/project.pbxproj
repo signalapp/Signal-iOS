@@ -600,7 +600,7 @@
 		4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */; };
 		4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BC20470A5B00CEE724 /* classic.aifc */; };
 		450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */; };
-		450C801220AD1D5B00F3A091 /* UIDevice+featureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */; };
+		450C801220AD1D5B00F3A091 /* UIDevice+FeatureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BB93371E688E14001E3939 /* UIDevice+FeatureSupport.swift */; };
 		450D19131F85236600970622 /* RemoteVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 450D19121F85236600970622 /* RemoteVideoView.m */; };
 		451166C01FD86B98000739BA /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451166BF1FD86B98000739BA /* AccountManager.swift */; };
 		45161BA928A2E54B0055AB45 /* ThreadReplyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45161BA828A2E54B0055AB45 /* ThreadReplyInfo.swift */; };
@@ -1250,8 +1250,8 @@
 		F94262A1289B1B5600460798 /* SignalServiceAddressTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426239289B1B5500460798 /* SignalServiceAddressTest.swift */; };
 		F94262A2289B1B5600460798 /* SSKBaseTestSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942623A289B1B5500460798 /* SSKBaseTestSwift.swift */; };
 		F94BFA9528EBB0D800A5F34E /* FakeMessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */; };
-		F94C912028FDEA2E0065DF75 /* Decimal+rounded.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94C911F28FDEA2E0065DF75 /* Decimal+rounded.swift */; };
-		F94C912228FDEAF50065DF75 /* Decimal+isInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94C912128FDEAF50065DF75 /* Decimal+isInteger.swift */; };
+		F94C912028FDEA2E0065DF75 /* Decimal+Rounded.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94C911F28FDEA2E0065DF75 /* Decimal+Rounded.swift */; };
+		F94C912228FDEAF50065DF75 /* Decimal+IsInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94C912128FDEAF50065DF75 /* Decimal+IsInteger.swift */; };
 		F94C912428FDECC40065DF75 /* DecimalTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94C912328FDECC40065DF75 /* DecimalTest.swift */; };
 		F94D12FF28BD0DD900B2C478 /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */; };
 		F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */; };
@@ -1968,7 +1968,7 @@
 		F9C5CE41289453B400548EEE /* OWSUserProfile+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB70289453B200548EEE /* OWSUserProfile+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE42289453B400548EEE /* SSKAsserts.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB71289453B200548EEE /* SSKAsserts.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE43289453B400548EEE /* OrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB72289453B200548EEE /* OrderedDictionary.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CE44289453B400548EEE /* Error+isRetryable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB73289453B200548EEE /* Error+isRetryable.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
+		F9C5CE44289453B400548EEE /* Error+IsRetryable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB73289453B200548EEE /* Error+IsRetryable.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE45289453B400548EEE /* OWSUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB74289453B200548EEE /* OWSUserProfile.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE46289453B400548EEE /* InstrumentsMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB75289453B200548EEE /* InstrumentsMonitor.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE47289453B400548EEE /* OWSAnalyticsEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB76289453B200548EEE /* OWSAnalyticsEvents.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2924,7 +2924,7 @@
 		45B74A732044AAB600CD42F8 /* input-quiet.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "input-quiet.aifc"; sourceTree = "<group>"; };
 		45B9EE9A200E91FB005D2F2D /* MediaDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaDetailViewController.h; sourceTree = "<group>"; };
 		45B9EE9B200E91FB005D2F2D /* MediaDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaDetailViewController.m; sourceTree = "<group>"; };
-		45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIDevice+featureSupport.swift"; sourceTree = "<group>"; };
+		45BB93371E688E14001E3939 /* UIDevice+FeatureSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIDevice+FeatureSupport.swift"; sourceTree = "<group>"; };
 		45BD60811DE9547E00A8F436 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		45C845AC291466C0005F6EA5 /* JournalingOrderedDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalingOrderedDictionary.swift; sourceTree = "<group>"; };
 		45C845AE291467F7005F6EA5 /* JournalingOrderedDictionaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalingOrderedDictionaryTests.swift; sourceTree = "<group>"; };
@@ -3611,8 +3611,8 @@
 		F9426239289B1B5500460798 /* SignalServiceAddressTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceAddressTest.swift; sourceTree = "<group>"; };
 		F942623A289B1B5500460798 /* SSKBaseTestSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SSKBaseTestSwift.swift; path = SignalServiceKit/tests/SSKBaseTestSwift.swift; sourceTree = SOURCE_ROOT; };
 		F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeMessageSender.swift; sourceTree = "<group>"; };
-		F94C911F28FDEA2E0065DF75 /* Decimal+rounded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+rounded.swift"; sourceTree = "<group>"; };
-		F94C912128FDEAF50065DF75 /* Decimal+isInteger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+isInteger.swift"; sourceTree = "<group>"; };
+		F94C911F28FDEA2E0065DF75 /* Decimal+Rounded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+Rounded.swift"; sourceTree = "<group>"; };
+		F94C912128FDEAF50065DF75 /* Decimal+IsInteger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+IsInteger.swift"; sourceTree = "<group>"; };
 		F94C912328FDECC40065DF75 /* DecimalTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecimalTest.swift; sourceTree = "<group>"; };
 		F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechManager.swift; sourceTree = "<group>"; };
 		F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseRecoveryTest.swift; sourceTree = "<group>"; };
@@ -4329,7 +4329,7 @@
 		F9C5CB70289453B200548EEE /* OWSUserProfile+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSUserProfile+SDS.swift"; sourceTree = "<group>"; };
 		F9C5CB71289453B200548EEE /* SSKAsserts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSKAsserts.h; sourceTree = "<group>"; };
 		F9C5CB72289453B200548EEE /* OrderedDictionary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderedDictionary.swift; sourceTree = "<group>"; };
-		F9C5CB73289453B200548EEE /* Error+isRetryable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Error+isRetryable.swift"; sourceTree = "<group>"; };
+		F9C5CB73289453B200548EEE /* Error+IsRetryable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Error+IsRetryable.swift"; sourceTree = "<group>"; };
 		F9C5CB74289453B200548EEE /* OWSUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSUserProfile.m; sourceTree = "<group>"; };
 		F9C5CB75289453B200548EEE /* InstrumentsMonitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InstrumentsMonitor.swift; sourceTree = "<group>"; };
 		F9C5CB76289453B200548EEE /* OWSAnalyticsEvents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAnalyticsEvents.h; sourceTree = "<group>"; };
@@ -4825,7 +4825,7 @@
 			isa = PBXGroup;
 			children = (
 				34A955B5271B54BC00B05242 /* UIColor+OWS.swift */,
-				45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */,
+				45BB93371E688E14001E3939 /* UIDevice+FeatureSupport.swift */,
 				3402A9E0271D96570084CBAE /* UIView+OWS.swift */,
 			);
 			path = categories;
@@ -8180,14 +8180,14 @@
 				F9C5CB07289453B200548EEE /* DataSource.m */,
 				F9C5CB7C289453B200548EEE /* Date+SSK.swift */,
 				F9C5CB06289453B200548EEE /* DebouncedEvent.swift */,
-				F94C912128FDEAF50065DF75 /* Decimal+isInteger.swift */,
-				F94C911F28FDEA2E0065DF75 /* Decimal+rounded.swift */,
+				F94C912128FDEAF50065DF75 /* Decimal+IsInteger.swift */,
+				F94C911F28FDEA2E0065DF75 /* Decimal+Rounded.swift */,
 				F9C5CB79289453B200548EEE /* DecodableDefaults.swift */,
 				F9C5CB2B289453B200548EEE /* Dependencies+SSK.swift */,
 				F9C5CB3A289453B200548EEE /* DeviceNames.swift */,
 				F9C5CB16289453B200548EEE /* DispatchQueue+OWS.swift */,
 				F9C5CB0B289453B200548EEE /* Error+ErrorLocalizedDescription.swift */,
-				F9C5CB73289453B200548EEE /* Error+isRetryable.swift */,
+				F9C5CB73289453B200548EEE /* Error+IsRetryable.swift */,
 				F9C5CB51289453B200548EEE /* Error+SSK.swift */,
 				F9C5CB59289453B200548EEE /* FeatureFlags.swift */,
 				F97121E92903244700C0F5F2 /* FiatMoney.swift */,
@@ -10020,7 +10020,7 @@
 				45194F8F1FD71FF500333B2C /* ThreadUtil.m in Sources */,
 				348C686D246B0B110039705A /* ThreadUtil.swift in Sources */,
 				34A955B6271B54BD00B05242 /* UIColor+OWS.swift in Sources */,
-				450C801220AD1D5B00F3A091 /* UIDevice+featureSupport.swift in Sources */,
+				450C801220AD1D5B00F3A091 /* UIDevice+FeatureSupport.swift in Sources */,
 				3402A9E3271D96570084CBAE /* UIView+OWS.swift in Sources */,
 				88D23D0B23CEBF4400B0E74B /* UserNotificationsPresenter.swift in Sources */,
 				347024A0238C85850078D72C /* VersionedProfilesImpl.swift in Sources */,
@@ -10711,8 +10711,8 @@
 				F9C5CDD9289453B400548EEE /* DataSource.m in Sources */,
 				F9C5CE4D289453B400548EEE /* Date+SSK.swift in Sources */,
 				F9C5CDD8289453B400548EEE /* DebouncedEvent.swift in Sources */,
-				F94C912228FDEAF50065DF75 /* Decimal+isInteger.swift in Sources */,
-				F94C912028FDEA2E0065DF75 /* Decimal+rounded.swift in Sources */,
+				F94C912228FDEAF50065DF75 /* Decimal+IsInteger.swift in Sources */,
+				F94C912028FDEA2E0065DF75 /* Decimal+Rounded.swift in Sources */,
 				F9C5CE4A289453B400548EEE /* DecodableDefaults.swift in Sources */,
 				F9C5CD27289453B300548EEE /* DeepCopy.swift in Sources */,
 				F9C5CC11289453B300548EEE /* DefaultStickers.swift in Sources */,
@@ -10729,7 +10729,7 @@
 				F9C5CC18289453B300548EEE /* DownloadStickerPackOperation.swift in Sources */,
 				F9C5CC8A289453B300548EEE /* EarlyMessageManager.swift in Sources */,
 				F9C5CDDD289453B400548EEE /* Error+ErrorLocalizedDescription.swift in Sources */,
-				F9C5CE44289453B400548EEE /* Error+isRetryable.swift in Sources */,
+				F9C5CE44289453B400548EEE /* Error+IsRetryable.swift in Sources */,
 				F9C5CE23289453B400548EEE /* Error+SSK.swift in Sources */,
 				D9C7CEB428EB8495001E87B6 /* ExperienceUpgrade.swift in Sources */,
 				F9C5CE2D289453B400548EEE /* ExperienceUpgradeFinder.swift in Sources */,
