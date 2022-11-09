@@ -1578,6 +1578,11 @@ extension ConversationVC:
             case .typingIndicator, .dateHeader: break
             
             case .textOnlyMessage:
+                if cellViewModel.body == nil, let linkPreview: LinkPreview = cellViewModel.linkPreview {
+                    UIPasteboard.general.string = linkPreview.url
+                    return
+                }
+                
                 UIPasteboard.general.string = cellViewModel.body
             
             case .audio, .genericAttachment, .mediaMessage:

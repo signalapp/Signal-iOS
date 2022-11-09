@@ -241,7 +241,24 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
                                 ),
                                 accessibilityIdentifier: "\(ThreadSettingsViewModel.self).copy_thread_id",
                                 onTap: {
-                                    UIPasteboard.general.string = threadId
+                                    switch threadVariant {
+                                        case .contact, .closedGroup:
+                                            UIPasteboard.general.string = threadId
+                                            
+                                        case .openGroup:
+                                            guard
+                                                let server: String = threadViewModel.openGroupServer,
+                                                let roomToken: String = threadViewModel.openGroupRoomToken,
+                                                let publicKey: String = threadViewModel.openGroupPublicKey
+                                            else { return }
+                                            
+                                            UIPasteboard.general.string = OpenGroup.urlFor(
+                                                server: server,
+                                                roomToken: roomToken,
+                                                publicKey: publicKey
+                                            )
+                                    }
+                                    
                                     self?.showToast(
                                         text: "copied".localized(),
                                         backgroundColor: .backgroundSecondary
@@ -297,7 +314,10 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
                                             with: "vc_conversation_settings_invite_button_title".localized(),
                                             excluding: Set()
                                         ) { [weak self] selectedUsers in
-                                            self?.addUsersToOpenGoup(selectedUsers: selectedUsers)
+                                            self?.addUsersToOpenGoup(
+                                                threadViewModel: threadViewModel,
+                                                selectedUsers: selectedUsers
+                                            )
                                         }
                                     )
                                 }
@@ -561,13 +581,20 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
         self.transitionToScreen(navController, transitionType: .present)
     }
     
-    private func addUsersToOpenGoup(selectedUsers: Set<String>) {
-        let threadId: String = self.threadId
+    private func addUsersToOpenGoup(threadViewModel: SessionThreadViewModel, selectedUsers: Set<String>) {
+        guard
+            let name: String = threadViewModel.openGroupName,
+            let server: String = threadViewModel.openGroupServer,
+            let roomToken: String = threadViewModel.openGroupRoomToken,
+            let publicKey: String = threadViewModel.openGroupPublicKey
+        else { return }
         
         dependencies.storage.writeAsync { db in
-            guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: threadId) else { return }
-            
-            let urlString: String = "\(openGroup.server)/\(openGroup.roomToken)?public_key=\(openGroup.publicKey)"
+            let urlString: String = OpenGroup.urlFor(
+                server: server,
+                roomToken: roomToken,
+                publicKey: publicKey
+            )
             
             try selectedUsers.forEach { userId in
                 let thread: SessionThread = try SessionThread.fetchOrCreate(db, id: userId, variant: .contact)
@@ -575,7 +602,7 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
                 try LinkPreview(
                     url: urlString,
                     variant: .openGroupInvitation,
-                    title: openGroup.name
+                    title: name
                 )
                 .save(db)
                 
