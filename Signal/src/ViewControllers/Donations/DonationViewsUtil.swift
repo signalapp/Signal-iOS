@@ -74,7 +74,6 @@ public class DonationCurrencyPickerButton: UIStackView {
             label.textColor = Theme.primaryTextColor
             label.text = NSLocalizedString(
                 "DONATIONS_CURRENCY_PICKER_LABEL",
-                value: "Currency",
                 comment: "Label for the currency picker button in donation views"
             )
             self.addArrangedSubview(label)

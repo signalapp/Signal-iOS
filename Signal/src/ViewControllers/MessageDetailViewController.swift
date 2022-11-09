@@ -68,7 +68,6 @@ class MessageDetailViewController: OWSTableViewController2 {
     private var expiryLabelName: String {
         NSLocalizedString(
             "MESSAGE_METADATA_VIEW_DISAPPEARS_IN",
-            value: "Disappears",
             comment: "Label for the 'disappears' field of the 'message metadata' view."
         )
     }
@@ -87,7 +86,6 @@ class MessageDetailViewController: OWSTableViewController2 {
             owsFailDebug("We should never hit this code, because we should never show the label")
             return NSLocalizedString(
                 "MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS",
-                value: "Never",
                 comment: "On the 'message metadata' view, if a message never disappears, this text is shown as a fallback."
             )
         }

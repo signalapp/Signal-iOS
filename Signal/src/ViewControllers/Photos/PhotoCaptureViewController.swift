@@ -1531,7 +1531,6 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
         label.textColor = .ows_whiteAlpha60
         label.font = .ows_dynamicTypeLargeTitle1Clamped
         label.text = NSLocalizedString("STORY_COMPOSER_TAP_ADD_TEXT",
-                                       value: "Tap to add text",
                                        comment: "Placeholder text in text stories compose UI")
         return label
     }()

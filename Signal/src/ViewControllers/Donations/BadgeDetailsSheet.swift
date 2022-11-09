@@ -109,7 +109,6 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
                 let button = OWSFlatButton.button(
                     title: NSLocalizedString(
                         "BADGE_DETAILS_DONATE_TO_SIGNAL",
-                        value: "Donate Now",
                         comment: "When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button."
                     ),
                     font: UIFont.ows_dynamicTypeBody.ows_semibold,

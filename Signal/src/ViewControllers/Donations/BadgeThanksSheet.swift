@@ -239,7 +239,6 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         case .boost, .subscription:
             return NSLocalizedString(
                 "BADGE_THANKS_TITLE",
-                value: "Thanks for your support!",
                 comment: "When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet."
             )
         case .gift(shortName: let shortName, _, _, _):
@@ -256,7 +255,6 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         case .boost, .subscription:
             let formatText = NSLocalizedString(
                 "BADGE_THANKS_BODY",
-                value: "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.",
                 comment: "When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet."
             )
             return String(format: formatText, self.badge.localizedName)
@@ -448,12 +446,10 @@ class BadgeThanksSheet: OWSTableSheetViewController {
                     OWSActionSheets.showActionSheet(
                         title: NSLocalizedString(
                             "BADGE_GIFTING_REDEEM_ERROR_TITLE",
-                            value: "Couldn’t Redeem Gift",
                             comment: "Shown as the title of an alert when failing to redeem a gift."
                         ),
                         message: NSLocalizedString(
                             "BADGE_GIFTING_REDEEM_ERROR_BODY",
-                            value: "Your gift couldn’t be redeemed. Check your connection and try again.",
                             comment: "Shown as the body of an alert when failing to redeem a gift."
                         )
                     )

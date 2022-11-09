@@ -45,7 +45,6 @@ public class DonationReadMoreSheetViewController: InteractiveSheetViewController
         titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
         titleLabel.text = NSLocalizedString(
             "DONATION_READ_MORE_SCREEN_TITLE",
-            value: "Signal is different.",
             comment: "There is a screen where users can read more about their donation to Signal. This is the title of that screen."
         )
         titleLabel.numberOfLines = 0
@@ -55,17 +54,14 @@ public class DonationReadMoreSheetViewController: InteractiveSheetViewController
         let paragraphs: [String] = [
             NSLocalizedString(
                 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1",
-                value: "Private messaging. No ads, no trackers, no surveillance.",
                 comment: "There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen."
             ),
             NSLocalizedString(
                 "DONATION_READ_MORE_SCREEN_PARAGRAPH_2",
-                value: "Signal is supported by donations, meaning that your privacy is at the center of everything we do. Signal is built for you; not your data and not for profit.",
                 comment: "There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen."
             ),
             NSLocalizedString(
                 "DONATION_READ_MORE_SCREEN_PARAGRAPH_3",
-                value: "If you can, please donate today to keep Signal fun, dependable, and available for everyone.",
                 comment: "There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen."
             )
         ]

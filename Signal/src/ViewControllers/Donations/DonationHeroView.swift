@@ -32,7 +32,6 @@ class DonationHeroView: UIStackView {
         titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
         titleLabel.text = NSLocalizedString(
             "DONATION_SCREENS_HEADER_TITLE",
-            value: "Privacy over profit",
             comment: "On donation screens, a small amount of information text is shown. This is the title for that text."
         )
         titleLabel.numberOfLines = 0
@@ -53,7 +52,6 @@ class DonationHeroView: UIStackView {
     public func rerender() {
         let descriptionBodyText = NSLocalizedString(
             "DONATION_SCREENS_HEADER_DESCRIPTION",
-            value: "Private messaging, funded by you. No ads, no tracking, no compromise. Donate now to support Signal.",
             comment: "On donation screens, a small amount of information text is shown. This is the subtitle for that text."
         )
         // We'd like a link that doesn't go anywhere, because we'd like to
@@ -62,7 +60,6 @@ class DonationHeroView: UIStackView {
         let linkPart = StringStyle.Part.link(SupportConstants.subscriptionFAQURL)
         let readMoreText = NSLocalizedString(
             "DONATION_SCREENS_HEADER_READ_MORE",
-            value: "Read more",
             comment: "On donation screens, a small amount of information text is shown. Users can click this link to learn more information."
         ).styled(with: linkPart)
         descriptionTextView.attributedText = .composed(of: [

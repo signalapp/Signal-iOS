@@ -83,7 +83,6 @@ final class HelpViewController: OWSTableViewController2 {
         aboutSection.headerTitle = NSLocalizedString("ABOUT_SECTION_TITLE", comment: "Title for the 'about' help section")
         aboutSection.footerTitle = NSLocalizedString(
             "SETTINGS_COPYRIGHT",
-            value: "Copyright Signal Messenger\nLicensed under the AGPLv3",
             comment: "Footer for the 'about' help section"
         )
         aboutSection.add(.copyableItem(label: NSLocalizedString("SETTINGS_VERSION", comment: ""),

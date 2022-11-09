@@ -1515,7 +1515,6 @@ class CameraBottomBar: UIView {
             proceedButton.isEnabled = false
             proceedButton.contentEdgeInsets = UIEdgeInsets(margin: proceedButton.layoutMargins.leading + 9) // image is 24x24 and we want 42x42 button.
             proceedButton.accessibilityValue = NSLocalizedString("CAMERA_VO_ARROW_RIGHT_PROCEED",
-                                                                 value: "Proceed",
                                                                  comment: "VoiceOver label for -> button in text story composer.")
             proceedButton.translatesAutoresizingMaskIntoConstraints = false
             addSubview(proceedButton)
@@ -1599,10 +1598,14 @@ class CameraBottomBar: UIView {
 
     fileprivate class ContentTypeSelectionControl: UISegmentedControl {
 
-        static private let titleCamera = NSLocalizedString("STORY_COMPOSER_CAMERA", value: "Camera",
-                                                           comment: "One of two possible sources when composing a new story. Displayed at the bottom in in-app camera.")
-        static private let titleText = NSLocalizedString("STORY_COMPOSER_TEXT", value: "Text",
-                                                         comment: "One of two possible sources when composing a new story. Displayed at the bottom in in-app camera.")
+        static private let titleCamera = NSLocalizedString(
+            "STORY_COMPOSER_CAMERA",
+            comment: "One of two possible sources when composing a new story. Displayed at the bottom in in-app camera."
+        )
+        static private let titleText = NSLocalizedString(
+            "STORY_COMPOSER_TEXT",
+            comment: "One of two possible sources when composing a new story. Displayed at the bottom in in-app camera."
+        )
 
         init() {
             super.init(frame: .zero)
@@ -1962,8 +1965,12 @@ extension CameraBottomBar.ContentTypeSelectionControl {
     }
 
     override var accessibilityLabel: String? {
-        get { NSLocalizedString("CAMERA_VO_COMPOSER_MODE", value: "Composer mode",
-                                comment: "VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen.") }
+        get {
+            NSLocalizedString(
+                "CAMERA_VO_COMPOSER_MODE",
+                comment: "VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen."
+            )
+        }
         set { super.accessibilityLabel = newValue }
     }
 

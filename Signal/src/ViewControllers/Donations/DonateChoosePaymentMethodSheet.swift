@@ -37,7 +37,6 @@ class DonateChoosePaymentMethodSheet: InteractiveSheetViewController {
         case .oneTime:
             let format = NSLocalizedString(
                 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION",
-                value: "Donate %1$@ to Signal",
                 comment: "When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\"."
             )
             return String(format: format, currencyString)
@@ -49,7 +48,6 @@ class DonateChoosePaymentMethodSheet: InteractiveSheetViewController {
             let moneyPerMonthString = String(format: moneyPerMonthFormat, currencyString)
             let format = NSLocalizedString(
                 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION",
-                value: "Donate %1$@ to Signal",
                 comment: "When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\"."
             )
             return String(format: format, moneyPerMonthString)
@@ -66,13 +64,11 @@ class DonateChoosePaymentMethodSheet: InteractiveSheetViewController {
         case .oneTime:
             format = NSLocalizedString(
                 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION",
-                value: "Earn the %1$@ badge for one month",
                 comment: "When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\"."
             )
         case .monthly:
             format = NSLocalizedString(
                 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION",
-                value: "Get the %1$@ badge",
                 comment: "When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\"."
             )
         case .gift:

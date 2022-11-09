@@ -67,11 +67,9 @@ public class BadgeExpirationSheetState {
                                      comment: "Title for boost on the badge expiration sheet.")
         case .giftBadgeExpired:
             return NSLocalizedString("BADGE_EXPIRED_GIFT_TITLE",
-                                     value: "Your Gift Badge Has Expired",
                                      comment: "Title for gift on the badge expiration sheet.")
         case .giftNotRedeemed:
             return NSLocalizedString("GIFT_NOT_REDEEMED_TITLE",
-                                     value: "Your Gift Has Expired",
                                      comment: "Title when trying to redeem a gift that's already expired.")
         }
     }()
@@ -113,7 +111,6 @@ public class BadgeExpirationSheetState {
             var bodyText = [String]()
             bodyText.append(NSLocalizedString(
                 "BADGE_EXPIRED_GIFT_BODY",
-                value: "Your gift badge has expired and is no longer available to be displayed on your profile.",
                 comment: "String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet."
             ))
             if !hasCurrentSubscription {
@@ -123,7 +120,6 @@ public class BadgeExpirationSheetState {
         case let .giftNotRedeemed(fullName):
             let formatText = NSLocalizedString(
                 "GIFT_NOT_REDEEMED_BODY_FORMAT",
-                value: "Your gift from %@ has expired and can no longer be redeemed.",
                 comment: "Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}."
             )
             return Body(String(format: formatText, fullName))
@@ -198,7 +194,6 @@ public class BadgeExpirationSheetState {
             } else {
                 let text = NSLocalizedString(
                     "BADGE_EXPIRED_RENEWAL_MONTHLY",
-                    value: "Make a Monthly Donation",
                     comment: "Button title to donate monthly on the badge expiration sheet."
                 )
                 return ActionButton(action: .openMonthlyDonationView, text: text, hasNotNow: true)

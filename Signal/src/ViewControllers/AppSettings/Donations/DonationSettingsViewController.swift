@@ -263,7 +263,6 @@ class DonationSettingsViewController: OWSTableViewController2 {
             heroStack.delegate = self
             let buttonTitle = NSLocalizedString(
                 "DONATION_SCREEN_DONATE_BUTTON",
-                value: "Donate",
                 comment: "On the donation settings screen, tapping this button will take the user to a screen where they can donate."
             )
             let button = OWSButton(title: buttonTitle) { [weak self] in

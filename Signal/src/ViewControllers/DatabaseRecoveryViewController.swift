@@ -160,17 +160,14 @@ class DatabaseRecoveryViewController: OWSViewController {
         OWSActionSheets.showConfirmationAlert(
             title: NSLocalizedString(
                 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE",
-                value: "Reset Signal",
                 comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog."
             ),
             message: NSLocalizedString(
                 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION",
-                value: "Your account info, profile, and all of your messages will be cleared. The app will close after this process is complete.",
                 comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog."
             ),
             proceedTitle: NSLocalizedString(
                 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM",
-                value: "Reset",
                 comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset."
             ),
             proceedStyle: .destructive
@@ -320,13 +317,11 @@ class DatabaseRecoveryViewController: OWSViewController {
 
         headlineLabel.text = NSLocalizedString(
             "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE",
-            value: "Problem Retrieving Data",
             comment: "In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue."
         )
 
         descriptionLabel.text = NSLocalizedString(
             "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION",
-            value: "Some of your message history may be corrupted. There has been no impact to the security of your account or messages. Tap “Continue” to recover your data.",
             comment: "In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue."
         )
 
@@ -353,14 +348,12 @@ class DatabaseRecoveryViewController: OWSViewController {
 
         headlineLabel.text = NSLocalizedString(
             "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE",
-            value: "More Storage Space Needed",
             comment: "On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen."
         )
 
         descriptionLabel.text = {
             let labelFormat = NSLocalizedString(
                 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION",
-                value: "In order to complete data recovery, we recommend you have at least %@ of storage space free on your device.",
                 comment: "On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\"."
             )
             let formattedBytes = ByteCountFormatter().string(for: currentDatabaseSize) ?? {
@@ -373,7 +366,6 @@ class DatabaseRecoveryViewController: OWSViewController {
         let continueButton = button(
             title: NSLocalizedString(
                 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY",
-                value: "Continue Anyway",
                 comment: "On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning."
             ),
             selector: #selector(didTapContinueToBypassStorageWarning)
@@ -398,13 +390,11 @@ class DatabaseRecoveryViewController: OWSViewController {
         default:
             headlineLabel.text = NSLocalizedString(
                 "DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE",
-                value: "Recovering Data",
                 comment: "On the database recovery screen, this is the title shown as the user's data is being recovered."
             )
 
             descriptionLabel.text = NSLocalizedString(
                 "DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION",
-                value: "Keep the app open during the recovery process. It may take several minutes.",
                 comment: "On the database recovery screen, this is the description text shown as the user's data is being recovered."
             )
 
@@ -433,20 +423,17 @@ class DatabaseRecoveryViewController: OWSViewController {
 
         headlineLabel.text = NSLocalizedString(
             "DATABASE_RECOVERY_RECOVERY_FAILED_TITLE",
-            value: "Data Not Recovered",
             comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message."
         )
 
         descriptionLabel.text = NSLocalizedString(
             "DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION",
-            value: "Your message history couldn’t recover. You can continue to use Signal after resetting. Submit a debug log so we can better understand what went wrong.",
             comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message."
         )
 
         let resetSignalButton = self.button(
             title: NSLocalizedString(
                 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON",
-                value: "Reset Signal",
                 comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data."
             ),
             selector: #selector(didTapToResetSignal),
@@ -456,7 +443,6 @@ class DatabaseRecoveryViewController: OWSViewController {
         let submitDebugLogsButton = self.button(
             title: NSLocalizedString(
                 "DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON",
-                value: "Submit Debug Log",
                 comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log."
             ),
             selector: #selector(didTapToSubmitDebugLogs)
@@ -482,13 +468,11 @@ class DatabaseRecoveryViewController: OWSViewController {
 
         headlineLabel.text = NSLocalizedString(
             "DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE",
-            value: "Data Successfully Recovered",
             comment: "The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked."
         )
 
         descriptionLabel.text = NSLocalizedString(
             "DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION",
-            value: "Recovery was successful, but some messages may not have been recovered.",
             comment: "The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked."
         )
 

@@ -38,7 +38,6 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         textField.textContentType = .URL
         textField.attributedPlaceholder = NSAttributedString(
             string: NSLocalizedString("STORY_COMPOSER_URL_FIELD_PLACEHOLDER",
-                                      value: "Type or paste a URL",
                                       comment: "Placeholder text for URL input field in Text Story composer UI."),
             attributes: [ .foregroundColor: UIColor.ows_gray25 ])
         textField.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
@@ -305,7 +304,6 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
             label.textAlignment = .center
             label.textColor = .ows_gray45
             label.text = NSLocalizedString("STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER",
-                                           value: "Share a link with viewers of your story",
                                            comment: "Displayed in text story composer when user is about to attach a link with preview")
 
             let stackView = UIStackView(arrangedSubviews: [ icon, label ])
@@ -337,7 +335,6 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
             label.textAlignment = .center
             label.textColor = .ows_gray05
             label.text = NSLocalizedString("STORY_COMPOSER_LINK_PREVIEW_ERROR",
-                                           value: "Couldn't load link. Check your connection and try again.",
                                            comment: "Displayed when failed to fetch link preview in Text Story composer.")
 
             let stackView = UIStackView(arrangedSubviews: [ exclamationMark, label ])

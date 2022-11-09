@@ -589,7 +589,6 @@ extension AppDelegate {
             type: "\(Bundle.main.bundleIdPrefix).quickCompose",
             localizedTitle: NSLocalizedString(
                 "APPLICATION_SHORTCUT_NEW_MESSAGE",
-                value: "New Message",
                 comment: "On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings."
             ),
             localizedSubtitle: nil,

@@ -231,19 +231,16 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         case .noAmountSelected:
             showError(NSLocalizedString(
                 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED",
-                value: "Select an amount to donate.",
                 comment: "If the user tries to donate to Signal but no amount is selected, this error message is shown."
             ))
         case .amountIsTooSmall:
             showError(NSLocalizedString(
                 "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT",
-                value: "Select a larger amount to donate.",
                 comment: "If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown."
             ))
         case .amountIsTooLarge:
             showError(NSLocalizedString(
                 "DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT",
-                value: "Select a smaller amount to donate.",
                 comment: "If the user tries to donate to Signal but they've entered an amount that's too large, this error message is shown."
             ))
         case let .canContinue(amount):
@@ -688,7 +685,6 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         picker.insertSegment(
             withTitle: NSLocalizedString(
                 "DONATE_SCREEN_ONE_TIME_CHOICE",
-                value: "One-Time",
                 comment: "On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations."
             ),
             at: DonationMode.oneTime.rawValue,
@@ -697,7 +693,6 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         picker.insertSegment(
             withTitle: NSLocalizedString(
                 "DONATE_SCREEN_MONTHLY_CHOICE",
-                value: "Monthly",
                 comment: "On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations."
             ),
             at: DonationMode.monthly.rawValue,
@@ -737,7 +732,6 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         field.placeholder = NSLocalizedString(
             "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER",
-            value: "Enter Custom Amount",
             comment: "Default text for the custom amount field of the boost view."
         )
         field.delegate = self
@@ -974,7 +968,6 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         if let currentSubscription = monthly.currentSubscription {
             let updateTitle = NSLocalizedString(
                 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON",
-                value: "Update Subscription",
                 comment: "On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button."
             )
             let updateButton = OWSButton(title: updateTitle) { [weak self] in
