@@ -1,4 +1,2 @@
-• Stories are now in Signal! Share disappearing text, images, and video updates with select friends or groups that automatically disappear after 24 hours. If you don’t want to see or share stories, you can opt out of it all in your Settings.
-• Added accessibility labels to items in the photo library.
-• Improved UI for calls where mic and camera permissions are disabled.
-• Sorted out an issue with group membership banners.
+• Истории теперь в Signal! Делитесь с выбранными друзьями или группами исчезающими текстовыми, графическими и видеообновлениями. Они автоматически исчезают через 24 часа. Если не хотите видеть истории или делиться ими, то можете отказаться от этого в Настройках.
+• Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.
