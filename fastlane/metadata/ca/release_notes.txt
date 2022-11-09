@@ -1,4 +1,4 @@
-• Stories are now in Signal! Share disappearing text, images, and video updates with select friends or groups that automatically disappear after 24 hours. If you don’t want to see or share stories, you can opt out of it all in your Settings.
-• Added accessibility labels to items in the photo library.
-• Improved UI for calls where mic and camera permissions are disabled.
-• Sorted out an issue with group membership banners.
+• Ja han arribat les històries a Signal! Comparteix històries temporals de text, imatge i vídeo amb aquelles persones o grups que vulguis. Les històries desapareixeran automàticament després de 24 hores. Si no vols veure o compartir històries, pots desactivar aquesta funció als teus Ajustos.
+• S'han afegit etiquetes d'accessibilitat als elements de la galeria de fotos.
+• IU millorada per a trucades on els permisos de micròfon i càmera estan desactivats.
+• S'ha resolt un problema amb els bàners de membres del grup.

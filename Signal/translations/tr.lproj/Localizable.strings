@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Desteklenmeyen dosya";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "Animasyonlu";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Ses";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Çok uzun süre hareketsiz kaldığınız için yinelenen aylık bağışınız otomatik olarak iptal edildi. %1$@ rozetiniz artık profilinizde görünmüyor.\n\nSignal'i kullanmaya devam edebilirsiniz, ancak uygulamayı desteklemek ve rozetinizi yeniden etkinleştirmek için şimdi yenileyin.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Signal'den bir bağışçı rozeti kazandın! Desteğini göstermek için rozeti profilinde sergile.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Profilde Göster";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Rozeti Öne Çıkar";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "Desteğin için teşekkürler!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Birden fazla rozetiniz olduğunda, profilinizde başkalarının görmesi için birini seçebilirsiniz.";
@@ -1187,7 +1187,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Konuşmayı Sil?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Bu konuşmayı sessize al...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Bu konuşmayı sessize al…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 gün";
@@ -1316,7 +1316,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "ileti";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Bu konuşmayı sessize al...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Bu konuşmayı sessize al…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Her zaman";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Bu işlem hesap bilginizi, profilinizi ve tüm iletilerinizi silecektir.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Hesap Siliniyor...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Hesap siliniyor…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "İnternet bağlantısı yok. Kablosuz veya mobil verinin açık olduğundan emin olun ve tekrar deneyin.";
@@ -1703,7 +1703,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Hatırlatmayı eski aygıtınızda görmüyor musunuz?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Diğer Cihaz Bekleniyor...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Diğer Cihaz Bekleniyor…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "İki cihazı da yakında bulundurun. Cihazları veya Signal'i kapatmayın. Aktarımlar uçtan uca şifrelidir.";
@@ -1712,7 +1712,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Veri Alınıyor";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Bağlanıyor...";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Bağlanıyor…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Karekodu yuvarlağa göre hizalayın";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "Signal'e Bağış Yap";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Para birimi";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "iOS Ayarlar uygulamasından erişimini etkinleştirebilirsiniz.";
@@ -2306,10 +2306,10 @@
 "GROUP_CALL_IS_FULL" = "Görüşme dolu.";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%1$@ aranıyor...";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%1$@ aranıyor…";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "%1$@ ve %2$@ aranıyor...";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "%1$@ ve %2$@ aranıyor…";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Görüşmeye Katıl";
@@ -3185,7 +3185,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Eklenti seçimi başarısız oldu.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Bağlanıyor...";
+"IN_CALL_CONNECTING" = "Bağlanıyor…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Diğer cihazdan yanıtlandı.";
@@ -3200,16 +3200,16 @@
 "IN_CALL_RECONNECTING" = "Yeniden bağlanıyor…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Çalıyor...";
+"IN_CALL_RINGING" = "Çalıyor…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Sesli Arama...";
+"IN_CALL_RINGING_AUDIO" = "Sesli Arama…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Görüntülü Arama...";
+"IN_CALL_RINGING_VIDEO" = "Görüntülü Arama…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Cevaplandı. Güvenli hale getiriliyor...";
+"IN_CALL_SECURING" = "Cevaplandı. Güvenli hâle getiriliyor…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Arama Sonlandı.";
@@ -3791,7 +3791,7 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Tüm Signal Bağlantıları";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Sadece Bu Kişilerle Paylaş...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Sadece Bu Kişilerle Paylaş…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Hikayelerim";
@@ -4136,7 +4136,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "%1$@ içerisinde Beni Ara";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Kod Onaylanıyor...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Kod Onaylanıyor…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Bu kod doğru değil";
@@ -4604,7 +4604,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "PIN'i tekrar girin";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "PIN oluşturuluyor...";
+"PIN_CREATION_PIN_PROGRESS" = "PIN oluşturuluyor…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Bu cihaz kayıtlı olduğu sürece PIN'inizi değiştirebilirsiniz.";
@@ -4976,7 +4976,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Yanlış PIN";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "PIN Doğrulanıyor...";
+"REGISTER_2FA_PIN_PROGRESS" = "PIN Doğrulanıyor…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Gönder";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Düzenle";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%1$@ doğrulanıyor...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%1$@ doğrulanıyor…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Reddet";
@@ -5207,7 +5207,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Bu iPad'i hesabınıza bağlamak için telefonunuzdan Signal'i açın";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Telefonumda Signal uygulaması yok...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Telefonumda Signal uygulaması yok…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Telefonunuzdan Uygulama Mağazasına girin, Signal'i yükleyin, kaydolma işlemini tamamlayın, ve daha sonrasında iPad'inizi aynı hesaba bağlayabilirsiniz.";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Konuşma Geçmişini Temizle";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "Telif Hakkı Signal Messenger\n AGPLv3 altında lisanslanmıştır";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Veri kullanımı";
@@ -6143,7 +6143,7 @@
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "%1$@ / %2$@ yükleniyor…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Yükleniyor...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Yükleniyor…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Eklenti Hazırlanamadı";
@@ -6419,7 +6419,7 @@
 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Hikaye bazı kişilere gönderilemedi. Bağlantını kontrol edip tekrar dene";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Sadece Bu Kişilerle Paylaş...";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Sadece Bu Kişilerle Paylaş…";
 
 /* The title for the 'select excluded connections for story' view. */
 "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "...Hariç Herkes";
@@ -6440,7 +6440,7 @@
 "STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Kısmen gönderildi. Ayrıntılar için dokun";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "Gönderiliyor...";
+"STORY_SENDING" = "Gönderiliyor…";
 
 /* First bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Bir konuşma başlatmış olman";
@@ -6593,10 +6593,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · %1$@ tarihinde yenilenir";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Ödeme işleniyor...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Ödeme işleniyor…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "İşlem Gerçekleştiriliyor...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "İşlem gerçekleştiriliyor...";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "%1$@ tarihinde yenilenir";

@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Tệp tin không hỗ trợ";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "Hình động";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Âm thanh";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Khoản ủng hộ hàng tháng của bạn đã được tự động hủy vì bạn đã không hoạt động trong thời gian quá dài. Huy hiệu %1$@ của bạn không còn hiển thị trên hồ sơ.\n\nBạn có thể tiếp tục sử dụng Signal nhưng để hỗ trợ ứng dụng và kích hoạt lại huy hiệu, hãy gia hạn khoản ủng hộ.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Bạn nhận được một huy hiệu nhà ủng hộ từ Signal! Hãy hiển thị huy hiệu trên hồ sơ của bạn để thể hiện sự ủng hộ.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Hiển thị trên thông tin cá nhân";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Chọn Huy hiệu Nổi bật";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "Cảm ơn bạn đã đóng góp!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Khi bạn có nhiều hơn một huy hiệu. bạn có thể chọn huy hiệu mặc định mà mọi người sẽ nhìn thấy trên hồ sơ của bạn.";
@@ -689,7 +689,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Gọi Lại";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Cuộc gọi âm thanh đang đến...";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Có cuộc gọi âm thanh đến…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Cuộc gọi thoại nhỡ vào lúc %1$@";
@@ -731,7 +731,7 @@
 "CALL_USER_ALERT_TITLE" = "Gọi?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹Cuộc gọi video đang đến...";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Có cuộc gọi video đến…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Cuộc gọi video nhỡ vào lúc %1$@";
@@ -1316,7 +1316,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "Tin nhắn";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Tắt tiếng cuộc trò chuyện này cho...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Tắt tiếng cuộc trò chuyện này trong…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Luôn luôn";
@@ -1424,7 +1424,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Xoá Tất cả";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Đang tải Thêm Tin nhắn...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Đang tải Thêm Tin nhắn…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Đọc thêm";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Việc này sẽ xoá thông tin tài khoản của bạn, hồ sơ cá nhân, và tất cả tin nhắn của bạn.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Đang xoá Tài khoản...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Đang xoá Tài khoản…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Không có kết nối internet. Đảm bảo là Wi-Fi hoặc dữ liệu di động được bật, sau đó thử lại.";
@@ -1703,7 +1703,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Không thấy thông báo trên thiết bị cũ của bạn?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Đang chờ Thiết bị còn lại...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Đang chờ Thiết bị còn lại…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Để cả hai thiết bị gần nhau. Đừng tắt nguồn thiết bị nào và để mở ứng dụng Signal. Quá trình chuyển dữ liệu được bảo mật hai chiều.";
@@ -1712,7 +1712,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Đang nhận dữ liệu";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Đang kết nối...";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Đang kết nối…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Đặt mã QR trong vòng tròn";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "Ủng hộ Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Tiền tệ";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Bạn có thể cho phép quyền truy cập trong Cài đặt iOS.";
@@ -2180,10 +2180,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "Bạn không có tập đa phương tiện nào trong cuộc trò chuyện này.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Đang tải Tập tin đa phương tiện Mới...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Đang tải Tập tin đa phương tiện Mới…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Đang tải Tập tin đa phương tiện Cũ...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Đang tải Tập tin đa phương tiện Cũ…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Tập tin đính kèm";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "thêm";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Thêm miêu tả nhóm...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Thêm miêu tả nhóm…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Miêu tả nhóm sẽ được nhìn thấy bởi thành viên của nhóm này và những người đã được mời.";
@@ -2561,7 +2561,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Tham gia";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Đang tải...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Đang tải…";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Bạn có muốn tham gia nhóm này và công khai tên và ảnh đại diện với các thành viên trong nhóm?";
@@ -3185,7 +3185,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Không thể chọn tập tin đính kèm.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Đang kết nối...";
+"IN_CALL_CONNECTING" = "Đang kết nối…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Đã được trả lời trên thiết bị khác.";
@@ -3197,19 +3197,19 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Đã từ chối trên thiết bị khác.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Đang kết nối lại...";
+"IN_CALL_RECONNECTING" = "Đang kết nối lại…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Đang đổ chuông...";
+"IN_CALL_RINGING" = "Đang đổ chuông…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Cuộc gọi Âm thanh...";
+"IN_CALL_RINGING_AUDIO" = "Cuộc gọi Âm thanh…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Cuộc gọi Video...";
+"IN_CALL_RINGING_VIDEO" = "Cuộc gọi Video…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Đã trả lời. Đang thực hiện bảo mật...";
+"IN_CALL_SECURING" = "Đã trả lời. Đang thực hiện bảo mật…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Cuộc gọi Kết thúc.";
@@ -3719,13 +3719,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Gửi thất bại";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Đang gửi...";
+"MESSAGE_STATUS_SENDING" = "Đang gửi…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Đã gửi";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Đang tải lên...";
+"MESSAGE_STATUS_UPLOADING" = "Đang tải lên…";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Đã xem";
@@ -3983,7 +3983,7 @@
 "NOTIFICATIONS_SECTION_INAPP" = "Bật khi Ứng dụng đang Mở";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Thêm âm thanh tuỳ chọn...";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Thêm âm thanh tuỳ chọn…";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Tên, Nội dung và Hành động";
@@ -4136,7 +4136,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Gọi tôi trong %1$@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Đang xác thực Mã...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Đang xác thực Mã…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Mã này không chính xác";
@@ -4307,7 +4307,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Thanh toán Hoàn tất";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Đang gửi...";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Đang gửi…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Đã gửi";
@@ -4337,7 +4337,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Hoàn tất";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Đang gửi...";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Đang gửi…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Đã gửi";
@@ -4604,7 +4604,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Nhập lại mã PIN";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Đang tạo mã PIN...";
+"PIN_CREATION_PIN_PROGRESS" = "Đang tạo mã PIN…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Bạn có thể thay đổi mã PIN của bạn với điều kiện thiết bị được đăng ký.";
@@ -4769,7 +4769,7 @@
 "PROCEED_BUTTON" = "Tiến hành";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Viết một vài từ về bản thân mình...";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Viết một vài từ về bản thân mình…";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Mở lòng tốt";
@@ -4976,7 +4976,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Mã PIN không chính xác";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "Xác nhận mã PIN...";
+"REGISTER_2FA_PIN_PROGRESS" = "Xác thực mã PIN…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Gửi";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Sửa";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Đang xác thực %1$@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Đang xác thực %1$@…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Từ chối";
@@ -5207,7 +5207,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Mở Signal trên điện thoại để liên kết iPad này với tài khoản của bạn";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Tôi không có Signal trên điện thoại...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Tôi không có Signal trên điện thoại…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Hãy vào App Store trên điện thoại, cài Signal, hoàn thành quá trình đăng kí và rồi bạn có thể liên kết iPad với cùng một tài khoản.";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Xoá Lịch sử Trò chuyện";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "Bản quyền Signal Messenger\nCấp phép theo GPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Việc sử dụng Dữ liệu";
@@ -5561,7 +5561,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Liên hệ tham gia Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Thông báo khi...";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Thông báo khi…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Thông báo";
@@ -6122,7 +6122,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Số an toàn của bạn với %1$@ vừa được thay đổi. Bạn nên xác minh lại trong ứng dụng chính trước khi gửi lại.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Đang tải...";
+"SHARE_EXTENSION_LOADING" = "Đang tải…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Mở ứng dụng Signal để đăng ký.";
@@ -6140,10 +6140,10 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Không thể Gửi Tập tin đính kèm";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Đang đăng tải %1$@ trong %2$@...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Đang đăng tải %1$@ trong %2$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Đang tải lên...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Đang tải lên…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Không thể Chuẩn bị Tập tin đính kèm";
@@ -6209,7 +6209,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Các gói nhãn dán đã cài";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Đang tải...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Đang tải…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Chưa có nhãn dán nào được cài";
@@ -6545,7 +6545,7 @@
 "SUPPORT_INCLUDE_DEBUG_LOG" = "Bao gồm ghi chú lỗi";
 
 /* A string in the navigation bar indicating that the support request is uploading logs */
-"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Đang tải...";
+"SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Đang tải";
 
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Vẫn đang xữ lý";
@@ -6593,10 +6593,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · Làm mới %1$@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Đang xử lý thanh toán...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Đang xử lý thanh toán…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Đang xử lý Giao dịch...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Đang xử lý Giao dịch…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Làm mới %1$@";

@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Berkas tidak didukung.";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "Animasi";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Audio";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Langganan berulang bulanan Anda telah dibatalkan secara otomatis karena Anda tidak aktif terlalu lama. Lencana %1$@ Anda tidak lagi terlihat pada profil Anda.\n\nAnda bisa tetap menggunakan Signal tetapi untuk mendukung aplikasi dan mengaktivasi ulang lencana Anda, perbarui sekarang.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Anda telah mendapatkan lencana donor dari Signal! Tampilkan di profil untuk menunjukkan dukungan Anda.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Tampilkan di Profil";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Buat Lencana Unggulan";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "Terima kasih atas dukungan Anda!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Jika punya lebih dari satu lencana, Anda dapat memilih salah satunya untuk ditampilkan pada profil Anda.";
@@ -689,7 +689,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Telepon lagi";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞Panggilan suara masuk...";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞Panggilan suara masuk…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Panggilan suara tidak terjawab pada %1$@";
@@ -731,7 +731,7 @@
 "CALL_USER_ALERT_TITLE" = "Panggil?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹Panggilan video masuk...";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹Panggilan video masuk…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Panggilan video tidak terjawab pada %1$@";
@@ -1187,7 +1187,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Hapus Pesan?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Bisukan obrolan ini untuk...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Senyapkan obrolan ini untuk…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 hari";
@@ -1316,7 +1316,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "pesan";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Senyapkan percakapan ini selama...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Senyapkan percakapan ini selama…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Selalu";
@@ -1424,7 +1424,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Hapus Semua";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Memuat Lebih Banyak Pesan...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Memuat Lebih Banyak Pesan…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Baca Lebih Lanjut";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Ini akan menghapus info akun, profil, dan semua pesan Anda.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Menghapus Akun...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Menghapus Akun…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Tidak ada koneksi internet. Pastikan Wi-Fi atau data seluler dinyalakan, lalu coba lagi.";
@@ -1703,7 +1703,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Tidak melihat penjelasan muncul pada perangkat lama Anda?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Tunggu Perangkat Lain...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Menunggu Perangkat Lain…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Tempatkan kedua perangkat dekat satu sama lain. Jangan matikan kedua perangkat dan biarkan Signal terbuka. Transfer dienkripsi ujung-ke-ujung.";
@@ -1712,7 +1712,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Menerima Data";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Menyambungkan...";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Menyambungkan…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Posisikan kode QR dalam lingkaran";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "Donasi ke Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Mata uang";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Anda dapat mengaktifkan akses pada Pengaturan iOS.";
@@ -2180,10 +2180,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "Anda tidak memiliki media apapun dalam percakapan ini.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Memuat Media Baru...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Memuat Media Baru…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Memuat Media Lama...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Memuat Media Lama…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Lampiran";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "selanjutnya";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Tambahkan deskripsi grup...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Tambahkan deskripsi grup…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Deskripsi grup akan dapat dilihat oleh anggota grup dan orang yang telah diundang.";
@@ -2561,7 +2561,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Bergabung";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Memuat...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Memuat…";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Apakah Anda ingin bergabung dengan grup ini dan membagikan nama dan foto Anda dengan anggota grup?";
@@ -3185,7 +3185,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Gagal memilih lampiran.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Menyambungkan...";
+"IN_CALL_CONNECTING" = "Menyambungkan…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Dijawab di perangkat lain.";
@@ -3197,19 +3197,19 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Ditolak di perangkat lain.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Menyambungkan ulang...";
+"IN_CALL_RECONNECTING" = "Menyambungkan ulang…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Berbunyi...";
+"IN_CALL_RINGING" = "Berdering…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Panggilan Audio...";
+"IN_CALL_RINGING_AUDIO" = "Panggilan Audio…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Panggilan Video...";
+"IN_CALL_RINGING_VIDEO" = "Panggilan Video…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Terjawab. Diamankan...";
+"IN_CALL_SECURING" = "Terjawab. Mengamankan…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Panggilan Berakhir.";
@@ -3719,13 +3719,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Gagal kirim";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Mengirimkan...";
+"MESSAGE_STATUS_SENDING" = "Mengirim…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Terkirim";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Mengunggah...";
+"MESSAGE_STATUS_UPLOADING" = "Mengunggah…";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Dilihat";
@@ -3983,7 +3983,7 @@
 "NOTIFICATIONS_SECTION_INAPP" = "Mainkan Ketika Aplikasi sedang Terbuka";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Tambahkan suara pilihan khusus...";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Tambahkan suara kustom…";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nama, Isi, dan Respon";
@@ -4136,7 +4136,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Telepon Saya di %1$@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Memvalidasi Kode...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Memvalidasi Kode…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Kode ini salah";
@@ -4307,7 +4307,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Pembayaran Selesai";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Mengirimkan...";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Mengirim…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Terkirim";
@@ -4337,7 +4337,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Selesai";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Mengirimkan...";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Mengirim…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Terkirim";
@@ -4604,7 +4604,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Masukkan ulang PIN";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Membuat PIN...";
+"PIN_CREATION_PIN_PROGRESS" = "Membuat PIN…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Anda dapat mengganti PIN Anda selama perangkat ini terdaftar.";
@@ -4769,7 +4769,7 @@
 "PROCEED_BUTTON" = "Lanjutkan";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Tulis beberapa kata tentang diri Anda...";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Tulis beberapa kata tentang diri Anda…";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Ramah";
@@ -4976,7 +4976,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN Salah";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "Memverifikasi PIN...";
+"REGISTER_2FA_PIN_PROGRESS" = "Memverifikasi PIN…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Kirimkan";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Sunting";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Memverifikasi %1$@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Memverifikasi %1$@…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Tolak";
@@ -5207,7 +5207,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Buka Signal di ponsel Anda untuk menghubungkan iPad ini dengan akun Anda";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Saya tidak punya Signal di ponsel saya...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Saya tidak punya Signal di ponsel saya…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Buka App Store di ponsel Anda, pasang Signal, lengkapi proses pendaftaran, kemudian Anda dapat menghubungkan iPad anda ke akun yang sama.";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Hapus Riwayat Obrolan";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "Hak Cipta Signal Messenger\nBerlisensi di bawah AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Penggunaan Data";
@@ -5561,7 +5561,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontak Bergabung di Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Beritahukan ketika...";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Beri tahu ketika…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Notifikasi";
@@ -6122,7 +6122,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Nomor keamanan Anda dengan %1$@ barusan berubah. Anda mungkin mau memverifikasinya di aplikasi utama sebelum mengirimkan ulang.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Memuat...";
+"SHARE_EXTENSION_LOADING" = "Memuat…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Luncurkan Signal untuk mendaftar.";
@@ -6140,10 +6140,10 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Tidak Dapat Mengirimkan Lampiran";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Mengunggah %1$@ dari %2$@...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Mengunggah %1$@ dari %2$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Mengunggah...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Mengunggah…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Tidak Dapat Menyiapkan Lampiran";
@@ -6209,7 +6209,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Stiker Terpasang";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Memuat...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Memuat…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Tidak ada stiker terpasang";
@@ -6440,7 +6440,7 @@
 "STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Terkirim sebagian. Ketuk untuk detailnya";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "Mengirim...";
+"STORY_SENDING" = "Mengirim…";
 
 /* First bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Memulai percakapan";
@@ -6593,10 +6593,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · Perpanjang %1$@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Memproses pembayaran...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Memproses pembayaran…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Memproses Transaksi...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Memproses Transaksi…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Perpanjang %1$@";

@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Filen understøttes ikke";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "Animeret";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Lyd";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Din tilbagevendende, månedlige donation blev automatisk opsagt, fordi du har været inaktiv i for lang tid. Dit %1$@-emblem er ikke længere synligt på din profil.\n\nDu kan fortsætte med at bruge Signal, men hvis du vil støtte appen og genaktivere dit emblem, skal du forny nu.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Du har optjent et donorbadge fra Signal! Vis det på din profil for at vise din støtte.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Vis på profil";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Gør til fremhævet badge";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "Tak for din støtte!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Når du har mere end ét emblem, kan du udvælge ét af dem til at blive vist på din profil.";
@@ -689,7 +689,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Ring igen";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Indgående lydopkald ...";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Indgående lydopkald…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Ubesvaret lydopkald kl. %1$@";
@@ -731,7 +731,7 @@
 "CALL_USER_ALERT_TITLE" = "Ring op?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Indgående videoopkald ...";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Indgående videoopkald…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Ubesvaret videoopkald kl. %1$@";
@@ -1187,7 +1187,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Slet samtale?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Ignorer denne samtale i ...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Ignorer denne samtale i…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 dag";
@@ -1424,7 +1424,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Slet alle";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Indlæser flere beskeder ...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Indlæser flere beskeder…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Læs mere";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Dette vil slette din kontooplysning, profil, og alle dine beskeder.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Sletter kontoen ...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Sletter kontoen…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Ingen internetforbindelse. Sørg for at Wi-Fi eller mobildata er slået til, og prøv derefter igen.";
@@ -1703,7 +1703,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Ser du ikke prompten på din gamle enhed?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Venter på anden enhed ...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Venter på anden enhed…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Hold begge enheder tæt ved hinanden. Sluk ikke for nogen af enhederne og hold Signal åbent. Overførsler er end-to-end krypteret";
@@ -1712,7 +1712,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Modtager data";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Forbinder ...";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Forbinder…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Placer QR-koden inden for cirklen";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "Donér til Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Valuta";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Du kan aktivere adgang i iOS Indstillinger-appen";
@@ -2180,10 +2180,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "Du har ingen mediefiler i denne samtale.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Indlæser nyere mediefiler ...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Indlæser nyere mediefiler…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Indlæser ældre mediefiler ...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Indlæser ældre mediefiler…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Vedhæftning";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "mere";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Tilføj gruppebeskrivelse ...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Tilføj gruppebeskrivelse…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Gruppebeskrivelser vil være synlige for medlemmer af denne gruppe og personer, der er blevet inviteret.";
@@ -2561,7 +2561,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Deltag";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Indlæser ...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Indlæser…";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Vil du deltage i gruppen, og dele dit navn og foto med dens medlemmer?";
@@ -3185,7 +3185,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Kunne ikke vælge vedhæftet fil";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Forbinder ...";
+"IN_CALL_CONNECTING" = "Forbinder…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Besvares på en anden enhed";
@@ -3197,19 +3197,19 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Afvises på anden enhed";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Genopretter forbindelse ...";
+"IN_CALL_RECONNECTING" = "Genopretter forbindelse…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Ringer ...";
+"IN_CALL_RINGING" = "Ringer…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Lydopkald ...";
+"IN_CALL_RINGING_AUDIO" = "Lydopkald…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Videoopkald ...";
+"IN_CALL_RINGING_VIDEO" = "Videoopkald…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Besvaret. Sikrer ...";
+"IN_CALL_SECURING" = "Besvaret. Sikrér…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Opkald afsluttet.";
@@ -3719,13 +3719,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Afsendelse mislykkedes";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Sender ...";
+"MESSAGE_STATUS_SENDING" = "Sender…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Sendt";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Uploader ...";
+"MESSAGE_STATUS_UPLOADING" = "Uploader…";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Set";
@@ -3785,13 +3785,13 @@
 "MY_STORIES_NO_STORIES" = "Opdateringer til din historie vil blive vist her.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Alle undtagen...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Alle undtagen…";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Alle Signal-kontakter";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Del kun med...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Del kun med…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Mine historier";
@@ -3983,7 +3983,7 @@
 "NOTIFICATIONS_SECTION_INAPP" = "Afspil mens appen er åben";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Tilføj tilpasset lyd ...";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Tilføj tilpasset lyd…";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Navn, indhold og handlinger";
@@ -4136,7 +4136,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Ring til mig om %1$@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Godkender kode ...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Godkender kode…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Den indtastede verifikationskode er forkert";
@@ -4307,7 +4307,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Betaling gennemført";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Sender ...";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Sender…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Sendt";
@@ -4337,7 +4337,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Udført";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Sender ...";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Sender…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Sendt";
@@ -4604,7 +4604,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Indtast pinkode igen";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Opretter pinkode ...";
+"PIN_CREATION_PIN_PROGRESS" = "Opretter pinkode…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Du kan ændre din pinkode, så længe denne enheden er registreret.";
@@ -4769,7 +4769,7 @@
 "PROCEED_BUTTON" = "Fortsæt";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Skriv et par ord om dig selv ...";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Skriv et par ord om dig selv…";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Vær venlig";
@@ -4976,7 +4976,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Forkert pinkode";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "Verificerer pinkode ...";
+"REGISTER_2FA_PIN_PROGRESS" = "Verificerer pinkode …";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Indsend";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Redigér";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Bekræfter %1$@ ...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Bekræfter %1$@ …";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Afvis";
@@ -5207,7 +5207,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Start Signal på din mobil for at koble denne iPad til din konto";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Jeg har ikke Signal installeret på min mobil ...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Jeg har ikke Signal installeret på min mobil …";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Gå til App Store på din mobil, installér Signal, fuldfør registreringsprocessen, hvorefter du kan forbinde din iPad til den samme konto";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Ryd meddelelseshistorik";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicenseret under AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Dataforbrug";
@@ -5561,7 +5561,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontakt tilmelder sig Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Underret når ...";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Underret når…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Notifikationer";
@@ -6122,7 +6122,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Dit sikkerhedsnummer med %1$@ er ændret for nyligt. Du bør ønske at få det bekræftet inden du sender igen";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Indlæser ...";
+"SHARE_EXTENSION_LOADING" = "Indlæser…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Start Signal-appen for at registrere.";
@@ -6140,10 +6140,10 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Kunne ikke sende vedhæftede fil";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploader %1$@ af %2$@ ...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploader %1$@ af %2$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Uploader ...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Uploader…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Kunne ikke klargøre vedhæftede fil";
@@ -6209,7 +6209,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Installerede klistermærker";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Indlæser ...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Indlæser…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Ingen klistermærker installeret";
@@ -6419,10 +6419,10 @@
 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Denne historie kunne ikke sendes til visse brugere. Tjek din forbindelse, og prøv igen.";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Del kun med...";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Del kun med…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Alle undtagen...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Alle undtagen…";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Kunne ikke sende";
@@ -6440,7 +6440,7 @@
 "STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Delvist sendt. Tryk for flere oplysninger";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "Sender...";
+"STORY_SENDING" = "Sender…";
 
 /* First bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starte en samtale";
@@ -6593,10 +6593,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · Fornyes %1$@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Behandler betaling ...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Behandler betaling…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Behandler transaktion ...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Behandler transaktion…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Fornyes %1$@";

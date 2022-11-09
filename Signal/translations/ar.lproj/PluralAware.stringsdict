@@ -65,7 +65,7 @@
 			<key>one</key>
 			<string>إضافة عضو إلى &quot;%2$@&quot;؟</string>
 			<key>two</key>
-			<string>إضافة عضوين إلى &quot;%2$@&quot;؟</string>
+			<string>إضافة %1$d عضوين إلى &quot;%2$@&quot;؟</string>
 			<key>few</key>
 			<string>إضافة %1$d أعضاء إلى &quot;%2$@&quot;؟</string>
 			<key>many</key>
@@ -466,7 +466,7 @@
 			<key>zero</key>
 			<string>أرسل %1$d رسائل</string>
 			<key>one</key>
-			<string>إرسال رسالة واحدة.</string>
+			<string>أرسل رسالة واحدة</string>
 			<key>two</key>
 			<string>أرسل %1$d رسالتين</string>
 			<key>few</key>
@@ -730,7 +730,7 @@
 			<key>zero</key>
 			<string>تم إرسال %1$d دعوة</string>
 			<key>one</key>
-			<string>تم إرسال دعوة واحدة</string>
+			<string>تم إرسال %1$d دعوة</string>
 			<key>two</key>
 			<string>تم إرسال %1$d دعوتين</string>
 			<key>few</key>
@@ -1018,9 +1018,9 @@
 			<key>zero</key>
 			<string>تعذّر إضافة %1$d عضو إلى المجموعة الجديدة وقد تمت إزِالته منها.</string>
 			<key>one</key>
-			<string>تعذّر إضافة عضو واحد إلى المجموعة الجديدة وقد تمت إزِالته منها.</string>
+			<string>تعذّر إضافة %1$d عضو إلى المجموعة الجديدة وقد تمت إزِالته منها.</string>
 			<key>two</key>
-			<string>تعذّر إضافة عضوين %1$d إلى المجموعة الجديدة وقد تمت إزِالتهما منها.</string>
+			<string>تعذّر إضافة %1$d عضوين إلى المجموعة الجديدة وقد تمت إزِالتهما منها.</string>
 			<key>few</key>
 			<string>تعذّر إضافة %1$d أعضاء إلى المجموعة الجديدة وقد تمت إزِالتهم منها.</string>
 			<key>many</key>
@@ -1040,11 +1040,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>zero</key>
-			<string>تعذّر إضافة %1$d عضوا إلى المجموعة الجديدة وقد تمت دعوته للانضمام.</string>
+			<string>تعذّر إضافة %1$d عضو إلى المجموعة الجديدة وقد تمت دعوته للانضمام.</string>
 			<key>one</key>
-			<string>تعذّر إضافة عضو واحد إلى المجموعة الجديدة وقد تمت دعوته للانضمام.</string>
+			<string>تعذّر إضافة %1$d عضو إلى المجموعة الجديدة وقد تمت دعوته للانضمام.</string>
 			<key>two</key>
-			<string>تعذّر إضافة عضوين %1$d إلى المجموعة الجديدة وقد تمت دعوتهما للانضمام.</string>
+			<string>تعذّر إضافة %1$d عضوين إلى المجموعة الجديدة وقد تمت دعوتهما للانضمام.</string>
 			<key>few</key>
 			<string>تعذّر إضافة %1$d أعضاء إلى المجموعة الجديدة وقد تمت دعوتهم للانضمام.</string>
 			<key>many</key>
@@ -1498,9 +1498,9 @@
 			<key>zero</key>
 			<string>إلغاء %1$d دعوة غير صالحة</string>
 			<key>one</key>
-			<string>إلغاء دعوة واحدة غير صالحة</string>
+			<string>إلغاء %1$d دعوة غير صالحة</string>
 			<key>two</key>
-			<string>إلغاء دعوتين %1$d غير صالحتين</string>
+			<string>إلغاء %1$d دعوتين غير صالحتين</string>
 			<key>few</key>
 			<string>إلغاء %1$d دعوات غير صالحة</string>
 			<key>many</key>
@@ -1546,9 +1546,9 @@
 			<key>zero</key>
 			<string>إلغاء %1$d دعوة أَرسلها &quot;%2$@&quot;؟</string>
 			<key>one</key>
-			<string>إلغاء دعوة أَرسلها &quot;%2$@&quot;؟</string>
+			<string>إلغاء %1$d دعوة أَرسلها &quot;%2$@&quot;؟</string>
 			<key>two</key>
-			<string>إلغاء دعوتين %1$d أَرسلهما &quot;%2$@&quot;؟</string>
+			<string>إلغاء %1$d دعوتين أَرسلهما &quot;%2$@&quot;؟</string>
 			<key>few</key>
 			<string>إلغاء %1$d دعوات أَرسلها &quot;%2$@&quot;؟</string>
 			<key>many</key>
@@ -1714,7 +1714,7 @@
 			<key>zero</key>
 			<string>جارٍ إرسال %1$d…</string>
 			<key>one</key>
-			<string>جارٍ الإرسال…</string>
+			<string>جارٍ إرسال %1$d…</string>
 			<key>two</key>
 			<string>جارٍ إرسال %1$d…</string>
 			<key>few</key>

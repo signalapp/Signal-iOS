@@ -53,7 +53,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Dodati člana u “%2$@”?</string>
+			<string>Dodati %1$d člana u “%2$@”?</string>
 			<key>few</key>
 			<string>Dodati %1$d člana u “%2$@”?</string>
 			<key>many</key>
@@ -153,7 +153,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Izbrisati razgovor?</string>
+			<string>Izbrisati %1$d razgovor?</string>
 			<key>few</key>
 			<string>Izbrisati %1$d razgovora?</string>
 			<key>many</key>
@@ -328,7 +328,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Izbrisati poruku?</string>
+			<string>Izbrisati %1$d poruku?</string>
 			<key>few</key>
 			<string>Izbrisati %1$d poruke?</string>
 			<key>many</key>
@@ -388,7 +388,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Pošalji poruku</string>
+			<string>Pošalji %1$d poruku</string>
 			<key>few</key>
 			<string>Pošalji %1$d poruke</string>
 			<key>many</key>
@@ -608,7 +608,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Pozivnica je poslana</string>
+			<string>%1$d pozivnica je poslana</string>
 			<key>few</key>
 			<string>%1$d pozivnice su poslane</string>
 			<key>many</key>
@@ -848,7 +848,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Nije moguće dodati člana u Novu grupu te je uklonjen iz grupe.</string>
+			<string>%1$d člana nije bilo moguće dodati u Novu grupu te je uklonjen iz grupe.</string>
 			<key>few</key>
 			<string>%1$d člana nije bilo moguće dodati u Novu grupu te su uklonjeni iz grupe.</string>
 			<key>many</key>
@@ -868,7 +868,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Nije moguće dodati člana u Novu grupu, stoga je pozvan da se pridruži.</string>
+			<string>%1$d člana nije bilo moguće dodati u Novu grupu, stoga je pozvan da se pridruži.</string>
 			<key>few</key>
 			<string>%1$d člana nije moguće dodati u Novu grupu, stoga su pozvani da se pridruže.</string>
 			<key>many</key>
@@ -1248,7 +1248,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Opozovi nevažeću pozivnicu</string>
+			<string>Opozovi %1$d nevažeću pozivnicu</string>
 			<key>few</key>
 			<string>Opozovi %1$d nevažeće pozivnice</string>
 			<key>many</key>
@@ -1288,7 +1288,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Opozvati grupnu pozivnicu koju je poslao korisnik &quot;%2$@&quot;?</string>
+			<string>Opozvati %1$d grupnu pozivnicu koju je poslao korisnik &quot;%2$@&quot;?</string>
 			<key>few</key>
 			<string>Opozvati %1$d pozivnice koje je poslao korisnik &quot;%2$@&quot;?</string>
 			<key>many</key>
@@ -1428,7 +1428,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Slanje…</string>
+			<string>Slanje %1$d priče…</string>
 			<key>few</key>
 			<string>Slanje %1$d priče…</string>
 			<key>many</key>

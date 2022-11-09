@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "不支援的檔案類型";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "動畫";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "音訊";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "你的每月定期捐款被自動取消，因為你太久沒有活動。你的個人資料上不會再顯示你的%1$@徽章。\n\n你可以繼續使用 Signal，若要支持該app並重新啟動你的徽章，請立即續訂。";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "你已獲取 Signal 的捐款者徽章！在你的個人檔案中展示徽章，秀出你對我們的支持。";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "在個人資訊中展示";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "製作具特色的徽章";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "謝謝您的支持！";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "當你擁有多個徽章時，你可以選擇一個讓其他人在你的個人資料中看到。";
@@ -689,7 +689,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "重撥電話";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞語音電話來電...";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞語音電話來電…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 已錯過 %1$@ 的語音電話";
@@ -731,7 +731,7 @@
 "CALL_USER_ALERT_TITLE" = "撥出？";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹視訊電話來電...";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹視訊電話來電…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 已錯過%1$@ 的視訊電話";
@@ -1187,7 +1187,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "刪除聊天？";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "將此聊天靜音...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "將此聊天靜音…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 天";
@@ -1316,7 +1316,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "訊息";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "將此聊天設為靜音...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "將此聊天設為靜音…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "永遠";
@@ -1424,7 +1424,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "刪除全部";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "讀取更多的訊息中...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "讀取更多的訊息中…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "閱讀更多";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "這將刪除您的帳號資訊、個人資訊和所有訊息紀錄。";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "正在刪除帳號...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "正在刪除帳號…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "沒有網路連接。確保已開啟Wi-Fi或行動網路，然後重試。";
@@ -1703,7 +1703,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "在舊裝置上看不到提示?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "等待其他的裝置...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "等待其他的裝置…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "讓兩個裝置彼此接近。 請勿關閉任何一台裝置並使 Signal 保持開啟的狀態。 轉移是點對點加密的。";
@@ -1712,7 +1712,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "接收資料中";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "連接中...";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "連接中…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "將QR碼放置在圈圈內";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "贊助 Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "貨幣";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "你可以在 iOS 設定中允許取用。";
@@ -2180,10 +2180,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "你的聊天記錄中沒有任何媒體檔案。";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "讀取較新的媒體檔中...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "讀取較新的媒體檔中…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "讀取較舊的媒體檔中...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "讀取較舊的媒體檔中…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "附檔";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "更多";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "新增群組描述...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "新增群組描述…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "該群組的成員和被邀請的人都可以看到群組的描述。";
@@ -2561,7 +2561,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "加入";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "讀取中...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "讀取中…";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "你是否想加入該群組並與其成員分享你的名字和照片嗎？";
@@ -3197,19 +3197,19 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "在其他裝置上拒絕。";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "重新連接中...";
+"IN_CALL_RECONNECTING" = "重新連接中…";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "響鈴中…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "語音電話...";
+"IN_CALL_RINGING_AUDIO" = "語音電話…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "視訊電話...";
+"IN_CALL_RINGING_VIDEO" = "視訊電話…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "已接通。加密中...";
+"IN_CALL_SECURING" = "已接通。加密中…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "通話已結束";
@@ -3692,7 +3692,7 @@
 "MESSAGE_STATUS_DELIVERED" = "已傳送";
 
 /* message status while message is downloading. */
-"MESSAGE_STATUS_DOWNLOADING" = "下載中...";
+"MESSAGE_STATUS_DOWNLOADING" = "下載中…";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "傳送失敗";
@@ -3719,13 +3719,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "傳送失敗";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "傳送中...";
+"MESSAGE_STATUS_SENDING" = "傳送中…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "已傳送";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "上傳中...";
+"MESSAGE_STATUS_UPLOADING" = "上傳中…";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "已查看";
@@ -3785,7 +3785,7 @@
 "MY_STORIES_NO_STORIES" = "你的限時動態更新將顯示於此。";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "所有人，除了...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "所有人，除了…";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "所有 Signal 聯絡人";
@@ -4136,7 +4136,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "在%1$@ 後打電話給我";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "驗證碼中...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "驗證碼中…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "這個驗證碼是不正確的。";
@@ -4307,7 +4307,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "付款完成";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "傳送中...";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "傳送中…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "傳送時間";
@@ -4337,7 +4337,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "完成";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "傳送中...";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "傳送中…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "傳送時間";
@@ -4604,7 +4604,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "重新輸入 PIN 碼";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "建立PIN碼中...";
+"PIN_CREATION_PIN_PROGRESS" = "建立PIN碼中…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "只要註冊了此裝置，你就可以變更PIN碼。";
@@ -4976,7 +4976,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "錯誤的 PIN 碼";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "驗證PIN碼...";
+"REGISTER_2FA_PIN_PROGRESS" = "驗證PIN碼…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "確定";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "編輯";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "驗證中 %1$@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "驗證中 %1$@…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "拒絕";
@@ -5207,7 +5207,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "在手機上啟動Signal，以將此 iPad 連結到你的帳戶";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "我手機上沒有 Signal...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "我手機上沒有 Signal…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "前往手機上的 App Store，安裝Signal，完成註冊過程，然後可以將 iPad 連結到同一帳戶。";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "清除聊天歷史紀錄";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "Signal Messenger 版權所有\n根據 AGPLv3 授權";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "數據使用量";
@@ -6122,7 +6122,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "您與 %1$@的安全碼已改變。建議您重新寄送前，在主程式中驗證新的安全碼。";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "讀取中...";
+"SHARE_EXTENSION_LOADING" = "讀取中…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "啟動 Signal 應用程式來註冊。";
@@ -6140,10 +6140,10 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "無法寄出附檔";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "上傳 %2$@分之%1$@...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "上傳 %2$@分之%1$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "上傳中...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "上傳中…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "無法準備附檔";
@@ -6209,7 +6209,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "已裝的貼圖";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "讀取中...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "讀取中…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "沒有貼圖被安裝";
@@ -6419,10 +6419,10 @@
 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "無法將此限動傳送給某些用戶。請檢查您的連線，然後再試一次";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "只分享給...";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "只分享給…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "所有人，除了...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "所有人，除了…";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "傳送失敗";
@@ -6440,7 +6440,7 @@
 "STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "已部分傳送。請輕按以查看詳情";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "正在傳送...";
+"STORY_SENDING" = "正在傳送…";
 
 /* First bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "展開一個對話";
@@ -6593,10 +6593,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · 續約 %1$@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "正在處理付款中...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "正在處理付款中…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "正在處理交易...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "正在處理交易…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "續約 %1$@";

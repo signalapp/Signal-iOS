@@ -167,7 +167,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Scrios%1$d Comhrá?</string>
+			<string>Scrios Comhrá?</string>
 			<key>two</key>
 			<string>Scrios %1$d Chomhrá?</string>
 			<key>few</key>
@@ -1570,15 +1570,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ceann á sheoladh...</string>
+			<string>Seoladh…</string>
 			<key>two</key>
-			<string>%1$d cheann á seoladh...</string>
+			<string>%1$d cheann á seoladh…</string>
 			<key>few</key>
-			<string>%1$d cinn á seoladh...</string>
+			<string>%1$d cinn á seoladh…</string>
 			<key>many</key>
-			<string>%1$d gcinn á seoladh...</string>
+			<string>%1$d gcinn á seoladh…</string>
 			<key>other</key>
-			<string>%1$d ceann á seoladh...</string>
+			<string>%1$d ceann á seoladh…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

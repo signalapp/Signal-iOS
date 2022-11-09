@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Непідтримуваний файл";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "Анімовано";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Аудіо";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Ваш регулярний щомісячний платіж було автоматично скасовано, оскільки ви занадто довго були неактивні. Відзнака %1$@ більше не показуватиметься у вашому профілі.\n\nВи можете й надалі користуватися Signal, але для підтримки програми та відновлення вашої відзнаки, необхідно поновити внесок.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Ви отримали значок спонсора від Signal! Відобразіть його в профілі, щоб розповісти про свою підтримку.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Показувати в профілі";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Зробити обраним значком";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "Дякуємо за вашу підтримку!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Коли у вас більше однієї відзнаки, ви можете обрати, яку саме показувати у своєму профілі.";
@@ -1187,7 +1187,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Видалити чат?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Стишити цей чат на...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Вимкнути сповіщення чату на…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 день";
@@ -1316,7 +1316,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "повідомлення";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Стишити цю розмову на...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Вимкнути сповіщення чату на…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Завжди";
@@ -1424,7 +1424,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Видалити все";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Довантажуємо повідомлення...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Довантажуємо повідомлення…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Більше";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Це видалить інформацію вашого облікового запису, ваш профіль та усі ваші повідомлення.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Видалення облікового запису...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Видаляємо акаунт…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Відсутнє інтернет-з'єднання. Упевнитесь, що Wi-Fi або стільникові дані увімкнено та спробуйте знов.";
@@ -1703,7 +1703,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Не бачите підказок на своєму старому пристрої?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Очікування іншого пристрою...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Очікування іншого пристрою…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Тримайте обидва пристрої поруч один з одним. Не вимикайте ні один з пристроїв і залишайте Signal відкритим. Перенесення захищені наскрізним шифруванням.";
@@ -1712,7 +1712,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Отримання даних";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "З’єднання...";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Підключення…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Помістіть цей QR-код всередині кола";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "Підтримати Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Валюта";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Ви можете надати доступ у налаштуваннях iOS.";
@@ -2180,10 +2180,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "У цьому чаті немає медіа-файлів.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Довантаження нових медіа...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Завантажуємо нові медіа…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Довантаження старих медіа...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Завантажуємо старі медіа…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Вкладення";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "більше";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Додати опис групи...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Додайте опис групи…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Опис групи побачать учасники цієї групи та запрошені особи.";
@@ -2561,7 +2561,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Приєднатись";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Завантаження...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Завантаження…";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Ви бажаєте приєднатися до цієї групи і поширити ваше ім'я і фото серед її учасників?";
@@ -3185,7 +3185,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Не вдалося обрати додаток.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "З’єднання...";
+"IN_CALL_CONNECTING" = "Підключення…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Розмову прийнято на іншому пристрої.";
@@ -3197,10 +3197,10 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Відхилений на іншому пристрої.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Повторне з’єднання...";
+"IN_CALL_RECONNECTING" = "Повторне з’єднання…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Дзвонимо...";
+"IN_CALL_RINGING" = "Виклик…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_AUDIO" = "Голосовий дзвінок";
@@ -3209,7 +3209,7 @@
 "IN_CALL_RINGING_VIDEO" = "Відеовиклик";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Відповіли. Захищаємо...";
+"IN_CALL_SECURING" = "Є відповідь. Захищаємо…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Виклик завершено.";
@@ -3719,13 +3719,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Не вдалося надіслати";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Надсилання...";
+"MESSAGE_STATUS_SENDING" = "Надсилаємо…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Надіслано";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Завантаження...";
+"MESSAGE_STATUS_UPLOADING" = "Завантаження…";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Переглянуто";
@@ -4136,7 +4136,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Зателефонуйте мені за %1$@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Підтвердження коду...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Підтвердження коду…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Цей код є невірним";
@@ -4307,7 +4307,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Платіж завершено";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Надсилання...";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Надсилаємо…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Надіслано";
@@ -4337,7 +4337,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Виконати";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Надсилання...";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Надсилаємо…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Надіслано";
@@ -4604,7 +4604,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Введіть PIN-код ще раз";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Створення PIN-коду...";
+"PIN_CREATION_PIN_PROGRESS" = "Створення PIN-коду…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Ви можете змінити свій PIN-код, поки цей пристрій зареєстровано.";
@@ -4769,7 +4769,7 @@
 "PROCEED_BUTTON" = "Продовжити";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Напишіть декілька слів про себе...";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Напишіть кілька слів про себе…";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Будьте милими";
@@ -4976,7 +4976,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Неправельний PIN-код";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "Перевірка PIN-коду...";
+"REGISTER_2FA_PIN_PROGRESS" = "Перевірка PIN-коду…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Надіслати";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Редагувати";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Перевірка %1$@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Перевірка %1$@…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Відхилити";
@@ -5207,7 +5207,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Запустіть Signal на своєму телефоні, щоб прив'язати цей iPad до свого облікового запису";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "На моєму телефоні немає Signal...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "На моєму телефоні немає Signal…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Перейдіть в App Store на своєму телефоні, встановіть Signal, пройдіть процес реєстрації і тоді ви зможете прив'язати свій iPad до того ж облікового запису.";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Очистити історію чату";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "Захищено авторським правом Signal Messenger\nЛіцензія: AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Споживання даних";
@@ -5561,7 +5561,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Контакт приєднався до Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Сповіщати коли...";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Сповіщати, коли…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Сповіщення";
@@ -6122,7 +6122,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Ваш код безпеки із %1$@ недавно змінився. Можливо, його слід підтвердити в основній програмі перед тим, як надіслати повідомлення знову.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Завантаження...";
+"SHARE_EXTENSION_LOADING" = "Завантаження…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Запустити Signal щоб зареєструватись.";
@@ -6140,10 +6140,10 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Неможливо надіслати додаток";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Вивантаження %1$@ з %2$@...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Завантаження %1$@ з %2$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Завантажується...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Завантаження…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Неможливо підготувати додаток";
@@ -6209,7 +6209,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Встановлені наліпки";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Завантаження...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Завантаження…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Встановлені наліпки відсутні";
@@ -6593,10 +6593,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · Оновиться %1$@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Обробка платежу...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Обробка платежу…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Обробка транзакції...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Обробка транзакції…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Оновиться %1$@";

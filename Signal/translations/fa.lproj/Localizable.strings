@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "این نوع فایل پشتیبانی نمی‌شود.";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "متحرک";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "صوت";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "حمایت مالی ماهانۀ شما به صورت خودکار لغو گردید زیرا شما برای مدتی طولانی غیرفعال بودید. نشان %1$@ شما دیگر روی پروفایل شما قابل مشاهده نیست.\n\nمی‌توانید به استفاده از سیگنال ادامه دهید، اما برای پشتیبانی از برنامه و فعال‌سازی مجدد نشان خود، اکنون آن را تمدید کنید.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "شما یک نشان اهداکننده از سیگنال به‌دست آورده‌اید! برای نشان دادن حمایت خود، آن را در نمایه‌تان نمایش دهید.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "نمایش روی پروفایل";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "تبدیل به نشان برجسته";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "از پشتیبانی شما سپاسگزاریم!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "هنگامی که شما بیش از یک نشان دارید، می‌توانید یکی را برای نمایش روی پروفایل‌تان برای دیگران انتخاب کنید.";
@@ -689,7 +689,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "تماس دوباره";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 تماس صوتی ورودی...";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 تماس صوتی ورودی…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 تماس صوتی بی‌پاسخ در %1$@";
@@ -731,7 +731,7 @@
 "CALL_USER_ALERT_TITLE" = "تماس؟";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 تماس تصویری ورودی...";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 تماس تصویری ورودی…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 تماس تصویری بی‌پاسخ در %1$@";
@@ -1187,7 +1187,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "گفتگو حذف شود؟";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "بی‌صدا کردن این گفتگو به مدت...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "بی‌صدا کردن این گفتگو به‌مدت…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "۱ روز";
@@ -1316,7 +1316,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "پیام";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "بستن صدای این گفتگو برای...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "بی‌صدا کردن این گفتگو به‌مدت…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "همیشه";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "این گزینه اطلاعات حساب کاربری، پروفایل، و تمامی پیام‌های شما را پاک می‌کند.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "در حال حذف حساب کاربری...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "در حال حذف حساب کاربری…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "اتصال اینترنت وجود ندارد. مطمئن شوید که Wi-Fi یا داده‌های تلفن همراه روشن شده است، سپس دوباره امتحان کنید.";
@@ -1703,7 +1703,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "آیا درخواست را روی دستگاه قدیمی خود مشاهده نمی‌کنید؟";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "در انتظار دستگاه دیگر...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "در انتظار دستگاه دیگر…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "هر دو دستگاه را نزدیک هم قرار دهید. هیچکدام را خاموش نکنید و سیگنال را باز نگه دارید. عملیات انتقال رمزگذاری سرتاسری شده است.";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "حمایت از سیگنال";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "ارز";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "شما میتوانید در برنامه تنظیمات iOS دسترسی را اعمال کنید.";
@@ -2180,10 +2180,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "شما هیچ فایل رسانه‌ای در این گفتگو ندارید.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "در حال بارگیری رسانه‌های جدیدتر...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "بارگیری رسانه‌های جدیدتر…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "بارگیری رسانه‌های قدیمی‌تر...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "بارگیری رسانه‌های قدیمی‌تر…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "پیوست";
@@ -2306,10 +2306,10 @@
 "GROUP_CALL_IS_FULL" = "تماس کامل است";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "در حال تماس با %1$@...";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "در حال تماس با %1$@…";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "در حال تماس با %1$@ و %2$@...";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "در حال تماس با %1$@ و %2$@…";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "پیوستن به تماس";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "بیشتر";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "افزودن توضیحات گروه...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "افزودن توصیف گروه…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "توضیحات گروه برای اعضای این گروه و کسانی که دعوت شده‌اند قابل رؤیت خواهد بود.";
@@ -2561,7 +2561,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "پیوستن";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "در حال بارگیری...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "در حال بارگیری…";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "آیا می‌خواهید به این گروه بپیوندید و شماره و عکس خود را با اعضای آن به اشتراک بگذارید؟";
@@ -3197,7 +3197,7 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "روی دستگاه دیگر رد شد.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "در حال اتصال دوباره...";
+"IN_CALL_RECONNECTING" = "در حال اتصال دوباره…";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "در حال زنگ خوردن…";
@@ -3719,13 +3719,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "ارسال ناموفق بود";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "در حال ارسال...";
+"MESSAGE_STATUS_SENDING" = "در حال ارسال…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "ارسال شد";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "در حال بارگذاری...";
+"MESSAGE_STATUS_UPLOADING" = "در حال بارگذاری…";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "مشاهده شد";
@@ -3785,13 +3785,13 @@
 "MY_STORIES_NO_STORIES" = "به‌روزرسانی‌های استوری شما اینجا نشان داده می‌شود.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "همه به‌جز...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "همه به‌جز…";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "تمام آشنایان سیگنال";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "فقط هم‌رسانی شود با...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "فقط هم‌رسانی شود با…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "استوری‌های من";
@@ -3983,7 +3983,7 @@
 "NOTIFICATIONS_SECTION_INAPP" = "پخش در هنگام باز بودن برنامه";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "افزودن صوت سفارشی...";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "افزودن صدای سفارشی…";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "نام، محتوا، و عملیات";
@@ -4136,7 +4136,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "با من در %1$@ تماس بگیر";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "در حال احراز کد...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "در حال اعتبارسنجی کد…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "کد نادرست می باشد";
@@ -4307,7 +4307,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "پرداخت کامل";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "در حال ارسال...";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "در حال ارسال…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "ارسال شد";
@@ -4337,7 +4337,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "کامل";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "در حال ارسال...";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "در حال ارسال…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "ارسال شد";
@@ -4604,7 +4604,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "وارد کردن دوباره پین";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "ایجاد پین...";
+"PIN_CREATION_PIN_PROGRESS" = "در حال ایجاد پین…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "تا زمانی که این دستگاه ثبت شده باشد شما می‌توانید پین خود را تغییر دهید.";
@@ -4769,7 +4769,7 @@
 "PROCEED_BUTTON" = "ادامه دادن";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "چند کلمه دربارهٔ خودتان بنویسید...";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "چند کلمه درباره خودتان بنویسید…";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "مهربان باشید";
@@ -4976,7 +4976,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "پین نادرست است";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "در حال تأیید رمز...";
+"REGISTER_2FA_PIN_PROGRESS" = "در حال درستی‌سنجی پین…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "ارسال";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "ویرایش";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "در حال وارسی %1$@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "در حال درستی‌سنجی %1$@…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "رد کردن";
@@ -5168,7 +5168,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "عدم توانایی در گرفتن کد گرفتن پیوند";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "برای پیوند دادن این دستگاه به یک حساب کاربری دیگر، شما باید ابتدا این دستگاه را بازنشانی کنید. آیا مطمئن هستید می‌خواهید همهٔ تاریخچه (پیام‌ها، پیوست‌ها، تماس‌ها و ...) را حذف کنید؟ این عمل بازگشت‌پذیر نیست.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "برای پیوند دادن این دستگاه به حساب کاربری دیگر، باید ابتدا این دستگاه را بازنشانی کنید. مطمئن هستید که می‌خواهید همه پیشینه (پیام‌ها، پیوست‌ها، تماس‌ها و …) را حذف کنید؟ این عمل بازگشت‌پذیر نیست.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "پاک کردن همه چیز";
@@ -5207,7 +5207,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "باز کردن سیگنال روی گوشی شما برای پیوند این آیپد به حساب کاربری شما";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "من سیگنال را روی گوشی ام ندارم...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "سیگنال را در تلفنم ندارم…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "به اپ استور بروید، سیگنال را نصب کنید، رویه ثبت نام را کامل کرده، سپس میتوانید آیپد خود را به همان حساب کاربری پیوند دهید.";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "پاک کردن تاریخچهٔ گفتگو";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "حق تکثیر پیام‌رسان سیگنال\nگواهی شده تحت AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "مصرف داده";
@@ -5477,7 +5477,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "پاک کردن تمام اطلاعات";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "آیا مطمئن هستید می‌خواهید تمام تاریخچه (پیام‌ها، پیوست‌ها، تماس‌ها و ...) را حذف کنید؟ این عمل بازگشت‌پذیر نیست.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "مطمئن هستید که می‌خواهید تمام پیشینه (پیام‌ها، پیوست‌ها، تماس‌ها و …) را حذف کنید؟ این عمل بازگشت‌پذیر نیست.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "پاک کردن همه چیز";
@@ -5561,7 +5561,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "مخاطب به سیگنال می‌پیوندد";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "خبر بده هنگامی که...";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "اطلاع‌رسانی هنگامی که…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "اعلانات";
@@ -6122,7 +6122,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "کد امنیتی شما با %1$@ به تازگی تغییر یافته است. بهتر است در برنامه اصلی قبل از ارسال دوباره آن را تایید کنید.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "در حال بارگیری...";
+"SHARE_EXTENSION_LOADING" = "در حال بارگیری…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "برای ثبت نام برنامه سیگنال را اجراء کنید.";
@@ -6140,10 +6140,10 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "پیوست ارسال نشد";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "در حال بارگذاری %1$@ از %2$@...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "در حال بارگذاری %1$@ از %2$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "در حال بارگذاری...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "در حال بارگذاری…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "پیوست فراهم نشد";
@@ -6209,7 +6209,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "استیکر های نصب شده";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "در حال بارگیری...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "در حال بارگیری…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "هیچ استیکری نصب نیست";
@@ -6419,10 +6419,10 @@
 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "این استوری برای برخی افراد ارسال نشد. اتصال خود را بررسی و دوباره امتحان کنید.";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "فقط هم‌رسانی شود با...";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "فقط هم‌رسانی شود با…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "همه به‌جز...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "همه به‌جز…";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "ارسال انجام نشد";
@@ -6440,7 +6440,7 @@
 "STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "بخشی از آن ارسال شد. برای جزئیات بیشتر ضربه بزنید";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "در حال ارسال...";
+"STORY_SENDING" = "در حال ارسال…";
 
 /* First bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "شروع یک مکالمه";
@@ -6593,10 +6593,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · %1$@ تمدید می‌شود";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "در حال پردازش پرداخت...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "در حال پردازش پرداخت…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "در حال پردازش تراکنش...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "در حال پردازش تراکنش…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "%1$@ تمدید می‌شود";

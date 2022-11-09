@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Tiedostotyyppiä ei tueta";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "Animoitu";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Ääni";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Toistuva kuukausilahjoituksesi on keskeytetty, koska et ole ollut aktiivinen pitkään aikaan. Merkki %1$@ ei näy enää profiilissasi.\n\nVoit jatkaa Signalin käyttöä, mutta jos haluat tukea sovellusta ja aktivoida merkin, tee uusi lahjoitus.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Olet ansainnut lahjoittajamerkin Signalilta! Näytä se profiilissasi osoittaaksesi, että tuet Signalia.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Näytä profiilissa";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Aseta esiteltäväksi merkiksi";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "Kiitos tuestasi!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Jos sinulla on enemmän kuin yksi merkki, voit valita yhden niistä esiteltäväksi profiilissasi.";
@@ -1424,7 +1424,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Poista kaikki";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Ladataan lisää viestejä...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Ladataan lisää viestejä…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Lue lisää";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Tilin tiedot, profiili ja kaikki viestit poistetaan.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Poistetaan tiliä...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Poistetaan tiliä…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Ei Internet-yhteyttä. Tarkista WiFi- tai mobiilidatayhteys, ja yritä uudelleen.";
@@ -1712,7 +1712,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Tietoja vastaanotetaan";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Yhdistetään...";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Yhdistetään…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Sijoita QR-koodi ympyrän sisään";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "Lahjoita Signalille";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Valuutta";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Voit antaa käyttöoikeuden iOS-asetuksissa.";
@@ -2180,10 +2180,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "Keskustelussa ei ole vielä yhtään mediatiedostoa.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Ladataan uudempaa sisältöä...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Ladataan uudempaa sisältöä…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Ladataan vanhempaa sisältöä...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Ladataan vanhempaa sisältöä…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Liitetiedosto";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "lisää";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Lisää ryhmän kuvaus...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Lisää ryhmän kuvaus…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Ryhmän kuvaus näkyy ryhmän jäsenille ja siihen kutsutuille henkilöille.";
@@ -2561,7 +2561,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Liity";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Ladataan...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Ladataan…";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Haluatko liittyä tähän ryhmään ja jakaa nimesi ja profiilikuvasi sen jäsenille?";
@@ -3185,7 +3185,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Liitteen valitseminen epäonnistui.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Yhdistetään...";
+"IN_CALL_CONNECTING" = "Yhdistetään…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Vastattu toisella laitteella.";
@@ -3719,13 +3719,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Lähetys epäonnistui";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Lähetetään...";
+"MESSAGE_STATUS_SENDING" = "Lähetetään…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Lähetetty";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Lähetetään...";
+"MESSAGE_STATUS_UPLOADING" = "Ladataan…";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Katsottu";
@@ -3785,13 +3785,13 @@
 "MY_STORIES_NO_STORIES" = "Tarinasi päivitykset näkyvät täällä.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Kaikki, paitsi...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Kaikki, paitsi…";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Kaikki Signal-kontaktit";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Jaa vain seuraaville...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Jaa vain seuraaville…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Omat tarinat";
@@ -4307,7 +4307,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Maksu suoritettu";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Lähetetään...";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Lähetetään…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Lähetetty";
@@ -4337,7 +4337,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Valmis";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Lähetetään...";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Lähetetään…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Lähetetty";
@@ -4769,7 +4769,7 @@
 "PROCEED_BUTTON" = "Jatka";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Kerro jotain itsestäsi...";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Kerro jotain itsestäsi…";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Ole ystävällinen";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Tyhjennä keskusteluhistoria";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLisensoitu AGPLv3-lisenssillä";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Datankäyttö";
@@ -6122,7 +6122,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Turvanumerosi yhteystiedon %1$@ kanssa on vaihtunut hiljattain. Saatat halua varmentaa sen ennen viestin uudelleen lähettämistä.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Ladataan...";
+"SHARE_EXTENSION_LOADING" = "Ladataan…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Rekisteröidy avaamalla Signal";
@@ -6140,10 +6140,10 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Liitteen lähetys epäonnistui";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Lähetetään %1$@ / %2$@...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Lähetetään %1$@/%2$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Lähetetään...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Ladataan…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Liitteen valmistelu epäonnistui";
@@ -6209,7 +6209,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Asennetut tarrat";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Ladataan...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Ladataan…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Tarroja ei ole asennettu";
@@ -6419,10 +6419,10 @@
 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Tätä tarinaa ei voitu lähettää kaikille henkilöille. Tarkasta yhteytesi ja yritä uudelleen";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Jaa vain seuraaville...";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Jaa vain seuraaville…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Kaikki, paitsi...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Kaikki, paitsi…";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Lähetys epäonnistui";
@@ -6440,7 +6440,7 @@
 "STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Lähetetty osittain. Napauta saadaksesi lisätietoja";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "Lähetetään...";
+"STORY_SENDING" = "Lähetetään…";
 
 /* First bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Aloittamalla keskustelun";
@@ -6593,7 +6593,7 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · Uusiutuu %1$@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Käsitellään maksua...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Käsitellään maksua…";
 
 /* Status text while processing a badge redemption */
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Käsitellään transaktiota…";

@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ajouter un membre à “%2$@” ?</string>
+			<string>Ajouter un membre à « %2$@ » ?</string>
 			<key>other</key>
-			<string>Ajouter %1$d membres à “%2$@” ?</string>
+			<string>Ajouter %1$d membres à « %2$@ » ?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -127,7 +127,7 @@
 			<key>one</key>
 			<string>Supprimer la conversation ?</string>
 			<key>other</key>
-			<string>Supprimer %1$d conversations ?</string>
+			<string>Supprimer %1$d conversations ?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -266,7 +266,7 @@
 			<key>one</key>
 			<string>Supprimer le message ?</string>
 			<key>other</key>
-			<string>Supprimer %1$d messages ?</string>
+			<string>Supprimer %1$d messages ?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -314,7 +314,7 @@
 			<key>one</key>
 			<string>Envoyer le message</string>
 			<key>other</key>
-			<string>Envoyer %1$d messages</string>
+			<string>Envoyer %1$d messages</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -392,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sonne chez %2$@, %3$@ et %1$d autre...</string>
+			<string>Sonne chez %2$@, %3$@ et %1$d autre…</string>
 			<key>other</key>
-			<string>Sonne chez %2$@, %3$@ et %1$d autres...</string>
+			<string>Sonne chez %2$@, %3$@ et %1$d autres…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -680,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Un membre n&apos;a pas pu être ajouté au nouveau groupe et a été retiré du groupe.</string>
+			<string>Un membre n’a pas pu être ajouté au nouveau groupe et a été retiré du groupe.</string>
 			<key>other</key>
-			<string>%1$d membres n&apos;ont pas pu être ajoutés au nouveau groupe et ont été retirés du groupe.</string>
+			<string>%1$d membres n’ont pas pu être ajoutés au nouveau groupe et ont été retirés du groupe.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -696,9 +696,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Un membre n&apos;a pas pu être ajouté au Nouveau groupe et a été invité à le rejoindre.</string>
+			<string>Un membre n’a pas pu être ajouté au nouveau groupe et a été invité à le rejoindre.</string>
 			<key>other</key>
-			<string>%1$d membres n’ont pas pu être ajoutés au Nouveau groupe et ont été invités à le rejoindre.</string>
+			<string>%1$d membres n’ont pas pu être ajoutés au nouveau groupe et ont été invités à le rejoindre.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -1002,7 +1002,7 @@
 			<key>one</key>
 			<string>Révoquer une invitation invalide</string>
 			<key>other</key>
-			<string>Révoquer %1$d invitations invalides</string>
+			<string>Révoquer %1$d invitations invalides</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -1032,9 +1032,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Révoquer l&apos;invitation de groupe envoyée par &quot;%2$@&quot; ?</string>
+			<string>Révoquer l’invitation de groupe envoyée par « %2$@ » ?</string>
 			<key>other</key>
-			<string>Révoquer %1$d invitations envoyées par &quot;%2$@&quot; ?</string>
+			<string>Révoquer %1$d invitations envoyées par « %2$@ » ?</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -1144,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Envoi...</string>
+			<string>Envoi…</string>
 			<key>other</key>
-			<string>Envoi de %1$d...</string>
+			<string>Envoi de %1$d…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

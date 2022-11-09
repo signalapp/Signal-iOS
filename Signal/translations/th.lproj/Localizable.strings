@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "แฟ้มที่ไม่ได้รองรับ";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "ภาพเคลื่อนไหว";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "เสียง";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "การบริจาครายเดือนของคุณจะถูกยกเลิกโดยอัตโนมัติ เพราะว่าคุณไม่มีการเคลื่อนไหวมาเป็นระยะเวลานาน โล่ %1$@ ของคุณจะไม่ปรากฎบนโปรไฟล์อีกต่อไป \n\nคุณสามารถใช้ Signal ต่อไปได้ แต่หากต้องการสนับสนุนแอปและเปิดใช้งานโล่อีกครั้ง ให้ต่ออายุตอนนี้";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "คุณได้รับโล่ผู้บริจาคจาก Signal! แสดงโล่บนโปรไฟล์ของคุณเพื่ออวดให้ทุกคนเห็นได้เลย";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "แสดงบนโปรไฟล์";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "ใช้เป็นโล่ติดโปรไฟล์";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "ขอบคุณสำหรับการสนับสนุน!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "เมื่อคุณมีโล่มากกว่าหนึ่งอัน คุณสามารถเลือกได้หนึ่งอันเพื่อแสดงให้ผู้อื่นเห็นบนโปรไฟล์";
@@ -1187,7 +1187,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "ลบการสนทนาหรือไม่?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "ปิดเสียงแชตนี้เป็นเวลา...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "ปิดเสียงแชทนี้เป็นเวลา…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 วัน";
@@ -1316,7 +1316,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "ข้อความ";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "ปิดแจ้งเตือนการสนทนานี้ไป...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "ปิดเสียงแชทนี้เป็นเวลา…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "ตลอดเวลา";
@@ -1424,7 +1424,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "ลบทั้งหมด";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "กำลังเรียกข้อความเพิ่ม...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "กำลังโหลดข้อความเพิ่ม…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "อ่านเพิ่มเติม";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "การกระทำนี้จะลบข้อมูลบัญชีผู้ใช้ โปรไฟล์ และข้อความของคุณทั้งหมด";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "กำลังลบบัญชี...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "กำลังลบบัญชี…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "ไม่มีการเชื่อมต่ออินเทอร์เน็ต ตรวจสอบให้แน่ใจว่า Wi-Fi หรือข้อมูลมือถือได้เปิดไว้แล้วลองใหม่อีกครั้ง";
@@ -1703,7 +1703,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "ไม่พบการแจ้งเตือนบนอุปกรณ์เครื่องเก่าของคุณหรือ?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "กำลังรออุปกรณ์ตัวอื่น...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "กำลังรออุปกรณ์เครื่องอื่น…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "ทำให้แน่ใจว่าอุปกรณ์ทั้งคู่อยู่ใกล้กัน อย่าปิดเครื่องใด และให้เปิด Signal อยู่ตลอดเวลา การถ่ายโอนนั้นจะถูกเข้ารหัสลับตั้งแต่ต้นทางถึงปลายทาง";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "บริจาคให้ Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "สกุลเงิน";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "คุณสามารถเปิดการเข้าถึงได้ในการตั้งค่าของ iOS";
@@ -2180,10 +2180,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "คุณไม่มีสื่อข้อมูลใดในแชตนี้";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "กำลังเรียกสื่อที่ใหม่กว่า...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "กำลังโหลดสื่อที่ใหม่กว่า…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "กำลังเรียกสื่อที่เก่ากว่า...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "กำลังโหลดสื่อที่เก่ากว่า…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "แฟ้มแนบ";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "มีอีก";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "เพิ่มคำอธิบายกลุ่ม...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "เพิ่มคำอธิบายกลุ่ม…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "คำอธิบายกลุ่มจะแสดงให้เห็นเฉพาะสมาชิกของกลุ่มนี้และผู้ที่ได้รับคำเชิญ";
@@ -3197,16 +3197,16 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "ถูกปฏิเสธสายบนอุปกรณ์อื่น";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "กำลังเชื่อมต่อใหม่...";
+"IN_CALL_RECONNECTING" = "กำลังเชื่อมต่อใหม่…";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "กำลังเรียกสาย…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "โทรเสียง...";
+"IN_CALL_RINGING_AUDIO" = "โทรเสียง…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "โทรวิดีโอ...";
+"IN_CALL_RINGING_VIDEO" = "วิดีโอคอล…";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "รับสายแล้ว กำลังทำให้ปลอดภัย…";
@@ -4136,7 +4136,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "จะโทรหาคุณในอีก %1$@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "กำลังตรวจสอบรหัส...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "กำลังตรวจสอบรหัส…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "รหัสนี้ไม่ถูกต้อง";
@@ -4769,7 +4769,7 @@
 "PROCEED_BUTTON" = "ทำต่อ";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "เขียนอะไรบางอย่างเกี่ยวกับตัวคุณ...";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "เขียนอะไรบางอย่างเกี่ยวกับตัวคุณ…";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "ใจดีกัน";
@@ -4976,7 +4976,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN ไม่ถูกต้อง";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "กำลังตรวจยืนยันรหัส PIN...";
+"REGISTER_2FA_PIN_PROGRESS" = "กำลังตรวจยืนยันรหัส PIN…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "ส่ง";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "แก้ไข";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "กำลังตรวจยืนยันรหัส %1$@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "กำลังตรวจยืนยัน %1$@…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "ปฏิเสธ";
@@ -5207,7 +5207,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "เปิด Signal บนโทรศัพท์ของคุณเพื่อเชื่อมโยง iPad เครื่องนี้เข้ากับบัญชีของคุณ";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "ฉันไม่มี Signal ในโทรศัพท์...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "ฉันไม่มี Signal ในโทรศัพท์…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "ไปที่ App Store บนโทรศัพท์ของคุณ ติดตั้ง Signal ลงทะเบียนให้สำเร็จ และคุณจะสามารถเชื่อมโยง iPad ของคุณเข้ากับบัญชีเดียวกัน";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "ล้างประวัติแชท";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "ลิขสิทธิ์ Signal Messenger\nเผยแพร่ภายใต้สัญญาอนุญาต AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "การใช้ข้อมูล";
@@ -5561,7 +5561,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "ผู้ติดต่อเริ่มใช้ Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "แจ้งเตือนเมื่อ...";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "แจ้งเตือนเมื่อ…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "การแจ้งเตือน";
@@ -6593,10 +6593,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · ต่ออายุ %1$@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "กำลังประมวลผลการชำระเงิน...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "กำลังประมวลผลการชำระเงิน…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "กำลังดำเนินการธุรกรรม...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "กำลังดำเนินการธุรกรรม…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "ต่ออายุ %1$@";

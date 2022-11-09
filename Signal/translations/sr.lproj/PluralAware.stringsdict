@@ -45,7 +45,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Желите ли да додате члана у групу „%2$@“?</string>
+			<string>Желите ли да додате %1$d члана у групу „%2$@“?</string>
 			<key>other</key>
 			<string>Желите ли да додате њих %1$d у групу „%2$@“?</string>
 		</dict>
@@ -1032,7 +1032,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Желите ли да повучете групну позивницу коју шаље „%2$@“?</string>
+			<string>Желите ли да повучете позивнице (%1$d) које шаље „%2$@“?</string>
 			<key>other</key>
 			<string>Желите ли да повучете позивнице (%1$d) које шаље „%2$@“?</string>
 		</dict>

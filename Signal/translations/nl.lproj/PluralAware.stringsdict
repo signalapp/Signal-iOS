@@ -1144,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Versturen...</string>
+			<string>Versturen…</string>
 			<key>other</key>
-			<string>%1$d aan het versturen...</string>
+			<string>%1$d aan het versturen…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

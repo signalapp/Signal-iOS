@@ -13,7 +13,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Mesaj vocal 1 secundă</string>
+			<string>Mesaj vocal %1$d secundă</string>
 			<key>few</key>
 			<string>Mesaj vocal %1$d secunde</string>
 			<key>other</key>
@@ -175,7 +175,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Nu poți selecta mai mult de 1 conversație.</string>
+			<string>Nu poți selecta mai mult de %1$d conversație.</string>
 			<key>few</key>
 			<string>Nu poți selecta mai mult de %1$d conversații.</string>
 			<key>other</key>
@@ -278,7 +278,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>acum 1 minut</string>
+			<string>acum %1$d minut</string>
 			<key>few</key>
 			<string>acum %1$d minute</string>
 			<key>other</key>
@@ -354,7 +354,7 @@
 			<key>few</key>
 			<string>Trimite %1$d mesaje</string>
 			<key>other</key>
-			<string>Trimite %1$d mesaje</string>
+			<string>Trimite %1$d de mesaje</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -368,7 +368,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membru nu a putut fi adăugat noului grup. Vrei să-l adaugi acum?</string>
+			<string>%1$d membru nu a putut fi adăugat noului grup. Vrei să-l adaugi acum?</string>
 			<key>few</key>
 			<string>%1$d membri nu au putut fi adăugați noului grup. Vrei să-i adaugi acum?</string>
 			<key>other</key>
@@ -404,7 +404,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Numărul maxim de 1 participant a fost atins pentru acest apel. Încearcă mai târziu.</string>
+			<string>Numărul maxim de %1$d participant a fost atins pentru acest apel. Încearcă mai târziu.</string>
 			<key>few</key>
 			<string>Numărul maxim de %1$d participanți a fost atins pentru acest apel. Încearcă mai târziu.</string>
 			<key>other</key>
@@ -548,11 +548,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Invitații trimise</string>
+			<string>Invitație trimisă</string>
 			<key>few</key>
-			<string>%1$d invitații trimise</string>
+			<string>%1$d Invitații trimise</string>
 			<key>other</key>
-			<string>%1$d de invitații trimise</string>
+			<string>%1$d de Invitații trimise</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
@@ -566,7 +566,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membru al grupului are un nume similar.</string>
+			<string>%1$d membru al grupului are un nume similar.</string>
 			<key>few</key>
 			<string>%1$d membri ai grupului au nume similare.</string>
 			<key>other</key>
@@ -584,7 +584,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membru al grupului are nume similare, examinează membri mai jos sau ia măsuri.</string>
+			<string>%1$d membru al grupului are nume similare, examinează membri mai jos sau ia măsuri.</string>
 			<key>few</key>
 			<string>%1$d membri ai grupului au nume similare, examinează membri mai jos sau ia măsuri.</string>
 			<key>other</key>
@@ -602,7 +602,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membru al grupului are același nume, examinează membrul mai jos sau ia măsuri.</string>
+			<string>%1$d membru al grupului are același nume, examinează membrul mai jos sau ia măsuri.</string>
 			<key>few</key>
 			<string>%1$d membri ai grupului au același nume, examinează membri mai jos sau ia măsuri.</string>
 			<key>other</key>
@@ -656,7 +656,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 persoană a fost invitată la grup.</string>
+			<string>%1$d persoană a fost invitată la grup.</string>
 			<key>few</key>
 			<string>%1$d persoane au fost invitate la grup.</string>
 			<key>other</key>
@@ -674,7 +674,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ a invitat 1 persoană la grup.</string>
+			<string>%2$@ a invitat %1$d persoană la grup.</string>
 			<key>few</key>
 			<string>%2$@ a invitat %1$d persoane la grup.</string>
 			<key>other</key>
@@ -692,7 +692,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Au fost revocate invitațiile la grup pentru 1 persoană.</string>
+			<string>Au fost revocate invitațiile la grup pentru %1$d persoană.</string>
 			<key>few</key>
 			<string>Au fost revocate invitațiile la grup pentru %1$d persoane.</string>
 			<key>other</key>
@@ -710,7 +710,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ a revocat o invitație la grup pentru 1 persoană.</string>
+			<string>%2$@ a revocat o invitație la grup pentru %1$d persoană.</string>
 			<key>few</key>
 			<string>%2$@ a revocat o invitație la grup pentru %1$d persoane.</string>
 			<key>other</key>
@@ -746,7 +746,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Poveste de grup · 1 spectator</string>
+			<string>Poveste de grup · %1$d spectator</string>
 			<key>few</key>
 			<string>Poveste de grup · %1$d spectatori</string>
 			<key>other</key>
@@ -836,7 +836,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Șterge 1 mesaj</string>
+			<string>Șterge %1$d mesaj</string>
 			<key>few</key>
 			<string>Șterge %1$d mesaje</string>
 			<key>other</key>
@@ -854,7 +854,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 poză</string>
+			<string>%1$d poză</string>
 			<key>few</key>
 			<string>%1$d poze</string>
 			<key>other</key>
@@ -962,7 +962,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d 1 spectator</string>
+			<string>%1$d spectator</string>
 			<key>few</key>
 			<string>%1$d spectatori</string>
 			<key>other</key>
@@ -980,7 +980,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Toate conexiunile Signal · 1 spectator</string>
+			<string>Toate conexiunile Signal · %1$d spectator</string>
 			<key>few</key>
 			<string>Toate conexiunile Signal · %1$d spectatori</string>
 			<key>other</key>
@@ -1016,7 +1016,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Trimite doar către · 1 spectator</string>
+			<string>Trimite doar către · %1$d spectator</string>
 			<key>few</key>
 			<string>Trimite doar către · %1$d spectatori</string>
 			<key>other</key>
@@ -1232,7 +1232,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; răspuns</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; răspuns</string>
 			<key>few</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; răspunsuri</string>
 			<key>other</key>
@@ -1286,11 +1286,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Se trimite...</string>
+			<string>Se trimite…</string>
 			<key>few</key>
-			<string>Se trimit %1$d...</string>
+			<string>Se trimit %1$d…</string>
 			<key>other</key>
-			<string>Se trimit %1$d...</string>
+			<string>Se trimit %1$d…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1322,7 +1322,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; răspuns</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; răspuns</string>
 			<key>few</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; răspunsuri</string>
 			<key>other</key>
@@ -1335,7 +1335,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; vizualizare</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; vizualizare</string>
 			<key>few</key>
 			<string>&lt;bold&gt;%2$d&lt;/bold&gt; vizualizări</string>
 			<key>other</key>
@@ -1353,7 +1353,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; vizualizare</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vizualizare</string>
 			<key>few</key>
 			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vizualizări</string>
 			<key>other</key>

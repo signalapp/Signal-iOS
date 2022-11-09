@@ -392,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ringer %2$@, %3$@ och %1$d annan ...</string>
+			<string>Ringer %2$@, %3$@ och %1$d annan …</string>
 			<key>other</key>
-			<string>Ringer %2$@, %3$@ och %1$d andra ...</string>
+			<string>Ringer %2$@, %3$@ och %1$d andra …</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -1000,7 +1000,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Återkalla ogiltig inbjudning</string>
+			<string>Återkalla ogiltig inbjudan</string>
 			<key>other</key>
 			<string>Återkalla %1$d ogiltiga inbjudningar</string>
 		</dict>
@@ -1032,7 +1032,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Återkalla gruppinbjudning skickad av %2$@?</string>
+			<string>Återkalla gruppinbjudan skickad av %2$@?</string>
 			<key>other</key>
 			<string>Återkalla %1$d gruppinbjudningar skickade av %2$@?</string>
 		</dict>

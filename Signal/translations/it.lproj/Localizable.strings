@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Documento non supportato";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "Contenuto animato";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Audio";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "La tua donazione mensile ricorrente è stata automaticamente cancellata perché sei stato inattivo per troppo tempo. Il tuo badge %1$@ non è più visibile sul tuo profilo.\n\nPuoi continuare a usare Signal, ma per sostenere l'app e riattivare il tuo badge, rinnova ora.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Hai ricevuto un Badge Signal per la tua donazione! Mostralo sul tuo profilo per far vedere che anche tu supporti Signal.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Mostra sul profilo";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Metti il badge in evidenza sul profilo";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "Grazie per il tuo supporto!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Quando hai più di un badge, puoi sceglierne uno da mostrare agli altri sul tuo profilo.";
@@ -1187,7 +1187,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Eliminare la chat?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Silenzia questa chat per...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Silenzia questa chat per…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 giorno";
@@ -1424,7 +1424,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Elimina tutto";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Caricamento di altri messaggi...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Caricamento di altri messaggi…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Continua a leggere";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Questo eliminerà le informazioni del tuo account, il profilo e tutti i tuoi messaggi.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Eliminazione account...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Eliminazione account…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Nessuna connessione internet. Assicurati che il Wi-Fi o i dati mobili siano attivi, quindi riprova.";
@@ -1703,7 +1703,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Non vedi la richiesta sul tuo vecchio dispositivo?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "In attesa dell'altro dispositivo...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "In attesa dell'altro dispositivo…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Tieni entrambi i dispositivi vicini. Non spegnere nessuno dei due dispositivi e tieni aperto Signal. I trasferimenti sono crittografati end-to-end.";
@@ -1712,7 +1712,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Ricezione dati";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Connessione...";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Connessione in corso…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Posiziona il codice QR nel cerchio";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "Dona a Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Valuta";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Puoi abilitare l'accesso nelle impostazioni di iOS.";
@@ -2180,10 +2180,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "Non hai alcun contenuto multimediale in questa chat.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Caricamento media più recenti...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Caricamento media più recenti…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Caricamento media più vecchi...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Caricamento media più vecchi…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Allegato";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "altro";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Aggiungi descrizione gruppo...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Aggiungi descrizione gruppo…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Le descrizioni del gruppo saranno visibili ai membri di questo gruppo e alle persone che sono state invitate.";
@@ -2561,7 +2561,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Unisciti";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Caricamento...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Caricamento in corso…";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Vuoi unirti a questo gruppo e condividere il tuo nome e la tua foto con i suoi membri?";
@@ -3185,7 +3185,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Selezione allegato non riuscita.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Connessione...";
+"IN_CALL_CONNECTING" = "Connessione in corso…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Risposta su un altro dispositivo.";
@@ -3197,10 +3197,10 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Rifiutata su un altro dispositivo.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Riconnessione...";
+"IN_CALL_RECONNECTING" = "Riconnessione in corso…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Squilla...";
+"IN_CALL_RINGING" = "Sta squillando…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_AUDIO" = "Chiamata…";
@@ -3209,7 +3209,7 @@
 "IN_CALL_RINGING_VIDEO" = "Videochiamata…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Risposta. Verifica sicurezza...";
+"IN_CALL_SECURING" = "Risposta. Verifica sicurezza…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Chiamata terminata.";
@@ -3719,13 +3719,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Invio non riuscito";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Invio in corso...";
+"MESSAGE_STATUS_SENDING" = "Invio in corso…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Inviato";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Aggiornamento...";
+"MESSAGE_STATUS_UPLOADING" = "Caricamento in corso…";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Visualizzato";
@@ -4136,7 +4136,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Chiamami tra %1$@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Conferma codice...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Conferma codice in corso…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Questo codice è sbagliato";
@@ -4307,7 +4307,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Pagamento completato";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Invio in corso...";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Invio in corso…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Inviato";
@@ -4337,7 +4337,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Completa";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Invio in corso...";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Invio in corso…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Inviato";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Modifica";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Verifica %1$@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Verifica %1$@ in corso…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Rifiuta";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Elimina la cronologia delle chat";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nDistribuito con licenza AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Utilizzo dati";
@@ -6122,7 +6122,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Il tuo codice di sicurezza con %1$@ è cambiato di recente. Potrebbe essere necessario verificarlo nell'app principale prima di inviare nuovamente.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Caricamento...";
+"SHARE_EXTENSION_LOADING" = "Caricamento in corso…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Apri l'app Signal per la registrazione.";
@@ -6143,7 +6143,7 @@
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Caricamento %1$@ di %2$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Invio in corso...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Caricamento in corso…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Predisposizione allegato non riuscita";
@@ -6209,7 +6209,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Adesivi installati";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Caricamento...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Caricamento in corso…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Nessun pacchetto di adesivi installato";
@@ -6593,10 +6593,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · Si rinnova il giorno: %1$@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Pagamento in elaborazione...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Pagamento in elaborazione…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Elaborazione della transazione...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Elaborazione della transazione…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Si rinnova il giorno: %1$@";

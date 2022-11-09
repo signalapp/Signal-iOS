@@ -1,4 +1,4 @@
-• Stories are now in Signal! Share disappearing text, images, and video updates with select friends or groups that automatically disappear after 24 hours. If you don’t want to see or share stories, you can opt out of it all in your Settings.
-• Added accessibility labels to items in the photo library.
-• Improved UI for calls where mic and camera permissions are disabled.
-• Sorted out an issue with group membership banners.
+• 이제 Signal에서 스토리를 사용해 보세요! 24시간 후 자동으로 사라지는 자동 삭제 텍스트, 이미지, 동영상 업데이트를 특정 친구나 그룹과 공유해 보세요. 스토리를 보거나 공유하고 싶지 않다면 설정에서 관련 기능을 모두 끌 수 있습니다.
+• 사진 라이브러리 항목에 접근성 라벨을 추가했습니다.
+• 마이크와 카메라 권한이 비활성화된 경우의 통화 UI를 개선하였습니다.
+• 그룹 멤버십 배너 문제를 해결했습니다.

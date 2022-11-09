@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Filen stöds inte";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "Animerad";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Ljud";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Din månatliga donation var automatiskt avbruten för att du var inaktiv för länge. Ditt %1$@ märke är inte längre synligt på din profil.\n\nDu kan fortsätta att använda Signal men för att stödja appen och återaktivera ditt märke, förnya nu.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Du har fått ett donationsmärke från Signal! Visa den i din profil för att visa upp ditt stöd.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Visa på profilen";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Presentera märket";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "Tack för ditt stöd!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "När du har mer än ett märke kan du välja ett för att visa andra i din profil.";
@@ -731,7 +731,7 @@
 "CALL_USER_ALERT_TITLE" = "Ring?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "Inkommande videosamtal...";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Inkommande videosamtal …";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Missat videosamtal klockan %1$@";
@@ -1187,7 +1187,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Ta bort chatt?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Tysta denna chatt i...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Tysta denna chatt för …";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 dag";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Detta tar bort din kontoinformation, din profil och alla dina meddelanden.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Tar bort konto...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Tar bort konto …";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Ingen internetanslutning. Se till att Wi-Fi eller mobildata är påslaget och försök igen.";
@@ -1703,7 +1703,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Ser du inte meddelandet på din gamla enhet?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Väntar på annan enhet...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Väntar på annan enhet …";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Håll båda enheterna nära varandra. Stäng inte av någon av enheterna och håll Signal öppen. Överföringar är ände-till-ände-krypterade.";
@@ -1712,7 +1712,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Tar emot data";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Ansluter...";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Ansluter …";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Placera QR-koden i cirkeln";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "Donera till Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Valuta";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Du kan ge åtkomst i appen Inställningar i iOS.";
@@ -2306,10 +2306,10 @@
 "GROUP_CALL_IS_FULL" = "Samtalet är fullt";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Ringer %1$@ ...";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Ringer %1$@ …";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Ringer %1$@ och %2$@ ...";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Ringer %1$@ och %2$@ …";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Gå med i samtalet";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "mer";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Lägg till gruppbeskrivning...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Lägg till gruppbeskrivning …";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Gruppbeskrivningar kommer att vara synliga för medlemmar i denna grupp och personer som har bjudits in.";
@@ -2561,7 +2561,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Gå med";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Läser in...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Läser in …";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Vill du gå med i denna grupp och dela ditt namn och foto med dess medlemmar?";
@@ -3185,7 +3185,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Det gick inte att välja bilaga.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Ansluter...";
+"IN_CALL_CONNECTING" = "Ansluter …";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Besvaras på annan enhet.";
@@ -3197,10 +3197,10 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Avfärdades på annan enhet.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Återansluter...";
+"IN_CALL_RECONNECTING" = "Återansluter …";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Ringer...";
+"IN_CALL_RINGING" = "Ringer …";
 
 /* Call setup status label */
 "IN_CALL_RINGING_AUDIO" = "Ljudsamtal";
@@ -3209,7 +3209,7 @@
 "IN_CALL_RINGING_VIDEO" = "Videosamtal";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Besvarat. Säkrar...";
+"IN_CALL_SECURING" = "Besvarat. Säkrar …";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Samtalet avslutades.";
@@ -3719,7 +3719,7 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Det gick inte att skicka";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Skickar...";
+"MESSAGE_STATUS_SENDING" = "Skickar …";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Skickat";
@@ -3785,13 +3785,13 @@
 "MY_STORIES_NO_STORIES" = "Uppdateringar till din story kommer att visas här.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Alla utom ...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Alla utom …";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Alla Signal-förbindelser";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Dela endast med ...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Dela endast med …";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Mina Stories";
@@ -3983,7 +3983,7 @@
 "NOTIFICATIONS_SECTION_INAPP" = "Spela när appen är öppen";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Lägg till anpassat ljud...";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Lägg till anpassat ljud …";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Namn, innehåll och åtgärder";
@@ -4136,7 +4136,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Ring mig in om %1$@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Validerar kod...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Validerar kod …";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Denna kod är felaktig";
@@ -4307,7 +4307,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Betalningen slutförd";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Skickar...";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Skickar …";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Skickad";
@@ -4337,7 +4337,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Slutfört";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Skickar...";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Skickar …";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Skickad";
@@ -4769,7 +4769,7 @@
 "PROCEED_BUTTON" = "Fortsätt";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Skriv några ord om dig själv...";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Skriv några ord om dig själv …";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Var snäll";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Ändra";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Verifierar %1$@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Verifierar %1$@ …";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Avvisa";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Rensa chatthistorik";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicenserad under AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Dataanvändning";
@@ -5561,7 +5561,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontakt ansluter sig till Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Meddela när...";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Meddela när …";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Notiser";
@@ -6122,7 +6122,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Ditt säkerhetsnummer med %1$@ har nyligen ändrats. Du vill nog verifiera det i appen innan du skickar igen.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Läser in...";
+"SHARE_EXTENSION_LOADING" = "Läser in …";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Starta appen Signal för att registrera.";
@@ -6143,7 +6143,7 @@
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Laddar upp %1$@ av %2$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Laddar upp...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Laddar upp …";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Det går inte att förbereda bilagan";
@@ -6209,7 +6209,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Installera klistermärken";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Läser in...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Läser in …";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Inga klistermärken installerade";
@@ -6419,10 +6419,10 @@
 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Den här storyn kunde inte skickas till vissa personer. Kontrollera din anslutning och försök igen";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Dela endast med ...";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Dela endast med …";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Alla utom ...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Alla utom …";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Det gick inte att skicka";
@@ -6593,10 +6593,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · Förnyas %1$@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Bearbetar betalning...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Bearbetar betalning …";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Bearbetar transaktion...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Bearbetar transaktion …";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Förnyas %1$@";

@@ -1,4 +1,4 @@
-• Stories are now in Signal! Share disappearing text, images, and video updates with select friends or groups that automatically disappear after 24 hours. If you don’t want to see or share stories, you can opt out of it all in your Settings.
-• Added accessibility labels to items in the photo library.
-• Improved UI for calls where mic and camera permissions are disabled.
-• Sorted out an issue with group membership banners.
+• Signal 现在推出动态功能啦！您现在可以给选定的好友或群组分享限时文本、图片和视频动态。这些动态将会在 24 小时后自动消失。如果您不想浏览其他人的动态，也不想分享动态，您可以在设置中选择退出此功能。
+• 为照片库中的项目添加了可访问性标签。
+• 改进了禁用麦克风和摄像头权限时的呼叫 UI
+• 解决了群组成员遇到的横幅问题。

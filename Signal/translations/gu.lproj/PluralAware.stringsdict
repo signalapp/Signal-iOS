@@ -392,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, અને 1 અન્યને રિંગ જાય છે...</string>
+			<string>%2$@, %3$@, અને 1 અન્યને રિંગ જાય છે…</string>
 			<key>other</key>
-			<string>%2$@, %3$@, અને %1$d અન્યોને રિંગ જાય છે...</string>
+			<string>%2$@, %3$@, અને %1$d અન્યોને રિંગ જાય છે…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -1144,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>મોકલાઈ રહી છે...</string>
+			<string>મોકલાઈ રહ્યું છે…</string>
 			<key>other</key>
-			<string>%1$d મોકલાઈ રહી છે...</string>
+			<string>%1$d મોકલાઈ રહી છે…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

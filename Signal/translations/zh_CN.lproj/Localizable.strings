@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "不支持的文件";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "动画";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "音频";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "由于您长期不活跃，您的每月定期捐款已被自动取消。您的个人资料将不再显示您的%1$@徽章。\n\n您可以继续使用 Signal，如果您要支持我们的应用并重新激活您的徽章，请立即为您的定期捐款续期吧。";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "您获得了 Signal 的一个捐款徽章。赶快在个人资料中展示徽章，让大家看到您的支持吧。";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "在个人资料中显示";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "设为精选徽章";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "感谢您的支持！";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "当您拥有多个徽章时，您可以选择将其中一个徽章设为精选徽章，在个人资料中向其他用户展示。";
@@ -1424,7 +1424,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "删除全部消息";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "正在载入更多消息...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "正在加载更多消息……";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "查看更多";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "这将删除您的帐户、个人资料以及全部消息。";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "正在删除帐户...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "正在删除账户……";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "无互联网连接。请确保 Wi-Fi 或移动数据已开启，然后重试。";
@@ -1703,7 +1703,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "在旧设备上看不到提示？";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "正在等待另一个设备......";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "正在等待另一个设备……";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "请确保两个设备足够靠近。不要关闭设备并保证 Signal 运行。迁移是点对点加密的。";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "捐款给 Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "货币";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "您可在 iOS 设置中启用此权限。";
@@ -2180,10 +2180,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "此对话中没有任何媒体。";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "正在加载新媒体...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "正在加载新媒体……";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "正在加载较早媒体...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "正在加载较早的媒体……";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "附件";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "更多";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "添加群组描述...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "添加群组描述……";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "群组描述对于该群组成员以及受邀人可见。";
@@ -3185,7 +3185,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "选择附件失败。";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "链接中...";
+"IN_CALL_CONNECTING" = "正在连接……";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "已在其他设备上接听。";
@@ -3197,19 +3197,19 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "已在其他设备上拒绝。";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "重连中...";
+"IN_CALL_RECONNECTING" = "正在重新连接……";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "响铃中...";
+"IN_CALL_RINGING" = "正在响铃……";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "语音通话...";
+"IN_CALL_RINGING_AUDIO" = "语音通话……";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "视频通话...";
+"IN_CALL_RINGING_VIDEO" = "视频通话……";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "已接通。确保安全中...";
+"IN_CALL_SECURING" = "已接通。正在确保安全……";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "通话结束。";
@@ -3719,13 +3719,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "发送失败。";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "发送中...";
+"MESSAGE_STATUS_SENDING" = "发送中……";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "已发送";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "上传中...";
+"MESSAGE_STATUS_UPLOADING" = "上传中……";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "已查看";
@@ -3785,7 +3785,7 @@
 "MY_STORIES_NO_STORIES" = "您的动态更新将会在这里显示。";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "所有人，除了......";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "所有人，除了……";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "所有 Signal 密友";
@@ -3983,7 +3983,7 @@
 "NOTIFICATIONS_SECTION_INAPP" = "应用打开时播放";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "添加自定义声音...";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "添加自定义声音……";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "名字、内容和操作";
@@ -4136,7 +4136,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "%1$@ 后给我打电话";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "正在验证...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "正在验证……";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "验证码不正确";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "编辑";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "正在验证 %1$@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "正在验证 %1$@……";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "拒绝";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "清除聊天记录";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "版权所有 Signal Messenger\n根据 AGPLv3 授权许可";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "数据使用量";
@@ -6122,7 +6122,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "近期您与%1$@的安全码已改变。在您重新发送前，建议您在主应用中验证新的安全码。";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "加载中...";
+"SHARE_EXTENSION_LOADING" = "正在加载……";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "启动 Signal 来注册。";
@@ -6143,7 +6143,7 @@
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "正在上传 %1$@ 之 %2$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "上传中...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "正在上传……";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "无法准备附件";
@@ -6209,7 +6209,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "可用表情";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "加载中...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "正在加载……";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "没有安装任何表情包";
@@ -6422,7 +6422,7 @@
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "只分享给……";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "所有人，除了......";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "所有人，除了……";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "发送失败";
@@ -6440,7 +6440,7 @@
 "STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "未完全发送。点击查看详情";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "正在发送...";
+"STORY_SENDING" = "正在发送……";
 
 /* First bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "开启对话";

@@ -1,4 +1,4 @@
-• Stories are now in Signal! Share disappearing text, images, and video updates with select friends or groups that automatically disappear after 24 hours. If you don’t want to see or share stories, you can opt out of it all in your Settings.
-• Added accessibility labels to items in the photo library.
-• Improved UI for calls where mic and camera permissions are disabled.
-• Sorted out an issue with group membership banners.
+• Cerita kini dalam Signal! Kongsi kemas kini teks, imej dan video yang boleh hilang dengan rakan atau kumpulan terpilih. Ia akan hilang secara automatik selepas 24 jam. Jika anda tidak mahu melihat atau berkongsi cerita, anda boleh menarik diri daripada semua itu dalam Tetapan anda.
+• Menambahkan label kebolehaksesan pada item dalam pustaka foto.
+• UI yang dipertingkatkan untuk panggilan yang kebenaran mikrofon dan kamera dilumpuhkan.
+• Menyelesaikan isu sepanduk keahlian kumpulan.

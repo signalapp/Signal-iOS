@@ -392,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ ve diğer %1$d kişi aranıyor...</string>
+			<string>%2$@, %3$@ ve diğer %1$d kişi aranıyor…</string>
 			<key>other</key>
-			<string>%2$@, %3$@ ve diğer %1$d kişi aranıyor...</string>
+			<string>%2$@, %3$@ ve diğer %1$d kişi aranıyor…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -1144,7 +1144,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Gönderiliyor...</string>
+			<string>Gönderiliyor…</string>
 			<key>other</key>
 			<string>%1$d gönderiliyor...</string>
 		</dict>

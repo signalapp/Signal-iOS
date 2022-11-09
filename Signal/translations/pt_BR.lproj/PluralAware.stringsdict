@@ -1032,9 +1032,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Revogar convite de grupo enviado por “%2$@”?</string>
+			<string>Cancelar convite de grupo enviado por “%2$@”?</string>
 			<key>other</key>
-			<string>Revogar %1$d convites enviados por “%2$@”?</string>
+			<string>Cancelar %1$d convites enviados por “%2$@”?</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>

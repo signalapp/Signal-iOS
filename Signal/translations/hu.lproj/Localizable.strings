@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Nem támogatott fájltípus";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "Animált";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Hang";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Rendszeres havi támogatásod automatikusan kikapcsolásra került, mert túl sokáig voltál inaktív. A %1$@ kitűződ már nem látható profilképeden.\n\nA Signal használata nem változik, de ha fenntartanád a támogatásod és újraaktiválnád a kitűződet, akkor előfizetésed megújítása szükséges.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Kaptál egy adományozói jelvényt a Signaltól! Tedd ki a profilodra, és mutasd meg, hogy te is adományoztál!";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Megjelenítés profilképen";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Válaszd ki a kitűzött jelvényed";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "Köszönjük a támogatásodat!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Ha egynél több jelvényed van, választhatsz, hogy melyiket tűzöd ki a profilképedre.";
@@ -1316,7 +1316,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "üzenet";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Némítás eddig...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Némítás eddig…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Végleg";
@@ -1424,7 +1424,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Minden törlése";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "További üzenetek betöltése...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "További üzenetek betöltése…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Koppints a teljeshez";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Ezzel fiók információid, profilod és minden üzeneted törlésre kerül.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Fiók törlése...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Fiók törlése…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Nincs netkapcsolat. Ellenőrizd, hogy van WiFi vagy mobilnet kapcsolatod és próbáld újra.";
@@ -1703,7 +1703,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Nem látod a feliratot a régi eszközödön?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Várakozás a másik eszközre...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Várakozás a másik eszközre…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Tartsd a két eszközt egymás közelében. Ne kapcsold ki egyik eszközt sem és tartsd a Signalt nyitva. Az adatvitel végpontok között titkosított.";
@@ -1712,7 +1712,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Adat fogadása";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Csatlakozás...";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Csatlakozás…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Igazítsd a QR kódot a körön belülre";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "Adomány a Signal számára";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Pénznem";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Hozzáférés az iOS Beállításokban adható.";
@@ -2183,7 +2183,7 @@
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Tartalom betöltése";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Korábbi tartalmak betöltése...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Korábbi tartalmak betöltése…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Csatolmány";
@@ -2306,7 +2306,7 @@
 "GROUP_CALL_IS_FULL" = "A hívás betelt";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%1$@ hívása...";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%1$@ hívása…";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "%1$@ és %2$@ hívása…";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "tovább";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Csoportleírás hozzáadása...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Csoportleírás hozzáadása…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "A csoport leírása a tagok, illetve a meghívottak részére lesz látható.";
@@ -2561,7 +2561,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Belépés";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Betöltés...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Betöltés…";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Szeretnél belépni a csoportba? Ezzel profilod láthatóvá is válik.";
@@ -3185,7 +3185,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Csatolmány kiválasztása sikertelen.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Csatlakozás...";
+"IN_CALL_CONNECTING" = "Csatlakozás…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Fogadva egy másik eszközön.";
@@ -3197,19 +3197,19 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Elutasítva egy másik eszközön.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Újracsatlakozás...";
+"IN_CALL_RECONNECTING" = "Újracsatlakozás…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Kicseng...";
+"IN_CALL_RINGING" = "Kicseng…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Hanghívás...";
+"IN_CALL_RINGING_AUDIO" = "Hanghívás…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Videóhívás...";
+"IN_CALL_RINGING_VIDEO" = "Videohívás…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Hívás fogadva. Titkosítás...";
+"IN_CALL_SECURING" = "Hívás fogadva. Titkosítás…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Hívás vége";
@@ -3719,13 +3719,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Küldés sikertelen";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Küldés...";
+"MESSAGE_STATUS_SENDING" = "Küldés…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Elküldve";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Feltöltés folyamatban...";
+"MESSAGE_STATUS_UPLOADING" = "Feltöltés folyamatban…";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Megtekintve";
@@ -3785,13 +3785,13 @@
 "MY_STORIES_NO_STORIES" = "A Történeteid itt fognak megjelenni.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Mindenki, kivéve...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Mindenki, kivéve…";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Minden Signal Névjegy";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Megosztás kizárólag a következőkkel...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Megosztás kizárólag a következőkkel…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Történeteim";
@@ -3983,7 +3983,7 @@
 "NOTIFICATIONS_SECTION_INAPP" = "Hang megnyitott alkalmazásnál";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Egyedi értesítőhang hozzáadása...";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Egyedi értesítőhang hozzáadása…";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Név, szöveg és művelet";
@@ -4136,7 +4136,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Hívj fel: %1$@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Kód ellenőrzése...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Kód ellenőrzése…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Helytelen ellenőrző kód";
@@ -4307,7 +4307,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Fizetés teljesült";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Küldés...";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Küldés…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Elküldve";
@@ -4337,7 +4337,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Befejezés";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Küldés...";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Küldés…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Elküldve";
@@ -4604,7 +4604,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "PIN újraellenőrzése";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "PIN létrehozása...";
+"PIN_CREATION_PIN_PROGRESS" = "PIN létrehozása…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Mindaddig megváltoztathatod PIN kódodat, amíg ez az eszköz regisztrálva van.";
@@ -4769,7 +4769,7 @@
 "PROCEED_BUTTON" = "Végrehajtás";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Írj egy pár szót magadról...";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Írj egy pár szót magadról…";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Légy kedves";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Szerkesztés";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Ellenőrzés %1$@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%1$@ ellenőrzése…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Elutasít";
@@ -5207,7 +5207,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Nyisd meg a telefonodon a Signalt ezen iPad társításához";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Nincs Signal a telefonomon...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Nincs Signal a telefonomon…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Telepítsd a Signal alkalmazást az App Store alól, végezd el a regisztrációs folyamatot, ez után már képes leszel ugyan ahhoz a fiókhoz társítani az iPad készüléked.";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Összes beszélgetés-előzmény törlése";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicenc típusa: AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Adathasználat";
@@ -5561,7 +5561,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Ismerős csatlakozott Signalon";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Értesítsen mikor...";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Értesítsen, amikor…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Értesítések";
@@ -6122,7 +6122,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Biztonsági azonosítód megváltozott a következő ismerősöddel: %1$@. Érdemes lenne leellenőrizni, mielőtt újraküldenéd ezt az üzenetet.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Betöltés...";
+"SHARE_EXTENSION_LOADING" = "Betöltés…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Indítsd el a Signalt a regisztrálás elvégzéséhez.";
@@ -6143,7 +6143,7 @@
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Feltöltve: %1$@/%2$@";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Feltöltés folyamatban...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Feltöltés folyamatban…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "A csatolmány előkészítése sikertelen";
@@ -6209,7 +6209,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Telepített matricák";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Betöltés...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Betöltés…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Nincsenek matricák telepítve";
@@ -6419,10 +6419,10 @@
 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "A Történetet nem sikerült elküldeni néhány személy számára. Ellenőrizd az internetkapcsolatot, és próbáld újra";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Megosztás kizárólag a következőkkel...";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Megosztás kizárólag a következőkkel…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Mindenki, kivéve...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Mindenki, kivéve…";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Küldés sikertelen";
@@ -6440,7 +6440,7 @@
 "STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Részben elküldve. A részletekért koppints";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "Küldés...";
+"STORY_SENDING" = "Küldés…";
 
 /* First bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Beszélgetést kezdeményeztél velük";
@@ -6593,10 +6593,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · Megújul %1$@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Fizetés folyamatban...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Fizetés folyamatban…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Tranzakció folyamatban...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Tranzakció folyamatban…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Megújul %1$@";

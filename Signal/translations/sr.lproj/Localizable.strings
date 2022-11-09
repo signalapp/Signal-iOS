@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Nepodržan fajl";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "Анимирано";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Звучни запис";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Ваша претплата са аутоматско поништила пошто сте били предуго неактивни. Ваш %1$@ беџ није више видљив на вашем прфилу.\n\nМожете да наставите да користите Signal али да би подржили апликацију и поново активирали ваш беџ, обновите сада.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Добили сте значку донатора од Signal-а! Прикажите је на профилу да истакнете своју подршку.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Показати на профил";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Поставите као истакнуту значку";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "Хвала вам на подршци!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Када имате више од једне значке, можете да изаберете једну да садржите да другу да се види на ваш профил.";
@@ -689,7 +689,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Позови поново";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Долазни позив...";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Долазни аудио позив…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Пропуштен аудио позив у %1$@";
@@ -731,7 +731,7 @@
 "CALL_USER_ALERT_TITLE" = "Позови?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Долазни видео позив...";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Долазни видео позив…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Пропуштен видео позив у %1$@";
@@ -1187,7 +1187,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Избришите преписку?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Утишај ћаскање за...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Утишај ћаскање на одређено време…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 дан";
@@ -1316,7 +1316,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "порука";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Утишај ћаскање за...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Утишај ћаскање на одређено време…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Увек";
@@ -1424,7 +1424,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Избриши све";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Учитавање додатних порука...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Учитавамо још порука…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Прочитајте више";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Ово ће избрисати податке о вашем налогу, профил и све ваше поруке.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Брисање налога...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Брисање налога је у току…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Нема интернет везе. Проверите да ли су Wi-Fi или мобилни подаци укључени, а затим покушајте поново.";
@@ -1703,7 +1703,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Не видите упит на старом уређају?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Чека се други уређај...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Чека се други уређај…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Приближите уређаје, не искључујте их и не затварајте Signal. Пренос података је потпуно енкриптован.";
@@ -1712,7 +1712,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Подаци се примају";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Успостављање везе...";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Успостављамо везу…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Поставите QR кôд унутар круга";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "Донирајте Signal-у";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Валута";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Приступ можете омогућити у iOS апликацији за подешавања.";
@@ -2180,10 +2180,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "Нема медија у овој преписци.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Учитавање новијих медија...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Учитавамо новије садржаје…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Учитавање старијих медија...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Учитавамо старије садржаје…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Прилог";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "више";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Додај опис групи...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Унесите опис групе…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Описи групе биће видљиви члановима ове групе и особама које су позване.";
@@ -2561,7 +2561,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Придружи се";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Учитавање...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Учитава се…";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Да ли желите да се придружите овој групи и да са њеним члановима поделите ваше име и слику?";
@@ -3185,7 +3185,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Грешка при слању прилога.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Успостављање везе...";
+"IN_CALL_CONNECTING" = "Успостављамо везу…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Одговорено на другом уређају.";
@@ -3197,19 +3197,19 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Одбијено на другом уређају.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Обнављање везе...";
+"IN_CALL_RECONNECTING" = "Поново успостављамо везу…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Звони...";
+"IN_CALL_RINGING" = "Звони…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Аудио позив...";
+"IN_CALL_RINGING_AUDIO" = "Аудио позив…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Видео позив...";
+"IN_CALL_RINGING_VIDEO" = "Видео позив…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Одговорено. Обезбеђивање...";
+"IN_CALL_SECURING" = "Одговорено. Обезбеђујемо…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Позив је завршен.";
@@ -3719,13 +3719,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Слање није успело";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Шаље се...";
+"MESSAGE_STATUS_SENDING" = "Шаље се…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Послато";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Отпремање...";
+"MESSAGE_STATUS_UPLOADING" = "Отпрема се…";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Погледано";
@@ -3983,7 +3983,7 @@
 "NOTIFICATIONS_SECTION_INAPP" = "И док је апликација отворена";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Додати прилагођен звук...";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Додајте прилагођен звук…";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Име, садржај и акције";
@@ -4136,7 +4136,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Позови ме за %1$@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Потврђивање кода...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Потврда шифре је у току…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Унет је нетачан кôд";
@@ -4307,7 +4307,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Уплата завршена";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Шаље се...";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Шаље се…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Послато";
@@ -4337,7 +4337,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Доврши";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Шаље се...";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Шаље се…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Послато";
@@ -4604,7 +4604,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Потврдите ваш PIN";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Постављање PIN-а...";
+"PIN_CREATION_PIN_PROGRESS" = "Креирање PIN-а је у току…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Ваш PIN можете променити док год је овај уређај регистрован.";
@@ -4976,7 +4976,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Нетачан PIN";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "Провера PIN-а...";
+"REGISTER_2FA_PIN_PROGRESS" = "Провера PIN-а је у току…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Прихвати";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Уреди";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Проверавање %1$@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Провера броја %1$@ је у току…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Одбиј";
@@ -5207,7 +5207,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Покрените Signal на вашем телефону да бисте повезали овај iPad на ваш налог";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Немам Signal на телефону...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Немам Signal на телефону…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Идите у App Store на телефону, инсталирајте Signal, довршите регистрацију и тада повежите ваш iPad на исти налог.";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Очисти историју чета";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "Ауторско право Signal Messenger\nЛиценцирано под бројем AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Коришћене податке";
@@ -5561,7 +5561,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Контакт се придружио Signal-у";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Обавести када...";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Пошаљи обавештење када…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Обавештења";
@@ -6122,7 +6122,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Ваш сигурносни број са %1$@ је недавно промењен. Препоручујемо да га оверите у апликацији на вашем главном уређају пре слања порука.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Учитавање...";
+"SHARE_EXTENSION_LOADING" = "Учитава се…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Отворите Signal да се региструјете.";
@@ -6143,7 +6143,7 @@
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Отпремање %1$@ од %2$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Отпремање...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Отпрема се…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Није могуће припремити прилог";
@@ -6209,7 +6209,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Додате налепнице";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Учитавање...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Учитава се…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Немате додатих налепница";
@@ -6593,10 +6593,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · Обнавља се на дан %1$@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Обрађујем уплату...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Уплата се обрађује…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Обрађујем транзакцију...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Трансакција се обрађује…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Обнавља се на дан %1$@";

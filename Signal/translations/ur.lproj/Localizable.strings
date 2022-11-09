@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "غیر حمایت یافتہ فائل";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "اینیمیٹڈ";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "آڈیو";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "آپ کا ماہانہ متواتر عطیہ خود کار طور پر منسوخ ہو گیا تھا کیونکہ آپ طویل عرصے سے غیر فعال تھے۔ آپ کا %1$@بیج آپ کی پروفائل پر مزید نظر نہیں آئے گا۔\n\nآپ Signal استعمال کرنا جاری رکھ سکتے ہیں لیکن ایپ کی معاونت اور اپنے بیج کو دوبارہ فعال کرنے کے لیے، ابھی تجدید کریں۔";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "آپ نے Signal کی جانب سے عطیہ گزار کا بیج حاصل کیا ہے! اپنی سپورٹ کے اظہار کے لیے اسے اپنی پروفائل پر ڈسپلے کریں۔";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "پروفائل پر ڈسپلے کریں";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "خصوصی بیج بنائیں";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "آپ کی سپورٹ کا شکریہ!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "جب آپ کے پاس ایک سے زیادہ بیج ہو، تو آپ اپنی پروفائل پر دوسروں کے دیکھنے کے لیے ایک کو خصوصی بنانے کا انتخاب کر سکتے ہیں۔";
@@ -1187,7 +1187,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "چیٹ کو حذف کریں؟";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "اس چیٹ کو خاموش کر دیں تا وقت...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "اس چیٹ کو خاموش کر دیں تا وقت…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 دن";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "Signal کے لئے عطیہ کریں";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "کرنسی";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "iOS ایپ کی ترتیبات میں رسائی کیلئے فعال کر سکتے ہیں۔";
@@ -2306,10 +2306,10 @@
 "GROUP_CALL_IS_FULL" = "کال پوری ہے";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%1$@ کو کال کی جا رہی ہے...";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%1$@ کو کال کی جا رہی ہے…";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "%1$@ اور %2$@ کو کال کی جا رہی ہے...";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "%1$@ اور %2$@ کو کال کی جا رہی ہے…";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "کال میں شامل ہوں";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "مزید";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "گروپ کی تفصیل شامل کریں ...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "گروپ کی تفصیل شامل کریں…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "گروپ کی تفصیل اس گروپ کے ممبروں اور ان لوگوں کے لئے مرئی ہوگی جن کو مدعو کیا گیا ہے۔";
@@ -3785,13 +3785,13 @@
 "MY_STORIES_NO_STORIES" = "آپ کی سٹوری کی اپ ڈیٹس یہاں دکھائی جائیں گی۔";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "تمام سوائے...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "تمام سوائے…";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "تمام Signal کنکشنز";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "صرف ان کے ساتھ شیئر کریں...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "صرف ان کے ساتھ شیئر کریں…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "میری سٹوریز";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "ترتیب دیں";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%1$@ تصدیق ...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%1$@ کی تصدیق ہو رہی ہے…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "مسترد کریں";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "چیٹ کی ہسٹری صاف کریں";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "کاپی رائٹ Signal میسنجر\nAGPLv3 کے تحت لائسنس یافتہ";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "ڈیٹا کا استعمال";
@@ -6419,10 +6419,10 @@
 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "یہ سٹوری کچھ لوگوں کو نہیں بھیجی جا سکتی۔ اپنا انٹرنیٹ چیک کریں اور دوبارہ کوشش کریں";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "صرف ان کے ساتھ شیئر کریں...";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "صرف ان کے ساتھ شیئر کریں…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "تمام سوائے...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "تمام سوائے…";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "بھیجنے میں ناکام";
@@ -6440,7 +6440,7 @@
 "STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "جزوی طور پر بھیج دیا گیا۔ تفصیلات کے لئے ٹیپ کریں";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "بھیج رہا ہے ...";
+"STORY_SENDING" = "بھیج رہا ہے…";
 
 /* First bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "گفتگو شروع کرنا";
@@ -6593,7 +6593,7 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · %1$@ کی تجدید کرتا ہے";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "ادائیگی پر عمل کاری...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "پیمنٹ پر عمل کاری ہو رہی ہے…";
 
 /* Status text while processing a badge redemption */
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "ٹرانزیکشن پر عمل کاری";

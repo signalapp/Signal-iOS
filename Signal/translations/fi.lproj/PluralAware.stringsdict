@@ -45,7 +45,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Lisätäänkö jäsen kohteeseen %2$@?</string>
+			<string>Lisätäänkö %1$d jäsen kohteeseen %2$@?</string>
 			<key>other</key>
 			<string>Lisätäänkö %1$d jäsentä kohteeseen %2$@?</string>
 		</dict>
@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Poistetaanko keskustelu?</string>
+			<string>Poistetaanko %1$d keskustelu?</string>
 			<key>other</key>
 			<string>Poistetaanko %1$d keskustelua?</string>
 		</dict>
@@ -264,7 +264,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Poistetaanko viesti?</string>
+			<string>Poistetaanko %1$d viesti?</string>
 			<key>other</key>
 			<string>Poistetaanko %1$d viestiä?</string>
 		</dict>
@@ -312,7 +312,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Lähetä viesti</string>
+			<string>Lähetä %1$d viesti</string>
 			<key>other</key>
 			<string>Lähetä %1$d viestiä</string>
 		</dict>
@@ -392,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Soitetaan käyttäjille %2$@, %3$@ ja %1$d muulle...</string>
+			<string>Soitetaan käyttäjille %2$@, %3$@ ja %1$d muulle…</string>
 			<key>other</key>
-			<string>Soitetaan käyttäjille %2$@, %3$@ ja %1$d muulle...</string>
+			<string>Soitetaan käyttäjille %2$@, %3$@ ja %1$d muulle…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -488,7 +488,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Kutsu lähetetty</string>
+			<string>%1$d kutsu lähetetty</string>
 			<key>other</key>
 			<string>%1$d kutsua lähetetty</string>
 		</dict>
@@ -680,7 +680,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Jäsentä ei voitu lisätä uuteen ryhmään, ja hänet on poistettu ryhmästä.</string>
+			<string>%1$d jäsentä ei voitu lisätä uuteen ryhmään, ja hänet on poistettu ryhmästä.</string>
 			<key>other</key>
 			<string>%1$d jäsentä ei voitu lisätä uuteen ryhmään, ja heidät on poistettu ryhmästä.</string>
 		</dict>
@@ -696,7 +696,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Jäsentä ei voitu lisätä uuteen ryhmään, ja hänet on kutsuttu liittymään.</string>
+			<string>%1$d jäsentä ei voitu lisätä uuteen ryhmään, ja hänet on kutsuttu liittymään.</string>
 			<key>other</key>
 			<string>%1$d jäsentä ei voitu lisätä uuteen ryhmään, ja heidät on kutsuttu liittymään.</string>
 		</dict>
@@ -1000,7 +1000,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Peruuta virheellinen kutsu</string>
+			<string>Peruuta %1$d virheellinen kutsu</string>
 			<key>other</key>
 			<string>Peruuta %1$d virheellistä kutsua</string>
 		</dict>
@@ -1032,7 +1032,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Peruutetaanko ryhmäkutsu, jonka %2$@ lähetti?</string>
+			<string>Peruutetaanko %1$d ryhmäkutsu, jonka %2$@ lähetti?</string>
 			<key>other</key>
 			<string>Peruutetaanko %1$d kutsua, jotka %2$@ lähetti?</string>
 		</dict>
@@ -1144,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Lähetetään...</string>
+			<string>Lähetetään…</string>
 			<key>other</key>
-			<string>Lähetetään %1$d kohdetta...</string>
+			<string>Lähetetään %1$d kohdetta…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

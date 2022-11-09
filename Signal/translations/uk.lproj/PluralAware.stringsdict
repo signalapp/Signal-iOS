@@ -53,7 +53,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Додати учасника до «%2$@»?</string>
+			<string>Додати %1$d учасника до «%2$@»?</string>
 			<key>few</key>
 			<string>Додати %1$d учасників до «%2$@»?</string>
 			<key>many</key>
@@ -153,7 +153,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Видалити чат?</string>
+			<string>Видалити %1$d чат?</string>
 			<key>few</key>
 			<string>Видалити %1$d чати?</string>
 			<key>many</key>
@@ -328,7 +328,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Видалити повідомлення?</string>
+			<string>Видалити %1$d повідомлення?</string>
 			<key>few</key>
 			<string>Видалити %1$d повідомлення?</string>
 			<key>many</key>
@@ -388,7 +388,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Надіслати повідомлення</string>
+			<string>Надіслати %1$d повідомлення</string>
 			<key>few</key>
 			<string>Надіслати %1$d повідомлення</string>
 			<key>many</key>
@@ -608,7 +608,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Запрошення надіслано</string>
+			<string>Надіслано %1$d запрошення</string>
 			<key>few</key>
 			<string>Надіслано %1$d запрошення</string>
 			<key>many</key>
@@ -848,7 +848,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Не вдалося додати учасника до нової групи, тому його було вилучено з групи.</string>
+			<string>Не вдалося додати %1$d учасника до нової групи, тому було вилучено з групи.</string>
 			<key>few</key>
 			<string>Не вдалося додати %1$d учасників до нової групи, тому їх було вилучено з групи.</string>
 			<key>many</key>
@@ -868,7 +868,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Не вдалося додати учасника до нової групи, тому було надіслано запрошення приєднатися.</string>
+			<string>Не вдалося додати %1$d учасника до нової групи, тому було надіслано запрошення приєднатися.</string>
 			<key>few</key>
 			<string>Не вдалося додати %1$d учасників до нової групи, тому було надіслано запрошення приєднатися.</string>
 			<key>many</key>
@@ -1248,7 +1248,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Відкликати недійсне запрошення</string>
+			<string>Відкликати %1$d недійсне запрошення</string>
 			<key>few</key>
 			<string>Відкликати %1$d недійсні запрошення</string>
 			<key>many</key>
@@ -1288,7 +1288,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Відкликати запрошення до групи, надіслане «%2$@»?</string>
+			<string>Відкликати %1$d запрошення до групи, надіслане «%2$@»?</string>
 			<key>few</key>
 			<string>Відкликати %1$d запрошення, надісланих «%2$@»?</string>
 			<key>many</key>
@@ -1428,7 +1428,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Надсилаємо…</string>
+			<string>Надсилаємо %1$d…</string>
 			<key>few</key>
 			<string>Надсилаємо %1$d…</string>
 			<key>many</key>

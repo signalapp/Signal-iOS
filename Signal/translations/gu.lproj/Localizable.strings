@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "અસમર્થિત ફાઇલ";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "એનિમેશન સાથે";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "ઓડિયો";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "તમારું પુનરાવર્તિત માસિક દાન આપમેળે રદ થઈ ગયું હતું કારણ કે તમે ઘણા લાંબા સમયથી નિષ્ક્રિય રહ્યા હતા. તમારું %1$@ બૅજ હવે તમારી પ્રોફાઇલ પર દેખાશે નહીં.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "તમે Signal તરફથી દાતાનો બૅજ મેળવ્યો છે! તમારો સપોર્ટ બતાવવા માટે તેને તમારી પ્રોફાઇલ પર પ્રદર્શિત કરો.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "પ્રોફાઇલ પર દર્શાવો";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "ફીચર્ડ બૅજ બનાવો";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "આપના સહયોગ બદલ આભાર!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "જ્યારે તમારી પાસે એકથી વધુ બૅજ હોય, તમે અન્યોને તમારી પ્રોફાઇલ પર દર્શાવવા એક પસંદ કરી શકો છો.";
@@ -1187,7 +1187,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "શું ચેટ કાઢી નાંખવી છે?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "આ ચેટને આટલા સમય માટે મ્યૂટ કરો...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "આ ચેટને આટલા સમય માટે મ્યૂટ કરો…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 દિવસ";
@@ -1316,7 +1316,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "મેસેજ";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "... માટે આ ચેટને મ્યૂટ કરો";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "આ ચેટને આટલા સમય માટે મ્યૂટ કરો…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "હંમેશાં";
@@ -1424,7 +1424,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "બધું કાઢી નાંખો";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "વધુ મેસેજ લોડ કરી રહ્યું છે...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "વધુ મેસેજ લોડ થઈ રહ્યાં છે…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "વધુ વાંચો";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "આ તમારા એકાઉન્ટની માહિતી, પ્રોફાઇલ અને તમારા બધા મેસેજને કાઢી નાંખશે.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "એકાઉન્ટ કાઢી નાંખી રહ્યા છીએ...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "એકાઉન્ટ ડિલીટ થઈ રહ્યું છે…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "ઇન્ટરનેટ કનેક્શન નથી. ખાતરી કરો કે Wi-Fi અથવા મોબાઇલ ડેટા ચાલુ છે, પછી ફરીથી પ્રયાસ કરો.";
@@ -1703,7 +1703,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "શું તમારા જૂના ડિવાઇસ પર પ્રોમ્પ્ટ દેખાય નથી રહ્યો?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "અન્ય ડિવાઇસની રાહ જુએ છે...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "અન્ય ડિવાઇસની પ્રતીક્ષા છે…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "બંને ડિવાઇસને એકબીજાની નજીક રાખો. બંને ડિવાઇસ બંધ ન કરો અને Signal ને ખુલ્લા રાખો. ટ્રાન્સફર એન્ડ-ટુ-એન્ડ એન્ક્રિપ્ટ થયેલ છે.";
@@ -1712,7 +1712,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "ડેટા પ્રાપ્ત કરવો";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "કનેક્ટ કરી રહ્યું છે...";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "કનેક્ટ થઈ રહ્યું છે…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "વર્તુળમાં QR કોડ મૂકો";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "Signal ને દાન આપો";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "ચલણ";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "તમે iOS સેટિંગ્સ એપ્લિકેશનમાં એક્સેસને સક્ષમ કરી શકો છો.";
@@ -2183,7 +2183,7 @@
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "નવી મીડિયા લોડ કરી રહ્યું છે…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "જૂની મીડિયા લોડ કરી રહ્યું છે...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "જૂની મીડિયા લોડ થઈ રહી છે…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "જોડાણ";
@@ -2309,7 +2309,7 @@
 "GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%1$@ને રિંગ જાય છે…";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "%1$@ અને %2$@ને રિંગ જાય છે...";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "%1$@ અને %2$@ને રિંગ જાય છે…";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "કૉલમાં જોડાઓ";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "વધારે";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "ગ્રુપનું ડિસ્ક્રિપ્શન ઉમેરો...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "ગ્રુપનું ડિસ્ક્રિપ્શન ઉમેરો…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "ગ્રુપનું ડિસ્ક્રિપ્શન આ ગ્રુપના સભ્યો અને આમંત્રિત કરાયેલા લોકોને દેખાશે.";
@@ -3185,7 +3185,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "જોડાણ પસંદ કરવામાં નિષ્ફળ.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "કનેક્ટ કરી રહ્યું છે...";
+"IN_CALL_CONNECTING" = "કનેક્ટ થઈ રહ્યું છે…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "અન્ય ડિવાઇસ પર જવાબ આપ્યો.";
@@ -3197,10 +3197,10 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "અન્ય ડિવાઇસ પર નકારી.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "ફરીથી કનેક્ટ કરી રહ્યું છે...";
+"IN_CALL_RECONNECTING" = "ફરીથી કનેક્ટ કરી રહ્યું છે…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "રિંગ વાગે છે...";
+"IN_CALL_RINGING" = "રિંગ વાગે છે…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_AUDIO" = "ઓડિયો કૉલ…";
@@ -3209,7 +3209,7 @@
 "IN_CALL_RINGING_VIDEO" = "વિડિયો કૉલ…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "જવાબ આપ્યો. સલામત...";
+"IN_CALL_SECURING" = "જવાબ આપ્યો. સુરક્ષિત કરી રહ્યાં છીએ…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "કૉલ સમાપ્ત થયો.";
@@ -3719,13 +3719,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "મોકલવામાં નિષ્ફળ";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "મોકલવા...";
+"MESSAGE_STATUS_SENDING" = "મોકલાઈ રહ્યું છે…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "મોકલ્યો";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "અપલોડ કરી રહ્યુ છે...";
+"MESSAGE_STATUS_UPLOADING" = "અપલોડ થઈ રહ્યુ છે…";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "જોયેલુ";
@@ -3785,13 +3785,13 @@
 "MY_STORIES_NO_STORIES" = "તમારી સ્ટોરી પરના અપડેટ્સ અહીં દેખાશે.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "આમના સિવાય બધા...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "આમના સિવાય બધા…";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "બધા Signal કનેક્શન";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "ફક્ત આમની સાથે શેર કરો...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "ફક્ત આમની સાથે શેર કરો…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "મારી સ્ટોરી";
@@ -3983,7 +3983,7 @@
 "NOTIFICATIONS_SECTION_INAPP" = "જ્યારે એપ્લિકેશન ખુલ્લી હોય ત્યારે રમો";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "કસ્ટમ સાઉન્ડ ઉમેરો...";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "કસ્ટમ સાઉન્ડ ઉમેરો…";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "નામ, કન્ટેન્ટ અને ક્રિયાઓ";
@@ -4136,7 +4136,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "મને %1$@માં કૉલ કરો";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "કોડને માન્ય કરી રહ્યા છીએ...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "કોડને માન્ય કરી રહ્યા છીએ…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "આ કોડ ખોટો છે";
@@ -4307,7 +4307,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "પેમેન્ટ પૂર્ણ";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "મોકલી રહ્યો છે...";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "મોકલાઈ રહ્યું છે…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "મોકલ્યો";
@@ -4337,7 +4337,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "પૂર્ણ";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "મોકલી રહ્યો છે...";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "મોકલાઈ રહ્યું છે…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "મોકલ્યો";
@@ -4604,7 +4604,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "PIN ફરીથી દાખલ કરો";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "PIN બનાવી રહ્યાં છે...";
+"PIN_CREATION_PIN_PROGRESS" = "PIN બનાવી રહ્યાં છે…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "આ ડિવાઇસ રજીસ્ટર થાય ત્યાં સુધી તમે તમારો PIN બદલી શકો છો.";
@@ -4769,7 +4769,7 @@
 "PROCEED_BUTTON" = "આગળ વધો";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "તમારા વિશે થોડા શબ્દો લખો...";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "તમારા વિશે થોડા શબ્દો લખો…";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "દયાળુ બનો";
@@ -4976,7 +4976,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "ખોટો PIN";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "પિન ચકાસી રહ્યું છે...";
+"REGISTER_2FA_PIN_PROGRESS" = "પિનની ચકાસણી થઈ રહી છે…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "સબમિટ કરો";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "ફેરફાર કરો";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%1$@ ની ચકાસણી કરી રહ્યા છીએ...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%1$@ ની ચકાસણી થઈ રહી છે…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "અસ્વીકાર";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "ચેટ હિસ્ટ્રી દૂર કરો";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "કૉપિરાઇટ Signal મેસેન્જર\nGPLv3 હેઠળ લાઇસન્સ પ્રાપ્ત";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "ડેટાનો વપરાશ";
@@ -5561,7 +5561,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "સંપર્ક Signal સાથે જોડાય છે";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "સૂચિત કરો ક્યારે...";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "આ સમયે સૂચિત કરો…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "સૂચનાઓ";
@@ -6143,7 +6143,7 @@
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "%2$@ના %1$@ને અપલોડ કરી રહ્યા છીએ";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "અપલોડ કરી રહ્યુ છે...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "અપલોડ થઈ રહ્યુ છે…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "જોડાણ તૈયાર કરવામાં અસમર્થ";
@@ -6419,10 +6419,10 @@
 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "આ સ્ટોરી કેટલાક લોકોને મોકલી શકાઈ નથી. તમારું કનેક્શન તપાસો અને ફરી પ્રયાસ કરો";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "ફક્ત આમની સાથે શેર કરો...";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "ફક્ત આમની સાથે શેર કરો…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "આમના સિવાય બધા...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "આમના સિવાય બધા…";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "મોકલવામાં નિષ્ફળ";
@@ -6440,7 +6440,7 @@
 "STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "થોડી જ મોકલી શક્યા. વિગતો માટે ટેપ કરો";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "મોકલાઈ રહી છે...";
+"STORY_SENDING" = "મોકલાઈ રહ્યું છે…";
 
 /* First bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "વાતચીત શરૂ કરીને";
@@ -6593,10 +6593,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · %1$@ના રોજ રિન્યૂ થશે";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "ચુકવણીની પ્રક્રિયા ચાલુ છે...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "પેમેન્ટની પ્રક્રિયા ચાલુ છે…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "ટ્રાન્ઝેક્શનની પ્રક્રિયા ચાલુ છે...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "ટ્રાન્ઝેક્શનની પ્રક્રિયા ચાલુ છે…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "%1$@ના રોજ રિન્યૂ થશે";

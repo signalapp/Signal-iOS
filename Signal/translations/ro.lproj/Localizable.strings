@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Fișier nesuportat";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "Animat";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Audio";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Donația ta lunară recurentă a fost anulată automat deoarece ai fost inactiv pentru o perioadă lungă de timp. Insigna ta %1$@ nu mai este vizibilă pe profilul tău.\n\nPoți continua să folosești Signal, dar pentru a susține aplicația și pentru ați reactiva insigna, reînnoiește acum.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Ai câștigat o insignă de donator de la Signal! Afișează-o la profil ca să îți arăți sprijinul.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Afișează la profil";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Folosește ca insignă principală";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "Îți mulțumim pentru sprijin!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Atunci când ai mai mult de o insignă, poți alege una pe care să o afișezi pentru ca ceilalți să o vadă pe profilul tău.";
@@ -689,7 +689,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Sună din nou";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Se primește un apel audio...";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Se primește un apel audio…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Apel audio nepreluat la %1$@";
@@ -731,7 +731,7 @@
 "CALL_USER_ALERT_TITLE" = "Apelezi?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Apel de intrare video...";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Apel de intrare video…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Apel video nepreluat la %1$@";
@@ -1187,7 +1187,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Șterg conversația?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Pune pe silențios această conversație pentru...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Pune pe silențios această conversație pentru…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 zi";
@@ -1316,7 +1316,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "mesaj";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Pune pe silențios această conversație pentru...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Pune pe silențios această conversație pentru…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Întotdeauna";
@@ -1424,7 +1424,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Șterge tot";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Se încarcă mai multe mesaje...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Se încarcă mai multe mesaje…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Citește mai mult";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Această acțiune va șterge informațiile contului, profilul și toate mesajele tale.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Se șterge contul...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Se șterge contul…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Fără conexiune internet. Asigură-te că datele Wi-Fi sau mobile sunt activate, apoi încearcă din nou.";
@@ -1703,7 +1703,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Nu vezi notificarea pe vechiul tău dispozitiv?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Se așteaptă celălalt dispozitiv...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Se așteaptă celălalt dispozitiv…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Ține ambele dispozitive unul lângă altul. Nu opri niciun dispozitiv și menține Signal deschis. Transferurile sunt criptate integral.";
@@ -1712,7 +1712,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Se primesc date";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Se conectează...";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Se conectează…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Poziționează codul QR în interiorul cercului";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "Donează pentru Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Monedă";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Poți permite accesul din aplicația iOS Setări.";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "mai multe";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Adaugă descrierea grupului...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Adaugă descrierea grupului…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Descrierile grupului vor fi vizibile pentru membrii acestui grup și pentru persoanele care au fost invitate.";
@@ -2561,7 +2561,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Alătură-te";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Se încarcă...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Se încarcă…";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Vrei să te alături acestui grup și să partajezi numele și fotografia ta cu membrii săi?";
@@ -3185,7 +3185,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Atașamentul nu a putut fi selectat.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Se conectează...";
+"IN_CALL_CONNECTING" = "Se conectează…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Apel acceptat pe alt dispozitiv.";
@@ -3200,16 +3200,16 @@
 "IN_CALL_RECONNECTING" = "Se reconectează…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Sună...";
+"IN_CALL_RINGING" = "Sună…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Apel audio...";
+"IN_CALL_RINGING_AUDIO" = "Apel audio…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Apel video...";
+"IN_CALL_RINGING_VIDEO" = "Apel video…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Apel preluat. Securizare în curs...";
+"IN_CALL_SECURING" = "Apel preluat. Securizare în curs…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Apel Terminat.";
@@ -3719,13 +3719,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Trimitere eșuată.";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Se trimite...";
+"MESSAGE_STATUS_SENDING" = "Se trimite…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Trimis";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Se încarcă ...";
+"MESSAGE_STATUS_UPLOADING" = "Se încarcă …";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Vizualizat";
@@ -3983,7 +3983,7 @@
 "NOTIFICATIONS_SECTION_INAPP" = "Redă Cât Timp Aplicația este Deschisă";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Adaugă un ton personalizat...";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Adaugă un ton personalizat…";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nume, Conținut și Acțiuni";
@@ -4136,7 +4136,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Sună-mă în %1$@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Se validează codul...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Se validează codul…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Acest cod este incorect";
@@ -4307,7 +4307,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Plată finalizată";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Se trimite...";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Se trimite…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Trimis";
@@ -4337,7 +4337,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Complet";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Se trimite...";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Se trimite…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Trimis";
@@ -4604,7 +4604,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Introdu din nou PIN-ul";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Se creează PIN-ul...";
+"PIN_CREATION_PIN_PROGRESS" = "Se creează PIN-ul…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Poți schimba codul PIN atât timp cât acest dispozitiv este înregistrat.";
@@ -4769,7 +4769,7 @@
 "PROCEED_BUTTON" = "Continuă";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Scrie câteva cuvinte despre tine...";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Scrie câteva cuvinte despre tine…";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Fii bun/ă";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Editează";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Se verifică %1$@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Se verifică %1$@…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Respinge";
@@ -5207,7 +5207,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Deschide Signal pe telefon pentru a asocia acest iPad la contul tău.";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Nu am Signal pe telefonul meu...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Nu am Signal pe telefonul meu…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Accesează magazinul de aplicații de pe telefon, instalează Signal, finalizează procesul de înregistrare și apoi poți asocia iPad-ul la același cont.";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Șterge Istoricul Conversației";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "Drepturi de autor Signal Messenger\nSub licența GPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Utilizare date";
@@ -5561,7 +5561,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Un contact se alătură la Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Anunță-mă când...";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Anunță-mă când…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Notificări";
@@ -6122,7 +6122,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Numărul tău de siguranță pentru %1$@ s-a schimbat recent. S-ar putea să dorești să-l verifici în aplicație înainte de a retrimite.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Se încarcă...";
+"SHARE_EXTENSION_LOADING" = "Se încarcă…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Lansează aplicația Signal pentru a te înregistra.";
@@ -6140,10 +6140,10 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Nu s-a putut trimite atașamentul";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Actualizează %1$@ din %2$@ ...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Actualizează %1$@ din %2$@ …";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Se încarcă...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Se încarcă…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Nu s-a putut prepara atașamentul";
@@ -6209,7 +6209,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Autocolante instalate";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Se încarcă...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Se încarcă…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Nici un autocolant instalat";
@@ -6422,7 +6422,7 @@
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Împărtășește Doar Cu…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Toate cu Excepția...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Toate cu Excepția…";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Trimitere eșuată";
@@ -6440,7 +6440,7 @@
 "STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Trimisă parțial. Apasă pentru detalii";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "Se trimite...";
+"STORY_SENDING" = "Se trimite…";
 
 /* First bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Începi o conversație";
@@ -6593,10 +6593,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · Reînnoire: %1$@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Se procesează plata...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Se procesează plata…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Se procesează tranzacția...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Se procesează tranzacția…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Reînnoire: %1$@";

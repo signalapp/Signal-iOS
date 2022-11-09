@@ -848,13 +848,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Jednoho člena nebylo možné přidat do nové skupiny a ze skupiny byl odebrán.</string>
+			<string>Do nové skupiny nebylo možné přidat jednoho člena  a ze skupiny byl odebrán.</string>
 			<key>few</key>
-			<string>%1$d členy nebylo možné přidat do nové skupiny a ze skupiny byli odebráni.</string>
+			<string>Do nové skupiny nebylo možné přidat %1$d členy a ze skupiny byli odebráni.</string>
 			<key>many</key>
-			<string>%1$d členů nebylo možné přidat do nové skupiny a ze skupiny byli odebráni.</string>
+			<string>Do nové skupiny nebylo možné přidat %1$d členů a ze skupiny byli odebráni.</string>
 			<key>other</key>
-			<string>%1$d členů nebylo možné přidat do nové skupiny a ze skupiny byli odebráni.</string>
+			<string>Do nové skupiny nebylo možné přidat %1$d členů a ze skupiny byli odebráni.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>

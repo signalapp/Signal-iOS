@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "الملف غير مدعوم";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "متحرك";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "صوت";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "لقد أُلغيَ تبرعك الشهري الدوري تلقائيا، بسبب طول غياب نشاطك لفترة طويلة. لن تظهر بعد ذلك شارة %1$@ في ملفك الشخصي.\n\nيمكنك الاستمرار في استخدام Signal لدعم التطبيق وإعادة تفعيل شارتك، يُرجى التجديد الآن.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "لقد حصلت على شارة مُتبرع من Signal! اعرضها في حسابك الشخصي لإظهار دعمك.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "عرض في الملف الشخصي";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "اختيار الشارة المميزة";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "شكراً لدعمك!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "عندما يكون لديك أكثر من شارة واحدة، يمكنك اختيار واحدة لتمييزها ليراها الآخرون في ملفك الشخصي.";
@@ -689,7 +689,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "مُعاودة الاتصال";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 مكالمة صوتية واردة...";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 مكالمة صوتية واردة…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞مكالمة صوتية فائتة على الساعة %1$@";
@@ -731,7 +731,7 @@
 "CALL_USER_ALERT_TITLE" = "أأتصل ؟";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "‫📹 مكالمة بالصورة واردة...";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "‫📹 مكالمة بالصورة واردة…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞مكالمة مرئية فائتة على الساعة %1$@";
@@ -1187,7 +1187,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "حذف المحادثة ؟";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "كتم المحادثة لمدة...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "كتم المحادثة لمدة…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "يوم واحد";
@@ -1316,7 +1316,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "رسالة";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "كتم المحادثة لمدة...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "كتم المحادثة لمدة…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "دائمًا";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "سَوفَ يُؤدِّي هَذَا إلى حَذفِ مَعلُومَاتِ حِسابِك، مَلَفُّكَ الشَّخصِي وَجَمِيعُ الرَّسَائِلِ الخَاصَّةِ بِك.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "يَجري حَذفُ الحِساب...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "جارٍ حَذفُ الحِساب…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "لَا يُوجَدُ اِتِّصَالٌ بالإنترنت. تَأكُّد مِن تَشغِيل الـWi-Fi أو بَيَانَات الجَوَّال، ثُمَّ حَاوِل مَرَّةً أُخرَى.";
@@ -1703,7 +1703,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "ألا يظهر التَنبيه الفَوري في جِهازك القديم؟";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "في انتظار جهاز آخر ...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "في انتظار جهاز آخر…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "أبقي الجهازين بالقرب من بعضهما البعض. لا تقم بإيقاف تشغيل أياً مِنهُما وحافظ على Signal مفتوحاً. عمليات النقل مُعمّاة من النهاية إلى النهاية.";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "تبرَّع لـ Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "العملة";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "يُمكِنُك تمكين الوصول من خِلال تطبيق إعدادات iOS.";
@@ -2180,10 +2180,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "ليس لديك أي وسائط في هذه المُحادثة.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "يَجري تحميل وسائط أحدث...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "جارٍ تحميل وسائط أحدث…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "يَجري تحميل وسائط أقدم...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "جارٍ تحميل وسائط أقدم…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "مرفق";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "مَزيد";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "إضافَة وَصف لِلمَجمُوعَة...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "إضافَة وَصف لِلمَجمُوعَة…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "سوف تظهر أوصاف المجموعات لأعضائها وكذا الأفراد الذين تمت دعوتهم إليها.";
@@ -2561,7 +2561,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "انضم";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "قيد التحميل...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "جارٍ التحميل…";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "هل تريد الانضمام إلى هذه المجموعة ومُشاركة اسمك وصورتك مع أعضائها؟";
@@ -3203,13 +3203,13 @@
 "IN_CALL_RINGING" = "رنين…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "مُكالمة صوتية...";
+"IN_CALL_RINGING_AUDIO" = "مُكالمة صوتية…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "مُكالمة فيديو...";
+"IN_CALL_RINGING_VIDEO" = "مُكالمة فيديو…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "تم الرّد. جارِ التأمين...";
+"IN_CALL_SECURING" = "تم الرّد. جارٍ التأمين…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "انتهت المكالمة.";
@@ -3719,13 +3719,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "فشل الإرسال";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "يَجري الإرسال...";
+"MESSAGE_STATUS_SENDING" = "جارٍ الإرسال…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "أرسِلَت";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "جار الرفع...";
+"MESSAGE_STATUS_UPLOADING" = "جارٍ التحميل…";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "لقد تمَّ عرضه";
@@ -4136,7 +4136,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "اتَّصل بي بَعد %1$@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "التَّحَقُّقُ مِنَ الرَّمزِ جارٍ...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "جارٍ التَّحَقُّقُ مِنَ الرَّمز…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "هذا الرمز غير صحيح";
@@ -4307,7 +4307,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "تمَّ الدفع";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "يَجري الإرسال...";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "جارٍ الإرسال…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "تمّ الارسال";
@@ -4337,7 +4337,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "تم";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "يَجري الإرسال...";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "جارٍ الإرسال…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "تمّ الارسال";
@@ -4604,7 +4604,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "أعِد إدخال الـPIN";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "يَجري إنشاء الـPIN...";
+"PIN_CREATION_PIN_PROGRESS" = "جارٍ إنشاء الـ PIN…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "يُمكنك تغيير الـPIN الخاص بك طالما أن هذا الجهاز مُسجّل.";
@@ -4769,7 +4769,7 @@
 "PROCEED_BUTTON" = "تقدم";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "اكتب بضع كلمات عن نفسك...";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "اكتب بضع كلمات عن نفسك…";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "كُن طيِّبَ القَلب";
@@ -4976,7 +4976,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "إنَّ الـPIN غير صحيح";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "يَجري التَّحَقُّق مِن الـPIN...";
+"REGISTER_2FA_PIN_PROGRESS" = "جارٍ التَّحَقُّق مِن الـ PIN…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "تسليم";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "تحرير";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "يَجري التَّحَقُّق مِن %1$@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "جارٍ التَّحَقُّق مِن %1$@…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "رفض";
@@ -5207,7 +5207,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "شغِّل  Signal على الهاتف الخاص بك لربط هذا الـiPad بحسابك";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "ليس لدي تطبيق Signal على الهاتف الخاص بي...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "ليس لديّ تطبيق Signal على هاتفي…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "اذهب إلى الـAppStore على هاتفك ، ثبِّت Signal، أكمل عملية التسجيل، وبعد ذلك يُمكنك ربط الـiPad الخاص بك بنفس الحساب.";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "مسح تاريخ المحادثات";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "حقوق النشر محفوظة لـ Signal Messenger\nمُرخص بموجب AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "استخدام البيانات";
@@ -5561,7 +5561,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "جِهَةُ اِتِّصالٍ اِنضَمَّت إلى Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "اخطِرني مَتَى مَا...";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "اخطِرني مَتَى مَا…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "الإشعارات";
@@ -6140,10 +6140,10 @@
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "تعذّر إرسال المُرفق";
 
 /* Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}} */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "يَجري رَفع %1$@ مِن %2$@...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "جارٍ تحميل %1$@ مِن %2$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "يَجري الرَّفع...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "جارٍ التحميل…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "تعذَّر تجهيز  المُرفق";
@@ -6440,7 +6440,7 @@
 "STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "تم الإرسال جزئيًا. يُرجى النقر للتفاصيل";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "جارٍ الإرسال...";
+"STORY_SENDING" = "جارٍ الإرسال…";
 
 /* First bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "بدء المحادثة معهم";
@@ -6593,10 +6593,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " . يتجدد %1$@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "جاري تنفيذ عملية الدفع...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "جارٍ معالجة عملية الدفع…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "جاري معالجة المعاملة...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "جارٍ معالجة المعاملة…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "يتجدد %1$@";

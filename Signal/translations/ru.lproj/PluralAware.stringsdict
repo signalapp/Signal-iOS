@@ -488,13 +488,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Звоним %2$@, %3$@ и ещё %1$d человеку...</string>
+			<string>Звоним %2$@, %3$@ и ещё %1$d человеку…</string>
 			<key>few</key>
-			<string>Звоним %2$@, %3$@ и ещё %1$d людям</string>
+			<string>Звоним %2$@, %3$@ и ещё %1$d людям…</string>
 			<key>many</key>
-			<string>Звоним %2$@, %3$@ и ещё %1$d людям</string>
+			<string>Звоним %2$@, %3$@ и ещё %1$d людям…</string>
 			<key>other</key>
-			<string>Звоним %2$@, %3$@ и ещё %1$d человека...</string>
+			<string>Звоним %2$@, %3$@ и ещё %1$d человека…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -1288,7 +1288,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Отозвать приглашение в группу, которое отправил(-а) «%2$@»?</string>
+			<string>Отозвать %1$d приглашение, которое отправил(-а) «%2$@»?</string>
 			<key>few</key>
 			<string>Отозвать %1$d приглашения, которые отправил(-а) «%2$@»?</string>
 			<key>many</key>

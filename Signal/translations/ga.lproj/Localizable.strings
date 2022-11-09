@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Cineál comhaid nach dtacaítear leis";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "Beoite";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Fuaim";
@@ -512,7 +512,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %1$@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "Thuill tú suaitheantas bronntóra ó Signal! Taispeáin ar do phróifíl é le do thacaíocht a léiriú.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Display on Profile";
@@ -521,7 +521,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Cruthaigh Suaitheantas Faoi Thrácht";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "Go raibh maith agat as do thacaíocht!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "When you have more than one badge, you can choose one to feature for others to see on your profile.";
@@ -1187,7 +1187,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Chat?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Mute this chat for...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Balbhaigh an comhrá seo do…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 lá amháin";
@@ -1424,7 +1424,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Scrios Uile";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Tuilleadh Teachtaireachtaí á Lódáil...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Tuilleadh Teachtaireachtaí á Lódáil…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tuilleadh Eolais";
@@ -1586,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "This will delete your account info, profile, and all of your messages.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Deleting Account...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Cuntas á Scriosadh…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "No internet connection. Make sure that Wi-Fi or mobile data is turned on, then try again.";
@@ -1703,7 +1703,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Not seeing the prompt on your old device?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Ag feitheamh leis an ngléas eile...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Ag Feitheamh leis an nGléas Eile…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Coinnigh an dá ghléas i ngar dá chéile. Ná múch ceachtar acu, agus coinnigh Signal oscailte orthu. Tá an t-aistriú criptithe ó cheann go ceann.";
@@ -1712,7 +1712,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Sonraí á bhFáil";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Ag ceangal...";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Nascadh…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Cuir an cód QR laistigh den chiorcal";
@@ -1919,7 +1919,7 @@
 "DONATION_VIEW_TITLE" = "Bronn airgead ar Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Airgeadra";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Is féidir leat cead a thabhairt do Signal sna Socruithe iOS.";
@@ -2180,10 +2180,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this chat.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Meáin níos nuaí á lódáil...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Meáin Níos Nuaí á Lódáil…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Meáin níos sine á lódáil...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Meáin Níos Sine á Lódáil…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Ceangaltán";
@@ -2420,7 +2420,7 @@
 "GROUP_DESCRIPTION_MORE" = "more";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Cuir cur síos ar an ngrúpa leis…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Group descriptions will be visible to members of this group and people who have been invited.";
@@ -2561,7 +2561,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Téigh le";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Á lódáil...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Lódáil…";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Do you want to join this group and share your name and photo with its members?";
@@ -3185,7 +3185,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Níorbh fhéidir an ceangaltán a sheoladh.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Ag ceangal...";
+"IN_CALL_CONNECTING" = "Nascadh…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Freagartha ar ghléas eile";
@@ -3197,19 +3197,19 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Diúltaithe ar ghléas eile.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Ag ceangal arís...";
+"IN_CALL_RECONNECTING" = "Athnascadh…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Ag bualadh...";
+"IN_CALL_RINGING" = "Bualadh…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "Glao Fuaime...";
+"IN_CALL_RINGING_AUDIO" = "Glao Fuaime…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "Físghlao...";
+"IN_CALL_RINGING_VIDEO" = "Físghlao…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Freagartha. Á chriptiú...";
+"IN_CALL_SECURING" = "Freagartha. Á shlánú…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Deireadh an Ghlao.";
@@ -3719,13 +3719,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "Theip ar an seoladh";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Á seoladh...";
+"MESSAGE_STATUS_SENDING" = "Seoladh…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Seolta";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Á uaslódáil...";
+"MESSAGE_STATUS_UPLOADING" = "Uaslódáil…";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Feicthe";
@@ -3785,13 +3785,13 @@
 "MY_STORIES_NO_STORIES" = "Taispeánfar nuashonruithe ar do scéal anseo.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Gach Duine Ach Amháin...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Gach Duine Ach Amháin…";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Gach Teagmhálaí Signal";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Ná Comhroinn Ach Le...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Ná Comhroinn Ach Le…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Mo Scéalta";
@@ -4136,7 +4136,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Call Me in %1$@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Validating Code...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Cód á Bhailíochtú…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Tá an cód seo mícheart";
@@ -4307,7 +4307,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "Payment Complete";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Á seoladh...";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "Seoladh…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "Seolta";
@@ -4337,7 +4337,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "Complete";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Á seoladh...";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "Seoladh…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "Seolta";
@@ -4604,7 +4604,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Cuir an UAP isteach arís";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "UAP á cruthú...";
+"PIN_CREATION_PIN_PROGRESS" = "UAP á cruthú…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Is féidir leat d'UAP a athrú chomh fada is atá an gléas seo cláraithe.";
@@ -4976,7 +4976,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "UAP mhícheart";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "UAP á deimhniú...";
+"REGISTER_2FA_PIN_PROGRESS" = "UAP á deimhniú…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Seol isteach é";
@@ -5054,7 +5054,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Eagar";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Verifying %1$@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%1$@ á fíorú…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Diúltaigh";
@@ -5207,7 +5207,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Tosaigh Signal ar do ghuthán chun an iPad seo a nascadh le do chuntas";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Níl Signal ar mo ghuthán...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Níl Signal ar mo ghuthán…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Oscail an App Store ar do ghuthán, suiteáil Signal, cláraigh, ansin beidh tú in ann an iPad a nascadh leis an gcuntas céanna.";
@@ -5423,7 +5423,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Glan Stair na gComhráite";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "Cóipcheart Signal Messenger\nCeadúnaithe faoi GPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Data Usage";
@@ -5561,7 +5561,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joins Signal";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Fógraigh nuair a...";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Cuir in iúl nuair a…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Fógraí";
@@ -6122,7 +6122,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Athraíodh d'uimhir shábháilteachta le %1$@ le déanaí. Ba chóir duit í a dheimhniú sa bpríomhaip sula seolfaidh tú an teachtaireacht arís.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Á lódáil...";
+"SHARE_EXTENSION_LOADING" = "Lódáil…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Tosaigh aip Signal le clárú.";
@@ -6143,7 +6143,7 @@
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Uploading %1$@ of %2$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Á uaslódáil...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Uaslódáil…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Níorbh fhéidir an ceangaltán a ullmhú";
@@ -6209,7 +6209,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Greamáin Shuiteáilte";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Á lódáil...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Lódáil…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Níl aon ghreamáin suiteáilte";
@@ -6419,10 +6419,10 @@
 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Níorbh fhéidir an scéal seo a sheoladh chuig daoine áirithe. Seiceáil do nasc agus triail arís";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Ná Comhroinn Ach Le...";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Ná Comhroinn Ach Le…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Gach Duine Ach Amháin...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Gach Duine Ach Amháin…";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Theip ar an seoladh";
@@ -6440,7 +6440,7 @@
 "STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Seolta go páirteach. Tapáil chun sonraí a fháil";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "Á sheoladh...";
+"STORY_SENDING" = "Seoladh…";
 
 /* First bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Trí chomhrá a thosú leo";
@@ -6593,10 +6593,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · Athnuachan %1$@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Processing payment...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Íocaíocht á próiseáil…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Processing Transaction...";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Idirbheart á Phróiseáil…";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
 "SUSTAINER_VIEW_RENEWAL" = "Athnuachan %1$@";
