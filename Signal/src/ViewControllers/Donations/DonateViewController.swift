@@ -280,10 +280,6 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             ),
             currencyString
         )
-        let confirm = NSLocalizedString(
-            "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE",
-            comment: "Update Subscription? Action sheet confirm button"
-        )
         let notNow = NSLocalizedString(
             "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW",
             comment: "Sustainer view Not Now Action sheet button"
@@ -291,7 +287,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         let actionSheet = ActionSheetController(title: title, message: message)
         actionSheet.addAction(.init(
-            title: confirm,
+            title: CommonStrings.continueButton,
             style: .default,
             handler: { [weak self] _ in
                 self?.didTapToContinueMonthlyDonation()

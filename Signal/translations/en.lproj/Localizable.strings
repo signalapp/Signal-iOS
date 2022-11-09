@@ -6628,9 +6628,6 @@
 /* Update Subscription? Action sheet title */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Update Subscription?";
 
-/* Update Subscription? Action sheet confirm button */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Update";
-
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Off";
 
