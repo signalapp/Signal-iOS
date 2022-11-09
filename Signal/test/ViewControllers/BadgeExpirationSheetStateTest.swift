@@ -256,11 +256,11 @@ class BadgeExpirationSheetStateTest: XCTestCase {
             ),
             (
                 State(badge: getGiftBadge(), mode: .giftBadgeExpired(hasCurrentSubscription: true)),
-                State.ActionButton(action: .dismiss, text: CommonStrings.okButton, hasNotNow: false)
+                State.ActionButton(action: .dismiss, text: CommonStrings.okayButton, hasNotNow: false)
             ),
             (
                 State(badge: getGiftBadge(), mode: .giftNotRedeemed(fullName: "")),
-                State.ActionButton(action: .dismiss, text: CommonStrings.okButton, hasNotNow: false)
+                State.ActionButton(action: .dismiss, text: CommonStrings.okayButton, hasNotNow: false)
             )
         ]
 
