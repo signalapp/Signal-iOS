@@ -556,12 +556,14 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
             // Durably enqueue a job to (1) do the charge (2) redeem the receipt credential (3) enqueue
             // a gift badge message (and optionally a text message) to the recipient. We also want to
             // update the UI partway through the job's execution, and when it completes.
-            let jobRecord = SendGiftBadgeJobQueue.createJob(receiptRequest: try SubscriptionManager.generateReceiptRequest(),
-                                                            amount: self.price,
-                                                            paymentIntent: preparedPayment.paymentIntent,
-                                                            paymentMethodId: preparedPayment.paymentMethodId,
-                                                            thread: self.thread,
-                                                            messageText: self.messageText)
+            let jobRecord = SendGiftBadgeJobQueue.createJob(
+                receiptRequest: SubscriptionManager.generateReceiptRequest(),
+                amount: self.price,
+                paymentIntent: preparedPayment.paymentIntent,
+                paymentMethodId: preparedPayment.paymentMethodId,
+                thread: self.thread,
+                messageText: self.messageText
+            )
             let jobId = jobRecord.uniqueId
 
             let (promise, future) = Promise<Void>.pending()

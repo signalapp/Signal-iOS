@@ -598,8 +598,8 @@ public class SubscriptionManager: NSObject {
         for subscriberID: Data,
         subscriptionLevel: UInt,
         priorSubscriptionLevel: UInt?
-    ) throws {
-        let request = try generateReceiptRequest()
+    ) {
+        let request = generateReceiptRequest()
 
         // Remove prior operations if one exists (allow prior job to complete)
         for redemptionJob in subscriptionJobQueue.runningOperations.get() {
@@ -625,13 +625,19 @@ public class SubscriptionManager: NSObject {
         }
     }
 
-    public class func generateReceiptRequest() throws -> (context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest) {
-        let clientOperations = try clientZKReceiptOperations()
-        let receiptSerial = try generateReceiptSerial()
+    public class func generateReceiptRequest() -> (context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest) {
+        do {
+            let clientOperations = try clientZKReceiptOperations()
+            let receiptSerial = try generateReceiptSerial()
 
-        let receiptCredentialRequestContext = try clientOperations.createReceiptCredentialRequestContext(receiptSerial: receiptSerial)
-        let receiptCredentialRequest = try receiptCredentialRequestContext.getRequest()
-        return (receiptCredentialRequestContext, receiptCredentialRequest)
+            let receiptCredentialRequestContext = try clientOperations.createReceiptCredentialRequestContext(receiptSerial: receiptSerial)
+            let receiptCredentialRequest = try receiptCredentialRequestContext.getRequest()
+            return (receiptCredentialRequestContext, receiptCredentialRequest)
+        } catch {
+            // This operation happens entirely on-device and is unlikely to fail.
+            // If it does, a full crash is probably desirable.
+            owsFail("Could not generate receipt request: \(error)")
+        }
     }
 
     public class func requestReceiptCredentialPresentation(for subscriberID: Data,
@@ -852,7 +858,7 @@ public class SubscriptionManager: NSObject {
                 // Re-kick
                 let newDate = Date(timeIntervalSince1970: subscription.endOfCurrentPeriod)
                 Logger.info("[Donations] Triggering receipt redemption job during heartbeat, last expiration \(lastSubscriptionExpiration), new expiration \(newDate)")
-                try self.requestAndRedeemReceiptsIfNecessary(
+                self.requestAndRedeemReceiptsIfNecessary(
                     for: subscriberID,
                     subscriptionLevel: subscription.level,
                     priorSubscriptionLevel: nil
@@ -1123,8 +1129,8 @@ extension SubscriptionManager {
     public class func createAndRedeemBoostReceipt(
         for intentId: String,
         amount: FiatMoney
-    ) throws {
-        let request = try generateReceiptRequest()
+    ) {
+        let request = generateReceiptRequest()
 
         // Remove prior operations if one exists (allow prior job to complete)
         for redemptionJob in subscriptionJobQueue.runningOperations.get() {

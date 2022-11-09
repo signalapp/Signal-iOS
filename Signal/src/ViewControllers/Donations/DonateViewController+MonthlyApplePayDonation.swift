@@ -88,15 +88,11 @@ extension DonateViewController {
             return owsFailDebug("Did not fetch subscriberID")
         }
 
-        do {
-            try SubscriptionManager.requestAndRedeemReceiptsIfNecessary(
-                for: subscriberID,
-                subscriptionLevel: newSubscriptionLevel.level,
-                priorSubscriptionLevel: priorSubscriptionLevel?.level
-            )
-        } catch {
-            owsFailDebug("Failed to redeem receipts \(error)")
-        }
+        SubscriptionManager.requestAndRedeemReceiptsIfNecessary(
+            for: subscriberID,
+            subscriptionLevel: newSubscriptionLevel.level,
+            priorSubscriptionLevel: priorSubscriptionLevel?.level
+        )
 
         let backdropView = UIView()
         backdropView.backgroundColor = Theme.backdropColor

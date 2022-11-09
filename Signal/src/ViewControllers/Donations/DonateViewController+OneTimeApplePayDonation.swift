@@ -46,15 +46,7 @@ extension DonateViewController {
             SubscriptionManager.terminateTransactionIfPossible = false
             wrappedCompletion(.init(status: .success, errors: nil))
 
-            do {
-                try SubscriptionManager.createAndRedeemBoostReceipt(
-                    for: intentId,
-                    amount: amount
-                )
-            } catch {
-                // TODO: We should do something better here.
-                owsFail("Failed to create and redeem boost receipt")
-            }
+            SubscriptionManager.createAndRedeemBoostReceipt(for: intentId, amount: amount)
 
             ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { (modal) -> Void in
                 // TODO: We don't clean these up, which leads to memory leaks (at best) and
