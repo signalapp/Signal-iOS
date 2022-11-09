@@ -15,7 +15,7 @@ public enum LinkPreviewImageState: Int {
 
 // MARK: -
 
-public protocol LinkPreviewState {
+public protocol LinkPreviewState: AnyObject {
     var isLoaded: Bool { get }
     var urlString: String? { get }
     var displayDomain: String? { get }

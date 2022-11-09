@@ -159,15 +159,7 @@ public class CVComponentState: Equatable, Dependencies {
         // MARK: - Equatable
 
         public static func == (lhs: LinkPreview, rhs: LinkPreview) -> Bool {
-            guard let lhs = lhs.state as? NSObject else {
-                owsFailDebug("Invalid value.")
-                return false
-            }
-            guard let rhs = rhs.state as? NSObject else {
-                owsFailDebug("Invalid value.")
-                return false
-            }
-            return NSObject.isNullableObject(lhs, equalTo: rhs)
+            return lhs.state === rhs.state
         }
     }
     let linkPreview: LinkPreview?
