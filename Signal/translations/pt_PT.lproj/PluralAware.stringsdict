@@ -680,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Um membro não pôde ser adicionado ao &apos;Novo grupo&apos; e foi removido do grupo.</string>
+			<string>Um membro não pôde ser adicionado ao Novo grupo e foi removido do grupo.</string>
 			<key>other</key>
-			<string>%1$d membros não puderam ser adicionados ao &apos;Novo grupo&apos; e foram removidos do grupo.</string>
+			<string>%1$d membros não puderam ser adicionados ao Novo grupo e foram removidos do grupo.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -696,7 +696,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Um membro não pôde ser adicionado ao &apos;Novo grupo&apos; e foi convidado a entrar.</string>
+			<string>Um membro não pôde ser adicionado ao Novo grupo e foi convidado a entrar.</string>
 			<key>other</key>
 			<string>%1$d membros não puderam ser adicionados ao &apos;Novo grupo&apos; e foram convidados a entrar.</string>
 		</dict>
@@ -1176,9 +1176,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; resposta</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; resposta</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; respostas</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; respostas</string>
 		</dict>
 		<key>views</key>
 		<dict>

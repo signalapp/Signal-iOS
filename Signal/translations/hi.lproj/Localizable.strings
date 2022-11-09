@@ -299,7 +299,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "असमर्थित फ़ाइल प्रकार";
 
 /* Short text label for an animated attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_ANIMATED" = "Animated";
+"ATTACHMENT_TYPE_ANIMATED" = "ऐनिमेटेड";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "ऑडियो";
@@ -361,11 +361,8 @@
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "बैज";
 
-/* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "एक सस्टेनर बनें";
-
-/* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "सिग्नल को बूस्ट दें";
+/* When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button. */
+"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Donate Now";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "आपका बूस्ट बैज समाप्त हो गया है और आपकी प्रोफ़ाइल पर दर्शाए जाने के लिए अब उपलब्ध नहीं है।";
@@ -512,7 +509,7 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "आपका आवर्ती मासिक दान अपने आप रद्द कर दिया गया क्योंकि आप बहुत समय से निष्क्रीय थे। आपका %1$@ बैज अब आपकी प्रोफ़ाइल पर नहीं दिख रहा है।\n\nआप Signal का इस्तेमाल करना जारी रख सकते हैं लेकिन ऐप को सहयोग देने और अपना बैज फिर से सक्रीय करने के लिए अभी रिन्यू करें।";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
-"BADGE_THANKS_BODY" = "You’ve earned a donor badge from Signal! Display it on your profile to show off your support.";
+"BADGE_THANKS_BODY" = "आपको Signal की ओर से एक डोनर बैज मिला है। अपना सहयोग दर्शाने के लिए इसे अपनी प्रोफ़ाइल पर प्रदर्शित करें।";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "प्रोफ़ाइल पर डिस्प्ले करें";
@@ -521,7 +518,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "फ़ीचर होने वाले बैज बनाएं";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
-"BADGE_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_TITLE" = "आपके समर्थन के लिए शुक्रिया!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "जब आपके पास एक से ज़्यादा बैज हों, तो आप अपनी प्रोफ़ाइल पर दूसरों को देखने की ख़ातिर फ़ीचर के लिए एक को चुन सकते हैं.";
@@ -601,29 +598,8 @@
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "नया: चेहरों को धुंधला करें या धुंधला करने के लिए कहीं भी ड्रॉ करें।";
 
-/* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "एक बार दान दे कर 30 दिनों के लिए एक बूस्ट बैज पाएँ।";
-
-/* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "आपका बूस्ट बैज %1$@ को समाप्त हो जाएगा.";
-
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "कस्टम राशि दर्ज करें";
-
-/* Text explaining there are other ways to donate on the boost view. */
-"BOOST_VIEW_OTHER_WAYS" = "और अधिक पेमेंट विकल्प";
-
-/* Error text notifying the user they must select a large amount on the donate to signal view */
-"BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "दान करने के लिए बड़ी धनराशि का चयन करें";
-
-/* Error text notifying the user they must select a smaller amount on the donate to signal view */
-"BOOST_VIEW_SELECT_A_SMALLER_AMOUNT" = "दान करने के लिए छोटी धनराशि का चयन करें";
-
-/* Error text notifying the user they must select an amount on the donate to signal view */
-"BOOST_VIEW_SELECT_AN_AMOUNT" = "दान करने के लिए किसी धनराशि का चयन करें";
-
-/* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "सिग्नल को बूस्ट दें";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "जोड़ें";
@@ -689,7 +665,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "दोबारा कोल करें";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 ऑडियो कॉल आ रही है...";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 ऑडियो कॉल आ रही है…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "%1$@ बजे छूटा ऑडियो कॉल 📞";
@@ -708,6 +684,21 @@
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "माइक्रोफ़ोन इस्तेमाल करने की अनुमति चाहिए";
+
+/* label for button shown when an incoming call rings */
+"CALL_CONTROLS_INCOMING_ANSWER" = "answer";
+
+/* Label for button shown when an incoming call rings. This particular label has room for two lines; you may insert a manual linebreak with '\n' as long as both lines are 15 characters or shorter (8 fullwidth characters or shorter), as in the English translation. */
+"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "answer\nwithout video";
+
+/* label for button shown when an incoming call rings */
+"CALL_CONTROLS_INCOMING_DECLINE" = "decline";
+
+/* Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications */
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Incoming group call…";
+
+/* Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}} */
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ is ringing the group…";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ कॉल करने वाले का सुरक्षा नंबर बदल जाने की वजह से कॉल मिस हो गयी।";
@@ -731,7 +722,7 @@
 "CALL_USER_ALERT_TITLE" = "कॉल?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 वीडियो कॉल आ रही है...";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 वीडियो कॉल आ रही है…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
 "CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "%1$@ बजे छूटा वीडियो कॉल 📹";
@@ -935,10 +926,10 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "ग्रुप";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "फ़ोन नंबर खोजें";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Find by Number";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "उपयोगकर्ता का नाम खोजें";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Find by Username";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "आपके कितने संपर्क Signal उपभोगकर्ता हैं, यह जानने के लिये iOS सेटिंग्स ऐप में जा कर Signal को आपके संपर्क पढने की अनुमति दें।";
@@ -966,9 +957,6 @@
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "नया डिवाइस लिंक करें";
-
-/* No comment provided by engineer. */
-"CONFIRMATION_TITLE" = "पुष्टि करें";
 
 /* Label for a contact's postal address. */
 "CONTACT_ADDRESS" = "पता";
@@ -1187,7 +1175,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "चैट को डिलीट करना है?";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "इतने समय के लिए यह चैट म्यूट करें...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "इतने समय के लिए यह चैट म्यूट करें…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 दिन";
@@ -1424,7 +1412,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "सब हटा दें";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "और मेसेज लोड हो रहे हैं...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "और संदेश लोड हो रहे हैं…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "और पढ़ें";
@@ -1586,7 +1574,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "इससे आपके खाते की जानकारी, प्रोफ़ाइल, और आपके सारे संदेश डिलीट हो जाएँगे।";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "खाता डिलीट हो रहा है...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "अकाउंट डिलीट हो रहा है…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "इंटरनेट कनेक्शन नहीं है। सुनिश्चित करें कि Wi-Fi या मोबाइल डेटा चालू है, फिर दोबारा प्रयास करें।";
@@ -1703,7 +1691,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "अपने पुराने डिवाइस पर प्रॉम्पट नहीं देख पा रहे हैं?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "दूसरे डिवाइस का इंतेज़ार हो रहा है...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "दूसरे डिवाइस का इंतज़ार हो रहा है…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "दोनों डिवाइस एक दूसरे के पास रखें। किसी भी डिवाइस को बंद ना करें और Signal खुला रखें| ट्रान्सफर अंत-से-अंत तक एन्क्रिप्टेड है।";
@@ -1776,6 +1764,48 @@
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "सेंसरशिप से बचाव के लिये इस्तेमाल हो रही जगह";
+
+/* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Get the %1$@ badge";
+
+/* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Earn the %1$@ badge for one month";
+
+/* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Donate %1$@ to Signal";
+
+/* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Donate %1$@ to Signal";
+
+/* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
+"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Select an amount to donate.";
+
+/* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. */
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate.";
+
+/* If the user tries to donate to Signal but they've entered an amount that's too large, this error message is shown. */
+"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate.";
+
+/* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
+"DONATE_SCREEN_MONTHLY_CHOICE" = "Monthly";
+
+/* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these and it expires soon, this text is shown below it indicating when it will expire. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "Expires %1$@";
+
+/* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these, this text is shown below it indicating when it will renew. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Renews %1$@";
+
+/* On the donation screen, you can see a list of monthly subscription levels. This text will be shown in the subtitle of each level, telling you which badge you'll get. Embeds {{localized badge name}}, such as \"Planet\". */
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Get a %1$@ badge";
+
+/* On the donation screen, you can see a list of monthly subscription levels. This text will be shown as the title for each level, telling you the price per month. Embeds {{currency string}}, such as \"$5\". */
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/month";
+
+/* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
+"DONATE_SCREEN_ONE_TIME_CHOICE" = "One-Time";
+
+/* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
+"DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Update Subscription";
 
 /* Donation payment error for decline failures where authentication is required. */
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "किसी अन्य भुगतान विधि से प्रयास करें या फिर अधिक जानकारी के लिए अपने बैंक से संपर्क करें।";
@@ -1864,6 +1894,9 @@
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "यदि आपने Signal फिर से इंस्टॉल किया है तो पिछले किए गए किसी भी दान की रसीद उपलब्ध नहीं होगी।";
 
+/* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
+"DONATION_SCREEN_DONATE_BUTTON" = "Donate";
+
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
 "DONATION_SCREENS_HEADER_DESCRIPTION" = "आपके द्वारा आर्थिक सहायता प्राप्त निजी संदेश सेवा। न कोई विज्ञापन, न ट्रैकिंग, न ही समझौता। Signal को सहयोग देने के लिए अभी दान दें।";
 
@@ -1873,9 +1906,6 @@
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
 "DONATION_SCREENS_HEADER_TITLE" = "लाभ से अधिक निजता को वरीयता।";
 
-/* Text of the 'donate to signal' button on the donation screen */
-"DONATION_VIEW_DONATE_TO_SIGNAL" = "Signal को दान करें";
-
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Signal को दान";
 
@@ -1884,9 +1914,6 @@
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "नेटवर्क एरर. अपने कनेक्शन को चेक करें और फिर से कोशिश करें.";
-
-/* Text of the 'make a monthly donation' button on the donation screen */
-"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "एक मासिक दान दें";
 
 /* Title for the 'Badges' button on the donation screen */
 "DONATION_VIEW_MANAGE_BADGES" = "बैज";
@@ -1903,14 +1930,8 @@
 /* Title for the 'my support' section in the donation view */
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "मेरा समर्थन";
 
-/* Title for the 'one-time donation' link in the donation view */
-"DONATION_VIEW_ONE_TIME_DONATION" = "एक बार का दान";
-
 /* Title for the 'other ways to give' section on the donation view */
 "DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "देने के अन्य तरीके";
-
-/* Title for the 'receipts' section on the donation screen */
-"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "रसीद";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "सब्सक्रिप्शन के अक्सर पूछे जाने वाले प्रश्न";
@@ -1919,7 +1940,7 @@
 "DONATION_VIEW_TITLE" = "Signal को दान करें";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "करेंसी";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "आप इसकी अनुमति iOS सेटिंग्स ऐप से दे सकते हैं।";
@@ -2302,6 +2323,9 @@
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "इस कॉल के लिए भागीदारों की अधिकतम संख्या पूरी हो चुकी है। बाद में दोबारा प्रयास करें।";
 
+/* Text explaining that someone has sent a ring to the group. Embeds {ring sender name} */
+"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ is calling the group";
+
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "कॉल पूर्ण है";
 
@@ -2420,7 +2444,7 @@
 "GROUP_DESCRIPTION_MORE" = "अधिक";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "समूह विवरण जोड़ें...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "ग्रुप का विवरण जोड़ें…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "समूह विवरण इस समूह के सदस्यों और आमंत्रित किए गए लोगों के लिए दृश्यमान होंगे।";
@@ -3185,7 +3209,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "अटैचमेंट चुनने में विफल।";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "जोङ रहे हैं...";
+"IN_CALL_CONNECTING" = "कनेक्ट किया जा रहा है…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "आपने दूसरे डिवाइस पर इस काॅल का उत्तर दे दिया है।";
@@ -3197,19 +3221,19 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "दूसरे डिवाइस से काॅल रद्द कर दी गई।";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "फिर से जोङ रहे हैं...";
+"IN_CALL_RECONNECTING" = "फिर से कनेक्ट किया जा रहा है…";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "बज रहा है";
 
 /* Call setup status label */
-"IN_CALL_RINGING_AUDIO" = "ऑडियो कॉल...";
+"IN_CALL_RINGING_AUDIO" = "ऑडियो कॉल…";
 
 /* Call setup status label */
-"IN_CALL_RINGING_VIDEO" = "वीडियो कॉल...";
+"IN_CALL_RINGING_VIDEO" = "वीडियो कॉल…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "उठा लिया है। सुरक्षित कर रहे हैं...";
+"IN_CALL_SECURING" = "उठा लिया है। सुरक्षित कर रहे हैं…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "कॉल समाप्त हो गई है।";
@@ -3719,13 +3743,13 @@
 "MESSAGE_STATUS_SEND_FAILED" = "भेजना विफल";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "भेजा जा रहा है...";
+"MESSAGE_STATUS_SENDING" = "भेजा जा रहा है…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "भेज दिया गया";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "अपलोड हो रहा है...";
+"MESSAGE_STATUS_UPLOADING" = "अपलोड हो रहा है…";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "देखा गया";
@@ -3934,12 +3958,6 @@
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
 "NO_OTHER_GROUPS_IN_COMMON" = "कोई दूसरा साझा समूह नहीं";
 
-/* A string prompting the user to send a new mesaage to a user */
-"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "नया मेसेज:";
-
-/* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "कोई उपभोगकर्ता नहीं मिला। क्या आप SMS से आमंत्रित करना चाहते हैं?";
-
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "स्वयं को लिखें";
 
@@ -3983,7 +4001,7 @@
 "NOTIFICATIONS_SECTION_INAPP" = "सूचनाएँ ऐप खुले होने पर ही दें";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "कस्टम साउंड शामिल करनी है...";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "कस्टम साउंड जोड़ें…";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "नाम, जानकारी, और क्रिया";
@@ -4136,7 +4154,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "मुझे %1$@ में कॉल करें";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "कोड प्रमाणित किया जा रहा है...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "कोड प्रमाणित किया जा रहा है…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "यह कोड ग़लत है";
@@ -4307,7 +4325,7 @@
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE" = "भुगतान पूर्ण";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "भेजा जा रहा है...";
+"PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING" = "भेजा जा रहा है…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT" = "भेज दिया गया";
@@ -4337,7 +4355,7 @@
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE" = "पूरा हुआ";
 
 /* Status indicator for outgoing payments which are being sent. */
-"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "भेजा जा रहा है...";
+"PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING" = "भेजा जा रहा है…";
 
 /* Status indicator for outgoing payments which have been sent. */
 "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT" = "भेज दिया गया";
@@ -4604,7 +4622,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "पिन फिेरसे डालें";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "नया पिन बन रहा है़...";
+"PIN_CREATION_PIN_PROGRESS" = "नया पिन बन रहा है़…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "जब तक आपका डिवाइस पंजीकृत है, आप अपना पिन कभी भी बदल सकते हैं।";
@@ -4769,7 +4787,7 @@
 "PROCEED_BUTTON" = "आगे बढें";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "अपने बारे में कुछ शब्द लिखें...";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "अपने बारे में कुछ लिखें…";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "विनम्र रहें";
@@ -4870,9 +4888,6 @@
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "पुश अधिसूचनाओं के लिये पुनः पंजीकरण सक्षम हो गया है।";
 
-/* No comment provided by engineer. */
-"QUESTIONMARK_PUNCTUATION" = "?";
-
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";
 
@@ -4957,6 +4972,21 @@
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "यूज़र को चुना नहीं जा सकता।";
 
+/* Alert text. Shown after selecting a phone number that isn't valid. */
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ is not a Signal user. Try again with a valid phone number.";
+
+/* Alert title. Shown after selecting a phone number that isn't valid. */
+"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Invalid Phone Number";
+
+/* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
+"RECIPIENT_PICKER_INVITE_ACTION" = "Message";
+
+/* Alert text. Shown after selecting a phone number that isn't a Signal user. */
+"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ is not a Signal user. Would you like to invite this number?";
+
+/* Alert title. Shown after selecting a phone number that isn't a Signal user. */
+"RECIPIENT_PICKER_INVITE_TITLE" = "Invite to Signal";
+
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "मैं अपना पिन भूल गया।";
 
@@ -4976,7 +5006,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "ग़लत पिन";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "पिन की पुष्टि हो रही है...";
+"REGISTER_2FA_PIN_PROGRESS" = "पिन सत्यापित किया जा रहा है…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "जमा करें";
@@ -5054,7 +5084,7 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "बदलें";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%1$@ की पुष्टि की जा रही है...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%1$@ सत्यापित किया जा रहा है…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "अस्वीकार करें";
@@ -5207,7 +5237,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "इस iPad को अपने Signal खाते से लिंक करने के लिये अपने फोन में Signal ऐप खोलें";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "मेरे फ़ोन में Signal नहीं है...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "मेरे फ़ोन में Signal नहीं है…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "अपने फ़ोन में App Store खोलें, Signal इंस्टॉल करें, पंजीकरण प्रक्रिया पूरी करें, तब आप अपने iPad को उस खाते के साथ लिंक कर सकते हैं।";
@@ -5245,9 +5275,6 @@
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "आमंत्रण भेजना असफल रहा, कृपया फिर से कोशिश करें।";
 
-/* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "आपने अपने दोस्त को Signal पर आमंत्रित किया है!";
-
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "मीडिया रद्द करें";
 
@@ -5262,12 +5289,6 @@
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
 "SEND_MEDIA_TURN_OFF_MM_TITLE" = "मल्टी-मोड बंद करना है?";
-
-/* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "दोस्तो को असुरक्षित SMS के ज़रिये आमंत्रित करें?";
-
-/* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "क्या आप नीचे दिये गये नंबर को Signal पर आमंत्रित करना चाहेंगे? ";
 
 /* String describing high quality sent media */
 "SENT_MEDIA_QUALITY_HIGH" = "उच्च";
@@ -5423,7 +5444,7 @@
 "SETTINGS_CLEAR_HISTORY" = "चैट इतिहास हटाएँ";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicensed under the AGPLv3";
+"SETTINGS_COPYRIGHT" = "कॉपीराइट Signal मेसेंजर\nAGPLv3 के तहत लायसेंसीकृत";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "डेटा का उपयोग";
@@ -6143,7 +6164,7 @@
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "%2$@ का %1$@ अपलोड हो रहा है…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "अपलोड हो रहा है...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "अपलोड हो रहा है…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "अटैचमेंट तैयार करने में असमर्थ";
@@ -6281,7 +6302,7 @@
 "STORIES_INFO_ACTION" = "जानकारी";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "अभी दिखाने के लिए कोई अपडेट नहीं है।\nअपनी स्टोरी में जोड़ने के लिए + पर टैप करें।";
+"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "कोई जवाब नहीं";
@@ -6440,7 +6461,7 @@
 "STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "आंशिक रूप से भेजी गई। अधिक जानकारी के लिए टैप करें";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "भेजी जा रही है...";
+"STORY_SENDING" = "भेजी जा रही है…";
 
 /* First bullet point for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "बातचीत शुरू करके";
@@ -6550,9 +6571,6 @@
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "अभी भी प्रोसेस कर रहे";
 
-/* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "पाएँ एक %1$@ बैज";
-
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "सब्सक्रिप्शन रद्द करें";
 
@@ -6586,14 +6604,8 @@
 /* Pricing text for sustainer view badges, embeds {{price}} */
 "SUSTAINER_VIEW_PRICING" = "%1$@/महीना";
 
-/* Renewal text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · %1$@ समाप्त हो जाता है";
-
-/* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · %1$@ को नवीकृत होता है";
-
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "पेमेंट प्रोसेस कर रहे...";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "भुगतान प्रोसेस किया जा रहा है…";
 
 /* Status text while processing a badge redemption */
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "ट्रांज़ैक्शन प्रोसेस कर रहे हैं…";
@@ -6784,7 +6796,7 @@
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "असमर्थित अटैचमेंट प्रकार प्राप्त हुआ है।";
 
-/* No comment provided by engineer. */
+/* When inviting contacts to use Signal, this error is shown if the device doesn't support SMS or if there aren't any registered email accounts. */
 "UNSUPPORTED_FEATURE_ERROR" = "आपका डिवाइस इस फ़ीचर का समर्थन नहीं करता।";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */

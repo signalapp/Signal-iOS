@@ -127,7 +127,7 @@
 			<key>one</key>
 			<string>चॅट हटवायचा?</string>
 			<key>other</key>
-			<string>%1$d चॅट हटवायचे?</string>
+			<string>%1$d चॅट्स हटवायचे?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -1144,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>पाठवत आहे...</string>
+			<string>पाठवत आहे(…)</string>
 			<key>other</key>
-			<string>%1$d पाठवत आहे...</string>
+			<string>%1$d पाठवत आहे(…)</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1176,9 +1176,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; उत्तर</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; उत्तर</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; उत्तरे</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; उत्तरे</string>
 		</dict>
 		<key>views</key>
 		<dict>

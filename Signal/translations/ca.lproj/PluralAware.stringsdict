@@ -1032,7 +1032,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Vols rebutjar l&apos;invitació de grup enviada per %2$@?</string>
+			<string>Vols rebutjar la invitació de grup enviada per %2$@?</string>
 			<key>other</key>
 			<string>Vols rebutjar %1$d invitacions de grup enviades per %2$@?</string>
 		</dict>
@@ -1176,9 +1176,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; resposta</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; resposta</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; respostes</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; respostes</string>
 		</dict>
 		<key>views</key>
 		<dict>

@@ -45,7 +45,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Hozzáadsz egy tagot a(z) „%2$@” csoporthoz?</string>
+			<string>Hozzáadsz %1$d tagot a(z) „%2$@” csoporthoz?</string>
 			<key>other</key>
 			<string>Hozzáadsz %1$d tagot a(z) „%2$@” csoporthoz?</string>
 		</dict>
@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Törlöd a beszélgetést?</string>
+			<string>Törölsz %1$d beszélgetést?</string>
 			<key>other</key>
 			<string>Törölsz %1$d beszélgetést?</string>
 		</dict>
@@ -264,7 +264,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Törlöd az üzenetet?</string>
+			<string>Törölsz %1$d üzenetet?</string>
 			<key>other</key>
 			<string>Törölsz %1$d üzenetet?</string>
 		</dict>
@@ -312,7 +312,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Üzenet küldése</string>
+			<string>%1$d üzenet küldése</string>
 			<key>other</key>
 			<string>%1$d üzenet küldése</string>
 		</dict>
@@ -488,7 +488,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Meghívó elküldve</string>
+			<string>%1$d meghívó elküldve</string>
 			<key>other</key>
 			<string>%1$d meghívó elküldve</string>
 		</dict>
@@ -680,7 +680,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Egy tagot nem lehetett közvetlenül az új csoporthoz adni, és így el lettek távolítva.</string>
+			<string>%1$d tagot nem lehetett közvetlenül az új csoporthoz adni, és így el lett távolítva.</string>
 			<key>other</key>
 			<string>%1$d tagot nem lehetett közvetlenül az új csoporthoz adni, és így el lettek távolítva.</string>
 		</dict>
@@ -696,7 +696,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Egy tagot nem lehetett közvetlenül az új csoporthoz adni, ezért ehelyett meg lettek hívva.</string>
+			<string>%1$d tagot nem lehetett közvetlenül az új csoporthoz adni, ezért ehelyett meg lett hívva.</string>
 			<key>other</key>
 			<string>%1$d tagot nem lehetett közvetlenül az új csoporthoz adni, ezért ehelyett meg lettek hívva.</string>
 		</dict>
@@ -1000,7 +1000,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Érvénytelen meghívó visszavonása</string>
+			<string>%1$d érvénytelen meghívó visszavonása</string>
 			<key>other</key>
 			<string>%1$d érvénytelen meghívó visszavonása</string>
 		</dict>
@@ -1032,7 +1032,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Visszavonod a(z) „%2$@” által kiküldött meghívót?</string>
+			<string>Visszavonod a(z) „%2$@” által kiküldött %1$d meghívót?</string>
 			<key>other</key>
 			<string>Visszavonod a(z) „%2$@” által kiküldött %1$d meghívót?</string>
 		</dict>
@@ -1144,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Küldés...</string>
+			<string>%1$d küldése…</string>
 			<key>other</key>
-			<string>%1$d küldése...</string>
+			<string>%1$d küldése…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1176,9 +1176,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d válasz</string>
+			<string>%2$d válasz</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; válasz</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; válasz</string>
 		</dict>
 		<key>views</key>
 		<dict>

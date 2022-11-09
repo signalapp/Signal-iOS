@@ -904,7 +904,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Batalkan %1$d undangan yang dikirim oleh &quot;%2$@&quot;?</string>
+			<string>Batalkan %1$d undangan yang dikirim oleh “%2$@”?</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -1030,7 +1030,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; balasan</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; balasan</string>
 		</dict>
 		<key>views</key>
 		<dict>

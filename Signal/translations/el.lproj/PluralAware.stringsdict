@@ -45,7 +45,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Προσθήκη μέλος στο “%2$@”;</string>
+			<string>Προσθήκη μέλους στο “%2$@”;</string>
 			<key>other</key>
 			<string>Προσθήκη %1$d μελών στο “%2$@”;</string>
 		</dict>
@@ -312,7 +312,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Αποστολή %1$d μηνύματος</string>
+			<string>Αποστολή μηνύματος</string>
 			<key>other</key>
 			<string>Αποστολή %1$d μηνυμάτων</string>
 		</dict>
@@ -488,7 +488,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Στάλθηκε πρόσκληση</string>
+			<string>Στάλθηκε %1$d πρόσκληση</string>
 			<key>other</key>
 			<string>Στάλθηκαν %1$d προσκλήσεις</string>
 		</dict>
@@ -680,7 +680,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ένα μέλος δεν ήταν δυνατό να προστεθεί στη Νέα Ομάδα και αφαιρέθηκε από την ομάδα.</string>
+			<string>%1$d μέλος δεν ήταν δυνατό να προστεθεί στη Νέα Ομάδα και αφαιρέθηκε από την ομάδα.</string>
 			<key>other</key>
 			<string>%1$d μέλη δεν ήταν δυνατό να προστεθούν στη Νέα Ομάδα και αφαιρέθηκαν από την ομάδα.</string>
 		</dict>
@@ -696,7 +696,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ένα μέλος δεν ήταν δυνατό να προστεθεί στη Νέα Ομάδα και προσκλήθηκε για συμμετοχή.</string>
+			<string>%1$d μέλος δεν ήταν δυνατό να προστεθεί στη Νέα Ομάδα και προσκλήθηκε για συμμετοχή.</string>
 			<key>other</key>
 			<string>%1$d μέλη δεν ήταν δυνατό να προστεθούν στη Νέα Ομάδα και προσκλήθηκαν για συμμετοχή.</string>
 		</dict>
@@ -1032,9 +1032,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ανάκληση άκυρης πρόσκλησης που στάλθηκε από τον/την “%2$@“;</string>
+			<string>Ανάκληση άκυρης πρόσκλησης που στάλθηκε από τον χρήστη “%2$@“;</string>
 			<key>other</key>
-			<string>Ανάκληση %1$d προσκλήσεων που στάλθηκαν από τον/την “%2$@“;</string>
+			<string>Ανάκληση %1$d προσκλήσεων που στάλθηκαν από τον χρήστη “%2$@“;</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -1176,9 +1176,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; απάντηση</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; απάντηση</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; απαντήσεις</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; απαντήσεις</string>
 		</dict>
 		<key>views</key>
 		<dict>

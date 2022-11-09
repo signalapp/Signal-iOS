@@ -41,7 +41,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>เพิ่มสมาชิก %1$d ไปยัง “%2$@” หรือไม่</string>
+			<string>เพิ่มสมาชิก %1$d คนไปยัง “%2$@” หรือไม่</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -111,7 +111,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>ลบ %1$d แชทหรือไม่</string>
+			<string>ลบแชท %1$d รายการหรือไม่</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -232,7 +232,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>ลบ %1$d ข้อความหรือไม่</string>
+			<string>ลบข้อความ %1$d รายการหรือไม่</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -274,7 +274,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>ส่ง %1$d ข้อความ</string>
+			<string>ส่งข้อความ %1$d รายการ</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -428,7 +428,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>ส่ง %1$d คำเชิญแล้ว</string>
+			<string>ส่งคำเชิญ %1$d รายการแล้ว</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
@@ -876,7 +876,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>เพิกถอนคำเชิญที่ใช้งานไม่ได้ %1$d รายการ</string>
+			<string>เพิกถอนคำเชิญที่ไม่ถูกต้อง %1$d รายการ</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -904,7 +904,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>เพิกถอน %1$d คำเชิญที่ถูกส่งโดย “%2$@“ หรือไม่</string>
+			<string>เพิกถอนคำเชิญ %1$d รายการที่ส่งโดย “%2$@” หรือไม่</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -1030,7 +1030,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>ตอบกลับ &lt;bold&gt;%1$d&lt;/bold&gt; รายการ</string>
+			<string>ตอบกลับ &lt;bold&gt;%2$d&lt;/bold&gt; รายการ</string>
 		</dict>
 		<key>views</key>
 		<dict>

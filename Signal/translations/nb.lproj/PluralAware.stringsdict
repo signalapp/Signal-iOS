@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Vil du legge medlemmet til i %2$@?</string>
+			<string>Vil du legge til %1$d medlem i «%2$@»?</string>
 			<key>other</key>
-			<string>Vil du legge %1$d medlemmer til i %2$@?</string>
+			<string>Vil du legge til %1$d medlemmer i «%2$@»?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Vil du slette samtalen?</string>
+			<string>Vil du slette %1$d samtale?</string>
 			<key>other</key>
 			<string>Vil du slette %1$d samtaler?</string>
 		</dict>
@@ -264,7 +264,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Vil du slette meldingen?</string>
+			<string>Vil du slette %1$d melding?</string>
 			<key>other</key>
 			<string>Vil du slette %1$d meldinger?</string>
 		</dict>
@@ -312,7 +312,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Send meldingen</string>
+			<string>Send %1$d melding</string>
 			<key>other</key>
 			<string>Send %1$d meldinger</string>
 		</dict>
@@ -488,7 +488,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Invitasjonen er sendt</string>
+			<string>%1$d invitasjon er sendt</string>
 			<key>other</key>
 			<string>%1$d invitasjoner er sendt</string>
 		</dict>
@@ -680,7 +680,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Et medlem kunne ikke legges til i den nye gruppen og har blitt fjernet.</string>
+			<string>%1$d medlem kunne ikke legges til i den nye gruppen og har blitt fjernet.</string>
 			<key>other</key>
 			<string>%1$d medlemmer kunne ikke legges til i den nye gruppen og har blitt fjernet.</string>
 		</dict>
@@ -696,7 +696,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Et medlem kunne ikke legges til i den nye gruppen og har blitt invitert på nytt.</string>
+			<string>%1$d medlem kunne ikke legges til i den nye gruppen og har blitt invitert på nytt.</string>
 			<key>other</key>
 			<string>%1$d medlemmer kunne ikke legges til i den nye gruppen og har blitt invitert på nytt.</string>
 		</dict>
@@ -1000,7 +1000,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Trekk tilbake den ugyldige invitasjonen</string>
+			<string>Trekk tilbake %1$d ugyldig invitasjon</string>
 			<key>other</key>
 			<string>Trekk tilbake %1$d ugyldige invitasjoner</string>
 		</dict>
@@ -1032,9 +1032,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Vil du trekke tilbake gruppeinvitasjonen sendt av %2$@?</string>
+			<string>Vil du trekke tilbake %1$d invitasjon som er sendt av «%2$@»?</string>
 			<key>other</key>
-			<string>Vil du trekke tilbake de %1$d invitasjonene sendt av %2$@?</string>
+			<string>Vil du trekke tilbake de %1$d invitasjonene sendt av «%2$@»?</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -1144,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sender ...</string>
+			<string>Sender %1$d …</string>
 			<key>other</key>
-			<string>Sender %1$d ...</string>
+			<string>Sender %1$d …</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1176,9 +1176,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; svar</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; svar</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; svar</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; svar</string>
 		</dict>
 		<key>views</key>
 		<dict>

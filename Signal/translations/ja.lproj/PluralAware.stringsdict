@@ -610,7 +610,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d人のメンバーを新しいグループに追加できず、参加するように招待しました。</string>
+			<string>%1$d 人のメンバーが新しいグループに追加できず、参加するように招待しました。</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -876,7 +876,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d件の招待を取り消す</string>
+			<string>無効な招待を%1$d件取り消します</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -904,7 +904,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%2$@から送信された%1$dの招待を削除しますか？</string>
+			<string>%2$@から送信された%1$d件の招待を取り消しますか？</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -1002,7 +1002,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d 件目を送信しています...</string>
+			<string>%1$d 件を送信しています…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1030,7 +1030,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>返信 &lt;bold&gt;%1$d&lt;/bold&gt;</string>
+			<string>返信 &lt;bold&gt;%2$d&lt;/bold&gt;</string>
 		</dict>
 		<key>views</key>
 		<dict>

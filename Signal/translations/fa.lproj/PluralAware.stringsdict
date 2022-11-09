@@ -1000,9 +1000,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>لغو دعوت نامعتبر</string>
+			<string>لغو دعوت‌نامه نامعتبر</string>
 			<key>other</key>
-			<string>لغو %1$d دعوت نامعتبر</string>
+			<string>لغو %1$d دعوت‌نامه نامعتبر</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -1032,9 +1032,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>دعوت ارسالی از طرف «%2$@» لغو شود؟</string>
+			<string>دعوت‌نامه ارسالی از طرف «%2$@» لغو شود؟</string>
 			<key>other</key>
-			<string>%1$d دعوت ارسالی از طرف «%2$@» لغو شود؟</string>
+			<string>%1$d دعوت‌نامه ارسالی از طرف «%2$@» لغو شود؟</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -1144,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>در حال ارسال...</string>
+			<string>در حال ارسال…</string>
 			<key>other</key>
-			<string>در حال ارسال %1$d...</string>
+			<string>در حال ارسال %1$d…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1176,9 +1176,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; پاسخ</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; پاسخ</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; پاسخ</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; پاسخ</string>
 		</dict>
 		<key>views</key>
 		<dict>

@@ -41,7 +41,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Tambah ahli %1$d kepada &quot;%2$@&quot;?</string>
+			<string>Tambah %1$d ahli kepada &quot;%2$@&quot;?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -1030,7 +1030,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; balasan</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; balasan</string>
 		</dict>
 		<key>views</key>
 		<dict>

@@ -111,7 +111,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d개 채팅을 삭제할까요?</string>
+			<string>채팅 %1$d개를 삭제할까요?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -596,7 +596,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>멤버 %1$d명을 새 그룹에 추가하지 못했으며 그룹에서 제거했습니다.</string>
+			<string>멤버 %1$d명을 새 그룹에 추가하지 못했으며, 그룹에서 제거했습니다.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -1002,7 +1002,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d개 보내는 중...</string>
+			<string>%1$d개 보내는 중…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1030,7 +1030,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>답장 &lt;bold&gt;%1$d&lt;/bold&gt;개</string>
+			<string>답장 &lt;bold&gt;%2$d&lt;/bold&gt;개</string>
 		</dict>
 		<key>views</key>
 		<dict>

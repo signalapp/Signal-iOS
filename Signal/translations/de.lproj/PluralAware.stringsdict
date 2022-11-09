@@ -1112,7 +1112,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Betrachter</string>
+			<string>%1$d Betrachter</string>
 			<key>other</key>
 			<string>%1$d Betrachter</string>
 		</dict>
@@ -1146,7 +1146,7 @@
 			<key>one</key>
 			<string>Story wird gesendet …</string>
 			<key>other</key>
-			<string>Es werden %1$d Storys gesendet...</string>
+			<string>Es werden %1$d Storys gesendet …</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1176,9 +1176,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; Antwort</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; Antwort</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; Antworten</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; Antworten</string>
 		</dict>
 		<key>views</key>
 		<dict>

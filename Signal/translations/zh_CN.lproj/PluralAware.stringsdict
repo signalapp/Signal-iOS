@@ -41,7 +41,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>要添加 %1$d 个成员到“%2$@”？</string>
+			<string>要添加 %1$d 个成员到“%2$@”中吗？</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -1002,7 +1002,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>正在发送 %1$d......</string>
+			<string>正在发送 %1$d……</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1030,7 +1030,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; 个回复</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; 个回复</string>
 		</dict>
 		<key>views</key>
 		<dict>

@@ -1002,7 +1002,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>正在傳送 %1$d...</string>
+			<string>正在傳送 %1$d…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1030,7 +1030,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; 瀏覽次數</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; 瀏覽次數</string>
 		</dict>
 		<key>views</key>
 		<dict>

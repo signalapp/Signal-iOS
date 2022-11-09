@@ -53,7 +53,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Pridať člena do „%2$@“?</string>
+			<string>Pridať %1$d člena do „%2$@“?</string>
 			<key>few</key>
 			<string>Pridať %1$d členov do „%2$@“?</string>
 			<key>many</key>
@@ -153,7 +153,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Odstrániť čet?</string>
+			<string>Odstrániť %1$d čet?</string>
 			<key>few</key>
 			<string>Odstrániť %1$d čety?</string>
 			<key>many</key>
@@ -328,7 +328,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Vymazať správu?</string>
+			<string>Vymazať %1$d správu?</string>
 			<key>few</key>
 			<string>Vymazať %1$d správy?</string>
 			<key>many</key>
@@ -388,7 +388,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Odoslať správu</string>
+			<string>Odoslať %1$d správu</string>
 			<key>few</key>
 			<string>Odoslať %1$d správy</string>
 			<key>many</key>
@@ -608,7 +608,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Bola odoslaná jedna pozvánka</string>
+			<string>Bola odoslaná %1$d pozvánka</string>
 			<key>few</key>
 			<string>Boli odoslané %1$d pozvánky</string>
 			<key>many</key>
@@ -848,7 +848,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Jedného člena nebolo možné pridať do novej skupiny a bol odstránený zo skupiny.</string>
+			<string>%1$d člena nebolo možné pridať do novej skupiny a bol odstránený zo skupiny.</string>
 			<key>few</key>
 			<string>%1$d členov nebolo možné pridať do novej skupiny a boli odstránení zo skupiny.</string>
 			<key>many</key>
@@ -868,7 +868,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Jedného člena sa nepodarilo pridať do novej skupiny a bol pozvaný, aby sa pripojil.</string>
+			<string>%1$d člena sa nepodarilo pridať do novej skupiny a bol pozvaný, aby sa pripojil.</string>
 			<key>few</key>
 			<string>%1$d členov sa nepodarilo pridať do novej skupiny a boli pozvaní, aby sa pripojili.</string>
 			<key>many</key>
@@ -1248,7 +1248,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Odvolať neúspešnú pozvánku</string>
+			<string>Odvolať %1$d neúspešnú pozvánku</string>
 			<key>few</key>
 			<string>Odvolať %1$d neúspešné pozvánky</string>
 			<key>many</key>
@@ -1288,7 +1288,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Odvolať pozvánku odoslanú skupinou „%2$@“?</string>
+			<string>Odvolať %1$d pozvánku odoslanú skupinou „%2$@“?</string>
 			<key>few</key>
 			<string>Odvolať %1$d pozvánky odoslané skupinou „%2$@“?</string>
 			<key>many</key>
@@ -1428,7 +1428,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Odosiela sa…</string>
+			<string>Odosiela sa %1$d…</string>
 			<key>few</key>
 			<string>Odosielajú sa %1$d…</string>
 			<key>many</key>
@@ -1468,13 +1468,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; odpoveď</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odpoveď</string>
 			<key>few</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; odpovede</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odpovede</string>
 			<key>many</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; odpovede</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odpovede</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; odpovedí</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odpovedí</string>
 		</dict>
 		<key>views</key>
 		<dict>

@@ -45,7 +45,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Vuoi aggiungere una persona a &quot;%2$@&quot;?</string>
+			<string>Vuoi aggiungere %1$d persona a &quot;%2$@&quot;?</string>
 			<key>other</key>
 			<string>Vuoi aggiungere %1$d persone a &quot;%2$@&quot;?</string>
 		</dict>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Vuoi eliminare la chat?</string>
+			<string>Vuoi eliminare %1$d chat?</string>
 			<key>other</key>
-			<string>Vuoi eliminare le %1$d chat?</string>
+			<string>Vuoi eliminare %1$d chat?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -264,7 +264,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Vuoi eliminare il messaggio?</string>
+			<string>Vuoi eliminare %1$d messaggio?</string>
 			<key>other</key>
 			<string>Vuoi eliminare %1$d messaggi?</string>
 		</dict>
@@ -312,7 +312,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Invia messaggio</string>
+			<string>Invia %1$d messaggio</string>
 			<key>other</key>
 			<string>Invia %1$d messaggi</string>
 		</dict>
@@ -488,7 +488,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Invito mandato</string>
+			<string>%1$d invito mandato</string>
 			<key>other</key>
 			<string>%1$d inviti mandati</string>
 		</dict>
@@ -680,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Non è stato possibile aggiungere 1 persona al Nuovo gruppo ed è stata rimossa dal gruppo.</string>
+			<string>Non è stato possibile aggiungere %1$d persona al nuovo gruppo ed è stata rimossa dal gruppo.</string>
 			<key>other</key>
-			<string>Non è stato possibile aggiungere %1$d persone al Nuovo gruppo e sono state rimosse dal gruppo.</string>
+			<string>Non è stato possibile aggiungere %1$d persone al nuovo gruppo e sono state rimosse dal gruppo.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -696,9 +696,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Una persona non può essere aggiunta al Nuovo gruppo anche se è stata invitata a unirsi.</string>
+			<string>%1$d persona non può essere aggiunta al nuovo gruppo anche se è stata invitata a unirsi.</string>
 			<key>other</key>
-			<string>%1$d persone non possono essere aggiunte al Nuovo gruppo anche se sono state invitate a unirsi.</string>
+			<string>%1$d persone non possono essere aggiunte al nuovo gruppo anche se sono state invitate a unirsi.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -1000,7 +1000,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Annulla l&apos;invito non valido</string>
+			<string>Annulla %1$d invito non valido</string>
 			<key>other</key>
 			<string>Annulla %1$d inviti non validi</string>
 		</dict>
@@ -1032,7 +1032,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Annullare l&apos;invito al gruppo mandato da &quot;%2$@&quot;?</string>
+			<string>Annullare %1$d invito al gruppo mandato da &quot;%2$@&quot;?</string>
 			<key>other</key>
 			<string>Annullare %1$d inviti mandati da &quot;%2$@&quot;?</string>
 		</dict>
@@ -1144,7 +1144,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Invio in corso…</string>
+			<string>Invio in corso di %1$d Storia…</string>
 			<key>other</key>
 			<string>Invio in corso di %1$d Storie…</string>
 		</dict>
@@ -1178,7 +1178,7 @@
 			<key>one</key>
 			<string>&lt;bold&gt;1&lt;/bold&gt; risposta</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; risposte</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; risposte</string>
 		</dict>
 		<key>views</key>
 		<dict>

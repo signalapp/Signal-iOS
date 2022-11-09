@@ -1430,11 +1430,11 @@
 			<key>one</key>
 			<string>Trwa wysyłanie...</string>
 			<key>few</key>
-			<string>Trwa wysyłanie %1$d...</string>
+			<string>Trwa wysyłanie %1$d…</string>
 			<key>many</key>
-			<string>Trwa wysyłanie %1$d...</string>
+			<string>Trwa wysyłanie %1$d…</string>
 			<key>other</key>
-			<string>Trwa wysyłanie %1$d...</string>
+			<string>Trwa wysyłanie %1$d…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1468,13 +1468,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; odpowiedź</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odpowiedź</string>
 			<key>few</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; odpowiedzi</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odpowiedzi</string>
 			<key>many</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; odpowiedzi</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odpowiedzi</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; odpowiedzi</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odpowiedzi</string>
 		</dict>
 		<key>views</key>
 		<dict>

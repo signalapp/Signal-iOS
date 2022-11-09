@@ -1468,13 +1468,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>תשובה &lt;bold&gt;%1$d&lt;/bold&gt;</string>
+			<string>תשובה &lt;bold&gt;%2$d&lt;/bold&gt;</string>
 			<key>two</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; תשובות</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; תשובות</string>
 			<key>many</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; תשובות</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; תשובות</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; תשובות</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; תשובות</string>
 		</dict>
 		<key>views</key>
 		<dict>

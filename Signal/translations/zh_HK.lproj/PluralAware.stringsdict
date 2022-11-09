@@ -344,7 +344,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>正在打電話給 %2$@、%3$@ 和另外 %1$d 個人...</string>
+			<string>正在打電話給 %2$@、%3$@ 和另外 %1$d 個人…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -428,7 +428,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d 個邀請已傳送</string>
+			<string>已傳送 %1$d 個邀請</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
@@ -596,7 +596,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>無法將 %1$d 位成員加入「新的群組」，因此已從群組中移除。</string>
+			<string>無法將 %1$d 位成員加入新群組，並已將他們從群組中移除。</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -610,7 +610,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>無法將 %1$d 位成員加入「新的群組」，因此已邀請他們加入。</string>
+			<string>無法將 %1$d 位成員加入新群組，並已邀請他們加入。</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -904,7 +904,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>要撤銷「%2$@」傳送的 %1$d 個群組邀請嗎？</string>
+			<string>要撤銷「%2$@」傳送的 %1$d 個邀請嗎？</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -1002,7 +1002,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>正在傳送 %1$d...</string>
+			<string>正在傳送 %1$d…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1030,7 +1030,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; 回覆</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; 回覆</string>
 		</dict>
 		<key>views</key>
 		<dict>

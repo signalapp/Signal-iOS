@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&quot;%2$@&quot; में सदस्य जोड़ना है?</string>
+			<string>एक सदस्य को &quot;%2$@&quot; में जोड़ना है?</string>
 			<key>other</key>
-			<string>&quot;%2$@&quot; में %1$d सदस्य जोड़ने हैं?</string>
+			<string>%1$d सदस्यों को &quot;%2$@&quot; में जोड़ना है?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -1144,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>भेजी जा रही है...</string>
+			<string>भेजी जा रही है…</string>
 			<key>other</key>
-			<string>%1$d भेजी जा रही है…</string>
+			<string>%1$d भेजी जा रही हैं…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1178,7 +1178,7 @@
 			<key>one</key>
 			<string>&lt;bold&gt;1&lt;/bold&gt; जवाब</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; जवाब</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; जवाब</string>
 		</dict>
 		<key>views</key>
 		<dict>
