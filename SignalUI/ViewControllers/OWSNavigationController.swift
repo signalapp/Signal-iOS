@@ -188,6 +188,9 @@ open class OWSNavigationController: OWSNavigationControllerBase {
     }
 
     override open func setNavigationBarHidden(_ hidden: Bool, animated: Bool) {
+        guard hidden != self.isNavigationBarHidden else {
+            return
+        }
         guard animated else {
             super.setNavigationBarHidden(hidden, animated: false)
             return

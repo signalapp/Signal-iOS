@@ -52,16 +52,16 @@ public class OWSNavigationBar: UINavigationBar {
         return .topAttached
     }
 
-    public override func didMoveToSuperview() {
-        super.didMoveToSuperview()
-
-        constrainBlurEffectView()
-    }
-
-    public override func didMoveToWindow() {
-        super.didMoveToWindow()
-
-        constrainBlurEffectView()
+    public override var frame: CGRect {
+        didSet {
+            let top = self.convert(CGPoint.zero, from: nil).y
+            blurEffectView?.frame = CGRect(
+                x: 0,
+                y: top,
+                width: bounds.width,
+                height: bounds.height - top
+            )
+        }
     }
 
     // MARK: Theme
@@ -108,9 +108,6 @@ public class OWSNavigationBar: UINavigationBar {
 
                 self.blurEffectView = blurEffectView
                 self.insertSubview(blurEffectView, at: 0)
-                blurEffectView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
-
-                self.constrainBlurEffectView()
 
                 return blurEffectView
             }()
@@ -144,16 +141,6 @@ public class OWSNavigationBar: UINavigationBar {
                 self.setBackgroundImage(backgroundImage, for: .default)
             }
         }
-    }
-
-    private var blurEffectViewTopConstraint: NSLayoutConstraint?
-
-    private func constrainBlurEffectView() {
-        blurEffectViewTopConstraint?.isActive = false
-        guard let blurEffectView = blurEffectView, let superview = superview else {
-            return
-        }
-        blurEffectViewTopConstraint = blurEffectView.autoPinEdge(.top, to: .top, of: superview)
     }
 
     private var respectsTheme: Bool {
