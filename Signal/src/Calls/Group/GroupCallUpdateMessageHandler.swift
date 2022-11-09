@@ -36,7 +36,7 @@ class GroupCallUpdateMessageHandler: CallServiceObserver, CallObserver, Dependen
 
         SDSDatabaseStorage.shared.asyncWrite { writeTx in
             let updateMessage = OWSOutgoingGroupCallMessage(thread: thread, eraId: eraId, transaction: writeTx)
-            Self.messageSenderJobQueue.add(message: updateMessage.asPreparer, transaction: writeTx)
+            Self.sskJobQueues.messageSenderJobQueue.add(message: updateMessage.asPreparer, transaction: writeTx)
         }
     }
 

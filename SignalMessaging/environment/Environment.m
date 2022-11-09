@@ -18,9 +18,9 @@ static Environment *sharedEnvironment = nil;
 @property (nonatomic) id<OWSProximityMonitoringManager> proximityMonitoringManagerRef;
 @property (nonatomic) OWSSounds *soundsRef;
 @property (nonatomic) LaunchJobs *launchJobsRef;
-@property (nonatomic) BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueueRef;
 @property (nonatomic) OWSOrphanDataCleaner *orphanDataCleanerRef;
 @property (nonatomic) AvatarBuilder *avatarBuilderRef;
+@property (nonatomic) SignalMessagingJobQueues *signalMessagingJobQueuesRef;
 
 @end
 
@@ -47,40 +47,34 @@ static Environment *sharedEnvironment = nil;
     sharedEnvironment = environment;
 }
 
-- (instancetype)initWithIncomingContactSyncJobQueue:(OWSIncomingContactSyncJobQueue *)incomingContactSyncJobQueue
-                          incomingGroupSyncJobQueue:(OWSIncomingGroupSyncJobQueue *)incomingGroupSyncJobQueue
-                                         launchJobs:(LaunchJobs *)launchJobs
-                                        preferences:(OWSPreferences *)preferences
-                         proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
-                                             sounds:(OWSSounds *)sounds
-                      broadcastMediaMessageJobQueue:(BroadcastMediaMessageJobQueue *)broadcastMediaMessageJobQueue
-                                  orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
-                                      avatarBuilder:(AvatarBuilder *)avatarBuilder
+- (instancetype)initWithLaunchJobs:(LaunchJobs *)launchJobs
+                       preferences:(OWSPreferences *)preferences
+        proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
+                            sounds:(OWSSounds *)sounds
+                 orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
+                     avatarBuilder:(AvatarBuilder *)avatarBuilder
+                       smJobQueues:(SignalMessagingJobQueues *)smJobQueues
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    OWSAssertDebug(incomingGroupSyncJobQueue);
-    OWSAssertDebug(incomingContactSyncJobQueue);
     OWSAssertDebug(launchJobs);
     OWSAssertDebug(preferences);
     OWSAssertDebug(proximityMonitoringManager);
     OWSAssertDebug(sounds);
-    OWSAssertDebug(broadcastMediaMessageJobQueue);
     OWSAssertDebug(orphanDataCleaner);
     OWSAssertDebug(avatarBuilder);
+    OWSAssertDebug(smJobQueues);
 
-    _incomingContactSyncJobQueueRef = incomingContactSyncJobQueue;
-    _incomingGroupSyncJobQueueRef = incomingGroupSyncJobQueue;
     _launchJobsRef = launchJobs;
     _preferencesRef = preferences;
     _proximityMonitoringManagerRef = proximityMonitoringManager;
     _soundsRef = sounds;
-    _broadcastMediaMessageJobQueueRef = broadcastMediaMessageJobQueue;
     _orphanDataCleanerRef = orphanDataCleaner;
     _avatarBuilderRef = avatarBuilder;
+    _signalMessagingJobQueuesRef = smJobQueues;
 
     OWSSingletonAssert();
 

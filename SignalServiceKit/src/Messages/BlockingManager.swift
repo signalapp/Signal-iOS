@@ -398,7 +398,7 @@ extension BlockingManager {
                     State.setLastSyncedChangeToken(outgoingChangeToken, transaction: transaction)
                 }
 
-                messageSenderJobQueue.add(
+                sskJobQueues.messageSenderJobQueue.add(
                     .promise,
                     message: message.asPreparer,
                     transaction: transaction

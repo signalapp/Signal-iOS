@@ -26,25 +26,21 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init
 {
     // TODO: We should probably mock this out.
-    OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueue = [OWSIncomingContactSyncJobQueue new];
-    OWSIncomingGroupSyncJobQueue *incomingGroupSyncJobQueue = [OWSIncomingGroupSyncJobQueue new];
     LaunchJobs *launchJobs = [LaunchJobs new];
     OWSPreferences *preferences = [OWSPreferences new];
     OWSSounds *sounds = [OWSSounds new];
     id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
-    BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueue = [BroadcastMediaMessageJobQueue new];
     OWSOrphanDataCleaner *orphanDataCleaner = [OWSOrphanDataCleaner new];
     AvatarBuilder *avatarBuilder = [AvatarBuilder new];
+    SignalMessagingJobQueues *smJobQueues = [SignalMessagingJobQueues new];
 
-    self = [super initWithIncomingContactSyncJobQueue:incomingContactSyncJobQueue
-                            incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
-                                           launchJobs:launchJobs
-                                          preferences:preferences
-                           proximityMonitoringManager:proximityMonitoringManager
-                                               sounds:sounds
-                        broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue
-                                    orphanDataCleaner:orphanDataCleaner
-                                        avatarBuilder:avatarBuilder];
+    self = [super initWithLaunchJobs:launchJobs
+                         preferences:preferences
+          proximityMonitoringManager:proximityMonitoringManager
+                              sounds:sounds
+                   orphanDataCleaner:orphanDataCleaner
+                       avatarBuilder:avatarBuilder
+                         smJobQueues:smJobQueues];
 
     OWSAssertDebug(self);
     return self;

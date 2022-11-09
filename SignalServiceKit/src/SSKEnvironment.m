@@ -80,7 +80,6 @@ static SSKEnvironment *sharedSSKEnvironment;
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
                      linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
                           messageSender:(MessageSender *)messageSender
-                  messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
                  pendingReceiptRecorder:(id<PendingReceiptRecorder>)pendingReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          networkManager:(NetworkManager *)networkManager
@@ -133,7 +132,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                     subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager
                      systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager
                  remoteMegaphoneFetcher:(RemoteMegaphoneFetcher *)remoteMegaphoneFetcher
-            localUserLeaveGroupJobQueue:(LocalUserLeaveGroupJobQueue *)localUserLeaveGroupJobQueue
+                           sskJobQueues:(SSKJobQueues *)sskJobQueues
 {
     self = [super init];
     if (!self) {
@@ -143,7 +142,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     _contactsManagerRef = contactsManager;
     _linkPreviewManagerRef = linkPreviewManager;
     _messageSenderRef = messageSender;
-    _messageSenderJobQueueRef = messageSenderJobQueue;
     _pendingReceiptRecorderRef = pendingReceiptRecorder;
     _profileManagerRef = profileManager;
     _networkManagerRef = networkManager;
@@ -196,7 +194,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _subscriptionManagerRef = subscriptionManager;
     _systemStoryManagerRef = systemStoryManager;
     _remoteMegaphoneFetcherRef = remoteMegaphoneFetcher;
-    _localUserLeaveGroupJobQueue = localUserLeaveGroupJobQueue;
+    _sskJobQueuesRef = sskJobQueues;
 
     return self;
 }

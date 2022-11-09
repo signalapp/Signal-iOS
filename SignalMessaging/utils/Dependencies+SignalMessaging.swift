@@ -65,36 +65,12 @@ public extension NSObject {
         groupV2Updates as! GroupV2UpdatesImpl
     }
 
-    final var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
-        Environment.shared.broadcastMediaMessageJobQueueRef
-    }
-
-    static var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
-        Environment.shared.broadcastMediaMessageJobQueueRef
-    }
-
     final var sounds: OWSSounds {
         Environment.shared.soundsRef
     }
 
     static var sounds: OWSSounds {
         Environment.shared.soundsRef
-    }
-
-    final var incomingContactSyncJobQueue: IncomingContactSyncJobQueue {
-        Environment.shared.incomingContactSyncJobQueueRef
-    }
-
-    static var incomingContactSyncJobQueue: IncomingContactSyncJobQueue {
-        Environment.shared.incomingContactSyncJobQueueRef
-    }
-
-    final var incomingGroupSyncJobQueue: IncomingGroupSyncJobQueue {
-        Environment.shared.incomingGroupSyncJobQueueRef
-    }
-
-    static var incomingGroupSyncJobQueue: IncomingGroupSyncJobQueue {
-        Environment.shared.incomingGroupSyncJobQueueRef
     }
 
     final var orphanDataCleaner: OWSOrphanDataCleaner {
@@ -119,6 +95,14 @@ public extension NSObject {
 
     static var lightweightCallManager: LightweightCallManager? {
         Environment.shared.lightweightCallManagerRef
+    }
+
+    var smJobQueues: SignalMessagingJobQueues {
+        Environment.shared.signalMessagingJobQueuesRef
+    }
+
+    static var smJobQueues: SignalMessagingJobQueues {
+        Environment.shared.signalMessagingJobQueuesRef
     }
 }
 
@@ -181,36 +165,12 @@ public extension Dependencies {
         groupV2Updates as! GroupV2UpdatesImpl
     }
 
-    var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
-        Environment.shared.broadcastMediaMessageJobQueueRef
-    }
-
-    static var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
-        Environment.shared.broadcastMediaMessageJobQueueRef
-    }
-
     var sounds: OWSSounds {
         Environment.shared.soundsRef
     }
 
     static var sounds: OWSSounds {
         Environment.shared.soundsRef
-    }
-
-    var incomingContactSyncJobQueue: IncomingContactSyncJobQueue {
-        Environment.shared.incomingContactSyncJobQueueRef
-    }
-
-    static var incomingContactSyncJobQueue: IncomingContactSyncJobQueue {
-        Environment.shared.incomingContactSyncJobQueueRef
-    }
-
-    var incomingGroupSyncJobQueue: IncomingGroupSyncJobQueue {
-        Environment.shared.incomingGroupSyncJobQueueRef
-    }
-
-    static var incomingGroupSyncJobQueue: IncomingGroupSyncJobQueue {
-        Environment.shared.incomingGroupSyncJobQueueRef
     }
 
     var orphanDataCleaner: OWSOrphanDataCleaner {
@@ -227,6 +187,14 @@ public extension Dependencies {
 
     static var avatarBuilder: AvatarBuilder {
         Environment.shared.avatarBuilderRef
+    }
+
+    var smJobQueues: SignalMessagingJobQueues {
+        Environment.shared.signalMessagingJobQueuesRef
+    }
+
+    static var smJobQueues: SignalMessagingJobQueues {
+        Environment.shared.signalMessagingJobQueuesRef
     }
 }
 

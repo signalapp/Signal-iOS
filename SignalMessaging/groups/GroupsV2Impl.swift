@@ -532,7 +532,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                                                        plaintextData: contentProtoData,
                                                        transaction: transaction)
 
-                Self.messageSenderJobQueue.add(message: message.asPreparer, limitToCurrentProcessLifetime: true, transaction: transaction)
+                Self.sskJobQueues.messageSenderJobQueue.add(
+                    message: message.asPreparer,
+                    limitToCurrentProcessLifetime: true,
+                    transaction: transaction
+                )
             }
         }
     }

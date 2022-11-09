@@ -44,14 +44,6 @@ public extension NSObject {
         AppEnvironment.shared.pushRegistrationManagerRef
     }
 
-    final var sessionResetJobQueue: SessionResetJobQueue {
-        AppEnvironment.shared.sessionResetJobQueueRef
-    }
-
-    static var sessionResetJobQueue: SessionResetJobQueue {
-        AppEnvironment.shared.sessionResetJobQueueRef
-    }
-
     final var cvAudioPlayer: CVAudioPlayer {
         AppEnvironment.shared.cvAudioPlayerRef
     }
@@ -134,14 +126,6 @@ public extension Dependencies {
 
     static var pushRegistrationManager: PushRegistrationManager {
         AppEnvironment.shared.pushRegistrationManagerRef
-    }
-
-    var sessionResetJobQueue: SessionResetJobQueue {
-        AppEnvironment.shared.sessionResetJobQueueRef
-    }
-
-    static var sessionResetJobQueue: SessionResetJobQueue {
-        AppEnvironment.shared.sessionResetJobQueueRef
     }
 
     var cvAudioPlayer: CVAudioPlayer {

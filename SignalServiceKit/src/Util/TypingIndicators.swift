@@ -334,7 +334,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
                 SDSDatabaseStorage.shared.write { transaction in
                     let message = TypingIndicatorMessage(thread: thread, action: action, transaction: transaction)
 
-                    messageSenderJobQueue.add(
+                    sskJobQueues.messageSenderJobQueue.add(
                         .promise,
                         message: message.asPreparer,
                         limitToCurrentProcessLifetime: true,

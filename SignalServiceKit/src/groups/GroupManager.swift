@@ -805,7 +805,7 @@ public class GroupManager: NSObject {
         }
         let newConfiguration = updateResult.newConfiguration
         let message = OWSDisappearingMessagesConfigurationMessage(configuration: newConfiguration, thread: thread, transaction: transaction)
-        messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+        sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
     }
 
     // MARK: - Accept Invites
@@ -914,7 +914,7 @@ public class GroupManager: NSObject {
         waitForMessageProcessing: Bool,
         transaction: SDSAnyWriteTransaction
     ) -> Promise<TSGroupThread> {
-        self.localLeaveGroupJobQueue.add(
+        sskJobQueues.localUserLeaveGroupJobQueue.add(
             threadId: threadId,
             replacementAdminUuid: replacementAdminUuid,
             waitForMessageProcessing: waitForMessageProcessing,
@@ -1253,7 +1253,7 @@ public class GroupManager: NSObject {
                 message.updateWithSending(toSingleGroupRecipient: singleRecipient, transaction: transaction)
             }
 
-            Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         }
     }
 
@@ -1275,7 +1275,7 @@ public class GroupManager: NSObject {
                 additionalRecipients: Self.invitedMembers(in: thread),
                 transaction: transaction
             )
-            Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         }
     }
 
@@ -1311,7 +1311,7 @@ public class GroupManager: NSObject {
         let message = OutgoingGroupUpdateMessage(in: groupThread,
                                                  groupMetaMessage: .quit,
                                                  transaction: transaction)
-        messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+        sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
     }
 
     public static func resendInvite(groupThread: TSGroupThread,
@@ -1328,7 +1328,7 @@ public class GroupManager: NSObject {
             transaction: transaction
         )
 
-        messageSenderJobQueue.add(
+        sskJobQueues.messageSenderJobQueue.add(
             .promise,
             message: message.asPreparer,
             isHighPriority: true,

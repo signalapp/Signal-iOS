@@ -565,7 +565,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
                 skippedRecipients: nil,
                 transaction: transaction
             )
-            messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
+            sskJobQueues.messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
             anyRemove(transaction: transaction)
         case thread as TSPrivateStoryThread:
             // Private story deletes are complicated. We may have sent the private
@@ -603,7 +603,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
                 skippedRecipients: skippedRecipients,
                 transaction: transaction
             )
-            messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
+            sskJobQueues.messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
 
             if hasRemainingRecipients {
                 // Record the updated contexts, so we no longer render it for the one we deleted for.
@@ -620,7 +620,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
                 recipientStates: recipientStates,
                 transaction: transaction
             )
-            messageSenderJobQueue.add(message: sentTranscriptUpdate.asPreparer, transaction: transaction)
+            sskJobQueues.messageSenderJobQueue.add(message: sentTranscriptUpdate.asPreparer, transaction: transaction)
         default:
             owsFailDebug("Cannot remotely delete unexpected thread type \(type(of: thread))")
         }
@@ -664,7 +664,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         }
 
         messages.forEach { message in
-            messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         }
     }
 

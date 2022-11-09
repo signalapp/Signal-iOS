@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
         [message anyInsertWithTransaction:transaction];
         [message updateWithMessageSticker:messageSticker transaction:transaction];
 
-        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
+        [self.sskJobQueues.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
 
         [thread donateSendMessageIntentForOutgoingMessage:message transaction:transaction];
     }];

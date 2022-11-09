@@ -103,14 +103,6 @@ public extension NSObject {
         SSKEnvironment.shared.messageSenderRef
     }
 
-    final var messageSenderJobQueue: MessageSenderJobQueue {
-        SSKEnvironment.shared.messageSenderJobQueueRef
-    }
-
-    static var messageSenderJobQueue: MessageSenderJobQueue {
-        SSKEnvironment.shared.messageSenderJobQueueRef
-    }
-
     final var messagePipelineSupervisor: MessagePipelineSupervisor {
         SSKEnvironment.shared.messagePipelineSupervisorRef
     }
@@ -502,6 +494,14 @@ public extension NSObject {
     static var systemStoryManager: SystemStoryManagerProtocol {
         SSKEnvironment.shared.systemStoryManagerRef as! SystemStoryManagerProtocol
     }
+
+    var sskJobQueues: SSKJobQueues {
+        SSKEnvironment.shared.sskJobQueuesRef
+    }
+
+    static var sskJobQueues: SSKJobQueues {
+        SSKEnvironment.shared.sskJobQueuesRef
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -594,14 +594,6 @@ public extension Dependencies {
 
     static var messageSender: MessageSender {
         SSKEnvironment.shared.messageSenderRef
-    }
-
-    var messageSenderJobQueue: MessageSenderJobQueue {
-        SSKEnvironment.shared.messageSenderJobQueueRef
-    }
-
-    static var messageSenderJobQueue: MessageSenderJobQueue {
-        SSKEnvironment.shared.messageSenderJobQueueRef
     }
 
     var messagePipelineSupervisor: MessagePipelineSupervisor {
@@ -990,6 +982,14 @@ public extension Dependencies {
 
     static var systemStoryManager: SystemStoryManagerProtocol {
         SSKEnvironment.shared.systemStoryManagerRef as! SystemStoryManagerProtocol
+    }
+
+    var sskJobQueues: SSKJobQueues {
+        SSKEnvironment.shared.sskJobQueuesRef
+    }
+
+    static var sskJobQueues: SSKJobQueues {
+        SSKEnvironment.shared.sskJobQueuesRef
     }
 }
 

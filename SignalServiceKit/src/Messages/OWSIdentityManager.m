@@ -772,19 +772,19 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                                                        verificationStateSyncMessage:message
                                                                                         transaction:transaction];
 
-        [self.messageSenderJobQueue addPromiseWithMessage:nullMessage.asPreparer
-                                removeMessageAfterSending:NO
-                            limitToCurrentProcessLifetime:YES
-                                           isHighPriority:NO
-                                              transaction:transaction]
+        [self.sskJobQueues.messageSenderJobQueue addPromiseWithMessage:nullMessage.asPreparer
+                                             removeMessageAfterSending:NO
+                                         limitToCurrentProcessLifetime:YES
+                                                        isHighPriority:NO
+                                                           transaction:transaction]
             .doneInBackground(^(id value) {
                 OWSLogInfo(@"Successfully sent verification state NullMessage");
                 DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                    [self.messageSenderJobQueue addPromiseWithMessage:message.asPreparer
-                                            removeMessageAfterSending:NO
-                                        limitToCurrentProcessLifetime:YES
-                                                       isHighPriority:NO
-                                                          transaction:transaction]
+                    [self.sskJobQueues.messageSenderJobQueue addPromiseWithMessage:message.asPreparer
+                                                         removeMessageAfterSending:NO
+                                                     limitToCurrentProcessLifetime:YES
+                                                                    isHighPriority:NO
+                                                                       transaction:transaction]
                         .doneInBackground(^(id value) {
                             OWSLogInfo(@"Successfully sent verification state sync message");
 

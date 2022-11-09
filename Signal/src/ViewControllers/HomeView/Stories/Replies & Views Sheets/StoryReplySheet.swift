@@ -60,7 +60,7 @@ extension StoryReplySheet {
 
             let message = builder.build(transaction: transaction)
             message.anyInsert(transaction: transaction)
-            Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
 
             if message.hasRenderableContent() { thread.donateSendMessageIntent(for: message, transaction: transaction) }
 

@@ -8,14 +8,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class AvatarBuilder;
-@class BroadcastMediaMessageJobQueue;
 @class LaunchJobs;
 @class LightweightCallManager;
-@class OWSIncomingContactSyncJobQueue;
-@class OWSIncomingGroupSyncJobQueue;
 @class OWSOrphanDataCleaner;
 @class OWSPreferences;
 @class OWSSounds;
+@class SignalMessagingJobQueues;
 
 @protocol OWSProximityMonitoringManager;
 
@@ -32,25 +30,21 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithIncomingContactSyncJobQueue:(OWSIncomingContactSyncJobQueue *)incomingContactSyncJobQueue
-                          incomingGroupSyncJobQueue:(OWSIncomingGroupSyncJobQueue *)incomingGroupSyncJobQueue
-                                         launchJobs:(LaunchJobs *)launchJobs
-                                        preferences:(OWSPreferences *)preferences
-                         proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
-                                             sounds:(OWSSounds *)sounds
-                      broadcastMediaMessageJobQueue:(BroadcastMediaMessageJobQueue *)broadcastMediaMessageJobQueue
-                                  orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
-                                      avatarBuilder:(AvatarBuilder *)avatarBuilder;
+- (instancetype)initWithLaunchJobs:(LaunchJobs *)launchJobs
+                       preferences:(OWSPreferences *)preferences
+        proximityMonitoringManager:(id<OWSProximityMonitoringManager>)proximityMonitoringManager
+                            sounds:(OWSSounds *)sounds
+                 orphanDataCleaner:(OWSOrphanDataCleaner *)orphanDataCleaner
+                     avatarBuilder:(AvatarBuilder *)avatarBuilder
+                       smJobQueues:(SignalMessagingJobQueues *)smJobQueues;
 
-@property (nonatomic, readonly) OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueueRef;
-@property (nonatomic, readonly) OWSIncomingGroupSyncJobQueue *incomingGroupSyncJobQueueRef;
 @property (nonatomic, readonly) LaunchJobs *launchJobsRef;
 @property (nonatomic, readonly) id<OWSProximityMonitoringManager> proximityMonitoringManagerRef;
 @property (nonatomic, readonly) OWSPreferences *preferencesRef;
 @property (nonatomic, readonly) OWSSounds *soundsRef;
-@property (nonatomic, readonly) BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueueRef;
 @property (nonatomic, readonly) OWSOrphanDataCleaner *orphanDataCleanerRef;
 @property (nonatomic, readonly) AvatarBuilder *avatarBuilderRef;
+@property (nonatomic, readonly) SignalMessagingJobQueues *signalMessagingJobQueuesRef;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) LightweightCallManager *lightweightCallManagerRef;

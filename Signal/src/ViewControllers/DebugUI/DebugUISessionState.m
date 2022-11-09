@@ -77,7 +77,8 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSTableItem itemWithTitle:@"Send session reset"
                             actionBlock:^{
                                 DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                                    [self.sessionResetJobQueue addContactThread:thread transaction:transaction];
+                                    [self.smJobQueues.sessionResetJobQueue addContactThread:thread
+                                                                                transaction:transaction];
                                 });
                             }],
         ]];

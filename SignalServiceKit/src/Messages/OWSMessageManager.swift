@@ -231,7 +231,7 @@ extension OWSMessageManager {
 
             let sendBlock = { (transaction: SDSAnyWriteTransaction) in
                 if let resendResponse = resendResponse {
-                    Self.messageSenderJobQueue.add(message: resendResponse.asPreparer, transaction: transaction)
+                    Self.sskJobQueues.messageSenderJobQueue.add(message: resendResponse.asPreparer, transaction: transaction)
                 }
             }
 

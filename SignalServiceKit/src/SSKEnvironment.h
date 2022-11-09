@@ -34,6 +34,7 @@ extern NSNotificationName const WarmCachesNotification;
 @class PhoneNumberUtil;
 @class RemoteMegaphoneFetcher;
 @class SDSDatabaseStorage;
+@class SSKJobQueues;
 @class SSKPreferences;
 @class SenderKeyStore;
 @class SignalProtocolStore;
@@ -77,7 +78,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
                      linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
                           messageSender:(MessageSender *)messageSender
-                  messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
                  pendingReceiptRecorder:(id<PendingReceiptRecorder>)pendingReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          networkManager:(NetworkManager *)networkManager
@@ -130,8 +130,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                     subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager
                      systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager
                  remoteMegaphoneFetcher:(RemoteMegaphoneFetcher *)remoteMegaphoneFetcher
-            localUserLeaveGroupJobQueue:(LocalUserLeaveGroupJobQueue *)localUserLeaveGroupJobQueue
-    NS_DESIGNATED_INITIALIZER;
+                           sskJobQueues:(SSKJobQueues *)sskJobQueues NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -142,7 +141,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManagerRef;
 @property (nonatomic, readonly) OWSLinkPreviewManager *linkPreviewManagerRef;
 @property (nonatomic, readonly) MessageSender *messageSenderRef;
-@property (nonatomic, readonly) MessageSenderJobQueue *messageSenderJobQueueRef;
 @property (nonatomic, readonly) id<PendingReceiptRecorder> pendingReceiptRecorderRef;
 @property (nonatomic, readonly) id<ProfileManagerProtocol> profileManagerRef;
 @property (nonatomic, readonly) NetworkManager *networkManagerRef;
@@ -193,7 +191,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 @property (nonatomic, readonly) id<SubscriptionManagerProtocol> subscriptionManagerRef;
 @property (nonatomic, readonly) id<SystemStoryManagerProtocolObjc> systemStoryManagerRef;
 @property (nonatomic, readonly) RemoteMegaphoneFetcher *remoteMegaphoneFetcherRef;
-@property (nonatomic, readonly) LocalUserLeaveGroupJobQueue *localUserLeaveGroupJobQueue;
+@property (nonatomic, readonly) SSKJobQueues *sskJobQueuesRef;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandlerRef;

@@ -66,8 +66,10 @@ public extension ConversationViewController {
                                                       confirmationText: MessageStrings.sendButton) { didConfirm in
                 if didConfirm {
                     Self.databaseStorage.asyncWrite { transaction in
-                        Self.messageSenderJobQueue.add(message: messageToSend.asPreparer,
-                                                       transaction: transaction)
+                        Self.sskJobQueues.messageSenderJobQueue.add(
+                            message: messageToSend.asPreparer,
+                            transaction: transaction
+                        )
                     }
                 }
             }
@@ -90,8 +92,10 @@ public extension ConversationViewController {
                                                 accessibilityIdentifier: "send_again",
                                                 style: .default) { _ in
             Self.databaseStorage.asyncWrite { transaction in
-                Self.messageSenderJobQueue.add(message: messageToSend.asPreparer,
-                                               transaction: transaction)
+                Self.sskJobQueues.messageSenderJobQueue.add(
+                    message: messageToSend.asPreparer,
+                    transaction: transaction
+                )
             }
         })
 

@@ -86,7 +86,7 @@ public extension OWSReceiptManager {
                 let receiptsForMessage = readReceiptsForLinkedDevices.map { $0.asLinkedDeviceReadReceipt }
                 let message = OWSReadReceiptsForLinkedDevicesMessage(thread: thread, readReceipts: receiptsForMessage, transaction: transaction)
 
-                self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+                self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
                 self.toLinkedDevicesReadReceiptMapStore.removeAll(transaction: transaction)
             }
 
@@ -94,7 +94,7 @@ public extension OWSReceiptManager {
                 let receiptsForMessage = viewedReceiptsForLinkedDevices.map { $0.asLinkedDeviceViewedReceipt }
                 let message = OWSViewedReceiptsForLinkedDevicesMessage(thread: thread, viewedReceipts: receiptsForMessage, transaction: transaction)
 
-                self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+                self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
                 self.toLinkedDevicesViewedReceiptMapStore.removeAll(transaction: transaction)
             }
 
@@ -366,7 +366,7 @@ public extension OWSReceiptManager {
                         let message = OWSReadReceiptsForLinkedDevicesMessage(thread: thread,
                                                                              readReceipts: receiptsForMessage,
                                                                              transaction: transaction)
-                        self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+                        self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
                     }
                 }
                 // Continue until we process a batch and have some quota left.

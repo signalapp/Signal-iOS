@@ -228,7 +228,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         transaction.addAsyncCompletionOffMain {
             Self.databaseStorage.write { transaction in
                 let nullMessage = OWSOutgoingNullMessage(contactThread: contactThread, transaction: transaction)
-                Self.messageSenderJobQueue.add(
+                Self.sskJobQueues.messageSenderJobQueue.add(
                     .promise,
                     message: nullMessage.asPreparer,
                     isHighPriority: true,
@@ -277,7 +277,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         transaction.addAsyncCompletionOffMain {
             Self.databaseStorage.write { transaction in
                 let profileKeyMessage = OWSProfileKeyMessage(thread: contactThread, transaction: transaction)
-                Self.messageSenderJobQueue.add(
+                Self.sskJobQueues.messageSenderJobQueue.add(
                     .promise,
                     message: profileKeyMessage.asPreparer,
                     isHighPriority: true,
@@ -470,7 +470,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                                      transaction: transaction)
 
         if let resendRequest = resendRequest {
-            messageSenderJobQueue.add(message: resendRequest.asPreparer, transaction: transaction)
+            sskJobQueues.messageSenderJobQueue.add(message: resendRequest.asPreparer, transaction: transaction)
         } else {
             owsFailDebug("Failed to build resend message")
         }

@@ -183,7 +183,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                sendLinkPreviews:sendLinkPreviews
                                                     transaction:transaction];
 
-        [self.messageSenderJobQueue addMessage:syncConfigurationMessage.asPreparer transaction:transaction];
+        [self.sskJobQueues.messageSenderJobQueue addMessage:syncConfigurationMessage.asPreparer
+                                                transaction:transaction];
     });
 }
 
@@ -220,7 +221,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
     TSAttachmentPointer *attachmentPointer = [TSAttachmentPointer attachmentPointerFromProto:syncMessage.blob albumMessage:nil];
     [attachmentPointer anyInsertWithTransaction:transaction];
-    [self.incomingGroupSyncJobQueue addWithAttachmentId:attachmentPointer.uniqueId transaction:transaction];
+    [self.smJobQueues.incomingGroupSyncJobQueue addWithAttachmentId:attachmentPointer.uniqueId transaction:transaction];
 }
 
 - (void)processIncomingContactsSyncMessage:(SSKProtoSyncMessageContacts *)syncMessage transaction:(SDSAnyWriteTransaction *)transaction
@@ -228,9 +229,9 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     TSAttachmentPointer *attachmentPointer = [TSAttachmentPointer attachmentPointerFromProto:syncMessage.blob
                                                                                 albumMessage:nil];
     [attachmentPointer anyInsertWithTransaction:transaction];
-    [self.incomingContactSyncJobQueue addWithAttachmentId:attachmentPointer.uniqueId
-                                               isComplete:syncMessage.isComplete
-                                              transaction:transaction];
+    [self.smJobQueues.incomingContactSyncJobQueue addWithAttachmentId:attachmentPointer.uniqueId
+                                                           isComplete:syncMessage.isComplete
+                                                          transaction:transaction];
 }
 
 #pragma mark - Groups Sync
@@ -260,13 +261,13 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                            shouldDeleteOnDeallocation:YES
                                                                 error:&error];
         OWSAssertDebug(error == nil);
-        [self.messageSenderJobQueue addMediaMessage:syncGroupsMessage
-                                         dataSource:dataSource
-                                        contentType:OWSMimeTypeApplicationOctetStream
-                                     sourceFilename:nil
-                                            caption:nil
-                                     albumMessageId:nil
-                              isTemporaryAttachment:YES];
+        [self.sskJobQueues.messageSenderJobQueue addMediaMessage:syncGroupsMessage
+                                                      dataSource:dataSource
+                                                     contentType:OWSMimeTypeApplicationOctetStream
+                                                  sourceFilename:nil
+                                                         caption:nil
+                                                  albumMessageId:nil
+                                           isTemporaryAttachment:YES];
         completion();
     });
 }
@@ -435,13 +436,13 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                 }
 
                 if (isDurableSend) {
-                    [self.messageSenderJobQueue addMediaMessage:syncContactsMessage
-                                                     dataSource:dataSource
-                                                    contentType:OWSMimeTypeApplicationOctetStream
-                                                 sourceFilename:nil
-                                                        caption:nil
-                                                 albumMessageId:nil
-                                          isTemporaryAttachment:YES];
+                    [self.sskJobQueues.messageSenderJobQueue addMediaMessage:syncContactsMessage
+                                                                  dataSource:dataSource
+                                                                 contentType:OWSMimeTypeApplicationOctetStream
+                                                              sourceFilename:nil
+                                                                     caption:nil
+                                                              albumMessageId:nil
+                                                       isTemporaryAttachment:YES];
                     if (debounce) {
                         self.isRequestInFlight = NO;
                     }
@@ -523,7 +524,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         OWSSyncFetchLatestMessage *syncFetchLatestMessage =
             [[OWSSyncFetchLatestMessage alloc] initWithThread:thread fetchType:fetchType transaction:transaction];
 
-        [self.messageSenderJobQueue addMessage:syncFetchLatestMessage.asPreparer transaction:transaction];
+        [self.sskJobQueues.messageSenderJobQueue addMessage:syncFetchLatestMessage.asPreparer transaction:transaction];
     });
 }
 

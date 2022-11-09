@@ -45,10 +45,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     id<ContactsManagerProtocol> contactsManager = [OWSFakeContactsManager new];
     OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
-    NetworkManager *networkManager = [OWSFakeNetworkManager new];
     MessageSender *messageSender = [FakeMessageSender new];
-    MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
-
+    id<PendingReceiptRecorder> pendingReceiptRecorder = [NoopPendingReceiptRecorder new];
+    id<ProfileManagerProtocol> profileManager = [OWSFakeProfileManager new];
+    NetworkManager *networkManager = [OWSFakeNetworkManager new];
     OWSMessageManager *messageManager = [OWSMessageManager new];
     BlockingManager *blockingManager = [BlockingManager new];
     OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
@@ -97,14 +97,13 @@ NS_ASSUME_NONNULL_BEGIN
     id<SubscriptionManagerProtocol> subscriptionManager = [MockSubscriptionManager new];
     SystemStoryManagerMock *systemStoryManager = [SystemStoryManagerMock new];
     RemoteMegaphoneFetcher *remoteMegaphoneFetcher = [RemoteMegaphoneFetcher new];
-    LocalUserLeaveGroupJobQueue *localUserLeaveGroupJobQueue = [LocalUserLeaveGroupJobQueue new];
+    SSKJobQueues *sskJobQueues = [SSKJobQueues new];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
                             messageSender:messageSender
-                    messageSenderJobQueue:messageSenderJobQueue
-                   pendingReceiptRecorder:[NoopPendingReceiptRecorder new]
-                           profileManager:[OWSFakeProfileManager new]
+                   pendingReceiptRecorder:pendingReceiptRecorder
+                           profileManager:profileManager
                            networkManager:networkManager
                            messageManager:messageManager
                           blockingManager:blockingManager
@@ -155,7 +154,7 @@ NS_ASSUME_NONNULL_BEGIN
                       subscriptionManager:subscriptionManager
                        systemStoryManager:systemStoryManager
                    remoteMegaphoneFetcher:remoteMegaphoneFetcher
-              localUserLeaveGroupJobQueue:localUserLeaveGroupJobQueue];
+                             sskJobQueues:sskJobQueues];
 
     if (!self) {
         return nil;

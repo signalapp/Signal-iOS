@@ -258,11 +258,11 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
             }
 
             sendPromise =
-                [self.messageSenderJobQueue addPromiseWithMessage:message.asPreparer
-                                        removeMessageAfterSending:NO
-                                    limitToCurrentProcessLifetime:YES
-                                                   isHighPriority:NO
-                                                      transaction:transaction]
+                [self.sskJobQueues.messageSenderJobQueue addPromiseWithMessage:message.asPreparer
+                                                     removeMessageAfterSending:NO
+                                                 limitToCurrentProcessLifetime:YES
+                                                                isHighPriority:NO
+                                                                   transaction:transaction]
                     .doneInBackground(^(id value) {
                         OWSLogInfo(@"Successfully sent %lu %@ receipts to sender.",
                             (unsigned long)receiptSet.timestamps.count,

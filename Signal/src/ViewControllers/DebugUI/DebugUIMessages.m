@@ -221,8 +221,9 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
                                                    groupId:[TSGroupModel generateRandomV1GroupId]
                                                transaction:transaction];
 
-                                    [self.messageSenderJobQueue addMessage:groupInfoRequestMessage.asPreparer
-                                                               transaction:transaction];
+                                    [self.sskJobQueues.messageSenderJobQueue
+                                         addMessage:groupInfoRequestMessage.asPreparer
+                                        transaction:transaction];
                                 });
                         }],
         [OWSTableItem
@@ -4826,7 +4827,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 [[OWSGroupInfoRequestMessage alloc] initWithThread:thread
                                                            groupId:groupThread.groupModel.groupId
                                                        transaction:transaction];
-            [self.messageSenderJobQueue addMessage:groupInfoRequestMessage.asPreparer transaction:transaction];
+            [self.sskJobQueues.messageSenderJobQueue addMessage:groupInfoRequestMessage.asPreparer
+                                                    transaction:transaction];
         }
     });
 }

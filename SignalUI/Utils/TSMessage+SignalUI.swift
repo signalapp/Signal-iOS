@@ -48,7 +48,7 @@ public extension TSMessage {
                         // record that it is deleting.
                         outgoingMessage.updateWith(recipientAddressStates: deleteMessage.recipientAddressStates, transaction: transaction)
                         outgoingMessage.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
-                        Self.messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
+                        Self.sskJobQueues.messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
                     }
                 }
             }

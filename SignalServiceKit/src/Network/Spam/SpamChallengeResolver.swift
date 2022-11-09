@@ -116,7 +116,7 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
 
             pendingInteractionIds
                 .compactMap { TSOutgoingMessage.anyFetchOutgoingMessage(uniqueId: $0, transaction: writeTx) }
-                .forEach { self.messageSenderJobQueue.add(message: $0.asPreparer, transaction: writeTx) }
+                .forEach { self.sskJobQueues.messageSenderJobQueue.add(message: $0.asPreparer, transaction: writeTx) }
         }
     }
 }

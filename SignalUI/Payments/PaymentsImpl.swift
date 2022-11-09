@@ -1055,7 +1055,7 @@ public extension PaymentsImpl {
                                                     paymentRequest: paymentRequest,
                                                     expiresInSeconds: expiresInSeconds,
                                                     transaction: transaction)
-            Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
             return message
         }
     }
@@ -1090,7 +1090,7 @@ public extension PaymentsImpl {
                                                 paymentRequest: nil,
                                                 expiresInSeconds: expiresInSeconds,
                                                 transaction: transaction)
-        Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+        Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         return message
 
     }
@@ -1117,7 +1117,7 @@ public extension PaymentsImpl {
                                                 paymentRequest: nil,
                                                 expiresInSeconds: expiresInSeconds,
                                                 transaction: transaction)
-        Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+        Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         return message
 
     }
@@ -1151,7 +1151,7 @@ public extension PaymentsImpl {
                                                    receiptData: mcReceiptData,
                                                    isDefragmentation: isDefragmentation)
         let message = OutgoingPaymentSyncMessage(thread: thread, mobileCoin: mobileCoin, transaction: transaction)
-        Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+        Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         return message
     }
 }

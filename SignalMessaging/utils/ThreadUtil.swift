@@ -47,7 +47,7 @@ public extension ThreadUtil {
 
         Self.enqueueSendAsyncWrite { transaction in
             message.anyInsert(transaction: transaction)
-            self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
             if message.hasRenderableContent() { thread.donateSendMessageIntent(for: message, transaction: transaction) }
         }
 
@@ -63,7 +63,7 @@ public extension ThreadUtil {
 
         let message = builder.build(transaction: transaction)
         message.anyInsert(transaction: transaction)
-        self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+        self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
 
         if message.hasRenderableContent() { thread.donateSendMessageIntent(for: message, transaction: transaction) }
 
@@ -77,7 +77,7 @@ public extension ThreadUtil {
         isHighPriority: Bool = false,
         transaction: SDSAnyWriteTransaction
     ) -> Promise<Void> {
-        let promise = messageSenderJobQueue.add(
+        let promise = sskJobQueues.messageSenderJobQueue.add(
             .promise,
             message: message.asPreparer,
             limitToCurrentProcessLifetime: limitToCurrentProcessLifetime,

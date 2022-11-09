@@ -7,8 +7,8 @@ import Foundation
 import PassKit
 import SignalCoreKit
 
-public class DonationUtilities {
-    public static let sendGiftBadgeJobQueue = SendGiftBadgeJobQueue()
+public class DonationUtilities: Dependencies {
+    public static var sendGiftBadgeJobQueue: SendGiftBadgeJobQueue { smJobQueues.sendGiftBadgeJobQueue }
 
     public static var isApplePayAvailable: Bool {
         PKPaymentAuthorizationController.canMakePayments()

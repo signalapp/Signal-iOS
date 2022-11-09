@@ -259,7 +259,7 @@ extension ConversationViewController: MessageRequestDelegate {
 
                 // Send our profile key to the sender
                 let profileKeyMessage = OWSProfileKeyMessage(thread: thread, transaction: transaction)
-                Self.messageSenderJobQueue.add(message: profileKeyMessage.asPreparer, transaction: transaction)
+                Self.sskJobQueues.messageSenderJobQueue.add(message: profileKeyMessage.asPreparer, transaction: transaction)
                 NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
             }
         }

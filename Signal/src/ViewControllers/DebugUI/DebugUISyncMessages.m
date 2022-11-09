@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (MessageSenderJobQueue *)messageSenderJobQueue
 {
-    return SSKEnvironment.shared.messageSenderJobQueue;
+    return SSKEnvironment.shared.sskJobQueues.messageSenderJobQueue;
 }
 
 + (OWSContactsManager *)contactsManager

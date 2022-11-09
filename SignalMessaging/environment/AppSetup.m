@@ -58,15 +58,24 @@ NS_ASSUME_NONNULL_BEGIN
                                         fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
         OWSAssert(success);
 
-        OWSPreferences *preferences = [OWSPreferences new];
+        // MARK: SignalMessaging environment properties
 
-        NetworkManager *networkManager = [NetworkManager new];
+        LaunchJobs *launchJobs = [LaunchJobs new];
+        OWSPreferences *preferences = [OWSPreferences new];
+        id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
+        OWSSounds *sounds = [OWSSounds new];
+        OWSOrphanDataCleaner *orphanDataCleaner = [OWSOrphanDataCleaner new];
+        AvatarBuilder *avatarBuilder = [AvatarBuilder new];
+        SignalMessagingJobQueues *smJobQueues = [SignalMessagingJobQueues new];
+
+        // MARK: SSK environment properties
+
         OWSContactsManager *contactsManager = [OWSContactsManager new];
         OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
         MessageSender *messageSender = [MessageSender new];
-        MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
         id<PendingReceiptRecorder> pendingReceiptRecorder = [MessageRequestPendingReceipts new];
         OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithDatabaseStorage:databaseStorage];
+        NetworkManager *networkManager = [NetworkManager new];
         OWSMessageManager *messageManager = [OWSMessageManager new];
         BlockingManager *blockingManager = [BlockingManager new];
         OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
@@ -82,8 +91,8 @@ NS_ASSUME_NONNULL_BEGIN
         OWSDisappearingMessagesJob *disappearingMessagesJob = [OWSDisappearingMessagesJob new];
         OWSReceiptManager *receiptManager = [OWSReceiptManager new];
         OWSOutgoingReceiptManager *outgoingReceiptManager = [OWSOutgoingReceiptManager new];
-        id<SyncManagerProtocol> syncManager = (id<SyncManagerProtocol>)[[OWSSyncManager alloc] initDefault];
         id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
+        id<SyncManagerProtocol> syncManager = (id<SyncManagerProtocol>)[[OWSSyncManager alloc] initDefault];
         id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
         OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
         StickerManager *stickerManager = [[StickerManager alloc] init];
@@ -94,13 +103,6 @@ NS_ASSUME_NONNULL_BEGIN
         SSKPreferences *sskPreferences = [SSKPreferences new];
         id<GroupsV2> groupsV2 = [GroupsV2Impl new];
         id<GroupV2Updates> groupV2Updates = [[GroupV2UpdatesImpl alloc] init];
-        SenderKeyStore *senderKeyStore = [[SenderKeyStore alloc] init];
-
-        OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueue = [OWSIncomingContactSyncJobQueue new];
-        OWSIncomingGroupSyncJobQueue *incomingGroupSyncJobQueue = [OWSIncomingGroupSyncJobQueue new];
-        LaunchJobs *launchJobs = [LaunchJobs new];
-        OWSSounds *sounds = [OWSSounds new];
-        id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
         MessageFetcherJob *messageFetcherJob = [MessageFetcherJob new];
         BulkProfileFetch *bulkProfileFetch = [BulkProfileFetch new];
         id<VersionedProfiles> versionedProfiles = [VersionedProfilesImpl new];
@@ -110,34 +112,29 @@ NS_ASSUME_NONNULL_BEGIN
         OWSMessagePipelineSupervisor *messagePipelineSupervisor =
             [OWSMessagePipelineSupervisor createStandardSupervisor];
         AppExpiry *appExpiry = [AppExpiry new];
-        BroadcastMediaMessageJobQueue *broadcastMediaMessageJobQueue = [BroadcastMediaMessageJobQueue new];
         MessageProcessor *messageProcessor = [MessageProcessor new];
-        OWSOrphanDataCleaner *orphanDataCleaner = [OWSOrphanDataCleaner new];
         id<PaymentsHelper> paymentsHelper = [PaymentsHelperImpl new];
         id<PaymentsCurrencies> paymentsCurrencies = [PaymentsCurrenciesImpl new];
         SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];
-        AvatarBuilder *avatarBuilder = [AvatarBuilder new];
+        SenderKeyStore *senderKeyStore = [[SenderKeyStore alloc] init];
         PhoneNumberUtil *phoneNumberUtil = [PhoneNumberUtil new];
         ChangePhoneNumber *changePhoneNumber = [ChangePhoneNumber new];
         SubscriptionManager *subscriptionManager = [SubscriptionManager new];
         SystemStoryManager *systemStoryManager = [SystemStoryManager new];
         RemoteMegaphoneFetcher *remoteMegaphoneFetcher = [RemoteMegaphoneFetcher new];
-        LocalUserLeaveGroupJobQueue *localUserLeaveGroupJobQueue = [LocalUserLeaveGroupJobQueue new];
+        SSKJobQueues *sskJobQueues = [SSKJobQueues new];
 
-        [Environment setShared:[[Environment alloc] initWithIncomingContactSyncJobQueue:incomingContactSyncJobQueue
-                                                              incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
-                                                                             launchJobs:launchJobs
-                                                                            preferences:preferences
-                                                             proximityMonitoringManager:proximityMonitoringManager
-                                                                                 sounds:sounds
-                                                          broadcastMediaMessageJobQueue:broadcastMediaMessageJobQueue
-                                                                      orphanDataCleaner:orphanDataCleaner
-                                                                          avatarBuilder:avatarBuilder]];
+        [Environment setShared:[[Environment alloc] initWithLaunchJobs:launchJobs
+                                                           preferences:preferences
+                                            proximityMonitoringManager:proximityMonitoringManager
+                                                                sounds:sounds
+                                                     orphanDataCleaner:orphanDataCleaner
+                                                         avatarBuilder:avatarBuilder
+                                                           smJobQueues:smJobQueues]];
 
         [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithContactsManager:contactsManager
                                                                linkPreviewManager:linkPreviewManager
                                                                     messageSender:messageSender
-                                                            messageSenderJobQueue:messageSenderJobQueue
                                                            pendingReceiptRecorder:pendingReceiptRecorder
                                                                    profileManager:profileManager
                                                                    networkManager:networkManager
@@ -190,7 +187,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                               subscriptionManager:subscriptionManager
                                                                systemStoryManager:systemStoryManager
                                                            remoteMegaphoneFetcher:remoteMegaphoneFetcher
-                                                      localUserLeaveGroupJobQueue:localUserLeaveGroupJobQueue]];
+                                                                     sskJobQueues:sskJobQueues]];
 
         appSpecificSingletonBlock();
 

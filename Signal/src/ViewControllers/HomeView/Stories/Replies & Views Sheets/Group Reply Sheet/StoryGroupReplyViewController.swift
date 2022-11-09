@@ -190,7 +190,7 @@ extension StoryGroupReplyViewController: UITableViewDelegate {
             style: .default
         ) { _ in
             Self.databaseStorage.write { transaction in
-                Self.messageSenderJobQueue.add(
+                Self.sskJobQueues.messageSenderJobQueue.add(
                     message: messageToSend.asPreparer,
                     transaction: transaction
                 )
@@ -210,7 +210,7 @@ extension StoryGroupReplyViewController: UITableViewDelegate {
         ) { confirmedSafetyNumberChange in
             guard confirmedSafetyNumberChange else { return }
             Self.databaseStorage.write { transaction in
-                Self.messageSenderJobQueue.add(
+                Self.sskJobQueues.messageSenderJobQueue.add(
                     message: messageToSend.asPreparer,
                     transaction: transaction
                 )

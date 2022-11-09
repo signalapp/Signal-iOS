@@ -240,7 +240,7 @@ public class SubscriptionManager: NSObject {
         storageServiceManager.recordPendingLocalAccountUpdates()
     }
 
-    public static let subscriptionJobQueue = SubscriptionReceiptCredentialJobQueue()
+    public static var subscriptionJobQueue: SubscriptionReceiptCredentialJobQueue { smJobQueues.subscriptionReceiptCredentialJobQueue }
     public static let SubscriptionJobQueueDidFinishJobNotification = NSNotification.Name("SubscriptionJobQueueDidFinishJobNotification")
     public static let SubscriptionJobQueueDidFailJobNotification = NSNotification.Name("SubscriptionJobQueueDidFailJobNotification")
     private static let subscriptionKVS = SDSKeyValueStore(collection: "SubscriptionKeyValueStore")

@@ -59,7 +59,7 @@ NSString *const kLocalUuidString = @"B0D19730-950B-462C-84E7-60421F879EEF";
     [super setUp];
     [self.tsAccountManager registerForTestsWithLocalNumber:kLocalE164
                                                       uuid:[[NSUUID alloc] initWithUUIDString:kLocalUuidString]];
-    [self.messageSenderJobQueue setup];
+    [self.sskJobQueues.messageSenderJobQueue setup];
 }
 
 #pragma mark -

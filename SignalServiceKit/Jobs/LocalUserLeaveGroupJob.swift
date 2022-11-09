@@ -5,10 +5,6 @@
 
 import Foundation
 
-extension GroupManager {
-    static let localLeaveGroupJobQueue = LocalUserLeaveGroupJobQueue()
-}
-
 public final class LocalUserLeaveGroupOperation: OWSOperation, DurableOperation {
     public typealias JobRecordType = OWSLocalUserLeaveGroupJobRecord
     public typealias DurableOperationDelegateType = LocalUserLeaveGroupJobQueue

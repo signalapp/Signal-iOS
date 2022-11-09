@@ -27,7 +27,7 @@ public class AttachmentMultisend: Dependencies {
                 // and propagate their upload state to each of the TSAttachment unique IDs in the values.
                 // Each outgoing destination gets its own TSAttachment per attached media, but we upload only one,
                 // and propagate its upload state to each of these independent clones.
-                self.broadcastMediaMessageJobQueue.add(
+                self.smJobQueues.broadcastMediaMessageJobQueue.add(
                     attachmentIdMap: preparedSend.attachmentIdMap,
                     unsavedMessagesToSend: preparedSend.unsavedMessages,
                     transaction: transaction
@@ -255,7 +255,7 @@ public extension AttachmentMultisend {
                 // only send one text attachment at a time) and propagate its upload state to each of the
                 // TSAttachment unique IDs in the value (an array). Each outgoing destination gets its own
                 // TSAttachment, but we upload only one, and propagate its upload state to each of them.
-                self.broadcastMediaMessageJobQueue.add(
+                self.smJobQueues.broadcastMediaMessageJobQueue.add(
                     attachmentIdMap: preparedSend.attachmentIdMap,
                     unsavedMessagesToSend: preparedSend.messages,
                     transaction: transaction

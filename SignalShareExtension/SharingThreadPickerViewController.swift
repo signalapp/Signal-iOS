@@ -515,7 +515,7 @@ extension SharingThreadPickerViewController {
         var promises = [Promise<Void>]()
         databaseStorage.write { transaction in
             for message in outgoingMessages {
-                promises.append(messageSenderJobQueue.add(
+                promises.append(sskJobQueues.messageSenderJobQueue.add(
                     .promise,
                     message: message.asPreparer,
                     isHighPriority: true,

@@ -519,7 +519,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (shouldSendDurably) {
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
+            [self.sskJobQueues.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
         });
     } else {
         [self.messageSender sendMessage:message.asPreparer

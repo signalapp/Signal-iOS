@@ -511,7 +511,7 @@ extension ConversationViewController: CVComponentDelegate {
             }
 
             Self.databaseStorage.asyncWrite { transaction in
-                Self.sessionResetJobQueue.add(contactThread: contactThread, transaction: transaction)
+                Self.smJobQueues.sessionResetJobQueue.add(contactThread: contactThread, transaction: transaction)
             }
         })
 

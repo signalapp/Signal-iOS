@@ -32,7 +32,7 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
 
         // use the *real* message sender to measure it's perf
         sskEnvironment.messageSenderRef = MessageSender()
-        Self.messageSenderJobQueue.setup()
+        Self.sskJobQueues.messageSenderJobQueue.setup()
 
         try! databaseStorage.grdbStorage.setup()
 
