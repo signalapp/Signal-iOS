@@ -199,7 +199,13 @@ open class OWSViewController: UIViewController {
     ) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        updateKeyboardLayoutOffsets()
+        // Whatever keyboard frame we knew about is now invalidated.
+        // They keyboard will update us if its on screen, setting this again.
+        lastKnownKeyboardFrame = nil
+
+        coordinator.animate(alongsideTransition: nil) { [weak self] _ in
+            self?.updateKeyboardLayoutOffsets()
+        }
     }
 
     #if DEBUG
@@ -309,15 +315,7 @@ open class OWSViewController: UIViewController {
         isObservingKeyboardNotifications = false
     }
 
-    private lazy var lastKnownKeyboardFrame: CGRect = {
-        let deviceBounds = CurrentAppContext().frame
-        return CGRect(
-            x: deviceBounds.minX,
-            y: deviceBounds.maxY,
-            width: deviceBounds.width,
-            height: 0
-        )
-    }()
+    private var lastKnownKeyboardFrame: CGRect?
 
     @objc
     private func handleKeyboardNotificationBase(_ notification: NSNotification) {
@@ -410,6 +408,9 @@ open class OWSViewController: UIViewController {
     }
 
     private func updateKeyboardLayoutOffsets() {
+        guard let lastKnownKeyboardFrame = lastKnownKeyboardFrame else {
+            return
+        }
         if let keyboardLayoutViewBottomConstraint = self.keyboardLayoutViewBottomConstraint {
             keyboardLayoutViewBottomConstraint.constant = lastKnownKeyboardFrame.minY - view.bounds.height
         }
