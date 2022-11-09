@@ -218,6 +218,10 @@ extension OWSNavigationController: UIGestureRecognizerDelegate {
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         owsAssertDebug(gestureRecognizer === self.interactivePopGestureRecognizer)
 
+        guard viewControllers.count > 1 else {
+            return false
+        }
+
         if let child = topViewController?.getFinalNavigationChildController() {
             return !child.shouldCancelNavigationBack
         } else {
