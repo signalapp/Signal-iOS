@@ -69,6 +69,12 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     private lazy var statusLabel = LinkingTextView()
 
+    private static var canDonate: Bool {
+        DonationUtilities.canDonate(localNumber: tsAccountManager.localNumber)
+    }
+
+    private static var canSendGiftBadges: Bool { RemoteConfig.canSendGiftBadges && canDonate }
+
     public override func viewDidLoad() {
         super.viewDidLoad()
         setUpAvatarView()
@@ -266,11 +272,11 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 comment: "On the donation settings screen, tapping this button will take the user to a screen where they can donate."
             )
             let button = OWSButton(title: buttonTitle) { [weak self] in
-                guard DonationUtilities.isApplePayAvailable else {
+                if Self.canDonate {
+                    self?.showDonateViewController(startingDonationMode: .oneTime)
+                } else {
                     DonationViewsUtil.openDonateWebsite()
-                    return
                 }
-                self?.showDonateViewController(startingDonationMode: .oneTime)
             }
             button.dimsWhenHighlighted = true
             button.layer.cornerRadius = 8
@@ -365,7 +371,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
     }
 
     private func otherWaysToGiveSection() -> OWSTableSection? {
-        guard DonationUtilities.canSendGiftBadges else { return nil }
+        guard Self.canSendGiftBadges else { return nil }
 
         let title = NSLocalizedString("DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE",
                                                          comment: "Title for the 'other ways to give' section on the donation view")
@@ -381,7 +387,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 // It's possible (but unlikely) to lose the ability to send gifts while this button is
                 // visible. For example, Apple Pay could be disabled in parental controls after this
                 // screen is opened.
-                guard DonationUtilities.canSendGiftBadges else {
+                guard Self.canSendGiftBadges else {
                     // We might want to show a better UI here, but making the button a no-op is
                     // preferable to launching the view controller.
                     return

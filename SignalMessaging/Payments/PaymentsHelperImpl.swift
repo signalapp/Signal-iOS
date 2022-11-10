@@ -22,14 +22,14 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
         }
         let paymentsDisabledRegions = RemoteConfig.paymentsDisabledRegions
         if paymentsDisabledRegions.isEmpty {
-            return Self.isValidPhoneNumberForPayments_fixedWhitelist(localNumber)
+            return Self.isValidPhoneNumberForPayments_fixedAllowlist(localNumber)
         } else {
             return Self.isValidPhoneNumberForPayments_remoteConfigBlocklist(localNumber,
                                                                             paymentsDisabledRegions: paymentsDisabledRegions)
              }
     }
 
-    private static func isValidPhoneNumberForPayments_fixedWhitelist(_ e164: String) -> Bool {
+    private static func isValidPhoneNumberForPayments_fixedAllowlist(_ e164: String) -> Bool {
         guard let phoneNumber = PhoneNumber(fromE164: e164) else {
             owsFailDebug("Could not parse phone number: \(e164).")
             return false
@@ -51,28 +51,15 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
         return validCountryCodes.contains(nsCountryCode.intValue)
     }
 
-    internal static func isValidPhoneNumberForPayments_remoteConfigBlocklist(_ e164: String,
-                                                                             paymentsDisabledRegions: [String]) -> Bool {
-        guard !paymentsDisabledRegions.isEmpty else {
-            owsFailDebug("Missing paymentsDisabledRegions.")
-            return false
-        }
-        let e164Prefix = "+"
-        guard e164.hasPrefix(e164Prefix) else {
-            owsFailDebug("Invalid e164: \(e164).")
-            return false
-        }
-        let e164WithoutPrefix = e164.substring(from: e164Prefix.count)
-        guard !e164WithoutPrefix.isEmpty else {
-            owsFailDebug("Invalid e164: \(e164).")
-            return false
-        }
-        for regionPrefix in paymentsDisabledRegions {
-            if e164WithoutPrefix.hasPrefix(regionPrefix) {
-                return false
-            }
-        }
-        return true
+    internal static func isValidPhoneNumberForPayments_remoteConfigBlocklist(
+        _ e164: String,
+        paymentsDisabledRegions: PhoneNumberRegions
+    ) -> Bool {
+        owsAssertDebug(
+            !paymentsDisabledRegions.isEmpty,
+            "Missing paymentsDisabledRegions. Used the fixed allowlist instead."
+        )
+        return !paymentsDisabledRegions.contains(e164: e164)
     }
 
     public var canEnablePayments: Bool {

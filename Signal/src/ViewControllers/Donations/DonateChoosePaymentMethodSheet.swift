@@ -153,8 +153,7 @@ class DonateChoosePaymentMethodSheet: InteractiveSheetViewController {
         }()
 
         let paymentButtonContainerView: UIView = {
-            // When we add other payment methods, we should hide this button if
-            // Apple Pay is unavailable.
+            // TODO(donations) When we add other payment methods, we should hide this button if Apple Pay is unavailable.
             let applePayButton = ApplePayButton { [weak self] in
                 guard let self = self else { return }
                 self.didChoosePaymentMethod(self)

@@ -73,16 +73,6 @@ class PaymentsTest: SignalBaseTest {
                                                         signatureData: fakeSignatureData))
     }
 
-    func test_parsePaymentsDisabledRegions() {
-        XCTAssertEqual([], RemoteConfig.parsePaymentsDisabledRegions(valueList: ""))
-        XCTAssertEqual([], RemoteConfig.parsePaymentsDisabledRegions(valueList: "    "))
-        XCTAssertEqual([], RemoteConfig.parsePaymentsDisabledRegions(valueList: "a"))
-
-        XCTAssertEqual(["1"], RemoteConfig.parsePaymentsDisabledRegions(valueList: "1"))
-        XCTAssertEqual(["1"], RemoteConfig.parsePaymentsDisabledRegions(valueList: " 1a "))
-        XCTAssertEqual(["1", "2345", "67", "89"], RemoteConfig.parsePaymentsDisabledRegions(valueList: "1,2 345, +6 7,, ,89"))
-    }
-
     func test_isValidPhoneNumberForPayments_remoteConfigBlocklist() {
         XCTAssertTrue(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlocklist("+523456",
                                                                                              paymentsDisabledRegions: ["1", "234"]))

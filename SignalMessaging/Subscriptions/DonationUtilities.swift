@@ -10,12 +10,14 @@ import SignalCoreKit
 public class DonationUtilities: Dependencies {
     public static var sendGiftBadgeJobQueue: SendGiftBadgeJobQueue { smJobQueues.sendGiftBadgeJobQueue }
 
-    public static var isApplePayAvailable: Bool {
-        PKPaymentAuthorizationController.canMakePayments()
-    }
-
-    public static var canSendGiftBadges: Bool {
-        isApplePayAvailable && RemoteConfig.canSendGiftBadges
+    /// Can the user donate to Signal in the app?
+    public static func canDonate(localNumber: String?) -> Bool {
+        guard let localNumber else { return false }
+        let isApplePayAvailable = (
+            PKPaymentAuthorizationController.canMakePayments() &&
+            !RemoteConfig.applePayDisabledRegions.contains(e164: localNumber)
+        )
+        return isApplePayAvailable
     }
 
     public static var supportedNetworks: [PKPaymentNetwork] {

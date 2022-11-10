@@ -7,8 +7,34 @@ import Foundation
 import NaturalLanguage
 
 public extension String {
+    /// A version of the string that only contains digits.
+    ///
+    /// Handles non-ASCII digits. If you only want ASCII digits, see `asciiDigitsOnly`.
+    ///
+    /// ```
+    /// "1x2x3".digitsOnly
+    /// // => "123"
+    /// "١23".digitsOnly
+    /// // => "١23"
+    /// "1️⃣23".digitsOnly
+    /// // => "123"
+    /// ```
     var digitsOnly: String {
         return (self as NSString).digitsOnly()
+    }
+
+    /// A version of the string that only contains ASCII digits.
+    ///
+    /// If you want to include non-ASCII digits, see `digitsOnly`.
+    ///
+    /// ```
+    /// "1x2x3".digitsOnly
+    /// // => "123"
+    /// "1️⃣23".digitsOnly
+    /// // => "23"
+    /// ```
+    var asciiDigitsOnly: String {
+        filter { $0.isASCII && $0.isNumber }
     }
 
     func substring(from index: Int) -> String {

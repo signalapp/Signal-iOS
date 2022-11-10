@@ -163,7 +163,7 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
     @objc
     private func didTapDonate() {
         dismiss(animated: true) {
-            if DonationUtilities.isApplePayAvailable {
+            if DonationUtilities.canDonate(localNumber: Self.tsAccountManager.localNumber) {
                 let frontVc = { CurrentAppContext().frontmostViewController() }
 
                 let donateVc = DonateViewController(startingDonationMode: .oneTime) { finishResult in

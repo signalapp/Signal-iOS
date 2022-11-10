@@ -51,10 +51,12 @@ public class BadgeExpirationSheetState {
 
     public let badge: ProfileBadge
     private let mode: Mode
+    private let canDonate: Bool
 
-    public init(badge: ProfileBadge, mode: Mode) {
+    public init(badge: ProfileBadge, mode: Mode, canDonate: Bool) {
         self.badge = badge
         self.mode = mode
+        self.canDonate = canDonate
     }
 
     public lazy var titleText: String = {
@@ -173,6 +175,10 @@ public class BadgeExpirationSheetState {
     public lazy var actionButton: ActionButton = {
         lazy var okayButton = ActionButton(action: .dismiss, text: CommonStrings.okayButton)
 
+        guard canDonate else {
+            return okayButton
+        }
+
         switch mode {
         case .subscriptionExpiredBecauseNotRenewed:
             let text = NSLocalizedString("BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON",
@@ -210,7 +216,11 @@ class BadgeExpirationSheet: OWSTableSheetViewController {
     public weak var delegate: BadgeExpirationSheetDelegate?
 
     public init(badge: ProfileBadge, mode: BadgeExpirationSheetState.Mode) {
-        self.state = BadgeExpirationSheetState(badge: badge, mode: mode)
+        self.state = BadgeExpirationSheetState(
+            badge: badge,
+            mode: mode,
+            canDonate: DonationUtilities.canDonate(localNumber: Self.tsAccountManager.localNumber)
+        )
         owsAssertDebug(state.badge.assets != nil)
 
         super.init()

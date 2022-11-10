@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalMessaging
 
 class RemoteMegaphone: MegaphoneView {
     private let megaphoneModel: RemoteMegaphoneModel
@@ -83,14 +84,35 @@ class RemoteMegaphone: MegaphoneView {
             markAsCompleteWithSneakyTransaction()
             dismiss()
         case .donate:
-            let navController = OWSNavigationController(rootViewController: DonationSettingsViewController())
-            fromViewController.present(navController, animated: true) { [weak self] in
-                guard let self = self else { return }
-
-                // Snooze regardless of outcome from donation screen.
+            let done = { [weak self] in
+                guard let self else { return }
+                // Snooze regardless of outcome.
                 self.markAsSnoozedWithSneakyTransaction()
                 self.dismiss(animated: false)
             }
+
+            guard DonationUtilities.canDonate(localNumber: Self.tsAccountManager.localNumber) else {
+                done()
+                DonationViewsUtil.openDonateWebsite()
+                return
+            }
+
+            let donateVc = DonateViewController(startingDonationMode: .oneTime) { finishResult in
+                let frontVc = { CurrentAppContext().frontmostViewController() }
+                switch finishResult {
+                case let .completedDonation(donateSheet, thanksSheet):
+                    donateSheet.dismiss(animated: true) {
+                        frontVc()?.present(thanksSheet, animated: true)
+                    }
+                case let .monthlySubscriptionCancelled(donateSheet, toastText):
+                    donateSheet.dismiss(animated: true) {
+                        frontVc()?.presentToast(text: toastText)
+                    }
+                }
+            }
+
+            let navController = OWSNavigationController(rootViewController: donateVc)
+            fromViewController.present(navController, animated: true, completion: done)
         case .unrecognized(let actionId):
             owsFailDebug("Unrecognized action with ID \(actionId) should never have made it into \(buttonDescriptor) button!")
             dismiss()

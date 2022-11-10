@@ -2020,6 +2020,8 @@
 		F9C612B4284E466B00B2199A /* CGPointExtensionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */; };
 		F9CA468828FF0CA600C074F6 /* OneTimeDonationCustomAmountTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CA468728FF0CA600C074F6 /* OneTimeDonationCustomAmountTextField.swift */; };
 		F9CAC77F29199B9200EEC1DE /* StringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CAC77E29199B9200EEC1DE /* StringTest.swift */; };
+		F9CAC7832919B35E00EEC1DE /* PhoneNumberRegions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CAC7822919B35E00EEC1DE /* PhoneNumberRegions.swift */; };
+		F9CAC7852919B5A400EEC1DE /* PhoneNumberRegionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CAC7842919B5A400EEC1DE /* PhoneNumberRegionsTest.swift */; };
 		F9D83012282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D83011282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift */; };
 		F9DD70B92811AF82000C5960 /* DonationViewsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */; };
 		F9F4DE2A283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */; };
@@ -4378,6 +4380,8 @@
 		F9C985D2289459860029F9AD /* SignalServiceKit-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SignalServiceKit-Prefix.pch"; sourceTree = "<group>"; };
 		F9CA468728FF0CA600C074F6 /* OneTimeDonationCustomAmountTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneTimeDonationCustomAmountTextField.swift; sourceTree = "<group>"; };
 		F9CAC77E29199B9200EEC1DE /* StringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTest.swift; sourceTree = "<group>"; };
+		F9CAC7822919B35E00EEC1DE /* PhoneNumberRegions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberRegions.swift; sourceTree = "<group>"; };
+		F9CAC7842919B5A400EEC1DE /* PhoneNumberRegionsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberRegionsTest.swift; sourceTree = "<group>"; };
 		F9D83011282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingChooseBadgeViewController.swift; sourceTree = "<group>"; };
 		F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationViewsUtil.swift; sourceTree = "<group>"; };
 		F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingConfirmationViewController.swift; sourceTree = "<group>"; };
@@ -7060,6 +7064,7 @@
 				F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */,
 				F94261EE289B1B5400460798 /* OWSFormatTest.swift */,
 				F94261FB289B1B5400460798 /* OWSOperationTest.swift */,
+				F9CAC7842919B5A400EEC1DE /* PhoneNumberRegionsTest.swift */,
 				F908AA7728CB894400472E68 /* PngChunkerTest.swift */,
 				F94261F0289B1B5400460798 /* RefineryTest.swift */,
 				F94261EC289B1B5400460798 /* RemoteConfigManagerTests.swift */,
@@ -8244,6 +8249,7 @@
 				F9C5CAFE289453B200548EEE /* OWSUserProfile.swift */,
 				F9C5CAFB289453B200548EEE /* ParamParser.swift */,
 				F9C5CB4E289453B200548EEE /* PendingTasks.swift */,
+				F9CAC7822919B35E00EEC1DE /* PhoneNumberRegions.swift */,
 				F9C5CB1D289453B200548EEE /* PinnedThreadManager.swift */,
 				F9C5CB58289453B200548EEE /* Platform.swift */,
 				F908AA7928CB89CC00472E68 /* PngChunker.swift */,
@@ -10991,6 +10997,7 @@
 				F9C5CE20289453B400548EEE /* PendingTasks.swift in Sources */,
 				F9C5CD56289453B300548EEE /* PendingViewedReceiptRecord.swift in Sources */,
 				F9C5CCBC289453B300548EEE /* PhoneNumber.m in Sources */,
+				F9CAC7832919B35E00EEC1DE /* PhoneNumberRegions.swift in Sources */,
 				F9C5CCBB289453B300548EEE /* PhoneNumberUtil.m in Sources */,
 				F9C5CCD6289453B300548EEE /* PhoneNumberUtil.swift in Sources */,
 				F9C5CDEF289453B400548EEE /* PinnedThreadManager.swift in Sources */,
@@ -11275,6 +11282,7 @@
 				F9426244289B1B5500460798 /* OWSRequestFactoryTest.swift in Sources */,
 				F942629F289B1B5600460798 /* OWSUDManagerTest.swift in Sources */,
 				F9426242289B1B5500460798 /* OWSURLBuilderUtilTest.swift in Sources */,
+				F9CAC7852919B5A400EEC1DE /* PhoneNumberRegionsTest.swift in Sources */,
 				F9426280289B1B5600460798 /* PhoneNumberTest.m in Sources */,
 				F9426274289B1B5500460798 /* PhoneNumberTest.swift in Sources */,
 				F9426272289B1B5500460798 /* PhoneNumberUtilTest.m in Sources */,

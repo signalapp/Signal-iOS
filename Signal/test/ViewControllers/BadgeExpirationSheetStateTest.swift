@@ -54,35 +54,58 @@ class BadgeExpirationSheetStateTest: XCTestCase {
 
     func testBadge() throws {
         let badge = getSubscriptionBadge()
-        let state = State(badge: badge, mode: .subscriptionExpiredBecauseNotRenewed)
+        let state = State(
+            badge: badge,
+            mode: .subscriptionExpiredBecauseNotRenewed,
+            canDonate: true
+        )
         XCTAssertIdentical(state.badge, badge)
     }
 
     func testTitleText() throws {
         let testCases: [(State, String)] = [
             (
-                State(badge: getSubscriptionBadge(),
-                      mode: .subscriptionExpiredBecauseOfChargeFailure(chargeFailure: Subscription.ChargeFailure(code: "insufficient_funds"))),
+                State(
+                    badge: getSubscriptionBadge(),
+                    mode: .subscriptionExpiredBecauseOfChargeFailure(chargeFailure: Subscription.ChargeFailure(code: "insufficient_funds")),
+                    canDonate: true
+                ),
                 NSLocalizedString("BADGE_EXPIRED_SUBSCRIPTION_TITLE",
                                   comment: "Title for subscription on the badge expiration sheet.")
             ),
             (
-                State(badge: getSubscriptionBadge(), mode: .subscriptionExpiredBecauseNotRenewed),
+                State(
+                    badge: getSubscriptionBadge(),
+                    mode: .subscriptionExpiredBecauseNotRenewed,
+                    canDonate: true
+                ),
                 NSLocalizedString("BADGE_EXPIRED_SUBSCRIPTION_TITLE",
                                   comment: "Title for subscription on the badge expiration sheet.")
             ),
             (
-                State(badge: getSubscriptionBadge(), mode: .boostExpired(hasCurrentSubscription: true)),
+                State(
+                    badge: getSubscriptionBadge(),
+                    mode: .boostExpired(hasCurrentSubscription: true),
+                    canDonate: true
+                ),
                 NSLocalizedString("BADGE_EXPIRED_BOOST_TITLE",
                                   comment: "Title for boost on the badge expiration sheet.")
             ),
             (
-                State(badge: getGiftBadge(), mode: .giftBadgeExpired(hasCurrentSubscription: true)),
+                State(
+                    badge: getGiftBadge(),
+                    mode: .giftBadgeExpired(hasCurrentSubscription: true),
+                    canDonate: true
+                ),
                 NSLocalizedString("BADGE_EXPIRED_GIFT_TITLE",
                                   comment: "Title for gift on the badge expiration sheet.")
             ),
             (
-                State(badge: getGiftBadge(), mode: .giftNotRedeemed(fullName: "")),
+                State(
+                    badge: getGiftBadge(),
+                    mode: .giftNotRedeemed(fullName: ""),
+                    canDonate: true
+                ),
                 NSLocalizedString("GIFT_NOT_REDEEMED_TITLE",
                                   comment: "Title when trying to redeem a gift that's already expired.")
             )
@@ -144,8 +167,11 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                 } else {
                     chargeFailure = Subscription.ChargeFailure()
                 }
-                let state = State(badge: subscriptionBadge,
-                                  mode: .subscriptionExpiredBecauseOfChargeFailure(chargeFailure: chargeFailure))
+                let state = State(
+                    badge: subscriptionBadge,
+                    mode: .subscriptionExpiredBecauseOfChargeFailure(chargeFailure: chargeFailure),
+                    canDonate: true
+                )
                 let body = state.body
 
                 XCTAssert(body.text.contains(expectedSubstring))
@@ -156,13 +182,21 @@ class BadgeExpirationSheetStateTest: XCTestCase {
 
         let otherTestCases: [(State, String, Bool)] = [
             (
-                State(badge: getSubscriptionBadge(), mode: .subscriptionExpiredBecauseNotRenewed),
+                State(
+                    badge: getSubscriptionBadge(),
+                    mode: .subscriptionExpiredBecauseNotRenewed,
+                    canDonate: true
+                ),
                 NSLocalizedString("BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT",
                                   comment: "Body of the sheet shown when your subscription is canceled due to inactivity"),
                 true
             ),
             (
-                State(badge: getSubscriptionBadge(), mode: .boostExpired(hasCurrentSubscription: false)),
+                State(
+                    badge: getSubscriptionBadge(),
+                    mode: .boostExpired(hasCurrentSubscription: false),
+                    canDonate: true
+                ),
                 NSLocalizedString("BADGE_EXPIRED_BOOST_BODY",
                                   comment: "String explaining to the user that their boost badge has expired on the badge expiry sheet.")
                 + "\n\n"
@@ -171,13 +205,21 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                 false
             ),
             (
-                State(badge: getSubscriptionBadge(), mode: .boostExpired(hasCurrentSubscription: true)),
+                State(
+                    badge: getSubscriptionBadge(),
+                    mode: .boostExpired(hasCurrentSubscription: true),
+                    canDonate: true
+                ),
                 NSLocalizedString("BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY",
                                   comment: "String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet."),
                 false
             ),
             (
-                State(badge: getGiftBadge(), mode: .giftBadgeExpired(hasCurrentSubscription: false)),
+                State(
+                    badge: getGiftBadge(),
+                    mode: .giftBadgeExpired(hasCurrentSubscription: false),
+                    canDonate: true
+                ),
                 NSLocalizedString(
                     "BADGE_EXPIRED_GIFT_BODY",
                     comment: "String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet."
@@ -190,7 +232,11 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                 false
             ),
             (
-                State(badge: getGiftBadge(), mode: .giftBadgeExpired(hasCurrentSubscription: true)),
+                State(
+                    badge: getGiftBadge(),
+                    mode: .giftBadgeExpired(hasCurrentSubscription: true),
+                    canDonate: true
+                ),
                 NSLocalizedString(
                     "BADGE_EXPIRED_GIFT_BODY",
                     comment: "String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet."
@@ -198,7 +244,11 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                 false
             ),
             (
-                State(badge: getGiftBadge(), mode: .giftNotRedeemed(fullName: "John Doe")),
+                State(
+                    badge: getGiftBadge(),
+                    mode: .giftNotRedeemed(fullName: "John Doe"),
+                    canDonate: true
+                ),
                 NSLocalizedString(
                     "GIFT_NOT_REDEEMED_BODY_FORMAT",
                     comment: "Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}."
@@ -216,44 +266,79 @@ class BadgeExpirationSheetStateTest: XCTestCase {
     func testActionButton() throws {
         let testCases: [(State, State.ActionButton)] = [
             (
-                State(badge: getSubscriptionBadge(),
-                      mode: .subscriptionExpiredBecauseOfChargeFailure(chargeFailure: Subscription.ChargeFailure(code: "insufficient_funds"))),
+                State(
+                    badge: getSubscriptionBadge(),
+                    mode: .subscriptionExpiredBecauseOfChargeFailure(chargeFailure: Subscription.ChargeFailure(code: "insufficient_funds")),
+                    canDonate: true
+                ),
                 State.ActionButton(action: .dismiss, text: CommonStrings.okayButton, hasNotNow: false)
             ),
             (
-                State(badge: getSubscriptionBadge(), mode: .subscriptionExpiredBecauseNotRenewed),
+                State(
+                    badge: getSubscriptionBadge(),
+                    mode: .subscriptionExpiredBecauseNotRenewed,
+                    canDonate: true
+                ),
                 State.ActionButton(action: .openMonthlyDonationView,
                                    text: NSLocalizedString("BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON",
                                                            comment: "Button text when a badge expires, asking you to renew your subscription"),
                                    hasNotNow: true)
             ),
             (
-                State(badge: getSubscriptionBadge(), mode: .boostExpired(hasCurrentSubscription: false)),
+                State(
+                    badge: getSubscriptionBadge(),
+                    mode: .boostExpired(hasCurrentSubscription: false),
+                    canDonate: true
+                ),
                 State.ActionButton(action: .openOneTimeDonationView,
                                    text: NSLocalizedString("BADGE_EXPIRED_BOOST_RENEWAL_BUTTON",
                                                            comment: "Button title for boost on the badge expiration sheet, used if the user is not already a sustainer."),
                                    hasNotNow: true)
             ),
             (
-                State(badge: getSubscriptionBadge(), mode: .boostExpired(hasCurrentSubscription: true)),
+                State(
+                    badge: getSubscriptionBadge(),
+                    mode: .boostExpired(hasCurrentSubscription: true),
+                    canDonate: true
+                ),
                 State.ActionButton(action: .openOneTimeDonationView,
                                    text: NSLocalizedString("BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER",
                                                            comment: "Button title for boost on the badge expiration sheet, used if the user is already a sustainer."),
                                    hasNotNow: true)
             ),
             (
-                State(badge: getGiftBadge(), mode: .giftBadgeExpired(hasCurrentSubscription: false)),
+                State(
+                    badge: getGiftBadge(),
+                    mode: .giftBadgeExpired(hasCurrentSubscription: false),
+                    canDonate: true
+                ),
                 State.ActionButton(action: .openMonthlyDonationView,
                                    text: NSLocalizedString("BADGE_EXPIRED_RENEWAL_MONTHLY",
                                                            comment: "Button title to donate monthly on the badge expiration sheet."),
                                    hasNotNow: true)
             ),
             (
-                State(badge: getGiftBadge(), mode: .giftBadgeExpired(hasCurrentSubscription: true)),
+                State(
+                    badge: getGiftBadge(),
+                    mode: .giftBadgeExpired(hasCurrentSubscription: true),
+                    canDonate: true
+                ),
                 State.ActionButton(action: .dismiss, text: CommonStrings.okayButton, hasNotNow: false)
             ),
             (
-                State(badge: getGiftBadge(), mode: .giftNotRedeemed(fullName: "")),
+                State(
+                    badge: getGiftBadge(),
+                    mode: .giftNotRedeemed(fullName: ""),
+                    canDonate: true
+                ),
+                State.ActionButton(action: .dismiss, text: CommonStrings.okayButton, hasNotNow: false)
+            ),
+            (
+                State(
+                    badge: getSubscriptionBadge(),
+                    mode: .boostExpired(hasCurrentSubscription: true),
+                    canDonate: false
+                ),
                 State.ActionButton(action: .dismiss, text: CommonStrings.okayButton, hasNotNow: false)
             )
         ]

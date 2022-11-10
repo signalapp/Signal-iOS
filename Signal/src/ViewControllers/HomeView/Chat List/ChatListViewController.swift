@@ -485,6 +485,10 @@ public extension ChatListViewController {
             viewControllers += [ profile ]
             completion = { profile.presentAvatarSettingsView() }
         case let .donate(donationMode):
+            guard DonationUtilities.canDonate(localNumber: tsAccountManager.localNumber) else {
+                DonationViewsUtil.openDonateWebsite()
+                return
+            }
             let donate = DonateViewController(startingDonationMode: donationMode) { [weak self] finishResult in
                 switch finishResult {
                 case let .completedDonation(donateSheet, thanksSheet):

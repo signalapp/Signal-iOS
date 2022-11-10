@@ -14,14 +14,16 @@ public class RemoteConfig: BaseFlags {
     fileprivate let isEnabledFlags: [String: Bool]
     fileprivate let valueFlags: [String: AnyObject]
     private let standardMediaQualityLevel: ImageQualityLevel?
-    private let paymentsDisabledRegions: [String]
+    private let paymentsDisabledRegions: PhoneNumberRegions
+    private let applePayDisabledRegions: PhoneNumberRegions
 
     init(isEnabledFlags: [String: Bool],
          valueFlags: [String: AnyObject]) {
         self.isEnabledFlags = isEnabledFlags
         self.valueFlags = valueFlags
         self.standardMediaQualityLevel = Self.determineStandardMediaQualityLevel(valueFlags: valueFlags)
-        self.paymentsDisabledRegions = Self.parsePaymentsDisabledRegions(valueFlags: valueFlags)
+        self.paymentsDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .paymentsDisabledRegions)
+        self.applePayDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .applePayDisabledRegions)
     }
 
     @objc
@@ -121,9 +123,14 @@ public class RemoteConfig: BaseFlags {
         return remoteConfig.standardMediaQualityLevel
     }
 
-    public static var paymentsDisabledRegions: [String] {
+    public static var paymentsDisabledRegions: PhoneNumberRegions {
         guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
         return remoteConfig.paymentsDisabledRegions
+    }
+
+    public static var applePayDisabledRegions: PhoneNumberRegions {
+        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
+        return remoteConfig.applePayDisabledRegions
     }
 
     private static func determineStandardMediaQualityLevel(valueFlags: [String: AnyObject]) -> ImageQualityLevel? {
@@ -140,33 +147,12 @@ public class RemoteConfig: BaseFlags {
         return defaultMediaQuality
     }
 
-    static func parsePaymentsDisabledRegions(valueFlags: [String: AnyObject]) -> [String] {
-        let flag: Flags.SupportedValuesFlags = .paymentsDisabledRegions
-        let rawFlag = flag.rawFlag
-        guard let valueList = valueFlags[rawFlag] as? String else { return [] }
-        return parsePaymentsDisabledRegions(valueList: valueList)
-    }
-
-    internal static func parsePaymentsDisabledRegions(valueList: String) -> [String] {
-        // The value should always be a comma-separated list of e164 prefixes
-        // without leading +, e.g.: "1,2 345,2 567,4".
-        // Note that values might have whitespace which needs to be stripped.
-        let disabledPrefixList = valueList
-            .components(separatedBy: ",")
-            .reduce(into: [String]()) { result, value in
-                let validCharacterSet = CharacterSet(charactersIn: "0123456789")
-                let filteredValue = value.components(separatedBy: validCharacterSet.inverted).joined()
-                guard !filteredValue.isEmpty else {
-                    if CurrentAppContext().isRunningTests {
-                        Logger.warn("Invalid value: \(valueList)")
-                    } else {
-                        owsFailDebug("Invalid value: \(valueList)")
-                    }
-                    return
-                }
-                result.append(filteredValue)
-        }
-        return disabledPrefixList
+    fileprivate static func parsePhoneNumberRegions(
+        valueFlags: [String: AnyObject],
+        flag: Flags.SupportedValuesFlags
+    ) -> PhoneNumberRegions {
+        guard let valueList = valueFlags[flag.rawFlag] as? String else { return [] }
+        return PhoneNumberRegions(fromRemoteConfig: valueList)
     }
 
     @objc
@@ -468,6 +454,7 @@ private struct Flags {
         case automaticSessionResetAttemptInterval
         case reactiveProfileKeyAttemptInterval
         case paymentsDisabledRegions
+        case applePayDisabledRegions
         case maxGroupCallRingSize
     }
 
@@ -486,6 +473,7 @@ private struct Flags {
         case replaceableInteractionExpiration
         case messageSendLogEntryLifetime
         case paymentsDisabledRegions
+        case applePayDisabledRegions
         case maxGroupCallRingSize
     }
 }
@@ -507,6 +495,7 @@ private extension FlagType {
         case "groupsV2MaxGroupSizeHardLimit": return "global.groupsv2.groupSizeHardLimit"
         case "cdsSyncInterval": return "cds.syncInterval.seconds"
         case "paymentsDisabledRegions": return "global.payments.disabledRegions"
+        case "applePayDisabledRegions": return "global.donations.apayDisabledRegions"
         case "maxGroupCallRingSize": return "global.calling.maxGroupCallRingSize"
         default: return Flags.prefix + rawValue
         }
