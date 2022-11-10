@@ -99,8 +99,8 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
         // Don't show actions for the local user's badges.
         guard !owner.isLocal else { return }
 
-        switch focusedBadge.rawCategory.lowercased() {
-        case "donor":
+        switch focusedBadge.category {
+        case .donor:
             let buttonSection = OWSTableSection(items: [.init(customCellBlock: { [weak self] in
                 let cell = OWSTableItem.newCell()
                 cell.selectionStyle = .none
@@ -126,7 +126,7 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
             })])
             buttonSection.hasBackground = false
             contents.addSection(buttonSection)
-        default:
+        case .other:
             break
         }
 

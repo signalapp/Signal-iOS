@@ -10,7 +10,7 @@ import GRDB
 @objc
 public class ProfileBadge: NSObject, Codable {
     public let id: String
-    public let rawCategory: String
+    public let category: Category
     public let localizedName: String
     public let localizedDescriptionFormatString: String
     let resourcePath: String
@@ -26,14 +26,21 @@ public class ProfileBadge: NSObject, Codable {
 
     private enum CodingKeys: String, CodingKey {
         // Skip encoding of `assets`
-        case id, rawCategory, localizedName, localizedDescriptionFormatString, resourcePath, badgeVariant, localization, duration
+        case id
+        case category = "rawCategory"
+        case localizedName
+        case localizedDescriptionFormatString
+        case resourcePath
+        case badgeVariant
+        case localization
+        case duration
     }
 
     public init(jsonDictionary: [String: Any]) throws {
         let params = ParamParser(dictionary: jsonDictionary)
 
         id = try params.required(key: "id")
-        rawCategory = try params.required(key: "category")
+        category = Category(rawValue: try params.required(key: "category"))
         localizedName = try params.required(key: "name")
         localizedDescriptionFormatString = try params.required(key: "description")
 
@@ -51,6 +58,18 @@ public class ProfileBadge: NSObject, Codable {
         duration = try params.optional(key: "duration")
     }
 
+    required public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        id = try values.decode(String.self, forKey: .id)
+        category = try values.decode(Category.self, forKey: .category)
+        localizedName = try values.decode(String.self, forKey: .localizedName)
+        localizedDescriptionFormatString = try values.decode(String.self, forKey: .localizedDescriptionFormatString)
+        resourcePath = try values.decode(String.self, forKey: .resourcePath)
+        badgeVariant = try values.decode(BadgeVariant.self, forKey: .badgeVariant)
+        localization = try values.decode(String.self, forKey: .localization)
+        duration = try values.decodeIfPresent(TimeInterval.self, forKey: .duration)
+    }
+
     override public func isEqual(_ object: Any?) -> Bool {
         guard
             let other = object as? Self,
@@ -61,7 +80,7 @@ public class ProfileBadge: NSObject, Codable {
 
         return
             id == other.id &&
-            rawCategory == other.rawCategory &&
+            category == other.category &&
             localizedName == other.localizedName &&
             localizedDescriptionFormatString == other.localizedDescriptionFormatString &&
             resourcePath == other.resourcePath &&
@@ -94,10 +113,20 @@ extension ProfileBadge {
 
 extension ProfileBadge {
     /// Server defined category for the badge type
-    enum Category: String, Codable {
+    public enum Category: String, Codable {
         case donor
         case other
-        case testing
+
+        /// Creates a category from a raw string.
+        ///
+        /// Unrecognized strings are converted to `.other`. This includes
+        /// `"testing"`, which can be returned by the server in staging.
+        public init(rawValue: String) {
+            switch rawValue.lowercased() {
+            case "donor": self = .donor
+            default: self = .other
+            }
+        }
     }
 
     /// The badge image variant that the spritSheetUrl points to
