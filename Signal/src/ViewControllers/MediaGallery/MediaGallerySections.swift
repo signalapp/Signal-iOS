@@ -593,41 +593,68 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader>: Depende
             return removedSections
         }
     }
-    private var state: State
+
+    private struct SnapshotManager {
+        private(set) var state: State
+
+        init(_ state: State) {
+            self.state = state
+        }
+
+        mutating func mutate<T>(_ block: (inout State) -> (T)) -> T {
+            return block(&state)
+        }
+    }
+    private var snapshotManager: SnapshotManager
+    private var state: State { snapshotManager.state }
 
     internal init(loader: Loader) {
-        state = State(loader: loader)
+        snapshotManager = SnapshotManager(State(loader: loader))
     }
 
     // MARK: Sections
 
     internal mutating func loadEarlierSections(batchSize: Int, transaction: SDSAnyReadTransaction) -> Int {
-        return state.loadEarlierSections(batchSize: batchSize, transaction: transaction)
+        return snapshotManager.mutate { state in
+            return state.loadEarlierSections(batchSize: batchSize, transaction: transaction)
+        }
     }
 
     internal mutating func loadLaterSections(batchSize: Int, transaction: SDSAnyReadTransaction) -> Int {
-        return state.loadLaterSections(batchSize: batchSize, transaction: transaction)
+        return snapshotManager.mutate { state in
+            return state.loadLaterSections(batchSize: batchSize, transaction: transaction)
+        }
     }
 
     internal mutating func loadInitialSection(for date: GalleryDate, transaction: SDSAnyReadTransaction) {
-        state.loadInitialSection(for: date, transaction: transaction)
+        return snapshotManager.mutate { state in
+            return state.loadInitialSection(for: date, transaction: transaction)
+        }
     }
 
     @discardableResult
     internal mutating func reloadSection(for date: GalleryDate, transaction: SDSAnyReadTransaction) -> Int {
-        return state.reloadSection(for: date, transaction: transaction)
+        return snapshotManager.mutate { state in
+            return state.reloadSection(for: date, transaction: transaction)
+        }
     }
 
     internal mutating func removeEmptySections(atIndexes indexesToDelete: IndexSet) {
-        state.removeEmptySections(atIndexes: indexesToDelete)
+        return snapshotManager.mutate { state in
+            state.removeEmptySections(atIndexes: indexesToDelete)
+        }
     }
 
     internal mutating func resetHasFetchedMostRecent() {
-        state.resetHasFetchedMostRecent()
+        return snapshotManager.mutate { state in
+            state.resetHasFetchedMostRecent()
+        }
     }
 
     internal mutating func reset(transaction: SDSAnyReadTransaction) {
-        state.reset(transaction: transaction)
+        return snapshotManager.mutate { state in
+            state.reset(transaction: transaction)
+        }
     }
 
     // MARK: Items
@@ -721,10 +748,12 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader>: Depende
         batchSize: Int,
         transaction: SDSAnyReadTransaction?
     ) -> (path: IndexPath?, numberOfSectionsLoaded: Int) {
-        return state.resolveNaiveStartIndex(naiveIndex,
-                                            relativeToSection: initialSectionIndex,
-                                            batchSize: batchSize,
-                                            transaction: transaction)
+        return snapshotManager.mutate { state in
+            return state.resolveNaiveStartIndex(naiveIndex,
+                                                relativeToSection: initialSectionIndex,
+                                                batchSize: batchSize,
+                                                transaction: transaction)
+        }
     }
 
     internal func resolveNaiveEndIndex(_ naiveIndex: Int, relativeToSection initialSectionIndex: Int) -> IndexPath? {
@@ -743,16 +772,22 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader>: Depende
 
     internal mutating func ensureItemsLoaded(in naiveRange: Range<Int>,
                                              relativeToSection sectionIndex: Int) -> IndexSet {
-        return state.ensureItemsLoaded(in: naiveRange,
-                                       relativeToSection: sectionIndex)
+        return snapshotManager.mutate { state  in
+            state.ensureItemsLoaded(in: naiveRange,
+                                    relativeToSection: sectionIndex)
+        }
     }
 
     internal mutating func getOrReplaceItem(_ newItem: Item, offsetInSection: Int) -> Item? {
-        return state.getOrReplaceItem(newItem, offsetInSection: offsetInSection)
+        return snapshotManager.mutate { state  in
+            return state.getOrReplaceItem(newItem, offsetInSection: offsetInSection)
+        }
     }
 
     internal mutating func removeLoadedItems(atIndexPaths paths: [IndexPath]) -> IndexSet {
-        return state.removeLoadedItems(atIndexPaths: paths)
+        return snapshotManager.mutate { state in
+            state.removeLoadedItems(atIndexPaths: paths)
+        }
     }
 
     // MARK: Passthrough members
