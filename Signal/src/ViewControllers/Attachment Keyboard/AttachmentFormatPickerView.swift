@@ -80,7 +80,7 @@ enum AttachmentType: String, CaseIterable, Dependencies {
     case location
 
     static var contactCases: [AttachmentType] {
-        if payments.shouldShowPaymentsUI {
+        if paymentsImpl.arePaymentsEnabled {
             return allCases
         } else {
             return everythingExceptPayments
