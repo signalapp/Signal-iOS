@@ -7,7 +7,6 @@
 #import "OWS2FAManager.h"
 #import "OWSBackgroundTask.h"
 #import "OWSDisappearingMessagesJob.h"
-#import "OWSFakeCallMessageHandler.h"
 #import "OWSFakeProfileManager.h"
 #import "OWSIdentityManager.h"
 #import "OWSMessageManager.h"

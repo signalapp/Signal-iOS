@@ -8,7 +8,6 @@
 #import "HTTPUtils.h"
 #import "MessageSender.h"
 #import "MockSSKEnvironment.h"
-#import "OWSFakeCallMessageHandler.h"
 #import "OWSIdentityManager.h"
 #import "OWSSyncGroupsMessage.h"
 #import "SSKBaseTestObjC.h"

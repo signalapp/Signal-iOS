@@ -1278,6 +1278,7 @@
 		F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7928CB89CC00472E68 /* PngChunker.swift */; };
 		F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7728CB894400472E68 /* PngChunkerTest.swift */; };
 		F97A2EEA282578C000610669 /* BadgeExpirationSheetStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */; };
+		F97D10FB291C7FF900F0FFAA /* FakeCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97D10FA291C7FF900F0FFAA /* FakeCallMessageHandler.swift */; };
 		F9844C492867936400B16DD4 /* SignalMeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9844C482867936400B16DD4 /* SignalMeTest.swift */; };
 		F988DC13289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */; };
 		F98EA265286A469100791EB4 /* SendGiftBadgeJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */; };
@@ -1987,7 +1988,6 @@
 		F9C5CE57289453B400548EEE /* Factories.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB87289453B200548EEE /* Factories.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE58289453B400548EEE /* NoopPendingReadReceiptRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB88289453B200548EEE /* NoopPendingReadReceiptRecorder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE59289453B400548EEE /* TestAppContext.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB89289453B200548EEE /* TestAppContext.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CE5B289453B400548EEE /* OWSFakeCallMessageHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB8B289453B200548EEE /* OWSFakeCallMessageHandler.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE5C289453B400548EEE /* TestProtocolRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB8C289453B200548EEE /* TestProtocolRunner.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE5D289453B400548EEE /* MockSSKEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB8D289453B200548EEE /* MockSSKEnvironment.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE5E289453B400548EEE /* OWSMockSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB8E289453B200548EEE /* OWSMockSyncManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -1995,7 +1995,6 @@
 		F9C5CE60289453B400548EEE /* FakeContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB90289453B200548EEE /* FakeContactsManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE61289453B400548EEE /* FakeAccountServiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB91289453B200548EEE /* FakeAccountServiceClient.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE62289453B400548EEE /* NoopNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB92289453B200548EEE /* NoopNotificationsManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CE63289453B400548EEE /* OWSFakeCallMessageHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB93289453B200548EEE /* OWSFakeCallMessageHandler.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE65289453B400548EEE /* TestAppContext.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB95289453B200548EEE /* TestAppContext.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE66289453B400548EEE /* TestKeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB96289453B200548EEE /* TestKeychainStorage.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE67289453B400548EEE /* TSConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB97289453B200548EEE /* TSConstants.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -3636,6 +3635,7 @@
 		F972180528DE37A200113D9F /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		F97391A228EF0B20002DDE5D /* ProtoParsingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtoParsingTest.swift; sourceTree = "<group>"; };
 		F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheetStateTest.swift; sourceTree = "<group>"; };
+		F97D10FA291C7FF900F0FFAA /* FakeCallMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeCallMessageHandler.swift; sourceTree = "<group>"; };
 		F9844C482867936400B16DD4 /* SignalMeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMeTest.swift; sourceTree = "<group>"; };
 		F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingReactionMessageTest.swift; sourceTree = "<group>"; };
 		F98EA264286A469100791EB4 /* SendGiftBadgeJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendGiftBadgeJobQueue.swift; sourceTree = "<group>"; };
@@ -4345,7 +4345,6 @@
 		F9C5CB87289453B200548EEE /* Factories.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Factories.swift; sourceTree = "<group>"; };
 		F9C5CB88289453B200548EEE /* NoopPendingReadReceiptRecorder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopPendingReadReceiptRecorder.swift; sourceTree = "<group>"; };
 		F9C5CB89289453B200548EEE /* TestAppContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestAppContext.h; sourceTree = "<group>"; };
-		F9C5CB8B289453B200548EEE /* OWSFakeCallMessageHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSFakeCallMessageHandler.m; sourceTree = "<group>"; };
 		F9C5CB8C289453B200548EEE /* TestProtocolRunner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestProtocolRunner.swift; sourceTree = "<group>"; };
 		F9C5CB8D289453B200548EEE /* MockSSKEnvironment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MockSSKEnvironment.m; sourceTree = "<group>"; };
 		F9C5CB8E289453B200548EEE /* OWSMockSyncManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSMockSyncManager.swift; sourceTree = "<group>"; };
@@ -4353,7 +4352,6 @@
 		F9C5CB90289453B200548EEE /* FakeContactsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeContactsManager.swift; sourceTree = "<group>"; };
 		F9C5CB91289453B200548EEE /* FakeAccountServiceClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeAccountServiceClient.swift; sourceTree = "<group>"; };
 		F9C5CB92289453B200548EEE /* NoopNotificationsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopNotificationsManager.swift; sourceTree = "<group>"; };
-		F9C5CB93289453B200548EEE /* OWSFakeCallMessageHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSFakeCallMessageHandler.h; sourceTree = "<group>"; };
 		F9C5CB95289453B200548EEE /* TestAppContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestAppContext.m; sourceTree = "<group>"; };
 		F9C5CB96289453B200548EEE /* TestKeychainStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestKeychainStorage.swift; sourceTree = "<group>"; };
 		F9C5CB97289453B200548EEE /* TSConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TSConstants.swift; path = src/TSConstants.swift; sourceTree = "<group>"; };
@@ -8298,6 +8296,7 @@
 			children = (
 				F9C5CB87289453B200548EEE /* Factories.swift */,
 				F9C5CB91289453B200548EEE /* FakeAccountServiceClient.swift */,
+				F97D10FA291C7FF900F0FFAA /* FakeCallMessageHandler.swift */,
 				F9C5CB90289453B200548EEE /* FakeContactsManager.swift */,
 				F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */,
 				F9C5CB84289453B200548EEE /* FakeStorageServiceManager.swift */,
@@ -8307,8 +8306,6 @@
 				F9C5CB86289453B200548EEE /* MockSubscriptionManager.swift */,
 				F9C5CB92289453B200548EEE /* NoopNotificationsManager.swift */,
 				F9C5CB88289453B200548EEE /* NoopPendingReadReceiptRecorder.swift */,
-				F9C5CB93289453B200548EEE /* OWSFakeCallMessageHandler.h */,
-				F9C5CB8B289453B200548EEE /* OWSFakeCallMessageHandler.m */,
 				F9C5CB8F289453B200548EEE /* OWSFakeProfileManager.h */,
 				F9C5CB83289453B200548EEE /* OWSFakeProfileManager.m */,
 				F9C5CB8E289453B200548EEE /* OWSMockSyncManager.swift */,
@@ -8492,7 +8489,6 @@
 				F9C5CBE6289453B300548EEE /* OWSDynamicOutgoingMessage.h in Headers */,
 				F9C5CBFF289453B300548EEE /* OWSEndSessionMessage.h in Headers */,
 				F9C5CE01289453B400548EEE /* OWSError.h in Headers */,
-				F9C5CE63289453B400548EEE /* OWSFakeCallMessageHandler.h in Headers */,
 				F9C5CE5F289453B400548EEE /* OWSFakeProfileManager.h in Headers */,
 				F9C5CE1B289453B400548EEE /* OWSFileSystem.h in Headers */,
 				F9C5CE6A289453B400548EEE /* OWSFingerprint.h in Headers */,
@@ -10729,6 +10725,7 @@
 				F9C5CC86289453B300548EEE /* FailedAttachmentDownloadsJob.swift in Sources */,
 				F9C5CC1D289453B300548EEE /* FailedMessagesJob.swift in Sources */,
 				F9C5CE61289453B400548EEE /* FakeAccountServiceClient.swift in Sources */,
+				F97D10FB291C7FF900F0FFAA /* FakeCallMessageHandler.swift in Sources */,
 				F9C5CE60289453B400548EEE /* FakeContactsManager.swift in Sources */,
 				F94BFA9528EBB0D800A5F34E /* FakeMessageSender.swift in Sources */,
 				F9C5CE54289453B400548EEE /* FakeStorageServiceManager.swift in Sources */,
@@ -10874,7 +10871,6 @@
 				F9C5CBE8289453B300548EEE /* OWSEndSessionMessage.m in Sources */,
 				F9C5CE51289453B400548EEE /* OWSError.m in Sources */,
 				F9C5CE49289453B400548EEE /* OWSError.swift in Sources */,
-				F9C5CE5B289453B400548EEE /* OWSFakeCallMessageHandler.m in Sources */,
 				F9C5CE53289453B400548EEE /* OWSFakeProfileManager.m in Sources */,
 				F9C5CDCC289453B400548EEE /* OWSFileSystem.m in Sources */,
 				F9C5CDD7289453B400548EEE /* OWSFileSystem.swift in Sources */,
