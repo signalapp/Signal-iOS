@@ -21,15 +21,15 @@ PODS:
     - SignalCoreKit
   - LibSignalClient/Tests (0.21.0):
     - SignalCoreKit
-  - libwebp (1.2.3):
-    - libwebp/demux (= 1.2.3)
-    - libwebp/mux (= 1.2.3)
-    - libwebp/webp (= 1.2.3)
-  - libwebp/demux (1.2.3):
+  - libwebp (1.2.4):
+    - libwebp/demux (= 1.2.4)
+    - libwebp/mux (= 1.2.4)
+    - libwebp/webp (= 1.2.4)
+  - libwebp/demux (1.2.4):
     - libwebp/webp
-  - libwebp/mux (1.2.3):
+  - libwebp/mux (1.2.4):
     - libwebp/demux
-  - libwebp/webp (1.2.3)
+  - libwebp/webp (1.2.4)
   - Logging (1.4.0)
   - lottie-ios (3.4.1)
   - Mantle (2.1.0):
@@ -217,7 +217,7 @@ SPEC CHECKSUMS:
   LibMobileCoin: 860cbd565a4839cb8be784465100d9f09ac419aa
   libPhoneNumber-iOS: 2d26d0a38933eee2702962a4dbdec2fc20e5ef9f
   LibSignalClient: d5fc5e3c791013339932a8574c8b5e81e04a5455
-  libwebp: 60305b2e989864154bd9be3d772730f08fc6a59c
+  libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   lottie-ios: 016449b5d8be0c3dcbcfa0a9988469999cd04c5d
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
