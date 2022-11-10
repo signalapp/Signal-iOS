@@ -609,6 +609,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             bodyView.removeAllSubviews()
             bodyView.addArrangedSubviews(subviews)
 
+            bodyView.setCustomSpacing(18, after: currencyPickerContainerView)
+
             // Switching modes causes animations to lose their anchors,
             // so we remove them.
             for subview in stackView.subviews {
@@ -715,7 +717,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         let result = UIStackView()
         result.axis = .vertical
         result.distribution = .fillEqually
-        result.spacing = 16
+        result.spacing = 20
         return result
     }()
 
@@ -820,7 +822,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                     font: .ows_regularFont(withSize: UIDevice.current.isIPhone5OrShorter ? 18 : 20),
                     titleColor: Theme.primaryTextColor
                 )
-                button.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
+                button.autoSetDimension(.height, toSize: 52, relation: .greaterThanOrEqual)
                 button.enableMultilineLabel()
                 button.layer.cornerRadius = Self.cornerRadius
                 button.clipsToBounds = true
@@ -892,12 +894,14 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
     private var monthlySubscriptionLevelViews = [MonthlySubscriptionLevelView]()
 
-    private lazy var monthlySubscriptionLevelsView = Self.commonStack()
+    private lazy var monthlySubscriptionLevelsView: UIStackView = {
+        let result = Self.commonStack()
+        result.spacing = 10
+        return result
+    }()
 
     private lazy var monthlyButtonsView: UIStackView = {
-        let result = UIStackView()
-        result.axis = .vertical
-        result.alignment = .fill
+        let result = Self.commonStack()
         result.spacing = 10
         return result
     }()
