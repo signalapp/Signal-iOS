@@ -483,7 +483,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         let result = UIStackView()
         result.axis = .vertical
         result.alignment = .fill
-        result.spacing = 26
+        result.spacing = 24
         return result
     }()
 

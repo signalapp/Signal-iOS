@@ -22,10 +22,9 @@ class DonationHeroView: UIStackView {
         self.axis = .vertical
         self.alignment = .center
         self.isLayoutMarginsRelativeArrangement = true
-        self.spacing = 20
 
         self.addArrangedSubview(avatarView)
-        self.setCustomSpacing(16, after: avatarView)
+        self.setCustomSpacing(12, after: avatarView)
 
         let titleLabel = UILabel()
         titleLabel.textAlignment = .center
@@ -37,10 +36,14 @@ class DonationHeroView: UIStackView {
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         self.addArrangedSubview(titleLabel)
-        self.setCustomSpacing(20, after: titleLabel)
+        self.setCustomSpacing(6, after: titleLabel)
 
         descriptionTextView.delegate = self
         self.addArrangedSubview(descriptionTextView)
+
+        // Others may add additional views after the description view, which is
+        // why we set this spacing.
+        self.setCustomSpacing(24, after: descriptionTextView)
 
         rerender()
     }
