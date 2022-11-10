@@ -14,8 +14,7 @@ protocol BadgeExpirationSheetDelegate: AnyObject {
 
 public enum BadgeExpirationSheetAction {
     case dismiss
-    case openOneTimeDonationView
-    case openMonthlyDonationView
+    case openDonationView
 }
 
 public class BadgeExpirationSheetState {
@@ -76,49 +75,39 @@ public class BadgeExpirationSheetState {
         }
     }()
 
-    private var monthlyDonationCallToAction: String {
-        NSLocalizedString(
-            "BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION",
-            comment: "Shown when a non-monthly badge expires to suggest starting a recurring donation."
-        )
-    }
-
     public lazy var body: Body = {
         switch mode {
         case let .subscriptionExpiredBecauseOfChargeFailure(chargeFailure):
             let failureSpecificText = Self.getChargeFailureSpecificText(chargeFailure: chargeFailure)
-            let formatText = NSLocalizedString("BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT",
-                                               comment: "String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}.")
-            return Body(String(format: formatText, failureSpecificText, badge.localizedName), hasLearnMoreLink: true)
+            let formatText = NSLocalizedString(
+                "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT",
+                comment: "String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}."
+            )
+            return Body(String(format: formatText, failureSpecificText), hasLearnMoreLink: true)
         case .subscriptionExpiredBecauseNotRenewed:
             let formatText = NSLocalizedString("BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT",
                                                comment: "Body of the sheet shown when your subscription is canceled due to inactivity")
             return Body(String(format: formatText, badge.localizedName), hasLearnMoreLink: true)
         case let .boostExpired(hasCurrentSubscription):
-            var bodyText = [String]()
+            let bodyText: String
             if hasCurrentSubscription {
-                bodyText.append(NSLocalizedString(
+                bodyText = NSLocalizedString(
                     "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY",
                     comment: "String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet."
-                ))
+                )
             } else {
-                bodyText.append(NSLocalizedString(
+                bodyText = NSLocalizedString(
                     "BADGE_EXPIRED_BOOST_BODY",
                     comment: "String explaining to the user that their boost badge has expired on the badge expiry sheet."
-                ))
-                bodyText.append(self.monthlyDonationCallToAction)
+                )
             }
-            return Body(bodyText.joined(separator: "\n\n"))
+            return Body(bodyText)
         case let .giftBadgeExpired(hasCurrentSubscription):
-            var bodyText = [String]()
-            bodyText.append(NSLocalizedString(
+            let bodyText = NSLocalizedString(
                 "BADGE_EXPIRED_GIFT_BODY",
                 comment: "String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet."
-            ))
-            if !hasCurrentSubscription {
-                bodyText.append(self.monthlyDonationCallToAction)
-            }
-            return Body(bodyText.joined(separator: "\n\n"))
+            )
+            return Body(bodyText)
         case let .giftNotRedeemed(fullName):
             let formatText = NSLocalizedString(
                 "GIFT_NOT_REDEEMED_BODY_FORMAT",
@@ -173,39 +162,26 @@ public class BadgeExpirationSheetState {
     }
 
     public lazy var actionButton: ActionButton = {
-        lazy var okayButton = ActionButton(action: .dismiss, text: CommonStrings.okayButton)
-
-        guard canDonate else {
-            return okayButton
-        }
-
-        switch mode {
-        case .subscriptionExpiredBecauseNotRenewed:
-            let text = NSLocalizedString("BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON",
-                                         comment: "Button text when a badge expires, asking you to renew your subscription")
-            return ActionButton(action: .openMonthlyDonationView, text: text, hasNotNow: true)
-        case let .boostExpired(hasCurrentSubscription):
-            let text: String
-            if hasCurrentSubscription {
-                text = NSLocalizedString("BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER",
-                                         comment: "Button title for boost on the badge expiration sheet, used if the user is already a sustainer.")
-            } else {
-                text = NSLocalizedString("BADGE_EXPIRED_BOOST_RENEWAL_BUTTON",
-                                         comment: "Button title for boost on the badge expiration sheet, used if the user is not already a sustainer.")
+        let shouldAskUsersToDonate: Bool = {
+            guard canDonate else { return false }
+            switch mode {
+            case .subscriptionExpiredBecauseNotRenewed, .boostExpired:
+                return true
+            case let .giftBadgeExpired(hasCurrentSubscription):
+                return !hasCurrentSubscription
+            case .subscriptionExpiredBecauseOfChargeFailure, .giftNotRedeemed:
+                return false
             }
-            return ActionButton(action: .openOneTimeDonationView, text: text, hasNotNow: true)
-        case let .giftBadgeExpired(hasCurrentSubscription):
-            if hasCurrentSubscription {
-                return okayButton
-            } else {
-                let text = NSLocalizedString(
-                    "BADGE_EXPIRED_RENEWAL_MONTHLY",
-                    comment: "Button title to donate monthly on the badge expiration sheet."
-                )
-                return ActionButton(action: .openMonthlyDonationView, text: text, hasNotNow: true)
-            }
-        case .subscriptionExpiredBecauseOfChargeFailure, .giftNotRedeemed:
-            return okayButton
+        }()
+
+        if shouldAskUsersToDonate {
+            let text = NSLocalizedString(
+                "BADGE_EXPIRED_DONATE_BUTTON",
+                comment: "Button text when a badge expires, asking users to donate"
+            )
+            return .init(action: .openDonationView, text: text, hasNotNow: true)
+        } else {
+            return .init(action: .dismiss, text: CommonStrings.okayButton)
         }
     }()
 }

@@ -542,10 +542,8 @@ extension ChatListViewController: BadgeExpirationSheetDelegate {
         switch action {
         case .dismiss:
             break
-        case .openOneTimeDonationView:
+        case .openDonationView:
             showAppSettings(mode: .donate(donationMode: .oneTime))
-        case .openMonthlyDonationView:
-            showAppSettings(mode: .donate(donationMode: .monthly))
         }
     }
 }

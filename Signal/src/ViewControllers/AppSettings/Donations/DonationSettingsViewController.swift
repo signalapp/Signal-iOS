@@ -532,10 +532,8 @@ extension DonationSettingsViewController: BadgeExpirationSheetDelegate {
         switch action {
         case .dismiss:
             break
-        case .openMonthlyDonationView:
-            self.showDonateViewController(startingDonationMode: .monthly)
-        case .openOneTimeDonationView:
-            owsFailDebug("not supported")
+        case .openDonationView:
+            self.showDonateViewController(startingDonationMode: .oneTime)
         }
     }
 }

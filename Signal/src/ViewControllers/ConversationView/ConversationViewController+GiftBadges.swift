@@ -138,9 +138,9 @@ extension ConversationViewController: BadgeExpirationSheetDelegate {
         switch action {
         case .dismiss:
             break
-        case .openMonthlyDonationView:
+        case .openDonationView:
             let appSettings = AppSettingsViewController.inModalNavigationController()
-            let donateViewController = DonateViewController(startingDonationMode: .monthly) { [weak self] finishResult in
+            let donateViewController = DonateViewController(startingDonationMode: .oneTime) { [weak self] finishResult in
                 switch finishResult {
                 case let .completedDonation(donateSheet, thanksSheet):
                     donateSheet.dismiss(animated: true) { [weak self] in
@@ -158,8 +158,6 @@ extension ConversationViewController: BadgeExpirationSheetDelegate {
                 donateViewController
             ]
             self.presentFormSheet(appSettings, animated: true, completion: nil)
-        case .openOneTimeDonationView:
-            owsFailDebug("Not supported")
         }
     }
 }
