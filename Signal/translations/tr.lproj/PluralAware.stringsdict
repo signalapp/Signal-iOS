@@ -1146,7 +1146,7 @@
 			<key>one</key>
 			<string>Gönderiliyor…</string>
 			<key>other</key>
-			<string>%1$d gönderiliyor...</string>
+			<string>%1$d gönderiliyor…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

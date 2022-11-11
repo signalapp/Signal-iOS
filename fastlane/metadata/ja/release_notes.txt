@@ -1,2 +1,2 @@
-★ Signalにストーリーが登場しました！24時間後に自動的に消えるテキスト、画像、動画などのアップデートを、選択した友達やグループと共有できます。ストーリーの表示や共有をしたくない場合は、そのように設定も可能です。
+• Signalにストーリーが登場しました！24時間後に自動的に消えるテキスト、画像、動画などのアップデートを、選択した友達やグループと共有できます。ストーリーの表示や共有をしたくない場合は、そのように設定も可能です。
 • Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.

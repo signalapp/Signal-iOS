@@ -664,9 +664,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Groepsverhaal · Door %1$d persoon gezien</string>
+			<string>Groepsverhaal · %1$d kijker</string>
 			<key>other</key>
-			<string>Groepsverhaal · Door %1$d personen gezien</string>
+			<string>Groepsverhaal · %1$d kijkers</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -840,9 +840,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Door %1$d persoon gezien</string>
+			<string>%1$d kijker</string>
 			<key>other</key>
-			<string>Door %1$d personen gezien</string>
+			<string>%1$d kijkers</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -856,9 +856,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Door %1$d persoon gezien</string>
+			<string>%1$d kijker</string>
 			<key>other</key>
-			<string>Door %1$d personen gezien</string>
+			<string>%1$d kijkers</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -872,9 +872,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Alle Signal-contacten · Door %1$d persoon gezien</string>
+			<string>Alle Signal-contacten · %1$d kijker</string>
 			<key>other</key>
-			<string>Alle Signal-contacten · Door %1$d personen gezien</string>
+			<string>Alle Signal-contacten · %1$d kijkers</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -904,9 +904,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Alleen delen met · %1$d persoon</string>
+			<string>Alleen delen met · %1$d kijker</string>
 			<key>other</key>
-			<string>Alleen delen met · %1$d personen</string>
+			<string>Alleen delen met · %1$d kijkers</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -936,9 +936,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Door %1$d persoon gezien</string>
+			<string>%1$d kijker</string>
 			<key>other</key>
-			<string>Door %1$d personen gezien</string>
+			<string>%1$d kijkers</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -1048,9 +1048,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Aangepast verhaal · Door %1$d persoon gezien</string>
+			<string>Aangepast verhaal · %1$d kijkers</string>
 			<key>other</key>
-			<string>Aangepast verhaal · Door %1$d personen gezien</string>
+			<string>Aangepast verhaal · %1$d kijkers</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1112,9 +1112,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Door %1$d persoon gezien</string>
+			<string>%1$d kijker</string>
 			<key>other</key>
-			<string>Door %1$d personen gezien</string>
+			<string>%1$d kijkers</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>

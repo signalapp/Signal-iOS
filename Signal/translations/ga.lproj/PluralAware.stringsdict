@@ -1246,7 +1246,7 @@
 			<key>few</key>
 			<string>Ná Comhroinn Ach Le · %1$d Amharcóir</string>
 			<key>many</key>
-			<string>Ná Comhroinn Ach Le · %1$d nAmharcóir</string>
+			<string>Ná Comhroinn Ach Le · %1$d Amharcóir</string>
 			<key>other</key>
 			<string>Ná Comhroinn Ach Le · %1$d Amharcóir</string>
 		</dict>

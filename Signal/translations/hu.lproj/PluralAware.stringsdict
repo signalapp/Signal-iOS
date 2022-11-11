@@ -904,7 +904,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Megosztás kizárólag · %1$dnézővel</string>
+			<string>Megosztás kizárólag · %1$d nézővel</string>
 			<key>other</key>
 			<string>Megosztás kizárólag · %1$d nézővel</string>
 		</dict>

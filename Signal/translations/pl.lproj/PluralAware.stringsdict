@@ -1428,7 +1428,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Trwa wysyłanie...</string>
+			<string>Trwa wysyłanie…</string>
 			<key>few</key>
 			<string>Trwa wysyłanie %1$d…</string>
 			<key>many</key>
