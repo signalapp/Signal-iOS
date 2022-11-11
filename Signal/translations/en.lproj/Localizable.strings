@@ -2368,8 +2368,11 @@
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "Reconnecting";
 
+/* notification body when you join a group call and an already-joined participant has an untrusted safety number */
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "A call participant has a safety number change. Tap to view.";
+
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Someone has joined this call with a safety number that has changed.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "A call participant who joined has a safety number change. Tap to view.";
 
 /* Toast view text informing user about swiping to screen share */
 "GROUP_CALL_SCREEN_SHARE_TOAST" = "Swipe up to view screen share";

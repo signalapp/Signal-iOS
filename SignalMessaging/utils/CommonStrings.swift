@@ -434,6 +434,12 @@ public class NotificationStrings: NSObject {
     }
 
     @objc
+    static public var groupCallSafetyNumberChangeAtJoinBody: String {
+        OWSLocalizedString("GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY",
+                          comment: "notification body when you join a group call and an already-joined participant has an untrusted safety number")
+    }
+
+    @objc
     static public var incomingReactionFormat: String {
         OWSLocalizedString("REACTION_INCOMING_NOTIFICATION_BODY_FORMAT",
                           comment: "notification body. Embeds {{reaction emoji}}")

@@ -807,7 +807,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func notifyForGroupCallSafetyNumberChange(inThread thread: TSThread) {
+    public func notifyForGroupCallSafetyNumberChange(inThread thread: TSThread, presentAtJoin: Bool) {
         let notificationTitle: String?
         switch previewType {
         case .noNameNoPreview:
@@ -816,7 +816,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
         }
 
-        let notificationBody = NotificationStrings.groupCallSafetyNumberChangeBody
+        let notificationBody = (presentAtJoin
+                                ? NotificationStrings.groupCallSafetyNumberChangeAtJoinBody
+                                : NotificationStrings.groupCallSafetyNumberChangeBody)
         let threadId = thread.uniqueId
         let userInfo: [String: Any] = [
             AppNotificationUserInfoKey.threadId: threadId,
