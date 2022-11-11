@@ -987,8 +987,6 @@
 		88A4CC1D246D00090082211F /* DeviceTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC1C246D00090082211F /* DeviceTransferProgressViewController.swift */; };
 		88A505F423DA16E10005C012 /* ExperienceUpgradeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */; };
 		88A505FA23DBA1360005C012 /* IntroducingPINs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A505F923DBA1360005C012 /* IntroducingPINs.swift */; };
-		88A9419524099F7E000E9700 /* attachment_dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 88A9419424099F7E000E9700 /* attachment_dark.json */; };
-		88A9419724099F85000E9700 /* attachment_light.json in Resources */ = {isa = PBXBuildFile; fileRef = 88A9419624099F85000E9700 /* attachment_light.json */; };
 		88A941992409A391000E9700 /* LottieToggleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A941982409A391000E9700 /* LottieToggleButton.swift */; };
 		88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */; };
 		88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729322FB4D02004B4FBF /* LocationPicker.swift */; };
@@ -3321,8 +3319,6 @@
 		88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeManager.swift; sourceTree = "<group>"; };
 		88A505F923DBA1360005C012 /* IntroducingPINs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroducingPINs.swift; sourceTree = "<group>"; };
 		88A695BC232C18DF002F7B9B /* AudioWaveformProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformProgressView.swift; sourceTree = "<group>"; };
-		88A9419424099F7E000E9700 /* attachment_dark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = attachment_dark.json; sourceTree = "<group>"; };
-		88A9419624099F85000E9700 /* attachment_light.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = attachment_light.json; sourceTree = "<group>"; };
 		88A941982409A391000E9700 /* LottieToggleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieToggleButton.swift; sourceTree = "<group>"; };
 		88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentFormatPickerView.swift; sourceTree = "<group>"; };
 		88A9729322FB4D02004B4FBF /* LocationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPicker.swift; sourceTree = "<group>"; };
@@ -6447,15 +6443,6 @@
 			path = Wallpapers;
 			sourceTree = "<group>";
 		};
-		88A9419324099F6E000E9700 /* Attachment Keyboard */ = {
-			isa = PBXGroup;
-			children = (
-				88A9419424099F7E000E9700 /* attachment_dark.json */,
-				88A9419624099F85000E9700 /* attachment_light.json */,
-			);
-			path = "Attachment Keyboard";
-			sourceTree = "<group>";
-		};
 		88B986F728807D7400F8C74D /* Recipient Picker */ = {
 			isa = PBXGroup;
 			children = (
@@ -6483,7 +6470,6 @@
 		88BFD4712335C2A4001797D7 /* Lottie */ = {
 			isa = PBXGroup;
 			children = (
-				88A9419324099F6E000E9700 /* Attachment Keyboard */,
 				888017822741E5A500346E9A /* Boost */,
 				4C9D34842369EA3E006A4307 /* NotificationPermission */,
 				34848D5B25D43ADD00E5034B /* about-mobilecoin.json */,
@@ -9106,8 +9092,6 @@
 				34848D5F25D43ADD00E5034B /* about-mobilecoin.json in Resources */,
 				34848D6025D43ADD00E5034B /* activate-payments.json in Resources */,
 				34848D6125D43ADD00E5034B /* add-money.json in Resources */,
-				88A9419524099F7E000E9700 /* attachment_dark.json in Resources */,
-				88A9419724099F85000E9700 /* attachment_light.json in Resources */,
 				88DBDFBB2638FFBD00C2101C /* audio-played-dot.json in Resources */,
 				45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */,
 				45B74A882044AAB600CD42F8 /* aurora.aifc in Resources */,

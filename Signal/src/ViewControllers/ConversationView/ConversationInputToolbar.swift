@@ -165,8 +165,8 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         return inputTextView
     }()
 
-    private lazy var attachmentButton: LottieToggleButton = {
-        let button = LottieToggleButton()
+    private lazy var attachmentButton: AttachmentButton = {
+        let button = AttachmentButton()
         button.accessibilityLabel = NSLocalizedString(
             "ATTACHMENT_LABEL",
             comment: "Accessibility label for attaching photos"
@@ -177,8 +177,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         )
         button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "attachmentButton")
         button.addTarget(self, action: #selector(attachmentButtonPressed), for: .touchUpInside)
-        button.animationName = Theme.isDarkThemeEnabled ? "attachment_dark" : "attachment_light"
-        button.animationSize = CGSize(square: 28)
         button.autoSetDimensions(to: CGSize(square: LayoutMetrics.minToolbarItemHeight))
         button.setContentHuggingHorizontalHigh()
         button.setCompressionResistanceHorizontalHigh()
@@ -433,7 +431,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         if setAttachmentButtonHidden(hideAttachmentButton, animated: isAnimated) {
             hasLayoutChanged = true
         }
-        attachmentButton.setSelected(desiredKeyboardType == .attachment, animated: isAnimated)
+        attachmentButton.setAppearance(desiredKeyboardType == .attachment ? .close : .add, animated: isAnimated)
 
         // Sticker button disappears when there's any text input, including whitespace-only.
         let hasTextInput = !inputTextView.untrimmedText.isEmpty
@@ -674,6 +672,128 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
                 }
             }()
             return CGSize(width: width, height: LayoutMetrics.minToolbarItemHeight)
+        }
+    }
+
+    // MARK: Attachment Button
+
+    private class AttachmentButton: UIButton {
+
+        private let roundedCornersBackground: UIView = {
+            let view = UIView()
+            view.backgroundColor = .init(rgbHex: 0x3B3B3B)
+            view.clipsToBounds = true
+            view.layer.cornerRadius = 8
+            view.isUserInteractionEnabled = false
+            return view
+        }()
+
+        private let iconImageView = UIImageView(image: UIImage(imageLiteralResourceName: "plus-24"))
+
+        private override init(frame: CGRect) {
+            super.init(frame: frame)
+
+            addSubview(roundedCornersBackground)
+            roundedCornersBackground.autoCenterInSuperview()
+            roundedCornersBackground.autoSetDimensions(to: CGSize(square: 28))
+            updateImageColorAndBackground()
+
+            addSubview(iconImageView)
+            iconImageView.autoCenterInSuperview()
+            updateImageTransform()
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        override var isHighlighted: Bool {
+            didSet {
+                // When user releases their finger appearance change animations will be fired.
+                // We don't want changes performed by this method to interfere with animations.
+                guard !isAnimatingAppearance else { return }
+
+                let opacity: CGFloat = isHighlighted ? 0.5 : 1
+                switch appearance {
+                case .add:
+                    iconImageView.alpha = opacity
+
+                case .close:
+                    roundedCornersBackground.alpha = opacity
+                }
+            }
+        }
+
+        enum Appearance {
+            case add
+            case close
+        }
+
+        private var _appearance: Appearance = .add
+        private var isAnimatingAppearance = false
+
+        var appearance: Appearance {
+            get { _appearance }
+            set { setAppearance(newValue, animated: false) }
+        }
+
+        func setAppearance(_ appearance: Appearance, animated: Bool) {
+            guard appearance != _appearance else { return }
+
+            _appearance = appearance
+
+            guard animated else {
+                updateImageColorAndBackground()
+                updateImageTransform()
+                return
+            }
+
+            isAnimatingAppearance = true
+            let animationDuration: TimeInterval = 0.25
+            UIView.animate(
+                withDuration: 0.5 * animationDuration,
+                delay: appearance == .add ? 0 : 0.05
+            ) {
+                self.updateImageColorAndBackground()
+            }
+            UIView.animate(
+                withDuration: animationDuration,
+                delay: 0,
+                usingSpringWithDamping: 0.7,
+                initialSpringVelocity: 0,
+                animations: {
+                    self.updateImageTransform()
+                },
+                completion: { _ in
+                    self.isAnimatingAppearance = false
+                }
+            )
+        }
+
+        private func updateImageColorAndBackground() {
+            switch appearance {
+            case .add:
+                iconImageView.alpha = 1
+                iconImageView.tintColor = Theme.primaryIconColor
+                roundedCornersBackground.alpha = 0
+                roundedCornersBackground.transform = .scale(0.05)
+
+            case .close:
+                iconImageView.alpha = 1
+                iconImageView.tintColor = .white
+                roundedCornersBackground.alpha = 1
+                roundedCornersBackground.transform = .identity
+            }
+        }
+
+        private func updateImageTransform() {
+            switch appearance {
+            case .add:
+                iconImageView.transform = .identity
+
+            case .close:
+                iconImageView.transform = .rotate(1.5 * .halfPi)
+            }
         }
     }
 

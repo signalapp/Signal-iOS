@@ -466,6 +466,10 @@ public extension CGAffineTransform {
         CGAffineTransform(scaleX: scaling, y: scaling)
     }
 
+    static func rotate(_ angleRadians: CGFloat) -> CGAffineTransform {
+        CGAffineTransform(rotationAngle: angleRadians)
+    }
+
     func translate(_ point: CGPoint) -> CGAffineTransform {
         translatedBy(x: point.x, y: point.y)
     }
