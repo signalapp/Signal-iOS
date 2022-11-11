@@ -1159,6 +1159,8 @@
 		F927478828CFE9B10056EAFE /* test-png.png in Resources */ = {isa = PBXBuildFile; fileRef = F927478728CFE9B10056EAFE /* test-png.png */; };
 		F927478A28CFE9C60056EAFE /* test-png-with-metadata.png in Resources */ = {isa = PBXBuildFile; fileRef = F927478928CFE9C60056EAFE /* test-png-with-metadata.png */; };
 		F927478B28CFEA680056EAFE /* test-apng.png in Resources */ = {isa = PBXBuildFile; fileRef = F908AA7C28CE629700472E68 /* test-apng.png */; };
+		F93461B9291ED28A00366682 /* CreditAndDebitCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461B8291ED28900366682 /* CreditAndDebitCards.swift */; };
+		F93461BB291ED2B000366682 /* CreditAndDebitCardsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461BA291ED2B000366682 /* CreditAndDebitCardsTest.swift */; };
 		F9349CE62901866800F9A93A /* DonationHeroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9349CE52901866800F9A93A /* DonationHeroView.swift */; };
 		F93999EC28C80A6C00E34899 /* OWSDeviceProvisioningURLParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93999EB28C80A6C00E34899 /* OWSDeviceProvisioningURLParserTest.swift */; };
 		F93999F628C81F2100E34899 /* DataMessagePaddingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93999F528C81F2100E34899 /* DataMessagePaddingTests.swift */; };
@@ -3517,6 +3519,8 @@
 		F924A68128F8706200E368C8 /* DonationReadMoreSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReadMoreSheetViewController.swift; sourceTree = "<group>"; };
 		F927478728CFE9B10056EAFE /* test-png.png */ = {isa = PBXFileReference; explicitFileType = compiled; path = "test-png.png"; sourceTree = "<group>"; };
 		F927478928CFE9C60056EAFE /* test-png-with-metadata.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-png-with-metadata.png"; sourceTree = "<group>"; };
+		F93461B8291ED28900366682 /* CreditAndDebitCards.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreditAndDebitCards.swift; sourceTree = "<group>"; };
+		F93461BA291ED2B000366682 /* CreditAndDebitCardsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreditAndDebitCardsTest.swift; sourceTree = "<group>"; };
 		F9349CE52901866800F9A93A /* DonationHeroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationHeroView.swift; sourceTree = "<group>"; };
 		F93999EB28C80A6C00E34899 /* OWSDeviceProvisioningURLParserTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceProvisioningURLParserTest.swift; sourceTree = "<group>"; };
 		F93999F528C81F2100E34899 /* DataMessagePaddingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataMessagePaddingTests.swift; sourceTree = "<group>"; };
@@ -5979,6 +5983,7 @@
 				500FE5032890510800FA090C /* BadgeGiftingStrings.swift */,
 				34F1071F26D005340053EF4D /* BatchUpdate.swift */,
 				4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */,
+				F93461B8291ED28900366682 /* CreditAndDebitCards.swift */,
 				3498AC882513896400B1F315 /* Dependencies+MainApp.swift */,
 				34A95500271B503E00B05242 /* DisplayableText.swift */,
 				34B0796C1FCF46B000E248C2 /* MainAppContext.h */,
@@ -6708,6 +6713,7 @@
 				3499997D22EF1E2100654932 /* FTS */,
 				34F1072126D045290053EF4D /* BatchUpdateTest.swift */,
 				3421981B21061D2E00C57195 /* ByteParserTest.swift */,
+				F93461BA291ED2B000366682 /* CreditAndDebitCardsTest.swift */,
 				3494BBDF26E66FC30079B11B /* DateUtilTest.swift */,
 				45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */,
 				3485434426BC598800FB9C38 /* EmojiTests.swift */,
@@ -10173,6 +10179,7 @@
 				888B6D4D25B2523800E2A662 /* ConversationViewController+Wallpaper.swift in Sources */,
 				34A4D88D267A363A00A794E7 /* ConversationViewController.swift in Sources */,
 				3498AC9F25190E8C00B1F315 /* ConversationViewLayout.swift in Sources */,
+				F93461B9291ED28A00366682 /* CreditAndDebitCards.swift in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
 				3414896925C9B6490098E3ED /* CurrencyPickerViewController.swift in Sources */,
 				34FCCA04264AEDFE00A63EDE /* CustomColorViewController.swift in Sources */,
@@ -10589,6 +10596,7 @@
 				954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */,
 				4C6E6C6924241C00009DE948 /* ConversationViewControllerTest.swift in Sources */,
 				34635330256EA52A003C5428 /* ConversationViewTest.swift in Sources */,
+				F93461BB291ED2B000366682 /* CreditAndDebitCardsTest.swift in Sources */,
 				4C2A538C23C5462300D28CD8 /* CVMessageMappingTest.swift in Sources */,
 				88D6E94325535D49003142D9 /* CVTextTest.swift in Sources */,
 				F93999F628C81F2100E34899 /* DataMessagePaddingTests.swift in Sources */,

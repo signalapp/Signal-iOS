@@ -37,6 +37,20 @@ public extension String {
         filter { $0.isASCII && $0.isNumber }
     }
 
+    /// Is every character an ASCII digit between 0 and 9?
+    ///
+    /// Note that this returns `true` for the empty string.
+    ///
+    /// ```
+    /// "123".isAsciiDigitsOnly  // => true
+    /// "1x23".isAsciiDigitsOnly // => false
+    /// "".isAsciiDigitsOnly     // => true
+    /// "1.23".isAsciiDigitsOnly // => false
+    /// ```
+    var isAsciiDigitsOnly: Bool {
+        allSatisfy { $0.isASCII && $0.isNumber }
+    }
+
     func substring(from index: Int) -> String {
         return String(self[self.index(self.startIndex, offsetBy: index)...])
     }

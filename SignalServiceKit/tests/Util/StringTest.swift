@@ -28,6 +28,19 @@ final class StringTest: XCTestCase {
         XCTAssertEqual("6️⃣123".asciiDigitsOnly, "123")
     }
 
+    func test_isAsciiDigitsOnly() throws {
+        XCTAssertTrue("".isAsciiDigitsOnly)
+        XCTAssertTrue("1".isAsciiDigitsOnly)
+        XCTAssertTrue("1234567890".isAsciiDigitsOnly)
+        XCTAssertFalse(" ".isAsciiDigitsOnly)
+        XCTAssertFalse("x".isAsciiDigitsOnly)
+        XCTAssertFalse("x1".isAsciiDigitsOnly)
+        XCTAssertFalse("1x".isAsciiDigitsOnly)
+        XCTAssertFalse("1.2".isAsciiDigitsOnly)
+        XCTAssertFalse("1️⃣".isAsciiDigitsOnly)
+        XCTAssertFalse("١٢٣".isAsciiDigitsOnly)
+    }
+
     func test_caesar() {
         XCTAssertEqual("abc", try! "abc".caesar(shift: 0))
         XCTAssertEqual("abc", try! "abc".caesar(shift: 127))
