@@ -49,13 +49,6 @@
     XCTAssert([[@"abc123%^&" removeAllCharactersIn:NSCharacterSet.decimalDigitCharacterSet] isEqual:@"abc%^&"]);
 }
 
-- (void)testDigitsOnly {
-    XCTAssert([@"".digitsOnly isEqual:@""]);
-    XCTAssert([@"1".digitsOnly isEqual:@"1"]);
-    XCTAssert([@"a".digitsOnly isEqual:@""]);
-    XCTAssert([@"(555) 235-7111".digitsOnly isEqual:@"5552357111"]);
-}
-
 - (void)testEnsureArabicNumerals {
     NSArray<NSString *> *zeroToNineTests = @[
         @"০১২৩৪৫৬৭৮৯", // Bengali
