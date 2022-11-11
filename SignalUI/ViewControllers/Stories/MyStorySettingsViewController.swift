@@ -12,16 +12,6 @@ public class MyStorySettingsViewController: OWSTableViewController2, MyStorySett
 
     private lazy var dataSource = MyStorySettingsDataSource(delegate: self)
 
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        // Mark the my story privacy setting as having been set if the user
-        // views this screen at all.
-        Self.databaseStorage.write {
-            StoryManager.setHasSetMyStoriesPrivacy(transaction: $0)
-        }
-    }
-
     public override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -48,16 +38,6 @@ public class MyStorySettingsSheetViewController: OWSTableSheetViewController, My
 
     public required init() {
         super.init()
-    }
-
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        // Mark the my story privacy setting as having been set if the user
-        // views this screen at all.
-        Self.databaseStorage.write {
-            StoryManager.setHasSetMyStoriesPrivacy(transaction: $0)
-        }
     }
 
     public override func viewWillDisappear(_ animated: Bool) {
@@ -98,15 +78,20 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
     func generateTableContents(style: Style) -> OWSTableContents {
         let contents = OWSTableContents()
 
-        let myStoryThread: TSPrivateStoryThread! = databaseStorage.read {
-            TSPrivateStoryThread.getMyStory(transaction: $0)
+        let (hasSetMyStoriesPrivacy, myStoryThread) = databaseStorage.read { transaction -> (Bool, TSPrivateStoryThread) in
+            (
+                StoryManager.hasSetMyStoriesPrivacy(transaction: transaction),
+                TSPrivateStoryThread.getMyStory(transaction: transaction)
+            )
         }
 
         let visibilitySection = OWSTableSection()
         visibilitySection.separatorInsetLeading = NSNumber(value: OWSTableViewController2.cellHInnerMargin + 32)
         switch style {
         case .sheet:
-            visibilitySection.customHeaderView = SheetHeaderView(frame: .zero, dataSource: self)
+            let headerView = SheetHeaderView(frame: .zero, dataSource: self)
+            headerView.doneButton.isEnabled = hasSetMyStoriesPrivacy
+            visibilitySection.customHeaderView = headerView
         case .fullscreen:
             visibilitySection.headerTitle = OWSLocalizedString(
                 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER",
@@ -120,8 +105,16 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
         }
         contents.addSection(visibilitySection)
 
+        let storyViewMode: TSThreadStoryViewMode?
+        if hasSetMyStoriesPrivacy {
+            storyViewMode = myStoryThread.storyViewMode
+        } else {
+            // No option should be selected if story privacy settings are unset.
+            storyViewMode = nil
+        }
+
         do {
-            let isSelected = myStoryThread.storyViewMode == .blockList && myStoryThread.addresses.isEmpty
+            let isSelected = storyViewMode == .blockList && myStoryThread.addresses.isEmpty
             let detailText: String?
             if isSelected {
                 let formatString = OWSLocalizedString(
@@ -138,10 +131,10 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
                     comment: "Title for the visibility option"),
                 detailText: detailText,
                 isSelected: isSelected,
-                accessory: isSelected ? .button(title: CommonStrings.viewButton, action: { [weak self] in
+                accessory: .button(title: CommonStrings.viewButton, action: { [weak self] in
                     let vc = AllSignalConnectionsViewController()
                     self?.delegate?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
-                }) : .none
+                })
             ) { [weak self] in
                 Self.databaseStorage.write { transaction in
                     myStoryThread.updateWithStoryViewMode(
@@ -156,7 +149,7 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
         }
 
         do {
-            let isSelected = myStoryThread.storyViewMode == .blockList && myStoryThread.addresses.count > 0
+            let isSelected = storyViewMode == .blockList && myStoryThread.addresses.count > 0
             let detailText: String?
             if isSelected {
                 let formatString = OWSLocalizedString(
@@ -183,7 +176,7 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
         }
 
         do {
-            let isSelected = myStoryThread.storyViewMode == .explicit
+            let isSelected = storyViewMode == .explicit
             let detailText: String?
             if isSelected {
                 let formatString = OWSLocalizedString(
@@ -259,16 +252,20 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
             hStack.spacing = 9
             cell.contentView.addSubview(hStack)
             hStack.autoPinWidthToSuperviewMargins()
+            hStack.autoSetDimension(.height, toSize: 35, relation: .greaterThanOrEqual)
+            hStack.autoPinHeightToSuperview(withMargin: 6)
 
+            let imageView = UIImageView()
+            imageView.contentMode = .center
+            imageView.autoSetDimension(.width, toSize: 24)
             if isSelected {
-                let imageView = UIImageView()
-                imageView.contentMode = .center
-                imageView.autoSetDimension(.width, toSize: 22)
-                imageView.setThemeIcon(.accessoryCheckmark, tintColor: Theme.primaryIconColor)
-                hStack.addArrangedSubview(imageView)
+                imageView.image = #imageLiteral(resourceName: "check-circle-solid-new-24").withRenderingMode(.alwaysTemplate)
+                imageView.tintColor = Theme.accentBlueColor
             } else {
-                hStack.addArrangedSubview(.spacer(withWidth: 22))
+                imageView.image = #imageLiteral(resourceName: "empty-circle-outline-24").withRenderingMode(.alwaysTemplate)
+                imageView.tintColor = .ows_gray25
             }
+            hStack.addArrangedSubview(imageView)
 
             let vStack = UIStackView()
             vStack.axis = .vertical
@@ -288,10 +285,6 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
                 detailLabel.font = .ows_dynamicTypeCaption1Clamped
                 detailLabel.textColor = Theme.secondaryTextAndIconColor
                 vStack.addArrangedSubview(detailLabel)
-
-                hStack.autoPinHeightToSuperview(withMargin: 6)
-            } else {
-                hStack.autoPinHeightToSuperviewMargins()
             }
 
             switch accessory {
@@ -338,6 +331,7 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
             doneButton.setTitle(CommonStrings.doneButton, for: .normal)
             doneButton.titleLabel?.font = .ows_dynamicTypeHeadline.ows_semibold
             doneButton.setTitleColor(Theme.primaryTextColor, for: .normal)
+            doneButton.setTitleColor(Theme.primaryTextColor.withAlphaComponent(0.5), for: .disabled)
             doneButton.addTarget(dataSource, action: #selector(didTapDoneButton), for: .touchUpInside)
             addSubview(doneButton)
 

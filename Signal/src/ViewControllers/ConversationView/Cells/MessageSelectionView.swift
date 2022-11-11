@@ -38,7 +38,7 @@ public class MessageSelectionView: ManualLayoutView {
 
     private let selectedView: CVImageView = {
         let checkmarkView = CVImageView()
-        checkmarkView.setTemplateImageName("check-circle-solid-24", tintColor: .white)
+        checkmarkView.setTemplateImageName("check-circle-solid-new-24", tintColor: .white)
         return checkmarkView
     }()
 

@@ -214,6 +214,9 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem itemWithTitle:@"Clear custom reaction emoji (locally)"
                                      actionBlock:^() { [DebugUIMisc clearLocalCustomEmoji]; }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Clear My Story privacy settings"
+                                     actionBlock:^() { [DebugUIMisc clearMyStoryPrivacySettings]; }]];
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 

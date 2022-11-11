@@ -185,14 +185,15 @@ public class StoryManager: NSObject {
 
     @objc
     public class func setHasSetMyStoriesPrivacy(
+        _ hasSet: Bool = true,
         transaction: SDSAnyWriteTransaction,
         shouldUpdateStorageService: Bool = true
     ) {
-        guard !hasSetMyStoriesPrivacy(transaction: transaction) else {
+        guard hasSet != hasSetMyStoriesPrivacy(transaction: transaction) else {
             // Don't trigger account record updates unneccesarily!
             return
         }
-        keyValueStore.setBool(true, key: hasSetMyStoriesPrivacyKey, transaction: transaction)
+        keyValueStore.setBool(hasSet, key: hasSetMyStoriesPrivacyKey, transaction: transaction)
         if shouldUpdateStorageService {
             Self.storageServiceManager.recordPendingLocalAccountUpdates()
         }

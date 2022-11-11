@@ -858,8 +858,6 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             showBlockedByAnnouncementOnlyToast()
             return
         }
-        selection.add(conversation)
-        updateUIForCurrentSelection(animated: true)
 
         if let storyConversationItem = conversation as? StoryConversationItem {
             if
@@ -881,12 +879,22 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 // Reload the row when we show the sheet, and when it goes away, so we reflect changes.
                 let reloadRowBlock = { [weak self] in
                     self?.tableView.reloadData()
-                    self?.tableView.selectRow(at: IndexPath(row: 0, section: 0), animated: false, scrollPosition: .none)
+                    if Self.databaseStorage.read(block: { StoryManager.hasSetMyStoriesPrivacy(transaction: $0) }) {
+                        self?.selection.add(conversation)
+                        self?.updateUIForCurrentSelection(animated: true)
+                        self?.tableView.selectRow(at: IndexPath(row: 0, section: 0), animated: false, scrollPosition: .none)
+                    }
                 }
                 let sheetController = MyStorySettingsSheetViewController(willDisappear: reloadRowBlock)
                 self.present(sheetController, animated: true, completion: reloadRowBlock)
+            } else {
+                selection.add(conversation)
             }
+        } else {
+            selection.add(conversation)
         }
+
+        updateUIForCurrentSelection(animated: true)
     }
 
     private func showBlockedByAnnouncementOnlyToast() {
@@ -1280,7 +1288,7 @@ private class ConversationPickerCell: ContactTableViewCell {
     }()
 
     lazy var selectedBadgeView: UIView = {
-        let imageView = UIImageView(image: #imageLiteral(resourceName: "check-circle-solid-24").withRenderingMode(.alwaysTemplate))
+        let imageView = UIImageView(image: #imageLiteral(resourceName: "check-circle-solid-new-24").withRenderingMode(.alwaysTemplate))
         imageView.tintColor = Theme.accentBlueColor
         return imageView
     }()
