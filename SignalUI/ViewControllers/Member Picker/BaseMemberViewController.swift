@@ -392,7 +392,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         let isPreExistingMember = memberViewDelegate.memberViewIsPreExistingMember(recipient,
                                                                                    transaction: transaction)
 
-        let pickedIconName = memberViewDelegate.memberViewCustomIconNameForPickedMember(recipient) ?? "check-circle-solid-24"
+        let pickedIconName = memberViewDelegate.memberViewCustomIconNameForPickedMember(recipient) ?? "check-circle-solid-new-24"
         let pickedIconColor = memberViewDelegate.memberViewCustomIconColorForPickedMember(recipient) ?? Theme.accentBlueColor
 
         let imageView = CVImageView()

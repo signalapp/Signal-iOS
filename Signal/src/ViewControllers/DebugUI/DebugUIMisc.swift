@@ -82,6 +82,22 @@ public extension DebugUIMisc {
             owsFail("Crashing due to (intentional) database corruption")
         }
     }
+
+    static func clearMyStoryPrivacySettings() {
+        Self.databaseStorage.write { transaction in
+            guard let myStoryThread = TSPrivateStoryThread.getMyStory(transaction: transaction) else {
+                return
+            }
+            // Set to all connections which is the default.
+            myStoryThread.updateWithStoryViewMode(
+                .blockList,
+                addresses: [],
+                updateStorageService: false, /* storage service updated below */
+                transaction: transaction
+            )
+            StoryManager.setHasSetMyStoriesPrivacy(false, transaction: transaction, shouldUpdateStorageService: true)
+        }
+    }
 }
 
 #endif
