@@ -87,11 +87,15 @@ class IncomingCallControls: UIView {
         // Keep the buttons in a triangle on iPads by limiting the total width.
         // 430pt is the width of the iPhone 14 Pro Max.
         // Even if Apple makes a larger phone, we can probably still leave this.
-        vStack.autoPinWidthToSuperview().forEach { $0.priority = .defaultHigh }
+        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
+            vStack.autoPinWidthToSuperview()
+        }
         vStack.autoSetDimension(.width, toSize: 430, relation: .lessThanOrEqual)
         vStack.autoAlignAxis(toSuperviewAxis: .vertical)
 
-        vStack.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 56).priority = .defaultHigh - 1
+        NSLayoutConstraint.autoSetPriority(.defaultHigh - 1) {
+            vStack.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 56)
+        }
         vStack.autoPinEdge(toSuperviewEdge: .top)
     }
 

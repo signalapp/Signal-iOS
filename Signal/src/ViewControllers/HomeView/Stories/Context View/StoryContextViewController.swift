@@ -642,13 +642,12 @@ class StoryContextViewController: OWSViewController {
         var constraints = mediaViewContainer.autoCenterInSuperview()
 
         // Prefer to be as big as possible.
-        let heightConstraint = mediaViewContainer.autoMatch(.height, to: .height, of: view)
-        heightConstraint.priority = .defaultHigh
-        constraints.append(heightConstraint)
-
-        let widthConstraint = mediaViewContainer.autoMatch(.width, to: .width, of: view)
-        widthConstraint.priority = .defaultHigh
-        constraints.append(widthConstraint)
+        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
+            constraints.append(contentsOf: [
+                mediaViewContainer.autoMatch(.height, to: .height, of: view),
+                mediaViewContainer.autoMatch(.width, to: .width, of: view)
+            ])
+        }
 
         let maxWidthConstraint = mediaViewContainer.autoMatch(
             .width,

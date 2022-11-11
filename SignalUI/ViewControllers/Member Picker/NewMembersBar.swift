@@ -28,27 +28,7 @@ public class NewMembersBar: UIView {
     private var members = [NewMember]()
 
     public func setMembers(_ members: [NewMember]) {
-        var addedEntries: [IndexPath] = []
-        var removedEntries: [IndexPath] = []
-        let oldMemberHashes: [PickedRecipient] = self.members.map { $0.recipient }
-        let newMemberHashes: [PickedRecipient] = members.map { $0.recipient }
-        for row in 0..<self.members.count {
-            if !newMemberHashes.contains(self.members[row].recipient) {
-                removedEntries.append(IndexPath(row: row, section: 0))
-            }
-        }
-        for row in 0..<members.count {
-            if !oldMemberHashes.contains(members[row].recipient) {
-                addedEntries.append(IndexPath(row: row, section: 0))
-            }
-        }
         self.members = members
-        if !addedEntries.isEmpty || !removedEntries.isEmpty {
-            collectionView.performBatchUpdates { [weak self] in
-                self?.collectionView.deleteItems(at: removedEntries)
-                self?.collectionView.insertItems(at: addedEntries)
-            }
-        }
         resetContentAndLayout()
         updateHeightConstraint()
     }

@@ -233,7 +233,9 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
         // - Every view should have an intrinsicContentSize. Content Hugging and Content Compression
         //   don't mean much without a content size.
         stackView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 0, relation: .greaterThanOrEqual)
-        stackView.autoPinEdge(toSuperviewMargin: .top).priority = .defaultHigh
+        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
+            stackView.autoPinEdge(toSuperviewMargin: .top)
+        }
         stackView.autoPinWidthToSuperviewMargins()
         keyboardBottomConstraint = stackView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
         progressSpinner.autoCenterInSuperview()
@@ -251,17 +253,25 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
 
         // Views should ideally have a minimum amount of padding, but it's less required. In preferred order:
         bottomSpacer.setContentCompressionResistancePriority(.required - 10, for: .vertical)
-        phoneNumberRow.autoSetDimension(.height, toSize: 50).priority = .required - 20
-        countryRow.autoSetDimension(.height, toSize: 50).priority = .required - 30
+        NSLayoutConstraint.autoSetPriority(.required - 20) {
+            phoneNumberRow.autoSetDimension(.height, toSize: 50)
+        }
+        NSLayoutConstraint.autoSetPriority(.required - 30) {
+            countryRow.autoSetDimension(.height, toSize: 50)
+        }
         titleSpacer.setContentCompressionResistancePriority(.required - 40, for: .vertical)
         warningLabelSpacer.setContentCompressionResistancePriority(.required - 50, for: .vertical)
 
         // Ideally we'll try and satisfy these
         phoneNumberSpacer.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
-        bottomSpacer.autoSetDimension(.height, toSize: 16, relation: .greaterThanOrEqual).priority = .defaultHigh
+        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
+            bottomSpacer.autoSetDimension(.height, toSize: 16, relation: .greaterThanOrEqual)
+        }
 
         // If we're flush with space, bump up the keyboard spacer to the bottom layout margins
-        bottomSpacer.autoSetDimension(.height, toSize: primaryLayoutMargins.bottom).priority = .defaultLow
+        NSLayoutConstraint.autoSetPriority(.defaultLow) {
+            bottomSpacer.autoSetDimension(.height, toSize: primaryLayoutMargins.bottom)
+        }
         updateValidationWarningLabelCompressionResistance()
 
         // And if we have so much space we don't know what to do with it, grow the space between

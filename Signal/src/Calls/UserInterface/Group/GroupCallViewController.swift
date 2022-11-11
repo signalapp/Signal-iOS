@@ -181,7 +181,9 @@ class GroupCallViewController: UIViewController {
         view.addSubview(noVideoIndicatorView)
         noVideoIndicatorView.autoHCenterInSuperview()
         // Be flexible on the vertical centering on a cramped screen.
-        noVideoIndicatorView.autoVCenterInSuperview().priority = .defaultLow
+        NSLayoutConstraint.autoSetPriority(.defaultLow) {
+            noVideoIndicatorView.autoVCenterInSuperview()
+        }
         noVideoIndicatorView.autoPinEdge(.top, to: .bottom, of: callHeader, withOffset: 8, relation: .greaterThanOrEqual)
 
         view.addSubview(notificationView)

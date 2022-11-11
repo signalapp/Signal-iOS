@@ -136,7 +136,9 @@ class CallHeader: UIView {
 
         // Make the title view as wide as possible, but don't overlap either button.
         // This gets combined with the vStack's centered alignment, so we won't ever get an unbalanced title label.
-        callTitleLabel.autoPinWidthToSuperview().forEach { $0.priority = .defaultHigh }
+        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
+            callTitleLabel.autoPinWidthToSuperview()
+        }
         callTitleLabel.autoPinEdge(.leading, to: .trailing, of: backButton, withOffset: 13, relation: .greaterThanOrEqual)
         callTitleLabel.autoPinEdge(.trailing, to: .leading, of: groupMembersButton, withOffset: -13, relation: .lessThanOrEqual)
 

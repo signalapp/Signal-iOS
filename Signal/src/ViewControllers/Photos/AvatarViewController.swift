@@ -93,9 +93,11 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
         circleView.autoCenterInSuperview()
         circleView.autoPinToSquareAspectRatio()
 
-        circleView.autoMatch(.width, to: .width, of: view, withOffset: -48).priority = .defaultHigh
+        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
+            circleView.autoMatch(.width, to: .width, of: view, withOffset: -48)
+            circleView.autoMatch(.height, to: .height, of: view, withOffset: -48)
+        }
         circleView.autoMatch(.width, to: .width, of: view, withOffset: -48, relation: .lessThanOrEqual)
-        circleView.autoMatch(.height, to: .height, of: view, withOffset: -48).priority = .defaultHigh
         circleView.autoMatch(.height, to: .height, of: view, withOffset: -48, relation: .lessThanOrEqual)
 
         closeButton.autoPinTopToSuperviewMargin(withInset: 8)

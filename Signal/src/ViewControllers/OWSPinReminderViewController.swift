@@ -203,10 +203,14 @@ public class PinReminderViewController: OWSViewController {
         // The scroll view should never be *smaller* than the stack view...
         scrollView.autoMatch(.height, to: .height, of: stackView, withOffset: 0, relation: .lessThanOrEqual)
         // ...and if the stack view is smaller than the screen, the scroll view should shrink to match.
-        scrollView.autoPinHeight(toHeightOf: stackView).priority = .defaultLow - 2
+        NSLayoutConstraint.autoSetPriority(.defaultLow - 2) {
+            scrollView.autoPinHeight(toHeightOf: stackView)
+        }
         // But the stack view shouldn't *stretch* to fill the scroll view; it should shrink as much as possible after
         // all other constraints have been fulfilled.
-        stackView.autoSetDimension(.height, toSize: 0).priority = .defaultLow - 1
+        NSLayoutConstraint.autoSetPriority(.defaultLow - 1) {
+            stackView.autoSetDimension(.height, toSize: 0)
+        }
 
         containerView.addSubview(scrollView)
         scrollView.autoPinEdgesToSuperviewEdges()

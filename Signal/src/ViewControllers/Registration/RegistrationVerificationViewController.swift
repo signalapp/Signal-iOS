@@ -154,7 +154,9 @@ class RegistrationVerificationViewModel: NSObject {
         // - Every view should have an intrinsicContentSize. Content Hugging and Content Compression
         //   don't mean much without a content size.
         stackView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 0, relation: .greaterThanOrEqual)
-        stackView.autoPinEdge(toSuperviewMargin: .top).priority = .defaultHigh
+        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
+            stackView.autoPinEdge(toSuperviewMargin: .top)
+        }
         stackView.autoPinWidthToSuperviewMargins()
         stackView.autoPinEdge(.bottom, to: .bottom, of: vc.keyboardLayoutGuideViewSafeArea)
         progressView.autoCenterInSuperview()
@@ -183,8 +185,12 @@ class RegistrationVerificationViewModel: NSObject {
         backButtonSpacer.setContentCompressionResistancePriority(.defaultHigh - 50, for: .vertical)
 
         // If we're flush with space, bump up the bottomSpacer spacer to 16, then the bottom layout margins
-        bottomSpacer.autoSetDimension(.height, toSize: 16, relation: .greaterThanOrEqual).priority = .defaultHigh - 40
-        bottomSpacer.autoSetDimension(.height, toSize: vc.primaryLayoutMargins.bottom).priority = .defaultLow
+        NSLayoutConstraint.autoSetPriority(.defaultHigh - 40) {
+            bottomSpacer.autoSetDimension(.height, toSize: 16, relation: .greaterThanOrEqual)
+        }
+        NSLayoutConstraint.autoSetPriority(.defaultLow) {
+            bottomSpacer.autoSetDimension(.height, toSize: vc.primaryLayoutMargins.bottom)
+        }
 
         // And if we have so much space we don't know what to do with it, grow the space between
         // the error label and the button stack button. Usually the top space will grow along with
