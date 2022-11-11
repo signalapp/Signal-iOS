@@ -119,8 +119,6 @@ extension DonateViewController {
             backdropView.alpha = 1
         }
 
-        enum SubscriptionError: Error { case timeout, assertion }
-
         Promise.race(
             NotificationCenter.default.observe(
                 once: SubscriptionManager.SubscriptionJobQueueDidFinishJobNotification,
@@ -131,10 +129,10 @@ extension DonateViewController {
                 object: nil
             )
         ).timeout(seconds: 30) {
-            return SubscriptionError.timeout
+            return DonationJobError.timeout
         }.done { notification in
             if notification.name == SubscriptionManager.SubscriptionJobQueueDidFailJobNotification {
-                throw SubscriptionError.assertion
+                throw DonationJobError.assertion
             }
 
             progressView.stopAnimating(success: true) {
@@ -155,7 +153,7 @@ extension DonateViewController {
                 backdropView.removeFromSuperview()
                 progressView.removeFromSuperview()
 
-                guard let error = error as? SubscriptionError else {
+                guard let error = error as? DonationJobError else {
                     return owsFailDebug("Unexpected error \(error)")
                 }
 
