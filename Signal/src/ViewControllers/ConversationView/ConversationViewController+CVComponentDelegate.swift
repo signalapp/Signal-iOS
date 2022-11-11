@@ -253,7 +253,24 @@ extension ConversationViewController: CVComponentDelegate {
                 block: { StoryFinder.story(timestamp: quotedReply.timestamp, author: quotedReply.authorAddress, transaction: $0) }
             ) else { return }
 
-            let vc = StoryPageViewController(context: quotedStory.context, loadMessage: quotedStory)
+            let context: StoryContext
+            if
+                let contactUUID = self.threadViewModel.contactAddress?.uuid,
+                quotedStory.authorAddress.isLocalAddress,
+                case let .outgoing(recipientStates) = quotedStory.manifest,
+                let recipientState = recipientStates[contactUUID],
+                let validContext = recipientState.firstValidContext()
+            {
+                // If its an outgoing story from the local user and the contact
+                // is in the recipient states, set the context to the first valid
+                // context they are a part of.
+                context = validContext
+            } else {
+                // Else fall back to thinking this is an incoming story from this contact.
+                context = .authorUuid(quotedStory.authorUuid)
+            }
+
+            let vc = StoryPageViewController(context: context, loadMessage: quotedStory)
             presentFullScreen(vc, animated: true)
         } else {
             scrollToQuotedMessage(quotedReply, isAnimated: true)

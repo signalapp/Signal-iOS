@@ -788,6 +788,26 @@ extension StoryRecipientState {
             return false
         }
     }
+
+    /// If this recipient is present on multiple private story threads that the same
+    /// story message was sent to, there isn't really a sense in which they received
+    /// the story "on" any given one of those threads, its kind of on all of them.
+    /// Just pick the first valid one, preferring My Story if present.
+    public func firstValidContext() -> StoryContext? {
+        var firstValidContext: StoryContext?
+        for threadId in contexts {
+            // Prefer my story as the "first" valid context, if present.
+            if threadId.uuidString == TSPrivateStoryThread.myStoryUniqueId {
+                return .privateStory(threadId.uuidString)
+
+            }
+            guard firstValidContext == nil else {
+                continue
+            }
+            firstValidContext = .privateStory(threadId.uuidString)
+        }
+        return firstValidContext
+    }
 }
 
 extension OWSOutgoingMessageRecipientState: Codable {}
