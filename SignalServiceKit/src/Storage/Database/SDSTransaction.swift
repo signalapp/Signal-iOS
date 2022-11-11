@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -316,6 +317,9 @@ public extension GRDB.Database {
 // MARK: -
 
 private func handleFatalDatabaseError(_ error: Error) -> Never {
-    SSKPreferences.flagDatabaseCorruptionIfNecessary(error: error)
+    DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+        userDefaults: CurrentAppContext().appUserDefaults(),
+        error: error
+    )
     owsFail("Error: \(error)")
 }

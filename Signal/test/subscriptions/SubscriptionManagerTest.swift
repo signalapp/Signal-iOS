@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import XCTest
+@testable import SignalMessaging
 
 class SubscriptionChargeFailureTest: XCTestCase {
     typealias ChargeFailure = Subscription.ChargeFailure
@@ -50,8 +52,7 @@ class SubscriptionTest: XCTestCase {
                                             chargeFailureDict: nil)
 
         XCTAssertEqual(subscription.level, 123)
-        XCTAssertEqual(subscription.currency, "USD")
-        XCTAssertEqual(subscription.amount, 500)
+        XCTAssertEqual(subscription.amount, FiatMoney(currencyCode: "USD", value: 5))
         XCTAssertEqual(subscription.endOfCurrentPeriod, 1618881836)
         XCTAssertEqual(subscription.billingCycleAnchor, 1587345836)
         XCTAssertTrue(subscription.active)
@@ -115,5 +116,69 @@ class BadgeIdsTest: XCTestCase {
         for (badgeId, shouldMatch) in testCases {
             XCTAssertEqual(BoostBadgeIds.contains(badgeId), shouldMatch, "\(badgeId)")
         }
+    }
+}
+
+class SubscriptionManagerTest: XCTestCase {
+    func testParseSuggestedBoostAmountsResponse() throws {
+        let parse = { try SubscriptionManager.parseSuggestedBoostAmountsResponse(body: $0) }
+
+        XCTAssertThrowsError(try parse(nil))
+        XCTAssertThrowsError(try parse([]))
+        XCTAssertThrowsError(try parse("USD"))
+
+        XCTAssertEqual(try parse([:]), [:])
+        XCTAssertEqual(
+            try parse([
+                "USD": [Double]([1, 2.3]),
+                "JPY": [Double]([4, 5]),
+                "xyz": [Double]([6, 7]),
+                "": [Double]([8]),
+                "BAD": Double(9),
+                "SAD": "10",
+                "RAD": [],
+                "MAD": [Double]([1, 0, 2])
+            ]),
+            [
+                "USD": .init(
+                    currencyCode: "USD",
+                    amounts: [1, 2.3].map { FiatMoney(currencyCode: "USD", value: $0) }
+                ),
+                "JPY": .init(
+                    currencyCode: "JPY",
+                    amounts: [4, 5].map { FiatMoney(currencyCode: "JPY", value: $0) }
+                ),
+                "XYZ": .init(
+                    currencyCode: "XYZ",
+                    amounts: [6, 7].map { FiatMoney(currencyCode: "XYZ", value: $0) }
+                )
+            ]
+        )
+    }
+
+    func testParseGiftBadgePricesResponse() throws {
+        let parse = { try SubscriptionManager.parseGiftBadgePricesResponse(body: $0) }
+
+        XCTAssertThrowsError(try parse(nil))
+        XCTAssertThrowsError(try parse([]))
+        XCTAssertThrowsError(try parse("USD"))
+
+        XCTAssertEqual(try parse([:]), [:])
+        XCTAssertEqual(
+            try parse([
+                "USD": Double(1.2),
+                "JPY": Double(3),
+                "xyz": Double(4),
+                "": Double(8),
+                "BAD": "9",
+                "MAD": 0,
+                "SAD": -1
+            ]),
+            [
+                "USD": FiatMoney(currencyCode: "USD", value: 1.2),
+                "JPY": FiatMoney(currencyCode: "JPY", value: 3),
+                "XYZ": FiatMoney(currencyCode: "XYZ", value: 4)
+            ]
+        )
     }
 }

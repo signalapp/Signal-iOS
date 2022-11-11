@@ -1,9 +1,12 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import SignalRingRTC
+import UIKit
 
 @objc
 protocol CallHeaderDelegate: AnyObject {
@@ -122,6 +125,13 @@ class CallHeader: UIView {
         callTitleLabel.textColor = UIColor.white
         addShadow(to: callTitleLabel)
 
+#if TESTABLE_BUILD
+        // For debugging purposes, make it easy to force the call to disconnect.
+        callTitleLabel.addGestureRecognizer(UILongPressGestureRecognizer(target: self,
+                                                                         action: #selector(injectDisconnect)))
+        callTitleLabel.isUserInteractionEnabled = true
+#endif
+
         vStack.addArrangedSubview(callTitleLabel)
 
         // Make the title view as wide as possible, but don't overlap either button.
@@ -210,7 +220,16 @@ class CallHeader: UIView {
         let callStatusText: String
         switch call.groupCall.localDeviceState.joinState {
         case .notJoined, .joining:
-            if let joinedMembers = call.groupCall.peekInfo?.joinedMembers, !joinedMembers.isEmpty {
+            if case .incomingRing(let caller, _) = call.groupCallRingState {
+                let callerName = databaseStorage.read { transaction in
+                    contactsManager.shortDisplayName(for: caller, transaction: transaction)
+                }
+                let formatString = NSLocalizedString(
+                    "GROUP_CALL_INCOMING_RING_FORMAT",
+                    comment: "Text explaining that someone has sent a ring to the group. Embeds {ring sender name}")
+                callStatusText = String(format: formatString, callerName)
+
+            } else if let joinedMembers = call.groupCall.peekInfo?.joinedMembers, !joinedMembers.isEmpty {
                 let memberNames: [String] = databaseStorage.read { transaction in
                     joinedMembers.prefix(2).map {
                         contactsManager.shortDisplayName(for: SignalServiceAddress(uuid: $0),
@@ -237,7 +256,7 @@ class CallHeader: UIView {
                 callStatusText = ""
             } else {
                 let (memberCount, firstTwoNames) = fetchGroupSizeAndMemberNamesWithSneakyTransaction()
-                if call.ringRestrictions.isEmpty && call.userWantsToRing {
+                if call.ringRestrictions.isEmpty, case .shouldRing = call.groupCallRingState {
                     callStatusText = describeMembers(
                         count: memberCount,
                         names: firstTwoNames,
@@ -276,7 +295,7 @@ class CallHeader: UIView {
                     comment: "Text indicating that the user has lost their connection to the call and we are reconnecting.")
 
             } else if call.groupCall.remoteDeviceStates.isEmpty {
-                if call.ringRestrictions.isEmpty && call.userWantsToRing {
+                if case .ringing = call.groupCallRingState {
                     let (memberCount, firstTwoNames) = fetchGroupSizeAndMemberNamesWithSneakyTransaction()
                     callStatusText = describeMembers(
                         count: memberCount,
@@ -349,6 +368,12 @@ class CallHeader: UIView {
         let isJoined = call.groupCall.localDeviceState.joinState == .joined
         let remoteMemberCount = isJoined ? call.groupCall.remoteDeviceStates.count : Int(call.groupCall.peekInfo?.deviceCount ?? 0)
         groupMembersButton.updateMemberCount(remoteMemberCount + (isJoined ? 1 : 0))
+    }
+
+    // For testing abnormal scenarios.
+    @objc
+    private func injectDisconnect() {
+        call.groupCall.disconnect()
     }
 
     required init?(coder: NSCoder) {

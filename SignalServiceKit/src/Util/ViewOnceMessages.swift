@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -140,7 +141,7 @@ public class ViewOnceMessages: NSObject {
                                                             message: message,
                                                             readTimestamp: readTimestamp,
                                                             transaction: transaction)
-        messageSenderJobQueue.add(message: syncMessage.asPreparer, transaction: transaction)
+        sskJobQueues.messageSenderJobQueue.add(message: syncMessage.asPreparer, transaction: transaction)
 
         if let incomingMessage = message as? TSIncomingMessage {
             let circumstance: OWSReceiptCircumstance =

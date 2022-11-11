@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -28,18 +29,16 @@ public class RegistrationCountryState: NSObject {
         AssertIsOnMainThread()
 
         var countryCode: String = PhoneNumber.defaultCountryCode()
-        if let lastRegisteredCountryCode = RegistrationValues.lastRegisteredCountryCode(),
-           lastRegisteredCountryCode.count > 0 {
+        if
+            let lastRegisteredCountryCode = RegistrationValues.lastRegisteredCountryCode(),
+            !lastRegisteredCountryCode.isEmpty
+        {
             countryCode = lastRegisteredCountryCode
         }
 
         let callingCodeNumber: NSNumber = phoneNumberUtil.getCountryCode(forRegion: countryCode)
         let callingCode = "\(COUNTRY_CODE_PREFIX)\(callingCodeNumber)"
-
-        var countryName = OWSLocalizedString("UNKNOWN_COUNTRY_NAME", comment: "Label for unknown countries.")
-        if let countryNameDerived = PhoneNumberUtil.countryName(fromCountryCode: countryCode) {
-            countryName = countryNameDerived
-        }
+        let countryName = PhoneNumberUtil.countryName(fromCountryCode: countryCode)
 
         return RegistrationCountryState(countryName: countryName, callingCode: callingCode, countryCode: countryCode)
     }
@@ -75,7 +74,7 @@ public class RegistrationCountryState: NSObject {
                 owsFailDebug("Invalid callingCode.")
                 return nil
             }
-            guard let countryName = PhoneNumberUtil.countryName(fromCountryCode: countryCode)?.strippedOrNil else {
+            guard let countryName = PhoneNumberUtil.countryName(fromCountryCode: countryCode).strippedOrNil else {
                 owsFailDebug("Invalid countryName.")
                 return nil
             }

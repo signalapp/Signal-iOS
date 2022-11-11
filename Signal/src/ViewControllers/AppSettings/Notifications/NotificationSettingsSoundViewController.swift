@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 class NotificationSettingsSoundViewController: OWSTableViewController2 {

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "TSCall.h"
@@ -203,6 +204,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
                        thread:(TSThread *)thread
                  circumstance:(OWSReceiptCircumstance)circumstance
+     shouldClearNotifications:(BOOL)shouldClearNotifications
                   transaction:(SDSAnyWriteTransaction *)transaction
 {
 

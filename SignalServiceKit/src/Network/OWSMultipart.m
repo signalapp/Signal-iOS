@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSMultipart.h"
@@ -328,7 +329,7 @@ static inline NSString *AFMultipartFormFinalBoundary(NSString *boundary)
                 outputStream:(NSOutputStream *)outputStream
                        error:(NSError *__autoreleasing *)error
 {
-    NSInteger bufferSize = 16 * 1024;
+    NSUInteger bufferSize = 16 * 1024;
     uint8_t buffer[bufferSize];
 
     NSInteger totalBytesReadCount = 0;
@@ -352,15 +353,17 @@ static inline NSString *AFMultipartFormFinalBoundary(NSString *boundary)
         }
         totalBytesReadCount += numberOfBytesRead;
 
-        NSInteger totalBytesWrittenCount = 0;
-        while (totalBytesWrittenCount < numberOfBytesRead) {
-            NSInteger writeSize = numberOfBytesRead - totalBytesWrittenCount;
+        NSUInteger numberOfBytesToWrite = (NSUInteger)numberOfBytesRead;
+
+        NSUInteger totalBytesWrittenCount = 0;
+        while (totalBytesWrittenCount < numberOfBytesToWrite) {
+            NSUInteger writeSize = numberOfBytesToWrite - totalBytesWrittenCount;
             NSInteger bytesWrittenCount = [outputStream write:&buffer[totalBytesWrittenCount] maxLength:writeSize];
             if (bytesWrittenCount < 1) {
                 *error = [[NSError alloc] initWithDomain:NSURLErrorDomain code:NSURLErrorBadURL userInfo:nil];
                 return NO;
             }
-            totalBytesWrittenCount += bytesWrittenCount;
+            totalBytesWrittenCount += (NSUInteger)bytesWrittenCount;
         }
     }
     return YES;
@@ -368,13 +371,13 @@ static inline NSString *AFMultipartFormFinalBoundary(NSString *boundary)
 
 + (BOOL)writeData:(NSData *)data outputStream:(NSOutputStream *)outputStream error:(NSError *__autoreleasing *)error
 {
-    NSInteger totalBytesCount = data.length;
-    NSInteger bufferSize = 16 * 1024;
+    NSUInteger totalBytesCount = data.length;
+    NSUInteger bufferSize = 16 * 1024;
     uint8_t buffer[bufferSize];
 
-    NSInteger totalBytesWrittenCount = 0;
+    NSUInteger totalBytesWrittenCount = 0;
     while (totalBytesWrittenCount < totalBytesCount) {
-        NSInteger blockSize = MIN((totalBytesCount - totalBytesWrittenCount), bufferSize);
+        NSUInteger blockSize = MIN((totalBytesCount - totalBytesWrittenCount), bufferSize);
         NSRange range = NSMakeRange((NSUInteger)totalBytesWrittenCount, blockSize);
         [data getBytes:buffer range:range];
         NSInteger bytesWrittenCount = [outputStream write:buffer maxLength:blockSize];
@@ -382,7 +385,7 @@ static inline NSString *AFMultipartFormFinalBoundary(NSString *boundary)
             *error = [[NSError alloc] initWithDomain:NSURLErrorDomain code:NSURLErrorBadURL userInfo:nil];
             return NO;
         }
-        totalBytesWrittenCount += bytesWrittenCount;
+        totalBytesWrittenCount += (NSUInteger)bytesWrittenCount;
     }
     return YES;
 }

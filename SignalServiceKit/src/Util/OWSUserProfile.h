@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import <SignalServiceKit/BaseModel.h>
@@ -20,7 +21,6 @@ typedef void (^OWSUserProfileCompletion)(void);
 extern NSNotificationName const kNSNotificationNameProfileWhitelistDidChange;
 extern NSNotificationName const kNSNotificationNameLocalProfileDidChange;
 extern NSNotificationName const kNSNotificationNameLocalProfileKeyDidChange;
-extern NSNotificationName const kNSNotificationNameOtherUsersProfileWillChange;
 extern NSNotificationName const kNSNotificationNameOtherUsersProfileDidChange;
 
 extern NSString *const kNSNotificationKey_ProfileAddress;

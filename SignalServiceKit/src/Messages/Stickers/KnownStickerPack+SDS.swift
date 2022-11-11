@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -143,6 +144,15 @@ extension KnownStickerPack: SDSModel {
 
     public static var table: SDSTableMetadata {
         KnownStickerPackSerializer.table
+    }
+
+    public class func anyEnumerateIndexable(
+        transaction: SDSAnyReadTransaction,
+        block: @escaping (SDSIndexableModel) -> Void
+    ) {
+        anyEnumerate(transaction: transaction, batched: false) { model, _ in
+            block(model)
+        }
     }
 }
 
@@ -370,7 +380,7 @@ public extension KnownStickerPack {
     // Fetches a single model by "unique id".
     class func anyFetch(uniqueId: String,
                         transaction: SDSAnyReadTransaction) -> KnownStickerPack? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
@@ -527,7 +537,7 @@ public extension KnownStickerPack {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> Bool {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
@@ -558,7 +568,7 @@ public extension KnownStickerPack {
     class func grdbFetchOne(sql: String,
                             arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> KnownStickerPack? {
-        assert(sql.count > 0)
+        assert(!sql.isEmpty)
 
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)

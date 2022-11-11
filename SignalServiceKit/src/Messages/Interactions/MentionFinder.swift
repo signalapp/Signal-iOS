@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -15,6 +16,7 @@ public class MentionFinder: NSObject {
         address: SignalServiceAddress,
         in thread: TSThread? = nil,
         includeReadMessages: Bool = true,
+        includeGroupStoryReplies: Bool = false,
         transaction: GRDBReadTransaction
     ) -> [TSMessage] {
         guard let uuidString = address.uuidString else { return [] }
@@ -38,6 +40,11 @@ public class MentionFinder: NSObject {
 
         if !includeReadMessages {
             sql += " \(next) interaction.\(interactionColumn: .read) IS 0"
+            next = "AND"
+        }
+
+        if !includeGroupStoryReplies {
+            sql += " \(next) interaction.\(interactionColumn: .isGroupStoryReply) IS 0"
         }
 
         sql += " ORDER BY \(interactionColumn: .id)"

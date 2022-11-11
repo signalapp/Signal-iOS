@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -9,17 +10,6 @@ import Curve25519Kit
 @testable import SignalServiceKit
 
 class DeviceNamesTest: SSKBaseTestSwift {
-
-    override func setUp() {
-        super.setUp()
-    }
-
-    override func tearDown() {
-        super.tearDown()
-    }
-
-    // MARK: 
-
     func testNotEncrypted() {
         let identityKeyPair = Curve25519.generateKeyPair()
 

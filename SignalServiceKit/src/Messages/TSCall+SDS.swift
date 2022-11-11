@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -18,7 +19,7 @@ public extension TSCall {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> TSCall? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -410,9 +411,9 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
         return jobInfo
     }
 
-    public static func discardMode(forMessageFrom sourceAddress: SignalServiceAddress,
-                                   groupContext: SSKProtoGroupContextV2,
-                                   transaction: SDSAnyReadTransaction) -> DiscardMode {
+    internal static func discardMode(forMessageFrom sourceAddress: SignalServiceAddress,
+                                     groupContext: SSKProtoGroupContextV2,
+                                     transaction: SDSAnyReadTransaction) -> GroupsV2MessageProcessor.DiscardMode {
         guard groupContext.hasRevision else {
             Logger.info("Missing revision in group context")
             return .discard
@@ -426,25 +427,14 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             return .discard
         }
 
-        return self.discardMode(forMessageFrom: sourceAddress,
-                                groupContextInfo: groupContextInfo,
-                                hasGroupBeenUpdated: true,
-                                transaction: transaction)
-    }
-
-    public enum DiscardMode {
-        // Do not process this envelope.
-        case discard
-        // Process this envelope.
-        case doNotDiscard
-        // Process this envelope, but discard any "renderable" content,
-        // e.g. calls or messages in the chat history.
-        case discardVisibleMessages
+        return GroupsV2MessageProcessor.discardMode(forMessageFrom: sourceAddress,
+                                                    groupId: groupContextInfo.groupId,
+                                                    transaction: transaction)
     }
 
     private static func discardMode(forJobInfo jobInfo: IncomingGroupsV2MessageJobInfo,
                                     hasGroupBeenUpdated: Bool,
-                                    transaction: SDSAnyReadTransaction) -> DiscardMode {
+                                    transaction: SDSAnyReadTransaction) -> GroupsV2MessageProcessor.DiscardMode {
         guard let envelope = jobInfo.envelope else {
             owsFailDebug("Missing envelope.")
             return .discard
@@ -457,69 +447,10 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             owsFailDebug("Invalid source address.")
             return .discard
         }
-        return discardMode(forMessageFrom: sourceAddress,
-                           groupContextInfo: groupContextInfo,
-                           hasGroupBeenUpdated: hasGroupBeenUpdated,
-                           transaction: transaction)
-    }
-
-    private static func discardMode(forMessageFrom sourceAddress: SignalServiceAddress,
-                                    groupContextInfo: GroupV2ContextInfo,
-                                    hasGroupBeenUpdated: Bool,
-                                    transaction: SDSAnyReadTransaction) -> DiscardMode {
-        // We want to discard asap to avoid problems with batching.
-
-        guard !blockingManager.isAddressBlocked(sourceAddress, transaction: transaction) &&
-            !blockingManager.isGroupIdBlocked(groupContextInfo.groupId, transaction: transaction) else {
-                Logger.info("Discarding blocked envelope.")
-            return .discard
-        }
-
-        // We need to pre-process all incoming envelopes; they might change
-        // our group state.
-        //
-        // But we should only pass envelopes to the MessageManager for
-        // processing if they correspond to v2 groups of which we are a
-        // non-pending member.
-        if hasGroupBeenUpdated {
-            guard let localAddress = self.tsAccountManager.localAddress else {
-                owsFailDebug("Missing localAddress.")
-                return .discard
-            }
-            guard let groupThread = TSGroupThread.fetch(groupId: groupContextInfo.groupId,
-                                                        transaction: transaction) else {
-                                                            // The user might have just deleted the thread
-                                                            // but this race should be extremely rare.
-                                                            // Usually this should indicate a bug.
-                                                            owsFailDebug("Missing thread.")
-                return .discard
-            }
-            guard groupThread.groupModel.groupMembership.isFullMember(localAddress) else {
-                // * Local user might have just left the group.
-                // * Local user may have just learned that we were removed from the group.
-                // * Local user might be a pending member with an invite.
-                Logger.warn("Discarding envelope; local user is not an active group member.")
-                return .discard
-            }
-            guard groupThread.groupModel.groupMembership.isFullMember(sourceAddress) else {
-                // * The sender might have just left the group.
-                Logger.warn("Discarding envelope; sender is not an active group member.")
-                return .discard
-            }
-            if let groupModel = groupThread.groupModel as? TSGroupModelV2 {
-                if groupModel.isAnnouncementsOnly {
-                    guard groupThread.groupModel.groupMembership.isFullMemberAndAdministrator(sourceAddress) else {
-                        // * Only administrators can send "renderable" messages to a "announcement-only" group.
-                        Logger.warn("Discarding renderable content in envelope; sender is not an active group member.")
-                        return .discardVisibleMessages
-                    }
-                }
-            } else {
-                owsFailDebug("Invalid group model.")
-            }
-        }
-
-        return .doNotDiscard
+        return GroupsV2MessageProcessor.discardMode(forMessageFrom: sourceAddress,
+                                                    groupId: groupContextInfo.groupId,
+                                                    shouldCheckGroupModel: hasGroupBeenUpdated,
+                                                    transaction: transaction)
     }
 
     // Like non-v2 group messages, we want to do batch processing
@@ -1062,5 +993,77 @@ public class GroupsV2MessageProcessor: NSObject {
     @objc
     public func pendingJobCount(transaction: SDSAnyReadTransaction) -> UInt {
         processingQueue.pendingJobCount(transaction: transaction)
+    }
+
+    public enum DiscardMode {
+        /// Do not process this envelope.
+        case discard
+        /// Process this envelope.
+        case doNotDiscard
+        /// Process this envelope, but discard any "renderable" content,
+        /// e.g. calls or messages in the chat history.
+        case discardVisibleMessages
+    }
+
+    /// Returns whether a group message from the given user should be discarded.
+    ///
+    /// If `shouldCheckGroupModel` is false, only checks whether the sender or group is blocked.
+    public static func discardMode(forMessageFrom sourceAddress: SignalServiceAddress,
+                                   groupId: Data,
+                                   shouldCheckGroupModel: Bool = true,
+                                   transaction: SDSAnyReadTransaction) -> DiscardMode {
+        // We want to discard asap to avoid problems with batching.
+
+        guard !blockingManager.isAddressBlocked(sourceAddress, transaction: transaction) &&
+            !blockingManager.isGroupIdBlocked(groupId, transaction: transaction) else {
+                Logger.info("Discarding blocked envelope.")
+            return .discard
+        }
+
+        // We need to pre-process all incoming envelopes; they might change
+        // our group state.
+        //
+        // But we should only pass envelopes to the MessageManager for
+        // processing if they correspond to v2 groups of which we are a
+        // non-pending member.
+        if shouldCheckGroupModel {
+            guard let localAddress = self.tsAccountManager.localAddress else {
+                owsFailDebug("Missing localAddress.")
+                return .discard
+            }
+            guard let groupThread = TSGroupThread.fetch(groupId: groupId,
+                                                        transaction: transaction) else {
+                // The user might have just deleted the thread
+                // but this race should be extremely rare.
+                // Usually this should indicate a bug.
+                owsFailDebug("Missing thread.")
+                return .discard
+            }
+            guard groupThread.groupModel.groupMembership.isFullMember(localAddress) else {
+                // * Local user might have just left the group.
+                // * Local user may have just learned that we were removed from the group.
+                // * Local user might be a pending member with an invite.
+                Logger.warn("Discarding envelope; local user is not an active group member.")
+                return .discard
+            }
+            guard groupThread.groupModel.groupMembership.isFullMember(sourceAddress) else {
+                // * The sender might have just left the group.
+                Logger.warn("Discarding envelope; sender is not an active group member.")
+                return .discard
+            }
+            if let groupModel = groupThread.groupModel as? TSGroupModelV2 {
+                if groupModel.isAnnouncementsOnly {
+                    guard groupThread.groupModel.groupMembership.isFullMemberAndAdministrator(sourceAddress) else {
+                        // * Only administrators can send "renderable" messages to a "announcement-only" group.
+                        Logger.warn("Discarding renderable content in envelope; sender is not an active group member.")
+                        return .discardVisibleMessages
+                    }
+                }
+            } else {
+                owsFailDebug("Invalid group model.")
+            }
+        }
+
+        return .doNotDiscard
     }
 }

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -13,6 +14,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
         owsAssertDebug(paymentBalance.amount.isValidAmount(canBeEmpty: false))
 
         self.paymentBalance = paymentBalance
+        super.init()
     }
 
     public override func viewDidLoad() {
@@ -43,8 +45,8 @@ public class PaymentsDeactivateViewController: OWSViewController {
         updateContents()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateContents()
     }

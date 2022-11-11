@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -326,64 +327,6 @@ extension CVViewState {
 
     var asCoreState: CVCoreState {
         CVCoreState(conversationStyle: conversationStyle, mediaCache: mediaCache)
-    }
-}
-
-// MARK: - Banner Hiding
-
-public extension CVViewState {
-
-    // We hide banners for an hour.
-    private class BannerHiding {
-        let unfairLock = UnfairLock()
-        var hiddenDateMap = [String: Date]()
-
-        func isHidden(_ threadUniqueId: String) -> Bool {
-            let hiddenDate = unfairLock.withLock {
-                hiddenDateMap[threadUniqueId]
-            }
-            guard let date = hiddenDate else {
-                return false
-            }
-            let hiddenDurationInterval = kHourInterval * 1
-            return abs(date.timeIntervalSinceNow) < hiddenDurationInterval
-        }
-
-        func hide(_ threadUniqueId: String) {
-            unfairLock.withLock {
-                hiddenDateMap[threadUniqueId] = Date()
-            }
-        }
-    }
-
-    private static let isPendingMemberRequestsBannerHiding = BannerHiding()
-    private static let isDroppedGroupMembersBannerHiding = BannerHiding()
-    private static let isMessageRequestNameCollisionBannerHiding = BannerHiding()
-
-    var threadUniqueId: String { threadViewModel.threadRecord.uniqueId }
-
-    var isPendingMemberRequestsBannerHidden: Bool {
-        get { Self.isPendingMemberRequestsBannerHiding.isHidden(threadUniqueId) }
-    }
-
-    func hidePendingMemberRequestsBanner() {
-        Self.isPendingMemberRequestsBannerHiding.hide(threadUniqueId)
-    }
-
-    var isDroppedGroupMembersBannerHidden: Bool {
-        get { Self.isDroppedGroupMembersBannerHiding.isHidden(threadUniqueId) }
-    }
-
-    func hideDroppedGroupMembersBanner() {
-        Self.isDroppedGroupMembersBannerHiding.hide(threadUniqueId)
-    }
-
-    var isMessageRequestNameCollisionBannerHidden: Bool {
-        get { Self.isMessageRequestNameCollisionBannerHiding.isHidden(threadUniqueId) }
-    }
-
-    func hideMessageRequestNameCollisionBanner() {
-        Self.isMessageRequestNameCollisionBannerHiding.hide(threadUniqueId)
     }
 }
 

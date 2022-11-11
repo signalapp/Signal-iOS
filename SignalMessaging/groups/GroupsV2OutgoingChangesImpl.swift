@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -242,7 +243,8 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
     // See comments on buildGroupChangeProto() below.
     public func buildGroupChangeProto(
         currentGroupModel: TSGroupModelV2,
-        currentDisappearingMessageToken: DisappearingMessageToken
+        currentDisappearingMessageToken: DisappearingMessageToken,
+        forceRefreshProfileKeyCredentials: Bool
     ) -> Promise<GroupsProtoGroupChangeActions> {
         guard groupId == currentGroupModel.groupId else {
             return Promise(error: OWSAssertionError("Mismatched groupId."))
@@ -260,43 +262,17 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         var newUserUuids: Set<UUID> = Set(membersToAdd.keys).union(invitedMembersToPromote)
         newUserUuids.insert(localUuid)
 
-        if isMissingAnnouncementOnlyCapability(
-            currentGroupModel: currentGroupModel,
-            newAddresses: newUserUuids.map { SignalServiceAddress(uuid: $0) }
-        ) {
-            return Promise(error: GroupsV2Error.newMemberMissingAnnouncementOnlyCapability)
-        }
-
         return firstly(on: .global()) { () -> Promise<GroupsV2Swift.ProfileKeyCredentialMap> in
-            self.groupsV2Swift.loadProfileKeyCredentials(for: Array(newUserUuids), forceRefresh: false)
+            self.groupsV2Swift.loadProfileKeyCredentials(
+                for: Array(newUserUuids),
+                forceRefresh: forceRefreshProfileKeyCredentials
+            )
         }.map(on: .global()) { (profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions in
             try self.buildGroupChangeProto(
                 currentGroupModel: currentGroupModel,
                 currentDisappearingMessageToken: currentDisappearingMessageToken,
                 profileKeyCredentialMap: profileKeyCredentialMap
             )
-        }
-    }
-
-    private func isMissingAnnouncementOnlyCapability(currentGroupModel: TSGroupModelV2,
-                                                     newAddresses: [SignalServiceAddress]) -> Bool {
-        let shouldPreventNewMembersWithoutAnnouncementOnlyCapability: Bool = {
-            if let isAnnouncementsOnly = self.isAnnouncementsOnly {
-                return isAnnouncementsOnly
-            }
-            return currentGroupModel.isAnnouncementsOnly
-        }()
-        guard shouldPreventNewMembersWithoutAnnouncementOnlyCapability else {
-            return false
-        }
-        return databaseStorage.read { transaction in
-            for address in newAddresses {
-                guard GroupManager.doesUserHaveAnnouncementOnlyGroupsCapability(address: address,
-                                                                                transaction: transaction) else {
-                    return true
-                }
-            }
-            return false
         }
     }
 

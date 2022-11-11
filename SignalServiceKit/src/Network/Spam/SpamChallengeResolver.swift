@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -115,7 +116,7 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
 
             pendingInteractionIds
                 .compactMap { TSOutgoingMessage.anyFetchOutgoingMessage(uniqueId: $0, transaction: writeTx) }
-                .forEach { self.messageSenderJobQueue.add(message: $0.asPreparer, transaction: writeTx) }
+                .forEach { self.sskJobQueues.messageSenderJobQueue.add(message: $0.asPreparer, transaction: writeTx) }
         }
     }
 }

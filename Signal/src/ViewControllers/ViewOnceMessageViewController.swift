@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -114,9 +115,9 @@ class ViewOnceMessageViewController: OWSViewController {
                 return
             }
             let contentType = attachmentStream.contentType
-            guard contentType.count > 0 else {
+            if contentType.isEmpty {
                 owsFailDebug("Missing content type.")
-                    return
+                return
             }
 
             let viewOnceType: Content.ContentType

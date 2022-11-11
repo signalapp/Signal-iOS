@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -8,21 +9,34 @@ import GRDB
 @objc
 public class StoryFinder: NSObject {
     public static func unviewedSenderCount(transaction: SDSAnyReadTransaction) -> Int {
+        let ownUUIDClause = tsAccountManager.localUuid.map {
+            "AND \(StoryContextAssociatedData.columnName(.contactUuid)) IS NOT '\($0)'"
+        } ?? ""
         let sql = """
-            SELECT COUNT(*) OVER ()
-            FROM \(StoryMessage.databaseTableName)
-            WHERE json_extract(\(StoryMessage.columnName(.manifest)), '$.incoming.receivedState.viewedTimestamp') is NULL
-            AND \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.incoming.rawValue)
-            GROUP BY (
-                CASE
-                    WHEN \(StoryMessage.columnName(.groupId)) is NULL THEN \(StoryMessage.columnName(.authorUuid))
-                    ELSE \(StoryMessage.columnName(.groupId))
-                END
-            )
-            LIMIT 1
+            SELECT COUNT(*)
+            FROM \(StoryContextAssociatedData.databaseTableName)
+            WHERE
+                \(StoryContextAssociatedData.columnName(.isHidden)) IS NOT 1
+                AND \(StoryContextAssociatedData.columnName(.latestUnexpiredTimestamp)) IS NOT NULL
+                AND (
+                    \(StoryContextAssociatedData.columnName(.lastReadTimestamp)) IS NULL
+                    OR \(StoryContextAssociatedData.columnName(.lastReadTimestamp))
+                        < \(StoryContextAssociatedData.columnName(.latestUnexpiredTimestamp))
+                )
+                \(ownUUIDClause)
+                ;
         """
         do {
-            return try Int.fetchOne(transaction.unwrapGrdbRead.database, sql: sql) ?? 0
+            let unviewedStoryCount = try Int.fetchOne(transaction.unwrapGrdbRead.database, sql: sql) ?? 0
+
+            // Check the system story separately, since its hidden state is kept separately.
+            guard !Self.systemStoryManager.areSystemStoriesHidden(transaction: transaction) else {
+                return unviewedStoryCount
+            }
+
+            let unviewedSystemStoryCount = Self.systemStoryManager.isOnboardingStoryRead(transaction: transaction) ? 0 : 1
+            return unviewedStoryCount + unviewedSystemStoryCount
+
         } catch {
             owsFailDebug("Failed to query unviewed story sender count \(error)")
             return 0
@@ -66,6 +80,53 @@ public class StoryFinder: NSObject {
         } catch {
             owsFailDebug("Failed to fetch incoming stories \(error)")
             return []
+        }
+    }
+
+    public static func enumerateOutgoingStories(transaction: SDSAnyReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        let sql = """
+            SELECT *
+            FROM \(StoryMessage.databaseTableName)
+            WHERE \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.outgoing.rawValue)
+            ORDER BY \(StoryMessage.columnName(.timestamp)) DESC
+        """
+
+        do {
+            let cursor = try StoryMessage.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
+            while let message = try cursor.next() {
+                var stop: ObjCBool = false
+                block(message, &stop)
+                if stop.boolValue {
+                    return
+                }
+            }
+        } catch {
+            owsFailDebug("error: \(error)")
+        }
+    }
+
+    public static func enumerateUnreadIncomingStories(
+        transaction: SDSAnyReadTransaction,
+        block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) {
+        let sql = """
+            SELECT *
+            FROM \(StoryMessage.databaseTableName)
+            WHERE \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.incoming.rawValue)
+            AND json_extract(\(StoryMessage.columnName(.manifest)), '$.incoming.receivedState.readTimestamp') is NULL
+        """
+
+        do {
+            let cursor = try StoryMessage.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
+            while let message = try cursor.next() {
+                var stop: ObjCBool = false
+                block(message, &stop)
+                if stop.boolValue {
+                    return
+                }
+            }
+        } catch {
+            owsFailDebug("error: \(error)")
         }
     }
 
@@ -245,6 +306,49 @@ public class StoryFinder: NSObject {
             return nil
         }
     }
+
+    public static func enumerateSendingStories(transaction: SDSAnyReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+
+        let sql = """
+            SELECT *
+            FROM \(StoryMessage.databaseTableName)
+            WHERE \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.outgoing.rawValue)
+            AND (
+                    SELECT 1 FROM json_tree(\(StoryMessage.columnName(.manifest)), '$.outgoing.recipientStates')
+                    WHERE json_tree.type IS 'object'
+                    AND json_extract(json_tree.value, '$.sendingState') = \(OWSOutgoingMessageRecipientState.sending.rawValue)
+                )
+            ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
+        """
+
+        do {
+            let cursor = try StoryMessage.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
+            while let message = try cursor.next() {
+                var stop: ObjCBool = false
+                block(message, &stop)
+                if stop.boolValue {
+                    return
+                }
+            }
+        } catch {
+            owsFailDebug("error: \(error)")
+        }
+    }
+
+    public static func hasFailedStories(transaction: SDSAnyReadTransaction) -> Bool {
+        let sql = """
+            SELECT EXISTS (
+                SELECT 1 FROM \(StoryMessage.databaseTableName)
+                WHERE \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.outgoing.rawValue)
+                AND (
+                    SELECT 1 FROM json_tree(\(StoryMessage.columnName(.manifest)), '$.outgoing.recipientStates')
+                    WHERE json_tree.type IS 'object'
+                    AND json_extract(json_tree.value, '$.sendingState') = \(OWSOutgoingMessageRecipientState.failed.rawValue)
+                )
+            )
+        """
+        return try! Bool.fetchOne(transaction.unwrapGrdbRead.database, sql: sql) ?? false
+    }
 }
 
 private extension StoryContext {
@@ -266,6 +370,66 @@ private extension StoryContext {
             """
         case .none:
             return nil
+        }
+    }
+}
+
+// MARK: - StoryContextAssociatedData
+
+extension StoryFinder {
+
+    public static func getAssociatedData(
+        forContext source: StoryContextAssociatedData.SourceContext,
+        transaction: SDSAnyReadTransaction
+    ) -> StoryContextAssociatedData? {
+        switch source {
+        case .contact(let contactUuid):
+            return try? StoryContextAssociatedData
+                .filter(Column(StoryContextAssociatedData.columnName(.contactUuid)) == contactUuid.uuidString)
+                .fetchOne(transaction.unwrapGrdbRead.database)
+
+        case .group(let groupId):
+            return try? StoryContextAssociatedData
+                .filter(Column(StoryContextAssociatedData.columnName(.groupId)) == groupId)
+                .fetchOne(transaction.unwrapGrdbRead.database)
+        }
+    }
+
+    public static func getAssocatedData(
+        forContactAdddress address: SignalServiceAddress,
+        transaction: SDSAnyReadTransaction
+    ) -> StoryContextAssociatedData? {
+        guard let uuid = address.uuid else {
+            // Non-UUID addresses predate stories; we never create
+            // any story data without a uuid so this is safe to ignore.
+            return nil
+        }
+        return getAssociatedData(forContext: .contact(contactUuid: uuid), transaction: transaction)
+    }
+
+    public static func associatedData(for thread: TSThread, transaction: SDSAnyReadTransaction) -> StoryContextAssociatedData? {
+        if
+            let contactThread = thread as? TSContactThread,
+            let contactUuidString = contactThread.contactUUID,
+            let contactUuid = UUID(uuidString: contactUuidString)
+        {
+            return getAssociatedData(forContext: .contact(contactUuid: contactUuid), transaction: transaction)
+        } else if let groupThread = thread as? TSGroupThread {
+            return getAssociatedData(forContext: .group(groupId: groupThread.groupId), transaction: transaction)
+        } else {
+            return nil
+        }
+    }
+
+    public static func associatedDatasWithRecentlyViewedStories(limit: Int, transaction: SDSAnyReadTransaction) -> [StoryContextAssociatedData] {
+        do {
+            return try StoryContextAssociatedData
+            .order(Column(StoryContextAssociatedData.columnName(.lastViewedTimestamp)).desc)
+            .limit(limit)
+            .fetchAll(transaction.unwrapGrdbRead.database)
+        } catch {
+            owsFailDebug("Failed to query recent threads \(error)")
+            return []
         }
     }
 }

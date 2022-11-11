@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -14,37 +15,59 @@ public class GRDBSchemaMigrator: NSObject {
     public static let migrationSideEffectsCollectionName = "MigrationSideEffects"
     public static let avatarRepairAttemptCount = "Avatar Repair Attempt Count"
 
-    // Returns true IFF incremental migrations were performed.
-    @objc
-    public func runSchemaMigrations() -> Bool {
+    /// Migrate a database to the latest version. Throws if migrations fail.
+    ///
+    /// - Parameter databaseStorage: The database to migrate.
+    /// - Parameter isMainDatabase: A boolean indicating whether this is the main database. If so, some global state will be set.
+    /// - Parameter runDataMigrations: A boolean indicating whether to include data migrations. Typically, you want to omit this value or set it to `true`, but we want to skip them when recovering a corrupted database.
+    /// - Returns: `true` if incremental migrations were performed, and `false` otherwise.
+    @discardableResult
+    public static func migrateDatabase(
+        databaseStorage: SDSDatabaseStorage,
+        isMainDatabase: Bool,
+        runDataMigrations: Bool = true
+    ) throws -> Bool {
         let didPerformIncrementalMigrations: Bool
 
-        if hasCreatedInitialSchema {
+        let grdbStorageAdapter = databaseStorage.grdbStorage
+
+        if hasCreatedInitialSchema(grdbStorageAdapter: grdbStorageAdapter) {
             do {
                 Logger.info("Using incrementalMigrator.")
-                didPerformIncrementalMigrations = try runIncrementalMigrations()
+                didPerformIncrementalMigrations = try runIncrementalMigrations(
+                    databaseStorage: databaseStorage,
+                    runDataMigrations: runDataMigrations
+                )
             } catch {
-                owsFail("Incremental migrations failed: \(error.grdbErrorForLogging)")
+                owsFailDebug("Incremental migrations failed: \(error.grdbErrorForLogging)")
+                throw error
             }
         } else {
             do {
                 Logger.info("Using newUserMigrator.")
-                try newUserMigrator.migrate(grdbStorageAdapter.pool)
+                try newUserMigrator().migrate(grdbStorageAdapter.pool)
                 didPerformIncrementalMigrations = false
             } catch {
-                owsFail("New user migrator failed: \(error.grdbErrorForLogging)")
+                owsFailDebug("New user migrator failed: \(error.grdbErrorForLogging)")
+                throw error
             }
         }
         Logger.info("Migrations complete.")
 
-        SSKPreferences.markGRDBSchemaAsLatest()
-
-        Self._areMigrationsComplete.set(true)
+        if isMainDatabase {
+            SSKPreferences.markGRDBSchemaAsLatest()
+            Self._areMigrationsComplete.set(true)
+        }
 
         return didPerformIncrementalMigrations
     }
 
-    private func runIncrementalMigrations() throws -> Bool {
+    private static func runIncrementalMigrations(
+        databaseStorage: SDSDatabaseStorage,
+        runDataMigrations: Bool
+    ) throws -> Bool {
+        let grdbStorageAdapter = databaseStorage.grdbStorage
+
         let previouslyAppliedMigrations = try grdbStorageAdapter.read { transaction in
             try DatabaseMigrator().appliedIdentifiers(transaction.database)
         }
@@ -55,17 +78,19 @@ public class GRDBSchemaMigrator: NSObject {
         registerSchemaMigrations(migrator: incrementalMigrator)
         try incrementalMigrator.migrate(grdbStorageAdapter.pool)
 
-        // Hack: Load the account state now, so it can be accessed while performing other migrations.
-        // Otherwise one of them might indirectly try to load the account state using a sneaky transaction,
-        // which won't work because migrations use a barrier block to prevent observing database state
-        // before migration.
-        try grdbStorageAdapter.read { transaction in
-            _ = self.tsAccountManager.localAddress(with: transaction.asAnyRead)
-        }
+        if runDataMigrations {
+            // Hack: Load the account state now, so it can be accessed while performing other migrations.
+            // Otherwise one of them might indirectly try to load the account state using a sneaky transaction,
+            // which won't work because migrations use a barrier block to prevent observing database state
+            // before migration.
+            try grdbStorageAdapter.read { transaction in
+                _ = self.tsAccountManager.localAddress(with: transaction.asAnyRead)
+            }
 
-        // Finally, do data migrations.
-        registerDataMigrations(migrator: incrementalMigrator)
-        try incrementalMigrator.migrate(grdbStorageAdapter.pool)
+            // Finally, do data migrations.
+            registerDataMigrations(migrator: incrementalMigrator)
+            try incrementalMigrator.migrate(grdbStorageAdapter.pool)
+        }
 
         let allAppliedMigrations = try grdbStorageAdapter.read { transaction in
             try DatabaseMigrator().appliedIdentifiers(transaction.database)
@@ -74,7 +99,7 @@ public class GRDBSchemaMigrator: NSObject {
         return allAppliedMigrations != previouslyAppliedMigrations
     }
 
-    private var hasCreatedInitialSchema: Bool {
+    private static func hasCreatedInitialSchema(grdbStorageAdapter: GRDBDatabaseStorageAdapter) -> Bool {
         let appliedMigrations = try! grdbStorageAdapter.read { transaction in
             try! DatabaseMigrator().appliedIdentifiers(transaction.database)
         }
@@ -174,6 +199,15 @@ public class GRDBSchemaMigrator: NSObject {
         case recreateStoryIncomingViewedTimestampIndex
         case addColumnsForLocalUserLeaveGroupDurableJob
         case addStoriesHiddenStateToThreadAssociatedData
+        case addUnregisteredAtTimestampToSignalRecipient
+        case addLastReceivedStoryTimestampToTSThread
+        case addStoryContextAssociatedDataTable
+        case populateStoryContextAssociatedDataTableAndRemoveOldColumns
+        case addColumnForExperienceUpgradeManifest
+        case addStoryContextAssociatedDataReadTimestampColumn
+        case addIsCompleteToContactSyncJob
+        case addSnoozeCountToExperienceUpgrade
+        case addCancelledGroupRingsTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -221,14 +255,20 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_dropSentStories
         case dataMigration_indexMultipleNameComponentsForReceipients
         case dataMigration_syncGroupStories
+        case dataMigration_deleteOldGroupCapabilities
+        case dataMigration_updateStoriesDisabledInAccountRecord
+        case dataMigration_removeGroupStoryRepliesFromSearchIndex
+        case dataMigration_populateStoryContextAssociatedDataLastReadTimestamp
+        case dataMigration_indexPrivateStoryThreadNames
+        case dataMigration_scheduleStorageServiceUpdateForSystemContacts
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 43
+    public static let grdbSchemaVersionLatest: UInt = 52
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
-    private lazy var newUserMigrator: DatabaseMigrator = {
+    private static func newUserMigrator() -> DatabaseMigrator {
         var migrator = DatabaseMigrator()
         migrator.registerMigration(MigrationId.createInitialSchema.rawValue) { db in
             Logger.info("importing latest schema")
@@ -248,7 +288,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
         return migrator
-    }()
+    }
 
     private class DatabaseMigratorWrapper {
         var migrator = DatabaseMigrator()
@@ -272,7 +312,7 @@ public class GRDBSchemaMigrator: NSObject {
         }
     }
 
-    private func registerSchemaMigrations(migrator: DatabaseMigratorWrapper) {
+    private static func registerSchemaMigrations(migrator: DatabaseMigratorWrapper) {
 
         // The migration blocks should never throw. If we introduce a crashing
         // migration, we want the crash logs reflect where it occurred.
@@ -1953,10 +1993,228 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
+        migrator.registerMigration(.addUnregisteredAtTimestampToSignalRecipient) { db in
+            do {
+                try db.alter(table: "model_SignalRecipient") { table in
+                    table.add(column: "unregisteredAtTimestamp", .integer)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addLastReceivedStoryTimestampToTSThread) { db in
+            do {
+                try db.alter(table: "model_TSThread") { table in
+                    table.add(column: "lastReceivedStoryTimestamp", .integer)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addStoryContextAssociatedDataTable) { db in
+            do {
+                try db.create(table: StoryContextAssociatedData.databaseTableName) { table in
+                    table.autoIncrementedPrimaryKey(StoryContextAssociatedData.columnName(.id))
+                        .notNull()
+                    table.column(StoryContextAssociatedData.columnName(.recordType), .integer)
+                        .notNull()
+                    table.column(StoryContextAssociatedData.columnName(.uniqueId))
+                        .notNull()
+                        .unique(onConflict: .fail)
+                    table.column(StoryContextAssociatedData.columnName(.contactUuid), .text)
+                    table.column(StoryContextAssociatedData.columnName(.groupId), .blob)
+                    table.column(StoryContextAssociatedData.columnName(.isHidden), .boolean)
+                        .notNull()
+                        .defaults(to: false)
+                    table.column(StoryContextAssociatedData.columnName(.latestUnexpiredTimestamp), .integer)
+                    table.column(StoryContextAssociatedData.columnName(.lastReceivedTimestamp), .integer)
+                    table.column(StoryContextAssociatedData.columnName(.lastViewedTimestamp), .integer)
+                }
+                try db.create(
+                    index: "index_story_context_associated_data_contact_on_contact_uuid",
+                    on: StoryContextAssociatedData.databaseTableName,
+                    columns: [StoryContextAssociatedData.columnName(.contactUuid)]
+                )
+                try db.create(
+                    index: "index_story_context_associated_data_contact_on_group_id",
+                    on: StoryContextAssociatedData.databaseTableName,
+                    columns: [StoryContextAssociatedData.columnName(.groupId)]
+                )
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.populateStoryContextAssociatedDataTableAndRemoveOldColumns) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            do {
+                // All we need to do is iterate over ThreadAssociatedData; one exists for every
+                // thread, so we can pull hidden state from the associated data and received/viewed
+                // timestamps from their threads and have a copy of everything we need.
+                try Row.fetchCursor(db, sql: """
+                    SELECT * FROM thread_associated_data
+                """).forEach { threadAssociatedDataRow in
+                    guard
+                        let hideStory = (threadAssociatedDataRow["hideStory"] as? NSNumber)?.boolValue,
+                        let threadUniqueId = threadAssociatedDataRow["threadUniqueId"] as? String
+                    else {
+                        owsFailDebug("Did not find hideStory or threadUniqueId columnds on ThreadAssociatedData table")
+                        return
+                    }
+                    let insertSQL = """
+                    INSERT INTO model_StoryContextAssociatedData (
+                        recordType,
+                        uniqueId,
+                        contactUuid,
+                        groupId,
+                        isHidden,
+                        latestUnexpiredTimestamp,
+                        lastReceivedTimestamp,
+                        lastViewedTimestamp
+                    )
+                    VALUES ('0', ?, ?, ?, ?, ?, ?, ?)
+                    """
+
+                    if
+                        let threadRow = try? Row.fetchOne(
+                            db,
+                            sql: """
+                                SELECT * FROM model_TSThread
+                                WHERE uniqueId = ?
+                            """,
+                            arguments: [threadUniqueId]
+                        )
+                    {
+                        let lastReceivedStoryTimestamp = (threadRow["lastReceivedStoryTimestamp"] as? NSNumber)?.uint64Value
+                        let latestUnexpiredTimestamp = (lastReceivedStoryTimestamp ?? 0) > Date().ows_millisecondsSince1970 - kDayInMs
+                            ? lastReceivedStoryTimestamp : nil
+                        let lastViewedStoryTimestamp = (threadRow["lastViewedStoryTimestamp"] as? NSNumber)?.uint64Value
+                        if
+                            let groupModelData = threadRow["groupModel"] as? Data,
+                            let unarchivedObject = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(groupModelData),
+                            let groupId = (unarchivedObject as? TSGroupModel)?.groupId
+                        {
+                            try db.execute(
+                                sql: insertSQL,
+                                arguments: [
+                                    UUID().uuidString,
+                                    nil,
+                                    groupId,
+                                    hideStory,
+                                    latestUnexpiredTimestamp,
+                                    lastReceivedStoryTimestamp,
+                                    lastViewedStoryTimestamp
+                                ]
+                            )
+                        } else if
+                            let contactUuidString = threadRow["contactUUID"] as? String
+                        {
+                            // Okay to ignore e164 addresses because we can't have updated story metadata
+                            // for those contact threads anyway.
+                            try db.execute(
+                                sql: insertSQL,
+                                arguments: [
+                                    UUID().uuidString,
+                                    contactUuidString,
+                                    nil,
+                                    hideStory,
+                                    latestUnexpiredTimestamp,
+                                    lastReceivedStoryTimestamp,
+                                    lastViewedStoryTimestamp
+                                ]
+                            )
+                        }
+                    } else {
+                        // If we couldn't find a thread, that means this associated data was
+                        // created for a group we don't know about yet.
+                        // Stories is in beta at the time of this migration, so we will just drop it.
+                        Logger.info("Dropping StoryContextAssociatedData migration for ThreadAssociatedData without a TSThread")
+                    }
+
+                }
+
+                // Drop the old columns since they are no longer needed.
+                try db.alter(table: "model_TSThread") { alteration in
+                    alteration.drop(column: "lastViewedStoryTimestamp")
+                    alteration.drop(column: "lastReceivedStoryTimestamp")
+                }
+                try db.alter(table: "thread_associated_data") { alteration in
+                    alteration.drop(column: "hideStory")
+                }
+
+            } catch {
+                owsFail("Error \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addColumnForExperienceUpgradeManifest) { db in
+            do {
+                try db.alter(table: "model_ExperienceUpgrade") { table in
+                    table.add(column: "manifest", .blob)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addStoryContextAssociatedDataReadTimestampColumn) { db in
+            do {
+                try db.alter(table: "model_StoryContextAssociatedData") { table in
+                    table.add(column: "lastReadTimestamp", .integer)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addIsCompleteToContactSyncJob) { db in
+            do {
+                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                    table.add(column: "isCompleteContactSync", .boolean).defaults(to: false)
+                }
+            } catch let error {
+                owsFail("Error: \(error)")
+            }
+        } // end: .addIsCompleteToContactSyncJob
+
+        migrator.registerMigration(.addSnoozeCountToExperienceUpgrade) { db in
+            do {
+                try db.alter(table: "model_ExperienceUpgrade") { (table: TableAlteration) in
+                    table.add(column: "snoozeCount", .integer)
+                        .notNull()
+                        .defaults(to: 0)
+                }
+
+                let populateSql = """
+                    UPDATE model_ExperienceUpgrade
+                    SET snoozeCount = 1
+                    WHERE lastSnoozedTimestamp > 0
+                """
+                try db.execute(sql: populateSql)
+            } catch let error {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addCancelledGroupRingsTable) { db in
+            do {
+                try db.create(table: CancelledGroupRing.databaseTableName) { table in
+                    table.column("id", .integer).primaryKey().notNull()
+                    table.column("timestamp", .integer).notNull()
+                }
+            } catch {
+                owsFail("\(error)")
+            }
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
-    private func registerDataMigrations(migrator: DatabaseMigratorWrapper) {
+    private static func registerDataMigrations(migrator: DatabaseMigratorWrapper) {
 
         // The migration blocks should never throw. If we introduce a crashing
         // migration, we want the crash logs reflect where it occurred.
@@ -2195,8 +2453,7 @@ public class GRDBSchemaMigrator: NSObject {
                         isMarkedUnread: thread.isMarkedUnreadObsolete,
                         mutedUntilTimestamp: thread.mutedUntilTimestampObsolete,
                         // this didn't exist pre-migration, just write the default
-                        audioPlaybackRate: 1,
-                        hideStory: false
+                        audioPlaybackRate: 1
                     ).insert(transaction.database)
                 } catch {
                     owsFail("Error \(error)")
@@ -2297,11 +2554,115 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
-            for thread in AnyThreadFinder().storyThreads(transaction: transaction.asAnyRead) {
+            for thread in AnyThreadFinder().storyThreads(includeImplicitGroupThreads: false, transaction: transaction.asAnyRead) {
                 guard let thread = thread as? TSGroupThread else { continue }
                 self.storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
             }
         }
+
+        migrator.registerMigration(.dataMigration_deleteOldGroupCapabilities) { db in
+            let sql = """
+                DELETE FROM \(SDSKeyValueStore.tableName)
+                WHERE \(SDSKeyValueStore.collectionColumn.columnName)
+                IN ("GroupManager.senderKeyCapability", "GroupManager.announcementOnlyGroupsCapability", "GroupManager.groupsV2MigrationCapability")
+            """
+            do {
+                try db.execute(sql: sql)
+            } catch {
+                owsFail("Error \(error)")
+            }
+        }
+
+        migrator.registerMigration(.dataMigration_updateStoriesDisabledInAccountRecord) { db in
+            storageServiceManager.recordPendingLocalAccountUpdates()
+        }
+
+        migrator.registerMigration(.dataMigration_removeGroupStoryRepliesFromSearchIndex) { db in
+            do {
+                let uniqueIdSql = """
+                    SELECT \(interactionColumn: .uniqueId)
+                    FROM \(InteractionRecord.databaseTableName)
+                    WHERE \(interactionColumn: .isGroupStoryReply) = 1
+                """
+                let uniqueIds = try String.fetchAll(db, sql: uniqueIdSql)
+
+                guard !uniqueIds.isEmpty else { return }
+
+                let indexUpdateSql = """
+                    DELETE FROM \(GRDBFullTextSearchFinder.contentTableName)
+                    WHERE \(GRDBFullTextSearchFinder.uniqueIdColumn) IN (\(uniqueIds.map { "\"\($0)\"" }.joined(separator: ", ")))
+                    AND \(GRDBFullTextSearchFinder.collectionColumn) = "\(TSInteraction.collection())"
+                """
+                try db.execute(sql: indexUpdateSql)
+            } catch {
+                owsFail("Error \(error)")
+            }
+        }
+
+        migrator.registerMigration(.dataMigration_populateStoryContextAssociatedDataLastReadTimestamp) { db in
+            do {
+                let sql = """
+                    UPDATE model_StoryContextAssociatedData
+                    SET lastReadTimestamp = lastViewedTimestamp
+                """
+                try db.execute(sql: sql)
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.dataMigration_indexPrivateStoryThreadNames) { db in
+            do {
+                let transaction = GRDBWriteTransaction(database: db)
+                defer { transaction.finalizeTransaction() }
+
+                let sql = "SELECT * FROM model_TSThread WHERE recordType IS \(SDSRecordType.privateStoryThread.rawValue)"
+                let cursor = TSThread.grdbFetchCursor(sql: sql, transaction: transaction)
+                while let thread = try cursor.next() {
+                    guard let storyThread = thread as? TSPrivateStoryThread else {
+                        continue
+                    }
+                    GRDBFullTextSearchFinder.modelWasInserted(model: storyThread, transaction: transaction)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.dataMigration_scheduleStorageServiceUpdateForSystemContacts) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            // We've added fields on the StorageService ContactRecord proto for
+            // their "system name", or the name of their associated system
+            // contact, if present. Consequently, for all Signal contacts with
+            // a system contact, we should schedule a StorageService update.
+            //
+            // We only want to do this if we are the primary device, since only
+            // the primary device's system contacts are synced.
+
+            guard tsAccountManager.isPrimaryDevice else {
+                return
+            }
+
+            var accountsToRemove: Set<SignalAccount> = []
+
+            SignalAccount.anyEnumerate(transaction: transaction.asAnyRead) { account, _ in
+                guard
+                    let contact = account.contact,
+                    contact.isFromLocalAddressBook
+                else {
+                    // Skip any accounts that do not have a system contact
+                    return
+                }
+
+                accountsToRemove.insert(account)
+            }
+
+            storageServiceManager.recordPendingUpdates(updatedAddresses: accountsToRemove.map { $0.recipientAddress })
+        }
+
+        // MARK: - Data Migration Insertion Point
     }
 }
 

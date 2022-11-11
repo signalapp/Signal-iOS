@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "DebugUIMisc.h"
@@ -36,21 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
 
-    [items addObject:[OWSTableItem itemWithTitle:@"Enable Manual Censorship Circumvention"
-                                     actionBlock:^{
-                                         [DebugUIMisc setManualCensorshipCircumventionEnabled:YES];
-                                     }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Disable Manual Censorship Circumvention"
-                                     actionBlock:^{
-                                         [DebugUIMisc setManualCensorshipCircumventionEnabled:NO];
-                                     }]];
-    [items addObject:[OWSTableItem
-                         itemWithTitle:@"Clear experience upgrades (works once per launch)"
-                           actionBlock:^{
-                               DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
-                                   [ExperienceUpgrade anyRemoveAllWithoutInstantationWithTransaction:transaction];
-                               });
-                           }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Clear hasDismissedOffers"
                                      actionBlock:^{
                                          [DebugUIMisc clearHasDismissedOffers];
@@ -280,31 +266,6 @@ NS_ASSUME_NONNULL_BEGIN
     [Environment.shared.preferences unsetRecordedAPNSTokens];
 
     [SignalApp.shared showOnboardingView:[OnboardingController new]];
-}
-
-+ (void)setManualCensorshipCircumventionEnabled:(BOOL)isEnabled
-{
-    OWSCountryMetadata *countryMetadata = nil;
-    NSString *countryCode = self.signalService.manualCensorshipCircumventionCountryCode;
-    if (countryCode) {
-        countryMetadata = [OWSCountryMetadata countryMetadataForCountryCode:countryCode];
-    }
-
-    if (!countryMetadata) {
-        countryCode = [PhoneNumber defaultCountryCode];
-        if (countryCode) {
-            countryMetadata = [OWSCountryMetadata countryMetadataForCountryCode:countryCode];
-        }
-    }
-
-    if (!countryMetadata) {
-        countryCode = @"US";
-        countryMetadata = [OWSCountryMetadata countryMetadataForCountryCode:countryCode];
-    }
-
-    OWSAssertDebug(countryMetadata);
-    self.signalService.manualCensorshipCircumventionCountryCode = countryCode;
-    self.signalService.isCensorshipCircumventionManuallyActivated = isEnabled;
 }
 
 + (void)clearHasDismissedOffers
@@ -602,10 +563,8 @@ NS_ASSUME_NONNULL_BEGIN
                              OWSAssert(OWSIsTestableBuild() && Platform.isSimulator);
 
                              // Note: These static strings go hand-in-hand with Scripts/sqlclient.py
-                             NSDictionary *payload = @ {
-                                 @"dbPath" : SDSDatabaseStorage.grdbDatabaseFileUrl.path,
-                                 @"key" : [GRDBDatabaseStorageAdapter.debugOnly_keyData hexadecimalString]
-                             };
+                             NSDictionary *payload =
+                                 @ { @"key" : [GRDBDatabaseStorageAdapter.debugOnly_keyData hexadecimalString] };
                              NSData *payloadData = [NSJSONSerialization dataWithJSONObject:payload
                                                                                    options:NSJSONWritingPrettyPrinted
                                                                                      error:nil];

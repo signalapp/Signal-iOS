@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -642,6 +643,23 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
             // We should have three threads.
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
+        }
+    }
+
+    func testUnregisteredTimestamps() {
+        let address = CommonGenerator.address()
+
+        write {
+            let registeredRecipient = SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: $0)
+            XCTAssertNil(registeredRecipient.unregisteredAtTimestamp)
+
+            SignalRecipient.mark(asUnregistered: address, transaction: $0)
+
+            let unregisteredRecipient = AnySignalRecipientFinder().signalRecipient(for: address, transaction: $0)
+            XCTAssert(unregisteredRecipient!.unregisteredAtTimestamp!.uint64Value > 0)
+
+            let reregisteredRecipient = SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: $0)
+            XCTAssertNil(reregisteredRecipient.unregisteredAtTimestamp)
         }
     }
 }

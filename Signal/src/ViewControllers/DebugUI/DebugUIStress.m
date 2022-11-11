@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "DebugUIStress.h"
@@ -307,7 +308,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     [SSKProtoSyncMessage builder];
                                                 SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                     [SSKProtoSyncMessageSent builder];
-                                                sentBuilder.destinationE164 = @"abc";
+                                                sentBuilder.destinationUuid = @"abc";
                                                 sentBuilder.timestamp = arc4random_uniform(32) + 1;
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 sentBuilder.message = [dataBuilder buildIgnoringErrors];
@@ -329,7 +330,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     [SSKProtoSyncMessage builder];
                                                 SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                     [SSKProtoSyncMessageSent builder];
-                                                sentBuilder.destinationE164 = @"abc";
+                                                sentBuilder.destinationUuid = @"abc";
                                                 sentBuilder.timestamp = 0;
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 sentBuilder.message = [dataBuilder buildIgnoringErrors];
@@ -351,7 +352,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     [SSKProtoSyncMessage builder];
                                                 SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                     [SSKProtoSyncMessageSent builder];
-                                                sentBuilder.destinationE164 = @"abc";
+                                                sentBuilder.destinationUuid = @"abc";
                                                 sentBuilder.timestamp = 0;
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 dataBuilder.body = @" ";
@@ -374,7 +375,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     [SSKProtoSyncMessage builder];
                                                 SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                     [SSKProtoSyncMessageSent builder];
-                                                sentBuilder.destinationE164 = @"abc";
+                                                sentBuilder.destinationUuid = @"abc";
                                                 sentBuilder.timestamp = 0;
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 dataBuilder.body = @" ";
@@ -401,7 +402,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     [SSKProtoSyncMessage builder];
                                                 SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                     [SSKProtoSyncMessageSent builder];
-                                                sentBuilder.destinationE164 = @"abc";
+                                                sentBuilder.destinationUuid = @"abc";
                                                 sentBuilder.timestamp = 0;
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 dataBuilder.body = @" ";
@@ -426,7 +427,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                             [SSKProtoSyncMessage builder];
                                                                         SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                                             [SSKProtoSyncMessageSent builder];
-                                                                        sentBuilder.destinationE164 = @"abc";
+                                                                        sentBuilder.destinationUuid = @"abc";
                                                                         syncMessageBuilder.sent =
                                                                             [sentBuilder buildIgnoringErrors];
                                                                         contentBuilder.syncMessage =
@@ -438,10 +439,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
-        [items addObject:[OWSTableItem itemWithTitle:@"Clone as v1/v2 group"
-                                         actionBlock:^{
-            [DebugUIStress cloneAsV1orV2Group:groupThread];
-        }]];
         [items addObject:[OWSTableItem itemWithTitle:@"Clone as v1 group"
                                          actionBlock:^{
             [DebugUIStress cloneAsV1Group:groupThread];
@@ -522,7 +519,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (shouldSendDurably) {
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
+            [self.sskJobQueues.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
         });
     } else {
         [self.messageSender sendMessage:message.asPreparer

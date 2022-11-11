@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -100,14 +101,6 @@ public extension NSObject {
 
     static var messageSender: MessageSender {
         SSKEnvironment.shared.messageSenderRef
-    }
-
-    final var messageSenderJobQueue: MessageSenderJobQueue {
-        SSKEnvironment.shared.messageSenderJobQueueRef
-    }
-
-    static var messageSenderJobQueue: MessageSenderJobQueue {
-        SSKEnvironment.shared.messageSenderJobQueueRef
     }
 
     final var messagePipelineSupervisor: MessagePipelineSupervisor {
@@ -354,14 +347,6 @@ public extension NSObject {
         .shared()
     }
 
-    final var bulkUUIDLookup: BulkUUIDLookup {
-        SSKEnvironment.shared.bulkUUIDLookupRef
-    }
-
-    static var bulkUUIDLookup: BulkUUIDLookup {
-        SSKEnvironment.shared.bulkUUIDLookupRef
-    }
-
     final var outgoingReceiptManager: OWSOutgoingReceiptManager {
         SSKEnvironment.shared.outgoingReceiptManagerRef
     }
@@ -509,6 +494,14 @@ public extension NSObject {
     static var systemStoryManager: SystemStoryManagerProtocol {
         SSKEnvironment.shared.systemStoryManagerRef as! SystemStoryManagerProtocol
     }
+
+    var sskJobQueues: SSKJobQueues {
+        SSKEnvironment.shared.sskJobQueuesRef
+    }
+
+    static var sskJobQueues: SSKJobQueues {
+        SSKEnvironment.shared.sskJobQueuesRef
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -601,14 +594,6 @@ public extension Dependencies {
 
     static var messageSender: MessageSender {
         SSKEnvironment.shared.messageSenderRef
-    }
-
-    var messageSenderJobQueue: MessageSenderJobQueue {
-        SSKEnvironment.shared.messageSenderJobQueueRef
-    }
-
-    static var messageSenderJobQueue: MessageSenderJobQueue {
-        SSKEnvironment.shared.messageSenderJobQueueRef
     }
 
     var messagePipelineSupervisor: MessagePipelineSupervisor {
@@ -853,14 +838,6 @@ public extension Dependencies {
         .shared()
     }
 
-    var bulkUUIDLookup: BulkUUIDLookup {
-        SSKEnvironment.shared.bulkUUIDLookupRef
-    }
-
-    static var bulkUUIDLookup: BulkUUIDLookup {
-        SSKEnvironment.shared.bulkUUIDLookupRef
-    }
-
     var outgoingReceiptManager: OWSOutgoingReceiptManager {
         SSKEnvironment.shared.outgoingReceiptManagerRef
     }
@@ -1005,6 +982,14 @@ public extension Dependencies {
 
     static var systemStoryManager: SystemStoryManagerProtocol {
         SSKEnvironment.shared.systemStoryManagerRef as! SystemStoryManagerProtocol
+    }
+
+    var sskJobQueues: SSKJobQueues {
+        SSKEnvironment.shared.sskJobQueuesRef
+    }
+
+    static var sskJobQueues: SSKJobQueues {
+        SSKEnvironment.shared.sskJobQueuesRef
     }
 }
 

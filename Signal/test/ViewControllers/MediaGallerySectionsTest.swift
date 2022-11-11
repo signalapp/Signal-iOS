@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -46,6 +47,12 @@ private extension MediaGallerySections {
 // MARK: -
 
 private struct FakeItem: MediaGallerySectionItem, Equatable {
+    private static var _nextRowID = Int64(0)
+    private static func allocateRowID() -> Int64 {
+        defer { _nextRowID += 1 }
+        return _nextRowID
+    }
+    var rowid: Int64
     var uniqueId: String
     var timestamp: Date
 
@@ -55,6 +62,7 @@ private struct FakeItem: MediaGallerySectionItem, Equatable {
     ///
     /// The item's unique ID will be randomly generated.
     init(_ compressedDate: UInt32) {
+        self.rowid = FakeItem.allocateRowID()
         self.uniqueId = UUID().uuidString
         self.timestamp = Date(compressedDate: compressedDate)
     }
@@ -62,6 +70,17 @@ private struct FakeItem: MediaGallerySectionItem, Equatable {
 
 /// Takes the place of the database for MediaGallerySection tests.
 private final class FakeGalleryStore: MediaGallerySectionLoader {
+    func rowIdsOfItemsInSection(for date: GalleryDate,
+                                offset: Int,
+                                ascending: Bool,
+                                transaction: SignalServiceKit.SDSAnyReadTransaction) -> [Int64] {
+        guard let items = itemsBySection[date] else {
+            return []
+        }
+        let sortedItems = ascending ? items : items.reversed()
+        return sortedItems[offset...].map { $0.rowid }
+    }
+
     typealias Item = FakeItem
     typealias EnumerationCompletion = MediaGalleryFinder.EnumerationCompletion
 
@@ -81,7 +100,7 @@ private final class FakeGalleryStore: MediaGallerySectionLoader {
         return Self(self.allItems)
     }
 
-    func numberOfItemsInSection(for date: GalleryDate, transaction: SDSAnyReadTransaction) -> Int {
+    private func numberOfItemsInSection(for date: GalleryDate) -> Int {
         itemsBySection[date]?.count ?? 0
     }
 
@@ -101,22 +120,22 @@ private final class FakeGalleryStore: MediaGallerySectionLoader {
     func enumerateTimestamps(before date: Date,
                              count: Int,
                              transaction: SDSAnyReadTransaction,
-                             block: (Date) -> Void) -> EnumerationCompletion {
+                             block: (Date, Int64) -> Void) -> EnumerationCompletion {
         // It would be more efficient to binary search here, but this is for testing.
         let itemsInRange = allItems.reversed().drop { $0.timestamp >= date }
         return Self.enumerate(itemsInRange, count: count) {
-            block($0.timestamp)
+            block($0.timestamp, $0.rowid)
         }
     }
 
     func enumerateTimestamps(after date: Date,
                              count: Int,
                              transaction: SDSAnyReadTransaction,
-                             block: (Date) -> Void) -> EnumerationCompletion {
+                             block: (Date, Int64) -> Void) -> EnumerationCompletion {
         // It would be more efficient to binary search here, but this is for testing.
         let itemsInRange = allItems.drop { $0.timestamp < date }
         return Self.enumerate(itemsInRange, count: count) {
-            block($0.timestamp)
+            block($0.timestamp, $0.rowid)
         }
     }
 
@@ -137,18 +156,18 @@ private final class FakeGalleryStore: MediaGallerySectionLoader {
 
 /// A store initialized with items in Jan, Apr, and Sep 2021.
 private let standardFakeStore: FakeGalleryStore = FakeGalleryStore([
-    2021_01_01,
-    2021_01_02,
-    2021_01_20,
+    2021_01_01,  // rowid 0
+    2021_01_02,  // rowid 1
+    2021_01_20,  // rowid 2
 
-    2021_04_01,
-    2021_04_13,
+    2021_04_01,  // rowid 3
+    2021_04_13,  // rowid 4
 
-    2021_09_09,
-    2021_09_09,
-    2021_09_09,
-    2021_09_30,
-    2021_09_30
+    2021_09_09,  // rowid 5
+    2021_09_09,  // rowid 6
+    2021_09_09,  // rowid 7
+    2021_09_30,  // rowid 8
+    2021_09_30  // rowid 9
 ].map { FakeItem($0) })
 
 // Before we test the actual MediaGallerySections, make sure our fake store is behaving as expected.
@@ -168,10 +187,10 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
         let store = standardFakeStore
 
         databaseStorage.read { transaction in
-            XCTAssertEqual(3, store.numberOfItemsInSection(for: GalleryDate(2021_01_01), transaction: transaction))
-            XCTAssertEqual(0, store.numberOfItemsInSection(for: GalleryDate(2021_02_01), transaction: transaction))
-            XCTAssertEqual(2, store.numberOfItemsInSection(for: GalleryDate(2021_04_01), transaction: transaction))
-            XCTAssertEqual(5, store.numberOfItemsInSection(for: GalleryDate(2021_09_01), transaction: transaction))
+            XCTAssertEqual(3, store.rowIdsOfItemsInSection(for: GalleryDate(2021_01_01), offset: 0, ascending: true, transaction: transaction).count)
+            XCTAssertEqual(0, store.rowIdsOfItemsInSection(for: GalleryDate(2021_02_01), offset: 0, ascending: true, transaction: transaction).count)
+            XCTAssertEqual(2, store.rowIdsOfItemsInSection(for: GalleryDate(2021_04_01), offset: 0, ascending: true, transaction: transaction).count)
+            XCTAssertEqual(5, store.rowIdsOfItemsInSection(for: GalleryDate(2021_09_01), offset: 0, ascending: true, transaction: transaction).count)
         }
     }
 
@@ -181,22 +200,22 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
         databaseStorage.read { transaction in
             var results: [Date] = []
             XCTAssertEqual(.finished,
-                           store.enumerateTimestamps(after: .distantPast, count: 4, transaction: transaction) {
-                results.append($0)
+                           store.enumerateTimestamps(after: .distantPast, count: 4, transaction: transaction) { item, _ in
+                results.append(item)
             })
             XCTAssertEqual(results, store.allItems.prefix(4).map { $0.timestamp })
 
             results.removeAll()
             XCTAssertEqual(.finished,
-                           store.enumerateTimestamps(after: .distantPast, count: 10, transaction: transaction) {
-                results.append($0)
+                           store.enumerateTimestamps(after: .distantPast, count: 10, transaction: transaction) { item, _ in
+                results.append(item)
             })
             XCTAssertEqual(results, store.allItems.map { $0.timestamp })
 
             results.removeAll()
             XCTAssertEqual(.reachedEnd,
-                           store.enumerateTimestamps(after: .distantPast, count: 11, transaction: transaction) {
-                results.append($0)
+                           store.enumerateTimestamps(after: .distantPast, count: 11, transaction: transaction) { item, _ in
+                results.append(item)
             })
             XCTAssertEqual(results, store.allItems.map { $0.timestamp })
 
@@ -204,8 +223,8 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
             XCTAssertEqual(.finished,
                            store.enumerateTimestamps(after: Date(compressedDate: 2021_04_01),
                                                      count: 3,
-                                                     transaction: transaction) {
-                results.append($0)
+                                                     transaction: transaction) { item, _ in
+                results.append(item)
             })
             XCTAssertEqual(results, store.allItems[3..<6].map { $0.timestamp })
 
@@ -213,8 +232,8 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
             XCTAssertEqual(.reachedEnd,
                            store.enumerateTimestamps(after: Date(compressedDate: 2021_04_01),
                                                      count: 17,
-                                                     transaction: transaction) {
-                results.append($0)
+                                                     transaction: transaction) { item, _ in
+                results.append(item)
             })
             XCTAssertEqual(results, store.allItems[3...].map { $0.timestamp })
 
@@ -222,8 +241,8 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
             XCTAssertEqual(.reachedEnd,
                            store.enumerateTimestamps(after: Date(compressedDate: 2022_04_01),
                                                      count: 17,
-                                                     transaction: transaction) {
-                results.append($0)
+                                                     transaction: transaction) { item, _ in
+                results.append(item)
             })
             XCTAssertEqual(results, [])
 
@@ -231,8 +250,8 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
             XCTAssertEqual(.finished,
                            store.enumerateTimestamps(after: Date(compressedDate: 2022_04_01),
                                                      count: 0,
-                                                     transaction: transaction) {
-                results.append($0)
+                                                     transaction: transaction) { item, _ in
+                results.append(item)
             })
             XCTAssertEqual(results, [])
         }
@@ -244,22 +263,22 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
         databaseStorage.read { transaction in
             var results: [Date] = []
             XCTAssertEqual(.finished,
-                           store.enumerateTimestamps(before: .distantFuture, count: 4, transaction: transaction) {
-                results.append($0)
+                           store.enumerateTimestamps(before: .distantFuture, count: 4, transaction: transaction) { item, _ in
+                results.append(item)
             })
             XCTAssertEqual(results, store.allItems.reversed().prefix(4).map { $0.timestamp })
 
             results.removeAll()
             XCTAssertEqual(.finished,
-                           store.enumerateTimestamps(before: .distantFuture, count: 10, transaction: transaction) {
-                results.append($0)
+                           store.enumerateTimestamps(before: .distantFuture, count: 10, transaction: transaction) { item, _ in
+                results.append(item)
             })
             XCTAssertEqual(results, store.allItems.reversed().map { $0.timestamp })
 
             results.removeAll()
             XCTAssertEqual(.reachedEnd,
-                           store.enumerateTimestamps(before: .distantFuture, count: 11, transaction: transaction) {
-                results.append($0)
+                           store.enumerateTimestamps(before: .distantFuture, count: 11, transaction: transaction) { item, _ in
+                results.append(item)
             })
             XCTAssertEqual(results, store.allItems.reversed().map { $0.timestamp })
 
@@ -267,8 +286,8 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
             XCTAssertEqual(.finished,
                            store.enumerateTimestamps(before: Date(compressedDate: 2021_04_01),
                                                      count: 2,
-                                                     transaction: transaction) {
-                results.append($0)
+                                                     transaction: transaction) { item, _ in
+                results.append(item)
             })
             XCTAssertEqual(results, store.allItems[1..<3].reversed().map { $0.timestamp })
 
@@ -276,8 +295,8 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
             XCTAssertEqual(.reachedEnd,
                            store.enumerateTimestamps(before: Date(compressedDate: 2021_04_01),
                                                      count: 17,
-                                                     transaction: transaction) {
-                results.append($0)
+                                                     transaction: transaction) { item, _ in
+                results.append(item)
             })
             XCTAssertEqual(results, store.allItems[..<3].reversed().map { $0.timestamp })
 
@@ -285,8 +304,8 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
             XCTAssertEqual(.reachedEnd,
                            store.enumerateTimestamps(before: Date(compressedDate: 2020_01_01),
                                                      count: 17,
-                                                     transaction: transaction) {
-                results.append($0)
+                                                     transaction: transaction) { item, _ in
+                results.append(item)
             })
             XCTAssertEqual(results, [])
         }
@@ -432,12 +451,12 @@ class MediaGallerySectionsTest: SignalBaseTest {
             XCTAssertNil(sections.resolveNaiveStartIndex(-3, relativeToSection: 1))
 
             // Load January
-            XCTAssertEqual(IndexPath(item: 2, section: 0),
-                           sections.resolveNaiveStartIndex(-3, relativeToSection: 1) { sections in
-                XCTAssertEqual(1, sections.loadEarlierSections(batchSize: 1, transaction: transaction))
-                XCTAssertFalse(sections.hasFetchedOldest)
-                return 1
-            })
+            do {
+                let actual = sections.resolveNaiveStartIndex(-3, relativeToSection: 1, batchSize: 1, transaction: transaction)
+                XCTAssertEqual(IndexPath(item: 2, section: 0), actual.path)
+                XCTAssertEqual(1, actual.numberOfSectionsLoaded)
+            }
+            XCTAssertFalse(sections.hasFetchedOldest)
 
             XCTAssertEqual(IndexPath(item: 2, section: 0),
                            sections.resolveNaiveStartIndex(-3, relativeToSection: 2))
@@ -446,12 +465,13 @@ class MediaGallerySectionsTest: SignalBaseTest {
             XCTAssertNil(sections.resolveNaiveStartIndex(-6, relativeToSection: 2))
 
             // Find out that January was the earliest section.
-            XCTAssertEqual(IndexPath(item: 0, section: 0),
-                           sections.resolveNaiveStartIndex(-6, relativeToSection: 2) { sections in
-                XCTAssertEqual(0, sections.loadEarlierSections(batchSize: 1, transaction: transaction))
-                XCTAssertTrue(sections.hasFetchedOldest)
-                return 0
-            })
+            do {
+                let actual = sections.resolveNaiveStartIndex(-6, relativeToSection: 2, batchSize: 1, transaction: transaction)
+                XCTAssertEqual(IndexPath(item: 0, section: 0), actual.0)
+                XCTAssertEqual(0, actual.1)
+            }
+
+            XCTAssertTrue(sections.hasFetchedOldest)
 
             XCTAssertEqual(IndexPath(item: 0, section: 0),
                            sections.resolveNaiveStartIndex(-6, relativeToSection: 2))
@@ -518,28 +538,30 @@ class MediaGallerySectionsTest: SignalBaseTest {
             XCTAssertEqual(2, sections.loadEarlierSections(batchSize: 6, transaction: transaction))
             XCTAssertFalse(sections.hasFetchedOldest)
             XCTAssertEqual(2, sections.itemsBySection.count)
+            XCTAssertEqual([3, 4], sections.itemsBySection[0].value.map { $0.rowid })
+            XCTAssertEqual([5, 6, 7, 8, 9], sections.itemsBySection[1].value.map { $0.rowid })
         }
 
         XCTAssert(sections.ensureItemsLoaded(in: 1..<3, relativeToSection: 1).isEmpty)
         XCTAssertEqual(2, sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[1].value)
-        XCTAssertEqual([nil, nil], sections.itemsBySection[0].value)
+        XCTAssertEqual([nil, store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([nil, nil], sections.itemsBySection[0].value.map { $0.item })
 
         XCTAssert(sections.ensureItemsLoaded(in: 5..<5, relativeToSection: 1).isEmpty)
         XCTAssertEqual(2, sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[1].value)
-        XCTAssertEqual([nil, nil], sections.itemsBySection[0].value)
+        XCTAssertEqual([nil, store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([nil, nil], sections.itemsBySection[0].value.map { $0.item })
 
         XCTAssert(sections.ensureItemsLoaded(in: (-2)..<3, relativeToSection: 1).isEmpty)
         XCTAssertEqual(2, sections.itemsBySection.count)
-        XCTAssertEqual([store.allItems[5], store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[1].value)
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[0].value)
+        XCTAssertEqual([store.allItems[5], store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[0].value.map { $0.item })
 
         XCTAssertEqual(IndexSet(integer: 0), sections.ensureItemsLoaded(in: (-4)..<0, relativeToSection: 1))
         XCTAssertEqual(3, sections.itemsBySection.count)
-        XCTAssertEqual([store.allItems[5], store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[2].value)
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value)
+        XCTAssertEqual([store.allItems[5], store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[2].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testLoadingFromEndInBigJump() {
@@ -554,13 +576,13 @@ class MediaGallerySectionsTest: SignalBaseTest {
 
         XCTAssert(sections.ensureItemsLoaded(in: 1..<3, relativeToSection: 0).isEmpty)
         XCTAssertEqual(1, sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[0].value)
+        XCTAssertEqual([nil, store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[0].value.map { $0.item })
 
         XCTAssertEqual(IndexSet(integersIn: 0...1), sections.ensureItemsLoaded(in: (-4)..<0, relativeToSection: 0))
         XCTAssertEqual(3, sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[2].value)
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value)
+        XCTAssertEqual([nil, store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[2].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testLoadingFromStart() {
@@ -575,24 +597,24 @@ class MediaGallerySectionsTest: SignalBaseTest {
 
         XCTAssert(sections.ensureItemsLoaded(in: 1..<3, relativeToSection: 0).isEmpty)
         XCTAssertEqual(2, sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value)
-        XCTAssertEqual([nil, nil], sections.itemsBySection[1].value)
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, nil], sections.itemsBySection[1].value.map { $0.item })
 
         XCTAssert(sections.ensureItemsLoaded(in: 0..<0, relativeToSection: 0).isEmpty)
         XCTAssertEqual(2, sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value)
-        XCTAssertEqual([nil, nil], sections.itemsBySection[1].value)
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, nil], sections.itemsBySection[1].value.map { $0.item })
 
         XCTAssert(sections.ensureItemsLoaded(in: 3..<4, relativeToSection: 0).isEmpty)
         XCTAssertEqual(2, sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value)
-        XCTAssertEqual([store.allItems[3], nil], sections.itemsBySection[1].value)
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], nil], sections.itemsBySection[1].value.map { $0.item })
 
         XCTAssertEqual(IndexSet(integer: 2), sections.ensureItemsLoaded(in: 3..<7, relativeToSection: 0))
         XCTAssertEqual(3, sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value)
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value)
-        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], sections.itemsBySection[2].value)
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], sections.itemsBySection[2].value.map { $0.item })
     }
 
     func testLoadingFromStartInBigJump() {
@@ -607,17 +629,17 @@ class MediaGallerySectionsTest: SignalBaseTest {
 
         XCTAssert(sections.ensureItemsLoaded(in: 1..<3, relativeToSection: 0).isEmpty)
         XCTAssertEqual(1, sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value)
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
 
         XCTAssert(sections.ensureItemsLoaded(in: 0..<0, relativeToSection: 0).isEmpty)
         XCTAssertEqual(1, sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value)
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
 
         XCTAssertEqual(IndexSet(integersIn: 1...2), sections.ensureItemsLoaded(in: 3..<7, relativeToSection: 0))
         XCTAssertEqual(3, sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value)
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value)
-        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], sections.itemsBySection[2].value)
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], sections.itemsBySection[2].value.map { $0.item })
     }
 
     func testLoadingFromMiddle() {
@@ -630,14 +652,14 @@ class MediaGallerySectionsTest: SignalBaseTest {
 
         XCTAssert(sections.ensureItemsLoaded(in: 1..<2, relativeToSection: 0).isEmpty)
         XCTAssertEqual(1, sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[4]], sections.itemsBySection[0].value)
+        XCTAssertEqual([nil, store.allItems[4]], sections.itemsBySection[0].value.map { $0.item })
 
         XCTAssertEqual(IndexSet([0, 2]), sections.ensureItemsLoaded(in: (-2)..<5, relativeToSection: 0))
         XCTAssertEqual(3, sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value)
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value)
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value.map { $0.item })
         XCTAssertEqual([store.allItems[5], store.allItems[6], store.allItems[7], nil, nil],
-                       sections.itemsBySection[2].value)
+                       sections.itemsBySection[2].value.map { $0.item })
     }
 
     func testReloadSection() {
@@ -652,16 +674,16 @@ class MediaGallerySectionsTest: SignalBaseTest {
 
         XCTAssertEqual(IndexSet(integersIn: 1...2), sections.ensureItemsLoaded(in: 3..<7, relativeToSection: 0))
         XCTAssertEqual(3, sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value)
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value)
-        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], sections.itemsBySection[2].value)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], sections.itemsBySection[2].value.map { $0.item })
 
         databaseStorage.read { transaction in
             XCTAssertEqual(2, sections.reloadSection(for: GalleryDate(2021_04_01), transaction: transaction))
             XCTAssertEqual(3, sections.itemsBySection.count)
-            XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value)
-            XCTAssertEqual([nil, nil], sections.itemsBySection[1].value)
-            XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], sections.itemsBySection[2].value)
+            XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
+            XCTAssertEqual([nil, nil], sections.itemsBySection[1].value.map { $0.item })
+            XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], sections.itemsBySection[2].value.map { $0.item })
         }
     }
 
@@ -685,14 +707,14 @@ class MediaGallerySectionsTest: SignalBaseTest {
         databaseStorage.read { transaction in
             XCTAssertEqual(0, sections.reloadSection(for: GalleryDate(2021_01_01), transaction: transaction))
             XCTAssertEqual(0, sections.reloadSection(for: GalleryDate(2021_09_01), transaction: transaction))
-            XCTAssertEqual([], sections.itemsBySection[0].value)
-            XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value)
-            XCTAssertEqual([], sections.itemsBySection[2].value)
+            XCTAssertEqual([], sections.itemsBySection[0].value.map { $0.item })
+            XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value.map { $0.item })
+            XCTAssertEqual([], sections.itemsBySection[2].value.map { $0.item })
 
             sections.removeEmptySections(atIndexes: IndexSet([0, 2]))
             XCTAssertEqual(1, sections.itemsBySection.count)
             XCTAssertEqual([GalleryDate(2021_04_01)], sections.itemsBySection.orderedKeys)
-            XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[0].value)
+            XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[0].value.map { $0.item })
         }
     }
 
@@ -725,7 +747,7 @@ class MediaGallerySectionsTest: SignalBaseTest {
         XCTAssertFalse(sections.hasFetchedOldest)
         XCTAssertFalse(sections.hasFetchedMostRecent)
         XCTAssertEqual(1, sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testResetTwoSections() {
@@ -740,8 +762,8 @@ class MediaGallerySectionsTest: SignalBaseTest {
 
         XCTAssertEqual(IndexSet(integer: 1), sections.ensureItemsLoaded(in: 3..<4, relativeToSection: 0))
         XCTAssertEqual(2, sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value)
-        XCTAssertEqual([store.allItems[3], nil], sections.itemsBySection[1].value)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], nil], sections.itemsBySection[1].value.map { $0.item })
 
         databaseStorage.read { transaction in
             sections.reset(transaction: transaction)
@@ -750,8 +772,8 @@ class MediaGallerySectionsTest: SignalBaseTest {
         XCTAssertFalse(sections.hasFetchedOldest)
         XCTAssertFalse(sections.hasFetchedMostRecent)
         XCTAssertEqual(2, sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value)
-        XCTAssertEqual([nil, nil], sections.itemsBySection[1].value)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, nil], sections.itemsBySection[1].value.map { $0.item })
     }
 
     func testResetFull() {
@@ -768,9 +790,9 @@ class MediaGallerySectionsTest: SignalBaseTest {
         XCTAssertTrue(sections.hasFetchedOldest)
         XCTAssertFalse(sections.hasFetchedMostRecent)
         XCTAssertEqual(3, sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, store.allItems[2]], sections.itemsBySection[0].value)
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value)
-        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], sections.itemsBySection[2].value)
+        XCTAssertEqual([nil, nil, store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], sections.itemsBySection[2].value.map { $0.item })
 
         databaseStorage.read { transaction in
             sections.reset(transaction: transaction)
@@ -779,9 +801,9 @@ class MediaGallerySectionsTest: SignalBaseTest {
         XCTAssertFalse(sections.hasFetchedOldest)
         XCTAssertFalse(sections.hasFetchedMostRecent)
         XCTAssertEqual(3, sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value)
-        XCTAssertEqual([nil, nil], sections.itemsBySection[1].value)
-        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[2].value)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, nil], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[2].value.map { $0.item })
     }
 
     func testResetOneSectionAfterDeletingStart() {
@@ -805,7 +827,7 @@ class MediaGallerySectionsTest: SignalBaseTest {
         XCTAssertTrue(sections.hasFetchedMostRecent)
         XCTAssertEqual(1, sections.itemsBySection.count)
         XCTAssertEqual([GalleryDate(2021_09_01)], sections.itemsBySection.orderedKeys)
-        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[0].value)
+        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testResetTwoSectionsAfterDeletingStart() {
@@ -832,7 +854,7 @@ class MediaGallerySectionsTest: SignalBaseTest {
         XCTAssertTrue(sections.hasFetchedMostRecent)
         XCTAssertEqual(1, sections.itemsBySection.count)
         XCTAssertEqual([GalleryDate(2021_09_01)], sections.itemsBySection.orderedKeys)
-        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[0].value)
+        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testResetTwoSectionsAfterDeletingEndWithAnotherSectionFollowing() {
@@ -858,8 +880,8 @@ class MediaGallerySectionsTest: SignalBaseTest {
         XCTAssertFalse(sections.hasFetchedOldest)
         XCTAssertFalse(sections.hasFetchedMostRecent)
         XCTAssertEqual(2, sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value)
-        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[1].value)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[1].value.map { $0.item })
     }
 
     func testResetTwoSectionsAfterDeletingEndWithNothingFollowing() {
@@ -882,7 +904,7 @@ class MediaGallerySectionsTest: SignalBaseTest {
         XCTAssertTrue(sections.hasFetchedMostRecent)
         XCTAssertEqual(1, sections.itemsBySection.count)
         XCTAssertEqual([GalleryDate(2021_04_01)], sections.itemsBySection.orderedKeys)
-        XCTAssertEqual([nil, nil], sections.itemsBySection[0].value)
+        XCTAssertEqual([nil, nil], sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testResetFullAfterDeletingStart() {
@@ -910,8 +932,8 @@ class MediaGallerySectionsTest: SignalBaseTest {
         XCTAssertFalse(sections.hasFetchedOldest)
         XCTAssertTrue(sections.hasFetchedMostRecent)
         XCTAssertEqual(2, sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil], sections.itemsBySection[0].value)
-        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[1].value)
+        XCTAssertEqual([nil, nil], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[1].value.map { $0.item })
     }
 
     func testResetFullAfterDeletingMiddle() {
@@ -939,8 +961,8 @@ class MediaGallerySectionsTest: SignalBaseTest {
         XCTAssertFalse(sections.hasFetchedOldest)
         XCTAssertTrue(sections.hasFetchedMostRecent)
         XCTAssertEqual(2, sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value)
-        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[1].value)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[1].value.map { $0.item })
     }
 
     func testResetFullAfterDeletingEnd() {
@@ -968,8 +990,8 @@ class MediaGallerySectionsTest: SignalBaseTest {
         XCTAssertFalse(sections.hasFetchedOldest)
         XCTAssertTrue(sections.hasFetchedMostRecent)
         XCTAssertEqual(2, sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value)
-        XCTAssertEqual([nil, nil], sections.itemsBySection[1].value)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, nil], sections.itemsBySection[1].value.map { $0.item })
     }
 
     func testGetOrAddItem() {
@@ -980,18 +1002,18 @@ class MediaGallerySectionsTest: SignalBaseTest {
             XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1, transaction: transaction))
             XCTAssertFalse(sections.hasFetchedMostRecent)
             XCTAssertEqual(1, sections.itemsBySection.count)
-            XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value)
+            XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
         }
 
         let fakeItem = FakeItem(2021_01_05)
         let newItem = sections.getOrReplaceItem(fakeItem, offsetInSection: 1)
         XCTAssertEqual(fakeItem, newItem)
-        XCTAssertEqual([nil, fakeItem, nil], sections.itemsBySection[0].value)
+        XCTAssertEqual([nil, fakeItem, nil], sections.itemsBySection[0].value.map { $0.item })
 
         let fakeItem2 = FakeItem(2021_01_06)
         let newItem2 = sections.getOrReplaceItem(fakeItem2, offsetInSection: 1)
         XCTAssertEqual(fakeItem, newItem2)
-        XCTAssertEqual([nil, fakeItem, nil], sections.itemsBySection[0].value)
+        XCTAssertEqual([nil, fakeItem, nil], sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testIndexAfter() {
@@ -1002,7 +1024,7 @@ class MediaGallerySectionsTest: SignalBaseTest {
             XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1, transaction: transaction))
             XCTAssertFalse(sections.hasFetchedMostRecent)
             XCTAssertEqual(1, sections.itemsBySection.count)
-            XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value)
+            XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
         }
 
         XCTAssertEqual(IndexPath(item: 1, section: 0), sections.indexPath(after: IndexPath(item: 0, section: 0)))
@@ -1032,7 +1054,7 @@ class MediaGallerySectionsTest: SignalBaseTest {
             XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1, transaction: transaction))
             XCTAssertFalse(sections.hasFetchedMostRecent)
             XCTAssertEqual(1, sections.itemsBySection.count)
-            XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value)
+            XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
         }
 
         XCTAssertEqual(IndexPath(item: 1, section: 0), sections.indexPath(before: IndexPath(item: 2, section: 0)))
@@ -1094,15 +1116,15 @@ class MediaGallerySectionsTest: SignalBaseTest {
         XCTAssert(sections.ensureItemsLoaded(in: 0..<20, relativeToSection: 0).isEmpty)
 
         XCTAssert(sections.removeLoadedItems(atIndexPaths: [IndexPath(item: 1, section: 1)]).isEmpty)
-        XCTAssertEqual(store.itemsBySection[0].value.map { $0 }, sections.itemsBySection[0].value)
-        XCTAssertEqual([store.itemsBySection[1].value[0]], sections.itemsBySection[1].value)
-        XCTAssertEqual(store.itemsBySection[2].value.map { $0 }, sections.itemsBySection[2].value)
+        XCTAssertEqual(store.itemsBySection[0].value.map { $0 }, sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.itemsBySection[1].value[0]], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual(store.itemsBySection[2].value.map { $0 }, sections.itemsBySection[2].value.map { $0.item })
 
         XCTAssert(sections.removeLoadedItems(atIndexPaths: [IndexPath(item: 1, section: 2),
                                                             IndexPath(item: 3, section: 2)]).isEmpty)
-        XCTAssertEqual(store.itemsBySection[0].value.map { $0 }, sections.itemsBySection[0].value)
-        XCTAssertEqual([store.itemsBySection[1].value[0]], sections.itemsBySection[1].value)
-        XCTAssertEqual([store.allItems[5], store.allItems[7], store.allItems[9]], sections.itemsBySection[2].value)
+        XCTAssertEqual(store.itemsBySection[0].value, sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.itemsBySection[1].value[0]], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([store.allItems[5], store.allItems[7], store.allItems[9]], sections.itemsBySection[2].value.map { $0.item })
 
         XCTAssertEqual(IndexSet([0, 2]),
                        sections.removeLoadedItems(atIndexPaths: [IndexPath(item: 0, section: 0),
@@ -1111,7 +1133,7 @@ class MediaGallerySectionsTest: SignalBaseTest {
                                                                  IndexPath(item: 0, section: 2),
                                                                  IndexPath(item: 1, section: 2),
                                                                  IndexPath(item: 2, section: 2)]))
-        XCTAssertEqual([store.itemsBySection[1].value[0]], sections.itemsBySection[0].value)
+        XCTAssertEqual([store.itemsBySection[1].value[0]], sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testTrimFromStart() {

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -60,8 +61,11 @@ public class ReturnToCallViewController: UIViewController {
             avatarView.update(transaction) { config in
                 config.dataSource = .address(callViewController.remoteVideoAddress)
             }
-            return self.profileManagerImpl.profileAvatar(for: callViewController.remoteVideoAddress,
-                                                         transaction: transaction)
+            return self.profileManagerImpl.profileAvatar(
+                for: callViewController.remoteVideoAddress,
+                downloadIfMissing: true,
+                transaction: transaction
+            )
         }
 
         backgroundAvatarView.image = profileImage

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -84,10 +85,9 @@ public class StickerManager: NSObject {
 
         // Resume sticker and sticker pack downloads when app is ready.
         AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-            guard CurrentAppContext().isMainApp,
-                  !CurrentAppContext().isRunningTests else {
-                      return
-                  }
+            guard !CurrentAppContext().isRunningTests else {
+                return
+            }
 
             StickerManager.cleanupOrphans()
 
@@ -1189,7 +1189,7 @@ public class StickerManager: NSObject {
         }
 
         let message = OWSStickerPackSyncMessage(thread: thread, packs: packs, operationType: operationType, transaction: transaction)
-        self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+        sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
     }
 
     @objc

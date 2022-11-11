@@ -1,3 +1,2 @@
-• Video Call Picture-in-Picture rises above the keyboard when typing
-• Improve group metadata update reliability & error handling
-
+• Stories are now in Signal! Share disappearing text, images, and video updates with select friends or groups that automatically disappear after 24 hours. If you don’t want to see or share stories, you can opt out of it all in your Settings.
+• Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.

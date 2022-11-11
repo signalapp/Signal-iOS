@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
-import UIKit
+import SignalMessaging
 import SignalUI
+import UIKit
 
 extension ConversationSettingsViewController {
 
@@ -33,11 +35,6 @@ extension ConversationSettingsViewController {
     }
 
     // MARK: - Table
-
-    override func themeDidChange() {
-        super.themeDidChange()
-        updateTableContents()
-    }
 
     @objc
     func updateTableContents(shouldReload: Bool = true) {

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -15,11 +16,18 @@ extension StorageServiceProtoContactRecord: Dependencies {
         unknownFields: SwiftProtobuf.UnknownStorage? = nil,
         transaction: SDSAnyReadTransaction
     ) throws -> StorageServiceProtoContactRecord {
-        guard let address = OWSAccountIdFinder.address(forAccountId: accountId, transaction: transaction) else {
+        guard
+            let address = OWSAccountIdFinder.address(forAccountId: accountId, transaction: transaction),
+            let recipient = AnySignalRecipientFinder().signalRecipient(for: address, transaction: transaction)
+        else {
             throw StorageService.StorageError.accountMissing
         }
 
         var builder = StorageServiceProtoContactRecord.builder()
+
+        if !recipient.isRegistered, let unregisteredAtTimestamp = recipient.unregisteredAtTimestamp?.uint64Value {
+            builder.setUnregisteredAtTimestamp(unregisteredAtTimestamp)
+        }
 
         if let phoneNumber = address.phoneNumber {
             if PhoneNumber.resemblesE164(phoneNumber) {
@@ -68,13 +76,50 @@ extension StorageServiceProtoContactRecord: Dependencies {
             builder.setFamilyName(profileFamilyName)
         }
 
+        if
+            let account = contactsManagerImpl.fetchSignalAccount(for: address, transaction: transaction),
+            let contact = account.contact
+        {
+            // We have a contact for this address, whose name we may want to
+            // add to this ContactRecord. We should add it if:
+            //
+            // - We are a primary device, and this contact is from our local
+            //   address book. In this case, we want to let linked devices
+            //   know about our "system contact".
+            //
+            // - We are a linked device, and this is a contact we synced from
+            //   the primary device (via a previous ContactRecord). In this
+            //   case, we want to preserve the name the primary device
+            //   originally uploaded.
+
+            let isPrimaryAndHasLocalContact = tsAccountManager.isPrimaryDevice && contact.isFromLocalAddressBook
+            let isLinkedAndHasSyncedContact = !tsAccountManager.isPrimaryDevice && !contact.isFromLocalAddressBook
+
+            if isPrimaryAndHasLocalContact || isLinkedAndHasSyncedContact {
+                if let systemGivenName = contact.firstName {
+                    builder.setSystemGivenName(systemGivenName)
+                }
+
+                if let systemFamilyName = contact.lastName {
+                    builder.setSystemFamilyName(systemFamilyName)
+                }
+
+                if let systemNickname = contact.nickname {
+                    builder.setSystemNickname(systemNickname)
+                }
+            }
+        }
+
         if let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
             let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
 
             builder.setArchived(threadAssociatedData.isArchived)
             builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
             builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
-            builder.setHideStory(threadAssociatedData.hideStory)
+        }
+
+        if let storyContextAssociatedData = StoryFinder.getAssocatedData(forContactAdddress: address, transaction: transaction) {
+            builder.setHideStory(storyContextAssociatedData.isHidden)
         }
 
         // Unknown
@@ -111,8 +156,12 @@ extension StorageServiceProtoContactRecord: Dependencies {
         // representing the remote and local last update time for every value we sync.
         // For now, we'd like to avoid that as it adds its own set of problems.
 
-        // Mark the user as registered, only registered contacts should exist in the sync'd data.
-        let recipient = SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: transaction)
+        let recipient: SignalRecipient
+        if unregisteredAtTimestamp > 0 {
+            recipient = SignalRecipient.markAsUnregistered(fromStorageServiceAndGet: address, unregisteredAtTimestamp: unregisteredAtTimestamp, transaction: transaction)
+        } else {
+            recipient = SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: transaction)
+        }
 
         var mergeState: MergeState = .resolved(recipient.accountId)
 
@@ -160,6 +209,8 @@ extension StorageServiceProtoContactRecord: Dependencies {
         } else if localGivenName != nil && !hasGivenName || localFamilyName != nil && !hasFamilyName {
             mergeState = .needsUpdate(recipient.accountId)
         }
+
+        mergeLocalContactSystemNames(address: address, transaction: transaction)
 
         // If our local identity differs from the service, use the service's value.
         if let identityKeyWithType = identityKey, let identityState = identityState?.verificationState,
@@ -216,11 +267,113 @@ extension StorageServiceProtoContactRecord: Dependencies {
             localThreadAssociatedData.updateWith(mutedUntilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
         }
 
-        if hideStory != localThreadAssociatedData.hideStory {
-            localThreadAssociatedData.updateWith(hideStory: hideStory, updateStorageService: false, transaction: transaction)
+        if let uuid = address.uuid {
+            let localStoryContextAssociatedData = StoryContextAssociatedData.fetchOrDefault(
+                sourceContext: .contact(contactUuid: uuid),
+                transaction: transaction
+            )
+            if hideStory != localStoryContextAssociatedData.isHidden {
+                localStoryContextAssociatedData.update(updateStorageService: false, isHidden: hideStory, transaction: transaction)
+            }
         }
 
         return mergeState
+    }
+
+    /// Merge system contact names from this ContactRecord with local state.
+    ///
+    /// Does nothing on primary devices. On linked devices, system contact data
+    /// in this ContactRecord will supercede any existing contact data for the
+    /// given address.
+    private func mergeLocalContactSystemNames(
+        address: SignalServiceAddress,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        if tsAccountManager.isPrimaryDevice {
+            // If we are a primary device, we should never be syncing system
+            // contacts from another device.
+            return
+        }
+
+        let maybeExistingAccount = contactsManagerImpl.fetchSignalAccount(for: address, transaction: transaction)
+
+        if
+            hasSystemGivenName || hasSystemFamilyName || hasSystemNickname,
+            let systemFullName = Contact.fullName(
+                fromGivenName: systemGivenName,
+                familyName: systemFamilyName,
+                nickname: systemNickname
+            )
+        {
+            // If we have a system contact in StorageService, save it. Any
+            // pre-existing data should be superceded by these values, since
+            // these represent a system contact from the primary device.
+
+            guard let addressServiceIdentifier = address.serviceIdentifier else {
+                owsFailDebug("Address unexpectedly missing service identifier!")
+                return
+            }
+
+            if let existingAccount = maybeExistingAccount {
+                existingAccount.anyRemove(transaction: transaction)
+            }
+
+            let newContact = Contact(
+                address: address,
+                addressServiceIdentifier: addressServiceIdentifier,
+                phoneNumberLabel: CommonStrings.mainPhoneNumberLabel,
+                givenName: systemGivenName,
+                familyName: systemFamilyName,
+                nickname: systemNickname,
+                fullName: systemFullName
+            )
+
+            // TODO: we should find a way to fill in `multipleAccountLabelText`.
+            // This is the string that helps disambiguate when multiple
+            // `SignalAccount`s are associated with the same system contact.
+            // For example, Alice may have a work and mobile number, both of
+            // of which are registered with Signal. This text could be (work)
+            // or (mobile), to help disambiguate - otherwise, both Signal
+            // accounts will present as just "Alice".
+            let multipleAccountLabelText = ""
+
+            let newAccount = SignalAccount(
+                contact: newContact,
+                contactAvatarHash: nil,
+                multipleAccountLabelText: multipleAccountLabelText,
+                recipientPhoneNumber: address.phoneNumber,
+                recipientUUID: address.uuidString
+            )
+
+            newAccount.anyInsert(transaction: transaction)
+        } else if
+            let existingAccount = maybeExistingAccount,
+            let existingContact = existingAccount.contact
+        {
+            if !existingContact.isFromLocalAddressBook {
+                // If we got here, we know:
+                // - This ContactRecord does _not_ contain a system contact.
+                // - We have an existing contact for this address, and they
+                //   are one we previously synced from the primary (rather
+                //   than one from our local address book).
+                //
+                // Consequently, we should remove our persisted copy of the
+                // contact we synced from the primary, since that contact has
+                // since been removed from the primary's address book (hence
+                // they are missing from this ContactRecord).
+                //
+                // If we _also_ have a local address-book contact for this
+                // address, it would have previously been superceded by the
+                // synced contact that we're now removing. Since we no longer
+                // have a synced contact, our local address-book contact will
+                // be loaded during the next regularly-scheduled address-book
+                // load.
+
+                existingAccount.anyRemove(transaction: transaction)
+            } else {
+                Logger.debug("No system contact found in contact record, keeping existing local address book contact!")
+            }
+        }
     }
 }
 
@@ -386,10 +539,13 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         builder.setArchived(threadAssociatedData.isArchived)
         builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
         builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
-        builder.setHideStory(threadAssociatedData.hideStory)
+
+        if let storyContextAssociatedData = StoryFinder.getAssociatedData(forContext: .group(groupId: groupId), transaction: transaction) {
+            builder.setHideStory(storyContextAssociatedData.isHidden)
+        }
 
         if let thread = TSGroupThread.anyFetchGroupThread(uniqueId: threadId, transaction: transaction) {
-            builder.setStorySendEnabled(thread.isStorySendEnabled)
+            builder.setStorySendMode(thread.storyViewMode.storageServiceMode)
         } else if let enqueuedRecord = groupsV2Swift.groupRecordPendingStorageServiceRestore(
             masterKeyData: masterKeyData,
             transaction: transaction
@@ -397,7 +553,7 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
             // We have a record pending restoration from storage service,
             // preserve any of the data that we weren't able to restore
             // yet because the thread record doesn't exist.
-            builder.setStorySendEnabled(enqueuedRecord.storySendEnabled)
+            enqueuedRecord.storySendMode.map { builder.setStorySendMode($0) }
         }
 
         if let unknownFields = unknownFields {
@@ -466,9 +622,13 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         var mergeState: MergeState = .resolved(masterKey)
 
         if let localThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-            let localStorySendEnabled = localThread.isStorySendEnabled
-            if localStorySendEnabled != storySendEnabled {
-                localThread.updateWithStorySendEnabled(storySendEnabled, shouldUpdateStorageService: false, transaction: transaction)
+            let localStorySendMode = localThread.storyViewMode.storageServiceMode
+            if let storySendMode = storySendMode {
+                if localStorySendMode != storySendMode {
+                    localThread.updateWithStoryViewMode(.init(storageServiceMode: storySendMode), transaction: transaction)
+                }
+            } else {
+                mergeState = .needsUpdate(masterKey)
             }
         } else {
             mergeState = .needsRefreshFromService(masterKey)
@@ -517,8 +677,12 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
             localThreadAssociatedData.updateWith(mutedUntilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
         }
 
-        if hideStory != localThreadAssociatedData.hideStory {
-            localThreadAssociatedData.updateWith(hideStory: hideStory, updateStorageService: false, transaction: transaction)
+        let localStoryContextAssociatedData = StoryContextAssociatedData.fetchOrDefault(
+            sourceContext: .group(groupId: groupId),
+            transaction: transaction
+        )
+        if hideStory != localStoryContextAssociatedData.isHidden {
+            localStoryContextAssociatedData.update(updateStorageService: false, isHidden: hideStory, transaction: transaction)
         }
 
         return mergeState
@@ -550,7 +714,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             builder.setFamilyName(profileFamilyName)
         }
 
-        if let profileAvatarUrlPath = profileManager.profileAvatarURLPath(for: localAddress, transaction: transaction) {
+        if let profileAvatarUrlPath = profileManager.profileAvatarURLPath(for: localAddress, downloadIfMissing: true, transaction: transaction) {
             Logger.info("profileAvatarUrlPath: yes")
             builder.setAvatarURL(profileAvatarUrlPath)
         } else {
@@ -566,6 +730,9 @@ extension StorageServiceProtoAccountRecord: Dependencies {
 
         let readReceiptsEnabled = receiptManager.areReadReceiptsEnabled()
         builder.setReadReceipts(readReceiptsEnabled)
+
+        let storyViewReceiptsEnabled = StoryManager.areViewReceiptsEnabled(transaction: transaction)
+        builder.setStoryViewReceiptsEnabled(.init(storyViewReceiptsEnabled))
 
         let sealedSenderIndicatorsEnabled = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
         builder.setSealedSenderIndicators(sealedSenderIndicatorsEnabled)
@@ -622,6 +789,9 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             builder.setSubscriberCurrencyCode(subscriberCurrencyCode)
         }
 
+        builder.setMyStoryPrivacyHasBeenSet(StoryManager.hasSetMyStoriesPrivacy(transaction: transaction))
+
+        builder.setReadOnboardingStory(Self.systemStoryManager.isOnboardingStoryRead(transaction: transaction))
         builder.setViewedOnboardingStory(Self.systemStoryManager.isOnboardingStoryViewed(transaction: transaction))
 
         builder.setDisplayBadgesOnProfile(subscriptionManager.displayBadgesOnProfile(transaction: transaction))
@@ -629,7 +799,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
 
         builder.setKeepMutedChatsArchived(SSKPreferences.shouldKeepMutedChatsArchived(transaction: transaction))
 
-        builder.setStoriesDisabled(!StoryManager.areStoriesEnabled)
+        builder.setStoriesDisabled(!StoryManager.areStoriesEnabled(transaction: transaction))
 
         return try builder.build()
     }
@@ -651,7 +821,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         let localProfileKey = profileManager.profileKey(for: localAddress, transaction: transaction)
         let localGivenName = profileManagerImpl.unfilteredGivenName(for: localAddress, transaction: transaction)
         let localFamilyName = profileManagerImpl.unfilteredFamilyName(for: localAddress, transaction: transaction)
-        let localAvatarUrl = profileManager.profileAvatarURLPath(for: localAddress, transaction: transaction)
+        let localAvatarUrl = profileManager.profileAvatarURLPath(for: localAddress, downloadIfMissing: true, transaction: transaction)
 
         // On the primary device, we only ever want to
         // take the profile key from storage service if
@@ -704,6 +874,15 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         let localReadReceiptsEnabled = receiptManager.areReadReceiptsEnabled()
         if readReceipts != localReadReceiptsEnabled {
             receiptManager.setAreReadReceiptsEnabled(readReceipts, transaction: transaction)
+        }
+
+        let localViewReceiptsEnabled = StoryManager.areViewReceiptsEnabled(transaction: transaction)
+        if let storyViewReceiptsEnabled = storyViewReceiptsEnabled?.boolValue {
+            if storyViewReceiptsEnabled != localViewReceiptsEnabled {
+                StoryManager.setAreViewReceiptsEnabled(storyViewReceiptsEnabled, shouldUpdateStorageService: false, transaction: transaction)
+            }
+        } else {
+            mergeState = .needsUpdate
         }
 
         let sealedSenderIndicatorsEnabled = preferences.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
@@ -831,6 +1010,16 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             SSKPreferences.setShouldKeepMutedChatsArchived(keepMutedChatsArchived, transaction: transaction)
         }
 
+        let localHasSetMyStoriesPrivacy = StoryManager.hasSetMyStoriesPrivacy(transaction: transaction)
+        if !localHasSetMyStoriesPrivacy && myStoryPrivacyHasBeenSet {
+            StoryManager.setHasSetMyStoriesPrivacy(transaction: transaction, shouldUpdateStorageService: false)
+        }
+
+        let localHasReadOnboardingStory = systemStoryManager.isOnboardingStoryRead(transaction: transaction)
+        if !localHasReadOnboardingStory && readOnboardingStory {
+            systemStoryManager.setHasReadOnboardingStory(transaction: transaction, updateStorageService: false)
+        }
+
         let localHasViewedOnboardingStory = systemStoryManager.isOnboardingStoryViewed(transaction: transaction)
         if !localHasViewedOnboardingStory && viewedOnboardingStory {
             systemStoryManager.setHasViewedOnboardingStoryOnAnotherDevice(transaction: transaction)
@@ -871,7 +1060,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             mergeState = .needsUpdate
         }
 
-        let localStoriesDisabled = !StoryManager.areStoriesEnabled
+        let localStoriesDisabled = !StoryManager.areStoriesEnabled(transaction: transaction)
         if localStoriesDisabled != storiesDisabled {
             StoryManager.setAreStoriesEnabled(!storiesDisabled, shouldUpdateStorageService: false, transaction: transaction)
         }
@@ -1019,7 +1208,12 @@ extension StorageServiceProtoStoryDistributionListRecord: Dependencies {
         var builder = StorageServiceProtoStoryDistributionListRecord.builder()
         builder.setIdentifier(distributionListIdentifier)
 
-        if let story = TSPrivateStoryThread.anyFetchPrivateStoryThread(
+        if let deletedAtTimestamp = TSPrivateStoryThread.deletedAtTimestamp(
+            forDistributionListIdentifer: distributionListIdentifier,
+            transaction: transaction
+        ) {
+            builder.setDeletedAtTimestamp(deletedAtTimestamp)
+        } else if let story = TSPrivateStoryThread.anyFetchPrivateStoryThread(
             uniqueId: uniqueId,
             transaction: transaction
         ) {
@@ -1027,11 +1221,6 @@ extension StorageServiceProtoStoryDistributionListRecord: Dependencies {
             builder.setRecipientUuids(story.addresses.compactMap { $0.uuidString })
             builder.setAllowsReplies(story.allowsReplies)
             builder.setIsBlockList(story.storyViewMode == .blockList)
-        } else if let deletedAtTimestamp = TSPrivateStoryThread.deletedAtTimestamp(
-            forDistributionListIdentifer: distributionListIdentifier,
-            transaction: transaction
-        ) {
-            builder.setDeletedAtTimestamp(deletedAtTimestamp)
         } else {
             throw StorageService.StorageError.storyMissing
         }
@@ -1134,5 +1323,20 @@ extension StorageServiceProtoStoryDistributionListRecord: Dependencies {
         }
 
         return mergeState
+    }
+}
+
+extension StorageServiceProtoOptionalBool {
+    var boolValue: Bool? {
+        switch self {
+        case .unset: return nil
+        case .true: return true
+        case .false: return false
+        case .UNRECOGNIZED: return nil
+        }
+    }
+
+    init(_ boolValue: Bool) {
+        self = boolValue ? .true : .false
     }
 }

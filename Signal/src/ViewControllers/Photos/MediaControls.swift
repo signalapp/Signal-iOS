@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Photos
+import SignalMessaging
 import SignalUI
 import UIKit
 
@@ -1447,6 +1449,23 @@ class CameraBottomBar: UIView {
     let switchCameraButton = CameraChooserButton(backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor))
     let proceedButton = RoundMediaButton(image: UIImage(imageLiteralResourceName: "arrow-right-24"), backgroundStyle: .solid(.ows_accentBlue))
     let controlButtonsLayoutGuide = UILayoutGuide() // area encompassing Photo Library and Switch Camera buttons.
+    private var controlButtonsLayoutGuideConstraints: [NSLayoutConstraint]?
+    func constrainControlButtonsLayoutGuideHorizontallyTo(leadingAnchor: NSLayoutXAxisAnchor?,
+                                                          trailingAnchor: NSLayoutXAxisAnchor?) {
+        if let existingConstraints = controlButtonsLayoutGuideConstraints {
+            NSLayoutConstraint.deactivate(existingConstraints)
+        }
+
+        let referenceLeadingAnchor = leadingAnchor ?? layoutMarginsGuide.leadingAnchor
+        let referenceTrailingAnchor = trailingAnchor ?? layoutMarginsGuide.trailingAnchor
+        let constraints = [
+            controlButtonsLayoutGuide.leadingAnchor.constraint(equalTo: referenceLeadingAnchor),
+            controlButtonsLayoutGuide.trailingAnchor.constraint(equalTo: referenceTrailingAnchor)
+        ]
+        constraints.forEach { $0.priority = .defaultHigh - 10 }
+        NSLayoutConstraint.activate(constraints)
+        self.controlButtonsLayoutGuideConstraints = constraints
+    }
 
     let captureControl = CameraCaptureControl(axis: .horizontal)
     var shutterButtonLayoutGuide: UILayoutGuide {
@@ -1465,9 +1484,8 @@ class CameraBottomBar: UIView {
 
         controlButtonsLayoutGuide.identifier = "ControlButtonsLayoutGuide"
         addLayoutGuide(controlButtonsLayoutGuide)
-        addConstraints([ controlButtonsLayoutGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
-                         controlButtonsLayoutGuide.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),
-                         controlButtonsLayoutGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor) ])
+        addConstraint(controlButtonsLayoutGuide.topAnchor.constraint(greaterThanOrEqualTo: topAnchor))
+        constrainControlButtonsLayoutGuideHorizontallyTo(leadingAnchor: nil, trailingAnchor: nil)
 
         captureControl.translatesAutoresizingMaskIntoConstraints = false
         addSubview(captureControl)
@@ -1497,7 +1515,6 @@ class CameraBottomBar: UIView {
             proceedButton.isEnabled = false
             proceedButton.contentEdgeInsets = UIEdgeInsets(margin: proceedButton.layoutMargins.leading + 9) // image is 24x24 and we want 42x42 button.
             proceedButton.accessibilityValue = NSLocalizedString("CAMERA_VO_ARROW_RIGHT_PROCEED",
-                                                                 value: "Proceed",
                                                                  comment: "VoiceOver label for -> button in text story composer.")
             proceedButton.translatesAutoresizingMaskIntoConstraints = false
             addSubview(proceedButton)
@@ -1581,10 +1598,14 @@ class CameraBottomBar: UIView {
 
     fileprivate class ContentTypeSelectionControl: UISegmentedControl {
 
-        static private let titleCamera = NSLocalizedString("STORY_COMPOSER_CAMERA", value: "Camera",
-                                                           comment: "One of two possible sources when composing a new story. Displayed at the bottom in in-app camera.")
-        static private let titleText = NSLocalizedString("STORY_COMPOSER_TEXT", value: "Text",
-                                                         comment: "One of two possible sources when composing a new story. Displayed at the bottom in in-app camera.")
+        static private let titleCamera = NSLocalizedString(
+            "STORY_COMPOSER_CAMERA",
+            comment: "One of two possible sources when composing a new story. Displayed at the bottom in in-app camera."
+        )
+        static private let titleText = NSLocalizedString(
+            "STORY_COMPOSER_TEXT",
+            comment: "One of two possible sources when composing a new story. Displayed at the bottom in in-app camera."
+        )
 
         init() {
             super.init(frame: .zero)
@@ -1944,8 +1965,12 @@ extension CameraBottomBar.ContentTypeSelectionControl {
     }
 
     override var accessibilityLabel: String? {
-        get { NSLocalizedString("CAMERA_VO_COMPOSER_MODE", value: "Composer mode",
-                                comment: "VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen.") }
+        get {
+            NSLocalizedString(
+                "CAMERA_VO_COMPOSER_MODE",
+                comment: "VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen."
+            )
+        }
         set { super.accessibilityLabel = newValue }
     }
 

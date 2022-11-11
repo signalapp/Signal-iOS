@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -59,8 +60,8 @@ public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
         return textField
     }()
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         nameTextField.textColor = Theme.primaryTextColor
     }
@@ -161,7 +162,11 @@ public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
 extension PrivateStoryNameSettingsViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if string == "\n" {
-            hasPendingChanges ? didTapDone() : didTapCancel()
+            if hasPendingChanges {
+                didTapDone()
+            } else {
+                didTapCancel()
+            }
             return false
         } else {
             return true

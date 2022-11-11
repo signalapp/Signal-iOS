@@ -13,9 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Audiobericht 1 seconde</string>
+			<string>Audiobericht %1$d seconde</string>
 			<key>other</key>
-			<string>Audiobericht %d seconden</string>
+			<string>Audiobericht %1$d seconden</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Persoon aan de groep “%2$@” toevoegen?</string>
+			<string>Contact aan de groep “%2$@” toevoegen?</string>
 			<key>other</key>
-			<string>%d personen aan de groep “%2$@” toevoegen?</string>
+			<string>%1$d contacten aan de groep “%2$@” toevoegen?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 item</string>
+			<string>%1$d item</string>
 			<key>other</key>
-			<string>%d items</string>
+			<string>%1$d items</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deze zelfgekozen kleur wordt in nog 1 gesprek gebruikt. Wil je het voor dat gesprek wissen?</string>
+			<string>Deze zelfgekozen kleur wordt nog in %1$d gesprek gebruikt. Wil je het voor dat gesprek wissen?</string>
 			<key>other</key>
-			<string>Deze zelfgekozen kleur wordt nog in %d gesprekken gebruikt. Wil je het voor al die gesprekken wissen?</string>
+			<string>Deze zelfgekozen kleur wordt nog in %1$d gesprekken gebruikt. Wil je het voor al die gesprekken wissen?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deze kleur wordt in 1 gesprek gebruikt. Wil je de wijziging op alle gesprekken toepassen?</string>
+			<string>Deze kleur wordt in %1$d gesprek gebruikt. Wil je de wijziging ook op dat gesprek toepassen?</string>
 			<key>other</key>
-			<string>Deze kleur wordt in %d gesprekken gebruikt. Wil je de wijziging op alle gesprekken toepassen?</string>
+			<string>Deze kleur wordt in %1$d gesprekken gebruikt. Wil je de wijziging op alle gesprekken toepassen?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Gesprek wissen?</string>
+			<string>Gesprek verwijderen?</string>
 			<key>other</key>
-			<string>%d gesprekken wissen?</string>
+			<string>%1$d gesprekken verwijderen?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -157,9 +157,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Je kunt niet meer dan 1 gesprek selecteren.</string>
+			<string>Je kunt niet meer dan %1$d gesprek selecteren.</string>
 			<key>other</key>
-			<string>Je kunt niet meer dan %d gesprekken selecteren.</string>
+			<string>Je kunt niet meer dan %1$d gesprekken selecteren.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -173,9 +173,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 %2$#@total@</string>
+			<string>%1$d %2$#@total@</string>
 			<key>other</key>
-			<string>%d %2$#@total@</string>
+			<string>%1$d %2$#@total@</string>
 		</dict>
 		<key>total</key>
 		<dict>
@@ -186,7 +186,7 @@
 			<key>one</key>
 			<string>overeenkomst</string>
 			<key>other</key>
-			<string>van %d overeenkomsten</string>
+			<string>van %2$d overeenkomsten</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -200,9 +200,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 lid</string>
+			<string>%1$d lid</string>
 			<key>other</key>
-			<string>%d leden</string>
+			<string>%1$d leden</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -216,9 +216,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 gemeenschappelijke groep</string>
+			<string>Nog %1$d andere gemeenschappelijke groep</string>
 			<key>other</key>
-			<string>%d gemeenschappelijke groepen</string>
+			<string>%1$d gemeenschappelijke groepen</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_%d</key>
@@ -232,9 +232,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d min</string>
+			<string>%1$d min</string>
 			<key>other</key>
-			<string>%d min</string>
+			<string>%1$d min</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -248,9 +248,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 minuut geleden</string>
+			<string>%1$d minuut geleden</string>
 			<key>other</key>
-			<string>%d minuten geleden</string>
+			<string>%1$d minuten geleden</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -264,9 +264,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Bericht wissen?</string>
+			<string>Bericht verwijderen?</string>
 			<key>other</key>
-			<string>%d berichten wissen?</string>
+			<string>%1$d berichten verwijderen?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -280,9 +280,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Je hebt de maximale groepsomvang van %d lid bereikt.</string>
+			<string>Je hebt de maximale groepsomvang van %1$d lid bereikt.</string>
 			<key>other</key>
-			<string>Je hebt de maximale groepsomvang van %d leden bereikt.</string>
+			<string>Je hebt de maximale groepsomvang van %1$d leden bereikt.</string>
 		</dict>
 	</dict>
 	<key>EXPIRATION_WARNING_%d</key>
@@ -296,9 +296,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deze versie van Signal zal binnen een dag verlopen. Tik hier om bij te werken naar de meest recente versie.</string>
+			<string>Deze versie van Signal zal binnen %1$d dag verlopen. Tik hier om bij te werken naar de meest recente versie.</string>
 			<key>other</key>
-			<string>Deze versie van Signal zal binnen %d dagen verlopen. Tik hier om bij te werken naar de meest recente versie.</string>
+			<string>Deze versie van Signal zal binnen %1$d dagen verlopen. Tik hier om bij te werken naar de meest recente versie.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -314,39 +314,7 @@
 			<key>one</key>
 			<string>Bericht verzenden</string>
 			<key>other</key>
-			<string>%d berichten verzenden</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Deze groep kan niet worden aangemaakt omdat 1 lid een oude versie van Signal gebruikt. Je kunt een nieuwe-stijl groep aanmaken met hem of haar als lid nadat hij of zij Signal heeft bijgewerkt, of je kunt hem of haar voordat je de groep aanmaakt verwijderen. %2$@</string>
-			<key>other</key>
-			<string>Deze groep kan niet worden aangemaakt omdat %d leden een oude versie van Signal gebruiken. Je kunt een nieuwe-stijl groep aanmaken met hen als lid nadat ze Signal hebben bijgewerkt, of je kunt hen voordat je de groep aanmaakt verwijderen. %2$@</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Deze groep kan niet worden aangemaakt omdat 1 lid een oude versie van Signal gebruikt. Je kunt een nieuwe-stijl groep aanmaken met hem of haar als lid nadat hij of zij Signal heeft bijgewerkt, of je kunt hem of haar voordat je de groep aanmaakt verwijderen.</string>
-			<key>other</key>
-			<string>Deze groep kan niet worden aangemaakt omdat %d leden een oude versie van Signal gebruiken. Je kunt een nieuwe-stijl groep aanmaken met hen als lid nadat ze Signal hebben bijgewerkt, of je kunt hen voordat je de groep aanmaakt verwijderen.</string>
+			<string>%1$d berichten verzenden</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -360,9 +328,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 groepslid kon niet worden toegevoegd tot de nieuwe-stijl groep. Wil je hem of haar nu toevoegen?</string>
+			<string>%1$d lid kon niet worden toegevoegd aan de nieuwe groep. Wil je diegene nu toevoegen?</string>
 			<key>other</key>
-			<string>%d groepsleden konden niet worden toegevoegd tot de nieuwe-stijl groep. Wil je ze nu toevoegen?</string>
+			<string>%1$d leden konden niet worden toegevoegd aan de nieuwe groep. Wil je ze nu toevoegen?</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -376,9 +344,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal-groepen presteren het best met 1 of minder leden. Het toevoegen van extra leden zal vertragingen veroorzaken in het verzenden en ontvangen van berichten.</string>
+			<string>Signal-groepen werken het best met %1$d lid. Het toevoegen van extra leden zal vertragingen veroorzaken in het versturen en ontvangen van berichten.</string>
 			<key>other</key>
-			<string>Signal-groepen presteren het best met %d of minder leden. Het toevoegen van extra leden zal vertragingen veroorzaken in het verzenden en ontvangen van berichten.</string>
+			<string>Signal-groepen werken het best met %1$d of minder leden. Het toevoegen van extra leden zal vertragingen veroorzaken in het versturen en ontvangen van berichten.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -392,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Je kunt niet deelnemen omdat deze groepsoproep het maximale aantal van 1 deelnemer heeft bereikt. Probeer het later opnieuw.</string>
+			<string>Je kunt niet deelnemen omdat deze oproep het maximale aantal van %1$d deelnemer heeft bereikt. Probeer het later opnieuw.</string>
 			<key>other</key>
-			<string>Je kunt niet deelnemen omdat deze groepsoproep het maximale aantal van %d deelnemers heeft bereikt. Probeer het later opnieuw.</string>
+			<string>Je kunt niet deelnemen omdat deze oproep het maximale aantal van %1$d deelnemers heeft bereikt. Probeer het later opnieuw.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -408,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 persoon in deze oproep aanwezig</string>
+			<string>In deze oproep · %1$d persoon</string>
 			<key>other</key>
-			<string>%d personen in deze oproep aanwezig</string>
+			<string>In deze oproep · %1$d personen</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
@@ -424,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Bellen naar %2$@, %3$@ en 1 ander contact...</string>
+			<string>Bellen naar %2$@, %3$@ en %1$d ander…</string>
 			<key>other</key>
-			<string>Bellen naar %2$@, %3$@ en %d anderen…</string>
+			<string>Bellen naar %2$@, %3$@ en %1$d anderen…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -440,9 +408,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ en 1 ander zijn in deze groepsoproep aanwezig</string>
+			<string>%2$@, %3$@ en %1$d ander zijn in deze groepsoproep aanwezig</string>
 			<key>other</key>
-			<string>%2$@, %3$@ en %d anderen zijn in deze groepsoproep aanwezig</string>
+			<string>%2$@, %3$@ en %1$d anderen zijn in deze groepsoproep aanwezig</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -456,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ en 1 ander nemen deel aan de oproep</string>
+			<string>%2$@, %3$@ en %1$d ander nemen deel aan het gesprek</string>
 			<key>other</key>
-			<string>%2$@, %3$@ en %d anderen nemen deel aan de oproep</string>
+			<string>%2$@, %3$@ en %1$d anderen nemen deel aan het gesprek</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -472,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ en 1 ander hebben de oproep verlaten</string>
+			<string>%2$@, %3$@ en %1$d ander hebben het gesprek verlaten</string>
 			<key>other</key>
-			<string>%2$@, %3$@ en %d anderen hebben de oproep verlaten</string>
+			<string>%2$@, %3$@ en %1$d anderen hebben het gesprek verlaten</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
@@ -488,9 +456,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ en 1 ander contact krijgen hier een melding van</string>
+			<string>%2$@, %3$@ en %1$d ander krijgen hier een melding van</string>
 			<key>other</key>
-			<string>%2$@, %3$@en %d anderen krijgen hier een melding van</string>
+			<string>%2$@, %3$@en %1$d anderen krijgen hier een melding van</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -504,9 +472,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal belt naar %2$@, %3$@ en 1 ander contact</string>
+			<string>Signal zal %2$@, %3$@ en %1$d ander bellen</string>
 			<key>other</key>
-			<string>Signal belt naar %2$@, %3$@ en  %d anderen</string>
+			<string>Signal zal %2$@, %3$@ en %1$d anderen bellen</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -522,7 +490,7 @@
 			<key>one</key>
 			<string>Uitnodiging verzonden</string>
 			<key>other</key>
-			<string>%d uitnodigingen verzonden</string>
+			<string>%1$d uitnodigingen verzonden</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
@@ -536,9 +504,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 groepslid heeft dezelfde naam.</string>
+			<string>%1$d groepslid heeft bijna dezelfde naam.</string>
 			<key>other</key>
-			<string>%d groepsleden hebben dezelfde naam.</string>
+			<string>%1$d groepsleden hebben bijna dezelfde naam.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -552,9 +520,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 groepslid heeft dezelfde naam. Vergelijk dit groepslid hieronder en neem actie indien je denkt dat hij of zij zich probeert voor te doen als een ander.</string>
+			<string>%1$d groepslid heeft bijna dezelfde naam. Vergelijk deze groepsleden hieronder en onderneem actie.</string>
 			<key>other</key>
-			<string>%d groepsleden hebben dezelfde naam. Vergelijk deze groepsleden hieronder en neem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.</string>
+			<string>%1$d groepsleden hebben bijna dezelfde naam. Vergelijk deze groepsleden hieronder en onderneem actie.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -568,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 groepslid heeft dezelfde naam. Vergelijk dit groepslid hieronder en neem actie indien je denkt dat hij of zij zich probeert voor te doen als een ander.</string>
+			<string>%1$d groepslid heeft dezelfde naam. Vergelijk deze groepsleden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.</string>
 			<key>other</key>
-			<string>%d groepsleden hebben dezelfde naam. Vergelijk deze groepsleden hieronder en neem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.</string>
+			<string>%1$d groepsleden hebben dezelfde naam. Vergelijk deze groepsleden hieronder en onderneem actie indien je denkt dat een van hen zich probeert voor te doen als de ander.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -584,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 lid</string>
+			<string>%1$d lid</string>
 			<key>other</key>
-			<string>%d leden</string>
+			<string>%1$d leden</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
@@ -600,9 +568,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d lid</string>
+			<string>%1$d lid</string>
 			<key>other</key>
-			<string>%d leden</string>
+			<string>%1$d leden</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -616,9 +584,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Één persoon is uitgenodigd om lid te worden van de groep.</string>
+			<string>%1$d persoon is uitgenodigd om lid te worden van de groep.</string>
 			<key>other</key>
-			<string>%d personen zijn uitgenodigd om lid te worden van de groep.</string>
+			<string>%1$d personen zijn uitgenodigd om lid te worden van de groep.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
@@ -632,9 +600,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ heeft één persoon uitgenodigd om lid te worden van de groep.</string>
+			<string>%2$@ heeft %1$d persoon uitgenodigd om lid te worden van de groep.</string>
 			<key>other</key>
-			<string>%2$@ heeft %d personen uitgenodigd om lid te worden van de groep.</string>
+			<string>%2$@ heeft %1$d personen uitgenodigd om lid te worden van de groep.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -648,9 +616,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Voor één persoon is de uitnodiging om lid te worden van de groep ingetrokken.</string>
+			<string>De uitnodiging om lid te worden van de groep is voor %1$d persoon ingetrokken.</string>
 			<key>other</key>
-			<string>Voor %d personen is de uitnodiging om lid te worden van de groep ingetrokken.</string>
+			<string>De uitnodiging om lid te worden van de groep is voor %1$d personen ingetrokken.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -664,9 +632,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ heeft voor één persoon de uitnodiging om lid te worden van de groep ingetrokken.</string>
+			<string>%2$@ heeft voor %1$d persoon de uitnodiging om lid te worden van de groep ingetrokken.</string>
 			<key>other</key>
-			<string>%2$@ heeft voor %d personen de uitnodiging om lid te worden van de groep ingetrokken.</string>
+			<string>%2$@ heeft voor %1$d personen de uitnodiging om lid te worden van de groep ingetrokken.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
@@ -680,9 +648,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ heeft verzocht om lid te worden van de groep en dat verzoek weer ingetrokken.</string>
+			<string>%2$@ heeft verzocht om lid te worden van de groep en dat verzoek weer ingetrokken via de link.</string>
 			<key>other</key>
-			<string>%2$@ heeft %d keer verzocht om lid te worden van de groep en die verzoeken weer ingetrokken.</string>
+			<string>%2$@ hebben %1$d keer verzocht om lid te worden van de groep en die verzoeken weer ingetrokken via de link.</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -696,9 +664,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Groepsverhaal · Door 1 persoon gezien</string>
+			<string>Groepsverhaal · Door %1$d persoon gezien</string>
 			<key>other</key>
-			<string>Groepsverhaal · Door %d personen gezien</string>
+			<string>Groepsverhaal · Door %1$d personen gezien</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -712,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Een groepslid kon niet toegevoegd worden tot de nieuwe-stijl groep en is daarom verwijderd uit de groep.</string>
+			<string>Een lid kon niet worden toegevoegd aan de nieuwe groep en is uit de groep verwijderd.</string>
 			<key>other</key>
-			<string>%d groepsleden konden niet toegevoegd worden tot de nieuwe-stijl groep en zijn daarom verwijderd uit de groep.</string>
+			<string>%1$d leden konden niet toegevoegd worden aan de nieuwe groep en zijn uit de groep verwijderd.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -728,9 +696,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Een lid kon niet direct toegevoegd worden tot de nieuwe-stijl groep en heeft daarom een uitnodiging gekregen om opnieuw lid te worden.</string>
+			<string>Een lid kon niet worden toegevoegd aan de nieuwe groep en heeft een uitnodiging gekregen om lid te worden.</string>
 			<key>other</key>
-			<string>%d groepsleden konden niet direct toegevoegd worden tot de nieuwe-stijl groep en hebben daarom een uitnodiging gekregen om opnieuw lid te worden.</string>
+			<string>%1$d leden konden niet worden toegevoegd aan de nieuwe groep en hebben een uitnodiging gekregen om lid te worden.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -746,7 +714,7 @@
 			<key>one</key>
 			<string>Je kunt niet meer dan 1 item delen.</string>
 			<key>other</key>
-			<string>Je kunt niet meer dan %d items delen.</string>
+			<string>Je kunt niet meer dan %1$d items delen.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -760,9 +728,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 gemeenschappelijke groep</string>
+			<string>%1$d gemeenschappelijke groep</string>
 			<key>other</key>
-			<string>%d gemeenschappelijke groepen</string>
+			<string>%1$d gemeenschappelijke groepen</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
@@ -776,9 +744,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 bericht wissen</string>
+			<string>%1$d bericht verwijderen</string>
 			<key>other</key>
-			<string>%d berichten wissen</string>
+			<string>%1$d berichten verwijderen</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -792,9 +760,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 afbeelding</string>
+			<string>%1$d foto</string>
 			<key>other</key>
-			<string>%d afbeeldingen</string>
+			<string>%1$d foto&apos;s</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
@@ -808,9 +776,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 item</string>
+			<string>%1$d item</string>
 			<key>other</key>
-			<string>%d items</string>
+			<string>%1$d items</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
@@ -824,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Je hebt één lid van deze groep geblokkeerd</string>
+			<string>Je hebt %1$d lid van deze groep geblokkeerd</string>
 			<key>other</key>
-			<string>Je hebt %d leden van deze groep geblokkeerd</string>
+			<string>Je hebt %1$d leden van deze groep geblokkeerd</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
@@ -840,9 +808,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 geselecteerd</string>
+			<string>%1$d geselecteerd</string>
 			<key>other</key>
-			<string>%d geselecteerd</string>
+			<string>%1$d geselecteerd</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -856,9 +824,25 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>Verborgen voor %1$d</string>
 			<key>other</key>
-			<string>%d Excluded</string>
+			<string>Verborgen voor %1$d</string>
+		</dict>
+	</dict>
+	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Door %1$d persoon gezien</string>
+			<key>other</key>
+			<string>Door %1$d personen gezien</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -872,9 +856,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>Door %1$d persoon gezien</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>Door %1$d personen gezien</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -888,9 +872,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Viewer</string>
+			<string>Alle Signal-contacten · Door %1$d persoon gezien</string>
 			<key>other</key>
-			<string>All Signal Connections · %d Viewers</string>
+			<string>Alle Signal-contacten · Door %1$d personen gezien</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -904,9 +888,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Excluded</string>
+			<string>Alle Signal-contacten · Verborgen voor %1$d</string>
 			<key>other</key>
-			<string>All Signal Connections · %d Excluded</string>
+			<string>Alle Signal-contacten · Verborgen voor %1$d</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -920,9 +904,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Only Share With · 1 Viewer</string>
+			<string>Alleen delen met · %1$d persoon</string>
 			<key>other</key>
-			<string>Only Share With · %d Viewers</string>
+			<string>Alleen delen met · %1$d personen</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -936,9 +920,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 lid</string>
+			<string>%1$d lid</string>
 			<key>other</key>
-			<string>%d leden</string>
+			<string>%1$d leden</string>
 		</dict>
 	</dict>
 	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>
@@ -952,9 +936,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 weergave</string>
+			<string>Door %1$d persoon gezien</string>
 			<key>other</key>
-			<string>%d weergaven</string>
+			<string>Door %1$d personen gezien</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -968,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Foutieve pincode. 1 poging resterend.</string>
+			<string>Foutieve pincode. %1$d poging resterend.</string>
 			<key>other</key>
-			<string>Foutieve pincode. %d pogingen resterend.</string>
+			<string>Foutieve pincode. %1$d pogingen resterend.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -984,9 +968,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ heeft 1 persoon voor de groep uitgenodigd</string>
+			<string>%2$@ heeft %1$d persoon uitgenodigd</string>
 			<key>other</key>
-			<string>%2$@ heeft %d personen uitgenodigd voor de groep</string>
+			<string>%2$@ heeft %1$d personen uitgenodigd</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -1000,9 +984,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 openstaand lidmaatschapsverzoek.</string>
+			<string>%1$d openstaand lidmaatschapsverzoek.</string>
 			<key>other</key>
-			<string>%d openstaande lidmaatschapsverzoeken.</string>
+			<string>%1$d openstaande lidmaatschapsverzoeken.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -1018,7 +1002,7 @@
 			<key>one</key>
 			<string>Ongeldige uitnodiging intrekken</string>
 			<key>other</key>
-			<string>%d ongeldige uitnodigingen intrekken</string>
+			<string>%1$d ongeldige uitnodigingen intrekken</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -1048,25 +1032,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>De uitnodiging welke door “%2$@” is verzonden intrekken?</string>
+			<string>Groepsuitnodiging van “%2$@” intrekken?</string>
 			<key>other</key>
-			<string>%d uitnodigingen welke door “%2$@” zijn verzonden intrekken?</string>
-		</dict>
-	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Signal zal je later opnieuw een herinnering geven. Het aanmaken van een pincode wordt binnen 1 dag verplicht.</string>
-			<key>other</key>
-			<string>Signal zal je later opnieuw een herinnering geven. Het aanmaken van een pincode wordt binnen %d dagen verplicht.</string>
+			<string>%1$d uitnodigingen van “%2$@” intrekken?</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -1080,9 +1048,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Privéverhaal · Door 1 persoon gezien</string>
+			<string>Aangepast verhaal · Door %1$d persoon gezien</string>
 			<key>other</key>
-			<string>Privéverhaal · Door %d personen gezien</string>
+			<string>Aangepast verhaal · Door %1$d personen gezien</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1096,9 +1064,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Je hebt nog 1 poging resterend. Wanneer je geen pogingen meer over hebt, dan kun je nog wel een nieuwe pincode aanmaken. Je kunt Signal dan wel weer registreren met dit telefoonnummer, maar sommige instellingen zoals je profielnaam, -foto en -omschrijving zullen dan verloren gaan.</string>
+			<string>Je hebt nog %1$d poging. Als je geen pogingen meer over hebt, kun je nog wel een nieuwe pincode aanmaken. Je kunt dan opnieuw registreren en je account gebruiken, maar opgeslagen instellingen zoals je profielinformatie worden verwijderd.</string>
 			<key>other</key>
-			<string>Je hebt nog %d pogingen resterend. Wanneer je geen pogingen meer over hebt, dan kun je nog wel een nieuwe pincode aanmaken. Je kunt Signal dan wel weer registreren met dit telefoonnummer, maar sommige instellingen zoals je profielnaam, -foto en -omschrijving zullen dan verloren gaan.</string>
+			<string>Je hebt nog %1$d pogingen. Als je geen pogingen meer over hebt, kun je nog wel een nieuwe pincode aanmaken. Je kunt dan opnieuw registreren en je account gebruiken, maar opgeslagen instellingen zoals je profielinformatie worden verwijderd.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -1112,9 +1080,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Je hebt nog 1 poging resterend. Wanneer je geen pogingen meer over hebt dan wordt Signal voor dit telefoonnummer tijdelijk vergrendeld. Na ten minste 7 dagen inactiviteit kun je je telefoonnummer opnieuw registreren zonder je pincode. Als je er dan voor kiest om zonder pincode opnieuw te registreren, dan wordt de Signal-app gereset en alle inhoud wordt gewist.</string>
+			<string>Je hebt nog %1$d poging. Als je geen pogingen meer over hebt, wordt Signal voor dit telefoonnummer tijdelijk vergrendeld. Na 7 dagen kun je je telefoonnummer opnieuw registreren zonder je pincode. Je account wordt gewist en alle inhoud wordt verwijderd.</string>
 			<key>other</key>
-			<string>Je hebt nog %d pogingen resterend. Wanneer je geen pogingen meer over hebt dan wordt Signal voor dit telefoonnummer tijdelijk vergrendeld. Na ten minste 7 dagen inactiviteit kun je je telefoonnummer opnieuw registreren zonder je pincode. Als je er dan voor kiest om zonder pincode opnieuw te registreren, dan wordt de Signal-app gereset en alle inhoud wordt gewist.</string>
+			<string>Je hebt nog %1$d pogingen. Als je geen pogingen meer over hebt, wordt Signal voor dit telefoonnummer tijdelijk vergrendeld. Na 7 dagen kun je je telefoonnummer opnieuw registreren zonder je pincode. Je account wordt gewist en alle inhoud wordt verwijderd.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
@@ -1128,9 +1096,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; antwoord</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; antwoord</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; antwoorden</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; antwoorden</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1144,9 +1112,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>Door %1$d persoon gezien</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>Door %1$d personen gezien</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1160,9 +1128,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>voor 1 persoon verborgen</string>
+			<string>Verborgen voor %1$d</string>
 			<key>other</key>
-			<string>voor %d personen verborgen</string>
+			<string>Verborgen voor %1$d</string>
 		</dict>
 	</dict>
 	<key>STORY_SENDING_%d</key>
@@ -1176,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Aan het verzenden…</string>
+			<string>Versturen…</string>
 			<key>other</key>
-			<string>%d aan het verzenden…</string>
+			<string>%1$d aan het versturen…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1192,9 +1160,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Door 1 persoon gezien</string>
+			<string>Door %1$d persoon gezien</string>
 			<key>other</key>
-			<string>Door %d personen gezien</string>
+			<string>Door %1$d personen gezien</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
@@ -1208,9 +1176,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; antwoord</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; antwoord</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; antwoorden</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; antwoorden</string>
 		</dict>
 		<key>views</key>
 		<dict>
@@ -1219,9 +1187,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; weergave</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; keer bekeken</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; weergaven</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
@@ -1235,201 +1203,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; keer bekeken</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; weergave</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; keer bekeken</string>
-		</dict>
-	</dict>
-	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Lid van %2$@, %3$@ en nog 1 andere groep</string>
-			<key>other</key>
-			<string>Lid van %2$@, %3$@ en nog %d andere groepen</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_DAYS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 dag</string>
-			<key>other</key>
-			<string>%d dagen</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_DAYS_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 d</string>
-			<key>other</key>
-			<string>%d d</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_HOURS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 uur</string>
-			<key>other</key>
-			<string>%d uur</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_HOURS_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 u</string>
-			<key>other</key>
-			<string>%d u</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_MINUTES_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 minuut</string>
-			<key>other</key>
-			<string>%d minuten</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 min</string>
-			<key>other</key>
-			<string>%d min</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_SECONDS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 seconde</string>
-			<key>other</key>
-			<string>%d seconden</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 s</string>
-			<key>other</key>
-			<string>%d s</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_WEEKS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 week</string>
-			<key>other</key>
-			<string>%d weken</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 w</string>
-			<key>other</key>
-			<string>%d w</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_YEARS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 jaar</string>
-			<key>other</key>
-			<string>%d jaar</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; weergaven</string>
 		</dict>
 	</dict>
 </dict>

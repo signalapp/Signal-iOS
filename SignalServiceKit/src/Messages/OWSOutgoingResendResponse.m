@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSOutgoingResendResponse.h"
@@ -18,7 +19,7 @@
 
 - (nullable instancetype)initWithAddress:(SignalServiceAddress *)address
                                 deviceId:(int64_t)deviceId
-                         failedTimestamp:(int64_t)failedTimestamp
+                         failedTimestamp:(uint64_t)failedTimestamp
                          didResetSession:(BOOL)didPerformSessionReset
                              transaction:(SDSAnyWriteTransaction *)transaction
 {

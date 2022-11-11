@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -62,7 +63,7 @@ public extension OWSFileSystem {
     }
 
     class func recursiveFilesInDirectory(_ dirPath: String) throws -> [String] {
-        owsAssertDebug(dirPath.count > 0)
+        owsAssertDebug(!dirPath.isEmpty)
 
         do {
             return try FileManager.default.subpathsOfDirectory(atPath: dirPath)
@@ -149,5 +150,22 @@ public extension OWSFileSystem {
             }
             return false
         }
+    }
+}
+
+// MARK: - Remaining space
+
+public extension OWSFileSystem {
+    /// Get the remaining free space for a path's volume in bytes.
+    ///
+    /// See [Apple's example][0]. It checks "important" storage (versus "opportunistic" storage).
+    ///
+    /// [0]: https://developer.apple.com/documentation/foundation/nsurlresourcekey/checking_volume_storage_capacity
+    class func freeSpaceInBytes(forPath path: URL) throws -> UInt64 {
+        let resourceValues = try path.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey])
+        guard let result = resourceValues.volumeAvailableCapacityForImportantUsage else {
+            throw OWSGenericError("Could not determine remaining disk space")
+        }
+        return UInt64(result)
     }
 }

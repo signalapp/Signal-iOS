@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import UIKit
@@ -753,40 +754,32 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
         // We need to adjust the font size to reflect the current output scale,
         // using the image width as reference.
         let fontSize = item.fontSize * imageFrame.size.width / item.fontReferenceImageWidth
-        let font = MediaTextView.font(forTextStyle: item.textStyle, pointSize: fontSize)
-
-        let textColor: UIColor = {
-            switch item.decorationStyle {
-            case .none: return item.color.color
-            default: return UIColor.white
-            }
-        }()
+        let font = MediaTextView.font(for: item.textStyle, withPointSize: fontSize)
 
         let text = item.text.filterForDisplay ?? ""
-        let attributedString = NSMutableAttributedString(string: text,
-                                                         attributes: [ .font: font,
-                                                                       .foregroundColor: textColor ])
-        switch item.decorationStyle {
-        case .underline:
-            attributedString.addAttributes([ .underlineStyle: NSUnderlineStyle.single.rawValue,
-                                             .underlineColor: item.color.color ],
-                                           range: attributedString.entireRange)
-        case .outline:
-            attributedString.addAttributes([ .strokeWidth: -3,
-                                             .strokeColor: item.color.color ],
-                                           range: attributedString.entireRange)
+        let textStorage = NSTextStorage(
+            string: text,
+            attributes: [ .font: font, .foregroundColor: item.textForegroundColor ]
+        )
 
-        case .inverted:
-            attributedString.addAttribute(.backgroundColor,
-                                          value: item.color.color,
-                                          range: attributedString.entireRange)
+        if let textDecorationColor = item.textDecorationColor {
+            switch item.decorationStyle {
+            case .underline:
+                textStorage.addAttributes([ .underlineStyle: NSUnderlineStyle.single.rawValue,
+                                            .underlineColor: textDecorationColor],
+                                          range: textStorage.entireRange)
+            case .outline:
+                textStorage.addAttributes([ .strokeWidth: -3,
+                                            .strokeColor: textDecorationColor ],
+                                          range: textStorage.entireRange)
 
-        default:
-            break
+            default:
+                break
+            }
         }
 
         let layer = EditorTextLayer(itemId: item.itemId)
-        layer.string = attributedString
+        layer.string = textStorage.attributedString()
         layer.isWrapped = true
         layer.alignmentMode = .center
         // I don't think we need to enable allowsFontSubpixelQuantization
@@ -799,19 +792,28 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
         // * Model transform (so that text doesn't become blurry as you zoom the content).
         layer.contentsScale = UIScreen.main.scale * item.scaling * transform.scaling
 
-        let maxSize = CGSize(width: imageFrame.size.width * item.unitWidth, height: CGFloat.greatestFiniteMagnitude)
-        let textBounds = attributedString.boundingRect(with: maxSize,
-                                                       options: [ .usesLineFragmentOrigin, .usesFontLeading ],
-                                                       context: nil)
+        let maxWidth = imageFrame.size.width * item.unitWidth
+        let textSize = textStorage.boundingRect(with: CGSize(width: maxWidth, height: .greatestFiniteMagnitude),
+                                                options: [ .usesLineFragmentOrigin ],
+                                                context: nil).size.ceil
+
         // The text item's center is specified in "image unit" coordinates, but
         // needs to be rendered in "canvas" coordinates.  The imageFrame
         // is the bounds of the image specified in "canvas" coordinates,
         // so to transform we can simply convert from image frame units.
         let centerInCanvas = item.unitCenter.fromUnitCoordinates(viewBounds: imageFrame)
-        let layerSize = textBounds.size.ceil
-        layer.frame = CGRect(origin: CGPoint(x: centerInCanvas.x - layerSize.width * 0.5,
-                                             y: centerInCanvas.y - layerSize.height * 0.5),
-                             size: layerSize)
+        layer.frame = CGRect(origin: CGPoint(x: centerInCanvas.x - textSize.width * 0.5,
+                                             y: centerInCanvas.y - textSize.height * 0.5),
+                             size: textSize)
+
+        // Enlarge the layer slightly when setting the background color to add some horizontal padding around the text.
+        // Unfortunately there's no easy way to add vertical padding because default CATextLayer's behavior
+        // is to start drawing text from the top.
+        if let textBackgroundColor = item.textBackgroundColor {
+            layer.frame = layer.frame.insetBy(dx: -4, dy: 0)
+            layer.backgroundColor = textBackgroundColor.cgColor
+            layer.cornerRadius = 8
+        }
 
         let transform = CGAffineTransform.identity.scaledBy(x: item.scaling, y: item.scaling).rotated(by: item.rotationRadians)
         layer.setAffineTransform(transform)

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import UIKit
@@ -9,6 +10,7 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
 
     var dismissHandler: (() -> Void)?
 
+    var bottomBar: UIView { inputToolbar }
     lazy var inputToolbar: StoryReplyInputToolbar = {
         let quotedReplyModel = databaseStorage.read {
             OWSQuotedReplyModel.quotedReply(from: storyMessage, transaction: $0)
@@ -19,7 +21,6 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
     }()
     let storyMessage: StoryMessage
     lazy var thread: TSThread? = databaseStorage.read { storyMessage.context.thread(transaction: $0) }
-    weak var interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator?
 
     var reactionPickerBackdrop: UIView?
     var reactionPicker: MessageReactionPicker?
@@ -31,7 +32,6 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
         self.storyMessage = storyMessage
         super.init()
         modalPresentationStyle = .custom
-        transitioningDelegate = self
     }
 
     public override func viewWillAppear(_ animated: Bool) {
@@ -53,7 +53,7 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
         view.addSubview(inputToolbar)
         inputToolbar.autoPinWidthToSuperview()
         inputToolbar.autoPin(toTopLayoutGuideOf: self, withInset: 0, relation: .greaterThanOrEqual)
-        autoPinView(toBottomOfViewControllerOrKeyboard: inputToolbar, avoidNotch: true)
+        inputToolbar.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
     }
 
     @objc
@@ -71,36 +71,5 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
 
     func didSendMessage() {
         dismiss(animated: true)
-    }
-}
-
-extension StoryDirectReplySheet: UIViewControllerTransitioningDelegate {
-    public func animationController(
-        forPresented presented: UIViewController,
-        presenting: UIViewController,
-        source: UIViewController
-    ) -> UIViewControllerAnimatedTransitioning? {
-        return StoryReplySheetAnimator(
-            isPresenting: true,
-            isInteractive: interactiveTransitionCoordinator != nil,
-            backdropView: backdropView
-        )
-    }
-
-    public func animationController(
-        forDismissed dismissed: UIViewController
-    ) -> UIViewControllerAnimatedTransitioning? {
-        return StoryReplySheetAnimator(
-            isPresenting: false,
-            isInteractive: false,
-            backdropView: backdropView
-        )
-    }
-
-    public func interactionControllerForPresentation(
-        using animator: UIViewControllerAnimatedTransitioning
-    ) -> UIViewControllerInteractiveTransitioning? {
-        interactiveTransitionCoordinator?.mode = .reply
-        return interactiveTransitionCoordinator
     }
 }

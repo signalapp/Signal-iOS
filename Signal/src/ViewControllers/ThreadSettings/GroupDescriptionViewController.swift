@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 protocol GroupDescriptionViewControllerDelegate: AnyObject {
     func groupDescriptionViewControllerDidComplete(groupDescription: String?)
@@ -70,8 +72,8 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    override func applyTheme() {
-        super.applyTheme()
+    override func themeDidChange() {
+        super.themeDidChange()
 
         helper.descriptionTextView.linkTextAttributes = [
             .foregroundColor: Theme.primaryTextColor,

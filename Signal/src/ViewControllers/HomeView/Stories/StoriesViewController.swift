@@ -1,15 +1,33 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import Photos
+import SignalMessaging
 import SignalServiceKit
-import UIKit
 import SignalUI
+import UIKit
 
 class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
     let tableView = UITableView()
+
+    let searchBarBackdropView = UIView()
+
+    let searchBarContainer = UIView()
+    let searchBar = OWSSearchBar()
+
+    var searchBarScrollingConstraint: NSLayoutConstraint?
+    var searchBarPinnedConstraint: NSLayoutConstraint?
+
+    var isFocusingSearchBar = false {
+        didSet {
+            searchBarBackdropView.isHidden = !isFocusingSearchBar
+            searchBarScrollingConstraint?.isActive = !isFocusingSearchBar
+            searchBarPinnedConstraint?.isActive = isFocusingSearchBar
+        }
+    }
 
     private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
@@ -24,11 +42,9 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         return label
     }()
 
-    private lazy var contextMenu = ContextMenuInteraction(delegate: self)
-
     private lazy var dataSource = StoryListDataSource(delegate: self)
 
-    private lazy var contextMenuGenerator = StoryContextMenuGenerator(presentingController: self)
+    private lazy var contextMenuGenerator = StoryContextMenuGenerator(presentingController: self, delegate: self)
 
     override init() {
         super.init()
@@ -40,18 +56,54 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(profileDidChange), name: .localProfileDidChange, object: nil)
     }
 
-    override func loadView() {
-        view = tableView
-        tableView.delegate = self
-        tableView.dataSource = self
-    }
-
     var tableViewIfLoaded: UITableView? {
-        return viewIfLoaded as? UITableView
+        return viewIfLoaded == nil ? nil : tableView
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        view.addSubview(tableView)
+        tableView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+        tableView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
+        tableView.delegate = self
+        tableView.dataSource = self
+
+        // Search
+        searchBarContainer.layoutMargins = .init(hMargin: 8, vMargin: 0)
+
+        // Comment is wrong but its the same string...
+        searchBar.placeholder = OWSLocalizedString(
+            "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
+            comment: "Placeholder text for search bar which filters conversations."
+        )
+        searchBar.delegate = self
+        searchBar.sizeToFit()
+        searchBar.layoutMargins = .zero
+
+        searchBarContainer.frame = searchBar.frame
+        searchBarContainer.addSubview(searchBar)
+        searchBar.autoPinEdgesToSuperviewMargins()
+
+        let searchBarSizingView = UIView()
+        searchBarSizingView.frame = searchBarContainer.frame
+        self.tableView.tableHeaderView = searchBarSizingView
+
+        searchBarSizingView.addSubview(searchBarContainer)
+        searchBarContainer.autoPinHorizontalEdges(toEdgesOf: view)
+        self.searchBarScrollingConstraint = searchBarContainer.autoPinEdge(
+            .bottom,
+            to: .bottom,
+            of: searchBarSizingView
+        )
+        self.searchBarPinnedConstraint = searchBarContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
+        searchBarPinnedConstraint?.priority = .defaultLow
+
+        view.insertSubview(searchBarBackdropView, aboveSubview: tableView)
+        searchBarBackdropView.isHidden = true
+        searchBarBackdropView.backgroundColor = Theme.backgroundColor
+        searchBarBackdropView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+        searchBarBackdropView.autoPinEdge(.bottom, to: .top, of: searchBarContainer)
 
         title = NSLocalizedString("STORIES_TITLE", comment: "Title for the stories view.")
 
@@ -64,9 +116,9 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
 
         updateNavigationBar()
 
-        tableView.addInteraction(contextMenu)
-
         OWSTableViewController2.removeBackButtonText(viewController: self)
+
+        observeTableViewContentSize()
     }
 
     private var timestampUpdateTimer: Timer?
@@ -91,10 +143,19 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
                 }
             }
         }
+
+        if isFocusingSearchBar {
+            navigationController?.setNavigationBarHidden(true, animated: false)
+            (tabBarController as? HomeTabBarController)?.setTabBarHidden(true, animated: false)
+        }
     }
+
+    private var viewIsAppeared = false
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        self.viewIsAppeared = true
 
         // Whether or not the theme has changed, always ensure
         // the right theme is applied. The initial collapsed
@@ -119,16 +180,33 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
+        defer {
+            self.viewIsAppeared = false
+        }
+
         timestampUpdateTimer?.invalidate()
         timestampUpdateTimer = nil
+
+        navigationController?.setNavigationBarHidden(false, animated: animated)
+        (tabBarController as? HomeTabBarController)?.setTabBarHidden(false, animated: animated)
     }
 
-    override func applyTheme() {
-        super.applyTheme()
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
 
+        if !searchBar.text.isEmptyOrNil {
+            searchBar.text = nil
+            dataSource.setSearchText(nil)
+        }
+    }
+
+    override func themeDidChange() {
+        super.themeDidChange()
+        applyTheme()
+    }
+
+    private func applyTheme() {
         emptyStateLabel.textColor = Theme.secondaryTextAndIconColor
-
-        contextMenu.dismissMenu(animated: true) {}
 
         for indexPath in self.tableView.indexPathsForVisibleRows ?? [] {
             switch Section(rawValue: indexPath.section) {
@@ -159,8 +237,44 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
 
         view.backgroundColor = Theme.backgroundColor
         tableView.backgroundColor = Theme.backgroundColor
+        searchBarContainer.backgroundColor = Theme.backgroundColor
+        searchBarBackdropView.backgroundColor = Theme.backgroundColor
 
         updateNavigationBar()
+    }
+
+    private var hasSeenNonZeroContentSize = false
+    private var tableViewContentSizeObservation: NSKeyValueObservation?
+
+    private func stopObsersingTableViewContentSize() {
+        tableViewContentSizeObservation?.invalidate()
+        tableViewContentSizeObservation = nil
+    }
+
+    private func observeTableViewContentSize() {
+        stopObsersingTableViewContentSize()
+        guard !hasSeenNonZeroContentSize else { return }
+
+        tableViewContentSizeObservation = tableView.observe(\.contentSize, changeHandler: { [weak self] _, _ in
+            guard
+                let strongSelf = self,
+                !strongSelf.hasSeenNonZeroContentSize
+            else {
+                self?.stopObsersingTableViewContentSize()
+                return
+            }
+
+            if strongSelf.tableView.contentSize.height > 0 {
+                strongSelf.hasSeenNonZeroContentSize = true
+
+                if strongSelf.tableView.contentSize.height > strongSelf.tableView.frame.height {
+                    // Scroll up the search bar.
+                    strongSelf.tableView.contentOffset = strongSelf.tableView.contentOffset.offsetBy(dy: strongSelf.searchBarContainer.frame.height)
+                }
+
+                strongSelf.stopObsersingTableViewContentSize()
+            }
+        })
     }
 
     @objc
@@ -171,7 +285,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         contextButton.showsContextMenuAsPrimaryAction = true
         contextButton.contextMenu = .init([
             .init(
-                title: NSLocalizedString("STORIES_SETTINGS_TITLE", comment: "Title for the story privacy settings view"),
+                title: NSLocalizedString("STORY_PRIVACY_TITLE", comment: "Title for the story privacy settings view"),
                 image: Theme.iconImage(.settingsPrivacy),
                 handler: { [weak self] _ in
                     self?.showPrivacySettings()
@@ -245,6 +359,57 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         let vc = StoryPrivacySettingsViewController()
         presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
     }
+
+    // MARK: - Scrolling after reload
+
+    private enum ScrollTarget {
+        // Scroll to a section so its first cell is at the top.
+        case section(Section)
+        // Scroll to a context, optionally restricted to a given section.
+        // Highlights after scroll.
+        case context(StoryContext, section: Section?)
+    }
+
+    private var scrollTarget: ScrollTarget?
+
+    public func tableViewDidUpdate() {
+        emptyStateLabel.isHidden = !dataSource.isEmpty
+        tableView.isScrollEnabled = !dataSource.isEmpty
+        guard let scrollTarget = scrollTarget else {
+            return
+        }
+        switch scrollTarget {
+        case .section(let section):
+            guard tableView.numberOfRows(inSection: section.rawValue) > 0 else {
+                return
+            }
+            tableView.scrollToRow(at: IndexPath(item: 0, section: section.rawValue), at: .top, animated: true)
+            self.scrollTarget = nil
+        case let .context(context, sectionConstraint):
+            let section: Section
+            let index: Int
+            if
+                sectionConstraint ?? .visibleStories == .visibleStories,
+                let visibleStoryIndex = dataSource.visibleStories.firstIndex(where: { $0.context == context }) {
+                section = .visibleStories
+                index = visibleStoryIndex
+            } else if
+                sectionConstraint ?? .hiddenStories == .hiddenStories,
+                let hiddenStoryIndex = dataSource.hiddenStories.firstIndex(where: { $0.context == context }),
+                dataSource.shouldDisplayHiddenStories {
+                section = .hiddenStories
+                // Offset for the header
+                let headerOffset = dataSource.shouldDisplayHiddenStoriesHeader ? 1 : 0
+                index = hiddenStoryIndex + headerOffset
+            } else {
+                // Not found.
+                return
+            }
+            let indexPath = IndexPath(row: index, section: section.rawValue)
+            tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+            self.scrollTarget = nil
+        }
+    }
 }
 
 extension StoriesViewController: CameraFirstCaptureDelegate {
@@ -258,6 +423,13 @@ extension StoriesViewController: CameraFirstCaptureDelegate {
 }
 
 extension StoriesViewController: UITableViewDelegate {
+
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        if isFocusingSearchBar, searchBar.text?.isEmpty ?? true {
+            stopFocusingSearchBar(clearingSearchText: true)
+        }
+    }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
 
@@ -269,9 +441,14 @@ extension StoriesViewController: UITableViewDelegate {
                 navigationController?.pushViewController(MyStoriesViewController(), animated: true)
             }
         case .hiddenStories:
-            if indexPath.row == 0 {
+            if indexPath.row == 0, dataSource.shouldDisplayHiddenStoriesHeader {
                 // Tapping the collapsing header.
-                dataSource.isHiddenStoriesSectionCollapsed = !dataSource.isHiddenStoriesSectionCollapsed
+                let wasCollapsed = dataSource.isHiddenStoriesSectionCollapsed
+                dataSource.isHiddenStoriesSectionCollapsed = !wasCollapsed
+                if wasCollapsed {
+                    // Scroll to it once we reload.
+                    self.scrollTarget = .section(.hiddenStories)
+                }
             } else {
                 fallthrough
             }
@@ -299,20 +476,80 @@ extension StoriesViewController: UITableViewDelegate {
             // to page through unviewed contexts.
             let filterViewed = model.hasUnviewedMessages
             // If we tap on a non-hidden story, we only want the viewer to page through
-            // non-hidden contexts.
-            let filterHidden = !model.isHidden
+            // non-hidden contexts, and vice versa.
+            let startedFromHidden = model.isHidden
             let viewableContexts: [StoryContext] = dataSource.allStories
                 .lazy
                 .filter { !filterViewed || $0.hasUnviewedMessages }
-                .filter { !filterHidden || !$0.isHidden }
+                .filter { startedFromHidden == $0.isHidden }
                 .map(\.context)
 
-            let vc = StoryPageViewController(context: model.context, viewableContexts: viewableContexts)
+            let vc = StoryPageViewController(
+                context: model.context,
+                viewableContexts: viewableContexts,
+                hiddenStoryFilter: startedFromHidden
+            )
             vc.contextDataSource = self
             presentFullScreen(vc, animated: true)
         case .none:
             owsFailDebug("Unexpected section \(indexPath.section)")
         }
+    }
+
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        switch Section(rawValue: indexPath.section) {
+        case .hiddenStories, .visibleStories:
+            return true
+        case .myStory, .none:
+            return false
+        }
+    }
+
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        switch Section(rawValue: indexPath.section) {
+        case .hiddenStories, .visibleStories:
+            guard
+                let model = model(for: indexPath),
+                let action = contextMenuGenerator.goToChatContextualAction(for: model)
+            else {
+                return nil
+            }
+            return .init(actions: [action])
+        case .myStory, .none:
+            return nil
+        }
+    }
+
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        switch Section(rawValue: indexPath.section) {
+        case .hiddenStories, .visibleStories:
+            guard
+                let model = model(for: indexPath),
+                let action = contextMenuGenerator.hideTableRowContextualAction(for: model)
+            else {
+                return nil
+            }
+            return .init(actions: [action])
+        case .myStory, .none:
+            return nil
+        }
+    }
+
+    @available(iOS 13, *)
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard let model = model(for: indexPath) else {
+            return nil
+        }
+
+        return .init(identifier: indexPath as NSCopying, previewProvider: nil, actionProvider: { [weak self] _ in
+            let actions = self?.contextMenuGenerator.nativeContextMenuActions(
+                for: model,
+                sourceView: { [weak self] in
+                    return self?.tableView.cellForRow(at: indexPath)
+                }
+            ) ?? []
+            return .init(children: actions)
+        })
     }
 }
 
@@ -325,7 +562,8 @@ extension StoriesViewController: UITableViewDataSource {
             return dataSource.visibleStories[safe: indexPath.row]
         case .hiddenStories:
             // Offset by 1 to account for the header cell.
-            return dataSource.hiddenStories[safe: indexPath.row - 1]
+            let headerOffset = dataSource.shouldDisplayHiddenStoriesHeader ? 1 : 0
+            return dataSource.hiddenStories[safe: indexPath.row - headerOffset]
         case .myStory, .none:
             return nil
         }
@@ -340,10 +578,11 @@ extension StoriesViewController: UITableViewDataSource {
         if let visibleRow = dataSource.visibleStories.firstIndex(where: { $0.context == context }) {
             indexPath = IndexPath(row: visibleRow, section: Section.visibleStories.rawValue)
         } else if
-            !dataSource.isHiddenStoriesSectionCollapsed,
+            dataSource.shouldDisplayHiddenStories,
             let hiddenRow = dataSource.hiddenStories.firstIndex(where: { $0.context == context }) {
             // Offset by 1 to account for the header cell.
-            indexPath = IndexPath(row: hiddenRow + 1, section: Section.hiddenStories.rawValue)
+            let headerOffset = dataSource.shouldDisplayHiddenStoriesHeader ? 1 : 0
+            indexPath = IndexPath(row: hiddenRow + headerOffset, section: Section.hiddenStories.rawValue)
         } else {
             return nil
         }
@@ -362,7 +601,7 @@ extension StoriesViewController: UITableViewDataSource {
             cell.configure(with: myStoryModel) { [weak self] in self?.showCameraView() }
             return cell
         case .hiddenStories:
-            if indexPath.row == 0 {
+            if indexPath.row == 0 && dataSource.shouldDisplayHiddenStoriesHeader {
                 let cell = tableView.dequeueReusableCell(
                     withIdentifier: HiddenStoryHeaderCell.reuseIdentifier,
                     for: indexPath
@@ -391,18 +630,17 @@ extension StoriesViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        emptyStateLabel.isHidden = !dataSource.allStories.isEmpty || dataSource.myStory?.messages.isEmpty == false
-
         switch Section(rawValue: section) {
         case .myStory:
-            return dataSource.myStory == nil ? 0 : 1
+            return dataSource.shouldDisplayMyStory ? 1 : 0
         case .visibleStories:
             return dataSource.visibleStories.count
         case .hiddenStories:
-            guard !dataSource.hiddenStories.isEmpty else {
-                return 0
-            }
-            return dataSource.isHiddenStoriesSectionCollapsed ? 1 : dataSource.hiddenStories.count + 1
+            return (
+                dataSource.shouldDisplayHiddenStoriesHeader ? 1 : 0
+            ) + (
+                dataSource.shouldDisplayHiddenStories ? dataSource.hiddenStories.count : 0
+            )
         case .none:
             owsFailDebug("Unexpected section \(section)")
             return 0
@@ -410,64 +648,92 @@ extension StoriesViewController: UITableViewDataSource {
     }
 }
 
-extension StoriesViewController: StoryPageViewControllerDataSource {
-    func storyPageViewControllerAvailableContexts(_ storyPageViewController: StoryPageViewController) -> [StoryContext] {
-        return dataSource.threadSafeStoryContexts
+extension StoriesViewController: UISearchBarDelegate {
+
+    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        return viewIsAppeared
+    }
+
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        beginFocusingSearchBar()
+    }
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        dataSource.setSearchText(searchText.isEmpty ? nil : searchText)
+    }
+
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        stopFocusingSearchBar(clearingSearchText: false)
+    }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        stopFocusingSearchBar(clearingSearchText: true)
+    }
+
+    private func beginFocusingSearchBar() {
+        self.navigationController?.setNavigationBarHidden(true, animated: true)
+        (tabBarController as? HomeTabBarController)?.setTabBarHidden(true, animated: true)
+        searchBar.setShowsCancelButton(true, animated: true)
+        // Do this as a transition animation so we get tighter timing
+        // with the navigation controller animation.
+        UIView.transition(
+            with: view,
+            duration: UINavigationController.hideShowBarDuration,
+            animations: {},
+            completion: { _ in
+                // Only change state when animations are done.
+                self.isFocusingSearchBar = true
+            }
+        )
+    }
+
+    private func stopFocusingSearchBar(clearingSearchText: Bool) {
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
+        (tabBarController as? HomeTabBarController)?.setTabBarHidden(false, animated: true)
+        searchBar.setShowsCancelButton(false, animated: true)
+        // Do this as a transition animation so we get tighter timing
+        // with the navigation controller animation.
+        UIView.transition(
+            with: self.view,
+            duration: UINavigationController.hideShowBarDuration,
+            animations: {},
+            completion: { _ in
+                // Only change state when animations are done.
+                self.isFocusingSearchBar = false
+            }
+        )
+        searchBar.resignFirstResponder()
+        if clearingSearchText {
+            self.searchBar.text = nil
+            dataSource.setSearchText(nil)
+        }
     }
 }
 
-extension StoriesViewController: ContextMenuInteractionDelegate {
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
-        guard
-            let indexPath = tableView.indexPathForRow(at: location),
-            let model = model(for: indexPath),
-            let cell = tableView.cellForRow(at: indexPath)
-        else {
-            return nil
-        }
-
-        return .init(identifier: indexPath as NSCopying) { [weak self] _ in
-            let actions = self?.contextMenuGenerator.contextMenuActions(
-                for: model,
-                sourceView: cell
-            ) ?? []
-            return .init(actions)
+extension StoriesViewController: StoryPageViewControllerDataSource {
+    func storyPageViewControllerAvailableContexts(
+        _ storyPageViewController: StoryPageViewController,
+        hiddenStoryFilter: Bool?
+    ) -> [StoryContext] {
+        if hiddenStoryFilter == true {
+            return dataSource.threadSafeHiddenStoryContexts
+        } else if hiddenStoryFilter == false {
+            return dataSource.threadSafeVisibleStoryContexts
+        } else {
+            return dataSource.threadSafeStoryContexts
         }
     }
+}
 
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration) -> ContextMenuTargetedPreview? {
-        guard let indexPath = configuration.identifier as? IndexPath else { return nil }
+extension StoriesViewController: StoryContextMenuDelegate {
 
-        guard let cell = tableView.cellForRow(at: indexPath) as? StoryCell,
-            let cellSnapshot = cell.contentHStackView.snapshotView(afterScreenUpdates: false) else { return nil }
-
-        // Build a custom preview that wraps the cell contents in a bubble.
-        // Normally, our context menus just present the cell row full width.
-
-        let previewView = UIView()
-        previewView.frame = cell.contentView
-            .convert(cell.contentHStackView.frame, to: cell.superview)
-            .insetBy(dx: -12, dy: -12)
-        previewView.layer.cornerRadius = 18
-        previewView.backgroundColor = Theme.backgroundColor
-        previewView.clipsToBounds = true
-
-        previewView.addSubview(cellSnapshot)
-        cellSnapshot.frame.origin = CGPoint(x: 12, y: 12)
-
-        let preview = ContextMenuTargetedPreview(
-            view: cell,
-            previewView: previewView,
-            alignment: .leading,
-            accessoryViews: []
-        )
-        preview.alignmentOffset = CGPoint(x: 12, y: 12)
-        return preview
+    func storyContextMenuDidUpdateHiddenState(_ message: StoryMessage, isHidden: Bool) -> Bool {
+        if isHidden {
+            // Uncollapse so we can scroll to the section.
+            dataSource.isHiddenStoriesSectionCollapsed = false
+        }
+        self.scrollTarget = .context(message.context, section: isHidden ? .hiddenStories : .visibleStories)
+        // Don't show a toast, we have the scroll action.
+        return false
     }
-
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, willDisplayMenuForConfiguration: ContextMenuConfiguration) {}
-
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {}
-
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, didEndForConfiguration configuration: ContextMenuConfiguration) {}
 }

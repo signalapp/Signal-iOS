@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -38,13 +39,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
         }
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            self.mergeUserProfiles()
-
             Self.enqueueRestoreGroupPass()
-
-            if !CurrentAppContext().isNSE {
-                GroupsV2Migration.tryToAutoMigrateAllGroups(shouldLimitBatchSize: true)
-            }
         }
 
         observeNotifications()
@@ -102,23 +97,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         return true
     }
 
-    // This will only be used for internal builds.
-    private func mergeUserProfiles() {
-        guard DebugFlags.shouldMergeUserProfiles else {
-            return
-        }
-
-        databaseStorage.asyncWrite { transaction in
-            SignalRecipient.anyEnumerate(transaction: transaction) { (recipient, _) in
-                let address = recipient.address
-                guard address.uuid != nil, address.phoneNumber != nil else {
-                    return
-                }
-                OWSUserProfile.mergeUserProfilesIfNecessary(for: address, transaction: transaction)
-            }
-        }
-    }
-
     // MARK: - Notifications
 
     private func observeNotifications() {
@@ -152,9 +130,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
     public func createNewGroupOnService(groupModel: TSGroupModelV2,
                                         disappearingMessageToken: DisappearingMessageToken) -> Promise<Void> {
-        guard let localUuid = tsAccountManager.localUuid else {
-            return Promise<Void>(error: OWSAssertionError("Missing localUuid."))
-        }
         let groupV2Params: GroupV2Params
         do {
             groupV2Params = try groupModel.groupV2Params()
@@ -162,35 +137,112 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             return Promise<Void>(error: error)
         }
 
-        let requestBuilder: RequestBuilder = { (authCredential) in
-            return firstly(on: .global()) { () -> [UUID] in
-                // Gather the UUIDs for all members.
-                // We cannot gather profile key credentials for pending members, by definition.
-                let uuids = self.uuids(for: groupModel.groupMembers)
-                guard uuids.contains(localUuid) else {
-                    throw OWSAssertionError("localUuid is not a member.")
+        return firstly(on: .global()) { () throws -> Promise<GroupsProtoGroup> in
+            self.buildProtoToCreateNewGroupOnService(
+                groupModel: groupModel,
+                disappearingMessageToken: disappearingMessageToken,
+                groupV2Params: groupV2Params
+            )
+        }.then(on: .global()) { groupProto -> Promise<Void> in
+            let requestBuilder: RequestBuilder = { authCredential -> Promise<GroupsV2Request> in
+                return .value(try StorageService.buildNewGroupRequest(
+                    groupProto: groupProto,
+                    groupV2Params: groupV2Params,
+                    authCredential: authCredential
+                ))
+            }
+
+            // New-group protos contain a profile key credential for each
+            // member. If the proto we're submitting contains a profile key
+            // credential that's expired, we'll get back a generic 400.
+            // Consequently, if we get a 400 we should attempt to recover
+            // (see below).
+
+            return self.performServiceRequest(
+                requestBuilder: requestBuilder,
+                groupId: nil,
+                behavior400: .reportForRecovery,
+                behavior403: .fail,
+                behavior404: .fail
+            ).asVoid()
+        }.recover(on: .global()) { error throws -> Promise<Void> in
+            guard case GroupsV2Error.serviceRequestHitRecoverable400 = error else {
+                throw error
+            }
+
+            // We likely failed to create the group because one of the profile
+            // key credentials we submitted was expired, possibly due to drift
+            // between our local clock and the service. We should try again
+            // exactly once, forcing a refresh of all the credentials first.
+
+            return self.buildProtoToCreateNewGroupOnService(
+                groupModel: groupModel,
+                disappearingMessageToken: disappearingMessageToken,
+                groupV2Params: groupV2Params,
+                shouldForceRefreshProfileKeyCredentials: true
+            ).then(on: .global()) { groupProto -> Promise<Void> in
+                let requestBuilder: RequestBuilder = { authCredential -> Promise<GroupsV2Request> in
+                    return .value(try StorageService.buildNewGroupRequest(
+                        groupProto: groupProto,
+                        groupV2Params: groupV2Params,
+                        authCredential: authCredential
+                    ))
                 }
-                return uuids
-            }.then(on: .global()) { (uuids: [UUID]) -> Promise<ProfileKeyCredentialMap> in
-                // Gather the profile key credentials for all members.
-                let allUuids = uuids + [localUuid]
-                return self.loadProfileKeyCredentials(for: allUuids, forceRefresh: false)
-            }.map(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> GroupsV2Request in
-                let groupProto = try GroupsV2Protos.buildNewGroupProto(groupModel: groupModel,
-                                                                       disappearingMessageToken: disappearingMessageToken,
-                                                                       groupV2Params: groupV2Params,
-                                                                       profileKeyCredentialMap: profileKeyCredentialMap,
-                                                                       localUuid: localUuid)
-                return try StorageService.buildNewGroupRequest(groupProto: groupProto,
-                                                               groupV2Params: groupV2Params,
-                                                               authCredential: authCredential)
+
+                return self.performServiceRequest(
+                    requestBuilder: requestBuilder,
+                    groupId: nil,
+                    behavior400: .fail,
+                    behavior403: .fail,
+                    behavior404: .fail
+                ).asVoid()
             }
         }
+    }
 
-        return performServiceRequest(requestBuilder: requestBuilder,
-                                     groupId: nil,
-                                     behavior403: .fail,
-                                     behavior404: .fail).asVoid()
+    /// Construct the proto to create a new group on the service.
+    /// - Parameters:
+    ///   - shouldForceRefreshProfileKeyCredentials: Whether we should force-refresh PKCs for the group members.
+    private func buildProtoToCreateNewGroupOnService(
+        groupModel: TSGroupModelV2,
+        disappearingMessageToken: DisappearingMessageToken,
+        groupV2Params: GroupV2Params,
+        shouldForceRefreshProfileKeyCredentials: Bool = false
+    ) -> Promise<GroupsProtoGroup> {
+        guard let localUuid = tsAccountManager.localUuid else {
+            return Promise(error: OWSAssertionError("Missing localUuid."))
+        }
+
+        return firstly(on: .global()) { () throws -> Promise<ProfileKeyCredentialMap> in
+            // Gather the UUIDs for all full (not invited) members, and get
+            // profile key credentials for them. By definition, we cannot get
+            // a PKC for the invited members.
+            let uuids: [UUID] = groupModel.groupMembers.compactMap { address in
+                guard let uuid = address.uuid else {
+                    owsFailDebug("Address of full member in new group missing UUID.")
+                    return nil
+                }
+
+                return uuid
+            }
+
+            guard uuids.contains(localUuid) else {
+                throw OWSAssertionError("localUuid is not a member.")
+            }
+
+            return self.loadProfileKeyCredentials(
+                for: uuids,
+                forceRefresh: shouldForceRefreshProfileKeyCredentials
+            )
+        }.map(on: .global()) { profileKeyCredentialMap -> GroupsProtoGroup in
+            return try GroupsV2Protos.buildNewGroupProto(
+                groupModel: groupModel,
+                disappearingMessageToken: disappearingMessageToken,
+                groupV2Params: groupV2Params,
+                profileKeyCredentialMap: profileKeyCredentialMap,
+                localUuid: localUuid
+            )
+        }
     }
 
     // MARK: - Update Group
@@ -233,57 +285,130 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             return Promise(error: error)
         }
 
-        let finalGroupChangeProto = AtomicOptional<GroupsProtoGroupChangeActions>(nil)
-
-        let requestBuilder: RequestBuilder = { authCredential in
-            firstly(on: .global()) { () throws -> (thread: TSGroupThread, disappearingMessageToken: DisappearingMessageToken) in
-                return try self.databaseStorage.read { transaction in
-                    guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                        throw OWSAssertionError("Thread does not exist.")
-                    }
-                    let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread, transaction: transaction)
-                    return (groupThread, dmConfiguration.asToken)
-                }
-            }.then(on: .global()) { (groupThread: TSGroupThread, disappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions> in
-                guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-                    throw OWSAssertionError("Invalid group model.")
-                }
-                return changes.buildGroupChangeProto(currentGroupModel: groupModel,
-                                                     currentDisappearingMessageToken: disappearingMessageToken)
-            }.map(on: .global()) { (groupChangeProto: GroupsProtoGroupChangeActions) -> GroupsV2Request in
-                finalGroupChangeProto.set(groupChangeProto)
-                return try StorageService.buildUpdateGroupRequest(groupChangeProto: groupChangeProto,
-                                                                  groupV2Params: groupV2Params,
-                                                                  authCredential: authCredential,
-                                                                  groupInviteLinkPassword: nil)
-            }
-        }
-
-        return firstly {
-            self.performServiceRequest(
-                requestBuilder: requestBuilder,
+        return firstly { () -> Promise<(GroupsProtoGroupChangeActions, HTTPResponse)> in
+            self.buildGroupChangeProtoAndTryToUpdateGroupOnService(
                 groupId: groupId,
-                behavior403: .fetchGroupUpdates,
-                behavior404: .fail
-            ).recover(on: .global()) { error throws -> Promise<HTTPResponse> in
-                guard case GroupsV2Error.conflictingChangeOnService = error else {
-                    throw error
-                }
+                groupV2Params: groupV2Params,
+                changes: changes
+            )
+        }.recover(on: .global()) { error throws -> Promise<(GroupsProtoGroupChangeActions, HTTPResponse)> in
+            switch error {
+            case GroupsV2Error.conflictingChangeOnService:
+                // If we failed because a conflicting change has already been
+                // committed to the service, we should refresh our local state
+                // for the group and try again to apply our changes.
 
                 return self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
                     groupId: groupId,
                     groupSecretParamsData: groupSecretParamsData
                 ).then(on: .global()) { _ in
-                    self.performServiceRequest(
-                        requestBuilder: requestBuilder,
+                    self.buildGroupChangeProtoAndTryToUpdateGroupOnService(
                         groupId: groupId,
-                        behavior403: .fetchGroupUpdates,
-                        behavior404: .fail
+                        groupV2Params: groupV2Params,
+                        changes: changes
                     )
                 }
-            }
-        }.then(on: .global()) { (response: HTTPResponse) -> Promise<UpdatedV2Group> in
+            case GroupsV2Error.serviceRequestHitRecoverable400:
+                // We likely got the 400 because we submitted a proto with
+                // profile key credentials and one of them was expired, possibly
+                // due to drift between our local clock and the service. We
+                // should try again exactly once, forcing a refresh of all the
+                // credentials first.
 
+                return self.buildGroupChangeProtoAndTryToUpdateGroupOnService(
+                    groupId: groupId,
+                    groupV2Params: groupV2Params,
+                    changes: changes,
+                    shouldForceRefreshProfileKeyCredentials: true,
+                    forceFailOn400: true
+                )
+            default:
+                throw error
+            }
+        }.then(on: .global()) { (groupChangeProto, response) throws -> Promise<TSGroupThread> in
+            return self.handleGroupUpdatedOnService(
+                response: response,
+                changes: changes,
+                groupChangeProto: groupChangeProto,
+                groupId: groupId,
+                groupV2Params: groupV2Params
+            )
+        }
+    }
+
+    /// Construct a group change proto from the given `changes` for the given
+    /// `groupId`, and attempt to commit the group change to the service.
+    /// - Parameters:
+    ///   - shouldForceRefreshProfileKeyCredentials: Whether we should force-refresh PKCs for any new members while building the proto.
+    ///   - forceFailOn400: Whether we should force failure when receiving a 400. If `false`, may instead report expired PKCs.
+    private func buildGroupChangeProtoAndTryToUpdateGroupOnService(
+        groupId: Data,
+        groupV2Params: GroupV2Params,
+        changes: GroupsV2OutgoingChanges,
+        shouldForceRefreshProfileKeyCredentials: Bool = false,
+        forceFailOn400: Bool = false
+    ) -> Promise<(GroupsProtoGroupChangeActions, HTTPResponse)> {
+        self.databaseStorage.read(.promise) { transaction throws -> (TSGroupThread, DisappearingMessageToken) in
+            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                throw OWSAssertionError("Thread does not exist.")
+            }
+
+            let dmConfiguration = OWSDisappearingMessagesConfiguration.fetchOrBuildDefault(with: groupThread, transaction: transaction)
+
+            return (groupThread, dmConfiguration.asToken)
+        }.then(on: .global()) { (groupThread, dmToken) throws -> Promise<GroupsProtoGroupChangeActions> in
+            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                throw OWSAssertionError("Invalid group model.")
+            }
+
+            return changes.buildGroupChangeProto(
+                currentGroupModel: groupModel,
+                currentDisappearingMessageToken: dmToken,
+                forceRefreshProfileKeyCredentials: shouldForceRefreshProfileKeyCredentials
+            )
+        }.then(on: .global()) { groupChangeProto -> Promise<(GroupsProtoGroupChangeActions, HTTPResponse)> in
+            var behavior400: Behavior400 = .fail
+            if
+                !forceFailOn400,
+                groupChangeProto.containsProfileKeyCredentials
+            {
+                // If the proto we're submitting contains a profile key credential
+                // that's expired, we'll get back a generic 400. Consequently, if
+                // we're submitting a proto with PKCs, and we get a 400, we should
+                // attempt to recover.
+
+                behavior400 = .reportForRecovery
+            }
+
+            let requestBuilder: RequestBuilder = { authCredential in
+                return .value(try StorageService.buildUpdateGroupRequest(
+                    groupChangeProto: groupChangeProto,
+                    groupV2Params: groupV2Params,
+                    authCredential: authCredential,
+                    groupInviteLinkPassword: nil
+                ))
+            }
+
+            return self.performServiceRequest(
+                requestBuilder: requestBuilder,
+                groupId: groupId,
+                behavior400: behavior400,
+                behavior403: .fetchGroupUpdates,
+                behavior404: .fail
+            ).map(on: .global()) { response -> (GroupsProtoGroupChangeActions, HTTPResponse) in
+                return (groupChangeProto, response)
+            }
+        }
+    }
+
+    private func handleGroupUpdatedOnService(
+        response: HTTPResponse,
+        changes: GroupsV2OutgoingChanges,
+        groupChangeProto: GroupsProtoGroupChangeActions,
+        groupId: Data,
+        groupV2Params: GroupV2Params
+    ) -> Promise<TSGroupThread> {
+        firstly { () -> Promise<UpdatedV2Group> in
             guard let changeActionsProtoData = response.responseBodyData else {
                 throw OWSAssertionError("Invalid responseObject.")
             }
@@ -310,10 +435,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                 GroupManager.sendGroupUpdateMessage(thread: updatedV2Group.groupThread,
                                                     changeActionsProtoData: updatedV2Group.changeActionsProtoData)
             }.map(on: .global()) { (_) -> Void in
-                guard let groupChangeProto = finalGroupChangeProto.get() else {
-                    owsFailDebug("Missing groupChangeProto.")
-                    return
-                }
                 self.sendGroupUpdateMessageToRemovedUsers(groupThread: updatedV2Group.groupThread,
                                                           groupChangeProto: groupChangeProto,
                                                           changeActionsProtoData: updatedV2Group.changeActionsProtoData,
@@ -411,7 +532,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                                                        plaintextData: contentProtoData,
                                                        transaction: transaction)
 
-                Self.messageSenderJobQueue.add(message: message.asPreparer, limitToCurrentProcessLifetime: true, transaction: transaction)
+                Self.sskJobQueues.messageSenderJobQueue.add(
+                    message: message.asPreparer,
+                    limitToCurrentProcessLifetime: true,
+                    transaction: transaction
+                )
             }
         }
     }
@@ -488,6 +613,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             let groupId = try self.groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
+                                              behavior400: .fail,
                                               behavior403: .fetchGroupUpdates,
                                               behavior404: .fail)
         }.map(on: .global()) { (response: HTTPResponse) -> GroupsProtoAvatarUploadAttributes in
@@ -548,6 +674,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             let groupId = try self.groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
+                                              behavior400: .fail,
                                               behavior403: .removeFromGroup,
                                               behavior404: .groupDoesNotExistOnService)
         }.map(on: .global()) { (response: HTTPResponse) -> GroupsProtoGroup in
@@ -689,6 +816,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             return self.performServiceRequest(
                 requestBuilder: fetchGroupChangesRequestBuilder,
                 groupId: groupId,
+                behavior400: .fail,
                 behavior403: .fail,
                 behavior404: .fail
             )
@@ -742,6 +870,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             return self.performServiceRequest(
                 requestBuilder: getJoinedAtRevisionRequestBuilder,
                 groupId: groupId,
+                behavior400: .fail,
                 behavior403: .ignore,
                 behavior404: .fail
             )
@@ -936,7 +1065,13 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
     private typealias AuthCredentialWithPniMap = [UInt64: AuthCredentialWithPni]
     private typealias RequestBuilder = (AuthCredentialWithPni) throws -> Promise<GroupsV2Request>
 
-    // Represents how we should respond to 403 status codes.
+    /// Represents how we should respond to 400 status codes.
+    enum Behavior400 {
+        case fail
+        case reportForRecovery
+    }
+
+    /// Represents how we should respond to 403 status codes.
     private enum Behavior403 {
         case fail
         case removeFromGroup
@@ -946,7 +1081,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         case localUserIsNotARequestingMember
     }
 
-    // Represents how we should respond to 404 status codes.
+    /// Represents how we should respond to 404 status codes.
     private enum Behavior404 {
         case fail
         case groupDoesNotExistOnService
@@ -958,6 +1093,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
     private func performServiceRequest(
         requestBuilder: @escaping RequestBuilder,
         groupId: Data?,
+        behavior400: Behavior400,
         behavior403: Behavior403,
         behavior404: Behavior404,
         remainingRetries: UInt = 3
@@ -976,11 +1112,12 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         }.then(on: .global()) { (request: GroupsV2Request) -> Promise<HTTPResponse> in
             self.performServiceRequestAttempt(request: request)
                 .recover(on: .global()) { (error: Error) throws -> Promise<HTTPResponse> in
-                    let retryIfPossible = { () throws -> Promise<HTTPResponse> in
+                    let retryIfPossible = { (error: Error) throws -> Promise<HTTPResponse> in
                         if remainingRetries > 0 {
                             return self.performServiceRequest(
                                 requestBuilder: requestBuilder,
                                 groupId: groupId,
+                                behavior400: behavior400,
                                 behavior403: behavior403,
                                 behavior404: behavior404,
                                 remainingRetries: remainingRetries - 1
@@ -994,9 +1131,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                         error: error,
                         retryBlock: retryIfPossible,
                         groupId: groupId,
+                        behavior400: behavior400,
                         behavior403: behavior403,
-                        behavior404: behavior404,
-                        remainingRetries: remainingRetries
+                        behavior404: behavior404
                     )
                 }
         }
@@ -1006,22 +1143,31 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
     /// on the error and our 4XX behaviors.
     private func tryRecoveryFromServiceRequestFailure(
         error: Error,
-        retryBlock: () throws -> Promise<HTTPResponse>,
+        retryBlock: (Error) throws -> Promise<HTTPResponse>,
         groupId: Data?,
+        behavior400: Behavior400,
         behavior403: Behavior403,
-        behavior404: Behavior404,
-        remainingRetries: UInt
+        behavior404: Behavior404
     ) throws -> Promise<HTTPResponse> {
         // Fall through to retry if retry-able,
         // otherwise reject immediately.
         if let statusCode = error.httpStatusCode {
             switch statusCode {
+            case 400:
+                switch behavior400 {
+                case .fail:
+                    owsFailDebug("Unexpected 400.")
+                case .reportForRecovery:
+                    throw GroupsV2Error.serviceRequestHitRecoverable400
+                }
+
+                throw error
             case 401:
                 // Retry auth errors after retrieving new temporal credentials.
                 self.databaseStorage.write { transaction in
                     self.clearTemporalCredentials(transaction: transaction)
                 }
-                return try retryBlock()
+                return try retryBlock(error)
             case 403:
                 // 403 indicates that we are no longer in the group for
                 // many (but not all) group v2 service requests.
@@ -1098,7 +1244,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             }
         } else if error.isNetworkFailureOrTimeout {
             // Retry on network failure.
-            return try retryBlock()
+            return try retryBlock(error)
         } else {
             // Unexpected error.
             throw error
@@ -1134,7 +1280,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             }
 
             if let statusCode = error.httpStatusCode {
-                if [401, 403, 404, 409].contains(statusCode) {
+                if [400, 401, 403, 404, 409].contains(statusCode) {
                     // These status codes will be handled by performServiceRequest.
                     Logger.warn("Request error: \(error)")
                     throw error
@@ -1251,7 +1397,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             for uuid in uuids {
                 do {
                     let address = SignalServiceAddress(uuid: uuid)
-                    if let credential = try self.versionedProfilesSwift.profileKeyCredential(
+                    if let credential = try self.versionedProfilesSwift.validProfileKeyCredential(
                         for: address,
                         transaction: transaction
                     ) {
@@ -1271,7 +1417,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         transaction: SDSAnyReadTransaction
     ) -> Bool {
         do {
-            return try self.versionedProfilesSwift.profileKeyCredential(
+            return try self.versionedProfilesSwift.validProfileKeyCredential(
                 for: address,
                 transaction: transaction
             ) != nil
@@ -1677,6 +1823,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                                                 : .localUserIsNotARequestingMember)
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: nil,
+                                              behavior400: .fail,
                                               behavior403: behavior403,
                                               behavior404: .fail)
         }.map(on: .global()) { (response: HTTPResponse) -> GroupInviteLinkPreview in
@@ -1841,6 +1988,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
+                                              behavior400: .fail,
                                               behavior403: .reportInvalidOrBlockedGroupLink,
                                               behavior404: .fail)
         }.then(on: .global()) { (response: HTTPResponse) -> Promise<TSGroupThread> in
@@ -2039,7 +2187,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             self.fetchGroupInviteLinkPreview(inviteLinkPassword: inviteLinkPassword,
                                              groupSecretParamsData: groupV2Params.groupSecretParamsData,
                                              allowCached: false)
-        }.then(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview) -> Promise<(GroupInviteLinkPreview, ProfileKeyCredential)> in
+        }.then(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview) -> Promise<(GroupInviteLinkPreview, ExpiringProfileKeyCredential)> in
 
             guard !groupInviteLinkPreview.isLocalUserRequestingMember else {
                 // Use the current revision when creating a placeholder group.
@@ -2049,13 +2197,13 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
             return firstly(on: .global()) { () -> Promise<ProfileKeyCredentialMap> in
                 self.loadProfileKeyCredentials(for: [localUuid], forceRefresh: false)
-            }.map(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> (GroupInviteLinkPreview, ProfileKeyCredential) in
+            }.map(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> (GroupInviteLinkPreview, ExpiringProfileKeyCredential) in
                 guard let localProfileKeyCredential = profileKeyCredentialMap[localUuid] else {
                     throw OWSAssertionError("Missing localProfileKeyCredential.")
                 }
                 return (groupInviteLinkPreview, localProfileKeyCredential)
             }
-        }.map(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview, localProfileKeyCredential: ProfileKeyCredential) -> GroupsProtoGroupChangeActions in
+        }.map(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview, localProfileKeyCredential: ExpiringProfileKeyCredential) -> GroupsProtoGroupChangeActions in
             var actionsBuilder = GroupsProtoGroupChangeActions.builder()
 
             let oldRevision = groupInviteLinkPreview.revision
@@ -2201,6 +2349,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
+                                              behavior400: .fail,
                                               behavior403: .fail,
                                               behavior404: .fail)
         }.map(on: .global()) { _ -> UInt32 in
@@ -2330,6 +2479,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         return firstly { () -> Promise<HTTPResponse> in
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupModel.groupId,
+                                              behavior400: .fail,
                                               behavior403: .fetchGroupUpdates,
                                               behavior404: .fail)
         }.map(on: .global()) { (response: HTTPResponse) -> GroupsProtoGroupExternalCredential in
@@ -2345,20 +2495,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
     public func updateAlreadyMigratedGroupIfNecessary(v2GroupId: Data) -> Promise<Void> {
         GroupsV2Migration.updateAlreadyMigratedGroupIfNecessary(v2GroupId: v2GroupId)
     }
-
-    // MARK: - Utils
-
-    private func uuids(for addresses: [SignalServiceAddress]) -> [UUID] {
-        var uuids = [UUID]()
-        for address in addresses {
-            guard let uuid = address.uuid else {
-                owsFailDebug("Missing UUID.")
-                continue
-            }
-            uuids.append(uuid)
-        }
-        return uuids
-    }
 }
 
 fileprivate extension OWSHttpHeaders {
@@ -2367,5 +2503,13 @@ fileprivate extension OWSHttpHeaders {
 
     var containsBan: Bool {
         value(forHeader: Self.forbiddenKey) == Self.forbiddenValue
+    }
+}
+
+// MARK: - What's in the change actions?
+
+private extension GroupsProtoGroupChangeActions {
+    var containsProfileKeyCredentials: Bool {
+        !addMembers.isEmpty
     }
 }

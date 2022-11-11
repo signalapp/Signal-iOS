@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import <SignalServiceKit/DataSource.h>
@@ -179,7 +180,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
     NS_SWIFT_NAME(thumbnailImageSync(quality:));
 
 // This method should only be invoked by OWSThumbnailService.
-- (NSString *)pathForThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints;
+- (NSString *)pathForThumbnailDimensionPoints:(CGFloat)thumbnailDimensionPoints;
 
 #pragma mark - Validation
 

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -44,7 +45,7 @@ class EmojiPickerCollectionView: UICollectionView {
     private var emojiSearchIndex: [String: [String]]?
 
     public var isSearching: Bool {
-        if let searchText = searchText, searchText.count != 0 {
+        if let searchText = searchText, !searchText.isEmpty {
             return true
         }
 

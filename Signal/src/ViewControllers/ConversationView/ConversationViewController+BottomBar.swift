@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 enum CVCBottomViewType: Equatable {
     // For perf reasons, we don't use a bottom view until
@@ -145,7 +147,7 @@ public extension ConversationViewController {
 
         updateInputAccessoryPlaceholderHeight()
         updateBottomBarPosition()
-        updateContentInsets(animated: hasAppearedAndHasAppliedFirstLoad)
+        updateContentInsets()
     }
 
     // This is expensive. We only need to do it if conversationStyle has changed.
@@ -164,8 +166,8 @@ public extension ConversationViewController {
         var voiceMemoDraft: VoiceMessageModel?
         if let oldInputToolbar = self.inputToolbar {
             // Maintain draft continuity.
-            messageDraft = oldInputToolbar.messageBody()
-            replyDraft = oldInputToolbar.draftReply()
+            messageDraft = oldInputToolbar.messageBody
+            replyDraft = oldInputToolbar.draftReply
             voiceMemoDraft = oldInputToolbar.voiceMemoDraft
         } else {
             Self.databaseStorage.read { transaction in
@@ -184,7 +186,7 @@ public extension ConversationViewController {
                                                 draftReply: replyDraft,
                                                 voiceMemoDraft: voiceMemoDraft)
 
-        let hadFocus = self.inputToolbar?.isInputViewFirstResponder() ?? false
+        let hadFocus = self.inputToolbar?.isInputViewFirstResponder ?? false
         self.inputToolbar = newInputToolbar
 
         if hadFocus {
@@ -289,7 +291,13 @@ public extension ConversationViewController {
             return
         }
 
-        inputToolbar.updateLayout(withSafeAreaInsets: view.safeAreaInsets)
+        if inputToolbar.updateLayout(withSafeAreaInsets: view.safeAreaInsets) {
+            // Ensure that if the toolbar has its insets changed, we trigger a re-layout.
+            // Without this, UIKit does a bad job of picking up the final safe area for
+            // constraints on the toolbar on its own.
+            self.view.setNeedsLayout()
+            self.updateContentInsets()
+        }
     }
 
     @objc

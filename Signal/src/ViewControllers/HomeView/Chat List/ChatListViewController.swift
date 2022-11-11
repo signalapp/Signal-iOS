@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -80,10 +81,10 @@ public extension ChatListViewController {
     // MARK: -
 
     func showBadgeExpirationSheetIfNeeded() {
-        Logger.info("[Subscriptions] Checking whether we should show badge expiration sheet...")
+        Logger.info("[Donations] Checking whether we should show badge expiration sheet...")
 
         guard !hasShownBadgeExpiration else { // Do this once per launch
-            Logger.info("[Subscriptions] Not showing badge expiration sheet, because we've already done so")
+            Logger.info("[Donations] Not showing badge expiration sheet, because we've already done so")
             return
         }
 
@@ -100,16 +101,16 @@ public extension ChatListViewController {
         )}
 
         guard let expiredBadgeID = expiredBadgeID else {
-            Logger.info("[Subscriptions] No expired badge ID, not showing sheet")
+            Logger.info("[Donations] No expired badge ID, not showing sheet")
             return
         }
 
         guard shouldShowExpirySheet else {
-            Logger.info("[Subscriptions] Not showing badge expiration sheet because the flag is off")
+            Logger.info("[Donations] Not showing badge expiration sheet because the flag is off")
             return
         }
 
-        Logger.info("[Subscriptions] showing expiry sheet for expired badge \(expiredBadgeID)")
+        Logger.info("[Donations] showing expiry sheet for expired badge \(expiredBadgeID)")
 
         if BoostBadgeIds.contains(expiredBadgeID) {
             firstly {
@@ -347,15 +348,15 @@ public extension ChatListViewController {
 
 // MARK: -
 
-public enum ShowAppSettingsMode {
+enum ShowAppSettingsMode {
     case none
     case payments
     case payment(paymentsHistoryItem: PaymentsHistoryItem)
     case paymentsTransferIn
     case appearance
     case avatarBuilder
-    case subscriptions
-    case boost
+    case donate(donationMode: DonateViewController.DonationMode)
+    case proxy
 }
 
 // MARK: -
@@ -440,11 +441,16 @@ public extension ChatListViewController {
     }
 
     @objc
+    func showAppSettingsInProxyMode() {
+        showAppSettings(mode: .proxy)
+    }
+
+    @objc
     func showAppSettingsInAvatarBuilderMode() {
         showAppSettings(mode: .avatarBuilder)
     }
 
-    func showAppSettings(mode: ShowAppSettingsMode) {
+    internal func showAppSettings(mode: ShowAppSettingsMode) {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -478,15 +484,52 @@ public extension ChatListViewController {
             let profile = ProfileSettingsViewController()
             viewControllers += [ profile ]
             completion = { profile.presentAvatarSettingsView() }
-        case .subscriptions:
-            let subscriptions = SubscriptionViewController()
-            viewControllers += [ subscriptions ]
-        case .boost:
-            let boost = BoostViewController()
-            viewControllers += [ boost ]
+        case let .donate(donationMode):
+            let donate = DonateViewController(startingDonationMode: donationMode) { [weak self] finishResult in
+                switch finishResult {
+                case let .completedDonation(donateSheet, thanksSheet):
+                    donateSheet.dismiss(animated: true) { [weak self] in
+                        self?.present(thanksSheet, animated: true)
+                    }
+                case let .monthlySubscriptionCancelled(donateSheet, toastText):
+                    donateSheet.dismiss(animated: true) { [weak self] in
+                        guard let self = self else { return }
+                        self.view.presentToast(text: toastText, fromViewController: self)
+                    }
+                }
+            }
+            viewControllers += [donate]
+        case .proxy:
+            viewControllers += [ PrivacySettingsViewController(), AdvancedPrivacySettingsViewController(), ProxySettingsViewController() ]
         }
         navigationController.setViewControllers(viewControllers, animated: false)
         presentFormSheet(navigationController, animated: true, completion: completion)
+    }
+
+    /// Verifies that the currently selected cell matches the provided thread.
+    /// If it does or if the user's in multi-select: Do nothing.
+    /// If it doesn't: Select the first cell matching the provided thread, if one exists. Otherwise, deselect the current row.
+    @objc
+    func ensureSelectedThread(_ targetThread: TSThread, animated: Bool) {
+        // Ignore any updates if we're in multiselect mode. I don't think this can happen,
+        // but if it does let's avoid stepping over the user's manual selection.
+        let currentSelection = tableView.indexPathsForSelectedRows ?? []
+        guard viewState.multiSelectState.isActive == false, currentSelection.count < 2 else {
+            return
+        }
+
+        let currentlySelectedThread = currentSelection.first.flatMap {
+            self.tableDataSource.thread(forIndexPath: $0, expectsSuccess: false)
+        }
+
+        if currentlySelectedThread?.uniqueId != targetThread.uniqueId {
+            if let targetPath = tableDataSource.renderState.indexPath(forUniqueId: targetThread.uniqueId) {
+                tableView.selectRow(at: targetPath, animated: animated, scrollPosition: .none)
+                tableView.scrollToRow(at: targetPath, at: .none, animated: animated)
+            } else if let stalePath = currentSelection.first {
+                tableView.deselectRow(at: stalePath, animated: animated)
+            }
+        }
     }
 }
 
@@ -495,10 +538,10 @@ extension ChatListViewController: BadgeExpirationSheetDelegate {
         switch action {
         case .dismiss:
             break
-        case .openBoostView:
-            showAppSettings(mode: .boost)
-        case .openSubscriptionsView:
-            showAppSettings(mode: .subscriptions)
+        case .openOneTimeDonationView:
+            showAppSettings(mode: .donate(donationMode: .oneTime))
+        case .openMonthlyDonationView:
+            showAppSettings(mode: .donate(donationMode: .monthly))
         }
     }
 }
@@ -506,5 +549,81 @@ extension ChatListViewController: BadgeExpirationSheetDelegate {
 extension ChatListViewController: ThreadSwipeHandler {
     func updateUIAfterSwipeAction() {
         updateViewState()
+    }
+}
+
+// MARK: - First conversation label
+
+extension ChatListViewController {
+    @objc
+    func updateFirstConversationLabel() {
+        let signalAccounts = suggestedAccountsForFirstContact(maxCount: 3)
+
+        var contactNames = databaseStorage.read { transaction in
+            signalAccounts.map { account in
+                self.contactsManagerImpl.displayName(forSignalAccount: account, transaction: transaction)
+            }
+        }
+
+        let formatString = { () -> String in
+            switch contactNames.count {
+            case 0:
+                return OWSLocalizedString(
+                    "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS",
+                    comment: "A label offering to start a new conversation with your contacts, if you have no Signal contacts."
+                )
+            case 1:
+                return OWSLocalizedString(
+                    "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT",
+                    comment: "Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}."
+                )
+            case 2:
+                return OWSLocalizedString(
+                    "HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT",
+                    comment: "Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}."
+                )
+            case 3:
+                break
+            default:
+                owsFailDebug("Unexpectedly had \(contactNames.count) names, expected at most 3!")
+                contactNames = Array(contactNames.prefix(3))
+            }
+
+            return OWSLocalizedString(
+                "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT",
+                comment: "Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}."
+            )
+        }()
+
+        let attributedString = NSAttributedString.make(
+            fromFormat: formatString,
+            attributedFormatArgs: contactNames.map { name in
+                return .string(name, attributes: [.font: firstConversationLabel.font.ows_semibold])
+            }
+        )
+
+        firstConversationLabel.attributedText = attributedString
+    }
+
+    private func suggestedAccountsForFirstContact(maxCount: UInt) -> [SignalAccount] {
+        // Load all signal accounts even though we only need the first N;
+        // we want the returned value to be stable so we need to sort.
+        let sortedSignalAccounts = contactsManagerImpl.sortedSignalAccountsWithSneakyTransaction()
+
+        // Get up to 3 accounts to suggest, excluding ourselves.
+        var suggestedAccounts = [SignalAccount]()
+        for account in sortedSignalAccounts {
+            guard suggestedAccounts.count < maxCount else {
+                break
+            }
+
+            guard !account.recipientAddress.isLocalAddress else {
+                continue
+            }
+
+            suggestedAccounts.append(account)
+        }
+
+        return suggestedAccounts
     }
 }

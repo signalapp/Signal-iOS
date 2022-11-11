@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -50,6 +51,9 @@ public class PaymentsConstants {
 
     @objc
     public static let arePaymentsEnabledDidChange = Notification.Name("arePaymentsEnabledDidChange")
+
+    @objc
+    public static let isPaymentsVersionOutdatedDidChange = Notification.Name("isPaymentsVersionOutdatedDidChange")
 
     @objc
     public static let picoMobPerMob: UInt64 = 1000 * 1000 * 1000 * 1000

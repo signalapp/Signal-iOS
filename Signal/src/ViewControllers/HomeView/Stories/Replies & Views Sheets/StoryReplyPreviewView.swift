@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
-import UIKit
+import SignalMessaging
 import SignalUI
+import UIKit
 
 // TODO: We could theoretically replace this with QuotedMessageView, but that's very
 // deeply tied into the CV rendering system and not easy to use outside of that context.

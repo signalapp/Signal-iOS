@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -56,6 +57,14 @@ public class SignalCall: NSObject, CallManagerCallReference {
 
     public let audioActivity: AudioActivity
 
+    private(set) var systemState: SystemState = .notReported
+    enum SystemState {
+        case notReported
+        case pending
+        case reported
+        case removed
+    }
+
     @objc
     var isGroupCall: Bool {
         switch mode {
@@ -100,6 +109,32 @@ public class SignalCall: NSObject, CallManagerCallReference {
         }
     }
 
+    public var isOutgoingAudioMuted: Bool {
+        switch mode {
+        case .individual(let call): return call.isMuted
+        case .group(let call): return call.isOutgoingAudioMuted
+        }
+    }
+
+    /// Returns the remote party for an incoming 1:1 call, or the ringer for a group call ring.
+    ///
+    /// Returns `nil` for an outgoing 1:1 call, a manually-entered group call,
+    /// or a group call that has already been joined.
+    public var caller: SignalServiceAddress? {
+        switch mode {
+        case .individual(let call):
+            guard call.direction == .incoming else {
+                return nil
+            }
+            return call.remoteAddress
+        case .group:
+            guard case .incomingRing(let caller, _) = groupCallRingState else {
+                return nil
+            }
+            return caller
+        }
+    }
+
     private(set) lazy var videoCaptureController = VideoCaptureController()
 
     // Should be used only on the main thread
@@ -134,12 +169,26 @@ public class SignalCall: NSObject, CallManagerCallReference {
         }
     }
 
-    /// Before joining, indicates that the user wants to send a ring.
-    ///
-    /// After joining, indicates that the ring was sent but no one has responded yet.
-    public var userWantsToRing: Bool = true {
+    internal enum GroupCallRingState {
+        case doNotRing
+        case shouldRing
+        case ringing
+        case ringingEnded
+        case incomingRing(caller: SignalServiceAddress, ringId: Int64)
+
+        var isIncomingRing: Bool {
+            if case .incomingRing = self {
+                return true
+            }
+            return false
+        }
+    }
+
+    internal var groupCallRingState: GroupCallRingState = .shouldRing {
         didSet {
             AssertIsOnMainThread()
+            // If we ever support non-ringing 1:1 calls, we might want to reuse this.
+            owsAssertDebug(isGroupCall)
         }
     }
 
@@ -220,6 +269,10 @@ public class SignalCall: NSObject, CallManagerCallReference {
         ringRestrictions = .notApplicable
         super.init()
         individualCall.delegate = self
+    }
+
+    deinit {
+        owsAssertDebug(systemState != .reported, "call \(localId) was reported to system but never removed")
     }
 
     public class func groupCall(thread: TSGroupThread) -> SignalCall? {
@@ -349,12 +402,31 @@ public class SignalCall: NSObject, CallManagerCallReference {
         }
         return -connectedDate.timeIntervalSinceNow
     }
+
+    func markPendingReportToSystem() {
+        owsAssertDebug(systemState == .notReported, "call \(localId) had unexpected system state: \(systemState)")
+        systemState = .pending
+    }
+
+    func markReportedToSystem() {
+        owsAssertDebug(systemState == .notReported || systemState == .pending,
+                       "call \(localId) had unexpected system state: \(systemState)")
+        systemState = .reported
+    }
+
+    func markRemovedFromSystem() {
+        owsAssertDebug(systemState == .reported, "call \(localId) had unexpected system state: \(systemState)")
+        systemState = .removed
+    }
 }
 
 extension SignalCall: GroupCallDelegate {
     public func groupCall(onLocalDeviceStateChanged groupCall: GroupCall) {
         if groupCall.localDeviceState.joinState == .joined, connectedDate == nil {
             connectedDate = Date()
+            if groupCallRingState.isIncomingRing {
+                groupCallRingState = .ringingEnded
+            }
 
             // make sure we don't terminate audio session during call
             audioSession.isRTCAudioEnabled = true
@@ -365,10 +437,13 @@ extension SignalCall: GroupCallDelegate {
     }
 
     public func groupCall(onRemoteDeviceStatesChanged groupCall: GroupCall) {
-        if !groupCall.remoteDeviceStates.isEmpty {
-            userWantsToRing = false
-        }
         observers.elements.forEach { $0.groupCallRemoteDeviceStatesChanged(self) }
+        // Change this after notifying observers so that they can see when the ring has concluded.
+        if case .ringing = groupCallRingState, !groupCall.remoteDeviceStates.isEmpty {
+            groupCallRingState = .ringingEnded
+            // Treat the end of ringing as a "local state change" for listeners that normally ignore remote changes.
+            self.groupCall(onLocalDeviceStateChanged: groupCall)
+        }
     }
 
     public func groupCall(onAudioLevels groupCall: GroupCall) {

@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import MultipeerConnectivity
+import SignalMessaging
 
 public class OnboardingTransferQRCodeViewController: OnboardingBaseViewController {
 

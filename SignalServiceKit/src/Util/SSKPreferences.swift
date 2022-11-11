@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -265,32 +266,5 @@ public class SSKPreferences: NSObject {
     @objc
     public static func setShouldKeepMutedChatsArchived(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
         store.setBool(newValue, key: shouldKeepMutedChatsArchivedKey, transaction: transaction)
-    }
-
-    private static var hasGrdbDatabaseCorruptionKey: String { "hasGrdbDatabaseCorruption" }
-    @objc
-    public static func hasGrdbDatabaseCorruption() -> Bool {
-        let appUserDefaults = CurrentAppContext().appUserDefaults()
-        guard let preference = appUserDefaults.object(forKey: hasGrdbDatabaseCorruptionKey) as? NSNumber else {
-            return false
-        }
-        return preference.boolValue
-    }
-
-    /// If the error is a `SQLITE_CORRUPT` error, set the "has database corruption" flag, log, and crash.
-    /// We do this so we can attempt to perform diagnostics/recovery on relaunch.
-    public static func flagDatabaseCorruptionIfNecessary(error: Error) {
-        if let error = error as? DatabaseError, error.resultCode == .SQLITE_CORRUPT {
-            setHasGrdbDatabaseCorruption(true)
-            owsFail("Crashing due to database corruption. Extended result code: \(error.extendedResultCode)")
-        }
-    }
-
-    public static func setHasGrdbDatabaseCorruption(_ value: Bool) {
-        if value { Logger.warn("Flagging GRDB database as corrupted.") }
-
-        let appUserDefaults = CurrentAppContext().appUserDefaults()
-        appUserDefaults.set(value, forKey: hasGrdbDatabaseCorruptionKey)
-        appUserDefaults.synchronize()
     }
 }

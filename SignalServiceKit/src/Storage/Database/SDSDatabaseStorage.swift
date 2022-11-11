@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -24,6 +25,8 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     // MARK: - Initialization / Setup
 
+    private let databaseFileUrl: URL
+
     private var _grdbStorage: GRDBDatabaseStorageAdapter?
 
     @objc
@@ -38,7 +41,8 @@ public class SDSDatabaseStorage: SDSTransactable {
     }
 
     @objc
-    public required init(delegate: SDSDatabaseStorageDelegate) {
+    public required init(databaseFileUrl: URL, delegate: SDSDatabaseStorageDelegate) {
+        self.databaseFileUrl = databaseFileUrl
         self.delegate = delegate
 
         super.init()
@@ -89,7 +93,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     // completion is performed on the main queue.
     @objc
-    public func runGrdbSchemaMigrations(completion: @escaping () -> Void) {
+    public func runGrdbSchemaMigrationsOnMainDatabase(completion: @escaping () -> Void) {
         guard storageCoordinatorState == .GRDB else {
             owsFailDebug("Not GRDB.")
             return
@@ -97,7 +101,16 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         Logger.info("")
 
-        let didPerformIncrementalMigrations = GRDBSchemaMigrator().runSchemaMigrations()
+        let didPerformIncrementalMigrations: Bool = {
+            do {
+                return try GRDBSchemaMigrator.migrateDatabase(
+                    databaseStorage: self,
+                    isMainDatabase: true
+                )
+            } catch {
+                owsFail("Database migration failed. Error: \(error.grdbErrorForLogging)")
+            }
+        }()
 
         Logger.info("didPerformIncrementalMigrations: \(didPerformIncrementalMigrations)")
 
@@ -135,7 +148,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    public func reloadDatabase() -> Guarantee<Void> {
+    public func reloadAsMainDatabase() -> Guarantee<Void> {
         AssertIsOnMainThread()
         assert(storageCoordinatorState == .GRDB)
 
@@ -145,7 +158,14 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         let (promise, future) = Guarantee<Void>.pending()
         reopenGRDBStorage {
-            _ = GRDBSchemaMigrator().runSchemaMigrations()
+            do {
+                try GRDBSchemaMigrator.migrateDatabase(
+                    databaseStorage: self,
+                    isMainDatabase: true
+                )
+            } catch {
+                owsFail("Database migration failed. Error: \(error.grdbErrorForLogging)")
+            }
 
             self.grdbStorage.publishUpdatesImmediately()
 
@@ -164,7 +184,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
         return Bench(title: "Creating GRDB storage") {
-            return GRDBDatabaseStorageAdapter()
+            return GRDBDatabaseStorageAdapter(databaseFileUrl: databaseFileUrl)
         }
     }
 
@@ -483,5 +503,9 @@ public extension SDSDatabaseStorage {
 
     var databaseSHMFileSize: UInt64 {
         grdbStorage.databaseSHMFileSize
+    }
+
+    var databaseCombinedFileSize: UInt64 {
+        databaseFileSize + databaseWALFileSize + databaseSHMFileSize
     }
 }

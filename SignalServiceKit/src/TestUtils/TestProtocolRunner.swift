@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -389,6 +390,10 @@ public struct FakeService: Dependencies {
     public func buildSyncSentMessage(bodyText: String,
                                      recipient: SignalServiceAddress,
                                      timestamp: UInt64) throws -> Data {
+        guard let destinationUuid = recipient.uuidString else {
+            owsFail("Cannot build sync message without a recipient UUID. Test is not set up correctly")
+        }
+
         let dataMessageBuilder = SSKProtoDataMessage.builder()
         dataMessageBuilder.setBody(bodyText)
         dataMessageBuilder.setTimestamp(timestamp)
@@ -396,11 +401,7 @@ public struct FakeService: Dependencies {
         let sentBuilder = SSKProtoSyncMessageSent.builder()
         sentBuilder.setMessage(try dataMessageBuilder.build())
         sentBuilder.setTimestamp(timestamp)
-        if let uuid = recipient.uuidString {
-            sentBuilder.setDestinationUuid(uuid)
-        } else if let e164 = recipient.phoneNumber {
-            sentBuilder.setDestinationE164(e164)
-        }
+        sentBuilder.setDestinationUuid(destinationUuid)
         let syncMessageBuilder = SSKProtoSyncMessage.builder()
         syncMessageBuilder.setSent(try sentBuilder.build())
 

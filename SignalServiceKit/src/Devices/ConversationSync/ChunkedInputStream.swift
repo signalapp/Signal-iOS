@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 // Some parts Copyright (c) 2014 - 2016 Apple Inc. and the project authors

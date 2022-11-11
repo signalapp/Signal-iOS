@@ -1,3 +1,2 @@
-• Video Call Picture-in-Picture rises above the keyboard when typing
-• Improve group metadata update reliability & error handling
-
+• Jetzt gibt es Storys bei Signal! Teile verschwindende Nachrichten, Bilder und Video-Updates mit ausgewählten Freunden oder Gruppen, die nach 24 Stunden automatisch verschwinden. Wenn du keine Storys sehen oder teilen möchtest, kannst du dies in deinen Einstellungen deaktivieren.
+• Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.

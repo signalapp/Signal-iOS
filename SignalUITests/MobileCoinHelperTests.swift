@@ -1,20 +1,13 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalMessaging
 import XCTest
 @testable import SignalUI
 
 class MobileCoinHelperTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
     func testInfoForReceiptData() {
         let receiptData = Data(base64Encoded: """
         CiIKIARfCkd3ZdIMRhXSGvi72N2cDjtc5A0LvdPCgTMBWX5JEiIKIFf4+WnFJ5XvgQ3Si6ewxByjiZKIhwJO4AfN1cP\

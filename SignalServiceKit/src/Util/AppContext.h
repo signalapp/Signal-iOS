@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -148,13 +149,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 @end
 
 id<AppContext> CurrentAppContext(void);
-void SetCurrentAppContext(id<AppContext> appContext);
+void SetCurrentAppContext(id<AppContext> appContext, BOOL isRunningTests);
 
 void ExitShareExtension(void);
-
-#ifdef TESTABLE_BUILD
-void ClearCurrentAppContextForTests(void);
-#endif
-
 
 NS_ASSUME_NONNULL_END

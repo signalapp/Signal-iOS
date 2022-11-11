@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2014 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSContactsManager.h"
@@ -8,7 +9,6 @@
 #import <Contacts/Contacts.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
-#import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/PhoneNumber.h>
@@ -369,65 +369,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     });
 }
 
-- (void)intersectContacts:(NSSet<NSString *> *)phoneNumbers
-        retryDelaySeconds:(double)retryDelaySeconds
-                  success:(void (^)(NSSet<SignalRecipient *> *))successParameter
-                  failure:(void (^)(NSError *))failureParameter
-{
-    OWSAssertDebug(phoneNumbers.count > 0);
-    OWSAssertDebug(retryDelaySeconds > 0);
-    OWSAssertDebug(successParameter);
-    OWSAssertDebug(failureParameter);
-    
-    void (^success)(NSSet<SignalRecipient *> *) = ^(NSSet<SignalRecipient *> *registeredRecipients) {
-        OWSLogInfo(@"Successfully intersected contacts.");
-        successParameter(registeredRecipients);
-    };
-    void (^failure)(NSError *) = ^(NSError *error) {
-        double delay = retryDelaySeconds;
-        BOOL isRateLimitingError = NO;
-        BOOL shouldRetry = YES;
-        
-        if ([error isKindOfClass:[OWSContactDiscoveryError class]]) {
-            OWSContactDiscoveryError *cdsError = (OWSContactDiscoveryError *)error;
-            isRateLimitingError = (cdsError.code == OWSContactDiscoveryErrorCodeRateLimit);
-            shouldRetry = cdsError.retrySuggested;
-            if (cdsError.retryAfterDate) {
-                delay = MAX(cdsError.retryAfterDate.timeIntervalSinceNow, delay);
-            }
-        }
-        
-        if (isRateLimitingError) {
-            OWSLogError(@"Contact intersection hit rate limit with error: %@", error);
-            failureParameter(error);
-            return;
-        }
-        if (!shouldRetry) {
-            OWSLogError(@"ContactDiscoveryError suggests not to retry. Aborting without rescheduling.");
-            failureParameter(error);
-            return;
-        }
-        
-        OWSLogWarn(@"Failed to intersect contacts with error: %@. Rescheduling", error);
-        
-        // Retry with exponential backoff.
-        //
-        // TODO: Abort if another contact intersection succeeds in the meantime.
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)),
-                       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self intersectContacts:phoneNumbers
-                  retryDelaySeconds:retryDelaySeconds * 2.0
-                            success:successParameter
-                            failure:failureParameter];
-        });
-    };
-    OWSContactDiscoveryTask *discoveryTask = [[OWSContactDiscoveryTask alloc] initWithPhoneNumbers:phoneNumbers];
-    [discoveryTask performAtQoS:QOS_CLASS_USER_INITIATED
-                  callbackQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-                        success:success
-                        failure:failure];
-}
-
 - (void)updateWithContacts:(NSArray<Contact *> *)contacts didLoad:(BOOL)didLoad isUserRequested:(BOOL)isUserRequested
 {
     dispatch_async(self.intersectionQueue, ^{
@@ -456,11 +397,16 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                 OWSFailDebug(@"Error: %@", error);
                 return;
             }
-            [OWSContactsManager buildSignalAccountsForContacts:contactsMaps.allContacts
-                                                    completion:^(NSArray<SignalAccount *> *signalAccounts) {
-                                                        [self updateSignalAccountsForSystemContactsFetch:signalAccounts
-                                                                        shouldSetHasLoadedSystemContacts:didLoad];
-                                                    }];
+            [OWSContactsManager
+                buildSignalAccountsAndUpdatePersistedStateForFetchedSystemContacts:contactsMaps.allContacts
+                                                                        completion:^(
+                                                                            NSArray<SignalAccount *> *signalAccounts) {
+                                                                            [self
+                                                                                updateSignalAccountsForSystemContactsFetch:
+                                                                                    signalAccounts
+                                                                                          shouldSetHasLoadedSystemContacts:
+                                                                                              didLoad];
+                                                                        }];
         }];
     });
 }

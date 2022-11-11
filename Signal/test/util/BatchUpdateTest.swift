@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import XCTest
@@ -8,16 +9,6 @@ import XCTest
 @testable import SignalMessaging
 
 class BatchUpdateTest: SignalBaseTest {
-
-    override func setUp() {
-        super.setUp()
-
-    }
-
-    override func tearDown() {
-        super.tearDown()
-    }
-
     func testScenario1() {
         let oldValueIdList = [
             "ggbb3dk2uJONs9yDvWUj+SFV5b5ITNlJRhzsAd03Lmts=",

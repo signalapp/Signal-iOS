@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -166,10 +167,10 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
                                                                             comment: "Label for the 'organization' field of a contact."),
                                               value: contactShare.name.organizationName, delegate: self)
         fieldViews = [
-            namePrefixView ,
-            givenNameView ,
-            middleNameView ,
-            familyNameView ,
+            namePrefixView,
+            givenNameView,
+            middleNameView,
+            familyNameView,
             nameSuffixView,
             organizationNameView
         ]

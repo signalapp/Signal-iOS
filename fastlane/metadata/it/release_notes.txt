@@ -1,3 +1,2 @@
-• Video Call Picture-in-Picture rises above the keyboard when typing
-• Improve group metadata update reliability & error handling
-
+• Le Storie sono arrivate su Signal! Condividi testi, foto e video temporanei con le persone che vuoi o con i tuoi gruppi. Le Storie scompaiono automaticamente 24 ore dopo la pubblicazione. Se non vuoi vedere o condividere le Storie, puoi sempre disattivare la funzione nelle tue Impostazioni.
+• Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.

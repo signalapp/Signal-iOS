@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -55,11 +56,11 @@ public struct OrderedSet<Element> where Element: Hashable {
         return orderedMembers.first
     }
 
-    public static func ==(lhs: OrderedSet<Element>, rhs: OrderedSet<Element>) -> Bool {
+    public static func == (lhs: OrderedSet<Element>, rhs: OrderedSet<Element>) -> Bool {
         lhs.set == rhs.set
     }
 
-    public static func !=(lhs: OrderedSet<Element>, rhs: OrderedSet<Element>) -> Bool {
+    public static func != (lhs: OrderedSet<Element>, rhs: OrderedSet<Element>) -> Bool {
         lhs.set != rhs.set
     }
 

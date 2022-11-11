@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "RESTNetworkManager.h"
@@ -38,10 +39,22 @@ NS_ASSUME_NONNULL_BEGIN
                name:OWSSignalService.isCensorshipCircumventionActiveDidChangeNotificationName
              object:nil];
 
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(isSignalProxyReadyDidChange)
+                                               name:SignalProxy.isSignalProxyReadyDidChangeNotificationName
+                                             object:nil];
+
     return self;
 }
 
 - (void)isCensorshipCircumventionActiveDidChange
+{
+    OWSAssertIsOnMainThread();
+
+    self.lastDiscardDate = [NSDate new];
+}
+
+- (void)isSignalProxyReadyDidChange
 {
     OWSAssertIsOnMainThread();
 

@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 public class CVMediaAlbumView: ManualStackViewWithLayer {
     private var items = [CVMediaAlbumItem]()
@@ -169,7 +171,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
             guard let caption = item.caption else {
                 continue
             }
-            guard caption.count > 0 else {
+            if caption.isEmpty {
                 continue
             }
             guard let icon = UIImage(named: "media_album_caption") else {

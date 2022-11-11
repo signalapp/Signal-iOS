@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import XCTest
@@ -7,17 +8,6 @@ import SignalServiceKit
 import SignalCoreKit
 
 class SMKUDAccessKeyTest: XCTestCase {
-
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
-
     func testUDAccessKeyForProfileKey() {
         let profileKey = Data(count: Int(kAES256_KeyByteLength))
         let udAccessKey1 = try! SMKUDAccessKey(profileKey: profileKey)

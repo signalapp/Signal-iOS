@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import MessageUI
 import SignalCoreKit
+import SignalMessaging
 
 // This extension reproduces some of the UITextView link interaction behavior.
 // This is how UITextView behaves:
@@ -67,7 +69,6 @@ extension ConversationViewController {
             didTapOrLongPressMention(mentionItem.mention)
         case .referencedUser(let referencedUserItem):
             owsFailDebug("Should never have a referenced user item in body text, but tapped \(referencedUserItem)")
-            break
         }
     }
 
@@ -111,7 +112,6 @@ extension ConversationViewController {
             didTapOrLongPressMention(mentionItem.mention)
         case .referencedUser(let referencedUserItem):
             owsFailDebug("Should never have a referenced user item in body text, but long pressed \(referencedUserItem)")
-            break
         }
     }
 
@@ -149,6 +149,13 @@ extension ConversationViewController {
                                                     accessibilityIdentifier: "link_open_group_invite",
                                                     style: .default) { [weak self] _ in
                 self?.cvc_didTapGroupInviteLink(url: dataItem.url)
+            })
+        } else if SignalProxy.isValidProxyLink(dataItem.url) {
+            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_LINK_OPEN_PROXY",
+                                                                             comment: "Label for button to open a signal proxy."),
+                                                    accessibilityIdentifier: "link_open_proxy",
+                                                    style: .default) { [weak self] _ in
+                self?.cvc_didTapProxyLink(url: dataItem.url)
             })
         } else {
             actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_LINK_OPEN_LINK",
@@ -319,6 +326,8 @@ extension ConversationViewController {
             cvc_didTapStickerPack(stickerPackInfo)
         } else if GroupManager.isPossibleGroupInviteLink(dataItem.url) {
             cvc_didTapGroupInviteLink(url: dataItem.url)
+        } else if SignalProxy.isValidProxyLink(dataItem.url) {
+            cvc_didTapProxyLink(url: dataItem.url)
         } else if SignalMe.isPossibleUrl(dataItem.url) {
             cvc_didTapSignalMeLink(url: dataItem.url)
         } else if isMailtoUrl(dataItem.url) {

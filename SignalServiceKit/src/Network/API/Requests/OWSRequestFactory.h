@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -86,14 +87,16 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                                      timestamp:(uint64_t)timestamp
                                    udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
                                       isOnline:(BOOL)isOnline
-                                      isUrgent:(BOOL)isUrgent;
+                                      isUrgent:(BOOL)isUrgent
+                                       isStory:(BOOL)isStory;
 
 + (TSRequest *)submitMultiRecipientMessageRequestWithCiphertext:(NSData *)ciphertext
                                            compositeUDAccessKey:(SMKUDAccessKey *)udAccessKey
                                                       timestamp:(uint64_t)timestamp
                                                        isOnline:(BOOL)isOnline
                                                        isUrgent:(BOOL)isUrgent
-    NS_SWIFT_NAME(submitMultiRecipientMessageRequest(ciphertext:compositeUDAccessKey:timestamp:isOnline:isUrgent:));
+                                                        isStory:(BOOL)isStory
+    NS_SWIFT_NAME(submitMultiRecipientMessageRequest(ciphertext:compositeUDAccessKey:timestamp:isOnline:isUrgent:isStory:));
 
 + (TSRequest *)verifyPrimaryDeviceRequestWithVerificationCode:(NSString *)verificationCode
                                                   phoneNumber:(NSString *)phoneNumber
@@ -149,8 +152,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 + (TSRequest *)cdsFeedbackRequestWithStatus:(NSString *)status
                                      reason:(nullable NSString *)reason NS_SWIFT_NAME(cdsFeedbackRequest(status:reason:));
-
-+ (TSRequest *)hsmDirectoryAuthRequest;
 
 #pragma mark - KBS
 
@@ -230,12 +231,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 + (TSRequest *)pushChallengeResponseWithToken:(NSString *)challengeToken;
 + (TSRequest *)recaptchChallengeResponseWithToken:(NSString *)serverToken captchaToken:(NSString *)captchaToken;
 + (TSRequest *)reportSpamFromUuid:(NSUUID *)senderUuid withServerGuid:(NSString *)serverGuid;
-
-#pragma mark - Donations
-
-+ (TSRequest *)createPaymentIntentWithAmount:(NSUInteger)amount
-                              inCurrencyCode:(NSString *)currencyCode
-                             withDescription:(nullable NSString *)description;
 
 @end
 

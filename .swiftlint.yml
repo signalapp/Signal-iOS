@@ -1,6 +1,12 @@
 excluded:
+- Pods
+- ThirdParty
 - SignalServiceKit/src/Protos/Generated
+# SwiftLint has trouble with these files. See <https://github.com/realm/SwiftLint/issues/3988>.
+- Signal/src/util/Emoji/Emoji+SkinTones.swift
+- Signal/src/util/Emoji/EmojiWithSkinTones+String.swift
 disabled_rules:
+- block_based_kvo
 - cyclomatic_complexity
 - file_length
 - for_where
@@ -12,6 +18,7 @@ disabled_rules:
 - line_length
 - multiple_closures_with_trailing_closure
 - nesting
+- notification_center_detachment
 - todo
 - type_body_length
 - unused_closure_parameter

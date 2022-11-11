@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import SignalCoreKit
@@ -10,7 +11,10 @@ open class RoundMediaButton: UIButton {
     public enum BackgroundStyle {
         case none
         case solid(UIColor)
-        case blur
+        case blur(UIBlurEffect.Style)
+
+        public static let blur: BackgroundStyle = .blur(.dark)
+        public static let blurLight: BackgroundStyle = .blur(.light)
     }
 
     let backgroundStyle: BackgroundStyle
@@ -40,8 +44,8 @@ open class RoundMediaButton: UIButton {
             case .solid:
                 return UIView()
 
-            case .blur:
-                return UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+            case .blur(let style):
+                return UIVisualEffectView(effect: UIBlurEffect(style: style))
             }
         }()
 
@@ -51,6 +55,8 @@ open class RoundMediaButton: UIButton {
         layoutMargins = UIEdgeInsets(margin: Self.defaultInset)
         tintColor = Theme.darkThemePrimaryColor
         insetsLayoutMarginsFromSafeArea = false
+
+        setCompressionResistanceHigh()
 
         if backgroundView != nil || customView != nil {
             let backgroundContainerView = PillView()

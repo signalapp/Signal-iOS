@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "TSAccountManager.h"
@@ -29,7 +30,6 @@ NSString *const TSAccountManager_RegisteredPNIKey = @"TSAccountManager_Registere
 NSString *const TSAccountManager_IsDeregisteredKey = @"TSAccountManager_IsDeregisteredKey";
 NSString *const TSAccountManager_ReregisteringPhoneNumberKey = @"TSAccountManager_ReregisteringPhoneNumberKey";
 NSString *const TSAccountManager_ReregisteringUUIDKey = @"TSAccountManager_ReregisteringUUIDKey";
-NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegistrationId";
 NSString *const TSAccountManager_IsOnboardedKey = @"TSAccountManager_IsOnboardedKey";
 NSString *const TSAccountManager_IsTransferInProgressKey = @"TSAccountManager_IsTransferInProgressKey";
 NSString *const TSAccountManager_WasTransferredKey = @"TSAccountManager_WasTransferredKey";
@@ -642,38 +642,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 - (nullable NSDate *)registrationDateWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return [self getOrLoadAccountStateWithTransaction:transaction].registrationDate;
-}
-
-- (uint32_t)getOrGenerateRegistrationId
-{
-    __block uint32_t result;
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        result = [self getOrGenerateRegistrationIdWithTransaction:transaction];
-    });
-    return result;
-}
-
-- (uint32_t)getOrGenerateRegistrationIdWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    // Unlike other methods in this class, there's no need for a `@synchronized` block
-    // here, since we're already in a write transaction, and all writes occur on a serial queue.
-    //
-    // Since other code in this class which uses @synchronized(self) also needs to open write
-    // transaction, using @synchronized(self) here, inside of a WriteTransaction risks deadlock.
-    NSNumber *_Nullable storedId = [self.keyValueStore getObjectForKey:TSAccountManager_LocalRegistrationIdKey
-                                                           transaction:transaction];
-
-    uint32_t registrationID = storedId.unsignedIntValue;
-
-    if (registrationID == 0) {
-        registrationID = (uint32_t)arc4random_uniform(16380) + 1;
-        OWSLogWarn(@"Generated a new registrationID: %u", registrationID);
-
-        [self.keyValueStore setObject:[NSNumber numberWithUnsignedInteger:registrationID]
-                                  key:TSAccountManager_LocalRegistrationIdKey
-                          transaction:transaction];
-    }
-    return registrationID;
 }
 
 - (BOOL)isOnboarded

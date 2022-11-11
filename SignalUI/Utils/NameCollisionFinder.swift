@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 /// A collection of addresses (and adjacent info) that collide (i.e. the user many confuse one element's `currentName` for another)
@@ -29,23 +30,45 @@ public protocol NameCollisionFinder {
     func markCollisionsAsResolved(transaction: SDSAnyWriteTransaction)
 }
 
-/// Finds all name collisions for a given contact thread
-/// Compares the contact thread recipient with all known
+/// Finds all name collisions for a given contact thread. Compares the contact
+/// thread recipient with all known Signal accounts.
 public class ContactThreadNameCollisionFinder: NameCollisionFinder, Dependencies {
-    var contactThread: TSContactThread
-    public var thread: TSThread { contactThread }
+    private var contactThread: TSContactThread
+    private let onlySearchIfMessageRequest: Bool
 
-    public init(thread: TSContactThread) {
-        contactThread = thread
+    private init(contactThread: TSContactThread, onlySearchIfMessageRequest: Bool) {
+        self.contactThread = contactThread
+        self.onlySearchIfMessageRequest = onlySearchIfMessageRequest
     }
 
+    /// Builds a collision finder that will only return collisions if the
+    /// target contact thread represents a pending message request.
+    public static func makeToCheckMessageRequestNameCollisions(
+        forContactThread contactThread: TSContactThread
+    ) -> ContactThreadNameCollisionFinder {
+        ContactThreadNameCollisionFinder(
+            contactThread: contactThread,
+            onlySearchIfMessageRequest: true
+        )
+    }
+
+    // MARK: NameCollisionFinder
+
+    public var thread: TSThread { contactThread }
+
     public func findCollisions(transaction: SDSAnyReadTransaction) -> [NameCollision] {
-        // Only look for name collisions in pending message requests
         guard let updatedThread = TSContactThread.getWithContactAddress(contactThread.contactAddress, transaction: transaction) else {
             return []
         }
+
         contactThread = updatedThread
-        guard contactThread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) else { return [] }
+
+        if
+            onlySearchIfMessageRequest,
+            !contactThread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
+        {
+            return []
+        }
 
         let collisionCandidates = Self.contactsViewHelper.signalAccounts(
             matchingSearch: contactThread.contactAddress.displayName(transaction: transaction),
@@ -79,6 +102,8 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder, Dependencies
         // Do nothing
         // Contact threads always display all collisions
     }
+
+    // MARK: Utils
 
     private func isCollision(
         _ address1: SignalServiceAddress,

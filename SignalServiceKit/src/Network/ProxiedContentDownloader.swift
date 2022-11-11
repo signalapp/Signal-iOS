@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -174,8 +175,8 @@ public class ProxiedContentAssetRequest: NSObject {
 
     init(assetDescription: ProxiedContentAssetDescription,
          priority: ProxiedContentRequestPriority,
-         success:@escaping ((ProxiedContentAssetRequest?, ProxiedContentAsset) -> Void),
-         failure:@escaping ((ProxiedContentAssetRequest) -> Void)) {
+         success: @escaping ((ProxiedContentAssetRequest?, ProxiedContentAsset) -> Void),
+         failure: @escaping ((ProxiedContentAssetRequest) -> Void)) {
         self.assetDescription = assetDescription
         self.priority = priority
         self.success = success
@@ -502,8 +503,8 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
     // which case the ProxiedContentAssetRequest parameter will be nil.
     public func requestAsset(assetDescription: ProxiedContentAssetDescription,
                              priority: ProxiedContentRequestPriority,
-                             success:@escaping ((ProxiedContentAssetRequest?, ProxiedContentAsset) -> Void),
-                             failure:@escaping ((ProxiedContentAssetRequest) -> Void)) -> ProxiedContentAssetRequest? {
+                             success: @escaping ((ProxiedContentAssetRequest?, ProxiedContentAsset) -> Void),
+                             failure: @escaping ((ProxiedContentAssetRequest) -> Void)) -> ProxiedContentAssetRequest? {
         AssertIsOnMainThread()
 
         if let asset = assetMap.get(key: assetDescription.url) {
@@ -764,8 +765,10 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
                                                                 self.assetRequestDidFail(assetRequest: assetRequest)
                                                                 return
         }
-        guard contentLengthString.count > 0,
-            let contentLength = Int(contentLengthString) else {
+        guard
+            !contentLengthString.isEmpty,
+            let contentLength = Int(contentLengthString)
+        else {
             owsFailDebug("Asset size response has unparsable content length.")
             assetRequest.state = .failed
             self.assetRequestDidFail(assetRequest: assetRequest)

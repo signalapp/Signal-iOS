@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -84,8 +85,8 @@ public class TextViewHelper: NSObject {
     }
 }
 
-private enum TextHelper {
-    static func shouldChangeCharactersInRange(
+public enum TextHelper {
+    public static func shouldChangeCharactersInRange(
         with existingString: String?,
         editingRange: NSRange,
         replacementString: String,

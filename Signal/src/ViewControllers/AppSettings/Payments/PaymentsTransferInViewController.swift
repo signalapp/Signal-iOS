@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 class PaymentsTransferInViewController: OWSTableViewController2 {
@@ -16,7 +18,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "share-ios-24"),
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "share-outline-24"),
                                                             landscapeImagePhone: nil,
                                                             style: .plain,
                                                             target: self,
@@ -38,8 +40,8 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         paymentsSwift.updateCurrentPaymentBalance()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateTableContents()
     }

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -88,12 +89,11 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let canUseNativeWebsocket = true
 
-    @objc
-    public static let hsmContactDiscovery = false
-
     public static let shouldUseRemoteConfigForReceivingGiftBadges = true
 
     public static let isPrerelease = build.includes(.beta)
+
+    public static let canSendGiftBadges = build.includes(.qa)
 
     @objc
     public static var notificationServiceExtension: Bool {
@@ -214,16 +214,19 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let internalSettings = build.includes(.qa)
 
+    public static let internalMegaphoneEligible = build.includes(.qa)
+
     // This can be used to shut down various background operations.
     @objc
     public static let suppressBackgroundActivity = false
 
     @objc
     public static let reduceLogChatter: Bool = {
+        // This is a little verbose to make it easy to change while developing.
         if CurrentAppContext().isRunningTests {
             return true
         }
-        return false && build.includes(.dev)
+        return false
     }()
 
     @objc
@@ -319,9 +322,6 @@ public class DebugFlags: BaseFlags {
     public static let verboseSignalRecipientLogging = build.includes(.qa)
 
     @objc
-    public static let shouldMergeUserProfiles = build.includes(.qa)
-
-    @objc
     public static let deviceTransferVerboseProgressLogging = build.includes(.qa)
 
     @objc
@@ -340,7 +340,7 @@ public class DebugFlags: BaseFlags {
     public static let forceGroupCalling = build.includes(.beta)
 
     @objc
-    public static let forceStories = build.includes(.qa)
+    public static let forceStories = build.includes(.beta)
 
     @objc
     public static let disableMessageProcessing = TestableFlag(false,

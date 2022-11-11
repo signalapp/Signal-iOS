@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import Lottie
+import SignalMessaging
+import UIKit
 
 @objc
 public protocol SendPaymentViewDelegate {
@@ -182,15 +184,30 @@ public class SendPaymentViewController: OWSViewController {
 
             let actionSheet = ActionSheetController(title: title, message: message)
 
-            if !hasSentMessagesToRecipient,
-               mode != .fromConversationView {
-                actionSheet.addAction(ActionSheetAction(title: CommonStrings.sendMessage,
-                                                        accessibilityIdentifier: "payments.settings.send_message",
-                                                        style: .default) { _ in
-                    fromViewController.dismiss(animated: true) {
-                        SignalApp.shared().presentConversation(for: recipientAddress, action: .compose, animated: true)
-                    }
-                })
+            if !hasSentMessagesToRecipient {
+                switch mode {
+                case .fromConversationView:
+                    break
+                case .fromTransferOutFlow:
+                    owsFailDebug("not a valid mode for this method")
+                case .fromPaymentSettings:
+                    actionSheet.addAction(ActionSheetAction(
+                        title: CommonStrings.sendMessage,
+                        accessibilityIdentifier: "payments.settings.send_message",
+                        style: .default,
+                        handler: { [weak fromViewController] _ in
+                            guard let fromViewController = fromViewController else { return }
+                            // We want to get back to the app's main interface. This is shown inside
+                            // Payment Settings, which is presented, and is part of the Send Payment
+                            // flow, which is *also* presented.
+                            let rootViewController = fromViewController.presentingViewController?.presentingViewController
+                            owsAssertDebug(rootViewController != nil)
+                            rootViewController?.dismiss(animated: true) {
+                                SignalApp.shared().presentConversation(for: recipientAddress, action: .compose, animated: true)
+                            }
+                        }
+                    ))
+                }
             }
 
             actionSheet.addAction(OWSActionSheets.okayAction)
@@ -274,7 +291,7 @@ public class SendPaymentViewController: OWSViewController {
         }
     }
 
-    public static func showRecipientNotEnabledAlert() {
+    private static func showRecipientNotEnabledAlert() {
         OWSActionSheets.showActionSheet(title: NSLocalizedString("PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_TITLE",
                                                                  comment: "Title for error alert indicating that a given user cannot receive payments because they have not enabled payments."),
                                         message: NSLocalizedString("PAYMENTS_RECIPIENT_PAYMENTS_NOT_ENABLED_MESSAGE",
@@ -321,6 +338,8 @@ public class SendPaymentViewController: OWSViewController {
 
         view.backgroundColor = Theme.backgroundColor
 
+        addListeners()
+
         createSubviews()
 
         updateContents()
@@ -339,10 +358,25 @@ public class SendPaymentViewController: OWSViewController {
         helper?.refreshObservedValues()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateContents()
+    }
+
+    private func addListeners() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(isPaymentsVersionOutdatedDidChange),
+            name: PaymentsConstants.isPaymentsVersionOutdatedDidChange,
+            object: nil
+        )
+    }
+
+    @objc
+    private func isPaymentsVersionOutdatedDidChange() {
+        guard UIApplication.shared.frontmostViewController == self else { return }
+        OWSActionSheets.showPaymentsOutdatedClientSheetIfNeeded(title: .updateRequired)
     }
 
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -640,7 +674,7 @@ public class SendPaymentViewController: OWSViewController {
         rootStack.autoPinEdge(toSuperviewMargin: .leading)
         rootStack.autoPinEdge(toSuperviewMargin: .trailing)
         rootStack.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        autoPinView(toBottomOfViewControllerOrKeyboard: rootStack, avoidNotch: true)
+        rootStack.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
         bigAmountLabel.font = UIFont.ows_dynamicTypeLargeTitle1Clamped.withSize(60)
         bigAmountLabel.textAlignment = .center

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -161,12 +162,12 @@ extension DeviceTransferService: MCSessionDelegate {
             firstly(on: .main) { () -> Guarantee<Void> in
                 // A successful restoration means we've updated our database path.
                 // Extensions will learn of this through NSUserDefaults KVO and exit ASAP
-                self.databaseStorage.reloadDatabase()
+                self.databaseStorage.reloadAsMainDatabase()
             }.then(on: .main) { () -> Guarantee<Void> in
                 self.finalizeRestorationIfNecessary()
             }.done(on: .main) {
                 // After transfer our push token has changed, update it.
-                SyncPushTokensJob.run(uploadOnlyIfStale: false)
+                SyncPushTokensJob.run(mode: .forceUpload)
                 SignalApp.shared().showConversationSplitView()
             }
 

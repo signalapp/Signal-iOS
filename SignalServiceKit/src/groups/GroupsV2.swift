@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -31,6 +32,10 @@ public enum GroupsV2Error: Error {
     case groupBlocked
     case newMemberMissingAnnouncementOnlyCapability
     case localUserBlockedFromJoining
+
+    /// We hit a 400 while making a service request, but believe it may be
+    /// recoverable.
+    case serviceRequestHitRecoverable400
 }
 
 // MARK: -
@@ -92,7 +97,7 @@ public protocol GroupsV2: AnyObject {
 
 public protocol GroupsV2Swift: GroupsV2 {
 
-    typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
+    typealias ProfileKeyCredentialMap = [UUID: ExpiringProfileKeyCredential]
 
     func createNewGroupOnService(groupModel: TSGroupModelV2,
                                  disappearingMessageToken: DisappearingMessageToken) -> Promise<Void>
@@ -221,8 +226,11 @@ public protocol GroupsV2OutgoingChanges: AnyObject {
 
     func setShouldUpdateLocalProfileKey()
 
-    func buildGroupChangeProto(currentGroupModel: TSGroupModelV2,
-                               currentDisappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions>
+    func buildGroupChangeProto(
+        currentGroupModel: TSGroupModelV2,
+        currentDisappearingMessageToken: DisappearingMessageToken,
+        forceRefreshProfileKeyCredentials: Bool
+    ) -> Promise<GroupsProtoGroupChangeActions>
 }
 
 // MARK: -
@@ -594,8 +602,13 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
         owsFail("Not implemented.")
     }
 
+    public var groupV2ContextInfos = [Data: GroupV2ContextInfo]()
+
     public func groupV2ContextInfo(forMasterKeyData masterKeyData: Data?) throws -> GroupV2ContextInfo {
-        owsFail("Not implemented.")
+        guard let masterKeyData = masterKeyData, let info = groupV2ContextInfos[masterKeyData] else {
+            owsFail("No registered GroupV2ContextInfo on mock")
+        }
+        return info
     }
 
     public func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,

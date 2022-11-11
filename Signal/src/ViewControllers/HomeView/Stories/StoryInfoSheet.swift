@@ -1,18 +1,22 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import SignalUI
 
 class StoryInfoSheet: OWSTableSheetViewController {
-    var storyMessage: StoryMessage
+    private(set) var storyMessage: StoryMessage
+    let context: StoryContext
     var dismissHandler: (() -> Void)?
 
     override var sheetBackgroundColor: UIColor { .ows_gray90 }
 
-    init(storyMessage: StoryMessage) {
+    init(storyMessage: StoryMessage, context: StoryContext) {
         self.storyMessage = storyMessage
+        self.context = context
         super.init()
 
         databaseStorage.appendDatabaseChangeDelegate(self)
@@ -55,7 +59,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
 
         switch storyMessage.manifest {
         case .outgoing(let recipientStates):
-            buildStatusSections(for: recipientStates).forEach { contents.addSection($0) }
+            contents.addSections(buildStatusSections(for: recipientStates))
         case .incoming:
             contents.addSection(buildSenderSection())
         }
@@ -134,6 +138,8 @@ class StoryInfoSheet: OWSTableSheetViewController {
     }
 
     private func buildStatusSections(for recipientStates: [UUID: StoryRecipientState]) -> [OWSTableSection] {
+        let recipientStates = recipientStates.filter { $1.isValidForContext(context) }
+
         var sections = [OWSTableSection]()
 
         let orderedSendingStates: [OWSOutgoingMessageRecipientState] = [
@@ -149,14 +155,19 @@ class StoryInfoSheet: OWSTableSheetViewController {
         for state in orderedSendingStates {
             guard let recipients = groupedRecipientStates[state], !recipients.isEmpty else { continue }
 
+            let sortedRecipientAddresses = contactsManagerImpl
+                .sortSignalServiceAddressesWithSneakyTransaction(
+                    recipients.compactMap { .init(uuid: $0.key) }
+                )
+
             let section = OWSTableSection()
             section.hasBackground = false
             section.headerTitle = sectionTitle(for: state)
             sections.append(section)
 
-            for recipient in recipients {
+            for address in sortedRecipientAddresses {
                 section.add(contactItem(
-                    for: SignalServiceAddress(uuid: recipient.key),
+                    for: address,
                     accessoryText: statusMessage(for: state)
                 ))
             }

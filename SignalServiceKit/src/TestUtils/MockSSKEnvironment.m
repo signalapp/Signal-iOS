@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "MockSSKEnvironment.h"
@@ -7,7 +8,6 @@
 #import "OWSBackgroundTask.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSFakeCallMessageHandler.h"
-#import "OWSFakeMessageSender.h"
 #import "OWSFakeProfileManager.h"
 #import "OWSIdentityManager.h"
 #import "OWSMessageManager.h"
@@ -45,10 +45,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     id<ContactsManagerProtocol> contactsManager = [OWSFakeContactsManager new];
     OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
+    MessageSender *messageSender = [FakeMessageSender new];
+    id<PendingReceiptRecorder> pendingReceiptRecorder = [NoopPendingReceiptRecorder new];
+    id<ProfileManagerProtocol> profileManager = [OWSFakeProfileManager new];
     NetworkManager *networkManager = [OWSFakeNetworkManager new];
-    MessageSender *messageSender = [OWSFakeMessageSender new];
-    MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
-
     OWSMessageManager *messageManager = [OWSMessageManager new];
     BlockingManager *blockingManager = [BlockingManager new];
     OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
@@ -78,7 +78,6 @@ NS_ASSUME_NONNULL_BEGIN
     id<GroupV2Updates> groupV2Updates = [[MockGroupV2Updates alloc] init];
     MessageFetcherJob *messageFetcherJob = [MessageFetcherJob new];
     BulkProfileFetch *bulkProfileFetch = [BulkProfileFetch new];
-    BulkUUIDLookup *bulkUUIDLookup = [BulkUUIDLookup new];
     id<VersionedProfiles> versionedProfiles = [MockVersionedProfiles new];
     ModelReadCaches *modelReadCaches =
         [[ModelReadCaches alloc] initWithModelReadCacheFactory:[TestableModelReadCacheFactory new]];
@@ -97,13 +96,14 @@ NS_ASSUME_NONNULL_BEGIN
     ChangePhoneNumber *changePhoneNumber = [ChangePhoneNumber new];
     id<SubscriptionManagerProtocol> subscriptionManager = [MockSubscriptionManager new];
     SystemStoryManagerMock *systemStoryManager = [SystemStoryManagerMock new];
+    RemoteMegaphoneFetcher *remoteMegaphoneFetcher = [RemoteMegaphoneFetcher new];
+    SSKJobQueues *sskJobQueues = [SSKJobQueues new];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
                             messageSender:messageSender
-                    messageSenderJobQueue:messageSenderJobQueue
-                   pendingReceiptRecorder:[NoopPendingReceiptRecorder new]
-                           profileManager:[OWSFakeProfileManager new]
+                   pendingReceiptRecorder:pendingReceiptRecorder
+                           profileManager:profileManager
                            networkManager:networkManager
                            messageManager:messageManager
                           blockingManager:blockingManager
@@ -136,7 +136,6 @@ NS_ASSUME_NONNULL_BEGIN
                            groupV2Updates:groupV2Updates
                         messageFetcherJob:messageFetcherJob
                          bulkProfileFetch:bulkProfileFetch
-                           bulkUUIDLookup:bulkUUIDLookup
                         versionedProfiles:versionedProfiles
                           modelReadCaches:modelReadCaches
                       earlyMessageManager:earlyMessageManager
@@ -153,7 +152,9 @@ NS_ASSUME_NONNULL_BEGIN
                          webSocketFactory:webSocketFactory
                         changePhoneNumber:changePhoneNumber
                       subscriptionManager:subscriptionManager
-                       systemStoryManager:systemStoryManager];
+                       systemStoryManager:systemStoryManager
+                   remoteMegaphoneFetcher:remoteMegaphoneFetcher
+                             sskJobQueues:sskJobQueues];
 
     if (!self) {
         return nil;
@@ -168,14 +169,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setContactsManagerForMockEnvironment:(id<ContactsManagerProtocol>)contactsManager
 {
     [super setContactsManagerRef:contactsManager];
-}
-
-- (void)configureGrdb
-{
-    OWSAssertIsOnMainThread();
-
-    GRDBSchemaMigrator *grdbSchemaMigrator = [GRDBSchemaMigrator new];
-    (void)[grdbSchemaMigrator runSchemaMigrations];
 }
 
 @end

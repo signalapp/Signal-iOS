@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 /// UIContextMenuInteractionDelegate analog
 public protocol ContextMenuInteractionDelegate: AnyObject {
@@ -246,6 +248,10 @@ extension ContextMenuInteraction: ContextMenuControllerDelegate, ContextMenuTarg
 
     func contextMenuControllerRequestsDismissal(_ contextMenuController: ContextMenuController) {
         dismissMenu(animated: true, completion: { })
+    }
+
+    func contextMenuControllerAccessoryFrameOffset(_ contextMenuController: ContextMenuController) -> CGPoint? {
+        nil
     }
 
     func contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(

@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import SafariServices
+import SignalMessaging
 
 @objc(OWSSupportConstants)
 @objcMembers
@@ -166,9 +168,12 @@ final class ContactSupportViewController: OWSTableViewController2 {
         navigationItem.rightBarButtonItem?.isEnabled = ((descriptionField.text?.count ?? 0) > 10) && selectedFilter != nil
     }
 
-    override func applyTheme() {
-        super.applyTheme()
+    override func themeDidChange() {
+        super.themeDidChange()
+        applyTheme()
+    }
 
+    private func applyTheme() {
         navigationItem.rightBarButtonItem?.tintColor = Theme.accentBlueColor
 
         // Rebuild the contents to force them to update their theme
@@ -444,7 +449,7 @@ extension ContactSupportViewController {
                 self?.updateRightBarButton()
                 self?.rebuildTableContents()
             }
-            if selectedFilter == filter { action.trailingIcon = .checkCircle }
+            if selectedFilter == filter { action.trailingIcon = .checkCircle24 }
             actionSheet.addAction(action)
         }
 

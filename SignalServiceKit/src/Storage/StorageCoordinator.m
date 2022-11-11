@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "StorageCoordinator.h"
@@ -52,7 +53,8 @@ NSString *NSStringForDataStore(DataStore value)
 
     OWSSingletonAssert();
 
-    _databaseStorage = [[SDSDatabaseStorage alloc] initWithDelegate:self];
+    NSURL *databaseFileUrl = [GRDBDatabaseStorageAdapter databaseFileUrlWithDirectoryMode:DirectoryModePrimary];
+    _databaseStorage = [[SDSDatabaseStorage alloc] initWithDatabaseFileUrl:databaseFileUrl delegate:self];
 
     [self configure];
 

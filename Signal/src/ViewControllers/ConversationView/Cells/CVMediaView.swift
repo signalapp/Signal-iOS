@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -161,10 +162,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
             owsFailDebug("Invalid attachment.")
             return
         }
-        guard let blurHash = pointer.blurHash,
-            blurHash.count > 0 else {
-                return
-        }
+        guard let blurHash = pointer.blurHash?.nilIfEmpty else { return }
         // NOTE: in the blurhash case, we use the blurHash itself as the
         // cachekey to avoid conflicts with the actual attachment contents.
         let cacheKey = blurHash

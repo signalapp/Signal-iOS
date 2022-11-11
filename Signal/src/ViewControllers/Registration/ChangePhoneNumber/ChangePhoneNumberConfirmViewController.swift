@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -22,6 +23,7 @@ class ChangePhoneNumberConfirmViewController: OWSViewController {
         self.changePhoneNumberController = changePhoneNumberController
         self.oldPhoneNumber = oldPhoneNumber
         self.newPhoneNumber = newPhoneNumber
+        super.init()
     }
 
     override func viewDidLoad() {
@@ -42,13 +44,13 @@ class ChangePhoneNumberConfirmViewController: OWSViewController {
         rootView.autoPinEdge(toSuperviewSafeArea: .leading)
         rootView.autoPinEdge(toSuperviewSafeArea: .trailing)
         rootView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        self.autoPinView(toBottomOfViewControllerOrKeyboard: rootView, avoidNotch: true)
+        rootView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
         updateContents()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateContents()
     }

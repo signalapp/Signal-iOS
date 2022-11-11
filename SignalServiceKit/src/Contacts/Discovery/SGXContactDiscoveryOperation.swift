@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -118,7 +119,7 @@ class SGXContactDiscoveryOperation: ContactDiscovering {
 
     func buildIntersectionQuery(e164sToLookup: [String], remoteAttestations: [RemoteAttestation.CDSAttestation.Id: RemoteAttestation]) throws -> ContactDiscoveryService.IntersectionQuery {
         let noncePlainTextData = Randomness.generateRandomBytes(32)
-        let addressPlainTextData = try Self.encodeE164s(e164sToLookup)
+        let addressPlainTextData = try ContactDiscoveryE164Collection(e164sToLookup).encodedValues
         let queryData = Data.join([noncePlainTextData, addressPlainTextData])
 
         let key = OWSAES256Key.generateRandom()

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -313,7 +314,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
 
     private func buildTableCell(availableStickerPack dataSource: StickerPackDataSource) -> UITableViewCell {
         if let stickerPack = dataSource.getStickerPack() {
-            let actionIconName = Theme.iconName(.messageActionSave)
+            let actionIconName = Theme.iconName(.messageActionSave24)
             return buildTableCell(dataSource: dataSource,
                                   actionIconName: actionIconName) { [weak self] in
                                     self?.install(stickerPack: stickerPack)
@@ -372,8 +373,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
         iconView.autoSetDimensions(to: CGSize(square: iconSize))
 
         let title: String
-        if let titleValue = titleValue?.ows_stripped(),
-            titleValue.count > 0 {
+        if let titleValue = titleValue?.ows_stripped(), !titleValue.isEmpty {
             title = titleValue
         } else {
             title = NSLocalizedString("STICKERS_PACK_DEFAULT_TITLE", comment: "Default title for sticker packs.")
@@ -406,8 +406,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
             authorViews.append(builtInPackView)
         }
 
-        if let authorName = authorNameValue?.ows_stripped(),
-            authorName.count > 0 {
+        if let authorName = authorNameValue?.ows_stripped(), !authorName.isEmpty {
             let authorLabel = UILabel()
             authorLabel.text = authorName
             authorLabel.font = isDefaultStickerPack ? UIFont.ows_dynamicTypeCaption1.ows_semibold : UIFont.ows_dynamicTypeCaption1

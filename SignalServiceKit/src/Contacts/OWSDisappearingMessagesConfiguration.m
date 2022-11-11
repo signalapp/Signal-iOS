@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -127,7 +128,7 @@ static NSString *const kUniversalTimerThreadId = @"kUniversalTimerThreadId";
 
 + (uint32_t)maxDurationSeconds
 {
-    return kYearInterval;
+    return (uint32_t)kYearInterval;
 }
 
 - (NSString *)durationString

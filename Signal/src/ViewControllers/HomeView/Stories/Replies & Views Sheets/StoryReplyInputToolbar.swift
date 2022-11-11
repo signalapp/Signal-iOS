@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -15,6 +16,8 @@ protocol StoryReplyInputToolbarDelegate: AnyObject {
     func storyReplyInputToolbarDidBeginEditing(_ storyReplyInputToolbar: StoryReplyInputToolbar)
     func storyReplyInputToolbarHeightDidChange(_ storyReplyInputToolbar: StoryReplyInputToolbar)
     func storyReplyInputToolbarMentionPickerPossibleAddresses(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> [SignalServiceAddress]
+    func storyReplyInputToolbarMentionPickerReferenceView(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> UIView?
+    func storyReplyInputToolbarMentionPickerParentView(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> UIView?
 }
 
 // MARK: -
@@ -70,7 +73,13 @@ class StoryReplyInputToolbar: UIView {
         } else {
             self.backgroundColor = .clear
 
-            let blurEffectView = UIVisualEffectView(effect: Theme.darkThemeBarBlurEffect)
+            let blurEffect: UIBlurEffect
+            if #available(iOS 13, *), quotedReplyModel != nil {
+                blurEffect = UIBlurEffect(style: .systemThickMaterialDark)
+            } else {
+                blurEffect = Theme.darkThemeBarBlurEffect
+            }
+            let blurEffectView = UIVisualEffectView(effect: blurEffect)
             blurEffectView.layer.zPosition = -1
             addSubview(blurEffectView)
             blurEffectView.autoPinWidthToSuperview()
@@ -180,15 +189,19 @@ class StoryReplyInputToolbar: UIView {
     }()
 
     private lazy var textContainer: UIView = {
-        let textContainer = UIView()
+        let textContainer = UIStackView()
+        textContainer.axis = .vertical
+
+        let headerLabel = buildHeaderLabel()
+        textContainer.addArrangedSubview(headerLabel)
 
         let bubbleView = UIStackView()
         bubbleView.axis = .vertical
         bubbleView.addBackgroundView(withBackgroundColor: .ows_gray75, cornerRadius: minTextViewHeight / 2)
 
-        textContainer.addSubview(bubbleView)
-        let inset = (40 - minTextViewHeight) / 2
-        bubbleView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, leading: 0, bottom: inset, trailing: 0))
+        textContainer.addArrangedSubview(bubbleView)
+        let bottomSpace = (40 - minTextViewHeight) / 2
+        textContainer.addArrangedSubview(.spacer(withHeight: bottomSpace))
 
         if let quotedReplyModel = quotedReplyModel {
             let previewView = StoryReplyPreviewView(quotedReplyModel: quotedReplyModel)
@@ -228,6 +241,34 @@ class StoryReplyInputToolbar: UIView {
         textView.textContainerInset.right = 7
 
         return textView
+    }
+
+    private func buildHeaderLabel() -> UIView {
+        let container = UIView()
+
+        let label = UILabel()
+        label.textColor = Theme.darkThemeSecondaryTextAndIconColor
+        label.font = .ows_dynamicTypeFootnote
+
+        switch quotedReplyModel {
+        case .some(let quotedReplyModel):
+            guard !quotedReplyModel.authorAddress.isLocalAddress else {
+                fallthrough
+            }
+            let format = OWSLocalizedString(
+                "STORY_REPLY_TEXT_FIELD_HEADER_FORMAT",
+                comment: "header text for replying to private story. Embeds {{author name}}"
+            )
+            let authorName = contactsManager.displayName(for: quotedReplyModel.authorAddress)
+            label.text = String(format: format, authorName)
+        case .none:
+            container.isHiddenInStackView = true
+        }
+
+        container.addSubview(label)
+        label.autoPinEdgesToSuperviewEdges(with: .init(top: 0, leading: 4, bottom: 10, trailing: 4))
+
+        return container
     }
 
     // MARK: - Actions
@@ -284,21 +325,21 @@ extension StoryReplyInputToolbar: MentionTextViewDelegate {
     func textViewDidEndTypingMention(_ textView: MentionTextView) {}
 
     func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView? {
-        return superview
+        delegate?.storyReplyInputToolbarMentionPickerParentView(self)
     }
 
     func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView? {
-        return self
+        delegate?.storyReplyInputToolbarMentionPickerReferenceView(self)
     }
 
     func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress] {
-        return delegate?.storyReplyInputToolbarMentionPickerPossibleAddresses(self) ?? []
+        delegate?.storyReplyInputToolbarMentionPickerPossibleAddresses(self) ?? []
     }
 
     func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
 
     func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style {
-        return .groupReply
+        .groupReply
     }
 
     public func textViewDidChange(_ textView: UITextView) {

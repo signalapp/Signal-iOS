@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2016 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 //  Originally based on EPContacts
@@ -7,9 +8,10 @@
 //  Created by Prabaharan Elangovan on 12/10/15.
 //  Parts Copyright © 2015 Prabaharan Elangovan. All rights reserved
 
-import UIKit
 import Contacts
+import SignalMessaging
 import SignalServiceKit
+import UIKit
 
 @objc
 public protocol ContactsPickerDelegate: AnyObject {

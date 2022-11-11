@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSReceiptManager.h"
@@ -176,6 +177,29 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
     }
 }
 
+- (void)storyWasRead:(StoryMessage *)storyMessage
+        circumstance:(OWSReceiptCircumstance)circumstance
+         transaction:(SDSAnyWriteTransaction *)transaction
+{
+    switch (circumstance) {
+        case OWSReceiptCircumstanceOnLinkedDevice:
+            // nothing further to do
+            break;
+        case OWSReceiptCircumstanceOnLinkedDeviceWhilePendingMessageRequest:
+            OWSFailDebug(@"Unexectedly had story receipt blocked by message request.");
+            break;
+        case OWSReceiptCircumstanceOnThisDevice: {
+            // We only send read receipts to linked devices, not to the author.
+            [self enqueueLinkedDeviceReadReceiptForStoryMessage:storyMessage transaction:transaction];
+            [transaction addAsyncCompletionOffMain:^{ [self scheduleProcessing]; }];
+            break;
+        }
+        case OWSReceiptCircumstanceOnThisDeviceWhilePendingMessageRequest:
+            OWSFailDebug(@"Unexectedly had story receipt blocked by message request.");
+            break;
+    }
+}
+
 - (void)storyWasViewed:(StoryMessage *)storyMessage
           circumstance:(OWSReceiptCircumstance)circumstance
            transaction:(SDSAnyWriteTransaction *)transaction
@@ -191,7 +215,7 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             [self enqueueLinkedDeviceViewedReceiptForStoryMessage:storyMessage transaction:transaction];
             [transaction addAsyncCompletionOffMain:^{ [self scheduleProcessing]; }];
 
-            if ([self areReadReceiptsEnabled]) {
+            if (StoryManager.areViewReceiptsEnabled) {
                 OWSLogVerbose(@"Enqueuing viewed receipt for sender.");
                 [self enqueueSenderViewedReceiptForStoryMessage:storyMessage transaction:transaction];
             }
@@ -280,11 +304,6 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
 
     NSMutableArray<NSNumber *> *sentTimestampsMissingMessage = [NSMutableArray new];
 
-    if (![self areReadReceiptsEnabled]) {
-        OWSLogInfo(@"Ignoring incoming receipt message as read receipts are disabled.");
-        return @[];
-    }
-
     for (NSNumber *nsSentTimestamp in sentTimestamps) {
         UInt64 sentTimestamp = [nsSentTimestamp unsignedLongLongValue];
 
@@ -305,6 +324,11 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
         }
 
         if (messages.count > 0) {
+            if (![self areReadReceiptsEnabled]) {
+                OWSLogInfo(@"Ignoring incoming receipt message as read receipts are disabled.");
+                return @[];
+            }
+
             for (TSOutgoingMessage *message in messages) {
                 [message updateWithViewedRecipient:address
                                  recipientDeviceId:deviceId
@@ -316,6 +340,11 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                                                                             author:TSAccountManager.localAddress
                                                                        transaction:transaction];
             if (storyMessage) {
+                if (!StoryManager.areViewReceiptsEnabled) {
+                    OWSLogInfo(@"Ignoring incoming story receipt message as view receipts are disabled.");
+                    return @[];
+                }
+
                 [storyMessage markAsViewedAt:viewedTimestamp by:address transaction:transaction];
             } else {
                 [sentTimestampsMissingMessage addObject:@(sentTimestamp)];
@@ -384,47 +413,20 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
                                    transaction:transaction];
             }
         } else {
-            [receiptsMissingMessage addObject:readReceiptProto];
+            StoryMessage *_Nullable storyMessage = [StoryFinder storyWithTimestamp:messageIdTimestamp
+                                                                            author:senderAddress
+                                                                       transaction:transaction];
+            if (storyMessage) {
+                [storyMessage markAsReadAt:readTimestamp
+                              circumstance:OWSReceiptCircumstanceOnLinkedDevice
+                               transaction:transaction];
+            } else {
+                [receiptsMissingMessage addObject:readReceiptProto];
+            }
         }
     }
 
     return [receiptsMissingMessage copy];
-}
-
-- (void)markAsReadOnLinkedDevice:(TSMessage *)message
-                          thread:(TSThread *)thread
-                   readTimestamp:(uint64_t)readTimestamp
-                     transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(message);
-    OWSAssertDebug(thread);
-    OWSAssertDebug(transaction);
-
-    if ([message isKindOfClass:[TSIncomingMessage class]]) {
-        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
-        BOOL hasPendingMessageRequest = [thread hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbRead];
-        OWSReceiptCircumstance circumstance = hasPendingMessageRequest
-            ? OWSReceiptCircumstanceOnLinkedDeviceWhilePendingMessageRequest
-            : OWSReceiptCircumstanceOnLinkedDevice;
-
-        // Always re-mark the message as read to ensure any earlier read time is applied to disappearing messages.
-        [incomingMessage markAsReadAtTimestamp:readTimestamp
-                                        thread:thread
-                                  circumstance:circumstance
-                                   transaction:transaction];
-
-        // Also mark any unread messages appearing earlier in the thread as read as well.
-        [self markAsReadBeforeSortId:incomingMessage.sortId
-                              thread:thread
-                       readTimestamp:readTimestamp
-                        circumstance:circumstance
-                         transaction:transaction];
-    } else if ([message isKindOfClass:[TSOutgoingMessage class]]) {
-        // Outgoing messages are always "read", but if we get a receipt
-        // from our linked device about one that indicates that any reactions
-        // we received on this message should also be marked read.
-        [message markUnreadReactionsAsReadWithTransaction:transaction];
-    }
 }
 
 - (NSArray<SSKProtoSyncMessageViewed *> *)processViewedReceiptsFromLinkedDevice:
@@ -549,15 +551,23 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
 {
     // We don't need to worry about races around this cached value.
     if (self.areReadReceiptsEnabledCached == nil) {
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            self.areReadReceiptsEnabledCached =
-                @([OWSReceiptManager.keyValueStore getBool:OWSReceiptManagerAreReadReceiptsEnabled
-                                              defaultValue:NO
-                                               transaction:transaction]);
-        } file:__FILE__ function:__FUNCTION__ line:__LINE__];
+        [self.databaseStorage
+            readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                self.areReadReceiptsEnabledCached = @([self areReadReceiptsEnabledWithTransaction:transaction]);
+            }
+                     file:__FILE__
+                 function:__FUNCTION__
+                     line:__LINE__];
     }
 
     return [self.areReadReceiptsEnabledCached boolValue];
+}
+
+- (BOOL)areReadReceiptsEnabledWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [OWSReceiptManager.keyValueStore getBool:OWSReceiptManagerAreReadReceiptsEnabled
+                                       defaultValue:NO
+                                        transaction:transaction];
 }
 
 - (void)setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration:(BOOL)value

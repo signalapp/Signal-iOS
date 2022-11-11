@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "DebugUIContacts.h"
@@ -90,12 +91,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)createUnregisteredGroupThread
 {
-    SignalServiceAddress *validRecipient = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054216"];
-
     NSString *groupName = @"Partially invalid group";
     NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
         self.unregisteredRecipient,
-        validRecipient,
         TSAccountManager.localAddress,
     ] mutableCopy];
 

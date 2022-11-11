@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2016 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "SignalBaseTest.h"
@@ -30,11 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Other formatters add a dynamic date prefix to log lines. We truncate that when comparing our expected output.
     self.datePrefixLength = [self.formatter formatLogMessage:[self messageWithString:@""]].length;
-}
-
-- (void)tearDown
-{
-    [super tearDown];
 }
 
 - (DDLogMessage *)messageWithString:(NSString *)string

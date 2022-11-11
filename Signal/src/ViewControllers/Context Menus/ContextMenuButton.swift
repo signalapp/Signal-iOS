@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -94,7 +95,7 @@ public class ContextMenuButton: UIButton, ContextMenuInteractionDelegate {
                 self.contextMenuInteraction(_contextMenuInteraction, didEndForConfiguration: contextMenuConfiguration)
                 self.contextMenuConfiguration = nil
             } else {
-                owsFailDebug("Dismissing context menu with no configuration present")
+                OWSLogger.info("Dismissing context menu with no configuration present")
             }
         }
 
@@ -221,7 +222,7 @@ public class ContextMenuButton: UIButton, ContextMenuInteractionDelegate {
         configurationForMenuAtLocation location: CGPoint
     ) -> ContextMenuConfiguration? {
         return self.contextMenu.map { contextMenu in
-            return .init(identifier: nil, actionProvider: { _ in
+            return .init(identifier: nil, forceDarkTheme: forceDarkTheme, actionProvider: { _ in
                 return contextMenu
             })
         }
@@ -250,6 +251,27 @@ public class ContextMenuButton: UIButton, ContextMenuInteractionDelegate {
 extension ContextMenuButton: ContextMenuControllerDelegate {
     func contextMenuControllerRequestsDismissal(_ contextMenuController: ContextMenuController) {
         dismissContextMenu(animated: true)
+    }
+
+    func contextMenuControllerAccessoryFrameOffset(_ contextMenuController: ContextMenuController) -> CGPoint? {
+        guard let splitVC = signalApp.conversationSplitViewControllerForSwift, splitVC.isCollapsed else { return nil }
+
+        guard let window = window else { return nil }
+
+        let menuPosition = ContextMenuPosition(
+            rect: window.bounds,
+            locationInRect: window.convert(frame, from: superview)
+        )
+
+        let accessoryFrame = window.convert(frame, from: superview)
+        let desiredEdgeInset: CGFloat = 8
+
+        switch menuPosition.horizontalPinnedEdge {
+        case .left:
+            return .init(x: -(accessoryFrame.x - desiredEdgeInset), y: 0)
+        case .right:
+            return .init(x: -(accessoryFrame.x - window.width + desiredEdgeInset), y: 0)
+        }
     }
 }
 

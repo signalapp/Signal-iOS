@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import Photos
+import SignalMessaging
 import SignalUI
 
 protocol SendMediaNavDelegate: AnyObject {
@@ -12,9 +14,11 @@ protocol SendMediaNavDelegate: AnyObject {
 
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageBody: MessageBody?)
 
-    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didFinishWithTextAttachment textAttachment: TextAttachment)
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didFinishWithTextAttachment textAttachment: UnsentTextAttachment)
 
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageBody newMessageBody: MessageBody?)
+
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeViewOnceState isViewOnce: Bool)
 }
 
 protocol SendMediaNavDataSource: AnyObject {
@@ -48,6 +52,8 @@ class CameraFirstCaptureNavigationController: SendMediaNavigationController {
         navController.sendMediaNavDelegate = cameraFirstCaptureSendFlow
         navController.sendMediaNavDataSource = cameraFirstCaptureSendFlow
 
+        navController.storiesOnly = storiesOnly
+
         return navController
     }
 }
@@ -59,17 +65,12 @@ class SendMediaNavigationController: OWSNavigationController {
     }
 
     fileprivate var canSendToStories: Bool { false }
+    fileprivate var storiesOnly: Bool = false
 
     // MARK: - Overrides
 
     override var childForStatusBarStyle: UIViewController? {
         topViewController
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        self.delegate = self
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -180,6 +181,9 @@ class SendMediaNavigationController: OWSNavigationController {
         if requiresContactPickerToProceed {
             options.insert(.isNotFinalScreen)
         }
+        if canSendToStories, storiesOnly {
+            options.insert(.disallowViewOnce)
+        }
         let approvalViewController = AttachmentApprovalViewController(options: options, attachmentApprovalItems: attachmentApprovalItems)
         approvalViewController.approvalDelegate = self
         approvalViewController.approvalDataSource = self
@@ -217,53 +221,7 @@ class SendMediaNavigationController: OWSNavigationController {
     }
 }
 
-extension SendMediaNavigationController: UINavigationControllerDelegate {
-
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        updateNavbarTheme(for: viewController, animated: animated)
-    }
-
-    // In case back navigation was canceled, we re-apply whatever is showing.
-    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        updateNavbarTheme(for: viewController, animated: animated)
-    }
-
-    func navigationControllerSupportedInterfaceOrientations(_ navigationController: UINavigationController) -> UIInterfaceOrientationMask {
-        return navigationController.topViewController?.supportedInterfaceOrientations ?? UIDevice.current.defaultSupportedOrientations
-    }
-
-    // MARK: - Helpers
-
-    private func updateNavbarTheme(for viewController: UIViewController, animated: Bool) {
-        let showNavbar: (OWSNavigationBar.NavigationBarStyle) -> Void = { navigationBarStyle in
-            if self.isNavigationBarHidden {
-                self.setNavigationBarHidden(false, animated: animated)
-            }
-            guard let owsNavBar = self.navigationBar as? OWSNavigationBar else {
-                owsFailDebug("unexpected navigationBar: \(self.navigationBar)")
-                return
-            }
-            owsNavBar.switchToStyle(navigationBarStyle)
-        }
-
-        switch viewController {
-        case is PhotoCaptureViewController:
-            if !isNavigationBarHidden {
-                setNavigationBarHidden(true, animated: animated)
-            }
-        case is AttachmentApprovalViewController:
-            if !isNavigationBarHidden {
-                setNavigationBarHidden(true, animated: animated)
-            }
-        case is ImagePickerGridController:
-            showNavbar(.alwaysDark)
-        case is ConversationPickerViewController:
-            showNavbar(.default)
-        default:
-            owsFailDebug("unexpected viewController: \(viewController)")
-            return
-        }
-    }
+extension SendMediaNavigationController {
 
     // MARK: - Too Many
 
@@ -288,7 +246,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     }
 
     func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController,
-                                    didFinishWithTextAttachment textAttachment: TextAttachment) {
+                                    didFinishWithTextAttachment textAttachment: UnsentTextAttachment) {
         sendMediaNavDelegate?.sendMediaNav(self, didFinishWithTextAttachment: textAttachment)
     }
 
@@ -326,10 +284,6 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
 
             BenchEventStart(title: "Show-Media-Library", eventId: "Show-Media-Library")
             let presentedViewController = OWSNavigationController(rootViewController: self.mediaLibraryViewController)
-            if let owsNavBar = presentedViewController.navigationBar as? OWSNavigationBar {
-                owsNavBar.switchToStyle(.alwaysDark)
-            }
-            presentedViewController.ows_preferredStatusBarStyle = .lightContent
             self.presentFullScreen(presentedViewController, animated: true)
         }
     }
@@ -480,6 +434,10 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageBody newMessageBody: MessageBody?) {
         sendMediaNavDelegate?.sendMediaNav(self, didChangeMessageBody: newMessageBody)
+    }
+
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeViewOnceState isViewOnce: Bool) {
+        sendMediaNavDelegate?.sendMediaNav(self, didChangeViewOnceState: isViewOnce)
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 @testable import SignalServiceKit
@@ -7,15 +8,6 @@ import XCTest
 import GRDB
 
 class MessageSendLogTests: SSKBaseTestSwift {
-
-    override func setUp() {
-        super.setUp()
-    }
-
-    override func tearDown() {
-        super.tearDown()
-    }
-
     func testStoreAndRetrieveValidPayload() {
         databaseStorage.write { writeTx in
             // Create and save the message payload

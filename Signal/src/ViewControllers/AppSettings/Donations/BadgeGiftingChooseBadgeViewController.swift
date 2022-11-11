@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -13,9 +14,11 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
         case initializing
         case loading
         case loadFailed
-        case loaded(selectedCurrencyCode: Currency.Code,
-                    badge: ProfileBadge,
-                    pricesByCurrencyCode: [Currency.Code: UInt])
+        case loaded(
+            selectedCurrencyCode: Currency.Code,
+            badge: ProfileBadge,
+            pricesByCurrencyCode: [Currency.Code: FiatMoney]
+        )
 
         public var canContinue: Bool {
             switch self {
@@ -63,26 +66,32 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
     }
 
     private func loadData() -> Guarantee<State> {
-        firstly { () -> Promise<(ProfileBadge, [String: UInt])> in
+        firstly { () -> Promise<(ProfileBadge, [Currency.Code: FiatMoney])> in
             Logger.info("[Gifting] Fetching badge data...")
             return Promise.when(fulfilled: SubscriptionManager.getGiftBadge(), SubscriptionManager.getGiftBadgePricesByCurrencyCode())
-        }.then { (giftBadge: ProfileBadge, pricesByCurrencyCode: [String: UInt]) -> Promise<(ProfileBadge, [String: UInt])> in
+        }.then { (giftBadge: ProfileBadge, pricesByCurrencyCode: [Currency.Code: FiatMoney]) -> Promise<(ProfileBadge, [Currency.Code: FiatMoney])> in
             Logger.info("[Gifting] Populating badge assets...")
             return self.profileManager.badgeStore.populateAssetsOnBadge(giftBadge).map { (giftBadge, pricesByCurrencyCode) }
-        }.then { (giftBadge: ProfileBadge, pricesByCurrencyCode: [Currency.Code: UInt]) -> Guarantee<State> in
-            let selectedCurrencyCode: Currency.Code
-            if pricesByCurrencyCode[Stripe.defaultCurrencyCode] != nil {
-                selectedCurrencyCode = Stripe.defaultCurrencyCode
-            } else if pricesByCurrencyCode["USD"] != nil {
-                Logger.warn("Could not find the desired currency code. Falling back to USD")
-                selectedCurrencyCode = "USD"
-            } else {
-                owsFail("Could not pick a currency, even USD")
+        }.then { (giftBadge: ProfileBadge, pricesByCurrencyCode: [Currency.Code: FiatMoney]) -> Guarantee<State> in
+            let defaultCurrencyCode = DonationUtilities.chooseDefaultCurrency(
+                preferred: [
+                    Locale.current.currencyCode?.uppercased(),
+                    "USD",
+                    pricesByCurrencyCode.keys.first
+                ],
+                supported: pricesByCurrencyCode.keys
+            )
+            guard let defaultCurrencyCode = defaultCurrencyCode else {
+                // This indicates a bug, either in the iOS app or the server.
+                owsFailDebug("[Gifting] Successfully loaded data, but a preferred currency could not be found")
+                return Guarantee.value(.loadFailed)
             }
 
-            return Guarantee.value(.loaded(selectedCurrencyCode: selectedCurrencyCode,
-                                           badge: giftBadge,
-                                           pricesByCurrencyCode: pricesByCurrencyCode))
+            return Guarantee.value(.loaded(
+                selectedCurrencyCode: defaultCurrencyCode,
+                badge: giftBadge,
+                pricesByCurrencyCode: pricesByCurrencyCode
+            ))
         }.recover { error -> Guarantee<State> in
             Logger.warn("\(error)")
             return Guarantee.value(.loadFailed)
@@ -98,9 +107,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
                 owsFailDebug("State is invalid. We selected a currency code that we don't have a price for")
                 return
             }
-            let vc = BadgeGiftingChooseRecipientViewController(badge: badge,
-                                                               price: price,
-                                                               currencyCode: selectedCurrencyCode)
+            let vc = BadgeGiftingChooseRecipientViewController(badge: badge, price: price)
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -230,16 +237,21 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
         return [section]
     }
 
-    private func loadedSections(selectedCurrencyCode: Currency.Code,
-                                badge: ProfileBadge,
-                                pricesByCurrencyCode: [Currency.Code: UInt]) -> [OWSTableSection] {
+    private func loadedSections(
+        selectedCurrencyCode: Currency.Code,
+        badge: ProfileBadge,
+        pricesByCurrencyCode: [Currency.Code: FiatMoney]
+    ) -> [OWSTableSection] {
         let currencyButtonSection = OWSTableSection()
         currencyButtonSection.hasBackground = false
         currencyButtonSection.add(.init(customCellBlock: { [weak self] in
             guard let self = self else { return UITableViewCell() }
             let cell = AppSettingsViewsUtil.newCell(cellOuterInsets: self.cellOuterInsets)
 
-            let currencyPickerButton = DonationCurrencyPickerButton(currentCurrencyCode: selectedCurrencyCode) { [weak self] in
+            let currencyPickerButton = DonationCurrencyPickerButton(
+                currentCurrencyCode: selectedCurrencyCode,
+                hasLabel: true
+            ) { [weak self] in
                 guard let self = self else { return }
                 let vc = CurrencyPickerViewController(
                     dataSource: StripeCurrencyPickerDataSource(currentCurrencyCode: selectedCurrencyCode,
@@ -266,7 +278,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
                 owsFailDebug("State is invalid. We selected a currency code that we don't have a price for.")
                 return cell
             }
-            let badgeCellView = GiftBadgeCellView(badge: badge, price: price, currencyCode: selectedCurrencyCode)
+            let badgeCellView = GiftBadgeCellView(badge: badge, price: price)
             cell.contentView.addSubview(badgeCellView)
             badgeCellView.autoPinEdgesToSuperviewMargins()
 

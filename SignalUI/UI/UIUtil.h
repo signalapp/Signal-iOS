@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2014 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import <SignalServiceKit/MIMETypeUtil.h>
@@ -13,16 +14,7 @@
 
 typedef void (^completionBlock)(void);
 
-/**
- *
- * UIUtil contains various class methods that centralize common app UI functionality that would otherwise be hardcoded.
- *
- */
-
 @interface UIUtil : NSObject
-
-+ (void)applyRoundedBorderToImageView:(UIImageView *)imageView;
-+ (void)removeRoundedBorderToImageView:(UIImageView *__strong *)imageView;
 
 + (void)setupSignalAppearence;
 

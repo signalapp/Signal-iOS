@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import SignalServiceKit
 
-@objc
 public protocol ContactShareApprovalViewControllerDelegate: AnyObject {
     func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
                              didApproveContactShare contactShare: ContactShareViewModel)
@@ -159,7 +159,7 @@ class ContactShareFieldView: UIStackView {
 
     let field: ContactShareField
 
-    let previewViewBlock : (() -> UIView)
+    let previewViewBlock: (() -> UIView)
 
     private var checkbox: UIButton!
 
@@ -170,7 +170,7 @@ class ContactShareFieldView: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    required init(field: ContactShareField, previewViewBlock : @escaping (() -> UIView), delegate: ContactShareFieldViewDelegate) {
+    required init(field: ContactShareField, previewViewBlock: @escaping (() -> UIView), delegate: ContactShareFieldViewDelegate) {
         self.field = field
         self.previewViewBlock = previewViewBlock
         self.delegate = delegate
@@ -212,7 +212,7 @@ class ContactShareFieldView: UIStackView {
     }
 
     @objc
-    func wasTapped(sender: UIGestureRecognizer) {
+    private func wasTapped(sender: UIGestureRecognizer) {
         Logger.info("")
 
         guard sender.state == .recognized else {
@@ -227,10 +227,8 @@ class ContactShareFieldView: UIStackView {
 
 // MARK: -
 
-@objc
 public class ContactShareApprovalViewController: OWSViewController, EditContactShareNameViewControllerDelegate, ContactShareFieldViewDelegate {
 
-    @objc
     public weak var delegate: ContactShareApprovalViewControllerDelegate?
 
     var contactShare: ContactShareViewModel
@@ -268,7 +266,6 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
 
     // MARK: Initializers
 
-    @objc
     required public init(contactShare: ContactShareViewModel) {
         self.contactShare = contactShare
 
@@ -409,7 +406,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         scrollView.autoPinEdge(toSuperviewSafeArea: .leading)
         scrollView.autoPinEdge(toSuperviewSafeArea: .trailing)
         scrollView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        autoPinView(toBottomOfViewControllerOrKeyboard: scrollView, avoidNotch: true)
+        scrollView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
         let fieldsView = createFieldsView()
 
@@ -489,7 +486,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
     // MARK: -
 
     @objc
-    func didPressSendButton() {
+    private func didPressSendButton() {
         AssertIsOnMainThread()
 
         guard isAtLeastOneFieldSelected() else {
@@ -518,7 +515,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
     }
 
     @objc
-    func didPressCancel() {
+    private func didPressCancel() {
         Logger.info("")
 
         guard let delegate = self.delegate else {
@@ -529,7 +526,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         delegate.approveContactShare(self, didCancelContactShare: contactShare)
     }
 
-    func didPressEditName() {
+    private func didPressEditName() {
         Logger.info("")
 
         let view = EditContactShareNameViewController(contactShare: contactShare, delegate: self)

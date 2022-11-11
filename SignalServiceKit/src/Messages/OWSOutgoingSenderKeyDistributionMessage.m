@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSOutgoingSenderKeyDistributionMessage.h"
@@ -8,6 +9,7 @@
 @interface OWSOutgoingSenderKeyDistributionMessage ()
 @property (strong, nonatomic, readonly) NSData *serializedSKDM;
 @property (assign, atomic) BOOL isSentOnBehalfOfOnlineMessage;
+@property (assign, atomic) BOOL isSentOnBehalfOfStoryMessage;
 @end
 
 @implementation OWSOutgoingSenderKeyDistributionMessage
@@ -41,6 +43,11 @@
     return NO;
 }
 
+- (BOOL)isStorySend
+{
+    return self.isSentOnBehalfOfStoryMessage;
+}
+
 - (nullable SSKProtoContentBuilder *)contentBuilderWithThread:(TSThread *)thread
                                                   transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -49,9 +56,10 @@
     return builder;
 }
 
-- (void)configureAsSentOnBehalfOf:(TSOutgoingMessage *)message
+- (void)configureAsSentOnBehalfOf:(TSOutgoingMessage *)message inThread:(TSThread *)thread
 {
     self.isSentOnBehalfOfOnlineMessage = message.isOnline;
+    self.isSentOnBehalfOfStoryMessage = message.isStorySend && !thread.isGroupThread;
 }
 
 @end

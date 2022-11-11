@@ -1,7 +1,9 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalMessaging
 import SignalServiceKit
 
 public protocol ForwardMessageDelegate: AnyObject {
@@ -32,7 +34,9 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     private let selection = ConversationPickerSelection()
     var selectedConversations: [ConversationItem] { selection.conversations }
 
-    override var sheetBackgroundColor: UIColor { pickerVC.tableBackgroundColor }
+    override var sheetBackgroundColor: UIColor {
+        ForwardPickerViewController.tableBackgroundColor(isUsingPresentedStyle: true)
+    }
 
     private init(content: Content) {
         self.content = content
@@ -40,11 +44,19 @@ class ForwardMessageViewController: InteractiveSheetViewController {
 
         super.init()
 
+        if self.content.canSendToStories {
+            if self.content.canSendToNonStories {
+                self.pickerVC.sectionOptions.insert(.stories)
+            } else {
+                self.pickerVC.sectionOptions = .storiesOnly
+            }
+        } else {
+            self.pickerVC.shouldHideRecentConversationsTitle = true
+        }
+
         selectRecipientsStep()
-        self.pickerVC.shouldHideRecentConversationsTitle = true
-        let placeholderText = NSLocalizedString("FORWARD_MESSAGE_TEXT_PLACEHOLDER",
-                                                comment: "Indicates that the user can add a text message to forwarded messages.")
-        pickerVC.approvalTextMode = .active(placeholderText: placeholderText)
+
+        minimizedHeight = 576
     }
 
     required init() {
@@ -83,17 +95,44 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         }
     }
 
-    public class func present(_ attachments: [TSAttachment],
-                              from fromViewController: UIViewController,
-                              delegate: ForwardMessageDelegate) {
-        do {
-            let content: Content = try Self.databaseStorage.read { transaction in
-                try Content.build(attachments: attachments, transaction: transaction)
+    public class func present(
+        forStoryMessage storyMessage: StoryMessage,
+        from fromViewController: UIViewController,
+        delegate: ForwardMessageDelegate
+    ) {
+        let builder = Item.Builder()
+        switch storyMessage.attachment {
+        case .file(let attachmentId):
+            guard let attachmentStream = databaseStorage.read(block: {
+                TSAttachmentStream.anyFetchAttachmentStream(uniqueId: attachmentId, transaction: $0)
+            }) else {
+                ForwardMessageViewController.showAlertForForwardError(
+                    error: OWSAssertionError("Missing attachment stream for forwarded story message"),
+                    forwardedInteractionCount: 1
+                )
+                return
             }
-            present(content: content, from: fromViewController, delegate: delegate)
-        } catch {
-            ForwardMessageViewController.showAlertForForwardError(error: error, forwardedInteractionCount: 1)
+            do {
+                let signalAttachment = try attachmentStream.cloneAsSignalAttachment()
+                builder.attachments = [signalAttachment]
+            } catch {
+                ForwardMessageViewController.showAlertForForwardError(
+                    error: error,
+                    forwardedInteractionCount: 1
+                )
+                return
+            }
+        case .text(let textAttachment):
+            builder.textAttachment = textAttachment
         }
+        present(content: .single(item: builder.build()), from: fromViewController, delegate: delegate)
+    }
+
+    public class func present(
+        _ textAttachment: TextAttachment,
+        from fromViewController: UIViewController,
+        delegate: ForwardMessageDelegate
+    ) {
     }
 
     private class func present(content: Content,
@@ -114,7 +153,6 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        applyTheme()
         ensureBottomFooterVisibility()
     }
 
@@ -123,6 +161,7 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         pickerVC.shouldShowSearchBar = false
         pickerVC.shouldHideSearchBarIfCancelled = true
         pickerVC.pickerDelegate = self
+        pickerVC.shouldBatchUpdateIdentityKeys = true
 
         forwardNavigationViewController.forwardMessageViewController = self
         forwardNavigationViewController.viewControllers = [ pickerVC ]
@@ -131,8 +170,6 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         let navView = forwardNavigationViewController.view!
         self.contentView.addSubview(navView)
         navView.autoPinEdgesToSuperviewEdges()
-
-        applyTheme()
     }
 
     fileprivate func selectSearchBar() {
@@ -154,6 +191,16 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     fileprivate func ensureBottomFooterVisibility() {
         AssertIsOnMainThread()
 
+        if selectedConversations.allSatisfy({ $0.outgoingMessageClass == OutgoingStoryMessage.self }) {
+            pickerVC.approvalTextMode = .none
+        } else {
+            let placeholderText = NSLocalizedString(
+                "FORWARD_MESSAGE_TEXT_PLACEHOLDER",
+                comment: "Indicates that the user can add a text message to forwarded messages."
+            )
+            pickerVC.approvalTextMode = .active(placeholderText: placeholderText)
+        }
+
         pickerVC.shouldHideBottomFooter = selectedConversations.isEmpty
     }
 
@@ -162,8 +209,6 @@ class ForwardMessageViewController: InteractiveSheetViewController {
 
         forwardMessageDelegate?.forwardMessageFlowDidCancel()
     }
-
-    override var minHeight: CGFloat { 576 }
 }
 
 // MARK: - Sending
@@ -230,10 +275,10 @@ extension ForwardMessageViewController {
 
         let recipientConversations = self.selectedConversations
         firstly(on: .global()) {
-            self.recipientThreads(for: recipientConversations)
-        }.then(on: .main) { (recipientThreads: [TSThread]) -> Promise<Void> in
+            self.outgoingMessageRecipientThreads(for: recipientConversations)
+        }.then(on: .main) { (outgoingMessageRecipientThreads: [TSThread]) -> Promise<Void> in
             try Self.databaseStorage.write { transaction in
-                for recipientThread in recipientThreads {
+                for recipientThread in outgoingMessageRecipientThreads {
                     // We're sending a message to this thread, approve any pending message request
                     ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(thread: recipientThread,
                                                                                                     transaction: transaction)
@@ -248,10 +293,15 @@ extension ForwardMessageViewController {
 
                 // Make sure the message and its content haven't been deleted (view-once
                 // messages, remove delete, disappearing messages, manual deletion, etc.).
-                for item in content.allItems where !item.isUnsavedInteraction {
-                    let interactionId = item.interaction.uniqueId
-                    guard let latestInteraction = TSInteraction.anyFetch(uniqueId: interactionId, transaction: transaction),
-                          hasRenderableContent(interaction: latestInteraction) else {
+                for item in content.allItems where item.interaction != nil {
+                    guard
+                        let interactionId = item.interaction?.uniqueId,
+                        let latestInteraction = TSInteraction.anyFetch(
+                            uniqueId: interactionId,
+                            transaction: transaction
+                        ),
+                        hasRenderableContent(interaction: latestInteraction)
+                    else {
                         throw ForwardError.missingInteraction
                     }
                 }
@@ -261,10 +311,10 @@ extension ForwardMessageViewController {
             return firstly { () -> Promise<Void> in
                 // Maintain order of interactions.
                 let sortedItems = content.allItems.sorted { lhs, rhs in
-                    lhs.interaction.timestamp < rhs.interaction.timestamp
+                    lhs.interaction?.timestamp ?? 0 < rhs.interaction?.timestamp ?? 0
                 }
                 let promises: [Promise<Void>] = sortedItems.map { item in
-                    self.send(item: item, toRecipientThreads: recipientThreads)
+                    self.send(item: item, toOutgoingMessageRecipientThreads: outgoingMessageRecipientThreads)
                 }
                 return firstly(on: .main) { () -> Promise<Void> in
                     Promise.when(resolved: promises).asVoid()
@@ -273,17 +323,18 @@ extension ForwardMessageViewController {
                     // It should be sent last.
                     if let textMessage = textMessage {
                         let messageBody = MessageBody(text: textMessage, ranges: .empty)
-                        return self.send(toRecipientThreads: recipientThreads) { recipientThread in
-                            self.send(body: messageBody,
-                                      recipientThread: recipientThread)
+                        return self.send(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
+                            self.send(body: messageBody, recipientThread: recipientThread)
                         }
                     } else {
                         return Promise.value(())
                     }
                 }
             }.map(on: .main) {
-                self.forwardMessageDelegate?.forwardMessageFlowDidComplete(items: content.allItems,
-                                                                           recipientThreads: recipientThreads)
+                self.forwardMessageDelegate?.forwardMessageFlowDidComplete(
+                    items: content.allItems,
+                    recipientThreads: outgoingMessageRecipientThreads
+                )
             }
         }.catch(on: .main) { error in
             owsFailDebug("Error: \(error)")
@@ -292,7 +343,7 @@ extension ForwardMessageViewController {
         }
     }
 
-    private func send(item: Item, toRecipientThreads recipientThreads: [TSThread]) -> Promise<Void> {
+    private func send(item: Item, toOutgoingMessageRecipientThreads outgoingMessageRecipientThreads: [TSThread]) -> Promise<Void> {
         AssertIsOnMainThread()
 
         let componentState = item.componentState
@@ -300,16 +351,16 @@ extension ForwardMessageViewController {
         if let stickerMetadata = item.stickerMetadata {
             let stickerInfo = stickerMetadata.stickerInfo
             if StickerManager.isStickerInstalled(stickerInfo: stickerInfo) {
-                return send(toRecipientThreads: recipientThreads) { recipientThread in
+                return send(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
                     self.send(installedSticker: stickerInfo, thread: recipientThread)
                 }
             } else {
-                guard let stickerAttachment = componentState.stickerAttachment else {
+                guard let stickerAttachment = componentState?.stickerAttachment else {
                     return Promise(error: OWSAssertionError("Missing stickerAttachment."))
                 }
                 do {
                     let stickerData = try stickerAttachment.readDataFromFile()
-                    return send(toRecipientThreads: recipientThreads) { recipientThread in
+                    return send(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
                         self.send(uninstalledSticker: stickerMetadata,
                                   stickerData: stickerData,
                                   thread: recipientThread)
@@ -319,7 +370,7 @@ extension ForwardMessageViewController {
                 }
             }
         } else if let contactShare = item.contactShare {
-            return send(toRecipientThreads: recipientThreads) { recipientThread in
+            return send(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
                 if let avatarImage = contactShare.avatarImage {
                     self.databaseStorage.write { transaction in
                         contactShare.dbRecord.saveAvatarImage(avatarImage, transaction: transaction)
@@ -334,13 +385,26 @@ extension ForwardMessageViewController {
             return AttachmentMultisend.sendApprovedMedia(conversations: conversations,
                                                          approvalMessageBody: item.messageBody,
                                                          approvedAttachments: attachments).asVoid()
+        } else if let textAttachment = item.textAttachment {
+            // TODO: we want to reuse the uploaded link preview image attachment instead of re-uploading
+            // if the original was sent recently (if not the image could be stale)
+            return AttachmentMultisend.sendTextAttachment(textAttachment.asUnsentAttachment(), to: selectedConversations).asVoid()
         } else if let messageBody = item.messageBody {
             let linkPreviewDraft = item.linkPreviewDraft
-            return send(toRecipientThreads: recipientThreads) { recipientThread in
-                self.send(body: messageBody,
-                          linkPreviewDraft: linkPreviewDraft,
-                          recipientThread: recipientThread)
+            let nonStorySendPromise = send(toRecipientThreads: outgoingMessageRecipientThreads) { recipientThread in
+                self.send(
+                    body: messageBody,
+                    linkPreviewDraft: linkPreviewDraft,
+                    recipientThread: recipientThread
+                )
             }
+
+            // Send the text message to any selected story recipients
+            // as a text story with default styling.
+            let storyConversations = selectedConversations.filter { $0.outgoingMessageClass == OutgoingStoryMessage.self }
+            let storySendPromise = StorySharing.sendTextStory(with: messageBody, linkPreviewDraft: linkPreviewDraft, to: storyConversations)
+
+            return Promise<Void>.when(fulfilled: [nonStorySendPromise, storySendPromise])
         } else {
             return Promise(error: ForwardError.invalidInteraction)
         }
@@ -390,14 +454,14 @@ extension ForwardMessageViewController {
         return Promise.when(fulfilled: recipientThreads.map { thread in enqueueBlock(thread) }).asVoid()
     }
 
-    fileprivate func recipientThreads(for conversationItems: [ConversationItem]) -> Promise<[TSThread]> {
+    fileprivate func outgoingMessageRecipientThreads(for conversationItems: [ConversationItem]) -> Promise<[TSThread]> {
         firstly(on: .global()) {
             guard conversationItems.count > 0 else {
                 throw OWSAssertionError("No recipients.")
             }
 
             return try self.databaseStorage.write { transaction in
-                try conversationItems.map {
+                try conversationItems.lazy.filter { $0.outgoingMessageClass == TSOutgoingMessage.self }.map {
                     guard let thread = $0.getOrCreateThread(transaction: transaction) else {
                         throw ForwardError.missingThread
                     }
@@ -539,47 +603,48 @@ extension ForwardMessageViewController {
 public struct ForwardMessageItem {
     fileprivate typealias Item = ForwardMessageItem
 
-    let interaction: TSInteraction
-    let isUnsavedInteraction: Bool
-    let componentState: CVComponentState
+    let interaction: TSInteraction?
+    let componentState: CVComponentState?
 
     let attachments: [SignalAttachment]?
     let contactShare: ContactShareViewModel?
     let messageBody: MessageBody?
     let linkPreviewDraft: OWSLinkPreviewDraft?
     let stickerMetadata: StickerMetadata?
+    let textAttachment: TextAttachment?
 
     fileprivate class Builder {
-        let interaction: TSInteraction
-        let isUnsavedInteraction: Bool
-        let componentState: CVComponentState
+        let interaction: TSInteraction?
+        let componentState: CVComponentState?
 
         var attachments: [SignalAttachment]?
         var contactShare: ContactShareViewModel?
         var messageBody: MessageBody?
         var linkPreviewDraft: OWSLinkPreviewDraft?
         var stickerMetadata: StickerMetadata?
+        var textAttachment: TextAttachment?
 
-        init(interaction: TSInteraction, isUnsavedInteraction: Bool, componentState: CVComponentState) {
+        init(interaction: TSInteraction? = nil, componentState: CVComponentState? = nil) {
             self.interaction = interaction
-            self.isUnsavedInteraction = isUnsavedInteraction
             self.componentState = componentState
         }
 
         func build() -> ForwardMessageItem {
-            ForwardMessageItem(interaction: interaction,
-                               isUnsavedInteraction: isUnsavedInteraction,
-                               componentState: componentState,
-                               attachments: attachments,
-                               contactShare: contactShare,
-                               messageBody: messageBody,
-                               linkPreviewDraft: linkPreviewDraft,
-                               stickerMetadata: stickerMetadata)
+            ForwardMessageItem(
+                interaction: interaction,
+                componentState: componentState,
+                attachments: attachments,
+                contactShare: contactShare,
+                messageBody: messageBody,
+                linkPreviewDraft: linkPreviewDraft,
+                stickerMetadata: stickerMetadata,
+                textAttachment: textAttachment
+            )
         }
     }
 
     fileprivate var asBuilder: Builder {
-        let builder = Builder(interaction: interaction, isUnsavedInteraction: isUnsavedInteraction, componentState: componentState)
+        let builder = Builder(interaction: interaction, componentState: componentState)
         builder.attachments = attachments
         builder.contactShare = contactShare
         builder.messageBody = messageBody
@@ -601,13 +666,14 @@ public struct ForwardMessageItem {
         return true
     }
 
-    fileprivate static func build(interaction: TSInteraction,
-                                  isUnsavedInteraction: Bool = false,
-                                  componentState: CVComponentState,
-                                  selectionType: CVSelectionType,
-                                  transaction: SDSAnyReadTransaction) throws -> Item {
+    fileprivate static func build(
+        interaction: TSInteraction,
+        componentState: CVComponentState,
+        selectionType: CVSelectionType,
+        transaction: SDSAnyReadTransaction
+    ) throws -> Item {
 
-        let builder = Builder(interaction: interaction, isUnsavedInteraction: isUnsavedInteraction, componentState: componentState)
+        let builder = Builder(interaction: interaction, componentState: componentState)
 
         let shouldHaveText = (selectionType == .allContent ||
                                 selectionType == .secondaryContent)
@@ -727,6 +793,24 @@ private enum ForwardMessageContent {
         }
     }
 
+    var canSendToStories: Bool {
+        allItems.allSatisfy { item in
+            if let attachments = item.attachments {
+                return attachments.allSatisfy({ $0.isValidImage || $0.isValidVideo })
+            } else if item.textAttachment != nil {
+                return true
+            } else if item.messageBody != nil {
+                return true
+            } else {
+                return false
+            }
+        }
+    }
+
+    var canSendToNonStories: Bool {
+        allItems.allSatisfy { $0.textAttachment == nil }
+    }
+
     static func build(items: [Item]) -> ForwardMessageContent {
         if items.count == 1, let item = items.first {
             return .single(item: item)
@@ -759,33 +843,6 @@ private enum ForwardMessageContent {
             return try Item.build(interaction: interaction,
                                   componentState: componentState,
                                   selectionType: selectionItem.selectionType,
-                                  transaction: transaction)
-        }
-        return build(items: items)
-    }
-
-    static func build(attachments: [TSAttachment], transaction: SDSAnyReadTransaction) throws -> ForwardMessageContent {
-        // The forwarding mechanism all operates on "interactions", so create a dummy unsaved interaction
-        // to wrap each attachment we're trying to forward.
-        guard let localThread = TSContactThread.getWithContactAddress(
-            TSAccountManager.shared.localAddress!,
-            transaction: transaction
-        ) else {
-            throw ForwardError.missingThread
-        }
-
-        let items: [Item] = try attachments.map { attachment in
-            let builder = TSOutgoingMessageBuilder(thread: localThread)
-            builder.attachmentIds = [attachment.uniqueId]
-            let interaction = builder.build(transaction: transaction)
-
-            let componentState = try buildComponentState(interaction: interaction,
-                                                         transaction: transaction)
-
-            return try Item.build(interaction: interaction,
-                                  isUnsavedInteraction: true,
-                                  componentState: componentState,
-                                  selectionType: .allContent,
                                   transaction: transaction)
         }
         return build(items: items)

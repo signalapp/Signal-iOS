@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -15,15 +16,7 @@ public protocol MemberViewDelegate: AnyObject {
 
     func memberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool
 
-    func memberViewWillRenderRecipient(_ recipient: PickedRecipient)
-
     func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> AnyPromise
-
-    func memberViewShowInvalidRecipientAlert(_ recipient: PickedRecipient)
-
-    func memberViewNoUuidSubtitleForRecipient(_ recipient: PickedRecipient) -> String?
-
-    func memberViewGetRecipientStateForRecipient(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> RecipientPickerRecipientState?
 
     func memberViewShouldShowMemberCount() -> Bool
 
@@ -34,13 +27,17 @@ public protocol MemberViewDelegate: AnyObject {
     func memberViewIsPreExistingMember(_ recipient: PickedRecipient,
                                        transaction: SDSAnyReadTransaction) -> Bool
 
+    func memberViewCustomIconNameForPickedMember(_ recipient: PickedRecipient) -> String?
+
+    func memberViewCustomIconColorForPickedMember(_ recipient: PickedRecipient) -> UIColor?
+
     func memberViewDismiss()
 }
 
 // MARK: -
 
 @objc
-open class BaseMemberViewController: OWSViewController {
+open class BaseMemberViewController: RecipientPickerContainerViewController {
 
     // This delegate is the subclass.
     public weak var memberViewDelegate: MemberViewDelegate?
@@ -60,8 +57,6 @@ open class BaseMemberViewController: OWSViewController {
         }
         return memberViewDelegate.memberViewHasUnsavedChanges
     }
-
-    public let recipientPicker = RecipientPickerViewController()
 
     private let memberBar = NewMembersBar()
     private let memberCountLabel = UILabel()
@@ -90,10 +85,7 @@ open class BaseMemberViewController: OWSViewController {
         memberCountLabel.autoPinEdgesToSuperviewMargins()
         memberCountWrapper.layoutMargins = UIEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12)
 
-        recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
-        recipientPicker.shouldShowGroups = false
-        recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
-        recipientPicker.showUseAsyncSelection = true
+        recipientPicker.groupsToShow = .showNoGroups
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
@@ -101,19 +93,9 @@ open class BaseMemberViewController: OWSViewController {
         recipientPicker.view.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         recipientPicker.view.autoPinEdge(toSuperviewSafeArea: .leading)
         recipientPicker.view.autoPinEdge(toSuperviewSafeArea: .trailing)
-        autoPinView(toBottomOfViewControllerOrKeyboard: recipientPicker.view, avoidNotch: false)
+        recipientPicker.view.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideView)
 
         updateMemberCount()
-        tryToFillInMissingUuids()
-    }
-
-    private func tryToFillInMissingUuids() {
-        let addresses = contactsViewHelper.allSignalAccounts.map { $0.recipientAddress }
-        firstly {
-            GroupManager.tryToFillInMissingUuids(for: addresses, isBlocking: false)
-        }.catch { error in
-            owsFailDebug("Error: \(error)")
-        }
     }
 
     @objc
@@ -224,7 +206,6 @@ open class BaseMemberViewController: OWSViewController {
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        recipientPicker.applyTheme(to: self)
         recipientPicker.pickedRecipients = recipientSet.orderedMembers
 
         updateMemberBar()
@@ -239,12 +220,6 @@ open class BaseMemberViewController: OWSViewController {
                                                                target: self,
                                                                action: #selector(dismissPressed))
         }
-    }
-
-    open override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        recipientPicker.removeTheme(from: self)
     }
 
     @objc
@@ -294,12 +269,11 @@ extension BaseMemberViewController: RecipientPickerDelegate {
             return .unknownError
         }
         return Self.databaseStorage.read { transaction -> RecipientPickerRecipientState in
-            if memberViewDelegate.memberViewIsPreExistingMember(recipient,
-                                                                transaction: transaction) {
+            if memberViewDelegate.memberViewIsPreExistingMember(
+                recipient,
+                transaction: transaction
+            ) {
                 return .duplicateGroupMember
-            }
-            if let state = memberViewDelegate.memberViewGetRecipientStateForRecipient(recipient, transaction: transaction) {
-                return state
             }
             return .canBeSelected
         }
@@ -379,19 +353,6 @@ extension BaseMemberViewController: RecipientPickerDelegate {
 
     public func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        willRenderRecipient recipient: PickedRecipient
-    ) {
-
-        guard let memberViewDelegate = memberViewDelegate else {
-            owsFailDebug("Missing delegate.")
-            return
-        }
-
-        memberViewDelegate.memberViewWillRenderRecipient(recipient)
-    }
-
-    public func recipientPicker(
-        _ recipientPickerViewController: RecipientPickerViewController,
         prepareToSelectRecipient recipient: PickedRecipient
     ) -> AnyPromise {
 
@@ -401,20 +362,6 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         }
 
         return memberViewDelegate.memberViewPrepareToSelectRecipient(recipient)
-    }
-
-    public func recipientPicker(
-        _ recipientPickerViewController: RecipientPickerViewController,
-        showInvalidRecipientAlert recipient: PickedRecipient
-    ) {
-        AssertIsOnMainThread()
-
-        guard let memberViewDelegate = memberViewDelegate else {
-            owsFailDebug("Missing memberViewDelegate.")
-            return
-        }
-
-        memberViewDelegate.memberViewShowInvalidRecipientAlert(recipient)
     }
 
     public func recipientPicker(
@@ -445,11 +392,14 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         let isPreExistingMember = memberViewDelegate.memberViewIsPreExistingMember(recipient,
                                                                                    transaction: transaction)
 
+        let pickedIconName = memberViewDelegate.memberViewCustomIconNameForPickedMember(recipient) ?? "check-circle-solid-24"
+        let pickedIconColor = memberViewDelegate.memberViewCustomIconColorForPickedMember(recipient) ?? Theme.accentBlueColor
+
         let imageView = CVImageView()
         if isPreExistingMember {
-            imageView.setTemplateImageName("check-circle-solid-24", tintColor: Theme.washColor)
+            imageView.setTemplateImageName(pickedIconName, tintColor: Theme.washColor)
         } else if isCurrentMember {
-            imageView.setTemplateImageName("check-circle-solid-24", tintColor: Theme.accentBlueColor)
+            imageView.setTemplateImageName(pickedIconName, tintColor: pickedIconColor)
         } else {
             imageView.setTemplateImageName("empty-circle-outline-24", tintColor: .ows_gray25)
         }
@@ -461,21 +411,10 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         attributedSubtitleForRecipient recipient: PickedRecipient,
         transaction: SDSAnyReadTransaction
     ) -> NSAttributedString? {
-
         guard let address = recipient.address else {
             owsFailDebug("Recipient missing address.")
             return nil
         }
-
-        guard let memberViewDelegate = memberViewDelegate else {
-            owsFailDebug("Missing memberViewDelegate.")
-            return nil
-        }
-
-        if address.uuid == nil, let warning = memberViewDelegate.memberViewNoUuidSubtitleForRecipient(recipient) {
-            return NSAttributedString(string: warning)
-        }
-
         guard !address.isLocalAddress else {
             return nil
         }
@@ -497,9 +436,9 @@ extension BaseMemberViewController: RecipientPickerDelegate {
 
 // MARK: -
 
-extension BaseMemberViewController: OWSNavigationView {
+extension BaseMemberViewController {
 
-    public func shouldCancelNavigationBack() -> Bool {
+    public var shouldCancelNavigationBack: Bool {
         let hasUnsavedChanges = self.hasUnsavedChanges
         if hasUnsavedChanges {
             backButtonPressed()

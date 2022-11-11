@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -153,14 +154,17 @@ public protocol OWSUDManager: AnyObject {
                          requireSyncAccess: Bool,
                          senderCertificates: SenderCertificates) -> OWSUDSendingAccess?
 
+    @objc
+    func storySendingAccess(forAddress address: SignalServiceAddress, senderCertificates: SenderCertificates) -> OWSUDSendingAccess
+
     // MARK: Sender Certificate
 
     // We use completion handlers instead of a promise so that message sending
     // logic can access the strongly typed certificate data.
     @objc
     func ensureSenderCertificates(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy,
-                                  success:@escaping (SenderCertificates) -> Void,
-                                  failure:@escaping (Error) -> Void)
+                                  success: @escaping (SenderCertificates) -> Void,
+                                  failure: @escaping (Error) -> Void)
 
     @objc
     func removeSenderCertificates(transaction: SDSAnyWriteTransaction)
@@ -518,7 +522,17 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             return nil
         }
 
-        return databaseStorage.read { transaction in
+        return udSendingAccess(for: address, udAccess: udAccess, senderCertificates: senderCertificates)
+    }
+
+    @objc
+    public func storySendingAccess(forAddress address: SignalServiceAddress, senderCertificates: SenderCertificates) -> OWSUDSendingAccess {
+        let udAccess = OWSUDAccess(udAccessKey: randomUDAccessKey(), udAccessMode: .unrestricted, isRandomKey: true)
+        return udSendingAccess(for: address, udAccess: udAccess, senderCertificates: senderCertificates)
+    }
+
+    private func udSendingAccess(for address: SignalServiceAddress, udAccess: OWSUDAccess, senderCertificates: SenderCertificates) -> OWSUDSendingAccess {
+        databaseStorage.read { transaction in
             let senderCertificate: SenderCertificate
             switch phoneNumberSharingMode {
             case .everybody:

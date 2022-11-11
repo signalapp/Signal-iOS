@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -48,11 +49,11 @@ private struct OWSThumbnailRequest {
     public typealias FailureBlock = (Error) -> Void
 
     let attachment: TSAttachmentStream
-    let thumbnailDimensionPoints: UInt
+    let thumbnailDimensionPoints: CGFloat
     let success: SuccessBlock
     let failure: FailureBlock
 
-    init(attachment: TSAttachmentStream, thumbnailDimensionPoints: UInt, success: @escaping SuccessBlock, failure: @escaping FailureBlock) {
+    init(attachment: TSAttachmentStream, thumbnailDimensionPoints: CGFloat, success: @escaping SuccessBlock, failure: @escaping FailureBlock) {
         self.attachment = attachment
         self.thumbnailDimensionPoints = thumbnailDimensionPoints
         self.success = success
@@ -97,7 +98,7 @@ public class OWSThumbnailService: NSObject {
     // success and failure will be called async _off_ the main thread.
     @objc
     public func ensureThumbnail(forAttachment attachment: TSAttachmentStream,
-                                thumbnailDimensionPoints: UInt,
+                                thumbnailDimensionPoints: CGFloat,
                                 success: @escaping SuccessBlock,
                                 failure: @escaping FailureBlock) {
         serialQueue.async {

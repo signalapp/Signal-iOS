@@ -1,18 +1,21 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
-import SignalUI
+import SignalMessaging
 import SignalRingRTC
+import SignalUI
 
 // TODO: Eventually add 1:1 call support to this view
 // and replace CallViewController
 class GroupCallViewController: UIViewController {
-    private let thread: TSGroupThread?
     private let call: SignalCall
     private var groupCall: GroupCall { call.groupCall }
     private lazy var callControls = CallControls(call: call, delegate: self)
+    private lazy var incomingCallControls = IncomingCallControls(video: true, delegate: self)
+    private var incomingCallControlsConstraint: NSLayoutConstraint?
     private lazy var noVideoIndicatorView: UIStackView = createNoVideoIndicatorView()
     private lazy var callHeader = CallHeader(call: call, delegate: self)
     private lazy var notificationView = GroupCallNotificationView(call: call)
@@ -56,7 +59,7 @@ class GroupCallViewController: UIViewController {
         didSet { updateCallUI() }
     }
     var hasUnresolvedSafetyNumberMismatch = false
-    var shouldRing = false
+    var hasDismissed = false
 
     private static let keyValueStore = SDSKeyValueStore(collection: "GroupCallViewController")
     private static let didUserSwipeToSpeakerViewKey = "didUserSwipeToSpeakerView"
@@ -67,7 +70,6 @@ class GroupCallViewController: UIViewController {
         owsAssertDebug(call.isGroupCall)
 
         self.call = call
-        self.thread = call.thread as? TSGroupThread
 
         super.init(nibName: nil, bundle: nil)
 
@@ -95,8 +97,7 @@ class GroupCallViewController: UIViewController {
     }
 
     @discardableResult
-    @objc(presentLobbyForThread:)
-    class func presentLobby(thread: TSGroupThread) -> Bool {
+    class func presentLobby(thread: TSGroupThread, videoMuted: Bool = false) -> Bool {
         guard tsAccountManager.isOnboarded() else {
             Logger.warn("aborting due to user not being onboarded.")
             OWSActionSheets.showActionSheet(title: NSLocalizedString(
@@ -118,18 +119,13 @@ class GroupCallViewController: UIViewController {
                 return
             }
 
-            frontmostViewController.ows_askForCameraPermissions { granted in
-                guard granted else {
-                    Logger.warn("aborting due to missing camera permissions.")
-                    return
-                }
+            guard let groupCall = Self.callService.buildAndConnectGroupCallIfPossible(
+                thread: thread, videoMuted: videoMuted
+            ) else {
+                return owsFailDebug("Failed to build group call")
+            }
 
-                guard let groupCall = Self.callService.buildAndConnectGroupCallIfPossible(
-                        thread: thread
-                ) else {
-                    return owsFailDebug("Failed to build group call")
-                }
-
+            let completion = {
                 // Dismiss the group call tooltip
                 self.preferences.setWasGroupCallTooltipShown()
 
@@ -137,6 +133,18 @@ class GroupCallViewController: UIViewController {
                 vc.modalTransitionStyle = .crossDissolve
 
                 OWSWindowManager.shared.startCall(vc)
+            }
+
+            if videoMuted {
+                completion()
+            } else {
+                frontmostViewController.ows_askForCameraPermissions { granted in
+                    guard granted else {
+                        Logger.warn("aborting due to missing camera permissions.")
+                        return
+                    }
+                    completion()
+                }
             }
         }
 
@@ -178,6 +186,14 @@ class GroupCallViewController: UIViewController {
         callControls.autoPinWidthToSuperview()
         callControls.autoPinEdge(toSuperviewEdge: .bottom)
         callControls.autoPinEdge(.top, to: .bottom, of: noVideoIndicatorView, withOffset: 8, relation: .greaterThanOrEqual)
+
+        view.addSubview(incomingCallControls)
+        incomingCallControls.autoPinWidthToSuperview()
+        incomingCallControls.autoPinEdge(toSuperviewEdge: .bottom)
+        // Save this constraint for manual activation/deactivation,
+        // so we don't push the noVideoIndicatorView out of center if we aren't showing the incoming controls.
+        incomingCallControlsConstraint = incomingCallControls.autoPinEdge(
+            .top, to: .bottom, of: noVideoIndicatorView, withOffset: 8, relation: .greaterThanOrEqual)
 
         view.addSubview(videoOverflow)
         videoOverflow.autoPinEdge(toSuperviewEdge: .leading)
@@ -436,6 +452,9 @@ class GroupCallViewController: UIViewController {
     }
 
     func updateCallUI(size: CGSize? = nil) {
+        // Force load the view if it hasn't been yet.
+        _ = self.view
+
         let localDevice = groupCall.localDeviceState
 
         localMemberView.configure(
@@ -457,6 +476,24 @@ class GroupCallViewController: UIViewController {
         let showNoVideoIndicator = groupCall.remoteDeviceStates.isEmpty && groupCall.isOutgoingVideoMuted
         // Hide the subviews of this view to collapse the stack.
         noVideoIndicatorView.subviews.forEach { $0.isHidden = !showNoVideoIndicator }
+
+        if call.groupCallRingState.isIncomingRing {
+            callControls.isHidden = true
+            incomingCallControls.isHidden = false
+            incomingCallControlsConstraint?.isActive = true
+            // These views aren't visible at this point, but we need them to be configured anyway.
+            updateMemberViewFrames(size: size, controlsAreHidden: true)
+            updateScrollViewFrames(size: size, controlsAreHidden: true)
+            return
+        }
+
+        if !incomingCallControls.isHidden {
+            // We were showing the incoming call controls, but now we don't want to.
+            // To make sure all views transition properly, pretend we were showing the regular controls all along.
+            callControls.isHidden = false
+            incomingCallControls.isHidden = true
+            incomingCallControlsConstraint?.isActive = false
+        }
 
         let hideRemoteControls = shouldRemoteVideoControlsBeHidden && !groupCall.remoteDeviceStates.isEmpty
         let remoteControlsAreHidden = callControls.isHidden && callHeader.isHidden
@@ -484,15 +521,25 @@ class GroupCallViewController: UIViewController {
         updateSwipeToastView()
     }
 
-    func dismissCall() {
-        callService.terminate(call: call)
-
-        guard let splitViewSnapshot = SignalApp.shared().snapshotSplitViewController(afterScreenUpdates: false) else {
-            OWSWindowManager.shared.endCall(self)
-            return owsFailDebug("failed to snapshot rootViewController")
+    func dismissCall(shouldHangUp: Bool = true) {
+        if shouldHangUp {
+            callService.callUIAdapter.localHangupCall(call)
         }
 
-        view.superview?.insertSubview(splitViewSnapshot, belowSubview: view)
+        guard !hasDismissed else {
+            return
+        }
+        hasDismissed = true
+
+        guard
+            let splitViewSnapshot = SignalApp.shared().snapshotSplitViewController(afterScreenUpdates: false),
+            view.superview?.insertSubview(splitViewSnapshot, belowSubview: view) != nil
+        else {
+            // This can happen if we're in the background when the call is dismissed (say, from CallKit).
+            OWSWindowManager.shared.endCall(self)
+            return
+        }
+
         splitViewSnapshot.autoPinEdgesToSuperviewEdges()
 
         UIView.animate(withDuration: 0.2, animations: {
@@ -699,9 +746,12 @@ extension GroupCallViewController: CallObserver {
         AssertIsOnMainThread()
         owsAssertDebug(call.isGroupCall)
 
-        defer { updateCallUI() }
+        guard reason != .deviceExplicitlyDisconnected else {
+            dismissCall(shouldHangUp: false)
+            return
+        }
 
-        guard reason != .deviceExplicitlyDisconnected else { return }
+        defer { updateCallUI() }
 
         let title: String
 
@@ -784,7 +834,7 @@ extension GroupCallViewController: CallControlsDelegate {
             let oldShouldRing = sender.isSelected
             let newShouldRing = !oldShouldRing
             sender.isSelected = newShouldRing
-            call.userWantsToRing = newShouldRing
+            call.groupCallRingState = newShouldRing ? .shouldRing : .doNotRing
 
             // Refresh the call header.
             callHeader.groupCallLocalDeviceStateChanged(call)
@@ -835,6 +885,26 @@ extension GroupCallViewController: CallControlsDelegate {
                 self.callService.joinGroupCallIfNecessary(self.call)
             }
         }
+    }
+}
+
+extension GroupCallViewController: IncomingCallControlsDelegate {
+    func didDeclineIncomingCall() {
+        dismissCall()
+    }
+
+    func didAcceptIncomingCall(sender: UIButton) {
+        // Explicitly unmute video in order to request permissions as needed.
+        // (Audio is unmuted as part of the call UI adapter.)
+
+        let videoMute = IncomingCallControls.VideoEnabledTag(rawValue: sender.tag) == .disabled
+        callService.updateIsLocalVideoMuted(isLocalVideoMuted: videoMute)
+        // When turning off video, default speakerphone to on.
+        if videoMute && !callService.audioService.hasExternalInputs {
+            callService.audioService.requestSpeakerphone(call: call.groupCall, isEnabled: true)
+        }
+
+        callService.callUIAdapter.answerCall(call)
     }
 }
 

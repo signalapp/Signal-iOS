@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import Lottie
+import SignalMessaging
 
 class DeviceTransferInitialViewController: DeviceTransferBaseViewController {
     let animationView = AnimationView(name: "transfer")

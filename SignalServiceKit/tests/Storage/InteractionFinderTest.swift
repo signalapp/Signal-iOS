@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -7,11 +8,6 @@ import XCTest
 @testable import SignalServiceKit
 
 class InteractionFinderTest: SSKBaseTestSwift {
-
-    override func setUp() {
-        super.setUp()
-    }
-
     func testInteractions() {
         let address1 = SignalServiceAddress(phoneNumber: "+fake-id")
         // Threads

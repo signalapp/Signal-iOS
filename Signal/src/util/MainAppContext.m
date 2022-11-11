@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "MainAppContext.h"
@@ -60,10 +61,6 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
                                                  name:UIApplicationDidBecomeActiveNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(applicationWillTerminate:)
-                                                 name:UIApplicationWillTerminateNotification
                                                object:nil];
 
     // We can't use OWSSingletonAssert() since it uses the app context.
@@ -169,14 +166,6 @@ NS_ASSUME_NONNULL_BEGIN
                            }];
 
     [self runAppActiveBlocks];
-}
-
-- (void)applicationWillTerminate:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogInfo(@"");
-    OWSLogFlush();
 }
 
 #pragma mark -

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -50,7 +51,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     @objc
     public class func present(fromViewController: UIViewController,
                               canCancel: Bool,
-                              backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
+                              backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void) {
         present(fromViewController: fromViewController,
                 canCancel: canCancel,
                 presentationDelay: kPresentationDelayDefault,
@@ -62,7 +63,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     public class func present(fromViewController: UIViewController,
                               canCancel: Bool,
                               presentationDelay: TimeInterval,
-                              backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
+                              backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void) {
         present(fromViewController: fromViewController,
                 canCancel: canCancel,
                 presentationDelay: presentationDelay,
@@ -72,7 +73,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
     @objc
     public class func presentAsInvisible(fromViewController: UIViewController,
-                                         backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
+                                         backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void) {
         present(fromViewController: fromViewController,
                 canCancel: false,
                 presentationDelay: kPresentationDelayDefault,
@@ -85,7 +86,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
                               canCancel: Bool,
                               presentationDelay: TimeInterval,
                               isInvisible: Bool,
-                              backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
+                              backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void) {
         AssertIsOnMainThread()
 
         let view = ModalActivityIndicatorViewController(canCancel: canCancel,
@@ -119,6 +120,23 @@ public class ModalActivityIndicatorViewController: OWSViewController {
             DispatchQueue.main.async {
                 completion()
             }
+        }
+    }
+
+    /// A helper for a common dismissal pattern.
+    ///
+    /// This can be invoked on any queue, and it'll switch to the main queue if
+    /// needed. The completion block will be invoked on the main queue.
+    ///
+    /// - Parameter completionIfNotCanceled:
+    ///     If the modal hasn't been canceled, dismiss it and then call this
+    ///     block. Note: If the modal was canceled, the block isn't invoked.
+    public func dismissIfNotCanceled(completionIfNotCanceled: @escaping () -> Void) {
+        if wasCancelled {
+            return
+        }
+        DispatchQueue.main.async {
+            self.dismiss(completion: completionIfNotCanceled)
         }
     }
 

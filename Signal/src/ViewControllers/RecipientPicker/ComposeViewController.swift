@@ -1,13 +1,13 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
-class ComposeViewController: OWSViewController {
-    let recipientPicker = RecipientPickerViewController()
-
+class ComposeViewController: RecipientPickerContainerViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -15,10 +15,11 @@ class ComposeViewController: OWSViewController {
 
         view.backgroundColor = Theme.backgroundColor
 
-        recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.shouldShowInvites = true
         recipientPicker.shouldShowNewGroup = true
+        recipientPicker.groupsToShow = .showGroupsThatUserIsMemberOfWhenSearching
         recipientPicker.shouldHideLocalRecipient = false
+
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
@@ -28,16 +29,6 @@ class ComposeViewController: OWSViewController {
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(dismissPressed))
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        recipientPicker.applyTheme(to: self)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        recipientPicker.removeTheme(from: self)
     }
 
     @objc
@@ -93,19 +84,9 @@ extension ComposeViewController: RecipientPickerDelegate {
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         willRenderRecipient recipient: PickedRecipient) {
-        // Do nothing.
-    }
-
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise {
         owsFailDebug("This method should not called.")
         return AnyPromise(Promise.value(()))
-    }
-
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         showInvalidRecipientAlert recipient: PickedRecipient) {
-        owsFailDebug("Unexpected error.")
     }
 
     func recipientPicker(

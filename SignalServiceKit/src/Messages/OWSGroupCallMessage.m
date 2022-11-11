@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSGroupCallMessage.h"
@@ -126,6 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
                        thread:(TSThread *)thread
                  circumstance:(OWSReceiptCircumstance)circumstance
+     shouldClearNotifications:(BOOL)shouldClearNotifications
                   transaction:(SDSAnyWriteTransaction *)transaction
 {
 

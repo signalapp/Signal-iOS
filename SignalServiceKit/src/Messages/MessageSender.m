@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "MessageSender.h"
@@ -43,7 +44,6 @@
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Threading.h>
-#import <SignalServiceKit/NSData+messagePadding.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -618,9 +618,14 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     if (senderCertificates != nil) {
         for (SignalServiceAddress *address in addresses) {
             if (!address.isLocalAddress) {
-                sendingAccessMap[address] = [self.udManager udSendingAccessForAddress:address
-                                                                    requireSyncAccess:YES
-                                                                   senderCertificates:senderCertificates];
+                if (message.isStorySend) {
+                    sendingAccessMap[address] = [self.udManager storySendingAccessForAddress:address
+                                                                          senderCertificates:senderCertificates];
+                } else {
+                    sendingAccessMap[address] = [self.udManager udSendingAccessForAddress:address
+                                                                        requireSyncAccess:YES
+                                                                       senderCertificates:senderCertificates];
+                }
             }
         }
     }
@@ -1061,7 +1066,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                 OWSFailDebug(@"Sync device message missing destination device id: %@", deviceMessage);
                 continue;
             }
-            if (destinationDeviceId.intValue != self.tsAccountManager.storedDeviceId) {
+            if (destinationDeviceId.unsignedIntValue != self.tsAccountManager.storedDeviceId) {
                 hasDeviceMessages = YES;
                 break;
             }

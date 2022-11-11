@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import SafariServices
+import SignalMessaging
 
 @objc
 public class NewGroupConfirmViewController: OWSTableViewController2 {
@@ -80,27 +82,13 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    private var membersDoNotSupportGroupsV2: [PickedRecipient] {
-        recipientSet.orderedMembers.filter {
+    private func allMembersSupportGroupsV2() -> Bool {
+        return recipientSet.orderedMembers.allSatisfy {
             guard let address = $0.address else {
                 return false
             }
-            return !GroupManager.doesUserSupportGroupsV2(address: address)
+            return GroupManager.doesUserSupportGroupsV2(address: address)
         }
-    }
-
-    @objc
-    func didTapLegacyGroupView() {
-        showLegacyGroupAlert()
-    }
-
-    @objc
-    func showLegacyGroupAlert() {
-        let membersDoNotSupportGroupsV2 = self.membersDoNotSupportGroupsV2
-        guard !membersDoNotSupportGroupsV2.isEmpty else {
-            return
-        }
-        NewLegacyGroupView(v1Members: membersDoNotSupportGroupsV2).present(fromViewController: self)
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -125,39 +113,6 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
         if members.isEmpty {
             nameAndAvatarSection.footerTitle = NSLocalizedString("GROUP_MEMBERS_NO_OTHER_MEMBERS",
                                                     comment: "Label indicating that a new group has no other members.")
-        } else if membersDoNotSupportGroupsV2.count > 0 {
-            let legacyGroupText: String
-            let learnMoreText = CommonStrings.learnMore
-            let legacyGroupFormat = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_ERROR_%d", tableName: "PluralAware",
-                                                      comment: "Indicates that a new group cannot be created because on ore more members do not support v2 groups. Embeds {{ %1$@ the number of members who do not support v2 groups, %2$@ a \"learn more\" link. }}.")
-            legacyGroupText = String.localizedStringWithFormat(legacyGroupFormat, membersDoNotSupportGroupsV2.count, learnMoreText)
-
-            let attributedString = NSMutableAttributedString(string: legacyGroupText)
-            attributedString.setAttributes(
-                [.foregroundColor: Theme.primaryTextColor],
-                forSubstring: learnMoreText
-            )
-
-            let legacyGroupLabel = UILabel()
-            legacyGroupLabel.textColor = Theme.secondaryTextAndIconColor
-            legacyGroupLabel.font = .ows_dynamicTypeCaption1Clamped
-            legacyGroupLabel.attributedText = attributedString
-            legacyGroupLabel.numberOfLines = 0
-            legacyGroupLabel.lineBreakMode = .byWordWrapping
-
-            let containerView = UIView()
-            containerView.layoutMargins = cellOuterInsetsWithMargin(
-                top: 12,
-                left: OWSTableViewController2.cellHInnerMargin,
-                bottom: 0,
-                right: OWSTableViewController2.cellHInnerMargin
-            )
-            containerView.addSubview(legacyGroupLabel)
-            legacyGroupLabel.autoPinEdgesToSuperviewMargins()
-            legacyGroupLabel.isUserInteractionEnabled = true
-            legacyGroupLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapLegacyGroupView)))
-
-            nameAndAvatarSection.customFooterView = containerView
         }
 
         nameAndAvatarSection.add(.init(
@@ -221,8 +176,6 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
             section.headerTitle = NSLocalizedString("GROUP_MEMBERS_SECTION_TITLE_MEMBERS",
                                                     comment: "Title for the 'members' section of the 'group members' view.")
 
-            let membersDoNotSupportGroupsV2 = self.membersDoNotSupportGroupsV2.map { $0.address }
-
             for address in members {
                 section.add(OWSTableItem(
                                 dequeueCellBlock: { tableView in
@@ -235,12 +188,6 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
 
                         Self.databaseStorage.read { transaction in
                             let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
-                            if membersDoNotSupportGroupsV2.contains(address) {
-                                let warning = NSLocalizedString("NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS",
-                                                                comment: "Indicates that a group member does not support New Groups.")
-                                configuration.attributedSubtitle = warning.attributedString()
-                            }
-
                             cell.configure(configuration: configuration, transaction: transaction)
                         }
                         return cell
@@ -262,16 +209,11 @@ public class NewGroupConfirmViewController: OWSTableViewController2 {
             owsFailDebug("missing local address")
             return
         }
-
-        guard let groupName = newGroupState.groupName,
-            !groupName.isEmpty else {
-                Self.showMissingGroupNameAlert()
-             return
-        }
-        guard self.membersDoNotSupportGroupsV2.isEmpty else {
-            showLegacyGroupAlert()
+        guard let groupName = newGroupState.groupName, !groupName.isEmpty else {
+            Self.showMissingGroupNameAlert()
             return
         }
+        owsAssertDebug(allMembersSupportGroupsV2(), "Members must already be checked for v2 support.")
 
         let avatarData = newGroupState.avatarData
         let memberSet = Set([localAddress] + recipientSet.orderedMembers.compactMap { $0.address })
@@ -413,114 +355,4 @@ extension NewGroupConfirmViewController: GroupAttributesEditorHelperDelegate {
     }
 
     func groupAttributesEditorSelectionDidChange() {}
-}
-
-// MARK: -
-
-class NewLegacyGroupView: UIView {
-
-    private let v1Members: [PickedRecipient]
-
-    private let tableViewController = OWSTableViewController2()
-
-    weak var actionSheetController: ActionSheetController?
-
-    required init(v1Members: [PickedRecipient]) {
-        self.v1Members = v1Members
-
-        super.init(frame: .zero)
-
-        tableViewController.tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
-    }
-
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    func present(fromViewController: UIViewController) {
-
-        let wrapViewWithHMargins = { (viewToWrap: UIView) -> UIView in
-            let stackView = UIStackView(arrangedSubviews: [viewToWrap])
-            stackView.axis = .vertical
-            stackView.alignment = .fill
-            stackView.layoutMargins = UIEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 24)
-            stackView.isLayoutMarginsRelativeArrangement = true
-            return stackView
-        }
-
-        let headerLabel = UILabel()
-        headerLabel.textColor = Theme.primaryTextColor
-        headerLabel.numberOfLines = 0
-        headerLabel.lineBreakMode = .byWordWrapping
-        headerLabel.font = UIFont.ows_dynamicTypeBody
-        let format = NSLocalizedString("GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d", tableName: "PluralAware",
-                                       comment: "Title for alert that explains that a new group cannot be created one ore more members does not support v2 groups. Embeds {{ the number of members which do not support v2 groups. }}")
-        headerLabel.text = String.localizedStringWithFormat(format, v1Members.count)
-        headerLabel.textAlignment = .center
-
-        let members = databaseStorage.read { transaction in
-            BaseGroupMemberViewController.orderedMembers(recipientSet: OrderedSet(self.v1Members),
-                                                         shouldSort: true,
-                                                         transaction: transaction)
-        }.compactMap { $0.address }
-
-        let section = OWSTableSection()
-        for address in members {
-            section.add(OWSTableItem(
-                            dequeueCellBlock: { tableView in
-
-                    guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
-                        owsFailDebug("Missing cell.")
-                        return UITableViewCell()
-                    }
-
-                    cell.selectionStyle = .none
-                    cell.configureWithSneakyTransaction(address: address,
-                                                        localUserDisplayMode: .asUser)
-                    return cell
-            }))
-        }
-        let contents = OWSTableContents()
-        contents.addSection(section)
-        tableViewController.contents = contents
-        tableViewController.view.autoSetDimension(.height, toSize: 200)
-
-        let buttonFont = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
-        let buttonHeight = OWSFlatButton.heightForFont(buttonFont)
-        let okayButton = OWSFlatButton.button(title: CommonStrings.okayButton,
-                                              font: buttonFont,
-                                              titleColor: .white,
-                                              backgroundColor: .ows_accentBlue,
-                                              target: self,
-                                              selector: #selector(dismissAlert))
-        okayButton.autoSetDimension(.height, toSize: buttonHeight)
-
-        let stackView = UIStackView(arrangedSubviews: [
-            wrapViewWithHMargins(headerLabel),
-            UIView.spacer(withHeight: 20),
-            tableViewController.view,
-            UIView.spacer(withHeight: 20),
-            wrapViewWithHMargins(okayButton)
-        ])
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: 20, leading: 0, bottom: 38, trailing: 0)
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.addBackgroundView(withBackgroundColor: tableViewController.tableBackgroundColor)
-
-        layoutMargins = .zero
-        addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
-
-        let actionSheetController = ActionSheetController()
-        actionSheetController.customHeader = self
-        actionSheetController.isCancelable = true
-        fromViewController.presentActionSheet(actionSheetController)
-        self.actionSheetController = actionSheetController
-    }
-
-    @objc
-    func dismissAlert() {
-        actionSheetController?.dismiss(animated: true)
-    }
 }

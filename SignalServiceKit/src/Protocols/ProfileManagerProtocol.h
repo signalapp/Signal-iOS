@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 @class AnyPromise;
@@ -54,6 +55,7 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 - (nullable NSString *)localUsername;
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
+- (nullable NSArray<OWSUserProfileBadgeInfo *> *)localProfileBadgeInfo;
 
 - (nullable NSString *)fullNameForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction;
@@ -81,6 +83,7 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 - (nullable NSData *)profileAvatarDataForAddress:(SignalServiceAddress *)address
                                      transaction:(SDSAnyReadTransaction *)transaction;
 - (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address
+                                    downloadIfMissing:(BOOL)downloadIfMissing
                                           transaction:(SDSAnyReadTransaction *)transaction;
 - (nullable NSURL *)writeAvatarDataToFile:(NSData *)avatarData NS_SWIFT_NAME(writeAvatarDataToFile(_:));
 
@@ -138,11 +141,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 - (AnyPromise *)fetchLocalUsersProfilePromise;
 
 - (void)fetchProfileForAddress:(SignalServiceAddress *)address;
-
-- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address;
-- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address
-                                  mainAppOnly:(BOOL)mainAppOnly
-                             ignoreThrottling:(BOOL)ignoreThrottling;
 
 // Profile fetches will make a best effort
 // to download and decrypt avatar data,

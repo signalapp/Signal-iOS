@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -7,6 +8,7 @@ import SignalServiceKit
 import UIKit
 import SignalUI
 import BonMot
+import Lottie
 
 protocol StoryContextViewControllerDelegate: AnyObject {
     func storyContextViewControllerWantsTransitionToNextContext(
@@ -38,7 +40,16 @@ class StoryContextViewController: OWSViewController {
             currentItemWasUpdated(messageDidChange: oldValue?.message.uniqueId != currentItem?.message.uniqueId)
         }
     }
-    var currentItemMediaView: StoryItemMediaView?
+    var currentItemMediaView: StoryItemMediaView? {
+        didSet {
+            if
+                oldValue == nil,
+                let pauseAndHideChromeWhenMediaViewIsCreated = pauseAndHideChromeWhenMediaViewIsCreated
+            {
+                pauseCurrentMediaItem(hideChrome: pauseAndHideChromeWhenMediaViewIsCreated)
+            }
+        }
+    }
 
     var allowsReplies: Bool {
         guard let currentItem = currentItem else {
@@ -81,6 +92,7 @@ class StoryContextViewController: OWSViewController {
         pauseTime = nil
         lastTransitionTime = nil
         if let currentItemMediaView = currentItemMediaView {
+            pauseAndHideChromeWhenMediaViewIsCreated = nil
             // Restart playback for the current item
             currentItemMediaView.reset()
             updateProgressState()
@@ -168,9 +180,13 @@ class StoryContextViewController: OWSViewController {
 
     private lazy var onboardingOverlay = StoryContextOnboardingOverlayView(delegate: self)
 
+    private lazy var sendingIndicatorStackView = UIStackView()
+
     private lazy var repliesAndViewsButton = OWSButton()
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        view.layer.masksToBounds = true
 
         view.addGestureRecognizer(leftTapGestureRecognizer)
         view.addGestureRecognizer(rightTapGestureRecognizer)
@@ -196,9 +212,16 @@ class StoryContextViewController: OWSViewController {
         repliesAndViewsButton.block = { [weak self] in self?.presentRepliesAndViewsSheet() }
         repliesAndViewsButton.autoSetDimension(.height, toSize: 64)
         repliesAndViewsButton.setTitleColor(Theme.darkThemePrimaryColor, for: .normal)
+        repliesAndViewsButton.setTitleColor(Theme.darkThemePrimaryColor.withAlphaComponent(0.4), for: .highlighted)
         view.addSubview(repliesAndViewsButton)
         repliesAndViewsButton.autoPinEdge(.leading, to: .leading, of: mediaViewContainer)
         repliesAndViewsButton.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer)
+
+        sendingIndicatorStackView.axis = .horizontal
+        sendingIndicatorStackView.spacing = 13
+        sendingIndicatorStackView.alignment = .center
+        view.addSubview(sendingIndicatorStackView)
+        sendingIndicatorStackView.autoPinEdges(toEdgesOf: repliesAndViewsButton)
 
         view.addSubview(playbackProgressView)
         playbackProgressView.autoPinEdge(.leading, to: .leading, of: mediaViewContainer, withOffset: OWSTableViewController2.defaultHOuterMargin)
@@ -264,11 +287,15 @@ class StoryContextViewController: OWSViewController {
         onboardingOverlay.checkIfShouldDisplay()
     }
 
+    /// NOTE: once this becomes true, it stays true. Becomes true once interactive presentation animations finish.
+    private var viewHasAppeared = false
+
     /// This controller's view gets generated early to use for a zoom animation, which triggers
     /// viewWill- and viewDidAppear before presentation has really finished.
     /// The parent page controller calls this method when presentation actually finishes.
     func pageControllerDidAppear() {
         onboardingOverlay.showIfNeeded()
+        viewHasAppeared = true
     }
 
     private static let maxItemsToRender = 100
@@ -312,101 +339,23 @@ class StoryContextViewController: OWSViewController {
     }
 
     private func currentItemWasUpdated(messageDidChange: Bool) {
-        currentItemMediaView?.pause()
-        currentItemMediaView?.removeFromSuperview()
-
         if let currentItem = currentItem {
-            let itemView = StoryItemMediaView(item: currentItem, delegate: self)
-            self.currentItemMediaView = itemView
-            mediaViewContainer.addSubview(itemView)
-            itemView.autoPinEdgesToSuperviewEdges()
+            if currentItemMediaView == nil {
+                let itemView = StoryItemMediaView(item: currentItem, delegate: self)
+                self.currentItemMediaView = itemView
+                mediaViewContainer.addSubview(itemView)
+                itemView.autoPinEdgesToSuperviewEdges()
+            }
+            currentItemMediaView?.updateItem(currentItem)
 
-            if currentItem.message.localUserAllowedToReply {
-                repliesAndViewsButton.isHidden = false
-
-                let repliesAndViewsButtonText: String
-
-                var leadingIcon: UIImage?
-                var trailingIcon: UIImage?
-
-                switch currentItem.message.direction {
-                case .incoming:
-                    if case .groupId = context {
-                        if currentItem.numberOfReplies == 0 {
-                            leadingIcon = #imageLiteral(resourceName: "reply-outline-20")
-                            repliesAndViewsButtonText = NSLocalizedString(
-                                "STORY_REPLY_TO_GROUP_BUTTON",
-                                comment: "Button for replying to a group story with no existing replies.")
-                        } else {
-                            trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
-                            let format = NSLocalizedString(
-                                "STORY_REPLIES_COUNT_%d",
-                                tableName: "PluralAware",
-                                comment: "Button for replying to a story with N existing replies.")
-                            repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.numberOfReplies)
-                        }
-                    } else {
-                        leadingIcon = #imageLiteral(resourceName: "reply-outline-20")
-                        repliesAndViewsButtonText = NSLocalizedString(
-                            "STORY_REPLY_BUTTON",
-                            comment: "Button for replying to a story with no existing replies.")
-                    }
-                case .outgoing:
-                    if receiptManager.areReadReceiptsEnabled() {
-                        trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
-                        if case .groupId = context {
-                            let format = NSLocalizedString(
-                                "STORY_VIEWS_AND_REPLIES_COUNT_%d_%d",
-                                tableName: "PluralAware",
-                                comment: "Button for viewing the replies and views for a story sent to a group")
-                            repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.message.remoteViewCount, currentItem.numberOfReplies)
-                        } else {
-                            let format = NSLocalizedString(
-                                "STORY_VIEWS_COUNT_%d",
-                                tableName: "PluralAware",
-                                comment: "Button for viewing the views for a story sent to a private list")
-                            repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.message.remoteViewCount)
-                        }
-                    } else if case .groupId = context, currentItem.numberOfReplies > 0 {
-                        trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
-                        let format = NSLocalizedString(
-                            "STORY_REPLIES_COUNT_%d",
-                            tableName: "PluralAware",
-                            comment: "Button for replying to a story with N existing replies.")
-                        repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.numberOfReplies)
-                    } else {
-                        repliesAndViewsButtonText = NSLocalizedString(
-                            "STORY_VIEWS_OFF",
-                            comment: "Text indicating that the user has views turned off"
-                        )
-                    }
-                }
-
-                repliesAndViewsButton.semanticContentAttribute = .unspecified
-
-                if let leadingIcon = leadingIcon {
-                    repliesAndViewsButton.setImage(leadingIcon.asTintedImage(color: Theme.darkThemePrimaryColor), for: .normal)
-                    repliesAndViewsButton.imageEdgeInsets = UIEdgeInsets(top: 2, leading: 0, bottom: 0, trailing: 16)
-                } else if let trailingIcon = trailingIcon {
-                    repliesAndViewsButton.setImage(trailingIcon.asTintedImage(color: Theme.darkThemePrimaryColor), for: .normal)
-                    repliesAndViewsButton.semanticContentAttribute = CurrentAppContext().isRTL ? .forceLeftToRight : .forceRightToLeft
-                    repliesAndViewsButton.imageEdgeInsets = UIEdgeInsets(top: 3, leading: 0, bottom: 0, trailing: 0)
-                } else {
-                    repliesAndViewsButton.setImage(nil, for: .normal)
-                    repliesAndViewsButton.contentHorizontalAlignment = .center
-                }
-
-                let semiboldStyle = StringStyle(.font(.systemFont(ofSize: 17, weight: .semibold)))
-                repliesAndViewsButton.setAttributedTitle(
-                    repliesAndViewsButtonText.styled(
-                        with: .font(.systemFont(ofSize: 17)),
-                        .xmlRules([.style("bold", semiboldStyle)])),
-                    for: .normal)
+            if currentItem.message.sendingState != .sent {
+                updateSendingIndicator(currentItem)
             } else {
-                repliesAndViewsButton.isHidden = true
+                updateRepliesAndViewsButton(currentItem)
             }
         } else {
             repliesAndViewsButton.isHidden = true
+            sendingIndicatorStackView.isHidden = true
         }
 
         if messageDidChange {
@@ -415,10 +364,194 @@ class StoryContextViewController: OWSViewController {
         }
     }
 
+    private func updateSendingIndicator(_ currentItem: StoryItem) {
+        repliesAndViewsButton.isHidden = true
+        sendingIndicatorStackView.gestureRecognizers?.removeAll()
+        sendingIndicatorStackView.removeAllSubviews()
+
+        switch currentItem.message.sendingState {
+        case .pending, .sending:
+            sendingIndicatorStackView.isHidden = false
+
+            let sendingSpinner = AnimationView(name: "indeterminate_spinner_20")
+            sendingSpinner.contentMode = .scaleAspectFit
+            sendingSpinner.loopMode = .loop
+            sendingSpinner.backgroundBehavior = .pauseAndRestore
+            sendingSpinner.autoSetDimension(.width, toSize: 20)
+            sendingSpinner.play()
+
+            let sendingLabel = UILabel()
+            sendingLabel.font = .ows_dynamicTypeBody
+            sendingLabel.textColor = Theme.darkThemePrimaryColor
+            sendingLabel.textAlignment = .center
+            sendingLabel.text = NSLocalizedString("STORY_SENDING", comment: "Text indicating that the story is currently sending")
+            sendingLabel.setContentHuggingHigh()
+
+            let leadingSpacer = UIView.hStretchingSpacer()
+            let trailingSpacer = UIView.hStretchingSpacer()
+
+            sendingIndicatorStackView.addArrangedSubviews([
+                leadingSpacer,
+                sendingSpinner,
+                sendingLabel,
+                trailingSpacer
+            ])
+
+            leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
+        case .failed:
+            sendingIndicatorStackView.isHidden = false
+
+            sendingIndicatorStackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(askToResendFailedMessage)))
+
+            let failedIcon = UIImageView()
+            failedIcon.contentMode = .scaleAspectFit
+            failedIcon.setTemplateImageName("error-20", tintColor: .ows_accentRed)
+            failedIcon.autoSetDimension(.width, toSize: 20)
+            sendingIndicatorStackView.addArrangedSubview(failedIcon)
+
+            let failedLabel = UILabel()
+            failedLabel.font = .ows_dynamicTypeBody
+            failedLabel.textColor = Theme.darkThemePrimaryColor
+            failedLabel.textAlignment = .center
+            failedLabel.text = currentItem.message.hasSentToAnyRecipients
+                ? NSLocalizedString("STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS", comment: "Text indicating that the story send has partially failed")
+                : NSLocalizedString("STORY_SEND_FAILED_TAP_FOR_DETAILS", comment: "Text indicating that the story send has failed")
+            failedLabel.setContentHuggingHigh()
+            sendingIndicatorStackView.addArrangedSubview(failedLabel)
+
+            let leadingSpacer = UIView.hStretchingSpacer()
+            let trailingSpacer = UIView.hStretchingSpacer()
+
+            sendingIndicatorStackView.addArrangedSubviews([
+                leadingSpacer,
+                failedIcon,
+                failedLabel,
+                trailingSpacer
+            ])
+
+            leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
+        case .sent:
+            sendingIndicatorStackView.isHidden = true
+        case .sent_OBSOLETE, .delivered_OBSOLETE:
+            owsFailDebug("Unexpected legacy sending state")
+        }
+    }
+
+    @objc
+    private func askToResendFailedMessage() {
+        guard
+            let message = currentItem?.message,
+            let thread = databaseStorage.read(block: { context.thread(transaction: $0) })
+        else { return }
+        pause()
+        StoryUtil.askToResend(message, in: thread, from: self) { [weak self] in
+            self?.play()
+        }
+    }
+
+    private func updateRepliesAndViewsButton(_ currentItem: StoryItem) {
+        sendingIndicatorStackView.isHidden = true
+
+        if currentItem.message.localUserAllowedToReply {
+            repliesAndViewsButton.isHidden = false
+
+            let repliesAndViewsButtonText: String
+
+            var leadingIcon: UIImage?
+            var trailingIcon: UIImage?
+
+            switch currentItem.message.direction {
+            case .incoming:
+                if case .groupId = context {
+                    if currentItem.numberOfReplies == 0 {
+                        leadingIcon = #imageLiteral(resourceName: "reply-outline-20")
+                        repliesAndViewsButtonText = NSLocalizedString(
+                            "STORY_REPLY_TO_GROUP_BUTTON",
+                            comment: "Button for replying to a group story with no existing replies.")
+                    } else {
+                        trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
+                        let format = NSLocalizedString(
+                            "STORY_REPLIES_COUNT_%d",
+                            tableName: "PluralAware",
+                            comment: "Button for replying to a story with N existing replies.")
+                        repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.numberOfReplies)
+                    }
+                } else {
+                    leadingIcon = #imageLiteral(resourceName: "reply-outline-20")
+                    repliesAndViewsButtonText = NSLocalizedString(
+                        "STORY_REPLY_BUTTON",
+                        comment: "Button for replying to a story with no existing replies.")
+                }
+            case .outgoing:
+                if StoryManager.areViewReceiptsEnabled {
+                    trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
+                    if case .groupId = context {
+                        let format = NSLocalizedString(
+                            "STORY_VIEWS_AND_REPLIES_COUNT_%d_%d",
+                            tableName: "PluralAware",
+                            comment: "Button for viewing the replies and views for a story sent to a group")
+                        repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.message.remoteViewCount(in: context), currentItem.numberOfReplies)
+                    } else {
+                        let format = NSLocalizedString(
+                            "STORY_VIEWS_COUNT_%d",
+                            tableName: "PluralAware",
+                            comment: "Button for viewing the views for a story sent to a private list")
+                        repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.message.remoteViewCount(in: context))
+                    }
+                } else if case .groupId = context, currentItem.numberOfReplies > 0 {
+                    trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
+                    let format = NSLocalizedString(
+                        "STORY_REPLIES_COUNT_%d",
+                        tableName: "PluralAware",
+                        comment: "Button for replying to a story with N existing replies.")
+                    repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.numberOfReplies)
+                } else {
+                    repliesAndViewsButtonText = NSLocalizedString(
+                        "STORY_VIEWS_OFF",
+                        comment: "Text indicating that the user has views turned off"
+                    )
+                }
+            }
+
+            repliesAndViewsButton.semanticContentAttribute = .unspecified
+
+            if let leadingIcon = leadingIcon {
+                repliesAndViewsButton.setImage(leadingIcon.asTintedImage(color: Theme.darkThemePrimaryColor), for: .normal)
+                repliesAndViewsButton.imageEdgeInsets = UIEdgeInsets(top: 2, leading: 0, bottom: 0, trailing: 16)
+            } else if let trailingIcon = trailingIcon {
+                repliesAndViewsButton.setImage(trailingIcon.asTintedImage(color: Theme.darkThemePrimaryColor), for: .normal)
+                repliesAndViewsButton.semanticContentAttribute = CurrentAppContext().isRTL ? .forceLeftToRight : .forceRightToLeft
+                repliesAndViewsButton.imageEdgeInsets = UIEdgeInsets(top: 3, leading: 0, bottom: 0, trailing: 0)
+            } else {
+                repliesAndViewsButton.setImage(nil, for: .normal)
+                repliesAndViewsButton.contentHorizontalAlignment = .center
+            }
+
+            let semiboldStyle = StringStyle(.font(.systemFont(ofSize: 17, weight: .semibold)))
+            repliesAndViewsButton.setAttributedTitle(
+                repliesAndViewsButtonText.styled(
+                    with: .font(.systemFont(ofSize: 17)),
+                    .color(Theme.darkThemePrimaryColor),
+                    .xmlRules([.style("bold", semiboldStyle)])),
+                for: .normal)
+            repliesAndViewsButton.setAttributedTitle(
+                repliesAndViewsButtonText.styled(
+                    with: .font(.systemFont(ofSize: 17)),
+                    .color(Theme.darkThemePrimaryColor.withAlphaComponent(0.4)),
+                    .xmlRules([.style("bold", semiboldStyle)])),
+                for: .highlighted)
+        } else {
+            repliesAndViewsButton.isHidden = true
+        }
+    }
+
     private var pauseTime: CFTimeInterval?
     private var lastTransitionTime: CFTimeInterval?
     private func updateProgressState() {
         lastTransitionTime = CACurrentMediaTime()
+        if let currentItemView = currentItemMediaView, let idx = items.firstIndex(of: currentItemView.item) {
+            playbackProgressView.itemState = .init(index: idx, value: 0)
+        }
     }
 
     @objc
@@ -427,7 +560,12 @@ class StoryContextViewController: OWSViewController {
         playbackProgressView.numberOfItems = items.count
         if let currentItemView = currentItemMediaView, let idx = items.firstIndex(of: currentItemView.item) {
             // When we present a story, mark it as viewed if it's not already, as long as it's downloaded.
-            if !currentItemView.item.isPendingDownload, currentItemView.item.message.localUserViewedTimestamp == nil {
+            if
+                self.viewHasAppeared,
+                !onboardingOverlay.isDisplaying,
+                !currentItemView.item.isPendingDownload,
+                currentItemView.item.message.localUserViewedTimestamp == nil
+            {
                 databaseStorage.write { transaction in
                     currentItemView.item.message.markAsViewed(at: Date.ows_millisecondTimestamp(), circumstance: .onThisDevice, transaction: transaction)
                 }
@@ -629,48 +767,31 @@ class StoryContextViewController: OWSViewController {
             }
         }
     }
-}
-
-extension StoryContextViewController: UIGestureRecognizerDelegate {
-    @objc
-    func didTapLeft() {
-        guard currentItemMediaView?.willHandleTapGesture(leftTapGestureRecognizer) != true else { return }
-        CurrentAppContext().isRTL
-            ? transitionToNextItem(nextContextLoadPositionIfRead: .oldest)
-            : transitionToPreviousItem(previousContextLoadPositionIfRead: .newest)
-    }
-
-    @objc
-    func didTapRight() {
-        guard currentItemMediaView?.willHandleTapGesture(rightTapGestureRecognizer) != true else { return }
-        CurrentAppContext().isRTL
-            ? transitionToPreviousItem(previousContextLoadPositionIfRead: .newest)
-            : transitionToNextItem(nextContextLoadPositionIfRead: .oldest)
-    }
-
-    @objc
-    func handleLongPress() {
-        switch pauseGestureRecognizer.state {
-        case .began:
-            pause(hideChrome: true)
-        case .ended:
-            play()
-        default:
-            break
-        }
-    }
 
     func pause(hideChrome: Bool = false) {
         guard pauseTime == nil else { return }
         pauseTime = CACurrentMediaTime()
         delegate?.storyContextViewControllerDidPause(self)
-        currentItemMediaView?.pause(hideChrome: hideChrome) {
+        pauseCurrentMediaItem(hideChrome: hideChrome)
+    }
+
+    /// If we try and pause before the media has been loaded and media view created,
+    /// we remember that state in this variable and apply it once the view is created.
+    private var pauseAndHideChromeWhenMediaViewIsCreated: Bool?
+
+    private func pauseCurrentMediaItem(hideChrome: Bool) {
+        guard let currentItemMediaView = currentItemMediaView else {
+            pauseAndHideChromeWhenMediaViewIsCreated = hideChrome
+            return
+        }
+        currentItemMediaView.pause(hideChrome: hideChrome) {
             if hideChrome {
                 self.playbackProgressView.alpha = 0
                 self.closeButton.alpha = 0
                 self.repliesAndViewsButton.alpha = 0
             }
         }
+        pauseAndHideChromeWhenMediaViewIsCreated = nil
     }
 
     func play() {
@@ -686,8 +807,50 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
         }
         delegate?.storyContextViewControllerDidResume(self)
     }
+}
 
-    func presentRepliesAndViewsSheet(interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator? = nil) {
+extension StoryContextViewController: UIGestureRecognizerDelegate {
+    @objc
+    func didTapLeft() {
+        guard currentItemMediaView?.willHandleTapGesture(leftTapGestureRecognizer) != true else {
+            return
+        }
+        if CurrentAppContext().isRTL {
+            transitionToNextItem(nextContextLoadPositionIfRead: .oldest)
+        } else {
+            transitionToPreviousItem(previousContextLoadPositionIfRead: .newest)
+        }
+    }
+
+    @objc
+    func didTapRight() {
+        guard currentItemMediaView?.willHandleTapGesture(rightTapGestureRecognizer) != true else {
+            return
+        }
+        if CurrentAppContext().isRTL {
+            transitionToPreviousItem(previousContextLoadPositionIfRead: .newest)
+        } else {
+            transitionToNextItem(nextContextLoadPositionIfRead: .oldest)
+        }
+    }
+
+    func willHandleInteractivePanGesture(_ gestureRecognizer: UIPanGestureRecognizer) -> Bool {
+        return currentItemMediaView?.willHandlePanGesture(gestureRecognizer) == true
+    }
+
+    @objc
+    func handleLongPress() {
+        switch pauseGestureRecognizer.state {
+        case .began:
+            pause(hideChrome: true)
+        case .ended:
+            play()
+        default:
+            break
+        }
+    }
+
+    func presentRepliesAndViewsSheet() {
         guard let currentItem = currentItem, currentItem.message.localUserAllowedToReply else {
             owsFailDebug("Unexpectedly attempting to present reply sheet")
             return
@@ -697,16 +860,13 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
         case .groupId:
             switch currentItem.message.direction {
             case .outgoing:
-                let groupRepliesAndViewsVC = StoryGroupRepliesAndViewsSheet(storyMessage: currentItem.message)
-                groupRepliesAndViewsVC.interactiveTransitionCoordinator = interactiveTransitionCoordinator
+                let groupRepliesAndViewsVC = StoryGroupRepliesAndViewsSheet(storyMessage: currentItem.message, context: context)
                 groupRepliesAndViewsVC.dismissHandler = { [weak self] in self?.play() }
                 groupRepliesAndViewsVC.focusedTab = currentItem.numberOfReplies > 0 ? .replies : .views
-
                 self.pause()
                 self.present(groupRepliesAndViewsVC, animated: true)
             case .incoming:
                 let groupReplyVC = StoryGroupReplySheet(storyMessage: currentItem.message)
-                groupReplyVC.interactiveTransitionCoordinator = interactiveTransitionCoordinator
                 groupReplyVC.dismissHandler = { [weak self] in self?.play() }
                 self.pause()
                 self.present(groupReplyVC, animated: true)
@@ -717,12 +877,11 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
                 "Should be impossible to reply to system stories"
             )
             let directReplyVC = StoryDirectReplySheet(storyMessage: currentItem.message)
-            directReplyVC.interactiveTransitionCoordinator = interactiveTransitionCoordinator
             directReplyVC.dismissHandler = { [weak self] in self?.play() }
             self.pause()
             self.present(directReplyVC, animated: true)
         case .privateStory:
-            let privateViewsVC = StoryPrivateViewsSheet(storyMessage: currentItem.message)
+            let privateViewsVC = StoryPrivateViewsSheet(storyMessage: currentItem.message, context: context)
             privateViewsVC.dismissHandler = { [weak self] in self?.play() }
             self.pause()
             self.present(privateViewsVC, animated: true)
@@ -734,7 +893,7 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
     func presentInfoSheet() {
         guard let currentItem = currentItem else { return }
 
-        let vc = StoryInfoSheet(storyMessage: currentItem.message)
+        let vc = StoryInfoSheet(storyMessage: currentItem.message, context: context)
         vc.dismissHandler = { [weak self] in self?.play() }
         pause()
         present(vc, animated: true)
@@ -750,6 +909,13 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
             return isMultiTouchGesture
         } else if isMultiTouchGesture {
             return false
+        }
+
+        if gestureRecognizer == pauseGestureRecognizer {
+            // Don't pause while long pressing the replies and views button
+            guard repliesAndViewsButton.isHidden || !repliesAndViewsButton.bounds.contains(gestureRecognizer.location(in: repliesAndViewsButton)) else {
+                return false
+            }
         }
 
         let nextFrameWidth = mediaViewContainer.width * 0.8
@@ -793,7 +959,7 @@ extension StoryContextViewController: DatabaseChangeDelegate {
 
         databaseStorage.asyncRead { transaction in
             var newItems = self.items
-            var shouldDismiss = false
+            var shouldGoToNextContext = false
             for (idx, item) in self.items.enumerated().reversed() {
                 guard let id = item.message.id, databaseChanges.storyMessageRowIds.contains(id) else { continue }
                 if let message = StoryMessage.anyFetch(uniqueId: item.message.uniqueId, transaction: transaction) {
@@ -810,12 +976,14 @@ extension StoryContextViewController: DatabaseChangeDelegate {
 
                 newItems.remove(at: idx)
                 if item.message.uniqueId == currentItem.message.uniqueId {
-                    shouldDismiss = true
+                    shouldGoToNextContext = true
                     break
                 }
             }
             DispatchQueue.main.async {
-                if shouldDismiss {
+                if shouldGoToNextContext, let delegate = self.delegate {
+                    delegate.storyContextViewControllerWantsTransitionToNextContext(self, loadPositionIfRead: .default)
+                } else if shouldGoToNextContext {
                     self.presentingViewController?.dismiss(animated: true)
                 } else {
                     self.items = newItems
@@ -845,23 +1013,26 @@ extension StoryContextViewController: StoryItemMediaViewDelegate {
         case .text(let textAttachment):
             attachment = .text(textAttachment)
         }
-        return .init(identifier: nil, actionProvider: { [weak self, weak contextMenuButton] _ in
-            guard
-                let self  = self,
-                let contextMenuButton = contextMenuButton
-            else {
-                return .init([])
+        return .init(
+            identifier: nil,
+            actionProvider: { [weak self, weak contextMenuButton] _ in
+                guard
+                    let self  = self,
+                    let contextMenuButton = contextMenuButton
+                else {
+                    return .init([])
+                }
+                return Self.databaseStorage.read {
+                    return ContextMenu(self.contextMenuGenerator.contextMenuActions(
+                        for: item.message,
+                        in: self.context.thread(transaction: $0),
+                        attachment: attachment,
+                        sourceView: { return contextMenuButton },
+                        transaction: $0
+                    ))
+                }
             }
-            return Self.databaseStorage.read {
-                return ContextMenu(self.contextMenuGenerator.contextMenuActions(
-                    for: item.message,
-                    in: self.context.thread(transaction: $0),
-                    attachment: attachment,
-                    sourceView: contextMenuButton,
-                    transaction: $0
-                ))
-            }
-        })
+        )
     }
 
     func storyItemMediaViewWantsToPlay(_ storyItemMediaView: StoryItemMediaView) {
@@ -890,14 +1061,18 @@ extension StoryContextViewController: StoryItemMediaViewDelegate {
 
 extension StoryContextViewController: StoryContextMenuDelegate {
 
-    func storyContextMenuWillNavigateToConversation(_ completion: @escaping () -> Void) {
-        // Dismiss the viewer before navigating.
-        self.dismiss(animated: true, completion: completion)
+    func storyContextMenuWillDelete(_ completion: @escaping () -> Void) {
+        // Go to the next item after deleting.
+        self.transitionToNextItem()
+        completion()
     }
 
-    func storyContextMenuWillDelete(_ completion: @escaping () -> Void) {
-        // Dismiss the viewer before deleting otherwise things get messed up.
-        self.dismiss(animated: true, completion: completion)
+    func storyContextMenuDidUpdateHiddenState(_ message: StoryMessage, isHidden: Bool) -> Bool {
+        // Go to the next context after hiding or unhiding; the current context is no longer
+        // a part of this view session as its hide state is now opposite.
+        self.delegate?.storyContextViewControllerWantsTransitionToNextContext(self, loadPositionIfRead: .default)
+        // Return true so we show a toast confirming the hide action.
+        return true
     }
 
     func storyContextMenuDidFinishDisplayingFollowups() {
@@ -913,6 +1088,10 @@ extension StoryContextViewController: StoryContextOnboardingOverlayViewDelegate 
 
     func storyContextOnboardingOverlayDidDismiss(_: StoryContextOnboardingOverlayView) {
         play()
+    }
+
+    func storyContextOnboardingOverlayWantsToExitStoryViewer(_: StoryContextOnboardingOverlayView) {
+        self.dismiss(animated: true)
     }
 }
 

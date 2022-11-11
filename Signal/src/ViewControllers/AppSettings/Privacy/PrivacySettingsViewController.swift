@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 class PrivacySettingsViewController: OWSTableViewController2 {
@@ -139,25 +141,6 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             }
         ))
         contents.addSection(disappearingMessagesSection)
-
-        if RemoteConfig.stories {
-            let storiesSection = OWSTableSection()
-            storiesSection.footerTitle = NSLocalizedString(
-                "SETTINGS_STORIES_FOOTER",
-                comment: "Explanation for the 'stories' privacy settings."
-            )
-            storiesSection.add(.disclosureItem(
-                withText: NSLocalizedString(
-                    "SETTINGS_STORIES_TITLE",
-                    comment: "Label for the stories section of the settings view"
-                ),
-                actionBlock: { [weak self] in
-                    let vc = StoryPrivacySettingsViewController()
-                    self?.navigationController?.pushViewController(vc, animated: true)
-                }
-            ))
-            contents.addSection(storiesSection)
-        }
 
         let appSecuritySection = OWSTableSection()
         appSecuritySection.headerTitle = NSLocalizedString("SETTINGS_SECURITY_TITLE", comment: "Section header")

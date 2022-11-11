@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import CoreServices
 import Foundation
 import Photos
-import CoreServices
+import SignalMessaging
 
 protocol PhotoLibraryDelegate: AnyObject {
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary)
@@ -38,7 +40,7 @@ class PhotoPickerAssetItem: PhotoGridItem {
 
     var type: PhotoGridItemType {
         if asset.mediaType == .video {
-            return .video
+            return .video(asset.duration)
         } else if asset.playbackStyle == .imageAnimated {
             return .animated
         } else {
@@ -46,10 +48,7 @@ class PhotoPickerAssetItem: PhotoGridItem {
         }
     }
 
-    var duration: TimeInterval {
-        guard asset.mediaType == .video else { return 0 }
-        return asset.duration
-    }
+    var creationDate: Date? { asset.creationDate }
 
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
         var syncImageResult: UIImage?
@@ -244,8 +243,10 @@ class PhotoCollection {
     }
 
     func localizedTitle() -> String {
-        guard let localizedTitle = collection.localizedTitle?.stripped,
-            localizedTitle.count > 0 else {
+        guard
+            let localizedTitle = collection.localizedTitle?.stripped,
+            !localizedTitle.isEmpty
+        else {
             return NSLocalizedString("PHOTO_PICKER_UNNAMED_COLLECTION", comment: "label for system photo collections which have no name.")
         }
         return localizedTitle
@@ -340,12 +341,12 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
                 owsFailDebug("Asset collection has unexpected type: \(type(of: collection))")
                 return
             }
-            let photoCollection = PhotoCollection(collection: assetCollection)
-            guard !hideIfEmpty || photoCollection.contents().assetCount > 0 else {
+
+            guard !hideIfEmpty || assetCollection.estimatedAssetCount > 0 else {
                 return
             }
 
-            collections.append(photoCollection)
+            collections.append(PhotoCollection(collection: assetCollection))
         }
         let processPHAssetCollections: ((fetchResult: PHFetchResult<PHAssetCollection>, hideIfEmpty: Bool)) -> Void = { arg in
             let (fetchResult, hideIfEmpty) = arg

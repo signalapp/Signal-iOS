@@ -1,20 +1,50 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import UIKit
 
 open class InteractiveSheetViewController: OWSViewController {
-    private let handleHeight: CGFloat = 5
-    private let handleInsideMargin: CGFloat = 12
 
-    public enum HandlePosition {
-        case outside
-        case inside
+    public enum Constants {
+        fileprivate static let handleSize = CGSize(width: 36, height: 5)
+        fileprivate static let handleInsideMargin: CGFloat = 12
+
+        /// Max height of the sheet has its top this far from the safe area top of the screen.
+        fileprivate static let extraTopPadding: CGFloat = 32
+
+        public static let defaultMinHeight: CGFloat = 346
+
+        fileprivate static let maxAnimationDuration: TimeInterval = 0.3
+
+        /// Any absolute velocity below this amount counts as zero velocity, e.g. just releasing.
+        fileprivate static let baseVelocityThreshhold: CGFloat = 200
+        /// Any upwards velocity greater this that amount maximizes the sheet.
+        fileprivate static let maximizeVelocityThreshold: CGFloat = 500
+        /// Any downwards velocity greater than this amount dismisses the sheet.
+        fileprivate static let dismissVelocityThreshold: CGFloat = 1000
     }
 
-    private let contentContainerView: UIStackView = {
+    private lazy var sheetContainerView: UIView = {
+        let view: UIView
+        if let blurEffect = blurEffect {
+            view = UIVisualEffectView(effect: blurEffect)
+        } else {
+            view = UIView()
+        }
+        view.layer.cornerRadius = 16
+        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        view.layer.masksToBounds = true
+        return view
+    }()
+
+    private var sheetContainerContentView: UIView {
+        return (sheetContainerView as? UIVisualEffectView)?.contentView ?? sheetContainerView
+    }
+
+    private let sheetStackView: UIStackView = {
         let view = UIStackView()
         view.axis = .vertical
         return view
@@ -32,13 +62,14 @@ open class InteractiveSheetViewController: OWSViewController {
     public var backdropColor = Theme.backdropColor
 
     public var maxWidth: CGFloat { 512 }
-    open var minHeight: CGFloat { 346 }
 
-    open var handlePosition: HandlePosition { .inside }
     private let handle = UIView()
     private lazy var handleContainer = UIView()
 
-    public required override init() {
+    private let blurEffect: UIBlurEffect?
+
+    public init(blurEffect: UIBlurEffect? = nil) {
+        self.blurEffect = blurEffect
         super.init()
         modalPresentationStyle = .custom
         transitioningDelegate = self
@@ -52,41 +83,35 @@ open class InteractiveSheetViewController: OWSViewController {
         view = UIView()
         view.backgroundColor = .clear
 
-        view.addSubview(contentContainerView)
-        contentContainerView.autoPinEdge(toSuperviewEdge: .bottom)
-        contentContainerView.autoHCenterInSuperview()
-        contentContainerView.backgroundColor = sheetBackgroundColor
+        view.addSubview(sheetContainerView)
+        sheetContainerView.autoPinEdge(toSuperviewEdge: .bottom)
+        sheetContainerView.autoHCenterInSuperview()
+        sheetContainerView.backgroundColor = sheetBackgroundColor
 
         // Prefer to be full width, but don't exceed the maximum width
-        contentContainerView.autoSetDimension(.width, toSize: maxWidth, relation: .lessThanOrEqual)
-        contentContainerView.autoPinWidthToSuperview(relation: .lessThanOrEqual)
+        sheetContainerView.autoSetDimension(.width, toSize: maxWidth, relation: .lessThanOrEqual)
+        sheetContainerView.autoPinWidthToSuperview(relation: .lessThanOrEqual)
+        let minScreenDimension = min(CurrentAppContext().frame.width, CurrentAppContext().frame.height)
+        if minScreenDimension <= maxWidth {
+            sheetContainerView.autoSetDimension(.width, toSize: minScreenDimension)
+        }
         NSLayoutConstraint.autoSetPriority(.defaultHigh) {
-            contentContainerView.autoPinWidthToSuperview()
+            sheetContainerView.autoPinWidthToSuperview()
         }
 
-        contentContainerView.layer.cornerRadius = 16
-        contentContainerView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        contentContainerView.layer.masksToBounds = true
+        sheetContainerContentView.addSubview(sheetStackView)
+        sheetStackView.autoPinEdgesToSuperviewEdges()
 
-        contentContainerView.addArrangedSubview(contentView)
+        sheetStackView.addArrangedSubview(contentView)
         contentView.autoPinWidthToSuperview()
 
-        handle.autoSetDimensions(to: CGSize(width: 36, height: handleHeight))
-        handle.layer.cornerRadius = handleHeight / 2
-        switch handlePosition {
-        case .outside:
-            view.addSubview(handle)
-            handle.backgroundColor = .ows_whiteAlpha80
-            handle.autoPinEdge(.bottom, to: .top, of: contentContainerView, withOffset: -8)
-        case .inside:
-            contentContainerView.insertArrangedSubview(handleContainer, at: 0)
-            handleContainer.autoPinWidthToSuperview()
-            handleContainer.addSubview(handle)
-            handleContainer.backgroundColor = contentContainerView.backgroundColor
-            handleContainer.isOpaque = true
-            handle.backgroundColor = Theme.tableView2PresentedSeparatorColor
-            handle.autoPinHeightToSuperview(withMargin: handleInsideMargin)
-        }
+        handle.autoSetDimensions(to: Constants.handleSize)
+        handle.layer.cornerRadius = Constants.handleSize.height / 2
+        sheetStackView.insertArrangedSubview(handleContainer, at: 0)
+        handleContainer.autoPinWidthToSuperview()
+        handleContainer.addSubview(handle)
+        handle.backgroundColor = Theme.tableView2PresentedSeparatorColor
+        handle.autoPinHeightToSuperview(withMargin: Constants.handleInsideMargin)
         handle.autoHCenterInSuperview()
 
         // Support tapping the backdrop to cancel the sheet.
@@ -101,15 +126,8 @@ open class InteractiveSheetViewController: OWSViewController {
     open override func themeDidChange() {
         super.themeDidChange()
 
-        contentContainerView.backgroundColor = sheetBackgroundColor
-
-        switch handlePosition {
-        case .outside:
-            break
-        case .inside:
-            handleContainer.backgroundColor = contentContainerView.backgroundColor
-            handle.backgroundColor = Theme.tableView2PresentedSeparatorColor
-        }
+        handle.backgroundColor = Theme.tableView2PresentedSeparatorColor
+        sheetContainerView.backgroundColor = sheetBackgroundColor
     }
 
     @objc
@@ -120,26 +138,125 @@ open class InteractiveSheetViewController: OWSViewController {
 
     // MARK: - Resize / Interactive Dismiss
 
-    public private(set) lazy var heightConstraint = contentContainerView.heightAnchor.constraint(equalToConstant: minimizedHeight)
-    public private(set) lazy var maxHeightConstraint = contentContainerView.heightAnchor.constraint(equalToConstant: maximizedHeight)
-    open var minimizedHeight: CGFloat {
-        return min(maximizedHeight, minHeight)
-    }
-    open var maximizedHeight: CGFloat {
-        return CurrentAppContext().frame.height - (view.safeAreaInsets.top + 32)
+    public final var allowsExpansion: Bool = true {
+        didSet {
+            if allowsExpansion {
+                maxHeight = maximumAllowedHeight()
+            } else {
+                maxHeight = minHeight
+            }
+            guard isViewLoaded else {
+                return
+            }
+            if
+                !isInInteractiveTransition,
+                !isDismissingFromPanGesture,
+                sheetCurrentHeightConstraint.constant > minHeight
+            {
+                sheetCurrentHeightConstraint.constant = minHeight
+            }
+        }
     }
 
-    public func maximizeHeight() {
-        heightConstraint.constant = maximizedHeight
-        view.layoutIfNeeded()
+    private var minHeight: CGFloat = Constants.defaultMinHeight {
+        didSet {
+            if !allowsExpansion {
+                maxHeight = minHeight
+            }
+            guard isViewLoaded else {
+                return
+            }
+            sheetHeightMinConstraint.constant = minHeight
+            if
+                !isInInteractiveTransition,
+                !isDismissingFromPanGesture,
+                sheetCurrentHeightConstraint.constant == oldValue
+                    || sheetCurrentHeightConstraint.constant < minHeight
+            {
+                sheetCurrentHeightConstraint.constant = minHeight
+            }
+        }
     }
 
-    public let maxAnimationDuration: TimeInterval = 0.2
+    private var externalMinHeight: CGFloat?
+
+    public final var minimizedHeight: CGFloat {
+        get {
+            return minHeight
+        }
+        set {
+            externalMinHeight = newValue
+            self.minHeight = min(newValue, maximumAllowedHeight())
+        }
+    }
+
+    public private(set) lazy final var maxHeight = maximumAllowedHeight()
+
+    private lazy var sheetHeightMinConstraint = sheetContainerView.autoSetDimension(
+        .height,
+        toSize: minHeight,
+        relation: .greaterThanOrEqual
+    )
+
+    private lazy var sheetHeightMaxConstraint = sheetContainerView.autoSetDimension(
+        .height,
+        toSize: maxHeight,
+        relation: .lessThanOrEqual
+    )
+
+    private lazy var sheetCurrentHeightConstraint = sheetContainerView.autoSetDimension(.height, toSize: minHeight)
+
+    public func minimizeHeight(animated: Bool = true) {
+        sheetCurrentHeightConstraint.constant = minHeight
+        guard animated else {
+            view.layoutIfNeeded()
+            return
+        }
+
+        view.setNeedsUpdateConstraints()
+        UIView.animate(
+            withDuration: Constants.maxAnimationDuration,
+            delay: 0,
+            options: .curveEaseOut,
+            animations: {
+                self.view.layoutIfNeeded()
+            }
+        )
+    }
+
+    public func maximizeHeight(animated: Bool = true, completion: (() -> Void)? = nil) {
+        sheetCurrentHeightConstraint.constant = maxHeight
+        guard animated else {
+            view.layoutIfNeeded()
+            completion?()
+            return
+        }
+
+        view.setNeedsUpdateConstraints()
+        UIView.animate(
+            withDuration: Constants.maxAnimationDuration,
+            delay: 0,
+            options: .curveEaseOut,
+            animations: {
+                self.view.layoutIfNeeded()
+            },
+            completion: { _ in
+                completion?()
+            }
+        )
+    }
+
+    // If either of these are set, min/max height changes will not take immediate effect.
+    private var isInInteractiveTransition = false
+    private var isDismissingFromPanGesture = false
+
     private var startingHeight: CGFloat?
     private var startingTranslation: CGFloat?
 
     private func setupInteractiveSizing() {
-        view.addConstraints( [ heightConstraint, maxHeightConstraint ] )
+        view.addConstraints([sheetCurrentHeightConstraint, sheetHeightMinConstraint, sheetHeightMaxConstraint])
+
+        sheetContainerView.autoSetDimension(.height, toSize: minimizedHeight, relation: .greaterThanOrEqual)
 
         // Create a pan gesture to handle when the user interacts with the
         // view outside of any scroll views we want to follow.
@@ -154,9 +271,38 @@ open class InteractiveSheetViewController: OWSViewController {
         interactiveScrollViews.forEach { $0.panGestureRecognizer.addTarget(self, action: #selector(handlePan)) }
     }
 
+    private func maximumAllowedHeight() -> CGFloat {
+        return CurrentAppContext().frame.height - (view.safeAreaInsets.top + Constants.extraTopPadding)
+    }
+
     open override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
-        maxHeightConstraint.constant = maximizedHeight
+        let oldMaxHeight = maxHeight
+        let newMaxHeight = maximumAllowedHeight()
+        if allowsExpansion {
+            maxHeight = newMaxHeight
+        }
+        if minHeight > maxHeight {
+            minHeight = maxHeight
+        } else if minHeight == oldMaxHeight, let externalMinHeight = externalMinHeight {
+            minimizedHeight = externalMinHeight
+        }
+
+        guard isViewLoaded else {
+            return
+        }
+        sheetHeightMaxConstraint.constant = maxHeight
+        if
+            !isInInteractiveTransition,
+            !isDismissingFromPanGesture,
+            (
+                sheetCurrentHeightConstraint.constant == oldMaxHeight
+                && sheetCurrentHeightConstraint.constant != minHeight
+            )
+                || sheetCurrentHeightConstraint.constant > maxHeight
+        {
+            sheetCurrentHeightConstraint.constant = maxHeight
+        }
     }
 
     @objc
@@ -184,8 +330,8 @@ open class InteractiveSheetViewController: OWSViewController {
             let translation = sender.translation(in: view).y - startingTranslation
 
             var newHeight = startingHeight - translation
-            if newHeight > maximizedHeight {
-                newHeight = maximizedHeight
+            if newHeight > maxHeight {
+                newHeight = maxHeight
             }
 
             // If the height is decreasing, adjust the relevant view's proporitionally
@@ -194,43 +340,46 @@ open class InteractiveSheetViewController: OWSViewController {
             }
 
             // Update our height to reflect the new position
-            heightConstraint.constant = newHeight
+            sheetCurrentHeightConstraint.constant = newHeight
             view.layoutIfNeeded()
         case .ended, .cancelled, .failed:
-            guard let startingHeight = startingHeight else { break }
-
-            let dismissThreshold = startingHeight * 0.5
-            let growThreshold = startingHeight * 1.5
-            let velocityThreshold: CGFloat = 500
-
-            let currentHeight = contentContainerView.height
+            let currentHeight = sheetContainerView.height
             let currentVelocity = sender.velocity(in: view).y
 
-            enum CompletionState { case growing, dismissing, cancelling }
+            enum CompletionState { case growing, shrinking, dismissing }
             let completionState: CompletionState
 
-            if abs(currentVelocity) >= velocityThreshold {
-                if currentVelocity < 0 {
-                    completionState = .growing
-                } else {
-                    completionState = .dismissing
-                }
-            } else if currentHeight >= growThreshold {
+            if currentVelocity <= -Constants.maximizeVelocityThreshold {
                 completionState = .growing
-            } else if currentHeight <= dismissThreshold {
+            } else if currentVelocity >= Constants.dismissVelocityThreshold {
                 completionState = .dismissing
+            } else if currentHeight >= minHeight {
+                if abs(currentVelocity) > Constants.baseVelocityThreshhold {
+                    completionState = currentVelocity > 0 ? .shrinking : .growing
+                } else {
+                    completionState =
+                        currentHeight < (maxHeight + minHeight) / 2
+                        ? .shrinking : .growing
+                }
             } else {
-                completionState = .cancelling
+                if abs(currentVelocity) > Constants.baseVelocityThreshhold {
+                    completionState = currentVelocity > 0 ? .dismissing : .shrinking
+                } else {
+                    completionState =
+                        currentHeight < minHeight / 2
+                        ? .dismissing : .shrinking
+                }
             }
 
             let finalHeight: CGFloat
             switch completionState {
             case .dismissing:
+                isDismissingFromPanGesture = true
                 finalHeight = 0
             case .growing:
-                finalHeight = maximizedHeight
-            case .cancelling:
-                finalHeight = startingHeight
+                finalHeight = maxHeight
+            case .shrinking:
+                finalHeight = minHeight
             }
 
             let remainingDistance = finalHeight - currentHeight
@@ -240,28 +389,24 @@ open class InteractiveSheetViewController: OWSViewController {
             // very slowly) we'll default to `maxAnimationDuration`
             let remainingTime = TimeInterval(abs(remainingDistance / currentVelocity))
 
-            UIView.animate(withDuration: min(remainingTime, maxAnimationDuration), delay: 0, options: .curveEaseOut, animations: {
+            UIView.animate(withDuration: min(remainingTime, Constants.maxAnimationDuration), delay: 0, options: .curveEaseOut, animations: {
                 if remainingDistance < 0 {
-                    self.contentContainerView.frame.origin.y -= remainingDistance
-                    switch self.handlePosition {
-                    case .outside:
-                        self.handle.frame.origin.y -= remainingDistance
-                    case .inside:
-                        break
-                    }
+                    self.sheetContainerView.frame.origin.y -= remainingDistance
                 } else {
-                    self.heightConstraint.constant = finalHeight
+                    self.sheetCurrentHeightConstraint.constant = finalHeight
                     self.view.layoutIfNeeded()
                 }
 
                 self.backdropView?.alpha = completionState == .dismissing ? 0 : 1
             }) { _ in
-                self.heightConstraint.constant = finalHeight
+                self.sheetCurrentHeightConstraint.constant = finalHeight
                 self.view.layoutIfNeeded()
 
                 if completionState == .dismissing {
                     self.willDismissInteractively()
-                    self.dismiss(animated: true, completion: nil)
+                    self.dismiss(animated: true, completion: { [weak self] in
+                        self?.isDismissingFromPanGesture = false
+                    })
                 }
             }
 
@@ -272,7 +417,7 @@ open class InteractiveSheetViewController: OWSViewController {
             backdropView?.alpha = 1
 
             guard let startingHeight = startingHeight else { break }
-            heightConstraint.constant = startingHeight
+            sheetCurrentHeightConstraint.constant = startingHeight
         }
     }
 
@@ -282,24 +427,29 @@ open class InteractiveSheetViewController: OWSViewController {
         // If we're at the top of the scrollView, the view is not
         // currently maximized, or we're panning outside of the scroll
         // view we want to do an interactive transition.
-        guard (panningScrollView != nil && panningScrollView!.contentOffset.y <= 0)
-                || contentContainerView.height < maxHeightConstraint.constant
-                || panningScrollView == nil else { return false }
+        guard
+            (panningScrollView != nil && panningScrollView!.contentOffset.y <= 0)
+            || sheetContainerView.height < maxHeight
+            || panningScrollView == nil
+        else {
+            return false
+        }
 
         if startingTranslation == nil {
             startingTranslation = sender.translation(in: view).y
         }
 
         if startingHeight == nil {
-            startingHeight = contentContainerView.height
+            startingHeight = sheetContainerView.height
         }
-
+        isInInteractiveTransition = true
         return true
     }
 
     private func resetInteractiveTransition(panningScrollView: UIScrollView?) {
         startingTranslation = nil
         startingHeight = nil
+        isInInteractiveTransition = false
         panningScrollView?.showsVerticalScrollIndicator = true
     }
 }
@@ -310,7 +460,7 @@ extension InteractiveSheetViewController: UIGestureRecognizerDelegate {
         switch gestureRecognizer {
         case is UITapGestureRecognizer:
             let point = gestureRecognizer.location(in: view)
-            guard !contentContainerView.frame.contains(point) else { return false }
+            guard !sheetContainerView.frame.contains(point) else { return false }
             return true
         default:
             return true

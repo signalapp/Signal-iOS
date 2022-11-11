@@ -399,7 +399,7 @@ class TypeInfo:
         elif value_name == 'mentionNotificationMode':
             value_statement = 'let %s: %s = TSThreadMentionNotificationMode(rawValue: %s) ?? .default' % ( value_name, "TSThreadMentionNotificationMode", value_expr, )
         elif value_name == 'storyViewMode':
-            value_statement = 'let %s: %s = TSThreadStoryViewMode(rawValue: %s) ?? .none' % ( value_name, "TSThreadStoryViewMode", value_expr, )
+            value_statement = 'let %s: %s = TSThreadStoryViewMode(rawValue: %s) ?? .default' % ( value_name, "TSThreadStoryViewMode", value_expr, )
         elif self.is_codable:
             value_statement = 'let %s: %s = %s' % ( value_name, initializer_param_type, value_expr, )
         elif self.should_use_blob:
@@ -887,7 +887,8 @@ def generate_swift_extensions_for_model(clazz):
     # TODO: We'll need to import SignalServiceKit for non-SSK models.
 
     swift_body = '''//
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -1264,6 +1265,15 @@ extension %s: SDSModel {
     public static var table: SDSTableMetadata {
         %sSerializer.table
     }
+
+    public class func anyEnumerateIndexable(
+        transaction: SDSAnyReadTransaction,
+        block: @escaping (SDSIndexableModel) -> Void
+    ) {
+        anyEnumerate(transaction: transaction, batched: false) { model, _ in
+            block(model)
+        }
+    }
 }
 ''' % ( str(clazz.name), record_name, str(clazz.name), )
 
@@ -1583,7 +1593,7 @@ public extension %(class_name)s {
     // Fetches a single model by "unique id".
     class func anyFetch(uniqueId: String,
                         transaction: SDSAnyReadTransaction) -> %(class_name)s? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 ''' % { "class_name": str(clazz.name), "record_name": record_name, "record_identifier": record_identifier(clazz.name) }
 
         cache_code = cache_get_code_for_class(clazz)
@@ -1596,7 +1606,7 @@ public extension %(class_name)s {
     class func anyFetch(uniqueId: String,
                         transaction: SDSAnyReadTransaction,
                         ignoreCache: Bool) -> %(class_name)s? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         if !ignoreCache,
             let cachedCopy = %(cache_code)s {
@@ -1774,7 +1784,7 @@ public extension %(class_name)s {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> Bool {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
@@ -1813,7 +1823,7 @@ public extension %(class_name)s {
     class func grdbFetchOne(sql: String,
                             arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> %s? {
-        assert(sql.count > 0)
+        assert(!sql.isEmpty)
 
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
@@ -1856,7 +1866,7 @@ public extension %s {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> %s? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {
@@ -2058,7 +2068,8 @@ def update_record_type_map(record_type_swift_path, record_type_json_path):
     # TODO: We'll need to import SignalServiceKit for non-SSK classes.
 
     swift_body = '''//
-//  Copyright © 2022 Signal. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation

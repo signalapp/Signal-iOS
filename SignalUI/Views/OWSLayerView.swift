@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -20,7 +21,7 @@ open class OWSLayerView: UIView {
     }
 
     @objc
-    public init(frame: CGRect, layoutCallback : @escaping (UIView) -> Void) {
+    public init(frame: CGRect, layoutCallback: @escaping (UIView) -> Void) {
         self.layoutCallback = layoutCallback
         super.init(frame: frame)
     }

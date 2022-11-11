@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "SignalBaseTest.h"
@@ -37,11 +38,6 @@
     XCTAssertEqual(0, [TSAttachmentStream numberOfKeysInCollection]);
     XCTAssertEqual(0, [TSIncomingMessage numberOfKeysInCollection]);
     XCTAssertEqual(0, [TSThread numberOfKeysInCollection]);
-}
-
-- (void)tearDown
-{
-    [super tearDown];
 }
 
 - (int)numberOfItemsInAttachmentsFolder

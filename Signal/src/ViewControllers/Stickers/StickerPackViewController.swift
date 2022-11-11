@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -242,8 +243,7 @@ public class StickerPackViewController: OWSViewController {
         }
 
         let defaultTitle = NSLocalizedString("STICKERS_PACK_VIEW_DEFAULT_TITLE", comment: "The default title for the 'sticker pack' view.")
-        if let title = stickerPack.title?.ows_stripped(),
-            title.count > 0 {
+        if let title = stickerPack.title?.ows_stripped(), !title.isEmpty {
             titleLabel.text = title.filterForDisplay
         } else {
             titleLabel.text = defaultTitle

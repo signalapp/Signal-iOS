@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -346,12 +347,12 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 //                                   action:#selector(didPressShareContact)))
 //        }
 
-        if let organizationName = contactShare.name.organizationName?.ows_stripped() {
-            if contactShare.name.hasAnyNamePart() &&
-                organizationName.count > 0 {
-                rows.append(ContactFieldView.contactFieldView(forOrganizationName: organizationName,
-                                                              layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin)))
-            }
+        if
+            let organizationName = contactShare.name.organizationName?.ows_stripped().nilIfEmpty,
+            contactShare.name.hasAnyNamePart()
+        {
+            rows.append(ContactFieldView.contactFieldView(forOrganizationName: organizationName,
+                                                          layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin)))
         }
 
         for phoneNumber in contactShare.phoneNumbers {
@@ -408,7 +409,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     }
 
     // TODO: Use real assets.
-    private func createCircleActionButton(text: String, imageName: String, actionBlock : @escaping () -> Void) -> UIView {
+    private func createCircleActionButton(text: String, imageName: String, actionBlock: @escaping () -> Void) -> UIView {
         let buttonSize = CGFloat(50)
 
         let button = TappableView(actionBlock: actionBlock)
@@ -445,7 +446,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         return button
     }
 
-    private func createLargePillButton(text: String, actionBlock : @escaping () -> Void) -> UIView {
+    private func createLargePillButton(text: String, actionBlock: @escaping () -> Void) -> UIView {
         let button = TappableView(actionBlock: actionBlock)
         button.backgroundColor = Theme.backgroundColor
         button.layoutMargins = .zero
@@ -638,7 +639,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             guard let part = part else {
                 return
             }
-            guard part.count > 0 else {
+            if part.isEmpty {
                 return
             }
             addressParts.append(part)

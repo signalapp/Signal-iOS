@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -7,6 +8,22 @@ import GRDB
 import SignalCoreKit
 
 extension SignalRecipient {
+
+    @objc
+    public var isRegistered: Bool { !devices.set.isEmpty }
+
+    private static let storageServiceUnregisteredThreshold = kMonthInterval
+
+    @objc
+    public var shouldBeRepresentedInStorageService: Bool {
+        guard !isRegistered else { return true }
+
+        guard let unregisteredAtTimestamp = unregisteredAtTimestamp?.uint64Value else {
+            return false
+        }
+
+        return Date().timeIntervalSince(Date(millisecondsSince1970: unregisteredAtTimestamp)) <= Self.storageServiceUnregisteredThreshold
+    }
 
     @objc
     public static let phoneNumberDidChange = Notification.Name("phoneNumberDidChange")

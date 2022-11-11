@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import SafariServices
+import SignalMessaging
 import SignalServiceKit
 
 @objc
@@ -77,48 +79,29 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
 
         return textField
     }()
-    private lazy var iconImageView: UIImageView = {
-        let imageView = UIImageView()
 
-        imageView.contentMode = .center
-        imageView.layer.cornerRadius = 32
-        imageView.clipsToBounds = true
-        imageView.autoSetDimensions(to: CGSize(square: 64))
-
-        return imageView
-    }()
-
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         nameTextField.textColor = Theme.primaryTextColor
-
-        iconImageView.setThemeIcon(.privateStory40, tintColor: Theme.primaryIconColor)
-        iconImageView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray02
     }
 
     private func updateTableContents() {
         let contents = OWSTableContents()
 
         let nameAndAvatarSection = OWSTableSection()
+        nameAndAvatarSection.footerTitle = OWSLocalizedString(
+            "NEW_PRIVATE_STORY_NAME_FOOTER",
+            comment: "Section footer for the name text field on the 'new private story' creation view"
+        )
         nameAndAvatarSection.add(.init(
             customCellBlock: { [weak self] in
                 let cell = OWSTableItem.newCell()
                 cell.selectionStyle = .none
                 guard let self = self else { return cell }
 
-                self.iconImageView.setContentHuggingVerticalHigh()
-                self.nameTextField.setContentHuggingHorizontalLow()
-                let firstSection = UIStackView(arrangedSubviews: [
-                    self.iconImageView,
-                    self.nameTextField
-                ])
-                firstSection.axis = .horizontal
-                firstSection.alignment = .center
-                firstSection.spacing = ContactCellView.avatarTextHSpacing
-
-                cell.contentView.addSubview(firstSection)
-                firstSection.autoPinEdgesToSuperviewMargins()
+                cell.contentView.addSubview(self.nameTextField)
+                self.nameTextField.autoPinEdgesToSuperviewMargins()
 
                 return cell
             },

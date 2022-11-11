@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 
-@objc
 public protocol TextApprovalViewControllerDelegate: AnyObject {
+
     func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?, linkPreviewDraft: OWSLinkPreviewDraft?)
 
     func textApprovalDidCancel(_ textApproval: TextApprovalViewController)
@@ -19,9 +20,8 @@ public protocol TextApprovalViewControllerDelegate: AnyObject {
 
 // MARK: -
 
-@objc
 public class TextApprovalViewController: OWSViewController, MentionTextViewDelegate {
-    @objc
+
     public weak var delegate: TextApprovalViewControllerDelegate?
 
     // MARK: - Properties
@@ -48,7 +48,6 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
 
     // MARK: - Initializers
 
-    @objc
     required public init(messageBody: MessageBody) {
         self.initialMessageBody = messageBody
 
@@ -88,11 +87,10 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
     }
 
     private func updateSendButton() {
-        guard textView.text.count > 0 else {
-            footerView.isHidden = true
-            return
-        }
-        guard let recipientsDescription = delegate?.textApprovalRecipientsDescription(self) else {
+        guard
+            !textView.text.isEmpty,
+            let recipientsDescription = delegate?.textApprovalRecipientsDescription(self)
+        else {
             footerView.isHidden = true
             return
         }
@@ -147,7 +145,7 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
         let isOversizedText = trimmedText.lengthOfBytes(using: .utf8) >= kOversizeTextMessageSizeThreshold
         guard !isOversizedText else { return clearLinkPreview() }
 
-        guard let previewUrl = linkPreviewManager.findFirstValidUrl(in: trimmedText) else { return clearLinkPreview() }
+        guard let previewUrl = linkPreviewManager.findFirstValidUrl(in: trimmedText, bypassSettingsCheck: false) else { return clearLinkPreview() }
 
         currentPreviewUrl = previewUrl
     }
@@ -186,7 +184,7 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
     // MARK: - Event Handlers
 
     @objc
-    func cancelPressed(sender: UIButton) {
+    private func cancelPressed(sender: UIButton) {
         delegate?.textApprovalDidCancel(self)
     }
 

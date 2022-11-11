@@ -1,7 +1,9 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalMessaging
 import UIKit
 
 // Objc wrapper for the MediaGalleryItem struct
@@ -300,7 +302,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     // MARK: Bar Buttons
 
     lazy var shareBarButton: UIBarButtonItem = {
-        let image = #imageLiteral(resourceName: "share-ios-24")
+        let image = #imageLiteral(resourceName: "share-outline-24")
         let shareBarButton = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(didPressShare))
         shareBarButton.tintColor = Theme.darkThemePrimaryColor
         return shareBarButton
@@ -529,7 +531,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             }
             self.pendingViewController = pendingViewController
 
-            if let pendingCaptionText = pendingViewController.galleryItem.captionForDisplay, pendingCaptionText.count > 0 {
+            if
+                let pendingCaptionText = pendingViewController.galleryItem.captionForDisplay,
+                !pendingCaptionText.isEmpty {
                 self.captionContainerView.pendingText = pendingCaptionText
             } else {
                 self.captionContainerView.pendingText = nil
@@ -813,12 +817,12 @@ extension MediaPageViewController: CaptionContainerViewDelegate {
     // MARK: Helpers
 
     func updateCaptionContainerVisibility() {
-        if let currentText = captionContainerView.currentText, currentText.count > 0 {
+        if let currentText = captionContainerView.currentText, !currentText.isEmpty {
             captionContainerView.isHidden = false
             return
         }
 
-        if let pendingText = captionContainerView.pendingText, pendingText.count > 0 {
+        if let pendingText = captionContainerView.pendingText, !pendingText.isEmpty {
             captionContainerView.isHidden = false
             return
         }

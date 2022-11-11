@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -93,6 +94,14 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         }.asVoid()
     }
 
+    public func isOnboardingStoryRead(transaction: SDSAnyReadTransaction) -> Bool {
+        if onboardingStoryReadStatus(transaction: transaction) {
+            return true
+        }
+        // If its viewed, that also counts as being read.
+        return isOnboardingStoryViewed(transaction: transaction)
+    }
+
     public func isOnboardingStoryViewed(transaction: SDSAnyReadTransaction) -> Bool {
         let status = onboardingStoryViewStatus(transaction: transaction)
         switch status.status {
@@ -101,6 +110,10 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         case .viewedOnThisDevice, .viewedOnAnotherDevice:
             return true
         }
+    }
+
+    public func setHasReadOnboardingStory(transaction: SDSAnyWriteTransaction, updateStorageService: Bool) {
+        try? setOnboardingStoryRead(transaction: transaction, updateStorageService: updateStorageService)
     }
 
     public func setHasViewedOnboardingStoryOnAnotherDevice(transaction: SDSAnyWriteTransaction) {
@@ -160,7 +173,8 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         )
     }
 
-    @objc private func onboardingStateDidChange() {
+    @objc
+    private func onboardingStateDidChange() {
         guard Self.tsAccountManager.isOnboarded() else {
             return
         }
@@ -371,10 +385,12 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         let viewStatus = self.onboardingStoryViewStatus(transaction: transaction)
 
         let viewedTimestamp: UInt64?
+        var markViewedIfNotFound = false
         switch viewStatus.status {
         case .notViewed:
-            // Nothing to clean up
-            return
+            // Legacy clients might have viewed stories from before we recorded viewed status.
+            viewedTimestamp = nil
+            markViewedIfNotFound = true
         case .viewedOnAnotherDevice:
             // Delete right away.
             forceDelete = true
@@ -390,7 +406,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
             Date().timeIntervalSince(Date(millisecondsSince1970: $0)) >= Constants.postViewingTimeout
         } ?? false
 
-        guard isExpired || forceDelete else {
+        guard isExpired || forceDelete || markViewedIfNotFound else {
             return
         }
 
@@ -399,6 +415,18 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         }
         let stories = StoryFinder.listStoriesWithUniqueIds(messageUniqueIds, transaction: transaction)
         guard !stories.isEmpty else {
+            if markViewedIfNotFound {
+                // this is a legacy client with stories that were viewed before
+                // we kept track of viewed state independently.
+                try self.setOnboardingStoryViewedOnThisDevice(
+                    atTimestamp: Date.distantPast.ows_millisecondsSince1970,
+                    transaction: transaction
+                )
+            }
+            return
+        }
+
+        guard isExpired || forceDelete else {
             return
         }
 
@@ -503,6 +531,23 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
 
     // MARK: - KV Store
 
+    // MARK: Onboarding Story Read Status
+
+    private func onboardingStoryReadStatus(transaction: SDSAnyReadTransaction) -> Bool {
+        return kvStore.getBool(Constants.kvStoreOnboardingStoryIsReadKey, defaultValue: false, transaction: transaction)
+    }
+
+    private func setOnboardingStoryRead(transaction: SDSAnyWriteTransaction, updateStorageService: Bool) throws {
+        guard !onboardingStoryReadStatus(transaction: transaction) else {
+            return
+        }
+        kvStore.setBool(true, key: Constants.kvStoreOnboardingStoryIsReadKey, transaction: transaction)
+        if updateStorageService {
+            Self.storageServiceManager.recordPendingLocalAccountUpdates()
+        }
+        NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
+    }
+
     // MARK: Onboarding Story View Status
 
     private struct OnboardingStoryViewStatus: Codable {
@@ -533,6 +578,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
             key: Constants.kvStoreOnboardingStoryViewStatusKey,
             transaction: transaction
         )
+        NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
     }
 
     // TODO: exposed to internal for testing, it really shouldn't be. But we dont have
@@ -551,6 +597,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
             transaction: transaction
         )
         Self.storageServiceManager.recordPendingLocalAccountUpdates()
+        NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
     }
 
     // MARK: Onboarding Story Download Status
@@ -573,7 +620,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         return status
     }
 
-    private func markOnboardingStoryDownloaded(
+    internal func markOnboardingStoryDownloaded(
         messageUniqueIds: [String],
         transaction: SDSAnyWriteTransaction
     ) throws {
@@ -585,6 +632,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         )
         DispatchQueue.main.async {
             self.beginObservingOnboardingStoryEventsIfNeeded(downloadStatus: status)
+            NotificationCenter.default.post(name: .onboardingStoryStateDidChange, object: nil)
         }
     }
 
@@ -597,9 +645,11 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
 
     private func setSystemStoryHidden(_ hidden: Bool, transaction: SDSAnyWriteTransaction) {
         kvStore.setBool(hidden, key: Constants.kvStoreHiddenStateKey, transaction: transaction)
+        NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
     }
 
     internal enum Constants {
+        static let kvStoreOnboardingStoryIsReadKey = "OnboardingStoryIsRead"
         static let kvStoreOnboardingStoryViewStatusKey = "OnboardingStoryViewStatus"
         static let kvStoreOnboardingStoryDownloadStatusKey = "OnboardingStoryStatus"
         static let kvStoreHiddenStateKey = "SystemStoriesAreHidden"

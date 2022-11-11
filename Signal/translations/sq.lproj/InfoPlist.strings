@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Signal duhet të përdorë Apple Music për të luajtur bashkëngjitjet e medias.";
-NSCameraUsageDescription = "Signal përdor kamerën tuaj për të bërë foto dhe për videotelefonata.";
-NSContactsUsageDescription = "Signal përdor kontaktet tuaja për të gjetur përdoruesit që njihni. Ne nuk i ruajmë kontaktet tuaja në server.";
-NSFaceIDUsageDescription = "Veçoria e mbylljes së ekranit të Signal përdor Face ID.";
-NSLocationWhenInUseUsageDescription = "Signal ka nevojë për qasje në vendndodhjen tuaj në mënyrë që të ndajë me të tjerët vendndodhjen tuaj aktuale.";
-NSMicrophoneUsageDescription = "Signal ka nevojë për qasje në mikrofonin tuaj për të kryer dhe marrë telefonata si dhe për të regjistruar mesazhe zanore.";
-NSPhotoLibraryAddUsageDescription = "Signal do të ruajë fotografitë në albumin tuaj.";
-NSPhotoLibraryUsageDescription = "Signal do t'ju lejojë të zgjidhni se cilat foto nga albumi juaj dëshironi të dërgoni.";
-NSLocalNetworkUsageDescription = "Signal përdor rrjetin lokal për t'ju lejuar të transferoni direkt llogarinë tuaj në një telefon të ri. Kjo veçori nuk do të përdoret nëse ju nuk zgjidhni në mënyrë eksplicite të filloni një transferim në një pajisje të re.";

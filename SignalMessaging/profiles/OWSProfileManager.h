@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import <SignalServiceKit/ProfileManagerProtocol.h>
@@ -71,6 +72,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (nullable NSString *)localUsername;
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
+- (nullable NSArray<OWSUserProfileBadgeInfo *> *)localProfileBadgeInfo;
 
 - (OWSProfileSnapshot *)localProfileSnapshotWithShouldIncludeAvatar:(BOOL)shouldIncludeAvatar
     NS_SWIFT_NAME(localProfileSnapshot(shouldIncludeAvatar:));
@@ -133,6 +135,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                                 transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
+                            downloadIfMissing:(BOOL)downloadIfMissing
                                   transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address

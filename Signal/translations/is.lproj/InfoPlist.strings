@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Signal þarf að nota Apple Music til að spila margmiðlunarviðhengi.";
-NSCameraUsageDescription = "Signal notar myndavél þína til að taka myndir og fyrir myndsímtöl.";
-NSContactsUsageDescription = "Signal notar tengiliðaskrána þína til að finna notendur sem þú þekkir. Engir tengiliðir eru vistaðir á vefþjónum okkar.";
-NSFaceIDUsageDescription = "Skjálæsing Signal notar Face ID.";
-NSLocationWhenInUseUsageDescription = "Signal þarf aðgang að staðsetningunni þinni svo hægt sé að deila henni.";
-NSMicrophoneUsageDescription = "Signal þarf aðgang að hljóðnemanum þínum svo hægt sé að hringja, taka við símtölum og taka upp hljóð.";
-NSPhotoLibraryAddUsageDescription = "Signal mun vista myndir í myndasafninu þínu.";
-NSPhotoLibraryUsageDescription = "Signal leyfir þér að velja hvaða myndir úr myndasafninu þínu þú sendir.";
-NSLocalNetworkUsageDescription = "Signal notar staðarnetið þitt til að gefa þér möguleika á að millifæra aðgang þinn beint yfir á nýjan síma. Millifærsla yfir á nýtt tæki mun ekki eiga sér stað nema þú veljir sérstaklega að hefja hana.";

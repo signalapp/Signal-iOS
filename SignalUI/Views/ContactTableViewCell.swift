@@ -1,17 +1,20 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import SignalMessaging
 
 @objc
-open class ContactTableViewCell: UITableViewCell {
+open class ContactTableViewCell: UITableViewCell, ReusableTableViewCell {
 
     @objc
     open class var reuseIdentifier: String { "ContactTableViewCell" }
 
     private let cellView = ContactCellView()
+
+    public var tooltipTailReferenceView: UIView { return cellView.tooltipTailReferenceView }
 
     @objc
     public override var accessoryView: UIView? {

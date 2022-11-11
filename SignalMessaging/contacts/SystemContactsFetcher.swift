@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -392,18 +393,12 @@ public class SystemContactsFetcher: NSObject {
 
             Logger.info("fetching contacts")
 
-            var fetchedContacts: [Contact]?
+            let contacts: [Contact]
             switch self.contactStoreAdapter.fetchContacts() {
             case .success(let result):
-                fetchedContacts = result
+                contacts = result
             case .error(let error):
                 completion(error)
-                return
-            }
-
-            guard let contacts = fetchedContacts else {
-                owsFailDebug("contacts was unexpectedly not set.")
-                completion(nil)
                 return
             }
 

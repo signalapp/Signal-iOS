@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import Lottie
 import MobileCoin
+import SignalMessaging
 
 @objc
 public class PaymentsTransferOutViewController: OWSTableViewController2 {
@@ -83,8 +85,8 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         addressTextfield.addTarget(self, action: #selector(addressDidChange), for: .editingChanged)
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateTableContents()
     }

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSIdentityManager.h"
@@ -771,19 +772,19 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                                                                        verificationStateSyncMessage:message
                                                                                         transaction:transaction];
 
-        [self.messageSenderJobQueue addPromiseWithMessage:nullMessage.asPreparer
-                                removeMessageAfterSending:NO
-                            limitToCurrentProcessLifetime:YES
-                                           isHighPriority:NO
-                                              transaction:transaction]
+        [self.sskJobQueues.messageSenderJobQueue addPromiseWithMessage:nullMessage.asPreparer
+                                             removeMessageAfterSending:NO
+                                         limitToCurrentProcessLifetime:YES
+                                                        isHighPriority:NO
+                                                           transaction:transaction]
             .doneInBackground(^(id value) {
                 OWSLogInfo(@"Successfully sent verification state NullMessage");
                 DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                    [self.messageSenderJobQueue addPromiseWithMessage:message.asPreparer
-                                            removeMessageAfterSending:NO
-                                        limitToCurrentProcessLifetime:YES
-                                                       isHighPriority:NO
-                                                          transaction:transaction]
+                    [self.sskJobQueues.messageSenderJobQueue addPromiseWithMessage:message.asPreparer
+                                                         removeMessageAfterSending:NO
+                                                     limitToCurrentProcessLifetime:YES
+                                                                    isHighPriority:NO
+                                                                       transaction:transaction]
                         .doneInBackground(^(id value) {
                             OWSLogInfo(@"Successfully sent verification state sync message");
 

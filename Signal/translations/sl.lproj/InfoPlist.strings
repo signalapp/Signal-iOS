@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Za predvajanje pripetih vsebin mora Signal uporabiti Apple Music.";
-NSCameraUsageDescription = "Za snemanje videov in fotografij Signal uporablja vašo kamero.";
-NSContactsUsageDescription = "Signal uporablja vaše kontakte za iskanje vam znanih uporabnikov. Kontaktov ne shranjujemo na svojih strežnikih.";
-NSFaceIDUsageDescription = "Signalov zaklep zaslona uporablja face ID prepoznavanje obraza.";
-NSLocationWhenInUseUsageDescription = "Signal potrebuje dostop do vaše lokacije, da bi lahko delil trenutno lokacijo. ";
-NSMicrophoneUsageDescription = "Signal potrebuje dostop do vašega mikrofona za klicanje ali sprejemanje klicev in za snemanje glasovnih sporočil.";
-NSPhotoLibraryAddUsageDescription = "Signal bo shranil slike v vašo knjižnico.";
-NSPhotoLibraryUsageDescription = "Signal vam za pošiljanje omogoča izbiro fotografij iz knjižnice.";
-NSLocalNetworkUsageDescription = "Signal uporablja lokalno omrežje za neposreden prenos vašega računa na drug telefon. To ne bo uporabljeno, če izrecno ne izberete zagon prenosa na novo napravo.";

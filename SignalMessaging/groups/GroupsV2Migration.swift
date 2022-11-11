@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -110,105 +111,6 @@ public extension GroupsV2Migration {
 
     private static var autoMigrationMode: GroupsV2MigrationMode {
         return .autoMigrationPolite
-    }
-
-    static func tryToAutoMigrateAllGroups(shouldLimitBatchSize: Bool) {
-        AssertIsOnMainThread()
-
-        guard !DebugFlags.reduceLogChatter else {
-            return
-        }
-        guard CurrentAppContext().isMainAppAndActive else {
-            // Don't try to migrate groups in app extensions,
-            // nor if the app is in the background, e.g.
-            // waking up from a VOIP push.
-            return
-        }
-        guard tsAccountManager.isRegisteredAndReady else {
-            return
-        }
-
-        DispatchQueue.global().async {
-            var groupThreads = [TSGroupThread]()
-            Self.databaseStorage.read { transaction in
-                TSGroupThread.anyEnumerate(transaction: transaction) { (thread, _) in
-                    guard let groupThread = thread as? TSGroupThread else {
-                        return
-                    }
-                    guard groupThread.isGroupV1Thread else {
-                        return
-                    }
-                    groupThreads.append(groupThread)
-                }
-            }
-
-            var phoneNumbersWithoutUuids = Set<String>()
-            for groupThread in groupThreads {
-                // We want to fill in missing UUIDs for all members including
-                // "dropped" members.
-                let groupMembers = (groupThread.groupModel.groupMembership.allMembersOfAnyKind +
-                                        groupThread.groupModel.getDroppedMembers)
-                for address in groupMembers {
-                    guard address.uuid == nil else {
-                        continue
-                    }
-                    guard let phoneNumber = address.phoneNumber else {
-                        owsFailDebug("Missing phone number.")
-                        continue
-                    }
-                    phoneNumbersWithoutUuids.insert(phoneNumber)
-                }
-            }
-
-            let migrationMode: GroupsV2MigrationMode = self.autoMigrationMode
-
-            // Check up to N groups on every launch.
-            let maxCheckCount: Int = 50
-            if shouldLimitBatchSize, groupThreads.count > maxCheckCount {
-                groupThreads.shuffle()
-                groupThreads = Array(groupThreads.prefix(upTo: maxCheckCount))
-            }
-
-            firstly(on: .global()) { () -> Promise<Void> in
-                guard !phoneNumbersWithoutUuids.isEmpty else {
-                    return Promise.value(())
-                }
-                return ContactDiscoveryTask(phoneNumbers: phoneNumbersWithoutUuids).perform().asVoid()
-            }.recover(on: .global()) { (error: Error) -> Promise<Void> in
-                if let httpStatusCode = error.httpStatusCode,
-                   httpStatusCode == 401 {
-                    // Not registered.
-                    Logger.warn("Error: \(error)")
-                } else {
-                    owsFailDebugUnlessNetworkFailure(error)
-                }
-                return Promise.value(())
-            }.map(on: .global()) { _ in
-                Logger.verbose("")
-
-                for groupThread in groupThreads {
-                    firstly {
-                        Self.tryToMigrate(groupThread: groupThread, migrationMode: migrationMode)
-                    }.done(on: .global()) { _ in
-                        Logger.verbose("")
-                    }.catch(on: .global()) { error in
-                        if case GroupsV2Error.groupDoesNotExistOnService = error {
-                            Logger.warn("Error: \(error)")
-                        } else if case GroupsV2Error.localUserNotInGroup = error {
-                            // no-op
-                        } else if case GroupsV2Error.groupCannotBeMigrated = error {
-                            // no-op
-                        } else if case GroupsV2Error.timeout = error {
-                            Logger.warn("Error: \(error)")
-                        } else {
-                            owsFailDebug("Error: \(error)")
-                        }
-                    }
-                }
-            }.catch(on: .global()) { error in
-                owsFailDebugUnlessNetworkFailure(error)
-            }
-        }
     }
 
     @objc(autoMigrateThreadIfNecessary:)
@@ -343,10 +245,10 @@ fileprivate extension GroupsV2Migration {
         }
 
         let groupMembership = unmigratedState.groupThread.groupModel.groupMembership
-        let membersToMigrate = membersToTryToMigrate(groupMembership: groupMembership)
 
         return firstly(on: .global()) { () -> Promise<Void> in
-            let phoneNumbersWithoutUuids = membersToMigrate.compactMap { (address: SignalServiceAddress) -> String? in
+            let membersToFetchUuids = membersToTryToMigrate(groupMembership: groupMembership)
+            let phoneNumbersWithoutUuids = membersToFetchUuids.compactMap { (address: SignalServiceAddress) -> String? in
                 if address.uuid != nil {
                     return nil
                 }
@@ -369,12 +271,7 @@ fileprivate extension GroupsV2Migration {
             let membersToFetchProfiles = Self.databaseStorage.read { transaction in
                 // Both the capability and a profile key are required to migrate
                 // If a user doesn't have both, we need to refetch their profile
-                membersToMigrate.filter { address in
-                    let hasCapability = GroupManager.doesUserHaveGroupsV2MigrationCapability(
-                        address: address,
-                        transaction: transaction)
-                    guard hasCapability else { return true }
-
+                groupMembership.allMembersOfAnyKind.filter { address in
                     let hasProfileKey = groupsV2.hasProfileKeyCredential(
                         for: address,
                         transaction: transaction)
@@ -523,63 +420,58 @@ fileprivate extension GroupsV2Migration {
 
         Logger.info("migrationMode: \(migrationMode)")
 
-        return firstly(on: .global()) { () -> Promise<TSGroupThread> in
+        // This is only called from attemptMigration, also located in this file.
+        // That method will fetch missing UUIDs and profile key credentials before
+        // calling this one, so we don't need to fetch those as part of this flow.
+
+        return firstly(on: .global()) { () throws -> Promise<String?> in
+            // We should only migrate groups when we're a member.
             let groupThread = unmigratedState.groupThread
             guard groupThread.isLocalUserFullMember else {
                 throw OWSAssertionError("Local user cannot migrate group; is not a full member.")
             }
-            let membersToMigrate = membersToTryToMigrate(groupMembership: groupThread.groupMembership)
 
-            return firstly(on: .global()) { () -> Promise<Void> in
-                GroupManager.tryToEnableGroupsV2(for: Array(membersToMigrate), isBlocking: true, ignoreErrors: true)
-            }.then(on: .global()) { () throws -> Promise<Void> in
-                self.groupsV2Swift.tryToFetchProfileKeyCredentials(
-                    for: membersToMigrate.compactMap { $0.uuid },
-                    ignoreMissingProfiles: true,
-                    forceRefresh: false
-                )
-            }.then(on: .global()) { () throws -> Promise<String?> in
-                guard let avatarData = unmigratedState.groupThread.groupModel.avatarData else {
-                    // No avatar to upload.
-                    return Promise.value(nil)
-                }
-
-                // Upload avatar.
-                return firstly(on: .global()) { () -> Promise<String> in
-                    return self.groupsV2Impl.uploadGroupAvatar(avatarData: avatarData,
-                                                               groupSecretParamsData: unmigratedState.migrationMetadata.v2GroupSecretParams)
-                }.map(on: .global()) { (avatarUrlPath: String) -> String? in
-                    return avatarUrlPath
-                }
-            }.map(on: .global()) { (avatarUrlPath: String?) throws -> TSGroupModelV2 in
-                try databaseStorage.read { transaction in
-                    try Self.deriveMigratedGroupModel(unmigratedState: unmigratedState,
-                                                      avatarUrlPath: avatarUrlPath,
-                                                      migrationMode: migrationMode,
-                                                      transaction: transaction)
-                }
-            }.then(on: .global()) { (proposedGroupModel: TSGroupModelV2) -> Promise<TSGroupModelV2> in
-                Self.migrateGroupOnService(proposedGroupModel: proposedGroupModel,
-                                           disappearingMessageToken: unmigratedState.disappearingMessageToken)
-            }.then(on: .global()) { (groupModelV2: TSGroupModelV2) -> Promise<TSGroupThread> in
-                guard let localAddress = tsAccountManager.localAddress else {
-                    throw OWSAssertionError("Missing localAddress.")
-                }
-                return GroupManager.replaceMigratedGroup(groupIdV1: unmigratedState.groupThread.groupModel.groupId,
-                                                         groupModelV2: groupModelV2,
-                                                         disappearingMessageToken: unmigratedState.disappearingMessageToken,
-                                                         groupUpdateSourceAddress: localAddress,
-                                                         shouldSendMessage: true)
-            }.map(on: .global()) { (groupThread: TSGroupThread) -> TSGroupThread in
-                self.profileManager.addThread(toProfileWhitelist: groupThread)
-
-                Logger.info("Group migrated to service")
-
-                return groupThread
-            }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
-                      description: "Migrate group") {
-                        GroupsV2Error.timeout
+            // If there's an avatar, upload it first; otherwise, just keep going.
+            guard let avatarData = unmigratedState.groupThread.groupModel.avatarData else {
+                // No avatar to upload.
+                return Promise.value(nil)
             }
+
+            // Upload avatar.
+            return firstly(on: .global()) { () -> Promise<String> in
+                return self.groupsV2Impl.uploadGroupAvatar(avatarData: avatarData,
+                                                           groupSecretParamsData: unmigratedState.migrationMetadata.v2GroupSecretParams)
+            }.map(on: .global()) { (avatarUrlPath: String) -> String? in
+                return avatarUrlPath
+            }
+        }.map(on: .global()) { (avatarUrlPath: String?) throws -> TSGroupModelV2 in
+            try databaseStorage.read { transaction in
+                try Self.deriveMigratedGroupModel(unmigratedState: unmigratedState,
+                                                  avatarUrlPath: avatarUrlPath,
+                                                  migrationMode: migrationMode,
+                                                  transaction: transaction)
+            }
+        }.then(on: .global()) { (proposedGroupModel: TSGroupModelV2) -> Promise<TSGroupModelV2> in
+            Self.migrateGroupOnService(proposedGroupModel: proposedGroupModel,
+                                       disappearingMessageToken: unmigratedState.disappearingMessageToken)
+        }.then(on: .global()) { (groupModelV2: TSGroupModelV2) -> Promise<TSGroupThread> in
+            guard let localAddress = tsAccountManager.localAddress else {
+                throw OWSAssertionError("Missing localAddress.")
+            }
+            return GroupManager.replaceMigratedGroup(groupIdV1: unmigratedState.groupThread.groupModel.groupId,
+                                                     groupModelV2: groupModelV2,
+                                                     disappearingMessageToken: unmigratedState.disappearingMessageToken,
+                                                     groupUpdateSourceAddress: localAddress,
+                                                     shouldSendMessage: true)
+        }.map(on: .global()) { (groupThread: TSGroupThread) -> TSGroupThread in
+            self.profileManager.addThread(toProfileWhitelist: groupThread)
+
+            Logger.info("Group migrated to service")
+
+            return groupThread
+        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
+                  description: "Migrate group") {
+            GroupsV2Error.timeout
         }
     }
 
@@ -630,8 +522,7 @@ fileprivate extension GroupsV2Migration {
         // The group creator is an administrator;
         // the other members are normal users.
         var v2MembershipBuilder = GroupMembership.Builder()
-        let membersToMigrate = membersToTryToMigrate(groupMembership: v1GroupModel.groupMembership)
-        for address in membersToMigrate {
+        for address in v1GroupModel.groupMembership.allMembersOfAnyKind {
             if DebugFlags.groupsV2migrationsDropOtherMembers.get(),
                 !address.isLocalAddress {
                 Logger.warn("Dropping non-local user.")
@@ -642,11 +533,6 @@ fileprivate extension GroupsV2Migration {
                 Logger.warn("Member missing uuid: \(address).")
                 owsAssertDebug(migrationMode.canSkipMembersWithoutUuids)
                 Logger.warn("Discarding member: \(address).")
-                continue
-            }
-
-            if !GroupManager.doesUserHaveGroupsV2MigrationCapability(address: address, transaction: transaction) {
-                owsAssertDebug(migrationMode.canSkipMembersWithoutCapabilities)
                 continue
             }
 
@@ -736,36 +622,27 @@ fileprivate extension GroupsV2Migration {
         let isGroupInProfileWhitelist = profileManager.isThread(inProfileWhitelist: groupThread,
                                                                 transaction: transaction)
 
-        let groupMembership = groupThread.groupModel.groupMembership
-        let membersToMigrate = membersToTryToMigrate(groupMembership: groupMembership)
-
         // Inspect member list.
         //
         // The group creator is an administrator;
         // the other members are normal users.
         var membersWithoutUuids = [SignalServiceAddress]()
-        var membersWithoutCapabilities = [SignalServiceAddress]()
         var membersWithoutProfileKeys = [SignalServiceAddress]()
         var membersMigrated = [SignalServiceAddress]()
-        for address in membersToMigrate {
+        for address in groupThread.groupModel.groupMembership.allMembersOfAnyKind {
             if address.isEqualToAddress(localAddress) {
                 continue
             }
 
             if DebugFlags.groupsV2migrationsDropOtherMembers.get() {
                 Logger.warn("Dropping non-local user.")
-                membersWithoutCapabilities.append(address)
+                membersWithoutUuids.append(address)
                 continue
             }
 
             guard nil != address.uuid else {
                 Logger.warn("Member without uuid: \(address).")
                 membersWithoutUuids.append(address)
-                continue
-            }
-
-            if !GroupManager.doesUserHaveGroupsV2MigrationCapability(address: address, transaction: transaction) {
-                membersWithoutCapabilities.append(address)
                 continue
             }
 
@@ -794,10 +671,6 @@ fileprivate extension GroupsV2Migration {
                 !membersWithoutUuids.isEmpty {
                 return .cantBeMigrated_MembersWithoutUuids
             }
-            if !migrationMode.canSkipMembersWithoutCapabilities,
-                !membersWithoutCapabilities.isEmpty {
-                return .cantBeMigrated_MembersWithoutCapabilities
-            }
             if !migrationMode.canInviteMembersWithoutProfileKey,
                 !membersWithoutProfileKeys.isEmpty {
                 return .cantBeMigrated_MembersWithoutProfileKey
@@ -813,7 +686,6 @@ fileprivate extension GroupsV2Migration {
 
         return GroupsV2MigrationInfo(isGroupInProfileWhitelist: isGroupInProfileWhitelist,
                                      membersWithoutUuids: membersWithoutUuids,
-                                     membersWithoutCapabilities: membersWithoutCapabilities,
                                      membersWithoutProfileKeys: membersWithoutProfileKeys,
                                      state: state)
     }
@@ -846,7 +718,6 @@ public enum GroupsV2MigrationState {
     case cantBeMigrated_NotInProfileWhitelist
     case cantBeMigrated_TooManyMembers
     case cantBeMigrated_MembersWithoutUuids
-    case cantBeMigrated_MembersWithoutCapabilities
     case cantBeMigrated_MembersWithoutProfileKey
 }
 
@@ -857,7 +728,6 @@ public class GroupsV2MigrationInfo: NSObject {
     // These properties only have valid values if canGroupBeMigrated is true.
     public let isGroupInProfileWhitelist: Bool
     public let membersWithoutUuids: [SignalServiceAddress]
-    public let membersWithoutCapabilities: [SignalServiceAddress]
     public let membersWithoutProfileKeys: [SignalServiceAddress]
 
     // Always consult this property first.
@@ -865,12 +735,10 @@ public class GroupsV2MigrationInfo: NSObject {
 
     fileprivate init(isGroupInProfileWhitelist: Bool,
                      membersWithoutUuids: [SignalServiceAddress],
-                     membersWithoutCapabilities: [SignalServiceAddress],
                      membersWithoutProfileKeys: [SignalServiceAddress],
                      state: GroupsV2MigrationState) {
         self.isGroupInProfileWhitelist = isGroupInProfileWhitelist
         self.membersWithoutUuids = membersWithoutUuids
-        self.membersWithoutCapabilities = membersWithoutCapabilities
         self.membersWithoutProfileKeys = membersWithoutProfileKeys
         self.state = state
     }
@@ -883,7 +751,6 @@ public class GroupsV2MigrationInfo: NSObject {
     fileprivate static func buildCannotBeMigrated(state: GroupsV2MigrationState) -> GroupsV2MigrationInfo {
         GroupsV2MigrationInfo(isGroupInProfileWhitelist: false,
                               membersWithoutUuids: [],
-                              membersWithoutCapabilities: [],
                               membersWithoutProfileKeys: [],
                               state: state)
     }
@@ -932,10 +799,6 @@ public enum GroupsV2MigrationMode: String {
     }
 
     public var canSkipMembersWithoutUuids: Bool {
-        isAggressive || isOnlyUpdatingIfAlreadyMigrated
-    }
-
-    public var canSkipMembersWithoutCapabilities: Bool {
         isAggressive || isOnlyUpdatingIfAlreadyMigrated
     }
 

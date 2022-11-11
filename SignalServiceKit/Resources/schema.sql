@@ -40,7 +40,6 @@ CREATE
             ,"name" TEXT
             ,"addresses" BLOB
             ,"storyViewMode" INTEGER DEFAULT 0
-            ,"lastViewedStoryTimestamp" INTEGER
         )
 ;
 
@@ -271,6 +270,7 @@ CREATE
             ,"paymentMethodId" TEXT
             ,"replacementAdminUuid" TEXT
             ,"waitForMessageProcessing" BOOLEAN
+            ,"isCompleteContactSync" BOOLEAN DEFAULT 0
         )
 ;
 
@@ -350,6 +350,7 @@ CREATE
             ,"devices" BLOB NOT NULL
             ,"recipientPhoneNumber" TEXT
             ,"recipientUUID" TEXT
+            ,"unregisteredAtTimestamp" INTEGER
         )
 ;
 
@@ -855,6 +856,8 @@ CREATE
             ,"firstViewedTimestamp" DOUBLE NOT NULL
             ,"lastSnoozedTimestamp" DOUBLE NOT NULL
             ,"isComplete" BOOLEAN NOT NULL
+            ,"manifest" BLOB
+            ,"snoozeCount" INTEGER NOT NULL DEFAULT 0
         )
 ;
 
@@ -1108,7 +1111,6 @@ CREATE
             ,"isMarkedUnread" BOOLEAN NOT NULL DEFAULT 0
             ,"mutedUntilTimestamp" INTEGER NOT NULL DEFAULT 0
             ,"audioPlaybackRate" DOUBLE NOT NULL DEFAULT 1
-            ,"hideStory" BOOLEAN NOT NULL DEFAULT 0
         )
 ;
 
@@ -1361,4 +1363,41 @@ CREATE
             ,'$.incoming.receivedState.viewedTimestamp'
         )
     )
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_StoryContextAssociatedData" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"contactUuid" TEXT
+            ,"groupId" BLOB
+            ,"isHidden" BOOLEAN NOT NULL DEFAULT 0
+            ,"latestUnexpiredTimestamp" INTEGER
+            ,"lastReceivedTimestamp" INTEGER
+            ,"lastViewedTimestamp" INTEGER
+            ,"lastReadTimestamp" INTEGER
+        )
+;
+
+CREATE
+    INDEX "index_story_context_associated_data_contact_on_contact_uuid"
+        ON "model_StoryContextAssociatedData"("contactUuid"
+)
+;
+
+CREATE
+    INDEX "index_story_context_associated_data_contact_on_group_id"
+        ON "model_StoryContextAssociatedData"("groupId"
+)
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "cancelledGroupRing" (
+            "id" INTEGER PRIMARY KEY NOT NULL
+            ,"timestamp" INTEGER NOT NULL
+        )
 ;

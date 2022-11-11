@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "BlockListUIUtils.h"
@@ -45,17 +46,6 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 {
     NSString *displayName = [self.contactsManager displayNameForAddress:address];
     [self showBlockAddressesActionSheet:@[ address ]
-                            displayName:displayName
-                     fromViewController:fromViewController
-                        completionBlock:completionBlock];
-}
-
-+ (void)showBlockSignalAccountActionSheet:(SignalAccount *)signalAccount
-                       fromViewController:(UIViewController *)fromViewController
-                          completionBlock:(nullable BlockActionCompletionBlock)completionBlock
-{
-    NSString *displayName = [self.contactsManagerImpl displayNameForSignalAccountWithSneakyTransaction:signalAccount];
-    [self showBlockAddressesActionSheet:@[ signalAccount.recipientAddress ]
                             displayName:displayName
                      fromViewController:fromViewController
                         completionBlock:completionBlock];
@@ -280,17 +270,6 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
 {
     NSString *displayName = [self.contactsManager displayNameForAddress:address];
     [self showUnblockAddressesActionSheet:@[ address ]
-                              displayName:displayName
-                       fromViewController:fromViewController
-                          completionBlock:completionBlock];
-}
-
-+ (void)showUnblockSignalAccountActionSheet:(SignalAccount *)signalAccount
-                         fromViewController:(UIViewController *)fromViewController
-                            completionBlock:(nullable BlockActionCompletionBlock)completionBlock
-{
-    NSString *displayName = [self.contactsManagerImpl displayNameForSignalAccountWithSneakyTransaction:signalAccount];
-    [self showUnblockAddressesActionSheet:@[ signalAccount.recipientAddress ]
                               displayName:displayName
                        fromViewController:fromViewController
                           completionBlock:completionBlock];

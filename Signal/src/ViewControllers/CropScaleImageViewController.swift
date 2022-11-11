@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -75,7 +76,7 @@ class CropScaleImageViewController: OWSViewController {
     // MARK: Initializers
 
     @objc
-    required init(srcImage: UIImage, successCompletion : @escaping (UIImage) -> Void) {
+    required init(srcImage: UIImage, successCompletion: @escaping (UIImage) -> Void) {
         // normalized() can be slightly expensive but in practice this is fine.
         self.srcImage = srcImage.normalized()
         self.successCompletion = successCompletion

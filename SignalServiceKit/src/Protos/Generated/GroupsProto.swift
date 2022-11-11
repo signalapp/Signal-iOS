@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -289,7 +290,7 @@ public enum GroupsProtoMemberRole: SwiftProtobuf.Enum {
     public init?(rawValue: Int) {
         switch rawValue {
             case 0: self = .unknown
-            case 1: self = .`default`
+            case 1: self = .default
             case 2: self = .administrator
             default: self = .UNRECOGNIZED(rawValue)
         }
@@ -298,7 +299,7 @@ public enum GroupsProtoMemberRole: SwiftProtobuf.Enum {
     public var rawValue: Int {
         switch self {
             case .unknown: return 0
-            case .`default`: return 1
+            case .default: return 1
             case .administrator: return 2
             case .UNRECOGNIZED(let i): return i
         }
@@ -2027,6 +2028,26 @@ public struct GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: Codable
         return !proto.presentation.isEmpty
     }
 
+    public var userID: Data? {
+        guard hasUserID else {
+            return nil
+        }
+        return proto.userID
+    }
+    public var hasUserID: Bool {
+        return !proto.userID.isEmpty
+    }
+
+    public var profileKey: Data? {
+        guard hasProfileKey else {
+            return nil
+        }
+        return proto.profileKey
+    }
+    public var hasProfileKey: Bool {
+        return !proto.profileKey.isEmpty
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -2082,6 +2103,12 @@ extension GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
         if let _value = presentation {
             builder.setPresentation(_value)
         }
+        if let _value = userID {
+            builder.setUserID(_value)
+        }
+        if let _value = profileKey {
+            builder.setProfileKey(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -2103,6 +2130,26 @@ public struct GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder {
 
     public mutating func setPresentation(_ valueParam: Data) {
         proto.presentation = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setUserID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.userID = valueParam
+    }
+
+    public mutating func setUserID(_ valueParam: Data) {
+        proto.userID = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setProfileKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.profileKey = valueParam
+    }
+
+    public mutating func setProfileKey(_ valueParam: Data) {
+        proto.profileKey = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -2396,6 +2443,26 @@ public struct GroupsProtoGroupChangeActionsPromotePendingMemberAction: Codable, 
         return !proto.presentation.isEmpty
     }
 
+    public var userID: Data? {
+        guard hasUserID else {
+            return nil
+        }
+        return proto.userID
+    }
+    public var hasUserID: Bool {
+        return !proto.userID.isEmpty
+    }
+
+    public var profileKey: Data? {
+        guard hasProfileKey else {
+            return nil
+        }
+        return proto.profileKey
+    }
+    public var hasProfileKey: Bool {
+        return !proto.profileKey.isEmpty
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -2451,6 +2518,12 @@ extension GroupsProtoGroupChangeActionsPromotePendingMemberAction {
         if let _value = presentation {
             builder.setPresentation(_value)
         }
+        if let _value = userID {
+            builder.setUserID(_value)
+        }
+        if let _value = profileKey {
+            builder.setProfileKey(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -2472,6 +2545,26 @@ public struct GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder {
 
     public mutating func setPresentation(_ valueParam: Data) {
         proto.presentation = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setUserID(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.userID = valueParam
+    }
+
+    public mutating func setUserID(_ valueParam: Data) {
+        proto.userID = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setProfileKey(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.profileKey = valueParam
+    }
+
+    public mutating func setProfileKey(_ valueParam: Data) {
+        proto.profileKey = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

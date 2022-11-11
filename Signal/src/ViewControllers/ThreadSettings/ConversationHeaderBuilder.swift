@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -437,7 +438,7 @@ struct ConversationHeaderBuilder: Dependencies {
 
         avatarView.update(transaction) {
             $0.dataSource = .thread(delegate.thread)
-            $0.storyState = StoryManager.areStoriesEnabled ? delegate.threadViewModel.storyState : .none
+            $0.storyConfiguration = .autoUpdate()
         }
         avatarView.interactionDelegate = delegate
 
@@ -588,26 +589,10 @@ extension ConversationHeaderDelegate {
             } else {
                 owsFailDebug("Tried to start call while call was ongoing")
             }
-        } else if let groupThread = thread as? TSGroupThread {
+        } else {
             // We initiated a call, so if there was a pending message request we should accept it.
             ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
-            GroupCallViewController.presentLobby(thread: groupThread)
-        } else if let contactThread = thread as? TSContactThread {
-
-            let didShowSNAlert = SafetyNumberConfirmationSheet.presentIfNecessary(
-                address: contactThread.contactAddress,
-                confirmationText: CallStrings.confirmAndCallButtonTitle
-            ) { [weak self] didConfirmIdentity in
-                guard didConfirmIdentity else { return }
-                self?.startCall(withVideo: withVideo)
-            }
-
-            guard !didShowSNAlert else { return }
-
-            // We initiated a call, so if there was a pending message request we should accept it.
-            ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
-
-            outboundIndividualCallInitiator.initiateCall(thread: contactThread, isVideo: withVideo)
+            callService.initiateCall(thread: thread, isVideo: withVideo)
         }
     }
 }

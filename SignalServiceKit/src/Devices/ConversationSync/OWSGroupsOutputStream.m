@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSGroupsOutputStream.h"
@@ -68,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     [groupBuilder setArchived:associatedData.isArchived];
     NSNumber *_Nullable sortIndex = [[AnyThreadFinder new] sortIndexObjcWithThread:groupThread transaction:transaction];
     if (sortIndex != nil) {
-        [groupBuilder setInboxPosition:sortIndex.intValue];
+        [groupBuilder setInboxPosition:sortIndex.unsignedIntValue];
     }
 
     // TODO setActive based on soft delete?

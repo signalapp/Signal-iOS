@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2016 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -466,10 +467,6 @@ public class MessageFetcherJob: NSObject {
             let builder = SSKProtoEnvelope.builder(timestamp: timestamp)
             builder.setType(type)
 
-            if let sourceE164: String = try params.optional(key: "source") {
-                builder.setSourceE164(sourceE164)
-            }
-
             if let sourceUuid: String = try params.optional(key: "sourceUuid") {
                 builder.setSourceUuid(sourceUuid)
             }
@@ -659,7 +656,7 @@ private class MessageAckOperation: OWSOperation {
         Logger.debug("")
 
         let request: TSRequest
-        if let serverGuid = envelopeInfo.serverGuid, serverGuid.count > 0 {
+        if let serverGuid = envelopeInfo.serverGuid, !serverGuid.isEmpty {
             request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid)
         } else if let sourceAddress = envelopeInfo.sourceAddress, sourceAddress.isValid, envelopeInfo.timestamp > 0 {
             request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(with: sourceAddress, timestamp: envelopeInfo.timestamp)

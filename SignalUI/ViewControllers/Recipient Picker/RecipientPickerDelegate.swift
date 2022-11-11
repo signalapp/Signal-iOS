@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -10,7 +11,6 @@ public enum RecipientPickerRecipientState: Int {
     case duplicateGroupMember
     case userAlreadyInBlocklist
     case conversationAlreadyInBlocklist
-    case userLacksGroupCapability
     case unknownError
 }
 
@@ -22,16 +22,9 @@ public protocol RecipientPickerDelegate: AnyObject {
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          didSelectRecipient recipient: PickedRecipient)
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         willRenderRecipient recipient: PickedRecipient)
-
-    // This delegate method is only used if showUseAsyncSelection is set.
+    // This delegate method is only used if shouldUseAsyncSelection is set.
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise
-
-    // This delegate method is only used if showUseAsyncSelection is set.
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         showInvalidRecipientAlert recipient: PickedRecipient)
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          accessoryMessageForRecipient recipient: PickedRecipient,
@@ -95,160 +88,5 @@ public class PickedRecipient: NSObject {
 
     public override var hash: Int {
         return identifier.hashValue
-    }
-}
-
-@objc
-extension RecipientPickerViewController {
-
-    func tryToSelectRecipient(_ recipient: PickedRecipient) {
-        if let address = recipient.address,
-            address.isLocalAddress,
-            shouldHideLocalRecipient {
-            return
-        }
-
-        guard let delegate = delegate else { return }
-        guard showUseAsyncSelection else {
-            AssertIsOnMainThread()
-
-            let recipientPickerRecipientState = delegate.recipientPicker(self, getRecipientState: recipient)
-            guard recipientPickerRecipientState == .canBeSelected else {
-                showErrorAlert(recipientPickerRecipientState: recipientPickerRecipientState)
-                return
-            }
-
-            delegate.recipientPicker(self, didSelectRecipient: recipient)
-            return
-        }
-        let fromViewController = self
-        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] modalActivityIndicator in
-            guard let self = self else { return }
-
-            firstly {
-                delegate.recipientPicker(fromViewController,
-                                         prepareToSelectRecipient: recipient)
-            }.done { _ in
-                AssertIsOnMainThread()
-                modalActivityIndicator.dismiss {
-                    AssertIsOnMainThread()
-                    let recipientPickerRecipientState = delegate.recipientPicker(self, getRecipientState: recipient)
-                    guard recipientPickerRecipientState == .canBeSelected else {
-                        self.showErrorAlert(recipientPickerRecipientState: recipientPickerRecipientState)
-                        return
-                    }
-                    delegate.recipientPicker(self, didSelectRecipient: recipient)
-                }
-            }.catch { error in
-                AssertIsOnMainThread()
-                owsFailDebug("Error: \(error)")
-                modalActivityIndicator.dismiss {
-                    OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
-                }
-            }
-        }
-    }
-
-    func showErrorAlert(recipientPickerRecipientState: RecipientPickerRecipientState) {
-        let errorMessage: String
-        switch recipientPickerRecipientState {
-        case .duplicateGroupMember:
-            errorMessage = OWSLocalizedString("GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP",
-                                              comment: "Error message indicating that a member can't be added to a group because they are already in the group.")
-        case .userAlreadyInBlocklist:
-            errorMessage = OWSLocalizedString("BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST",
-                                              comment: "Error message indicating that a user can't be blocked because they are already blocked.")
-        case .conversationAlreadyInBlocklist:
-            errorMessage = OWSLocalizedString("BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST",
-                                              comment: "Error message indicating that a conversation can't be blocked because they are already blocked.")
-        case .canBeSelected, .unknownError:
-            owsFailDebug("Unexpected value.")
-            errorMessage = OWSLocalizedString("RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED",
-                                              comment: "Error message indicating that a user can't be selected.")
-        case .userLacksGroupCapability:
-            errorMessage = OWSLocalizedString("RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT",
-                                              comment: "Error message indicating that a user can't be added to a group until they upgrade their app.")
-        }
-        OWSActionSheets.showErrorAlert(message: errorMessage)
-        return
-    }
-
-    func item(forRecipient recipient: PickedRecipient) -> OWSTableItem {
-
-        switch recipient.identifier {
-        case .address(let address):
-            return OWSTableItem(
-                customCellBlock: { [weak self] in
-                    guard let self = self else { return UITableViewCell() }
-                    let tableView = self.tableView
-                    guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
-                        owsFailDebug("cell was unexpectedly nil")
-                        return UITableViewCell()
-                    }
-
-                    if let delegate = self.delegate,
-                       delegate.recipientPicker(self, getRecipientState: recipient) != .canBeSelected {
-                        cell.selectionStyle = .none
-                    }
-
-                    Self.databaseStorage.read { transaction in
-                        let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .noteToSelf)
-                        if let delegate = self.delegate {
-                            if let accessoryView = delegate.recipientPicker?(self,
-                                                                             accessoryViewForRecipient: recipient,
-                                                                             transaction: transaction) {
-                                configuration.accessoryView = accessoryView
-                            } else {
-                                let accessoryMessage = delegate.recipientPicker(self,
-                                                                                accessoryMessageForRecipient: recipient,
-                                                                                transaction: transaction)
-                                configuration.accessoryMessage = accessoryMessage
-                            }
-
-                            if let attributedSubtitle = delegate.recipientPicker?(self,
-                                                                                  attributedSubtitleForRecipient: recipient,
-                                                                                  transaction: transaction) {
-                                configuration.attributedSubtitle = attributedSubtitle
-                            }
-                        }
-
-                        cell.configure(configuration: configuration, transaction: transaction)
-                    }
-
-                    self.delegate?.recipientPicker(self, willRenderRecipient: recipient)
-
-                    return cell
-                },
-                actionBlock: { [weak self] in
-                    self?.tryToSelectRecipient(recipient)
-                }
-            )
-        case .group(let groupThread):
-            return OWSTableItem(
-                customCellBlock: { [weak self] in
-                    let cell = GroupTableViewCell()
-                    guard let self = self else { return cell }
-
-                    if let delegate = self.delegate {
-                        if delegate.recipientPicker(self, getRecipientState: recipient) != .canBeSelected {
-                            cell.selectionStyle = .none
-                        }
-
-                        cell.accessoryMessage = Self.databaseStorage.read { transaction in
-                            delegate.recipientPicker(self,
-                                                     accessoryMessageForRecipient: recipient,
-                                                     transaction: transaction)
-                        }
-                    }
-
-                    cell.configure(thread: groupThread)
-
-                    return cell
-                },
-                actionBlock: { [weak self] in
-                    self?.tryToSelectRecipient(recipient)
-                }
-            )
-        }
     }
 }

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -26,7 +27,9 @@ public class VersionedProfileRequestImpl: NSObject, VersionedProfileRequest {
 public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedProfiles {
 
     private enum CredentialStore {
-        private static let credentialStore = SDSKeyValueStore(collection: "VersionedProfiles.credentialStore")
+        private static let deprecatedCredentialStore = SDSKeyValueStore(collection: "VersionedProfiles.credentialStore")
+
+        private static let expiringCredentialStore = SDSKeyValueStore(collection: "VersionedProfilesImpl.expiringCredentialStore")
 
         private static func storeKey(forAddress address: SignalServiceAddress) throws -> String {
             guard
@@ -39,32 +42,44 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
             return uuid.uuidString
         }
 
-        static func hasCredential(
+        static func dropDeprecatedCredentialsIfNecessary(transaction: SDSAnyWriteTransaction) {
+            deprecatedCredentialStore.removeAll(transaction: transaction)
+        }
+
+        static func hasValidCredential(
             forAddress address: SignalServiceAddress,
             transaction: SDSAnyReadTransaction
         ) throws -> Bool {
-            credentialStore.hasValue(
-                forKey: try storeKey(forAddress: address),
-                transaction: transaction
-            )
+            try getValidCredential(forAddress: address, transaction: transaction) != nil
         }
 
-        static func getCredential(
+        static func getValidCredential(
             forAddress address: SignalServiceAddress,
             transaction: SDSAnyReadTransaction
-        ) throws -> ProfileKeyCredential? {
-            guard let credentialData = credentialStore.getData(
+        ) throws -> ExpiringProfileKeyCredential? {
+            guard let credentialData = expiringCredentialStore.getData(
                 try storeKey(forAddress: address),
                 transaction: transaction
             ) else {
                 return nil
             }
 
-            return try ProfileKeyCredential(contents: [UInt8](credentialData))
+            let credential = try ExpiringProfileKeyCredential(contents: [UInt8](credentialData))
+
+            guard credential.isValid else {
+                // Safe to leave the expired credential here - we can't clear it
+                // because we're in a read-only transaction. When we try and
+                // fetch a new credential for this address we'll overwrite this
+                // expired one.
+                Logger.info("Found expired credential for address \(address)")
+                return nil
+            }
+
+            return credential
         }
 
         static func setCredential(
-            _ credential: ProfileKeyCredential,
+            _ credential: ExpiringProfileKeyCredential,
             forAddress address: SignalServiceAddress,
             transaction: SDSAnyWriteTransaction
         ) throws {
@@ -74,7 +89,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
                 throw OWSAssertionError("Invalid credential data")
             }
 
-            credentialStore.setData(
+            expiringCredentialStore.setData(
                 credentialData,
                 key: try storeKey(forAddress: address),
                 transaction: transaction
@@ -85,14 +100,28 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
             forAddress address: SignalServiceAddress,
             transaction: SDSAnyWriteTransaction
         ) throws {
-            credentialStore.removeValue(
+            expiringCredentialStore.removeValue(
                 forKey: try storeKey(forAddress: address),
                 transaction: transaction
             )
         }
 
         static func removeAll(transaction: SDSAnyWriteTransaction) {
-            credentialStore.removeAll(transaction: transaction)
+            expiringCredentialStore.removeAll(transaction: transaction)
+        }
+    }
+
+    // MARK: - Init
+
+    override public init() {
+        super.init()
+
+        AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+            // Once we think all clients in the world have migrated to expiring
+            // credentials we can remove this.
+            self.databaseStorage.write { transaction in
+                CredentialStore.dropDeprecatedCredentialsIfNecessary(transaction: transaction)
+            }
         }
     }
 
@@ -277,8 +306,8 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
             let profileKeyVersion = try profileKey.getProfileKeyVersion(uuid: uuid)
             profileKeyVersionArg = try profileKeyVersion.asHexadecimalString()
 
-            // We need to request a credential if we don't have one already.
-            if !(try CredentialStore.hasCredential(forAddress: address, transaction: transaction)) {
+            // We need to request a credential if we don't have a valid one already.
+            if !(try CredentialStore.hasValidCredential(forAddress: address, transaction: transaction)) {
                 let clientZkProfileOperations = try self.clientZkProfileOperations()
                 let context = try clientZkProfileOperations.createProfileKeyCredentialRequestContext(uuid: uuid,
                                                                                                      profileKey: profileKey)
@@ -320,9 +349,9 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
                 throw OWSAssertionError("Missing request context.")
             }
 
-            let credentialResponse = try ProfileKeyCredentialResponse(contents: [UInt8](credentialResponseData))
+            let credentialResponse = try ExpiringProfileKeyCredentialResponse(contents: [UInt8](credentialResponseData))
             let clientZkProfileOperations = try self.clientZkProfileOperations()
-            let profileKeyCredential = try clientZkProfileOperations.receiveProfileKeyCredential(
+            let profileKeyCredential = try clientZkProfileOperations.receiveExpiringProfileKeyCredential(
                 profileKeyCredentialRequestContext: requestContext,
                 profileKeyCredentialResponse: credentialResponse
             )
@@ -360,11 +389,11 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
     // MARK: - Credentials
 
-    public func profileKeyCredential(
+    public func validProfileKeyCredential(
         for address: SignalServiceAddress,
         transaction: SDSAnyReadTransaction
-    ) throws -> ProfileKeyCredential? {
-        try CredentialStore.getCredential(
+    ) throws -> ExpiringProfileKeyCredential? {
+        try CredentialStore.getValidCredential(
             forAddress: address,
             transaction: transaction
         )
@@ -384,5 +413,16 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
     public func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction) {
         CredentialStore.removeAll(transaction: transaction)
+    }
+}
+
+extension ExpiringProfileKeyCredential {
+    /// Checks if the credential is valid.
+    ///
+    /// `fileprivate` here since callers into this file should only ever receive
+    /// valid credentials, and so we should discourage redundant validity
+    /// checking elsewhere.
+    fileprivate var isValid: Bool {
+        return expirationTime > Date()
     }
 }

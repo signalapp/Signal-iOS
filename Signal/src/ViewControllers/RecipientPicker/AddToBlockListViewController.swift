@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 protocol AddToBlockListDelegate: AnyObject {
@@ -10,10 +12,9 @@ protocol AddToBlockListDelegate: AnyObject {
 }
 
 @objc
-class AddToBlockListViewController: OWSViewController {
+class AddToBlockListViewController: RecipientPickerContainerViewController {
     @objc
     weak var delegate: AddToBlockListDelegate?
-    let recipientPicker = RecipientPickerViewController()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +22,13 @@ class AddToBlockListViewController: OWSViewController {
         title = NSLocalizedString("SETTINGS_ADD_TO_BLOCK_LIST_TITLE",
                                   comment: "Title for the 'add to block list' view.")
 
+        recipientPicker.preferredNavigationBarStyle = OWSNavigationBarStyle.clear.rawValue
+        recipientPicker.selectionMode = .blocklist
+        recipientPicker.groupsToShow = .showAllGroupsWhenSearching
+        recipientPicker.findByPhoneNumberButtonTitle = NSLocalizedString(
+            "BLOCK_LIST_VIEW_BLOCK_BUTTON",
+            comment: "A label for the block button in the block list view"
+        )
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
@@ -28,21 +36,6 @@ class AddToBlockListViewController: OWSViewController {
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .leading)
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .trailing)
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
-
-        recipientPicker.findByPhoneNumberButtonTitle = NSLocalizedString(
-            "BLOCK_LIST_VIEW_BLOCK_BUTTON",
-            comment: "A label for the block button in the block list view"
-        )
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        recipientPicker.applyTheme(to: self)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        recipientPicker.removeTheme(from: self)
     }
 
     func block(address: SignalServiceAddress) {
@@ -103,19 +96,9 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         willRenderRecipient recipient: PickedRecipient) {
-        // Do nothing.
-    }
-
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise {
         owsFailDebug("This method should not called.")
         return AnyPromise(Promise.value(()))
-    }
-
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         showInvalidRecipientAlert recipient: PickedRecipient) {
-        owsFailDebug("Unexpected error.")
     }
 
     func recipientPicker(

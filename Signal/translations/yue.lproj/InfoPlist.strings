@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Signal 需要用到 Apple Music 嚟播放多媒體附件。";
-NSCameraUsageDescription = "Signal 會用到您部機嘅相機嚟影相同進行視像通話。";
-NSContactsUsageDescription = "Signal 會用到您嘅通訊錄嚟搵下您認識嘅人。我哋唔會將您嘅通訊錄儲存喺伺服器度。";
-NSFaceIDUsageDescription = "Signal 嘅畫面鎖會用到 Face ID。";
-NSLocationWhenInUseUsageDescription = "Signal 需要存取到您嘅位置以便分享您目前嘅位置。";
-NSMicrophoneUsageDescription = "Signal 需要存取到您部機個咪，以便打出同接收電話通話以及錄製語音訊息。";
-NSPhotoLibraryAddUsageDescription = "Signal 會將相片儲存到您嘅媒體庫入面。";
-NSPhotoLibraryUsageDescription = "Signal 會俾您喺您嘅媒體庫入面揀選邊啲相片要發送。";
-NSLocalNetworkUsageDescription = "Signal 會用到區域網絡嚟俾您直接轉移您嘅帳戶去一部新嘅電話度。不過佢就只會係喺您特登選擇啟動轉移去一部新機嘅時候先至會用到。";

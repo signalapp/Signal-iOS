@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -52,6 +53,8 @@ public extension Array where Element == UInt8 {
     }
 }
 
+// MARK: - UUID
+
 public extension UUID {
     var data: Data {
         return withUnsafeBytes(of: self.uuid) { Data($0) }
@@ -60,10 +63,66 @@ public extension UUID {
 
 public extension UUID {
     init?(data: Data) {
-        guard data.count >= MemoryLayout<uuid_t>.size else {
+        guard let (selfValue, _) = Self.from(data: data) else {
             owsFailDebug("Invalid UUID data")
             return nil
         }
-        self.init(uuid: data.withUnsafeBytes { $0.load(as: uuid_t.self) })
+        self = selfValue
+    }
+
+    /// Parses a `Data` value into a UUID.
+    ///
+    /// If `data.count` is larger than the size of a UUID, extra bytes are
+    /// ignored.
+    ///
+    /// - Parameter data: The data for a UUID.
+    /// - Returns: A tuple consisting of the UUID itself and the number of bytes
+    ///   consumed from `data`.
+    static func from(data: Data) -> (Self, byteCount: Int)? {
+        // The `data` parameter refers to a byte-aligned memory address. The load()
+        // call requires proper alignment, which therefore assumes uuid_t is
+        // byte-aligned. Verify this in debug builds in case it ever changes.
+        assert(MemoryLayout<uuid_t>.alignment == 1)
+        let count = MemoryLayout<uuid_t>.size
+        let uuidT: uuid_t? = data.withUnsafeBytes { bytes in
+            guard bytes.count >= count else { return nil }
+            return bytes.load(as: uuid_t.self)
+        }
+        guard let uuidT = uuidT else {
+            return nil
+        }
+        return (Self(uuid: uuidT), count)
+    }
+}
+
+// MARK: - FixedWidthInteger
+
+extension FixedWidthInteger {
+    init?(bigEndianData: Data) {
+        guard let (selfValue, _) = Self.from(bigEndianData: bigEndianData) else {
+            return nil
+        }
+        self = selfValue
+    }
+
+    /// Parses a big endian `Data` value into an integer.
+    ///
+    /// If `bigEndianData.count` is larger than the size of the underlying
+    /// integer, extra bytes are ignored.
+    ///
+    /// - Parameter bigEndianData: The data for a big endian integer.
+    /// - Returns: A tuple consisting of the integer itself and the number of
+    ///   bytes consumed from `bigEndianData`.
+    static func from(bigEndianData: Data) -> (Self, byteCount: Int)? {
+        var bigEndianValue = Self()
+        let count = withUnsafeMutableBytes(of: &bigEndianValue) { bigEndianData.copyBytes(to: $0) }
+        guard count == MemoryLayout<Self>.size else {
+            return nil
+        }
+        return (Self(bigEndian: bigEndianValue), count)
+    }
+
+    var bigEndianData: Data {
+        return withUnsafeBytes(of: bigEndian) { Data($0) }
     }
 }

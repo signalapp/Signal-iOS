@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Signal ត្រូវការប្រើប្រាស់ Apple Music ដើម្បីលេងឯកសារភ្ជាប់មេឌា។";
-NSCameraUsageDescription = "Signal ប្រើប្រាស់កាមេរ៉ារបស់ដើម្បីថតរូបភាព និងសម្រាប់ការហៅជាវីដេអូ។";
-NSContactsUsageDescription = "Signal ប្រើប្រាស់បញ្ជីទំនាក់ទំនងរបស់អ្នក ដើម្បីស្វែងរកអ្នកប្រើប្រាស់ដែលអ្នកស្គាល់។ យើងមិនរក្សាទុកបញ្ជីទំនាក់ទំនងលើម៉ាស៊ីនមេទេ។";
-NSFaceIDUsageDescription = "ការចាក់សោរអេក្រង់ Signal​ ប្រើប្រាស់ Face ID។";
-NSLocationWhenInUseUsageDescription = "Signal ត្រូវការប្រើប្រាស់ទីតាំងរបស់អ្នក ដើម្បីចែករំលែកទីតាំងបច្ចុប្បន្នរបស់អ្នក។";
-NSMicrophoneUsageDescription = "Signal ត្រូវការចូលប្រើប្រាស់ម៉ៃក្រូហ្វូនរបស់អ្នក ដើម្បីហៅ និងទទួលការហៅចូល និងថតសារសំឡេង។ ";
-NSPhotoLibraryAddUsageDescription = "Signal នឹងរក្សារូបភាពទៅកាន់បណ្ណាល័យរបស់អ្នក។";
-NSPhotoLibraryUsageDescription = "Signal នឹងអនុញ្ញាតឲ្យអ្នកជ្រើសរើសរូបភាពពីបណ្ណាល័យរបស់អ្នកដើម្បីផ្ញើចេញ។";
-NSLocalNetworkUsageDescription = "Signal ប្រើប្រាស់បណ្តាញមូលដ្ឋានដើម្បីអនុញ្ញាតឱ្យអ្នកផ្ទេរគណនីរបស់អ្នកដោយផ្ទាល់ទៅទូរស័ព្ទថ្មី។ វានឹងមិនត្រូវបានប្រើទេលុះត្រាតែអ្នកជ្រើសរើសយកការផ្ទេរទៅឧបករណ៍ថ្មី។";

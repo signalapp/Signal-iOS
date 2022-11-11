@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -394,8 +395,8 @@ public class EarlyMessageManager: NSObject {
             case .messageReadOnLinkedDevice(let timestamp):
                 Logger.info("Applying early read receipt from linked device for message \(identifier)")
 
-                OWSReceiptManager.shared.markAsRead(
-                    onLinkedDevice: message,
+                OWSReceiptManager.shared.markAsReadOnLinkedDevice(
+                    message,
                     thread: message.thread(transaction: transaction),
                     readTimestamp: timestamp,
                     transaction: transaction
@@ -442,8 +443,10 @@ public class EarlyMessageManager: NSObject {
                 }
 
                 // TODO: Mark Delivered
-            case .messageReadOnLinkedDevice:
-                owsFailDebug("Unexpectexly received early read receipt from linked device for StoryMessage \(identifier)")
+            case .messageReadOnLinkedDevice(let timestamp):
+                Logger.info("Applying early read receipt from linked device for StoryMessage \(identifier)")
+
+                storyMessage.markAsRead(at: timestamp, circumstance: .onLinkedDevice, transaction: transaction)
             case .messageViewedOnLinkedDevice(let timestamp):
                 Logger.info("Applying early viewed receipt from linked device for StoryMessage \(identifier)")
 

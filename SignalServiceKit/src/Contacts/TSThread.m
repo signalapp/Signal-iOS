@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "TSThread.h"
@@ -26,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) TSThreadStoryViewMode storyViewMode;
 @property (nonatomic, nullable) NSNumber *lastSentStoryTimestamp;
-@property (nonatomic, nullable) NSNumber *lastViewedStoryTimestamp;
 
 @property (nonatomic, nullable) NSDate *creationDate;
 @property (nonatomic) BOOL isArchivedObsolete;
@@ -97,7 +97,6 @@ NS_ASSUME_NONNULL_BEGIN
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
             lastInteractionRowId:(int64_t)lastInteractionRowId
           lastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
-        lastViewedStoryTimestamp:(nullable NSNumber *)lastViewedStoryTimestamp
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
 lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPercentageObsolete
          mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
@@ -121,7 +120,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     _isMarkedUnreadObsolete = isMarkedUnreadObsolete;
     _lastInteractionRowId = lastInteractionRowId;
     _lastSentStoryTimestamp = lastSentStoryTimestamp;
-    _lastViewedStoryTimestamp = lastViewedStoryTimestamp;
     _lastVisibleSortIdObsolete = lastVisibleSortIdObsolete;
     _lastVisibleSortIdOnScreenPercentageObsolete = lastVisibleSortIdOnScreenPercentageObsolete;
     _mentionNotificationMode = mentionNotificationMode;
@@ -337,19 +335,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                                                   block(interaction);
                                               }];
     }];
-}
-
-/**
- * Useful for tests and debugging. In production use an enumeration method.
- */
-- (NSArray<TSInteraction *> *)allInteractions
-{
-    NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
-    [self enumerateRecentInteractionsUsingBlock:^(TSInteraction *interaction) {
-        [interactions addObject:interaction];
-    }];
-
-    return [interactions copy];
 }
 
 #pragma clang diagnostic push
@@ -626,14 +611,12 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                              transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) { thread.lastSentStoryTimestamp = lastSentStoryTimestamp; }];
-}
-
-- (void)updateWithLastViewedStoryTimestamp:(nullable NSNumber *)lastViewedStoryTimestamp
-                               transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) { thread.lastViewedStoryTimestamp = lastViewedStoryTimestamp; }];
+                             block:^(TSThread *thread) {
+                                 if (lastSentStoryTimestamp.unsignedIntegerValue
+                                     > thread.lastSentStoryTimestamp.unsignedIntegerValue) {
+                                     thread.lastSentStoryTimestamp = lastSentStoryTimestamp;
+                                 }
+                             }];
 }
 
 - (void)updateWithStoryViewMode:(TSThreadStoryViewMode)storyViewMode transaction:(SDSAnyWriteTransaction *)transaction

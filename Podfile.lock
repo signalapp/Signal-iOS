@@ -17,9 +17,9 @@ PODS:
   - LibMobileCoin/CoreHTTP (1.2.2):
     - SwiftProtobuf (~> 1.5)
   - libPhoneNumber-iOS (0.9.15)
-  - LibSignalClient (0.19.3):
+  - LibSignalClient (0.21.0):
     - SignalCoreKit
-  - LibSignalClient/Tests (0.19.3):
+  - LibSignalClient/Tests (0.21.0):
     - SignalCoreKit
   - libwebp (1.2.3):
     - libwebp/demux (= 1.2.3)
@@ -58,19 +58,19 @@ PODS:
   - SignalCoreKit/Tests (1.0.0):
     - CocoaLumberjack
     - OpenSSL-Universal
-  - SignalRingRTC (2.21.0):
+  - SignalRingRTC (2.21.4):
     - SignalCoreKit
-    - SignalRingRTC/WebRTC (= 2.21.0)
-  - SignalRingRTC/WebRTC (2.21.0):
+    - SignalRingRTC/WebRTC (= 2.21.4)
+  - SignalRingRTC/WebRTC (2.21.4):
     - SignalCoreKit
   - SQLCipher (4.5.1):
     - SQLCipher/standard (= 4.5.1)
   - SQLCipher/common (4.5.1)
   - SQLCipher/standard (4.5.1):
     - SQLCipher/common
-  - SSZipArchive (2.1.4)
+  - SSZipArchive (2.5.2)
   - Starscream (3.1.1)
-  - SwiftProtobuf (1.15.0)
+  - SwiftProtobuf (1.20.2)
   - YYImage (1.0.4):
     - YYImage/Core (= 1.0.4)
   - YYImage/Core (1.0.4)
@@ -105,7 +105,7 @@ DEPENDENCIES:
   - "SignalCoreKit/Tests (from `git@github.com:signalapp/SignalCoreKit`)"
   - SignalRingRTC (from `ThirdParty/SignalRingRTC.podspec`)
   - SQLCipher (>= 4.0.1)
-  - SSZipArchive
+  - SSZipArchive (from `ThirdParty/SSZipArchive.podspec`)
   - Starscream (from `https://github.com/signalapp/Starscream.git`, branch `signal-release`)
   - SwiftProtobuf (>= 1.14.0)
   - YYImage (from `https://github.com/signalapp/YYImage`)
@@ -123,7 +123,6 @@ SPEC REPOS:
     - Reachability
     - SAMKeychain
     - SQLCipher
-    - SSZipArchive
     - SwiftProtobuf
 
 EXTERNAL SOURCES:
@@ -159,6 +158,8 @@ EXTERNAL SOURCES:
     :git: "git@github.com:signalapp/SignalCoreKit"
   SignalRingRTC:
     :path: ThirdParty/SignalRingRTC.podspec
+  SSZipArchive:
+    :podspec: ThirdParty/SSZipArchive.podspec
   Starscream:
     :branch: signal-release
     :git: https://github.com/signalapp/Starscream.git
@@ -179,7 +180,7 @@ CHECKOUT OPTIONS:
     :commit: 8b6f552682be0e66cf25cd0f0db5e1732a1e9f15
     :git: https://github.com/signalapp/libPhoneNumber-iOS
   LibSignalClient:
-    :commit: 13b60197a98c166a7bde7b3cd615e2c2f774cb29
+    :commit: d94f1b3d70140302b452aa07309f2ed7a00ae493
     :git: https://github.com/signalapp/libsignal-client.git
   Mantle:
     :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
@@ -198,7 +199,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
   SignalCoreKit:
-    :commit: 5a9c6be791459177328b5da14bf06459e7b79dbb
+    :commit: 5ae90e076c516a4b025045e38017f49353cf3f76
     :git: "git@github.com:signalapp/SignalCoreKit"
   Starscream:
     :commit: 71ebc08f248256497a237ece262e42e7ad05c4a5
@@ -215,7 +216,7 @@ SPEC CHECKSUMS:
   GRDB.swift: 1395cb3556df6b16ed69dfc74c3886abc75d2825
   LibMobileCoin: 860cbd565a4839cb8be784465100d9f09ac419aa
   libPhoneNumber-iOS: 2d26d0a38933eee2702962a4dbdec2fc20e5ef9f
-  LibSignalClient: 3180d534297ae089f15af948eade74c3dcaf16de
+  LibSignalClient: d5fc5e3c791013339932a8574c8b5e81e04a5455
   libwebp: 60305b2e989864154bd9be3d772730f08fc6a59c
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   lottie-ios: 016449b5d8be0c3dcbcfa0a9988469999cd04c5d
@@ -227,14 +228,14 @@ SPEC CHECKSUMS:
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalArgon2: 1c24183835ca861e6af06631c18b1671cdf35571
-  SignalCoreKit: 87da14c58d57760793b892ff03838c5ef2ce1167
-  SignalRingRTC: 98beb051aee8d866d220041078dd03961b54448f
+  SignalCoreKit: 9febad2d82f80c5b2f446740c68f1fba6d4cd9b2
+  SignalRingRTC: b609b2a9e525c792e8083589511d659817dae384
   SQLCipher: 712e8416685e8e575b9b0706ffee71678b2fdcf8
-  SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
+  SSZipArchive: 8c3485528a87fa6f90afdbfc33682eb61d985ae5
   Starscream: 4bb2f9942274833f7b4d296a55504dcfc7edb7b0
-  SwiftProtobuf: 3320217e9d8fb75f36b40282e78c482640fd75dd
+  SwiftProtobuf: 9f458aaa7844a2fc0b910053e66578bc4e2da9c1
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 6bbf58906bd535896e1c76b388c54055aa01ba6e
+PODFILE CHECKSUM: 147f1a21f458a057c3da5177649e40e8e6a34181
 
 COCOAPODS: 1.11.3

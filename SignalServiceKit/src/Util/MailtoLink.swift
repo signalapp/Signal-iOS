@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -35,7 +36,7 @@ public struct MailtoLink {
             ("body", escapeString(body))
         ]
         let cleanedQueryItems = rawQueryItems
-            .filter { $0.1.count > 0 }
+            .filter { !$0.1.isEmpty }
             .map { URLQueryItem(name: $0.0, value: $0.1) }
 
         componentsBuilder.percentEncodedQueryItems = cleanedQueryItems

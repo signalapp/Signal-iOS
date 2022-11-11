@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import UIKit
 
 protocol GroupAttributesViewControllerDelegate: AnyObject {
@@ -168,9 +170,9 @@ class GroupAttributesViewController: OWSTableViewController2 {
 
 // MARK: -
 
-extension GroupAttributesViewController: OWSNavigationView {
+extension GroupAttributesViewController {
 
-    public func shouldCancelNavigationBack() -> Bool {
+    public var shouldCancelNavigationBack: Bool {
         let result = hasUnsavedChanges
         if result {
             GroupAttributesViewController.showUnsavedGroupChangesActionSheet(from: self,

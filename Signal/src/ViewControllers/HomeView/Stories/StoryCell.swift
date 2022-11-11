@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -65,6 +66,8 @@ class StoryCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    private var attachment: StoryThumbnailView.Attachment?
+
     func configure(with model: StoryViewModel) {
         configureSubtitle(with: model)
 
@@ -80,8 +83,9 @@ class StoryCell: UITableViewCell {
         }
 
         replyImageView.isHidden = !model.hasReplies
-        replyImageView.tintColor = Theme.secondaryTextAndIconColor
+        replyImageView.tintColor = Theme.isDarkThemeEnabled ? Theme.secondaryTextAndIconColor : .ows_gray45
 
+        nameLabel.numberOfLines = 2
         nameLabel.font = .ows_dynamicTypeHeadline
         nameLabel.textColor = Theme.primaryTextColor
         nameLabel.text = model.latestMessageName
@@ -92,24 +96,32 @@ class StoryCell: UITableViewCell {
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = model.latestMessageAvatarDataSource
-            config.storyState = model.hasUnviewedMessages ? .unviewed : .viewed
+            // We reload the row when this state changes, so don't make the avatar auto update.
+            config.storyConfiguration = .fixed(model.hasUnviewedMessages ? .unviewed : .viewed)
             config.usePlaceholderImages()
         }
 
         attachmentThumbnail.backgroundColor = Theme.washColor
-        attachmentThumbnail.removeAllSubviews()
+        if self.attachment != model.latestMessageAttachment {
+            self.attachment = model.latestMessageAttachment
+            attachmentThumbnail.removeAllSubviews()
 
-        let storyThumbnailView = StoryThumbnailView(attachment: model.latestMessageAttachment)
-        attachmentThumbnail.addSubview(storyThumbnailView)
-        storyThumbnailView.autoPinEdgesToSuperviewEdges()
+            let storyThumbnailView = StoryThumbnailView(attachment: model.latestMessageAttachment)
+            attachmentThumbnail.addSubview(storyThumbnailView)
+            storyThumbnailView.autoPinEdgesToSuperviewEdges()
+        }
 
         contentView.alpha = model.isHidden ? 0.27 : 1
+
+        let selectedBackgroundView = UIView()
+        selectedBackgroundView.backgroundColor = Theme.tableCell2SelectedBackgroundColor2
+        self.selectedBackgroundView = selectedBackgroundView
     }
 
     func configureSubtitle(with model: StoryViewModel) {
         subtitleStack.isHidden = model.isSystemStory
         subtitleLabel.font = .ows_dynamicTypeSubheadline
-        subtitleLabel.textColor = Theme.secondaryTextAndIconColor
+        subtitleLabel.textColor = Theme.isDarkThemeEnabled ? Theme.secondaryTextAndIconColor : .ows_gray45
 
         switch model.latestMessageSendingState {
         case .sent:
@@ -119,7 +131,9 @@ class StoryCell: UITableViewCell {
             subtitleLabel.text = NSLocalizedString("STORY_SENDING", comment: "Text indicating that the story is currently sending")
             failedIconView.isHiddenInStackView = true
         case .failed:
-            subtitleLabel.text = NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
+            subtitleLabel.text = model.latestMessage.hasSentToAnyRecipients
+                ? NSLocalizedString("STORY_SEND_PARTIALLY_FAILED", comment: "Text indicating that the story send has partially failed")
+                : NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
             failedIconView.image = Theme.iconImage(.error16)
             failedIconView.isHiddenInStackView = false
         case .sent_OBSOLETE, .delivered_OBSOLETE:

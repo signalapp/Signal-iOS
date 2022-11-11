@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "SignalBaseTest.h"
@@ -19,11 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [super setUp];
 
-    ClearCurrentAppContextForTests();
-    [Environment clearSharedForTests];
-    [SSKEnvironment clearSharedForTests];
-
-    SetCurrentAppContext([TestAppContext new]);
+    SetCurrentAppContext([TestAppContext new], YES);
     [MockSSKEnvironment activate];
     [MockEnvironment activate];
 

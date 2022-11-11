@@ -1,16 +1,21 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import UIKit
 
 public extension TSMessage {
-    func presentDeletionActionSheet(from fromViewController: UIViewController) {
-        let actionSheetController = ActionSheetController(message: OWSLocalizedString(
-            "MESSAGE_ACTION_DELETE_FOR_TITLE",
-            comment: "The title for the action sheet asking who the user wants to delete the message for."
-        ))
+    func presentDeletionActionSheet(from fromViewController: UIViewController, forceDarkTheme: Bool = false) {
+        let actionSheetController = ActionSheetController(
+            message: OWSLocalizedString(
+                "MESSAGE_ACTION_DELETE_FOR_TITLE",
+                comment: "The title for the action sheet asking who the user wants to delete the message for."
+            ),
+            theme: forceDarkTheme ? .translucentDark : .default
+        )
 
         let deleteForMeAction = ActionSheetAction(
             title: CommonStrings.deleteForMeButton,
@@ -43,7 +48,7 @@ public extension TSMessage {
                         // record that it is deleting.
                         outgoingMessage.updateWith(recipientAddressStates: deleteMessage.recipientAddressStates, transaction: transaction)
                         outgoingMessage.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
-                        Self.messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
+                        Self.sskJobQueues.messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
                     }
                 }
             }

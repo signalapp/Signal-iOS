@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -10,7 +11,7 @@ extension SignalAccount {
         guard let contact = self.contact else {
             return nil
         }
-        guard !contact.isFromContactSync else {
+        guard contact.isFromLocalAddressBook else {
             return nil
         }
         guard let cnContactId: String = contact.cnContactId else {

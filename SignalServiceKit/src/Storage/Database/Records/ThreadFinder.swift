@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -13,9 +14,8 @@ public protocol ThreadFinder {
     func visibleThreadIds(isArchived: Bool, transaction: ReadTransaction) throws -> [String]
     func sortIndex(thread: TSThread, transaction: ReadTransaction) throws -> UInt?
     func threads(withThreadIds threadIds: Set<String>, transaction: ReadTransaction) throws -> Set<TSThread>
-    func storyThreads(transaction: ReadTransaction) -> [TSThread]
+    func storyThreads(includeImplicitGroupThreads: Bool, transaction: ReadTransaction) -> [TSThread]
     func threadsWithRecentInteractions(limit: UInt, transaction: ReadTransaction) -> [TSThread]
-    func threadsWithRecentlyViewedStories(limit: UInt, transaction: ReadTransaction) -> [TSThread]
 }
 
 @objc
@@ -82,10 +82,10 @@ public class AnyThreadFinder: NSObject, ThreadFinder {
         }
     }
 
-    public func storyThreads(transaction: SDSAnyReadTransaction) -> [TSThread] {
+    public func storyThreads(includeImplicitGroupThreads: Bool, transaction: SDSAnyReadTransaction) -> [TSThread] {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
-            return grdbAdapter.storyThreads(transaction: grdb)
+            return grdbAdapter.storyThreads(includeImplicitGroupThreads: includeImplicitGroupThreads, transaction: grdb)
         }
     }
 
@@ -93,13 +93,6 @@ public class AnyThreadFinder: NSObject, ThreadFinder {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
             return grdbAdapter.threadsWithRecentInteractions(limit: limit, transaction: grdb)
-        }
-    }
-
-    public func threadsWithRecentlyViewedStories(limit: UInt, transaction: SDSAnyReadTransaction) -> [TSThread] {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdb):
-            return grdbAdapter.threadsWithRecentlyViewedStories(limit: limit, transaction: grdb)
         }
     }
 }
@@ -308,17 +301,57 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
     }
 
-    public func storyThreads(transaction: GRDBReadTransaction) -> [TSThread] {
+    public func storyThreads(includeImplicitGroupThreads: Bool, transaction: GRDBReadTransaction) -> [TSThread] {
+
+        var allowedDefaultThreadIds = [String]()
+
+        if includeImplicitGroupThreads {
+            // Prefetch the group thread uniqueIds that currently have stories
+            // TODO: We could potential join on the KVS for groupId -> threadId
+            // to further reduce the number of queries required here, but it
+            // may be overkill.
+
+            let storyMessageGroupIdsSQL = """
+                SELECT DISTINCT \(StoryMessage.columnName(.groupId))
+                FROM \(StoryMessage.databaseTableName)
+                WHERE \(StoryMessage.columnName(.groupId)) IS NOT NULL
+            """
+
+            do {
+                let groupIdCursor = try Data.fetchCursor(transaction.database, sql: storyMessageGroupIdsSQL)
+
+                while let groupId = try groupIdCursor.next() {
+                    allowedDefaultThreadIds.append(TSGroupThread.threadId(
+                        forGroupId: groupId,
+                        transaction: transaction.asAnyRead
+                    ))
+                }
+            } catch {
+                owsFailDebug("Failed to query group thread ids \(error)")
+            }
+        }
+
         let sql = """
             SELECT *
             FROM \(ThreadRecord.databaseTableName)
-            WHERE \(threadColumn: .storyViewMode) != \(TSThreadStoryViewMode.none.rawValue)
+            WHERE \(threadColumn: .storyViewMode) != \(TSThreadStoryViewMode.disabled.rawValue)
+            AND \(threadColumn: .storyViewMode) != \(TSThreadStoryViewMode.default.rawValue)
+            OR (
+                \(threadColumn: .storyViewMode) = \(TSThreadStoryViewMode.default.rawValue)
+                AND \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)
+                AND \(threadColumn: .uniqueId) IN (\(allowedDefaultThreadIds.map { "\"\($0)\"" }.joined(separator: ", ")))
+            )
             ORDER BY \(threadColumn: .lastSentStoryTimestamp) DESC
         """
+
         let cursor = TSThread.grdbFetchCursor(sql: sql, transaction: transaction)
         var threads = [TSThread]()
         do {
             while let thread = try cursor.next() {
+                if let groupThread = thread as? TSGroupThread {
+                    guard groupThread.isStorySendEnabled(transaction: transaction.asAnyRead) else { continue }
+                }
+
                 threads.append(thread)
             }
         } catch {
@@ -332,26 +365,6 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
             SELECT *
             FROM \(ThreadRecord.databaseTableName)
             ORDER BY \(threadColumn: .lastInteractionRowId) DESC
-            LIMIT \(limit)
-            """
-
-        let cursor = TSThread.grdbFetchCursor(sql: sql, transaction: transaction)
-        var threads = [TSThread]()
-        do {
-            while let thread = try cursor.next() {
-                threads.append(thread)
-            }
-        } catch {
-            owsFailDebug("Failed to query recent threads \(error)")
-        }
-        return threads
-    }
-
-    public func threadsWithRecentlyViewedStories(limit: UInt, transaction: GRDBReadTransaction) -> [TSThread] {
-        let sql = """
-            SELECT *
-            FROM \(ThreadRecord.databaseTableName)
-            ORDER BY \(threadColumn: .lastViewedStoryTimestamp) DESC
             LIMIT \(limit)
             """
 

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -228,8 +229,8 @@ public class OWSHttpHeaders: NSObject {
             .joined(separator: ", ")
 
         return "<\(super.description)"
-            .appending(loggedPairsString.count > 0 ? " (\(loggedPairsString))" : "")
-            .appending(leftoverKeysString.count > 0 ? " (\(leftoverKeysString))" : "")
+            .appending(loggedPairsString.isEmpty ? "" : "\(loggedPairsString)")
+            .appending(leftoverKeysString.isEmpty ? "" : "\(leftoverKeysString)")
             .appending(">")
     }
 }

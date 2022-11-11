@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import SignalServiceKit
 
 public enum ConversationUIMode: UInt {
@@ -34,6 +36,16 @@ public class ConversationViewController: OWSViewController {
     var selectionToolbar: MessageActionsToolbar?
 
     var otherUsersProfileDidChangeEvent: DebouncedEvent?
+
+    /// See `ConversationViewController+OWS.updateContentInsetsDebounced`
+    lazy var updateContentInsetsEvent = DebouncedEvents.build(
+        mode: .lastOnly,
+        maxFrequencySeconds: 0.01,
+        onQueue: .asyncOnQueue(queue: .main),
+        notifyBlock: { [weak self] in
+            self?.updateContentInsets()
+        })
+
     private var leases = [ModelReadCacheSizeLease]()
 
     // MARK: -
@@ -474,6 +486,7 @@ public class ConversationViewController: OWSViewController {
     public override func themeDidChange() {
         super.themeDidChange()
 
+        applyTheme()
         self.updateThemeIfNecessary()
     }
 
@@ -490,11 +503,7 @@ public class ConversationViewController: OWSViewController {
         self.applyTheme()
     }
 
-    public override func applyTheme() {
-        AssertIsOnMainThread()
-
-        super.applyTheme()
-
+    private func applyTheme() {
         guard hasViewWillAppearEverBegun else {
             owsFailDebug("Not yet ready.")
             return
@@ -595,7 +604,7 @@ public class ConversationViewController: OWSViewController {
 
         super.viewSafeAreaInsetsDidChange()
 
-        updateContentInsets(animated: false)
+        updateContentInsetsDebounced()
         self.updateInputToolbarLayout()
         self.viewSafeAreaInsetsDidChangeForLoad()
         self.updateConversationStyle()

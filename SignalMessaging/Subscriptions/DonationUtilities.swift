@@ -1,13 +1,14 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import PassKit
 import SignalCoreKit
 
-public class DonationUtilities: NSObject {
-    public static let sendGiftBadgeJobQueue = SendGiftBadgeJobQueue()
+public class DonationUtilities: Dependencies {
+    public static var sendGiftBadgeJobQueue: SendGiftBadgeJobQueue { smJobQueues.sendGiftBadgeJobQueue }
 
     public static var isApplePayAvailable: Bool {
         PKPaymentAuthorizationController.canMakePayments()
@@ -31,34 +32,31 @@ public class DonationUtilities: NSObject {
         case before(String)
         case after(String)
         case currencyCode
-    }
 
-    public struct Presets {
-        public struct Preset {
-            public let symbol: Symbol
-            public let amounts: [UInt]
-        }
-
-        public static let presets: [Currency.Code: Preset] = [
-            "USD": Preset(symbol: .before("$"), amounts: [3, 5, 10, 20, 50, 100]),
-            "AUD": Preset(symbol: .before("A$"), amounts: [5, 10, 15, 25, 65, 125]),
-            "BRL": Preset(symbol: .before("R$"), amounts: [15, 25, 50, 100, 250, 525]),
-            "GBP": Preset(symbol: .before("£"), amounts: [3, 5, 10, 15, 35, 70]),
-            "CAD": Preset(symbol: .before("CA$"), amounts: [5, 10, 15, 25, 60, 125]),
-            "CNY": Preset(symbol: .before("CN¥"), amounts: [20, 35, 65, 130, 320, 650]),
-            "EUR": Preset(symbol: .before("€"), amounts: [3, 5, 10, 15, 40, 80]),
-            "HKD": Preset(symbol: .before("HK$"), amounts: [25, 40, 80, 150, 400, 775]),
-            "INR": Preset(symbol: .before("₹"), amounts: [100, 200, 300, 500, 1_000, 5_000]),
-            "JPY": Preset(symbol: .before("¥"), amounts: [325, 550, 1_000, 2_200, 5_500, 11_000]),
-            "KRW": Preset(symbol: .before("₩"), amounts: [3_500, 5_500, 11_000, 22_500, 55_500, 100_000]),
-            "PLN": Preset(symbol: .after("zł"), amounts: [10, 20, 40, 75, 150, 375]),
-            "SEK": Preset(symbol: .after("kr"), amounts: [25, 50, 75, 150, 400, 800]),
-            "CHF": Preset(symbol: .currencyCode, amounts: [3, 5, 10, 20, 50, 100])
+        private static let symbols: [Currency.Code: Symbol] = [
+            "USD": .before("$"),
+            "AUD": .before("A$"),
+            "BRL": .before("R$"),
+            "GBP": .before("£"),
+            "CAD": .before("CA$"),
+            "CNY": .before("CN¥"),
+            "EUR": .before("€"),
+            "HKD": .before("HK$"),
+            "INR": .before("₹"),
+            "JPY": .before("¥"),
+            "KRW": .before("₩"),
+            "PLN": .after("zł"),
+            "SEK": .after("kr")
         ]
 
-        public static func symbol(for code: Currency.Code) -> Symbol {
-            presets[code]?.symbol ?? .currencyCode
+        public static func `for`(currencyCode: Currency.Code) -> Symbol {
+            return symbols[currencyCode, default: .currencyCode]
         }
+    }
+
+    public struct Preset: Equatable {
+        public let currencyCode: Currency.Code
+        public let amounts: [FiatMoney]
     }
 
     private static let currencyFormatter: NumberFormatter = {
@@ -67,13 +65,16 @@ public class DonationUtilities: NSObject {
         return currencyFormatter
     }()
 
-    public static func formatCurrency(_ value: NSDecimalNumber, currencyCode: Currency.Code, includeSymbol: Bool = true) -> String {
+    public static func format(money: FiatMoney, includeSymbol: Bool = true) -> String {
+        let value = money.value
+        let currencyCode = money.currencyCode
+
         let isZeroDecimalCurrency = Stripe.zeroDecimalCurrencyCodes.contains(currencyCode)
 
         let decimalPlaces: Int
         if isZeroDecimalCurrency {
             decimalPlaces = 0
-        } else if value.doubleValue == Double(value.intValue) {
+        } else if value.isInteger {
             decimalPlaces = 0
         } else {
             decimalPlaces = 2
@@ -82,28 +83,89 @@ public class DonationUtilities: NSObject {
         currencyFormatter.minimumFractionDigits = decimalPlaces
         currencyFormatter.maximumFractionDigits = decimalPlaces
 
-        let valueString = currencyFormatter.string(from: value) ?? value.stringValue
+        let nsValue = value as NSDecimalNumber
+        let valueString = currencyFormatter.string(from: nsValue) ?? nsValue.stringValue
 
         guard includeSymbol else { return valueString }
 
-        switch Presets.symbol(for: currencyCode) {
+        switch Symbol.for(currencyCode: currencyCode) {
         case .before(let symbol): return symbol + valueString
         case .after(let symbol): return valueString + symbol
         case .currencyCode: return currencyCode + " " + valueString
         }
     }
 
-    public static func newPaymentRequest(for amount: NSDecimalNumber, currencyCode: String) -> PKPaymentRequest {
+    /// Given a list of currencies in preference order and a collection of
+    /// supported ones, pick a default currency.
+    ///
+    /// For example, we might want to use EUR with a USD fallback if EUR is
+    /// unsupported.
+    ///
+    /// ```
+    /// DonationUtilities.chooseDefaultCurrency(
+    ///     preferred: ["EUR", "USD"],
+    ///     supported: ["USD"]
+    /// )
+    /// // => "USD"
+    /// ```
+    ///
+    /// - Parameter preferred: A list of currencies in preference order.
+    ///   As a convenience, can contain `nil`, which is ignored.
+    /// - Parameter supported: A collection of supported currencies.
+    /// - Returns: The first supported currency code, or `nil` if none are found.
+    public static func chooseDefaultCurrency(
+        preferred: [Currency.Code?],
+        supported: any Collection<Currency.Code>
+    ) -> Currency.Code? {
+        for currency in preferred {
+            if let currency = currency, supported.contains(currency) {
+                return currency
+            }
+        }
+        return nil
+    }
+
+    private static func donationToSignal() -> String {
+        OWSLocalizedString(
+            "DONATION_VIEW_DONATION_TO_SIGNAL",
+            comment: "Text describing to the user that they're going to pay a donation to Signal"
+        )
+    }
+
+    private static func monthlyDonationToSignal() -> String {
+        OWSLocalizedString(
+            "DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL",
+            comment: "Text describing to the user that they're going to pay a monthly donation to Signal"
+        )
+    }
+
+    public static func newPaymentRequest(for amount: FiatMoney, isRecurring: Bool) -> PKPaymentRequest {
+        let nsValue = amount.value as NSDecimalNumber
+        let currencyCode = amount.currencyCode
+
+        let paymentSummaryItem: PKPaymentSummaryItem
+        if isRecurring {
+            if #available(iOS 15, *) {
+                let recurringSummaryItem = PKRecurringPaymentSummaryItem(
+                    label: donationToSignal(),
+                    amount: nsValue
+                )
+                recurringSummaryItem.intervalUnit = .month
+                recurringSummaryItem.intervalCount = 1  // once per month
+                paymentSummaryItem = recurringSummaryItem
+            } else {
+                paymentSummaryItem = PKPaymentSummaryItem(
+                    label: monthlyDonationToSignal(),
+                    amount: nsValue
+                )
+            }
+        } else {
+            paymentSummaryItem = PKPaymentSummaryItem(label: donationToSignal(), amount: nsValue)
+        }
+
         let request = PKPaymentRequest()
-        request.paymentSummaryItems = [PKPaymentSummaryItem(
-            label: OWSLocalizedString(
-                "DONATION_VIEW_DONATION_TO_SIGNAL",
-                comment: "Text describing to the user that they're going to pay a donation to Signal"
-            ),
-            amount: amount,
-            type: .final
-        )]
-        request.merchantIdentifier = "merchant.org.signalfoundation"
+        request.paymentSummaryItems = [paymentSummaryItem]
+        request.merchantIdentifier = "merchant." + Bundle.main.merchantId
         request.merchantCapabilities = .capability3DS
         request.countryCode = "US"
         request.currencyCode = currencyCode

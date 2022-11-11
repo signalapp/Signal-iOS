@@ -5,8 +5,7 @@ set -e
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 REPO_ROOT=$BIN_DIR/../..
-LOCALIZATION_ROOT=$REPO_ROOT/Signal/translations
-cd $LOCALIZATION_ROOT
+cd $REPO_ROOT
 
 cat <<EOS
 

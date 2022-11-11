@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2014 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import <UIKit/UIKit.h>
@@ -26,7 +27,8 @@ extern NSString *const kAppLaunchesAttemptedKey;
 @property (nonatomic, readwrite) BOOL shouldKillAppWhenBackgrounded;
 
 - (BOOL)launchToHomeScreenWithLaunchOptions:(NSDictionary *_Nullable)launchOptions
-                       instrumentsMonitorId:(unsigned long long)monitorId;
+                       instrumentsMonitorId:(unsigned long long)monitorId
+                  isEnvironmentAlreadySetUp:(BOOL)isEnvironmentAlreadySetUp;
 
 @end
 

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "AppVersion.h"
@@ -122,6 +123,8 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
     OWSLogInfo(@"lastCompletedLaunchSAEAppVersion: %@", self.lastCompletedLaunchSAEAppVersion);
     OWSLogInfo(@"lastCompletedLaunchNSEAppVersion: %@", self.lastCompletedLaunchNSEAppVersion);
 
+    OWSLogInfo(@"Database corruption state: %@", self.databaseCorruptionStateString);
+
     OWSLogInfo(@"iOS Version: %@", [[self class] iOSVersionString]);
 
     NSString *localeIdentifier = [NSLocale.currentLocale objectForKey:NSLocaleIdentifier];
@@ -221,7 +224,7 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
     NSArray<NSString *> *rhsComponents = [rhs componentsSeparatedByString:@"."];
 
     NSUInteger largestIdx = MAX(lhsComponents.count, rhsComponents.count);
-    for (NSInteger idx = 0; idx < largestIdx; idx++) {
+    for (NSUInteger idx = 0; idx < largestIdx; idx++) {
         // If we run off the end of an array, we'll assume zero for the component segment
         NSString *lhsComponentString = (idx < lhsComponents.count) ? lhsComponents[idx] : nil;
         NSString *rhsComponentString = (idx < rhsComponents.count) ? rhsComponents[idx] : nil;

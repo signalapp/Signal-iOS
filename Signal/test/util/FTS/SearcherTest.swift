@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import XCTest
@@ -24,16 +25,6 @@ class SearcherTest: SignalBaseTest {
 
     var searcher: Searcher<TestCharacter> {
         return Searcher(indexer: indexer)
-    }
-
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
     }
 
     func testSimple() {

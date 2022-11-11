@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -49,7 +50,7 @@ extension OWSRecipientIdentity {
         let groupMember_uuidString = TSGroupMember.columnName(.uuidString, fullyQualified: true)
 
         let recipient_id = "\(signalRecipientColumnFullyQualified: .id)"
-        let recipient_recipientPhoneNumber = "\(signalRecipientColumnFullyQualified:  .recipientPhoneNumber)"
+        let recipient_recipientPhoneNumber = "\(signalRecipientColumnFullyQualified: .recipientPhoneNumber)"
         let recipient_recipientUUID = "\(signalRecipientColumnFullyQualified: .recipientUUID)"
         let recipient_uniqueID = "\(signalRecipientColumnFullyQualified: .uniqueId)"
 

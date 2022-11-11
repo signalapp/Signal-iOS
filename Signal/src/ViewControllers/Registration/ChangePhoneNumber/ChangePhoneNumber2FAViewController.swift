@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
-import SignalCoreKit
 import Logging
+import SignalCoreKit
+import SignalMessaging
+import UIKit
 
 @objc
 public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController {
@@ -158,19 +160,13 @@ public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController 
         // Because of the keyboard, vertical spacing can get pretty cramped,
         // so we have custom spacer logic.
         stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
-        autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
+        stackView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
         // Ensure whitespace is balanced, so inputs are vertically centered.
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
 
         updateValidationWarnings()
         updatePinType()
-    }
-
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-
-        shouldBottomViewReserveSpaceForKeyboard = false
     }
 
     public override func viewDidAppear(_ animated: Bool) {

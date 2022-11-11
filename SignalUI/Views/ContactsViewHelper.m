@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "ContactsViewHelper.h"
@@ -507,8 +508,10 @@ NS_ASSUME_NONNULL_BEGIN
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             newContact.givenName = [self.profileManagerImpl givenNameForAddress:address transaction:transaction];
             newContact.familyName = [self.profileManagerImpl familyNameForAddress:address transaction:transaction];
-            newContact.imageData = UIImagePNGRepresentation(
-                [self.profileManagerImpl profileAvatarForAddress:address transaction:transaction]);
+            newContact.imageData
+                = UIImagePNGRepresentation([self.profileManagerImpl profileAvatarForAddress:address
+                                                                          downloadIfMissing:YES
+                                                                                transaction:transaction]);
         }];
 
         if (updatedNameComponents) {

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -429,7 +430,7 @@ public class SignalAttachment: NSObject {
 
         if let filename = sourceFilename {
             let fileExtension = (filename as NSString).pathExtension
-            if fileExtension.count > 0 {
+            if !fileExtension.isEmpty {
                 if let mimeType = MIMETypeUtil.mimeType(forFileExtension: fileExtension) {
                     // UTI types are an imperfect means of representing file type;
                     // file extensions are also imperfect but far more reliable and
@@ -479,7 +480,7 @@ public class SignalAttachment: NSObject {
     public var fileExtension: String? {
         if let filename = sourceFilename {
             let fileExtension = (filename as NSString).pathExtension
-            if fileExtension.count > 0 {
+            if !fileExtension.isEmpty {
                 return fileExtension.filterFilename()
             }
         }
@@ -751,7 +752,7 @@ public class SignalAttachment: NSObject {
     //       Check the attachment's error property.
     @objc
     private class func imageAttachment(dataSource: DataSource?, dataUTI: String, isBorderless: Bool = false) -> SignalAttachment {
-        assert(dataUTI.count > 0)
+        assert(!dataUTI.isEmpty)
         assert(dataSource != nil)
         guard let dataSource = dataSource else {
             let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
@@ -1393,9 +1394,9 @@ public class SignalAttachment: NSObject {
                                      dataUTI: String,
                                      validUTISet: Set<String>?,
                                      maxFileSize: UInt) -> SignalAttachment {
-        assert(dataUTI.count > 0)
-
+        assert(!dataUTI.isEmpty)
         assert(dataSource != nil)
+
         guard let dataSource = dataSource else {
             let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
             attachment.error = .missingData

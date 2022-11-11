@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import SignalServiceKit
 
 @objc
@@ -147,6 +149,10 @@ public class NotificationActionHandler: NSObject {
                        let storyAuthorAddress = incomingMessage.storyAuthorAddress {
                         builder.storyTimestamp = storyTimestamp
                         builder.storyAuthorAddress = storyAuthorAddress
+                    } else {
+                        // We only use the thread's DM timer for normal messages & 1:1 story
+                        // replies -- group story replies last for the lifetime of the story.
+                        builder.expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
                     }
 
                     let message = TSOutgoingMessage(outgoingMessageWithBuilder: builder, transaction: transaction)

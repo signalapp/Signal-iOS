@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2016 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import XCTest
@@ -55,7 +56,7 @@ class TokenObtainingTSAccountManager: VerifyingTSAccountManager {
 }
 
 class VerifyingPushRegistrationManager: PushRegistrationManager {
-    public override func requestPushTokens() -> Promise<(pushToken: String, voipToken: String?)> {
+    public override func requestPushTokens(forceRotation: Bool) -> Promise<(pushToken: String, voipToken: String?)> {
         return Promise.value(("a", "b"))
     }
 }

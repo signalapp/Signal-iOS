@@ -1,21 +1,18 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import SignalServiceKit
 
-class BadgeGiftingChooseRecipientViewController: OWSViewController {
+class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewController {
     private let badge: ProfileBadge
-    private let price: UInt
-    private let currencyCode: Currency.Code
+    private let price: FiatMoney
 
-    private let recipientPicker = RecipientPickerViewController()
-
-    public init(badge: ProfileBadge, price: UInt, currencyCode: Currency.Code) {
+    public init(badge: ProfileBadge, price: FiatMoney) {
         self.badge = badge
         self.price = price
-        self.currencyCode = currencyCode
     }
 
     public override func viewDidLoad() {
@@ -26,9 +23,7 @@ class BadgeGiftingChooseRecipientViewController: OWSViewController {
 
         recipientPicker.allowsAddByPhoneNumber = false
         recipientPicker.shouldHideLocalRecipient = true
-        recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
-        recipientPicker.shouldShowGroups = false
-        recipientPicker.showUseAsyncSelection = false
+        recipientPicker.groupsToShow = .showNoGroups
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
@@ -38,16 +33,6 @@ class BadgeGiftingChooseRecipientViewController: OWSViewController {
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
 
         rerender()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        recipientPicker.applyTheme(to: self)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        recipientPicker.removeTheme(from: self)
     }
 
     override func themeDidChange() {
@@ -84,20 +69,14 @@ extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate {
             owsFail("Recipient is missing address, but we expected one")
         }
         let thread = databaseStorage.write { TSContactThread.getOrCreateThread(withContactAddress: address, transaction: $0) }
-        let vc = BadgeGiftingConfirmationViewController(badge: badge, price: price, currencyCode: currencyCode, thread: thread)
+        let vc = BadgeGiftingConfirmationViewController(badge: badge, price: price, thread: thread)
         self.navigationController?.pushViewController(vc, animated: true)
     }
-
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         willRenderRecipient recipient: PickedRecipient) {}
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise {
         return AnyPromise(Promise.value(()))
     }
-
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         showInvalidRecipientAlert recipient: PickedRecipient) {}
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          accessoryMessageForRecipient recipient: PickedRecipient,

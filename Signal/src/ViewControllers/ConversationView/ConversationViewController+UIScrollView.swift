@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -285,7 +286,7 @@ extension ConversationViewController {
         scrollDownButton.isHidden = true
         scrollDownButton.alpha = 0
         view.addSubview(scrollDownButton)
-        scrollDownButton.autoSetDimension(.width, toSize: ConversationScrollButton.buttonSize())
+        scrollDownButton.autoSetDimension(.width, toSize: ConversationScrollButton.buttonSize)
         scrollDownButton.accessibilityIdentifier = "scrollDownButton"
 
         scrollDownButton.autoPinEdge(.bottom, to: .top, of: bottomBar, withOffset: -16)
@@ -295,7 +296,7 @@ extension ConversationViewController {
         scrollToNextMentionButton.isHidden = true
         scrollToNextMentionButton.alpha = 0
         view.addSubview(scrollToNextMentionButton)
-        scrollToNextMentionButton.autoSetDimension(.width, toSize: ConversationScrollButton.buttonSize())
+        scrollToNextMentionButton.autoSetDimension(.width, toSize: ConversationScrollButton.buttonSize)
         scrollToNextMentionButton.accessibilityIdentifier = "scrollToNextMentionButton"
 
         scrollToNextMentionButton.autoPinEdge(.bottom, to: .top, of: scrollDownButton, withOffset: -10)

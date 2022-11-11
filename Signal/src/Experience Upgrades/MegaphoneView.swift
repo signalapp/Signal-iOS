@@ -1,19 +1,15 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import Lottie
+import SignalMessaging
 
 class MegaphoneView: UIView, ExperienceUpgradeView {
     let experienceUpgrade: ExperienceUpgrade
 
-    enum ImageSize {
-        case large, small
-    }
-    var imageSize: ImageSize = .small {
-        willSet { assert(!hasPresented) }
-    }
     var imageName: String? {
         didSet {
             if imageName != nil { image = nil }
@@ -126,29 +122,26 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
 
         guard !hasPresented else { return owsFailDebug("can only present once") }
 
-        guard titleText != nil, bodyText != nil, (imageName != nil || image != nil || animation != nil) else {
+        guard titleText != nil, bodyText != nil else {
             return owsFailDebug("megaphone is not prepared for presentation")
         }
 
         // Top section
 
         let labelStack = createLabelStack()
-        let imageContainer = createImageContainer()
 
-        let topStackView = UIStackView(arrangedSubviews: [imageContainer, labelStack])
-
-        switch imageSize {
-        case .small:
-            topStackView.axis = .horizontal
-            topStackView.spacing = 8
-            topStackView.isLayoutMarginsRelativeArrangement = true
-            topStackView.layoutMargins = UIEdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
-        case .large:
-            topStackView.axis = .vertical
-            topStackView.spacing = 10
-            labelStack.isLayoutMarginsRelativeArrangement = true
-            labelStack.layoutMargins = UIEdgeInsets(top: 0, leading: 12, bottom: 12, trailing: 12)
+        let topStackSubviews: [UIView]
+        if imageName != nil || image != nil || animation != nil {
+            topStackSubviews = [createImageContainer(), labelStack]
+        } else {
+            topStackSubviews = [labelStack]
         }
+
+        let topStackView = UIStackView(arrangedSubviews: topStackSubviews)
+        topStackView.axis = .horizontal
+        topStackView.spacing = 8
+        topStackView.isLayoutMarginsRelativeArrangement = true
+        topStackView.layoutMargins = UIEdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
 
         stackView.addArrangedSubview(topStackView)
 
@@ -235,7 +228,8 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
             imageView.contentMode = .scaleAspectFit
             container.addSubview(imageView)
             imageView.autoPinWidthToSuperview()
-            imageView.autoPinEdge(toSuperviewEdge: .top)
+            imageView.autoPinToSquareAspectRatio()
+            imageView.autoVCenterInSuperview()
         } else if let animation = animation {
             container = UIView()
 
@@ -262,15 +256,8 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
             container = UIView()
         }
 
-        container.clipsToBounds = true
-
-        switch imageSize {
-        case .small:
-            container.autoSetDimension(.width, toSize: 64)
-            container.autoSetDimension(.height, toSize: 64, relation: .greaterThanOrEqual)
-        case .large:
-            container.autoSetDimension(.height, toSize: 128)
-        }
+        container.autoSetDimension(.width, toSize: 64)
+        container.autoSetDimension(.height, toSize: 64, relation: .greaterThanOrEqual)
 
         return container
     }
@@ -350,11 +337,11 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         dismissButton.autoPinEdge(toSuperviewEdge: .top)
     }
 
-    func snoozeButton(fromViewController: UIViewController, snoozeTitle: String = MegaphoneStrings.remindMeLater, snoozeCopy: @escaping () -> String = { MegaphoneStrings.weWillRemindYouLater }) -> Button {
+    func snoozeButton(fromViewController: UIViewController, snoozeTitle: String = MegaphoneStrings.remindMeLater) -> Button {
         return Button(title: snoozeTitle) { [weak self] in
-            self?.markAsSnoozed()
+            self?.markAsSnoozedWithSneakyTransaction()
             self?.dismiss {
-                self?.presentToast(text: snoozeCopy(), fromViewController: fromViewController)
+                self?.presentToast(text: MegaphoneStrings.weWillRemindYouLater, fromViewController: fromViewController)
             }
         }
     }

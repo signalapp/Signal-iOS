@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "TSAttachmentStream.h"
@@ -383,7 +384,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     return [OWSFileSystem.cachesDirectoryPath stringByAppendingPathComponent:dirName];
 }
 
-- (NSString *)pathForThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
+- (NSString *)pathForThumbnailDimensionPoints:(CGFloat)thumbnailDimensionPoints
 {
     NSString *fileExtension = [OWSThumbnailService thumbnailFileExtensionForContentType:self.contentType];
     NSString *filename =
@@ -837,7 +838,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
                            failure:(OWSThumbnailFailure)failure
 {
     CGFloat maxDimensionHint = MAX(sizeHint.width, sizeHint.height);
-    NSUInteger thumbnailDimensionPoints;
+    CGFloat thumbnailDimensionPoints;
     if (maxDimensionHint <= TSAttachmentStream.thumbnailDimensionPointsSmall) {
         thumbnailDimensionPoints = TSAttachmentStream.thumbnailDimensionPointsSmall;
     } else if (maxDimensionHint <= TSAttachmentStream.thumbnailDimensionPointsMedium) {
@@ -853,11 +854,11 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
                           success:(OWSThumbnailSuccess)success
                           failure:(OWSThumbnailFailure)failure
 {
-    NSUInteger thumbnailDimensionPoints = [TSAttachmentStream thumbnailDimensionPointsForThumbnailQuality:quality];
+    CGFloat thumbnailDimensionPoints = [TSAttachmentStream thumbnailDimensionPointsForThumbnailQuality:quality];
     [self thumbnailImageWithThumbnailDimensionPoints:thumbnailDimensionPoints success:success failure:failure];
 }
 
-- (void)thumbnailImageWithThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
+- (void)thumbnailImageWithThumbnailDimensionPoints:(CGFloat)thumbnailDimensionPoints
                                            success:(OWSThumbnailSuccess)success
                                            failure:(OWSThumbnailFailure)failure
 {
@@ -866,7 +867,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
         failure:^{ DispatchMainThreadSafe(^{ failure(); }); }];
 }
 
-- (void)loadedThumbnailWithThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
+- (void)loadedThumbnailWithThumbnailDimensionPoints:(CGFloat)thumbnailDimensionPoints
                                             success:(OWSLoadedThumbnailSuccess)success
                                             failure:(OWSThumbnailFailure)failure
 {
@@ -937,7 +938,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     return operationQueue;
 }
 
-- (nullable OWSLoadedThumbnail *)loadedThumbnailSyncWithDimensionPoints:(NSUInteger)thumbnailDimensionPoints
+- (nullable OWSLoadedThumbnail *)loadedThumbnailSyncWithDimensionPoints:(CGFloat)thumbnailDimensionPoints
 {
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
@@ -959,7 +960,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (nullable UIImage *)thumbnailImageSyncWithQuality:(AttachmentThumbnailQuality)quality
 {
-    NSUInteger thumbnailDimensionPoints = [TSAttachmentStream thumbnailDimensionPointsForThumbnailQuality:quality];
+    CGFloat thumbnailDimensionPoints = [TSAttachmentStream thumbnailDimensionPointsForThumbnailQuality:quality];
     OWSLoadedThumbnail *_Nullable loadedThumbnail =
         [self loadedThumbnailSyncWithDimensionPoints:thumbnailDimensionPoints];
     if (!loadedThumbnail) {

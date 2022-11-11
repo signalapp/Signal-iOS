@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -61,22 +62,6 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                 section.add(.copyableItem(label: "Identity Key",
                                           value: identityKey?.hexadecimalString,
                                           accessibilityIdentifier: "identity_key"))
-
-                var groupCapabilities = [String]()
-                if GroupManager.doesUserHaveGroupsV2MigrationCapability(address: address,
-                                                                        transaction: transaction) {
-                    groupCapabilities.append("migration")
-                }
-                if GroupManager.doesUserHaveAnnouncementOnlyGroupsCapability(address: address,
-                                                                             transaction: transaction) {
-                    groupCapabilities.append("announcementGroup")
-                }
-                if GroupManager.doesUserHaveSenderKeyCapability(address: address,
-                                                                transaction: transaction) {
-                    groupCapabilities.append("senderKey")
-                }
-                section.add(.label(withText: String(format: "Group Capabilities: %@",
-                                                    groupCapabilities.joined(separator: ", "))))
 
                 var canReceiveGiftBadgesString: String
                 if let profile = profileManager.getUserProfile(for: address, transaction: transaction) {

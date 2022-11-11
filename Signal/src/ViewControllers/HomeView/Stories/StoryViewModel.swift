@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -22,8 +23,6 @@ struct StoryViewModel: Dependencies {
     let latestMessageTimestamp: UInt64
     let latestMessageViewedTimestamp: UInt64?
     let latestMessageSendingState: TSOutgoingMessageState
-
-    let threadUniqueId: String?
 
     let latestMessageAvatarDataSource: ConversationAvatarDataSource
 
@@ -59,14 +58,7 @@ struct StoryViewModel: Dependencies {
         latestMessageViewedTimestamp = latestMessage.localUserViewedTimestamp
         latestMessageSendingState = latestMessage.sendingState
 
-        let threadUniqueId = context.threadUniqueId(transaction: transaction)
-        self.threadUniqueId = threadUniqueId
-
-        if latestMessage.authorAddress.isSystemStoryAddress {
-            self.isHidden = Self.systemStoryManager.areSystemStoriesHidden(transaction: transaction)
-        } else {
-            self.isHidden = isHidden ?? context.isHidden(threadUniqueId: threadUniqueId, transaction: transaction)
-        }
+        self.isHidden = isHidden ?? context.isHidden(transaction: transaction)
     }
 
     /// Returns nil if there are no messages left after deletions are applied.

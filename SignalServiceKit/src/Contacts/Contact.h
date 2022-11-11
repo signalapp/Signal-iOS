@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import <Mantle/MTLModel.h>
@@ -31,7 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) NSArray<NSString *> *emails;
 @property (readonly, nonatomic) NSString *uniqueId;
 @property (nonatomic, readonly, nullable) NSString *cnContactId;
-@property (nonatomic, readonly) BOOL isFromContactSync;
+
+@property (nonatomic, readonly) BOOL isFromLocalAddressBook;
 
 // This property should only be accessed from Swift.
 @property (nonatomic, readonly) NSDictionary<NSString *, NSString *> *phoneNumberNameMap;

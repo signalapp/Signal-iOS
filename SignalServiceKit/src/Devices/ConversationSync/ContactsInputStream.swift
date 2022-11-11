@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 
 public struct ContactDetails {
     public let address: SignalServiceAddress
-    public let name: String?
     public let verifiedProto: SSKProtoVerified?
     public let profileKey: Data?
     public let isBlocked: Bool
@@ -51,7 +51,6 @@ public class ContactsInputStream {
         }
 
         return ContactDetails(address: address,
-                              name: contactDetails.name,
                               verifiedProto: contactDetails.verified,
                               profileKey: contactDetails.profileKey,
                               isBlocked: contactDetails.blocked,

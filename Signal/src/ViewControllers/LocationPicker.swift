@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 //  Originally based on https://github.com/almassapargali/LocationPicker
@@ -7,10 +8,11 @@
 //  Created by Almas Sapargali on 7/29/15.
 //  Parts Copyright (c) 2015 almassapargali. All rights reserved.
 
-import MapKit
 import Contacts
 import CoreLocation
 import CoreServices
+import MapKit
+import SignalMessaging
 import UIKit
 
 @objc

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -32,9 +33,10 @@ public class OWSURLBuilderUtil {
 
         var finalComponents = URLComponents()
 
-        // Use scheme and host from baseUrl.
+        // Use scheme, host, and port from baseUrl.
         finalComponents.scheme = baseUrl.scheme
         finalComponents.host = baseUrl.host
+        finalComponents.port = baseUrl.port
 
         // Use query and fragment from the request.
         finalComponents.query = requestComponents.query

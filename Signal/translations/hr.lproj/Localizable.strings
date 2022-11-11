@@ -17,7 +17,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "Kontakt";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
-"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Kontakt za %@";
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "Kontakt za %1$@";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "Medijski zapis";
@@ -71,10 +71,10 @@
 "ADD_TO_GROUP_ALREADY_A_MEMBER" = "Već je član";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ je već član %@";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ je već član %2$@";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ je dodan u %@";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ je dodan u %2$@";
 
 /* Title of the 'add to group' view. */
 "ADD_TO_GROUP_TITLE" = "Dodaj u grupu";
@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Shvaćam";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Poruka, naljepnica, reakcija, potvrda o čitanju ili mediji nisu vam mogli biti isporučeni od osobe %@";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "Poruka, naljepnica, reakcija, potvrda o čitanju ili mediji nisu vam mogli biti isporučeni od osobe %1$@";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "Problem s isporukom";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Poruka, naljepnica, reakcija, potvrda o čitanju ili mediji nisu vam mogli biti isporučeni od osobe %@. Možda su vam to pokušali poslati izravno ili u grupu.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "Poruka, naljepnica, reakcija, potvrda o čitanju ili mediji nisu vam mogli biti isporučeni od osobe %1$@. Možda su vam to pokušali poslati izravno ili u grupu.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Poništi";
@@ -115,13 +115,16 @@
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "O zahtjevima za razgovorom";
 
+/* Title for the view of all your signal connections */
+"ALL_SIGNAL_CONNECTIONS_TITLE" = "Svi kontakti";
+
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Odgovori";
 
 /* notification body */
 "APN_Message" = "Možda imate nove poruke";
 
-/* Message for the 'app launch failed' alert. */
+/* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal se ne može pokrenuti. Molimo pošaljite zapisnike o pogrešci na support@signal.org kako bi riješili ovaj problem.";
 
 /* Title for the 'app launch failed' alert. */
@@ -140,7 +143,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Nepoznata verzija baze podataka.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal je imao problema prilikom pokušaja otvaranja. Kako biste pomogli u rješavanju ovog problema, molimo pošaljite zapisnik otklanjanja pogrešaka na support@signal.org. ";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal je imao problema prilikom pokušaja otvaranja. Kako biste pomogli u rješavanju ovog problema, molimo pošaljite zapisnik otklanjanja pogrešaka na support@signal.org.";
 
 /* Error indicating that the app crashed during the previous launch. */
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Nije moguće otvoriti Signal";
@@ -164,7 +167,7 @@
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Ne sada";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Verzija %@ je sada dostupna na App Storeu.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Verzija %1$@ je sada dostupna na App Storeu.";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "Dostupna je nova verzija Signala";
@@ -183,6 +186,9 @@
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
+
+/* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
+"APPLICATION_SHORTCUT_NEW_MESSAGE" = "Nova poruka";
 
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Arhiviraj";
@@ -203,10 +209,10 @@
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Spremanje nije uspjelo";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Vrsta datoteke: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Vrsta datoteke: %1$@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Veličina: %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Veličina: %1$@";
 
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Spremljeno";
@@ -292,6 +298,9 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Datoteka nije podržana.";
 
+/* Short text label for an animated attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_ANIMATED" = "Animirano";
+
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Zvuk";
 
@@ -352,11 +361,8 @@
 /* The title for the badge configuration page */
 "BADGE_CONFIGURATION_TITLE" = "Značke";
 
-/* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Pretplatite se";
-
-/* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Podržite Signal";
+/* When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button. */
+"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Donate Now";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "Vaša značka podrške je istekla i više nije dostupna za prikaz na vašem profilu.";
@@ -395,7 +401,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Mjesečna donacija otkazana";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "Poklonili ste značku korisniku %@. Kad ju preuzme, moći će izabrati hoće li ju prikazati ili sakriti.";
+"BADGE_GIFT_THANKS_BODY" = "Poklonili ste značku korisniku %1$@. Kad ju preuzme, moći će izabrati hoće li ju prikazati ili sakriti.";
 
 /* Title for the sheet that's shown when you gift someone a badge */
 "BADGE_GIFT_THANKS_TITLE" = "Hvala vam na podršci!";
@@ -479,7 +485,7 @@
 "BADGE_GIFTING_REDEEM_LATER" = "Značku možete preuzeti kasnije";
 
 /* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
-"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "Dobili ste poklon od korisnika %@";
+"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "Dobili ste poklon od korisnika %1$@";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
 "BADGE_GIFTING_REDEEMED" = "Preuzeto";
@@ -488,22 +494,22 @@
 "BADGE_GIFTING_REPLY" = "Poklon";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "Traje %@";
+"BADGE_GIFTING_ROW_DURATION" = "Traje %1$@";
 
 /* A button shown on a gift message you send to view additional details about the badge. */
 "BADGE_GIFTING_VIEW" = "Prikaz";
 
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "Primili ste značku na poklon od korisnika %@. Prikažite značku na svom profilu kako biste potakli druge da doniraju Signalu.";
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "Primili ste značku na poklon od korisnika %1$@. Prikažite značku na svom profilu kako biste potakli druge da doniraju Signalu.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Vaša mjesečna donacija automatski je otkazana. %@ Značka%@ više nije vidljiva na vašem profilu.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Vaša mjesečna donacija automatski je otkazana. %1$@ Značka%2$@ više nije vidljiva na vašem profilu.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Vaša pretplata je automatski otkazana zbog toga što ste dugo bili neaktivni. Vaša značka %@ više nije vidljiva na vašem profilu. \n\nMožete nastaviti koristiti Signal, ali da biste podržali aplikaciju i ponovno aktivirali svoju značku, trebate obnoviti pretplatu.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Vaša pretplata je automatski otkazana zbog toga što ste dugo bili neaktivni. Vaša značka %1$@ više nije vidljiva na vašem profilu. \n\nMožete nastaviti koristiti Signal, ali da biste podržali aplikaciju i ponovno aktivirali svoju značku, trebate obnoviti pretplatu.";
 
-/* Title for boost on the thank you sheet. */
-"BADGE_THANKS_BOOST_TITLE" = "Hvala vam na podršci!";
+/* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
+"BADGE_THANKS_BODY" = "Osvojili ste značku donatora! Prikažite je na svom profilu i iskažite svoju podršku Signalu.";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Prikaži na svom profilu";
@@ -511,14 +517,11 @@
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_MAKE_FEATURED" = "Istakni ovu značku";
 
-/* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Hvala vam na podršci!";
+/* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet. */
+"BADGE_THANKS_TITLE" = "Hvala vam na podršci!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "Kada imate više od jedne značke, možete odabrati koju želite istaknuti kako bi je drugi mogli vidjeti na vašem profilu.";
-
-/* String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "Osvojili ste značku %@. Prikažite ovu značku na svom profilu kako biste podigli svijest o važnosti doniranja Signalu.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Zatvori natpis";
@@ -530,10 +533,10 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "Blokiraj";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Blokiraj i napusti grupu \"%@\"?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Blokiraj i napusti grupu \"%1$@\"?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Blokiraj %@?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Blokiraj %1$@?";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Blokirane grupe";
@@ -563,13 +566,13 @@
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Odblokiraj ovu grupu?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Odblokiraj %@?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Odblokiraj %1$@?";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Blokiraj";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ je blokiran/a.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%1$@ je blokiran/a.";
 
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Korisnik je blokiran";
@@ -584,7 +587,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Pogreška";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ je odblokiran/a.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%1$@ je odblokiran/a.";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Postojeći članovi sada vas mogu ponovo dodati u grupu.";
@@ -595,29 +598,8 @@
 /* Tooltip highlighting the blur image editing tool. */
 "BLUR_TOOLTIP" = "Novo: Zamaglite lica ili povucite bilo gdje za zamagljivanje.";
 
-/* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Donirajte jednokratno i osvojite značku podrške na 30 dana.";
-
-/* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Vaša značka će isteći %@.";
-
 /* Default text for the custom amount field of the boost view. */
-"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Unesi prilagođeni iznos";
-
-/* Text explaining there are other ways to donate on the boost view. */
-"BOOST_VIEW_OTHER_WAYS" = "Više opcija plaćanja";
-
-/* Error text notifying the user they must select a large amount on the donate to signal view */
-"BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "Unesite veći iznos za donaciju";
-
-/* Error text notifying the user they must select a smaller amount on the donate to signal view */
-"BOOST_VIEW_SELECT_A_SMALLER_AMOUNT" = "Unesite manji iznos za donaciju";
-
-/* Error text notifying the user they must select an amount on the donate to signal view */
-"BOOST_VIEW_SELECT_AN_AMOUNT" = "Unesite iznos za donaciju";
-
-/* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Podržite Signal";
+"BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "Unesi željeni iznos";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Dodaj";
@@ -683,25 +665,40 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Nazovi ponovo";
 
 /* notification body */
-"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Dolazni zvučni poziv...";
+"CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 Dolazni zvučni poziv…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Propušteni audio poziv u %@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 Propušteni audio poziv u %1$@";
 
 /* notification body for a call that was just missed */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 Propušteni zvučni poziv";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Propušteni audio poziv  %@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 Propušteni audio poziv  %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Propušteni audio poziv u %@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Propušteni audio poziv u %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Za upućivanje poziva i snimanje glasovnih poruka u Signalu, možete omogućiti pristup mikrofonu u postavkama iOS-a.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Potreban je pristup mikrofonu";
+
+/* label for button shown when an incoming call rings */
+"CALL_CONTROLS_INCOMING_ANSWER" = "answer";
+
+/* Label for button shown when an incoming call rings. This particular label has room for two lines; you may insert a manual linebreak with '\n' as long as both lines are 15 characters or shorter (8 fullwidth characters or shorter), as in the English translation. */
+"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "answer\nwithout video";
+
+/* label for button shown when an incoming call rings */
+"CALL_CONTROLS_INCOMING_DECLINE" = "decline";
+
+/* Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications */
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Incoming group call…";
+
+/* Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}} */
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ is ringing the group…";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Propušten je poziv jer se promijenio sigurnosni broj pozivatelja.";
@@ -713,31 +710,31 @@
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Nema odgovora";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "Signal %@";
+"CALL_STATUS_FORMAT" = "Signal %1$@";
 
 /* Label for call button for alert offering to call a user. */
 "CALL_USER_ALERT_CALL_BUTTON" = "Nazovi";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "Želite li nazvati %@?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "Želite li nazvati %1$@?";
 
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Nazvati?";
 
 /* notification body */
-"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Dolazni video poziv...";
+"CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 Dolazni videopoziv…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Propušteni video poziv u %@";
+"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 Propušteni video poziv u %1$@";
 
 /* notification body for a call that was just missed */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 Propušteni video poziv";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Propušteni video poziv %@";
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 Propušteni video poziv %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Propušteni video poziv u %@";
+"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 Propušteni video poziv u %1$@";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "Odgovori bez videa";
@@ -758,7 +755,7 @@
 "CALL_VIEW_MUTE_LABEL" = "Utišano";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ će od vas dobiti zahtjev za razgovorom. Možete nazvati nakon što vaš zahtjev za razgovorom bude prihvaćen.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%1$@ će od vas dobiti zahtjev za razgovorom. Možete nazvati nakon što vaš zahtjev za razgovorom bude prihvaćen.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Promijeni smjer kamere";
@@ -777,6 +774,9 @@
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal korisnik";
+
+/* The generic name used for group calls if CallKit privacy is enabled */
+"CALLKIT_ANONYMOUS_GROUP_NAME" = "Signal grupa";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Snimite fotografiju te je zatim pošaljite";
@@ -842,7 +842,7 @@
 "CAMERA_VO_ZOOM" = "Uvećaj";
 
 /* VoiceOver description of current camera zoom level. */
-"CAMERA_VO_ZOOM_LEVEL" = "%@puta";
+"CAMERA_VO_ZOOM_LEVEL" = "%1$@puta";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Ovog korisnika nije moguće provjeriti dokle god ne razmijenite poruke s njim.";
@@ -926,10 +926,10 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Grupe";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Pretraga po broju";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Find by Number";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Pretraga po korisničkom imenu";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Find by Username";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Možete omogućiti pristup kontaktima u postavkama iOS-a kako biste vidjeli koji od vaših kontakata su korisnici Signala.";
@@ -957,9 +957,6 @@
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Poveži novi uređaj";
-
-/* No comment provided by engineer. */
-"CONFIRMATION_TITLE" = "Potvrdi";
 
 /* Label for a contact's postal address. */
 "CONTACT_ADDRESS" = "Adresa";
@@ -1178,7 +1175,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Izbriši razgovor";
 
 /* Title for the 'conversation mute confirmation' alert. */
-"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Utišaj ovaj razgovor na...";
+"CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Utišaj ovaj razgovor na…";
 
 /* 1 day */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 dan";
@@ -1286,7 +1283,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Postavi za administratora";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ će moći uređivati ovu grupu i njene članove.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ će moći uređivati ovu grupu i njene članove.";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Zahtjevi za članove i pozivnice";
@@ -1307,7 +1304,7 @@
 "CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "poruka";
 
 /* Title for the mute action sheet */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Utišaj razgovor na...";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Utišaj razgovor na…";
 
 /* Label for button to mute a thread forever. */
 "CONVERSATION_SETTINGS_MUTE_ALWAYS_ACTION" = "Uvijek";
@@ -1346,10 +1343,10 @@
 "CONVERSATION_SETTINGS_MUTED_BUTTON" = "utišano";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "do %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "do %1$@";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Utišano do %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "Utišano do %1$@";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Stvori novi kontakt";
@@ -1364,13 +1361,13 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Ukloni iz grupe";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Ukloniti %@ iz grupe?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Ukloniti %1$@ iz grupe?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Ukloni kao administratora";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Ukloniti administratorske privilegije za %@?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Ukloniti administratorske privilegije za %1$@?";
 
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "pretraži";
@@ -1402,14 +1399,11 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Detalji o kontaktu";
 
-/* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Podijeli profil";
-
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Dodaj u kontakte";
 
 /* Format for sender info for accessibility label for message. Embeds {{ the sender name }}. */
-"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "%@ je poslao:";
+"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "%1$@ je poslao:";
 
 /* Format for sender info for outgoing messages. */
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "Vi ste poslali:";
@@ -1418,7 +1412,7 @@
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Izbriši sve";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Učitavanje ostalih poruka...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Učitavanje ostalih poruka…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Pročitaj više";
@@ -1427,7 +1421,7 @@
 "COPIED_TO_CLIPBOARD" = "Kopirano u međuspremnik";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Poništavanje sesije omogućiti će vam primanje budućih poruka od %@, ali neće oporaviti već oštećene poruke.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Poništavanje sesije omogućiti će vam primanje budućih poruka od %1$@, ali neće oporaviti već oštećene poruke.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Odaberi kôd države";
@@ -1467,6 +1461,54 @@
 
 /* Title for alert before running a database integrity check */
 "DATABASE_INTEGRITY_CHECK_TITLE" = "Pokrenuti dijagnostiku baze podataka?";
+
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Dio vaše povijesti poruka možda je oštećen. To ne utječe na sigurnost vašeg računa ili vaših poruka. Dodirnite \"Nastavi\" za oporavak podataka.";
+
+/* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problem s dohvaćanjem podataka";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Svejedno nastavi";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "Kako bi oporavak podataka bio uspješan, preporučljivo je imati najmanje %1$@ slobodnog prostora za pohranu na svom uređaju.";
+
+/* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "Nedostaje prostora za pohranu";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Oporavak povijesti vaših poruka nije uspio. Možete nastaviti koristiti Signal nakon što ga ponovno instalirate. Pošaljite zapisnik o pogrešci kako bismo bolje razumjeli što se dogodilo.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Resetiraj Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Poništi";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Podaci o vašem računu, vaš profil i sve vaše poruke bit će izbrisani. Aplikacija će se zatvoriti nakon završetka ovog postupka.";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Resetiraj Signal";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Pošalji zapisnik pogreške";
+
+/* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Oporavak vaših podataka nije uspio";
+
+/* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Tijekom postupka oporavka nemojte izaći iz aplikacije. Ovo može potrajati nekoliko minuta.";
+
+/* On the database recovery screen, this is the title shown as the user's data is being recovered. */
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Oporavak podataka";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Oporavak je bio uspješan, no neke poruke možda nije bilo moguće spasiti.";
+
+/* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Podaci su uspješno oporavljeni";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Ovo može potrajati nekoliko minuta.";
@@ -1532,7 +1574,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "To će izbrisati podatke o vašem računu, profilu i svim porukama.";
 
 /* Indicates the work we are doing while deleting the account */
-"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Brisanje računa...";
+"DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Brisanje računa…";
 
 /* Title for the action sheet when you have no internet on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_NO_INTERNET" = "Nema internetske veze. Provjerite je li Wi-Fi ili mobilni podaci uključeni, a zatim pokušajte ponovno.";
@@ -1562,10 +1604,10 @@
 "DEREGISTRATION_WARNING" = "Uređaj više nije registriran. Vaš broj telefona se sada može registrirati na Signal s drugim uređajem. Pritisnite za ponovnu registraciju.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "Zadnje aktivno %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "Zadnje aktivno %1$@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Povezano %@";
+"DEVICE_LINKED_AT_LABEL" = "Povezano %1$@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Ažuriranje popisa uređaja nije uspjelo.";
@@ -1601,10 +1643,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Prenesite račun i poruke";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Prenesite račun i stare poruke sa svog starog iOS uređaja";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Prenesite korisnički račun i povijest poruka sa svog starog iOS uređaja";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Prenesite račun i stare poruke sa svog starog iPad-a";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Prenesite korisnički račun i povijest poruka sa svog starog iPad uređaja";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Prenesi s drugog iPada";
@@ -1649,7 +1691,7 @@
 "DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Ne vidite upit na starom uređaju?";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Čekanje drugog uređaja...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Čekanje drugog uređaja…";
 
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Držite oba uređaja blizu jedan drugog. Ne isključujte nijedan uređaj i držite Signal otvorenim. Prijenosi su end-to-end šifrirani.";
@@ -1658,7 +1700,7 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Primanje podataka";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Povezivanje...";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Povezivanje…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Postavite QR kôd unutar kruga";
@@ -1676,7 +1718,7 @@
 "DISAPPEARING_MESSAGES" = "Poruke koje nestaju";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Poruke u ovom razgovoru nestati će nakon %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Poruke u ovom razgovoru nestati će nakon %1$@.";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Prilagođeno vrijeme";
@@ -1688,7 +1730,7 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Kad je omogućeno, nove poslane i primljene poruke u ovom razgovoru će nestati nakon što ih se vidi.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Trenutno poruke nestaju nakon %@";
+"DISAPPEARING_MESSAGES_HINT" = "Trenutno poruke nestaju nakon %1$@";
 
 /* The unit for a number of hours */
 "DISAPPEARING_MESSAGES_HOURS" = "sati";
@@ -1717,26 +1759,59 @@
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Prikažite značke na svom profilu";
 
+/* Title for the proxy confirmation */
+"DO_YOU_WANT_TO_USE_PROXY" = "Želite li koristiti ovu proxy adresu?";
+
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Mjesto zaobilaska cenzure";
 
-/* Action text for donate megaphone */
-"DONATE_MEGAPHONE_ACTION" = "Doniraj";
+/* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Get the %1$@ badge";
 
-/* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal pokreću ljudi poput vas. Donirajte mjesečno i dobivate značku.";
+/* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Earn the %1$@ badge for one month";
 
-/* Cancel text for donate megaphone */
-"DONATE_MEGAPHONE_CANCEL" = "Ne sada";
+/* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Donate %1$@ to Signal";
 
-/* Title for donate megaphone */
-"DONATE_MEGAPHONE_TITLE" = "Donirajte Signalu";
+/* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Donate %1$@ to Signal";
+
+/* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
+"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Select an amount to donate.";
+
+/* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. */
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate.";
+
+/* If the user tries to donate to Signal but they've entered an amount that's too large, this error message is shown. */
+"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate.";
+
+/* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
+"DONATE_SCREEN_MONTHLY_CHOICE" = "Monthly";
+
+/* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these and it expires soon, this text is shown below it indicating when it will expire. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "Expires %1$@";
+
+/* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these, this text is shown below it indicating when it will renew. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Renews %1$@";
+
+/* On the donation screen, you can see a list of monthly subscription levels. This text will be shown in the subtitle of each level, telling you which badge you'll get. Embeds {{localized badge name}}, such as \"Planet\". */
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Get a %1$@ badge";
+
+/* On the donation screen, you can see a list of monthly subscription levels. This text will be shown as the title for each level, telling you the price per month. Embeds {{currency string}}, such as \"$5\". */
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/month";
+
+/* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
+"DONATE_SCREEN_ONE_TIME_CHOICE" = "One-Time";
+
+/* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
+"DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Update Subscription";
 
 /* Donation payment error for decline failures where authentication is required. */
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Promijenite način plaćanja ili se obratite svojoj banci za više informacija.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Provjerite je li vaš način plaćanja u Apple Payu ažuriran. U slučaju da nije, ažurirajte ga i pokušajte ponovno. Ako i dalje imate poteškoće, obratite se svojoj banci. ";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Provjerite je li vaš način plaćanja u Apple Payu ažuriran. U slučaju da nije, ažurirajte ga i pokušajte ponovno. Ako i dalje imate poteškoće, obratite se svojoj banci.";
 
 /* Donation payment error for decline failures where the card is not supported. */
 "DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Vaša kartica ne podržava ovu vrstu kupnje. Promijenite način plaćanja ili se obratite svojoj banci za više informacija.";
@@ -1771,6 +1846,18 @@
 /* Donation payment error for decline failures where the payment cannot be authorized. */
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Provjerite je li vaš način plaćanja u Apple Payu ažuriran. U slučaju da nije, ažurirajte ga i pokušajte ponovno.";
 
+/* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Privatna razmjena poruka. Bez oglasa, bez pratitelja i bez nadzora.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Signal podržavaju donacije, što znači da je vaša privatnost u središtu svega što radimo. Signal je stvoren za vas; ne za vaše podatke niti radi zarade.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Ako možete, donirajte već danas kako bi Signal ostao zabavan, pouzdan i dostupan svima.";
+
+/* There is a screen where users can read more about their donation to Signal. This is the title of that screen. */
+"DONATION_READ_MORE_SCREEN_TITLE" = "Signal nije kao ostali.";
+
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Količina";
 
@@ -1799,7 +1886,7 @@
 "DONATION_RECEIPT_TITLE" = "Potvrda o donaciji";
 
 /* Section title for donation type on receipts */
-"DONATION_RECEIPT_TYPE" = "Vrsta ";
+"DONATION_RECEIPT_TYPE" = "Vrsta";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
 "DONATION_RECEIPTS" = "Potvrde o donacijama";
@@ -1807,8 +1894,17 @@
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Ako ste ponovno instalirali Signal, potvrde o prijašnjim donacijama neće biti dostupne.";
 
-/* Text of the 'donate to signal' button on the donation screen */
-"DONATION_VIEW_DONATE_TO_SIGNAL" = "Donirajte Signalu";
+/* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
+"DONATION_SCREEN_DONATE_BUTTON" = "Donate";
+
+/* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Privatna razmjena poruka koju financirate vi. Bez oglasa, bez praćenja, bez kompromisa. Donirajte odmah i podržite Signal.";
+
+/* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
+"DONATION_SCREENS_HEADER_READ_MORE" = "Pročitaj više";
+
+/* On donation screens, a small amount of information text is shown. This is the title for that text. */
+"DONATION_SCREENS_HEADER_TITLE" = "Privatnost prije profita";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Donacija za Signal";
@@ -1819,14 +1915,14 @@
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "Pogreška mreže. Provjerite vezu i pokušajte ponovno.";
 
-/* Text of the 'make a monthly donation' button on the donation screen */
-"DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Donirajte mjesečno";
-
 /* Title for the 'Badges' button on the donation screen */
 "DONATION_VIEW_MANAGE_BADGES" = "Značke";
 
 /* Title for the 'Manage Subscription' button on the donation screen */
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Upravljajte svojom pretplatom";
+
+/* Text describing to the user that they're going to pay a monthly donation to Signal */
+"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Mjesečna donacija Signalu";
 
 /* Title for the 'more' section on the donation screen */
 "DONATION_VIEW_MORE_SECTION_TITLE" = "Više";
@@ -1834,14 +1930,8 @@
 /* Title for the 'my support' section in the donation view */
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "Moja podrška";
 
-/* Title for the 'one-time donation' link in the donation view */
-"DONATION_VIEW_ONE_TIME_DONATION" = "Jednokratna donacija";
-
 /* Title for the 'other ways to give' section on the donation view */
 "DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Drugi načini doniranja";
-
-/* Title for the 'receipts' section on the donation screen */
-"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Računi";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "Najčešća pitanja u vezi pretplate";
@@ -1850,7 +1940,7 @@
 "DONATION_VIEW_TITLE" = "Donirajte Signalu";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Odaberite valutu";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Valuta";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Možete omogućiti pristup u postavkama iOS-a.";
@@ -1880,7 +1970,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopiraj";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hej,\n\nU posljednje vrijeme pomoću Signala održavam svoje razgovore privatnima na svojem iPhoneu. Volio bih da ga i ti instaliraš, tako da možemo biti sigurni da samo ti i ja možemo čitati naše poruke ili čuti naše pozive.\n\nSignal je dostupan za iPhone i Android. Preuzmi ga ovdje: %@\n\nSignal funkcionira poput tvoje postojeće aplikacije za razmjenu poruka. Možemo slati slike i video, pozivati i započeti grupne razgovore. Najbolji dio je što nitko drugi ne može vidjeti, pa čak ni osobe koji stvaraju Signal!\n\nViše o Open Whisper Systems i osobama koji stvaraju Signal, možete pročitati ovdje: %@";
+"EMAIL_INVITE_BODY" = "Hej,\n\nU posljednje vrijeme pomoću Signala održavam svoje razgovore privatnima na svojem iPhoneu. Volio bih da ga i ti instaliraš, tako da možemo biti sigurni da samo ti i ja možemo čitati naše poruke ili čuti naše pozive.\n\nSignal je dostupan za iPhone i Android. Preuzmi ga ovdje: %1$@\n\nSignal funkcionira poput tvoje postojeće aplikacije za razmjenu poruka. Možemo slati slike i video, pozivati i započeti grupne razgovore. Najbolji dio je što nitko drugi ne može vidjeti, pa čak ni osobe koji stvaraju Signal!\n\nViše o Open Whisper Systems i osobama koji stvaraju Signal, možete pročitati ovdje: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Prebacimo se na Signal";
@@ -1997,7 +2087,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Preuzimanje privitka nije uspjelo.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Poruka od %@ nije se mogla isporučiti";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "Poruka od %1$@ nije se mogla isporučiti";
 
 /* Error message for a decryption failure. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "Poruku nije moguće isporučiti";
@@ -2021,7 +2111,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Sigurnosni broj je promijenjen.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Vaš sigurnosni broj s %@ je promijenjen.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Vaš sigurnosni broj s %1$@ je promijenjen.";
 
 /* Text notifying the user that their secure session has been reset */
 "ERROR_MESSAGE_SESSION_REFRESH" = "Sesija razgovora je osvježena";
@@ -2036,7 +2126,7 @@
 "ERROR_NETWORK_FAILURE" = "Mrežna pogreška";
 
 /* Format string for an error alert notification message. Embeds {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Pomozite nam poboljšati Signal prijavom ove pogreške zajedno s zapisnicima pogrešaka s vašeg uređaja na support@signal.org; %@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "Pomozite nam poboljšati Signal prijavom ove pogreške zajedno s zapisnicima pogrešaka s vašeg uređaja na support@signal.org; %1$@";
 
 /* Format string for an error alert notification title. */
 "ERROR_NOTIFICATION_TITLE" = "Signal Beta: Došlo je do pogreške";
@@ -2051,7 +2141,7 @@
 "ERROR_SENDING_EXPIRED" = "Vaša verzija Signala je istekla. Ažurirajte kako bi nastavili slati poruke.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Neregistrirani korisnik: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Neregistrirani korisnik: %1$@";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "Vaša verzija Signala je istekla. Pritisnite za ažuriranje na najnoviju verziju.";
@@ -2063,7 +2153,7 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Previše neuspjeha s ovim kontaktom. Pokušajte ponovo kasnije.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Vaš sigurnosni broj s %@ je nedavno promijenjen. Možda želite potvrditi prije nego što ponovo pošaljete poruku.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Vaš sigurnosni broj s %1$@ je nedavno promijenjen. Možda želite potvrditi prije nego što ponovo pošaljete poruku.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Provjera sigurnosnog broja nije uspjela!";
@@ -2111,10 +2201,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "U ovom razgovoru nema medijskih zapisa.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Učitavanje novijih medijskih zapisa...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Učitavanje novijih medijskih zapisa…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Učitavanje starijih medijskih zapisa...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Učitavanje starijih medijskih zapisa…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Privitak";
@@ -2162,7 +2252,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Pretraži";
 
 /* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
-"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Poklon koji ste dobili od korisnika %@ istekao je i više se ne može preuzeti.";
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Poklon koji ste dobili od korisnika %1$@ istekao je i više se ne može preuzeti.";
 
 /* Title when trying to redeem a gift that's already expired. */
 "GIFT_NOT_REDEEMED_TITLE" = "Vaš poklon je istekao";
@@ -2171,13 +2261,13 @@
 "GO_TO_SETTINGS_BUTTON" = "Idi na postavke";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Promijenili ste tko sve može urediti detalje o grupi na \"%@\".";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Promijenili ste tko sve može urediti detalje o grupi na \"%1$@\".";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ je promijenio/la tko sve može uređivati detalje o grupi na \"%2$@\".";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Detalje o grupi može promijeniti \"%@\".";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Detalje o grupi može promijeniti \"%1$@\".";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Samo administratori";
@@ -2195,13 +2285,13 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "Onemogućeno";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Promijenili ste tko može uređivati članstvo grupe na \"%@\".";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Promijenili ste tko može uređivati članstvo grupe na \"%1$@\".";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ je promijenio/la tko može uređivati članstvo grupe na \"%2$@\".";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Članstvo u grupi može promijeniti \"%@\".";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Članstvo u grupi može promijeniti \"%1$@\".";
 
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "Samo administratori mogu promijeniti ovu opciju.";
@@ -2210,7 +2300,7 @@
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Nećete primiti njihov audio ili video, a ni oni neće vaš.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@ je blokiran/a";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%1$@ je blokiran/a";
 
 /* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Samo administratori ove grupe mogu započeti poziv.";
@@ -2219,7 +2309,7 @@
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Nije moguće započeti grupni poziv";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ je blokiran/a";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@ je blokiran/a";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Nastavi poziv";
@@ -2233,11 +2323,14 @@
 /* An error displayed to the user when the group call ends because it has exceeded the max devices. */
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Dosegnut je maksimalan broj sudionika za ovaj poziv. Pokušajte ponovno kasnije.";
 
+/* Text explaining that someone has sent a ring to the group. Embeds {ring sender name} */
+"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ is calling the group";
+
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "Poziv je pun";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Poziva se %@…";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Poziva se %1$@…";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Pozivaju se %1$@ i %2$@…";
@@ -2249,13 +2342,13 @@
 "GROUP_CALL_LEAVE_BUTTON" = "Napusti poziv";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Ne možete primiti audio i video od %@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Ne možete primiti audio i video od %1$@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "To je možda zato što nisu potvrdili promjenu vašeg sigurnosnog broja, ili postoji problem s njihovim uređajem ili su vas blokirali.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Ne možete primiti audio i video od %@";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "Ne možete primiti audio i video od %1$@";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "Nitko drugi nije ovdje";
@@ -2264,22 +2357,22 @@
 "GROUP_CALL_NOBODY_IS_IN_YET" = "Nitko nije u ovom pozivu još.";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ se pridružio pozivu";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%1$@ se pridružio pozivu";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ je napustio/la poziv";
+"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%1$@ je napustio/la poziv";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ i %@ su se pridružili pozivu";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%1$@ i %2$@ su se pridružili pozivu";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ i %@ su napustili poziv";
+"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%1$@ i %2$@ su napustili poziv";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@ je na ovom pozivu";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%1$@ je na ovom pozivu";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "%@ prezentira";
+"GROUP_CALL_PRESENTING_FORMAT" = "%1$@ prezentira";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "Ponovno povezivanje";
@@ -2306,7 +2399,7 @@
 "GROUP_CALL_STARTED_BY_YOU" = "Započeli ste grupni poziv";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ je započeo/la grupni poziv";
+"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%1$@ je započeo/la grupni poziv";
 
 /* Text displayed when trying to turn on ringing when calling a large group. */
 "GROUP_CALL_TOO_LARGE_TO_RING" = "Grupa je prevelika za direktan poziv sudionika.";
@@ -2318,13 +2411,13 @@
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Vaš poziv je prekinut. Provjerite internetsku vezu i pokušajte ponovo.";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ bit će obavješten(a)";
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%1$@ bit će obavješten(a)";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ i %2$@ bit će obavješteni/e";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Poziva se %@";
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Poziva se %1$@";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Pozivaju se %1$@ i %2$@";
@@ -2339,7 +2432,7 @@
 "GROUP_CREATED_BY_LOCAL_USER" = "Stvorili ste grupu.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ vas je dodao u grupu.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ vas je dodao u grupu.";
 
 /* Message indicating that group was created by an unknown user. */
 "GROUP_CREATED_BY_UNKNOWN_USER" = "Grupa je stvorena.";
@@ -2351,7 +2444,7 @@
 "GROUP_DESCRIPTION_MORE" = "više";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Dodaj opis grupe...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Dodaj opis grupe…";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Opisi grupa bit će vidljivi članovima ove grupe i ljudima koji su pozvani.";
@@ -2360,7 +2453,7 @@
 "GROUP_DESCRIPTION_VIEW_TITLE" = "Opis grupe";
 
 /* Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}. */
-"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Opis grupe (%@)";
+"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "Opis grupe (%1$@)";
 
 /* Message indicating that 1 invalid invite was added to the group. */
 "GROUP_INVALID_INVITES_ADDED_1" = "Nevažeća pozivnica je dodana";
@@ -2372,10 +2465,10 @@
 "GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "Dodali ste nevažeće pozivnice.";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ je dodao nevažeću pozivnicu.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%1$@ je dodao nevažeću pozivnicu.";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ je dodao nevažeće pozivnice.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%1$@ je dodao nevažeće pozivnice.";
 
 /* Message indicating that multiple invalid invites were added to the group. */
 "GROUP_INVALID_INVITES_ADDED_N" = "Nevažeće pozivnice su dodane.";
@@ -2390,10 +2483,10 @@
 "GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "Opozvali ste nevažeće pozivnice.";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ je opozvao nevažeću pozivnicu.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%1$@ je opozvao nevažeću pozivnicu.";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ je opozvao nevažeće pozivnice.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%1$@ je opozvao nevažeće pozivnice.";
 
 /* Message indicating that multiple invalid invites were revoked. */
 "GROUP_INVALID_INVITES_REMOVED_N" = "Nevažeće pozivnice su opozvane.";
@@ -2405,7 +2498,7 @@
 "GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "Isključili ste poveznicu grupe.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ je isključio/la poveznicu grupe.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ je isključio/la poveznicu grupe.";
 
 /* Message indicating that the group invite link was enabled. */
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Uključena je poveznica grupe s omogućenim administratorskim odobrenjem.";
@@ -2414,7 +2507,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Uključili ste poveznicu grupe s omogućenim administratorskim odobrenjem.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ je uključio/la poveznicu grupe s omogućenim administratorskim odobrenjem.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ je uključio/la poveznicu grupe s omogućenim administratorskim odobrenjem.";
 
 /* Message indicating that the group invite link was enabled. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Uključena je poveznica grupe s onemogućenim administratorskim odobrenjem.";
@@ -2423,16 +2516,16 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Uključili ste poveznicu grupe s onemogućenim administratorskim odobrenjem.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ je uključio/la poveznicu grupe s onemogućenim administratorskim odobrenjem.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ je uključio/la poveznicu grupe s onemogućenim administratorskim odobrenjem.";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = "Poveznica grupe je poništena.";
+"GROUP_INVITE_LINK_RESET" = " Poveznica grupe je poništena.";
 
 /* Message indicating that the group invite link was reset by the local user. */
 "GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Poništili ste poveznicu grupe.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ je poništio/la poveznicu grupe.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%1$@ je poništio/la poveznicu grupe.";
 
 /* Message indicating that the group invite link was set to not require approval. */
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Onemogućili ste odobrenje administratora za poveznicu grupe.";
@@ -2441,7 +2534,7 @@
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Onemogućili ste odobrenje administratora za poveznicu grupe.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ je onemogućio/la odobrenje administratora za poveznicu grupe.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ je onemogućio/la odobrenje administratora za poveznicu grupe.";
 
 /* Message indicating that the group invite link was set to require approval. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Omogućili ste odobrenje administratora za poveznicu grupe.";
@@ -2450,10 +2543,10 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Omogućili ste odobrenje administratora za poveznicu grupe.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ je omogućio/la odobrenje administratora za poveznicu grupe.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ je omogućio/la odobrenje administratora za poveznicu grupe.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Ne možete automatski dodati %@ u grupu. Korisnik je pozvan i neće vidjeti poruke grupe dok ne prihvati pozivnicu.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Ne možete automatski dodati %1$@ u grupu. Korisnik je pozvan i neće vidjeti poruke grupe dok ne prihvati pozivnicu.";
 
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Ne možete automatski dodati ove korisnike u grupu. Korisnik je pozvan i neće vidjeti poruke grupe dok ne prihvati pozivnicu.";
@@ -2465,7 +2558,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "Promijenili ste postavke grupe kako biste omogućili svim članovima slanje poruka.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ je promijenio postavke grupe kako bi svim članovima omogućio slanje poruka.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ je promijenio postavke grupe kako bi svim članovima omogućio slanje poruka.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Postavke grupe promijenjene su tako da se dopušta slanje poruka isključivo administratorima.";
@@ -2474,7 +2567,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Promijenili ste postavke grupe tako da dopuštate slanje poruka isključivo administratorima.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ je promijenio postavke grupe tako da dopušta slanje poruka isključivo administratorima.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ je promijenio postavke grupe tako da dopušta slanje poruka isključivo administratorima.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Ne možete se pridružiti ovoj grupi putem veze grupe jer vas je administrator uklonio.";
@@ -2492,7 +2585,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "Pridruži se";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Učitavanje...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "Učitavanje…";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "Želite li se pridružiti ovoj grupi i podijeliti svoje ime i fotografiju s članovima?";
@@ -2579,34 +2672,34 @@
 "GROUP_LINK_VIEW_TITLE" = "Poveznica grupe";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ vas je dodao.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ vas je dodao.";
 
 /* Message indicating that the local user was granted administrator role. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Sada ste administrator.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ vas je postavio za administratora.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ vas je postavio za administratora.";
 
 /* Message indicating that the local user accepted an invite to the group. */
 "GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Prihvatili ste poziv u grupu.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Prihvatili ste pozivnicu za grupu od %@.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Prihvatili ste pozivnicu za grupu od %1$@.";
 
 /* Message indicating that the local user declined an invite to the group. */
 "GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Odbili ste poziv u grupu.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Odbili ste pozivnicu u grupu od %@.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Odbili ste pozivnicu u grupu od %1$@.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ je opozvao vašu pozivnicu u grupu.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%1$@ je opozvao vašu pozivnicu u grupu.";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
 "GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Vaš poziv u grupu je opozvan.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ vas je pozvao.";
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%1$@ vas je pozvao.";
 
 /* Message indicating that the local user was invited to the group. */
 "GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Pozvani ste u grupu.";
@@ -2618,13 +2711,13 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Pridružili ste se grupi putem poveznice grupe.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ vas je uklonio.";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ vas je uklonio.";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Uklonjeni ste iz grupe.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ je prihvatio vaš zahtjev za pridruživanje ovoj grupi.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ je prihvatio vaš zahtjev za pridruživanje ovoj grupi.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
 "GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "Otkazali ste zahtjev za pridruživanje ovoj grupi.";
@@ -2639,7 +2732,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Vaša administratorska prava su opozvana.";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ je opozvao vaša administratorska prava.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ je opozvao vaša administratorska prava.";
 
 /* Message indicating that the local user was added to the group. */
 "GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "Član vas je dodao u grupu.";
@@ -2669,91 +2762,91 @@
 "GROUP_NAME_VIEW_TITLE" = "Naziv grupe";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ je prihvatio poziv u grupu.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%1$@ je prihvatio poziv u grupu.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ je prihvatio vaš poziv u grupu.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@ je prihvatio vaš poziv u grupu.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ je prihvatio pozivnicu u grupu od %2$@.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "Dodali ste %@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "Dodali ste %1$@.";
 
 /* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ je dodao %2$@.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ je dodan u grupu.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%1$@ je dodan u grupu.";
 
 /* Message indicating that a remote user has declined their invite. */
 "GROUP_REMOTE_USER_DECLINED_INVITE" = "1 osoba je odbila pozivnicu za grupu.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 osoba koju je pozvao %@ odbila je pozivnicu za grupu.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 osoba koju je pozvao %1$@ odbila je pozivnicu za grupu.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ je odbio vaš poziv u grupu.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@ je odbio vaš poziv u grupu.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ je sada administrator";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%1$@ je sada administrator";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Postavili ste %@ za administratora.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Postavili ste %1$@ za administratora.";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ je postavio %2$@ za administratora.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Pozivnica u grupu je opozvana za %@.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Pozivnica u grupu je opozvana za %1$@.";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ je pozvan u grupu.";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%1$@ je pozvan u grupu.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Pozvali ste %@ u grupu.";
+"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Pozvali ste %1$@ u grupu.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ se pridružio/la grupi.";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%1$@ se pridružio/la grupi.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ se pridružio/la grupi putem poveznice grupe.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%1$@ se pridružio/la grupi putem poveznice grupe.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ je napustio/la grupu.";
+"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%1$@ je napustio/la grupu.";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "Uklonili ste %@.";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "Uklonili ste %1$@.";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ je uklonio %2$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Prihvatili ste zahtjev za pridruživanje u grupu od %@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Prihvatili ste zahtjev za pridruživanje u grupu od %1$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ je prihvatio/la zahtjev za pridruživanje u grupu od %1$@.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ je odbio njihov zahtjev za pridruživanje ovoj grupi.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ je odbio njihov zahtjev za pridruživanje ovoj grupi.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Odbili ste zahtjev za pridruživanje u grupu od %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "Odbili ste zahtjev za pridruživanje u grupu od %1$@.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ je odbio zahtjev za pridruživanje u grupu od %1$@.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Odbili ste zahtjev za pridruživanje u grupu od %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Odbili ste zahtjev za pridruživanje u grupu od %1$@.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ je zatražio/la pridruživanje grupi putem poveznice grupe.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%1$@ je zatražio/la pridruživanje grupi putem poveznice grupe.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "Opozvana su administratorska prava za %@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "Opozvana su administratorska prava za %1$@.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Opozvali ste administratorska prava za %@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Opozvali ste administratorska prava za %1$@.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ je opozvao administratorska prava za %2$@.";
@@ -2771,16 +2864,16 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ za %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Ukloni grupnu priču";
 
-/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Jeste li sigurni da želite izbrisati ovu priču?";
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Jeste li sigurni da želite ukloniti \"%1$@\"?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%@” can view and reply to this story. You can update the membership for this chat in the group.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Članovi grupe \"%1$@\" mogu pogledati i odgovoriti na ovu priču. Možete ažurirati članstvo za ovaj razgovor u grupi.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Tko može pogledati ovu priču";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Grupa je ažurirana.";
@@ -2792,7 +2885,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Uklonili ste sliku.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ je uklonio sliku.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ je uklonio sliku.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED" = "Grupna slika je ažurirana.";
@@ -2801,13 +2894,13 @@
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Ažurirali ste grupnu sliku.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ je ažurirao sliku.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ je ažurirao sliku.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "Ažurirali ste grupu.";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ je ažurirao grupu.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ je ažurirao grupu.";
 
 /* Message indicating that the group's description was removed. */
 "GROUP_UPDATED_DESCRIPTION_REMOVED" = "Opis grupe je uklonjen.";
@@ -2816,7 +2909,7 @@
 "GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "Uklonili ste opis grupe.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ je uklonio/la opis grupe.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ je uklonio/la opis grupe.";
 
 /* Message indicating that the group's description was changed. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED" = "Naziv grupe je primijenjen.";
@@ -2825,7 +2918,7 @@
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Vi ste promijenili opis grupe.";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ je promijenio opis grupe.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ je promijenio opis grupe.";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "Naziv grupe je uklonjen.";
@@ -2834,16 +2927,16 @@
 "GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Uklonili ste naziv grupe.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ je uklonio naziv grupe.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ je uklonio naziv grupe.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Promijenili ste naziv grupe u \"%@\".";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Promijenili ste naziv grupe u \"%1$@\".";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ je promijenio/la naziv grupe u \"%2$@\".";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Naziv grupe je sada “%@”.";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Naziv grupe je sada “%1$@”.";
 
 /* Message indicating that the group was migrated. */
 "GROUP_WAS_MIGRATED" = "Ova grupa je ažurirana u Novu grupu.";
@@ -2861,7 +2954,7 @@
 "GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "administratori";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
-"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Samo %@ može slati poruke.";
+"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Samo %1$@ može slati poruke.";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Pošalji poruku administratoru";
@@ -2873,7 +2966,7 @@
 "GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Blokiraj zahtjev";
 
 /* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
-"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ se neće moći pridružiti ovoj grupi niti zatražiti pridruživanje putem poveznice grupe. Administratori i dalje mogu dodati korisnika u grupu.";
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%1$@ se neće moći pridružiti ovoj grupi niti zatražiti pridruživanje putem poveznice grupe. Administratori i dalje mogu dodati korisnika u grupu.";
 
 /* Title for sheet asking if the user wants to block a request to join the group. */
 "GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Blokiraj zahtjev?";
@@ -2891,10 +2984,10 @@
 "GROUPS_INVITE_BLOCK_GROUP" = "Blokiraj grupu";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Blokiraj grupu i %@";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Blokiraj grupu i %1$@";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Blokiraj %@";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Blokiraj %1$@";
 
 /* Label for 'invite friends to group' button. */
 "GROUPS_INVITE_FRIENDS_BUTTON" = "Pozovi prijatelje";
@@ -2918,31 +3011,31 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "Naslijeđene i Nove grupe";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Nadogradite ovu grupu da biste aktivirali nove značajke poput @spominjanja i administratora. Članovi koji nisu podijelili svoje ime ili fotografiju u ovoj grupi bit će pozvani da se pridruže. %@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "Nadogradite ovu grupu da biste aktivirali nove značajke poput @spominjanja i administratora. Članovi koji nisu podijelili svoje ime ili fotografiju u ovoj grupi bit će pozvani da se pridruže. %1$@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "Nije moguće nadograditi u Novu grupu";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Ova se grupa ne može nadograditi u Novu grupu jer ima previše članova. Maksimalna veličina grupe koja se može nadograditi je %@.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "Ova se grupa ne može nadograditi u Novu grupu jer ima previše članova. Maksimalna veličina grupe koja se može nadograditi je %1$@.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "Kada svi trenutni članovi grupe budu koristili verziju Signala s kojom se može pridružiti Novoj grupi, ova će se grupa nadograditi.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Sva povijest poruka i medijskih zapisa će biti sačuvana od prije nadogradnje.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "Sva povijest poruka i medijskih zapisa bit će sačuvana nakon nadogradnje.";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Ovo je Naslijeđena grupa. Značajke poput grupnih administratora su dostupne samo za Nove grupe. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "Ovo je Naslijeđena grupa. Značajke poput grupnih administratora su dostupne samo za Nove grupe. %1$@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "Ova Naslijeđena grupa još nije spremna za nadogradnju u Novu grupu. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "Ova Naslijeđena grupa još nije spremna za nadogradnju u Novu grupu. %1$@.";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Ova Naslijeđena grupa ne može se nadograditi u Novu grupu jer je prevelika. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "Ova Naslijeđena grupa ne može se nadograditi u Novu grupu jer je prevelika. %1$@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Ovo je Naslijeđena grupa. Da biste pristupili novim značajkama poput @spominjanja i administratora, %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "Ovo je Naslijeđena grupa. Da biste pristupili novim značajkama poput @spominjanja i administratora, %1$@.";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "Naslijeđena grupa";
@@ -2954,7 +3047,7 @@
 "GROUPS_LEGACY_GROUP_MIGRATED_GROUP_ALERT_TITLE" = "Što su Nove grupe?";
 
 /* Explanation of group migration for a migrated group in the 'legacy group' alert views. */
-"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Sva povijest poruka i medijskih zapisa sačuvani su od prije nadogradnje.";
+"GROUPS_LEGACY_GROUP_MIGRATED_GROUP_DESCRIPTION" = "Sva povijest poruka i medijski zapisi sačuvani su nakon nadogradnje.";
 
 /* Explanation of new groups in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_NEW_GROUP_DESCRIPTION" = "Nove grupe imaju značajke poput @spominjanja i administratora grupa, a ubuduće će podržavati više značajki.";
@@ -2981,7 +3074,7 @@
 "GROUPS_LEGACY_GROUP_RE_ADD_DROPPED_GROUP_MEMBERS_DESCRIPTION_N" = "Ovi se članovi nisu mogli automatski dodati u Novu grupu kada je nadograđena:";
 
 /* Body text for the second section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Sva povijest poruka i medijskih zapisa sačuvani su od prije nadogradnje.";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Sva povijest poruka i medijski zapisi sačuvani su nakon nadogradnje.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Ovaj član je uklonjen iz grupe i neće se moći pridružiti grupi dok ne ažurira:";
@@ -3059,28 +3152,28 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Pretraži";
 
 /* A prefix indicating that a message preview is a draft */
-"HOME_VIEW_DRAFT_PREFIX" = "Skica:";
+"HOME_VIEW_DRAFT_PREFIX" = "Skica: ";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Neki vaši kontakti već koriste Signal, uključujući %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Neki vaši kontakti već koriste Signal, uključujući %1$@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Neki vaši kontakti već koriste Signal, uključujući %@ i %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Neki vaši kontakti već koriste Signal, uključujući %1$@ i %2$@";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Neki vaši kontakti već koriste Signal, uključujući %@, %@ i %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Neki vaši kontakti već koriste Signal, uključujući %1$@, %2$@ i %3$@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Započnite svoj prvi razgovor ovdje.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ vas je dodao u grupu";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ vas je dodao u grupu";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Zahtjev za razgovorom";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Nema rezultata za '%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Nema rezultata za '%1$@'";
 
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Arhiva";
@@ -3101,7 +3194,7 @@
 "IMAGE_EDITOR_BLUR_TOAST" = "Povucite kako biste zamutili dodatna lica ili područja";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Ne možete dijeliti više od %@ stavki.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Ne možete dijeliti više od %1$@ stavki.";
 
 /* Button that will present a view for the user to change the photos Signal has access to. */
 "IMAGE_PICKER_CHANGE_PHOTOS" = "Promijeni sliku";
@@ -3116,7 +3209,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Nije uspio odabir privitka.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Povezivanje...";
+"IN_CALL_CONNECTING" = "Povezivanje…";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Odgovoreno na drugom uređaju.";
@@ -3128,10 +3221,10 @@
 "IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Odbijeno na drugom uređaju.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Ponovno povezivanje...";
+"IN_CALL_RECONNECTING" = "Ponovno povezivanje…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Pozivanje...";
+"IN_CALL_RINGING" = "Pozivanje…";
 
 /* Call setup status label */
 "IN_CALL_RINGING_AUDIO" = "Zvučni poziv…";
@@ -3140,7 +3233,7 @@
 "IN_CALL_RINGING_VIDEO" = "Video poziv…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Odgovoreno. Osiguravanje...";
+"IN_CALL_SECURING" = "Odgovoreno. Osiguravanje…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Poziv je završen.";
@@ -3155,16 +3248,16 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Još nema razgovora.\nZapočnite slanjem poruke prijatelju.";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ vas je zvao/la";
+"INCOMING_CALL_FORMAT" = "%1$@ vas je zvao/la";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "Možete slati ili primati sinkronizirane poruke s vašeg telefona ili iPada.\nRadi vaše sigurnosti, povijest razgovora se ne prenosi na nove povezane uređaje.";
+"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ je promijenio/la svoj broj telefona.";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ je promijenio/la svoj broj telefona.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ je na Signalu!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ je na Signalu!";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Naljepnice";
@@ -3177,6 +3270,9 @@
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Nevažeća zvučna datoteka.";
+
+/* The provided proxy host address is not valid */
+"INVALID_PROXY_HOST_ERROR" = "Proxy adresa koju ste unijeli nije valjana. Provjerite adresu i pokušajte ponovno.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Možete omogućiti pristup kontaktima u postavkama iOS-a za pozivanje svojih prijatelja da se pridruže Signalu.";
@@ -3200,7 +3296,7 @@
 "JOIN_CALL_PILL_BUTTON" = "Pridruži se";
 
 /* Two strings, joined by a dot. Embeds {first} and {second}, which are on opposite sides of the dot */
-"JOINED_WITH_DOT" = "%@ · %@";
+"JOINED_WITH_DOT" = "%1$@ · %2$@";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Otvorite sve medijske zapise";
@@ -3347,7 +3443,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Jednom vidljiv medijski zapis";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
-"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
+"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Ovog mjeseca";
@@ -3399,6 +3495,9 @@
 
 /* Label for button to open a link. */
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Otvori poveznicu";
+
+/* Label for button to open a signal proxy. */
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Otvorite Signal Proxy";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Pogledaj paket naljepnica";
@@ -3515,13 +3614,13 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blokirani korisnici vas neće moći nazvati niti vam slati poruke.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Blokiraj %@?";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Blokiraj %1$@?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Napustiti će te ovu grupu i više nećete primati poruke ili ažuriranja.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Blokiraj i napusti %@?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Blokiraj i napusti %1$@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Izbriši";
@@ -3572,7 +3671,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blokiraj";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Želite li dopustiti %@ da vam pošalje poruku i da dijelite svoje ime i fotografiju s njima? Nećete primati poruke dok ne odblokirate.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Želite li dopustiti %1$@ da vam pošalje poruku i da dijelite svoje ime i fotografiju s njima? Nećete primati poruke dok ne odblokirate.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Želite li odblokirati ovu grupu i podijeliti svoje ime i fotografiju sa članovima? Nećete primati poruke dok ih ne odblokirate.";
@@ -3587,13 +3686,13 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Izbriši";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Želite li nastaviti ovaj razgovor s %@ i podijeliti svoje ime i fotografiju?";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Želite li nastaviti ovaj razgovor s %1$@ i podijeliti svoje ime i fotografiju?";
 
 /* A prompt notifying that the user must share their profile with this group. */
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Želite li nastaviti razgovor s ovom grupom i podijeliti svoje ime i fotografiju s članovima?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Želite li dopustiti %@ da vam pošalje poruku i da dijelite svoje ime i fotografiju s njima? Neće znati da ste vidjeli njihovu poruku dok ne prihvatite.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Želite li dopustiti %1$@ da vam pošalje poruku i da dijelite svoje ime i fotografiju s njima? Neće znati da ste vidjeli njihovu poruku dok ne prihvatite.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Želite li se pridružiti ovoj grupi i podijeliti svoje ime i fotografiju sa članovima? Neće znati da ste vidjeli njihove poruke dok ne prihvatite.";
@@ -3650,16 +3749,16 @@
 "MESSAGE_STATUS_SENT" = "Poslano";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Učitavanje...";
+"MESSAGE_STATUS_UPLOADING" = "Učitavanje…";
 
 /* status message for viewed messages */
 "MESSAGE_STATUS_VIEWED" = "Pregledano";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ više nije označen/a kao provjeren/a. Pritisnite za opcije.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%1$@ više nije označen/a kao provjeren/a. Pritisnite za opcije.";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ više nije označen/a kao provjeren/a. Pritisnite za opcije.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%1$@ više nije označen/a kao provjeren/a. Pritisnite za opcije.";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Nekoliko članova ove grupe više nije označeno kao provjereno. Pritisnite za opcije.";
@@ -3710,13 +3809,13 @@
 "MY_STORIES_NO_STORIES" = "Ovdje će se prikazivati ažuriranja vaše priče.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Svi osim…";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Svim Signal kontaktima";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Svi Signal kontakti";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Podijeli samo s...";
+"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Podijeli samo s…";
 
 /* Title for the 'My Stories' view */
 "MY_STORIES_TITLE" = "Moje priče";
@@ -3724,11 +3823,17 @@
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "Moja priča";
 
+/* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Odaberite tko može pogledati vašu priču";
+
+/* Title for the my story settings sheet */
+"MY_STORY_SETTINGS_SHEET_TITLE" = "Privatnost moje priče";
+
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "Moja priča";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Dodirnite za dodavanje priče";
+"MY_STORY_TAP_TO_ADD" = "Dodirnite za dodavanje";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Nedavno su promijenili ime svog profila iz %1$@ u %2$@.";
@@ -3766,9 +3871,6 @@
 /* Error indicating that a new group could not be created due to network connectivity problems. */
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Nije moguće stvoriti novu grupu. Provjerite internetsku vezu i pokušajte ponovo.";
 
-/* Indicates that a group member does not support New Groups. */
-"NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS" = "Ne podržava Nove grupe";
-
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Naziv grupe je obavezan.";
 
@@ -3779,7 +3881,7 @@
 "NEW_GROUP_DEFAULT_TITLE" = "Nova grupa";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ u %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%1$@ u %2$@";
 
 /* The title for the 'name new group' view. */
 "NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Dodijelite naziv grupi";
@@ -3791,7 +3893,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Odaberite članove";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ u %2$@ · Priča";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Odaberite grupu";
@@ -3817,6 +3919,9 @@
 /* Title for error alert indicating that a story name is required. */
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Nedostaje naziv priče";
 
+/* Section footer for the name text field on the 'new private story' creation view */
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Samo vi možete vidjeti naziv ove priče.";
+
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Naziv priče (obavezno)";
 
@@ -3829,17 +3934,17 @@
 /* table section header button to add a new story */
 "NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Nova priča";
 
+/* Subtitle for create custom story row on the 'new story sheet' */
+"NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE" = "Vidljiva samo određenim osobama";
+
+/* Title for create custom story row on the 'new story sheet' */
+"NEW_STORY_SHEET_CUSTOM_STORY_TITLE" = "Nova prilagođena priča";
+
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Podijelite s postojećom grupom";
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Nova grupna priča";
-
-/* Subtitle for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "Vidljiva samo određenim osobama";
-
-/* Title for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "Nova privatna priča";
 
 /* Title for the new story sheet */
 "NEW_STORY_SHEET_TITLE" = "Odaberite vrstu priče";
@@ -3853,17 +3958,11 @@
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
 "NO_OTHER_GROUPS_IN_COMMON" = "Nema drugih zajedničkih grupa.";
 
-/* A string prompting the user to send a new mesaage to a user */
-"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Nova poruka za:";
-
-/* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Nije pronađen nijedan korisnik. Pozovite putem SMS-a?";
-
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Osobna bilješka";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Možda ste primili poruke dok se vaš %@ ponovno pokretao.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Možda ste primili poruke dok se vaš %1$@ ponovno pokretao.";
 
 /* Body for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Kako biste primali obavijesti o novim porukama:";
@@ -3902,7 +4001,7 @@
 "NOTIFICATIONS_SECTION_INAPP" = "Sviraj dok je aplikacija otvorena";
 
 /* Label for settings UI that allows user to add a new notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Dodaj prilagođeni zvuk...";
+"NOTIFICATIONS_SECTION_SOUNDS_ADD_CUSTOM_SOUND" = "Dodaj prilagođeni zvuk…";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Ime, sadržaj i radnje";
@@ -3986,7 +4085,7 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "Omogući dozvole";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Odaberite tko vas može pronaći na Signalu s vašim brojem telefona %@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "Odaberite tko vas može pronaći na Signalu s vašim brojem telefona %1$@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "Tko vas može pronaći s vašim brojem telefona?";
@@ -3995,7 +4094,7 @@
 "ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "Vaš broj telefona";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
-"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Molimo pričekajte nekoliko minuta prije novog pokušaja. (%@)";
+"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "Molimo pričekajte nekoliko minuta prije novog pokušaja. (%1$@)";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Unesite vaš broj telefona";
@@ -4052,10 +4151,10 @@
 "ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Nazovi me";
 
 /* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Nazovi me za %@";
+"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Nazovi me za %1$@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Provjera kôda...";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Provjera kôda…";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Ovaj kôd je nevažeći";
@@ -4064,10 +4163,10 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "Ponovno pošalji kôd";
 
 /* Format string for button counting down time until SMS code can be resent. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Ponovno pošalji kôd za %@";
+"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Ponovno pošalji kôd za %1$@";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Unesite kôd koji smo poslali na %@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Unesite kôd koji smo poslali na %1$@";
 
 /* Title label for the onboarding verification page */
 "ONBOARDING_VERIFICATION_TITLE_LABEL" = "Potvrdni kôd";
@@ -4076,16 +4175,22 @@
 "OPEN_SETTINGS_BUTTON" = "Postavke";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ je onemogućio poruke koje nestaju.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@ je onemogućio poruke koje nestaju.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ je postavio da poruke nestaju za %@.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@ je postavio da poruke nestaju za %2$@.";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal ima tehničkih poteškoća. Naporno radimo na što bržem vraćanju usluge.";
 
+/* Label for action link when the user has an outdated payment client */
+"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Ažuriraj sada";
+
+/* Label warning the user that they should update Signal to continue using payments. */
+"OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Ažurirajte Signal da biste nastavili koristiti uslugu plaćanja. Vaše stanje računa možda nije ažurno.";
+
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "Vi ste zvali %@";
+"OUTGOING_CALL_FORMAT" = "Vi ste zvali %1$@";
 
 /* Button used to decline a payment request. */
 "PAYMENTS_ACTION_DECLINE_REQUEST" = "Odbij zahtjev";
@@ -4097,7 +4202,7 @@
 "PAYMENTS_CURRENCY_UNKNOWN" = "?";
 
 /* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ će biti obaviješten/a da ste odbili.";
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%1$@ će biti obaviješten/a da ste odbili.";
 
 /* Title for the 'decline a payment request' alert. */
 "PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "Odbij ovaj zahtjev?";
@@ -4136,7 +4241,7 @@
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Dodaj bilješku";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
-"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Dostupno stanje: %@";
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "Dostupno stanje: %1$@";
 
 /* Label for the 'confirm payment' button. */
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "Potvrdi plaćanje";
@@ -4154,7 +4259,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Nemate dovoljno MOB za dovršetak ove uplate.";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "Nemate dovoljno MOB za dovršetak ove uplate. Vaše trenutno stanje je%@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "Nemate dovoljno MOB za dovršetak ove uplate. Vaše trenutno stanje je%1$@.";
 
 /* Indicates that a payment failed due to being invalid. */
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "Nevažeća transakcija";
@@ -4172,7 +4277,7 @@
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "Mrežna naknada";
 
 /* Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}. */
-"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Procijenjeno %@";
+"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "Procijenjeno %1$@";
 
 /* Label for the 'invalid amount' button. */
 "PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "Nevažeći iznos";
@@ -4193,7 +4298,7 @@
 "PAYMENTS_NEW_PAYMENT_PROCESSING" = "Obrađivanje";
 
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
-"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "Za %@";
+"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "Za %1$@";
 
 /* Label for the 'new payment request' button. */
 "PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "Zahtjev";
@@ -4205,7 +4310,7 @@
 "PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ vam je poslao/la %2$@";
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
-"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ nova obavijest o uplatama";
+"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%1$@ nova obavijest o uplatama";
 
 /* Status indicator for incoming payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "Plaćanje je dovršeno";
@@ -4304,13 +4409,13 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "Dodaj u grupu";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Dodaj %@ u grupu?";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Dodaj %1$@ u grupu?";
 
 /* Title of 'deny member request to join group' button. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Odbij zahtjev";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Odbacite zahtjev od “%@”? Ova osoba neće moći ponovno zatražiti pridruživanje putem poveznice grupe.";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Odbacite zahtjev od “%1$@”? Ova osoba neće moći ponovno zatražiti pridruživanje putem poveznice grupe.";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Nema zahtjeva za članove na čekanju.";
@@ -4319,25 +4424,25 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Nema pozivnica.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Dodan/a je “%@“.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "Dodan/a je “%1$@“.";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "Prikaži zahtjeve";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Odbijen/a je “%@“.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "Odbijen/a je “%1$@“.";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Opozovi pozivnicu";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Opozvati pozivnicu za \"%@\"?";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Opozvati pozivnicu za \"%1$@\"?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Pojedinosti o osobama koje su pozvali drugi članovi grupe nisu prikazani. Ako se pozvane osobe odluče pridružiti, njihovi će se podaci tada podijeliti s grupom. Neće vidjeti poruke u grupi dok se ne pridruže.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Osobe s ovog popisa pokušavaju se pridružiti “%@” putem poveznice grupe.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Osobe s ovog popisa pokušavaju se pridružiti “%1$@” putem poveznice grupe.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Nevažeće pozivnice";
@@ -4385,7 +4490,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Nitko na Signalu vas neće moći pronaći s vašim brojem telefona. Nećete biti vidljivi osobama koje imaju vaš broj telefona u kontaktima, a drugi vas neće moći pronaći s vašim brojem telefona u pretraživanju.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
-"PHONE_NUMBER_EXAMPLE_FORMAT" = "Primjer: %@";
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "Primjer: %1$@";
 
 /* A user friendly name for the 'contacts only' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "Moji kontakti";
@@ -4406,7 +4511,7 @@
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "Nitko neće vidjeti vaš broj telefona na Signalu.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
-"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
+"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
 
 /* Label for 'Home' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME" = "Dom";
@@ -4517,7 +4622,7 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Ponovno unesite PIN";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Stvaranje PIN-a...";
+"PIN_CREATION_PIN_PROGRESS" = "Stvaranje PIN-a…";
 
 /* The re-creation explanation in the 'pin creation' view. */
 "PIN_CREATION_RECREATION_EXPLANATION" = "Možete promijeniti PIN sve dok je ovaj uređaj registriran.";
@@ -4616,13 +4721,13 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Reproduciraj";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Niste označili %@ kao provjerenog/u.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Niste označili %1$@ kao provjerenog/u.";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Provjeren/a";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ je provjeren/a.";
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%1$@ je provjeren/a.";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Skeniraj kôd";
@@ -4631,7 +4736,7 @@
 "PRIVACY_UNVERIFY_BUTTON" = "Ukloni provjeru";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ovo ne izgleda kao vaš sigurnosni broj s %@. Potvrđujete li ispravan kontakt?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ovo ne izgleda kao vaš sigurnosni broj s %1$@. Potvrđujete li ispravan kontakt?";
 
 /* Alert body */
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Broj u vašem međuspremniku ne izgleda kao točan sigurnosni broj za ovaj razgovor.";
@@ -4640,7 +4745,7 @@
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal nije uspio pronaći nijedan sigurnosni broj u međuspremniku. Jeste li ga ispravno kopirali?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Svaki par Signal korisnika ima poseban sigurnosni broj. Dvaput provjerite da %@ prikazuje *vaš* jedinstveni sigurnosni broj.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Svaki par Signal korisnika ima poseban sigurnosni broj. Dvaput provjerite da %1$@ prikazuje *vaš* jedinstveni sigurnosni broj.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Imate staru verziju Signala. Prije potvrde morate ažurirati aplikaciju.";
@@ -4652,7 +4757,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skenirani kôd ne izgleda kao sigurnosni broj. Koristite li oboje najnoviju verziju Signala?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Ako želite provjeriti sigurnost vašeg end-to-end šifriranja s %@, usporedite gore navedene brojeve s brojevima na njihovom uređaju.\nTakođer možete skenirati kôd na njihovom telefonu ili zatražiti da skeniraju vaš kôd.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Ako želite provjeriti sigurnost vašeg end-to-end šifriranja s %1$@, usporedite gore navedene brojeve s brojevima na njihovom uređaju.\nTakođer možete skenirati kôd na njihovom telefonu ili zatražiti da skeniraju vaš kôd.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Provjerite sigurnosni broj";
@@ -4664,16 +4769,16 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Dodaj gledatelje";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Izbriši privatnu priču";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Izbriši prilagođenu priču";
 
-/* Action sheet title confirming deletion of a private story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Jeste li sigurni da želite izbrisati ovu priču?";
+/* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Jeste li sigurni da želite izbrisati \"%1$@\"? Ažuriranja podijeljena u ovoj priči također će se izbrisati.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Ukloni";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Ova osoba više neće vidjeti vašu priču.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Izbriši %1$@?";
@@ -4682,7 +4787,7 @@
 "PROCEED_BUTTON" = "Nastavi";
 
 /* Placeholder text for the bio field of the profile bio view. */
-"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Napišite par riječi o sebi...";
+"PROFILE_BIO_VIEW_BIO_PLACEHOLDER" = "Napišite par riječi o sebi…";
 
 /* The 'Be kind' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_BE_KIND" = "Budite ljubazni";
@@ -4709,13 +4814,13 @@
 "PROFILE_BIO_VIEW_TITLE" = "Opis";
 
 /* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
-"PROFILE_BIO_VIEW_TITLE_FORMAT" = "Opis (%@)";
+"PROFILE_BIO_VIEW_TITLE_FORMAT" = "Opis (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ je promijenio/la svoje ime na profilu iz %@ u %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ je promijenio/la svoje ime na profilu iz %2$@ u %3$@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ je promijenio/la ime na profilu u %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ je promijenio/la ime na profilu u %2$@.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "Vaše ime";
@@ -4756,6 +4861,21 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Profil";
 
+/* The title for the address of the signal proxy */
+"PROXY_ADDRESS" = "Proxy adresa";
+
+/* The provided proxy connected successfully */
+"PROXY_CONNECTED_SUCCESSFULLY" = "Povezani ste s proxyjem. Možete u bilo kojem trenutku isključiti proxy u Postavkama.";
+
+/* The provided proxy couldn't connect */
+"PROXY_FAILED_TO_CONNECT" = "Spajanje na proxy nije uspjelo. Provjerite proxy adresu i pokušajte ponovno.";
+
+/* Placeholder text for signal proxy host */
+"PROXY_PLACEHOLDER" = "Unesite proxy adresu";
+
+/* Title for the signal proxy settings */
+"PROXY_SETTINGS_TITLE" = "Proxy";
+
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Označi kao pročitano";
 
@@ -4768,11 +4888,8 @@
 /* Title of alert shown when push tokens sync job succeeds. */
 "PUSH_REGISTER_SUCCESS" = "Ponovna registracija push obavijesti je uspješna.";
 
-/* No comment provided by engineer. */
-"QUESTIONMARK_PUNCTUATION" = "?";
-
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
-"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";
 
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Originalna poruka nije pronađena.";
@@ -4787,10 +4904,10 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reagira na vašu priču";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reagira na priču od %@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reagira na priču korisnika %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Priča";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Priča";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Privitak";
@@ -4811,52 +4928,64 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "Sve · %@";
+"REACTION_DETAIL_ALL_FORMAT" = "Sve · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagira s %@ na vašu poruku";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagira s %1$@ na vašu poruku";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reagira s %@ na vaš album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reagira s %1$@ na vaš album";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reagira s %@ na vaš zvuk";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reagira s %1$@ na vaš zvuk";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reagira s %@ na vaše dijeljenje kontakta";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reagira s %1$@ na vaše dijeljenje kontakta";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reagira s %@ na vašu datoteku";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reagira s %1$@ na vašu datoteku";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reagira s %@ na vaš GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reagira s %1$@ na vaš GIF";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reagira s %@ na vašu fotografiju";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reagira s %1$@ na vašu fotografiju";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reagira s %@ na vašu naljepnicu";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reagira s %1$@ na vašu naljepnicu";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reagira s %@ na \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reagira s %1$@ na \"%2$@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagira s %@ na vaš video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagira s %1$@ na vaš video";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagira s %@ na vaš jednom vidljiv medijski zapis";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagira s %1$@ na vaš jednom vidljiv medijski zapis";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagira s %@ na vašu glasovnu poruku";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagira s %1$@ na vašu glasovnu poruku";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Označi kao pročitano";
 
-/* Error message indicating that a user can't be added to a group until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "Ovaj se korisnik ne može dodati u grupu dok ne ažurira Signal.";
-
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Korisnika nije moguće odabrati.";
+
+/* Alert text. Shown after selecting a phone number that isn't valid. */
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ is not a Signal user. Try again with a valid phone number.";
+
+/* Alert title. Shown after selecting a phone number that isn't valid. */
+"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Invalid Phone Number";
+
+/* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
+"RECIPIENT_PICKER_INVITE_ACTION" = "Message";
+
+/* Alert text. Shown after selecting a phone number that isn't a Signal user. */
+"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ is not a Signal user. Would you like to invite this number?";
+
+/* Alert title. Shown after selecting a phone number that isn't a Signal user. */
+"RECIPIENT_PICKER_INVITE_TITLE" = "Invite to Signal";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Zaboravio/la sam PIN.";
@@ -4877,7 +5006,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Nevažeći PIN";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "Potvrđivanje PIN-a...";
+"REGISTER_2FA_PIN_PROGRESS" = "Potvrđivanje PIN-a…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Potvrdi";
@@ -4949,13 +5078,13 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "Potvrdni kôd će biti poslan na ovaj broj. Je li vaš navedeni broj telefona točan?";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Broj za potvrdu: %@";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "Broj za potvrdu: %1$@";
 
 /* A button allowing user to cancel registration and edit a phone number */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "Uredi";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Potvrđivanje %@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "Potvrđivanje %1$@…";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Odbij";
@@ -5003,10 +5132,10 @@
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "Pregled";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Naš Signal sigurnosni broj:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Naš Signal sigurnosni broj:\n%1$@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Vaš sigurnosni broj s %@ je promijenjen. Možda ga želite provjeriti.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Vaš sigurnosni broj s %1$@ je promijenjen. Možda ga želite provjeriti.";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Skenirajte QR kôd na uređaju vašeg kontakta.";
@@ -5069,7 +5198,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Nije moguće dohvatiti kôd za povezivanje";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Da biste ovaj uređaj povezali s drugim računom, prvo morate poništiti ovaj uređaj. Jeste li sigurni da želite izbrisati svu povijest (poruke, privitke, pozive itd.)? Radnju nije moguće poništiti.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Da biste ovaj uređaj povezali s drugim računom, najprije morate resetirati ovaj uređaj. Jeste li sigurni da želite izbrisati svu povijest (poruke, privitke, pozive itd.)? Radnju nije moguće poništiti.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Izbriši sve";
@@ -5108,7 +5237,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Pokrenite Signal na uređaju kako biste povezali ovaj iPad s svojim računom";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Nemam Signal na svom telefonu...";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Nemam Signal na svom telefonu…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Otvorite App Store na svom telefonu, instalirajte Signal, dovršite postupak registracije i tada možete svoj iPad povezati s istim računom.";
@@ -5146,9 +5275,6 @@
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Slanje pozivnice nije uspjelo, pokušajte ponovno kasnije.";
 
-/* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "Pozvali ste prijatelja da koristi Signal!";
-
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Odbaci medijske zapise";
 
@@ -5163,12 +5289,6 @@
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
 "SEND_MEDIA_TURN_OFF_MM_TITLE" = "Isključiti višestruki način rada?";
-
-/* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "Pozvati prijatelja putem nesigurnog SMS-a?";
-
-/* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "Želite li pozvati sljedeći broj na Signal:";
 
 /* String describing high quality sent media */
 "SENT_MEDIA_QUALITY_HIGH" = "Visoko";
@@ -5252,7 +5372,7 @@
 "SETTINGS_APPEARANCE_TITLE" = "Izgled";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
-"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (zadano)";
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@ (zadano)";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Dodaj kontakt za blokiranje";
@@ -5279,7 +5399,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Promijeni broj telefona";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Vaš broj telefona je promijenjen u %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Vaš broj telefona je promijenjen u %1$@";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Promijeni broj";
@@ -5294,7 +5414,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FORMAT" = "%1$@ (%2$@)";
 
 /* Format for 'example phone numbers' in the 'change phone number' settings. Embeds: {{ the example phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "Primjer: %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "Primjer: %1$@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "Vaš novi broj";
@@ -5306,7 +5426,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "Broj telefona";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Provjeravanje %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "Provjeravanje %1$@";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Koristite ovu opciju kako biste promijenili vaš trenutni broj telefona. Ovu promjenu ne možete poništiti. \n\nPrije nego što nastavite, provjerite može li vaš novi broj primati SMS poruke ili pozive.";
@@ -5324,7 +5444,7 @@
 "SETTINGS_CLEAR_HISTORY" = "Izbriši povijest razgovora";
 
 /* Footer for the 'about' help section */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \nGPLv3 licenca";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger\nLicenca AGPLv3";
 
 /* Label for the 'data' section of the app settings. */
 "SETTINGS_DATA" = "Upotreba podatkovnih podataka";
@@ -5366,7 +5486,7 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "Ne prenosi";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "Vaše stanje je %@. Ako sredstva ne prebacite na drugu adresu novčanika prije brisanja računa, izgubit ćete ih zauvijek.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "Vaše stanje je %1$@. Ako sredstva ne prebacite na drugu adresu novčanika prije brisanja računa, izgubit ćete ih zauvijek.";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "Prenesi stanje?";
@@ -5462,7 +5582,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontakt se pridružio/la Signalu";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Obavijesti me kada...";
+"SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE" = "Obavijesti me kada…";
 
 /* The title for the notification settings. */
 "SETTINGS_NOTIFICATIONS" = "Obavijesti";
@@ -5639,7 +5759,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "Primljeno";
 
 /* Format for indicator that you received a payment in the payment details view in the app settings. Embeds: {{ the user who sent you the payment }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "Primljeno od %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "Primljeno od %1$@";
 
 /* Label for the sender in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "Poslao/la";
@@ -5651,7 +5771,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Poslano";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Poslano za %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "Poslano za %1$@";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "Status";
@@ -5663,19 +5783,31 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "\"Naknada za čišćenje novčića\" naplaćuje se kada se novčići u vašem posjedu ne mogu kombinirati za dovršetak transakcije. Čišćenje će vam omogućiti da i dalje šaljete uplate.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Nemate dovoljno MOB za dovršetak ove uplate. Vaše trenutno stanje je%@.";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "Nemate dovoljno MOB za dovršetak ove uplate. Vaše trenutno stanje je%1$@.";
 
 /* Title for the 'insufficient balance for payment' alert. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "Nedovoljno na stanju";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "Od %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "Od %1$@";
 
 /* Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "Za %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "Za %1$@";
 
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Plaćanja su onemogućena.";
+
+/* Button for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Ažuriraj Signal";
+
+/* Message for payments outdated sheet. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE" = "Za nastavak slanja i primanja uplata te za pregled vašeg trenutnog stanja računa potrebno je ažurirati aplikaciju.";
+
+/* Title for payments outdated sheet saying cant send. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND" = "Neuspješno slanje uplate";
+
+/* Title for payments outdated sheet saying update required. */
+"SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE" = "Potrebno je ažuriranje";
 
 /* Label for the 'all payments' mode of the 'all payment records' section of the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_TYPE_ALL" = "Sve";
@@ -5747,7 +5879,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "Fraza za oporavak";
 
 /* Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "Unesite riječ %@";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "Unesite riječ %1$@";
 
 /* Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "Nevažeća fraza za oporavak.";
@@ -5816,7 +5948,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "Obje riječi su ne točne. Pokušajte ponovno.";
 
 /* Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "Riječ %@";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "Riječ %1$@";
 
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "Potvrdi frazu za oporavak";
@@ -5894,7 +6026,7 @@
 "SETTINGS_PINS_TITLE" = "Signal PIN";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Postavke za zaobilaženje cenzure, preusmjeravanje poziva i zapečaćene pošiljatelje.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Postavke za zaobilaženje cenzure, preusmjeravanje poziva i zaštićene pošiljatelje.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Napredno";
@@ -5977,12 +6109,6 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Omogućite iOS-u pristup vašim Signal kontaktima i razgovorima za značajke kao što su prijedlozi za dijeljenje i obavijesti.";
 
-/* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
-
-/* Label for the stories section of the settings view */
-"SETTINGS_STORIES_TITLE" = "Priče";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Zaključavanje registracije";
 
@@ -6014,10 +6140,10 @@
 "SHARE_ACTION_MESSAGE" = "Poruka";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Vaš sigurnosni broj s %@ je nedavno promijenjen. Možda ga želite provjeriti u glavnoj aplikaciji prije ponovnog slanja poruka.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Vaš sigurnosni broj s %1$@ je nedavno promijenjen. Možda ga želite provjeriti u glavnoj aplikaciji prije ponovnog slanja poruka.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Učitavanje...";
+"SHARE_EXTENSION_LOADING" = "Učitavanje…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Pokrenite Signal kako biste se registrirali.";
@@ -6038,7 +6164,7 @@
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "Učitavanje %1$@ od %2$@…";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Učitavanje...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Učitavanje…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Nije moguće pripremiti privitak";
@@ -6104,7 +6230,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Instalirane naljepnice";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Učitavanje...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Učitavanje…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Nema instaliranih naljepnica";
@@ -6152,7 +6278,7 @@
 "STORIES_GO_TO_CHAT_ACTION" = "Idi na razgovor";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Ne možete odgovoriti na ovu priču jer više niste član ove grupe.";
 
 /* Header for the hidden stories section of the stories list */
 "STORIES_HIDDEN_SECTION_HEADER" = "Sakrivene priče";
@@ -6161,10 +6287,13 @@
 "STORIES_HIDE_STORY_ACTION" = "Sakrij priču";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
-"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Nove priče korisnika %@ više se neće pojavljivati na vrhu popisa priča.";
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Nove priče korisnika %1$@ više se neće pojavljivati na vrhu popisa priča.";
 
 /* Title asking the user if they are sure they want to hide stories from another user */
 "STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Sakriti priču?";
+
+/* Short context menu action to hide the selected story */
+"STORIES_HIDE_STORY_ACTION_SHORT" = "Sakrij";
 
 /* Toast shown when a story is successfuly hidden */
 "STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Priča je skrivena";
@@ -6173,7 +6302,7 @@
 "STORIES_INFO_ACTION" = "Detalji";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "Trenutno nema novosti za prikaz.\nPritisnite + za dodavanje nove priče.";
+"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Još nema odgovora";
@@ -6199,29 +6328,35 @@
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "Spremi";
 
-/* Footer for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Priče automatski nestaju nakon 24 sata. Odaberite tko može vidjeti vašu priču ili kreirajte nove priče s određenim gledateljima ili grupama.";
+/* Footer for the 'Stories' section of the stories settings */
+"STORIES_SETTINGS_STORIES_FOOTER" = "Ažuriranja priče automatski nestaju nakon 24 sata. Odaberite tko može pogledati vašu priču ili stvorite nove priče s određenim gledateljima ili grupama.";
 
-/* Header for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_HEADER" = "Moje priče";
+/* Header for the 'Stories' section of the stories settings */
+"STORIES_SETTINGS_STORIES_HEADER" = "Priče";
 
-/* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Privatnost priče";
+/* Title for the action sheet confirming you want to turn off and delete all stories */
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Više nećete moći dijeliti niti pregledavati priče. Ažuriranja priča koja ste nedavno podijelili također će se izbrisati.";
 
-/* Title for the action sheet confirming you want to turn off stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+/* Button to turn off and delete stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Isključi i izbriši priče";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Ako isključite priče, više ih nećete moći dijeliti ni pregledavati.";
 
 /* Button to turn off stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Isključi priče";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Dijelite i gledajte priče drugih korisnika. One automatski nestaju nakon 24 sata.";
 
 /* Button to turn on stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Uključi priče";
+
+/* Title for the 'view receipts' setting in stories settings */
+"STORIES_SETTINGS_VIEW_RECEIPTS" = "Potvrde prikaza";
+
+/* Footer for the 'view receipts' section of the stories settings */
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Pogledajte i podijelite prikaze priča. Ako isključite ovu opciju, nećete vidjeti kada drugi pogledaju vašu priču.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Podijeli";
@@ -6232,11 +6367,14 @@
 /* Context menu action to unhide the selected story */
 "STORIES_UNHIDE_STORY_ACTION" = "Ponovno prikaži priču";
 
+/* Short context menu action to unhide the selected story */
+"STORIES_UNHIDE_STORY_ACTION_SHORT" = "Ponovno prikaži";
+
 /* Toast shown when a story is successfuly unhidden */
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Priča se ponovno prikazuje";
 
-/* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
+/* Text explaining that you will not see any views for your story because you have view receipts turned off */
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Omogućite potvrde čitanja da biste vidjeli tko je pogledao vaše priče.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Pregledi";
@@ -6245,7 +6383,7 @@
 "STORY_COMPOSER_CAMERA" = "Kamera";
 
 /* Displayed when failed to fetch link preview in Text Story composer. */
-"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Učitavanje poveznice nije uspjelo. Provjerite vezu i pokušajte ponovno.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
 "STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Podijelite poveznicu s gledateljima vaše priče";
@@ -6268,20 +6406,26 @@
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "Privatnost";
 
+/* Title for the story privacy settings view */
+"STORY_PRIVACY_TITLE" = "Privatnost priča";
+
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reagira s %1$@ na vašu priču";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Reacted %@ to a story";
+"STORY_REACTION_QUOTE_FORMAT" = "Reagira s %1$@ na priču";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reagira s %1$@ na priču korisnika %2$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Odgovori";
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "Reakcija na priču";
+
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Odgovori korisniku %1$@ u privatnoj poruci";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Odgovori";
@@ -6290,13 +6434,16 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "Odgovori grupi";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_MESSAGE_ACTION_SHEET" = "Nije moguće poslati priču. Provjerite internetsku vezu i pokušajte ponovno";
+"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Nije moguće poslati priču. Provjerite internetsku vezu i pokušajte ponovno";
+
+/* Title for the dialog asking user if they wish to resend a partially failed story message. */
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Priču nije bilo moguće poslati svim korisnicima. Provjerite internetsku vezu i pokušajte ponovno";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Podijeli samo s...";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Podijeli samo s…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Svi osim…";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Slanje nije uspjelo";
@@ -6304,14 +6451,47 @@
 /* Text indicating that you can tap to retry sending */
 "STORY_SEND_FAILED_RETRY" = "Dodirnite za ponovni pokušaj";
 
+/* Text indicating that the story send has failed */
+"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Slanje nije uspjelo. Dodirnite za ponovni pokušaj";
+
+/* Text indicating that the story send has partially failed */
+"STORY_SEND_PARTIALLY_FAILED" = "Djelomično poslano";
+
+/* Text indicating that the story send has partially failed */
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Djelomično poslano. Pritisnite za više detalja";
+
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "Slanje…";
 
+/* First bullet point for the explainer sheet for signal connections */
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Započeli razgovor s njima";
+
+/* Second bullet point for the explainer sheet for signal connections */
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Prihvatili njihov zahtjev za razgovorom";
+
+/* Third bullet point for the explainer sheet for signal connections */
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Spremili ih u kontakte";
+
+/* Footer for the explainer sheet for signal connections */
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Vaši kontakti mogu vidjeti vaše ime i fotografiju te sve što pošaljete u \"Moje priče\", osim ako to od njih ne sakrijete.";
+
+/* Header for the explainer sheet for signal connections */
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal kontakti</bold> su ljudi kojima ste odlučili iskazati povjerenje, tako što ste:";
+
+/* Label for the stories section of the settings view */
+"STORY_SETTINGS_TITLE" = "Priče";
+
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Odaberite Signal kontakte koji mogu pogledati vašu priču. Promjene neće utjecati na priče koje ste već poslali.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Tko može pogledati ovu priču";
+
+/* Header for the 'viewers' section on the 'story settings' bottom sheet */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Odaberite Signal kontakte koji mogu pogledati vašu priču. To možete uvijek promijeniti u postavkama privatnosti.";
+
+/* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videozapisi poslani putem Priča bit će skraćeni na isječke od %1$d sekundi/e i poslani kao više priča.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "Dodirni za nastavak";
@@ -6332,7 +6512,7 @@
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "ID pretplatnika kopiran u međuspremnik";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Vaš sigurnosni broj se podudara s %@. Možete označiti ovaj kontakt provjerenim.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Vaš sigurnosni broj se podudara s %1$@. Možete označiti ovaj kontakt provjerenim.";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Sigurnosni broj se podudara!";
@@ -6344,34 +6524,34 @@
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "Recite nam što se događa";
 
 /* Default prompt for user description in support email requests */
-"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Recite nam o problemu:";
+"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "Recite nam o problemu: ";
 
 /* Message for alert dialog presented when a support email failed to send */
 "SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "Pošaljite e-poštu s vašim zahtjevom za podršku na support@signal.org";
 
 /* Localized label for support request email filter string. Embeds {{filter text}}. */
-"SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "Filtar: %@";
+"SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "Filtar: %1$@";
 
 /* Localized label for support request email hardware string (e.g. iPhone or iPad). Embeds {{hardware text}}. */
-"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "Hardver: %@";
+"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "Hardver: %1$@";
 
 /* Localized label for support request email HID string (e.g. 12,1). Embeds {{hid text}}. */
-"SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID: %@";
+"SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID: %1$@";
 
 /* Localized divider for support request emails internal information */
 "SUPPORT_EMAIL_INFO_DIVIDER" = "--- Informacije o podršci ---";
 
 /* Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}. */
-"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS verzija: %@";
+"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS verzija: %1$@";
 
 /* Localized label for support request email locale string. Embeds {{locale}}. */
-"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "Lokalizacija: %@";
+"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "Lokalizacija: %1$@";
 
 /* Localized label for support request email debug log URL. Embeds {{debug log url}}. */
-"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "URL zapisa: %@";
+"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "URL zapisa: %1$@";
 
 /* Localized label for support request email signal version string. Embeds {{signal version}}. */
-"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal verzija: %@";
+"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal verzija: %1$@";
 
 /* Localized subject for support request emails */
 "SUPPORT_EMAIL_SUBJECT" = "Signal iOS zahtjev za podršku";
@@ -6388,23 +6568,8 @@
 /* A string in the navigation bar indicating that the support request is uploading logs */
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Učitavanje";
 
-/* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal je neprofitna organizacija bez oglasa i ulagača koju podržavaju samo ljudi koji ga koriste i cijene. Donirajte na mjesečnoj bazi kako biste dobili svoju značku profila u znak podrške projektu.";
-
-/* Second block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal je predan razvoju tehnologije privatnosti otvorenog koda koja štiti slobodno izražavanje i omogućuje sigurnu globalnu komunikaciju.\n\nVaše donacije potiču ovaj cilj i koriste se za daljnji razvoj i rad aplikacije koju  koriste milijuni ljudi diljem svijeta. Bez reklama. Bez alata za praćenje. Bez šale.";
-
-/* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Podržite tehnologiju koja je napravljena za vas, a ne za vaše podatke i pridružite se zajednici ljudi koji je održavaju.";
-
-/* Why Contribute title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Zašto donirati?";
-
 /* Action sheet title for Still Processing Badge sheet */
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Obrada u tijeku";
-
-/* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Osvojite značku %@ ";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Otkažite pretplatu";
@@ -6419,7 +6584,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Potvrditi otkazivanje?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Nije moguće dodati značku. %@";
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "Nije moguće dodati značku. %1$@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Vašu značku nije bilo moguće dodati na profil. Kontaktirajte podršku.";
@@ -6434,16 +6599,10 @@
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Pogreška u obradi plaćanja";
 
 /* Payment error occurred text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_PAYMENT_ERROR" = "Pogreška u obradi plaćanja. %@";
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "Pogreška u obradi plaćanja. %1$@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%@/mjesečno";
-
-/* Renewal text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · Ističe %@";
-
-/* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = " · Obnavlja %@";
+"SUSTAINER_VIEW_PRICING" = "%1$@/mjesečno";
 
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Obrada plaćanja…";
@@ -6451,11 +6610,8 @@
 /* Status text while processing a badge redemption */
 "SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Obrada transakcije…";
 
-/* Read More tappable text in sustainer view body */
-"SUSTAINER_VIEW_READ_MORE" = "Pročitaj više.";
-
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "Obnavlja %@";
+"SUSTAINER_VIEW_RENEWAL" = "Obnavlja se %1$@";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Vaša se uplata još uvijek obrađuje. Ovisno o vašoj vezi, to može potrajati nekoliko minuta.";
@@ -6466,20 +6622,14 @@
 /* Sustainer view Not Now Action sheet button */
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Ne sada";
 
-/* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Signal postoji zbog ljudi poput vas.";
-
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Danas će vam se naplatiti puni iznos (%@) pretplate. Vaša pretplata će se obnavljati mjesečno.";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Danas će vam se naplatiti puni iznos (%1$@) pretplate. Vaša pretplata će se obnavljati mjesečno.";
 
 /* Update Subscription? Action sheet title */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Ažurirajte pretplatu?";
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Ažuriraj";
-
-/* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Donirajte mjesečno i podržite Signal i njegovu tehnologiju koja je napravljena za vas, a ne za vaše podatke.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Isključeno";
@@ -6494,7 +6644,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Potvrdi";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Vrijeme poruka koje nestaju biti će postavljeno na %@ kada im pošaljete poruku.";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "Vrijeme poruka koje nestaju biti će postavljeno na %1$@ kada im pošaljete poruku.";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "Nemate zajedničkih grupa. Pažljivo pregledajte zahtjeve.";
@@ -6509,64 +6659,64 @@
 "THIS_MESSAGE_WAS_DELETED" = "Ova poruka je izbrisana.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Član/ica %@, %@ i još %lu dodatnih grupa/e";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Član/ica %1$@, %2$@ i još %3$lu dodatnih grupa/e";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "U ovom razgovoru možete dodati osobne bilješke. Ako vaš račun ima povezane uređaje, nove će se bilješke sinkronizirati.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Član/ica %@";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Član/ica %1$@";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "Prikaz";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Član/ica %@, %@ i %@";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Član/ica %1$@, %2$@ i %3$@";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Član/ica %@ i %@";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Član/ica %1$@ i %2$@";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%@ dana";
+"TIME_AMOUNT_DAYS" = "%1$@ dana";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%1$@d";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@ sata/i";
+"TIME_AMOUNT_HOURS" = "%1$@ sata/i";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%1$@h";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%@ minuta";
+"TIME_AMOUNT_MINUTES" = "%1$@ minuta";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%1$@m";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%@ sekunde/i";
+"TIME_AMOUNT_SECONDS" = "%1$@ sekunde/i";
 
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%1$@s";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@ dan";
+"TIME_AMOUNT_SINGLE_DAY" = "%1$@ dan";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%@ sat";
+"TIME_AMOUNT_SINGLE_HOUR" = "%1$@ sat";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minuta";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%1$@ minuta";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%@ tjedan";
+"TIME_AMOUNT_SINGLE_WEEK" = "%1$@ tjedan";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%@ tjedna/ana";
+"TIME_AMOUNT_WEEKS" = "%1$@ tjedna/ana";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@t";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@t";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Odustani";
@@ -6583,14 +6733,11 @@
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Nepoznati kontakt";
 
-/* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Nepoznata država";
-
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Jedan od vaših uređaja je poslao poruku koja se ne može obraditi niti prikazati ovdje jer koristi novu značajku Signala.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ vam je poslao poruku koja se ne može obraditi niti prikazati jer koristi novu značajku Signala.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%1$@ vam je poslao poruku koja se ne može obraditi niti prikazati jer koristi novu značajku Signala.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Primili ste poruku koja se ne može obraditi niti prikazati jer koristi novu značajku Signala.";
@@ -6602,7 +6749,7 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Ažurirano na najnoviju verziju Signala. Sada možete primati ovu vrstu poruke na svoj uređaj.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Možete zatražiti od %@ da ponovo pošalje ovu poruku sada kada koristite najnoviju verziju Signala.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Možete zatražiti od %1$@ da ponovo pošalje ovu poruku sada kada koristite najnoviju verziju Signala.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Možete zatražiti od pošiljatelja da ponovo pošalje ovu poruku sada kada koristite najnoviju verziju Signala.";
@@ -6614,7 +6761,7 @@
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Poruke koje nestaju su onemogućene.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Postavljeno je da poruke nestaju za %@.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Postavljeno je da poruke nestaju za %1$@.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Nepoznato";
@@ -6626,7 +6773,7 @@
 "UNLINK_CONFIRMATION_ALERT_BODY" = "Ovaj uređaj više neće moći slati i primati poruke ako je odspojen.";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "Poništi vezu s \"%@\"?";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "Poništi vezu s \"%1$@\"?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
 "UNLINKED_WARNING" = "Uređaj više nije povezan. Ponovno ga povežite s vašim telefonom kako biste nastavili slati poruke.";
@@ -6649,11 +6796,11 @@
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Primljena je nepodržana vrsta privitka.";
 
-/* No comment provided by engineer. */
+/* When inviting contacts to use Signal, this error is shown if the device doesn't support SMS or if there aren't any registered email accounts. */
 "UNSUPPORTED_FEATURE_ERROR" = "Vaš uređaj ne podržava ovu značajku.";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Vaš sigurnosni broj s %@ je promijenjen, vjerojatno zato što su ponovo instalirali Signal ili promijenili uređaje. Pritisnite Potvrdi da biste potvrdili novi sigurnosni broj. Ovo nije obavezno.";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "Vaš sigurnosni broj s %1$@ je promijenjen, vjerojatno zato što su ponovo instalirali Signal ili promijenili uređaje. Pritisnite Potvrdi da biste potvrdili novi sigurnosni broj. Ovo nije obavezno.";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "Potvrdi";
@@ -6667,6 +6814,12 @@
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Grupa nije bilo moguće ažurirati. Provjerite internetsku vezu i pokušajte ponovo.";
 
+/* Button to activate the signal proxy */
+"USE_PROXY_BUTTON" = "Koristi proxy";
+
+/* Explanation of when you should use a signal proxy */
+"USE_PROXY_EXPLANATION" = "Koristite proxy samo ako niste u mogućnosti povezati se na Signal putem mobilne ili Wi-Fi mreže.";
+
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Korisnička imena na Signalu su neobavezna. Ako odlučite stvoriti korisničko ime, drugi korisnici Signala će vas moći pronaći prema tom korisničkom imenu i kontaktirati vas bez poznavanja vašeg broja telefona.";
 
@@ -6677,7 +6830,7 @@
 "USERNAME_LOOKUP_ERROR" = "Došlo je do pogreške prilikom pretraživanja korisničkog imena. Pokušajte ponovno kasnije.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ nije korisnik Signala. Provjerite jeste li unijeli potpuno korisničko ime.";
+"USERNAME_NOT_FOUND_FORMAT" = "%1$@ nije korisnik Signala. Provjerite jeste li unijeli potpuno korisničko ime.";
 
 /* A message indicating that the given username was not registered with signal. */
 "USERNAME_NOT_FOUND_TITLE" = "Korisnik nije pronađen";
@@ -6698,7 +6851,7 @@
 "USERNAME_TOO_SHORT_ERROR" = "Korisnička imena moraju imati najmanje 4 znaka.";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ je zauzeto.";
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%1$@ je zauzeto.";
 
 /* Error message shown when a username update fails. */
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Ažuriranje korisničkog imena nije uspjelo.";
@@ -6710,16 +6863,16 @@
 "VALIDATION_ERROR_TOO_LONG" = "Naziv uređaja je predugačak";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Označili ste da %@ nije provjeren/a.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Označili ste da %1$@ nije provjeren/a.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Označili ste da %@ nije provjeren/a na drugom uređaju.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Označili ste da %1$@ nije provjeren/a na drugom uređaju.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Označili ste %@ kao provjerenog/u.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Označili ste %1$@ kao provjerenog/u.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Označili ste %@ kao provjernog/u na drugom uređaju.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Označili ste %1$@ kao provjernog/u na drugom uređaju.";
 
 /* Generic message indicating that verification state changed for a given user. */
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Stanje provjere je promijenjeno.";
@@ -6749,7 +6902,7 @@
 "VIEW_PHOTO" = "Pogledaj sliku";
 
 /* View the story of a group or user */
-"VIEW_STORY" = "View Story";
+"VIEW_STORY" = "Prikaži priču";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Povucite za otkazivanje";
@@ -6779,7 +6932,7 @@
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "Postavi pozadinu za sve razgovore.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Postavi pozadinu za %@.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "Postavi pozadinu za %1$@.";
 
 /* Title for the wallpaper preview view. */
 "WALLPAPER_PREVIEW_TITLE" = "Pregled";
@@ -6860,4 +7013,4 @@
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Morate dovršiti postavljanje za nastavak.";
 
 /* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Postavili ste da poruke nestaju za %@. ";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Postavili ste da poruke nestaju za %1$@.";

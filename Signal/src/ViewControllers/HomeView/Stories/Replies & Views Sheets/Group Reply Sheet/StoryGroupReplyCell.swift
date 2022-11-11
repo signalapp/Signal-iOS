@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -49,67 +50,119 @@ class StoryGroupReplyCell: UITableViewCell {
         return container
     }()
 
-    enum CellType: String, CaseIterable {
-        case standalone
-        case top
-        case bottom
-        case middle
-        case reaction
+    struct CellType: RawRepresentable {
+        enum Position: String, CaseIterable {
+            case standalone
+            case top
+            case middle
+            case bottom
+        }
+        var position: Position
+
+        enum Kind: String, CaseIterable {
+            case text
+            case reaction
+        }
+        let kind: Kind
+
+        init(kind: Kind, position: Position = .standalone) {
+            self.kind = kind
+            self.position = position
+        }
+
+        init?(rawValue: String) {
+            let components = rawValue.components(separatedBy: "_")
+            guard let rawKind = components[safe: 0], let kind = Kind(rawValue: rawKind) else { return nil }
+            guard let rawPosition = components[safe: 1], let position = Position(rawValue: rawPosition) else { return nil }
+            self.init(kind: kind, position: position)
+        }
+
+        var rawValue: String { kind.rawValue + "_" + position.rawValue }
+
+        static var all: [CellType] {
+            Kind.allCases.flatMap { kind in
+                Position.allCases.map { position in
+                    .init(kind: kind, position: position)
+                }
+            }
+        }
 
         var hasFooter: Bool {
-            switch self {
-            case .standalone, .bottom, .reaction: return true
-            case .top, .middle: return false
+            switch kind {
+            case .reaction: return true
+            case .text:
+                switch position {
+                case .standalone, .bottom: return true
+                case .top, .middle: return false
+                }
             }
         }
 
         var hasAuthor: Bool {
-            switch self {
-            case .standalone, .top, .reaction: return true
-            case .middle, .bottom: return false
+            switch kind {
+            case .reaction: return true
+            case .text:
+                switch position {
+                case .standalone, .top: return true
+                case .middle, .bottom: return false
+                }
             }
         }
 
         var hasAvatar: Bool {
-            switch self {
-            case .standalone, .bottom, .reaction: return true
-            case .top, .middle: return false
+            switch kind {
+            case .reaction: return true
+            case .text:
+                switch position {
+                case .standalone, .bottom: return true
+                case .top, .middle: return false
+                }
             }
         }
 
         var hasBubble: Bool {
-            switch self {
+            switch kind {
             case .reaction: return false
-            case .standalone, .top, .middle, .bottom: return true
+            case .text: return true
             }
         }
 
-        var hasReaction: Bool {
-            switch self {
+        var isReaction: Bool {
+            switch kind {
             case .reaction: return true
-            case .standalone, .top, .middle, .bottom: return false
+            case .text: return false
             }
         }
 
         var insets: UIEdgeInsets {
-            switch self {
-            case .standalone, .reaction: return UIEdgeInsets(hMargin: 16, vMargin: 6)
-            case .top: return UIEdgeInsets(top: 6, leading: 16, bottom: 1, trailing: 16)
-            case .middle: return UIEdgeInsets(top: 1, leading: 16, bottom: 1, trailing: 16)
-            case .bottom: return UIEdgeInsets(top: 1, leading: 16, bottom: 6, trailing: 16)
+            switch kind {
+            case .reaction:
+                switch position {
+                case .standalone: return UIEdgeInsets(hMargin: 16, vMargin: 17)
+                case .top: return UIEdgeInsets(top: 17, leading: 16, bottom: 7, trailing: 16)
+                case .middle: return UIEdgeInsets(hMargin: 16, vMargin: 7)
+                case .bottom: return UIEdgeInsets(top: 7, leading: 16, bottom: 17, trailing: 16)
+                }
+            case .text:
+                switch position {
+                case .standalone: return UIEdgeInsets(hMargin: 16, vMargin: 6)
+                case .top: return UIEdgeInsets(top: 6, leading: 16, bottom: 1, trailing: 16)
+                case .middle: return UIEdgeInsets(top: 1, leading: 16, bottom: 1, trailing: 16)
+                case .bottom: return UIEdgeInsets(top: 1, leading: 16, bottom: 6, trailing: 16)
+                }
             }
         }
 
         var verticalAlignment: UIStackView.Alignment {
-            switch self {
+            switch kind {
             case .reaction: return .center
-            case .standalone, .top, .middle, .bottom: return .bottom
+            case .text: return .bottom
             }
         }
 
         var sharpCorners: UIRectCorner {
-            switch self {
-            case .standalone, .reaction: return []
+            switch position {
+            case .standalone: return []
             case .top: return CurrentAppContext().isRTL ? .bottomRight : .bottomLeft
             case .middle: return CurrentAppContext().isRTL ? [.bottomRight, .topRight] : [.bottomLeft, .topLeft]
             case .bottom: return CurrentAppContext().isRTL ? .topRight : .topLeft
@@ -126,7 +179,7 @@ class StoryGroupReplyCell: UITableViewCell {
             self.cellType = cellType
         } else {
             owsFailDebug("Missing cellType for reuseIdentifer \(String(describing: reuseIdentifier))")
-            self.cellType = .standalone
+            self.cellType = .init(kind: .text)
         }
 
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -175,7 +228,7 @@ class StoryGroupReplyCell: UITableViewCell {
 
         hStack.addArrangedSubview(.hStretchingSpacer())
 
-        if cellType.hasReaction {
+        if cellType.isReaction {
             hStack.addArrangedSubview(reactionLabel)
         }
 
@@ -214,7 +267,7 @@ class StoryGroupReplyCell: UITableViewCell {
             }
         }
 
-        if cellType.hasReaction {
+        if cellType.isReaction {
             reactionLabel.text = item.reactionEmoji
         }
 
@@ -228,7 +281,7 @@ class StoryGroupReplyCell: UITableViewCell {
                     with: .font(UIFont.ows_dynamicTypeBodyClamped.ows_italic),
                     .color(.ows_gray05)
                 )
-            } else if cellType == .reaction {
+            } else if cellType.isReaction {
                 return NSLocalizedString("STORY_REPLY_REACTION", comment: "Text indicating a story has been reacted to").styled(
                     with: .font(.ows_dynamicTypeBodyClamped),
                     .color(.ows_gray05),
@@ -371,12 +424,26 @@ class StoryGroupReplyCell: UITableViewCell {
         textContainer.maximumNumberOfLines = 0
 
         let lastGlyphIndex = layoutManager.glyphIndexForCharacter(at: attributedString.length - 1)
-        let lastLineFragmentRect = layoutManager.lineFragmentUsedRect(
+        let unroundedLastLineFragmentRect = layoutManager.lineFragmentUsedRect(
             forGlyphAt: lastGlyphIndex,
             effectiveRange: nil
         )
+        let lastLineFragmentRect = CGRect(
+            origin: unroundedLastLineFragmentRect.origin,
+            size: CGSize(
+                width: floor(unroundedLastLineFragmentRect.width),
+                height: floor(unroundedLastLineFragmentRect.height)
+            )
+        )
 
-        let fullTextRect = layoutManager.usedRect(for: textContainer)
+        let unroundedFullTextRect = layoutManager.usedRect(for: textContainer)
+        let fullTextRect = CGRect(
+            origin: unroundedFullTextRect.origin,
+            size: CGSize(
+                width: floor(unroundedFullTextRect.width),
+                height: floor(unroundedFullTextRect.height)
+            )
+        )
 
         return (fullTextRect, lastLineFragmentRect)
     }

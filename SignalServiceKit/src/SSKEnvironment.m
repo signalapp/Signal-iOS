@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "SSKEnvironment.h"
@@ -46,7 +47,6 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<GroupV2Updates> groupV2UpdatesRef;
 @property (nonatomic) MessageFetcherJob *messageFetcherJobRef;
 @property (nonatomic) BulkProfileFetch *bulkProfileFetchRef;
-@property (nonatomic) BulkUUIDLookup *bulkUUIDLookupRef;
 @property (nonatomic) id<VersionedProfiles> versionedProfilesRef;
 @property (nonatomic) ModelReadCaches *modelReadCachesRef;
 @property (nonatomic) EarlyMessageManager *earlyMessageManagerRef;
@@ -63,6 +63,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) ChangePhoneNumber *changePhoneNumberRef;
 @property (nonatomic) id<SubscriptionManagerProtocol> subscriptionManagerRef;
 @property (nonatomic) id<SystemStoryManagerProtocolObjc> systemStoryManagerRef;
+@property (nonatomic) RemoteMegaphoneFetcher *remoteMegaphoneFetcherRef;
 
 @end
 
@@ -79,7 +80,6 @@ static SSKEnvironment *sharedSSKEnvironment;
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
                      linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
                           messageSender:(MessageSender *)messageSender
-                  messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
                  pendingReceiptRecorder:(id<PendingReceiptRecorder>)pendingReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          networkManager:(NetworkManager *)networkManager
@@ -114,7 +114,6 @@ static SSKEnvironment *sharedSSKEnvironment;
                          groupV2Updates:(id<GroupV2Updates>)groupV2Updates
                       messageFetcherJob:(MessageFetcherJob *)messageFetcherJob
                        bulkProfileFetch:(BulkProfileFetch *)bulkProfileFetch
-                         bulkUUIDLookup:(BulkUUIDLookup *)bulkUUIDLookup
                       versionedProfiles:(id<VersionedProfiles>)versionedProfiles
                         modelReadCaches:(ModelReadCaches *)modelReadCaches
                     earlyMessageManager:(EarlyMessageManager *)earlyMessageManager
@@ -132,6 +131,8 @@ static SSKEnvironment *sharedSSKEnvironment;
                       changePhoneNumber:(ChangePhoneNumber *)changePhoneNumber
                     subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager
                      systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager
+                 remoteMegaphoneFetcher:(RemoteMegaphoneFetcher *)remoteMegaphoneFetcher
+                           sskJobQueues:(SSKJobQueues *)sskJobQueues
 {
     self = [super init];
     if (!self) {
@@ -141,7 +142,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     _contactsManagerRef = contactsManager;
     _linkPreviewManagerRef = linkPreviewManager;
     _messageSenderRef = messageSender;
-    _messageSenderJobQueueRef = messageSenderJobQueue;
     _pendingReceiptRecorderRef = pendingReceiptRecorder;
     _profileManagerRef = profileManager;
     _networkManagerRef = networkManager;
@@ -177,7 +177,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     _messageFetcherJobRef = messageFetcherJob;
     _bulkProfileFetchRef = bulkProfileFetch;
     _versionedProfilesRef = versionedProfiles;
-    _bulkUUIDLookupRef = bulkUUIDLookup;
     _modelReadCachesRef = modelReadCaches;
     _earlyMessageManagerRef = earlyMessageManager;
     _messagePipelineSupervisorRef = messagePipelineSupervisor;
@@ -194,6 +193,8 @@ static SSKEnvironment *sharedSSKEnvironment;
     _changePhoneNumberRef = changePhoneNumber;
     _subscriptionManagerRef = subscriptionManager;
     _systemStoryManagerRef = systemStoryManager;
+    _remoteMegaphoneFetcherRef = remoteMegaphoneFetcher;
+    _sskJobQueuesRef = sskJobQueues;
 
     return self;
 }
@@ -211,11 +212,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(!sharedSSKEnvironment || CurrentAppContext().isRunningTests);
     
     sharedSSKEnvironment = env;
-}
-
-+ (void)clearSharedForTests
-{
-    sharedSSKEnvironment = nil;
 }
 
 + (BOOL)hasShared
@@ -281,6 +277,8 @@ static SSKEnvironment *sharedSSKEnvironment;
 - (void)warmCaches
 {
     NSArray *specs = @[
+        @"signalProxy",
+        ^{ [SignalProxy warmCaches]; },
         @"tsAccountManager",
         ^{ [self.tsAccountManager warmCaches]; },
         @"signalServiceAddressCache",
@@ -311,7 +309,7 @@ static SSKEnvironment *sharedSSKEnvironment;
         ^{ [StoryManager setup]; }
     ];
 
-    for (int i = 0; i < specs.count / 2; i++) {
+    for (unsigned i = 0; i < specs.count / 2; i++) {
         [InstrumentsMonitor measureWithCategory:@"appstart"
                                          parent:@"caches"
                                            name:[specs objectAtIndex:2 * i]

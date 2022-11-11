@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import UIKit
@@ -80,7 +81,7 @@ public class PinReminderViewController: OWSViewController {
         view.addSubview(containerView)
         containerView.autoPinWidthToSuperview()
         containerView.autoPin(toTopLayoutGuideOf: self, withInset: 0, relation: .greaterThanOrEqual)
-        autoPinView(toBottomOfViewControllerOrKeyboard: containerView, avoidNotch: true)
+        containerView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
         // We want the background to extend to the bottom of the screen
         // behind the safe area, so we add that inset to our bottom inset
@@ -277,7 +278,7 @@ public class PinReminderViewController: OWSViewController {
         Logger.info("")
 
         // We only check > 0 here rather than > 3 because legacy pins may be less than 4 characters
-        guard let pin = pin?.ows_stripped(), pin.count > 0 else {
+        guard let pin = pin?.ows_stripped(), !pin.isEmpty else {
             if !silent { validationState = .tooShort }
             return
         }

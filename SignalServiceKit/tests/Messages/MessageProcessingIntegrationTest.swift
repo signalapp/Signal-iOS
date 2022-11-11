@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import XCTest
@@ -104,7 +105,6 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         observer.appendDatabaseWriteDelegate(databaseDelegate)
 
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
-        envelopeBuilder.setSourceE164(bobClient.e164Identifier!)
         envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
         envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
         envelopeBuilder.setServerGuid(UUID().uuidString)
@@ -232,89 +232,6 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             }
         }
         waitForExpectations(timeout: 1.0)
-    }
-
-    private func deliveryReceiptProtoEnvelope(timestamp: UInt64) throws -> SSKProtoEnvelope {
-        let envelopeBuilder = fakeService.envelopeBuilderForServerGeneratedDeliveryReceipt(fromSenderClient: bobClient)
-        envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
-        envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
-        envelopeBuilder.setServerGuid(UUID().uuidString)
-        envelopeBuilder.setDestinationUuid(localClient.uuidIdentifier)
-        envelopeBuilder.setTimestamp(timestamp)
-        return try envelopeBuilder.build()
-    }
-
-    private func invalidProtoEnvelope() throws -> SSKProtoEnvelope {
-        let envelopeBuilder = fakeService.envelopeBuilderForInvalidEnvelope(fromSenderClient: bobClient)
-        envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
-        envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
-        envelopeBuilder.setServerGuid(UUID().uuidString)
-        envelopeBuilder.setDestinationUuid(localClient.uuidIdentifier)
-        return try envelopeBuilder.build()
-    }
-
-    private func udDeliveryReceiptProtoEnvelope(timestamp: UInt64) throws -> SSKProtoEnvelope {
-        let envelopeBuilder = fakeService.envelopeBuilderForUDDeliveryReceipt(fromSenderClient: bobClient,
-                                                                              timestamp: timestamp)
-        envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
-        envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
-        envelopeBuilder.setServerGuid(UUID().uuidString)
-        envelopeBuilder.setDestinationUuid(localClient.uuidIdentifier)
-        return try envelopeBuilder.build()
-    }
-
-    private func normalMessageProtoEnvelope() throws -> SSKProtoEnvelope {
-        let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
-        envelopeBuilder.setSourceE164(bobClient.e164Identifier!)
-        envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
-        envelopeBuilder.setServerTimestamp(NSDate.ows_millisecondTimeStamp())
-        envelopeBuilder.setServerGuid(UUID().uuidString)
-        return try envelopeBuilder.build()
-    }
-
-    private func decrytpedEnvelopeForDeliveryReceipt(timestamp: UInt64) throws -> DecryptedEnvelope {
-        let envelope = try deliveryReceiptProtoEnvelope(timestamp: timestamp)
-        let data = try envelope.serializedData()
-        return DecryptedEnvelope(envelope: envelope,
-                                 envelopeData: data,
-                                 plaintextData: nil,
-                                 serverDeliveryTimestamp: 1234,
-                                 wasReceivedByUD: false,
-                                 identity: .pni,
-                                 completion: { _ in })
-    }
-
-    private func decryptedEnvelopeForNormalMessage() throws -> DecryptedEnvelope {
-        let envelope = try normalMessageProtoEnvelope()
-        let data = try envelope.serializedData()
-        return DecryptedEnvelope(envelope: envelope,
-                                 envelopeData: data,
-                                 plaintextData: nil,
-                                 serverDeliveryTimestamp: 1234,
-                                 wasReceivedByUD: false,
-                                 identity: .pni,
-                                 completion: { _ in })
-    }
-
-    private func deliveryReceiptProcessingRequest(timestamp: UInt64) throws -> ProcessingRequest {
-        let decryptedEnvelope = try decrytpedEnvelopeForDeliveryReceipt(timestamp: 1)
-        return ProcessingRequest(decryptedEnvelope,
-                                 state: .plaintextReceipt(decryptedEnvelope.envelope))
-    }
-
-    private func normalMessageProcessingRequest() throws -> ProcessingRequest {
-        let envelope = try! normalMessageProtoEnvelope()
-        let mmr =  write { transaction in
-            MessageManagerRequest(envelope: envelope,
-                                            plaintextData: Data(),
-                                            wasReceivedByUD: false,
-                                            serverDeliveryTimestamp: 1,
-                                            shouldDiscardVisibleMessages: false,
-                                            transaction: transaction)!
-        }
-        let decryptedEnvelope = try decrytpedEnvelopeForDeliveryReceipt(timestamp: 1)
-        return ProcessingRequest(decryptedEnvelope,
-                                 state: .messageManagerRequest(mmr))
     }
 
     func testPniMessage() {

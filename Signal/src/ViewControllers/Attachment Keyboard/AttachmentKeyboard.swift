@@ -1,12 +1,13 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Photos
+import SignalMessaging
+import SignalUI
 
-@objc
-protocol AttachmentKeyboardDelegate {
+protocol AttachmentKeyboardDelegate: AnyObject {
     func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment)
     func didTapGalleryButton()
     func didTapCamera()
@@ -19,7 +20,6 @@ protocol AttachmentKeyboardDelegate {
 }
 
 class AttachmentKeyboard: CustomKeyboard {
-    @objc
     weak var delegate: AttachmentKeyboardDelegate?
 
     private let mainStackView = UIStackView()
@@ -71,11 +71,6 @@ class AttachmentKeyboard: CustomKeyboard {
         setupRecentPhotos()
         setupGalleryButton()
         setupFormatPicker()
-
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardFrameDidChange),
-                                               name: UIResponder.keyboardDidChangeFrameNotification,
-                                               object: nil)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -84,7 +79,7 @@ class AttachmentKeyboard: CustomKeyboard {
 
     // MARK: Recent Photos
 
-    func setupRecentPhotos() {
+    private func setupRecentPhotos() {
         recentPhotosCollectionView.recentPhotosDelegate = self
         mainStackView.addArrangedSubview(recentPhotosCollectionView)
 
@@ -92,7 +87,7 @@ class AttachmentKeyboard: CustomKeyboard {
         recentPhotosErrorView.isHidden = true
     }
 
-    func showRecentPhotos() {
+    private func showRecentPhotos() {
         guard recentPhotosCollectionView.hasPhotos || isMediaLibraryAccessLimited else {
             return showRecentPhotosError()
         }
@@ -104,7 +99,7 @@ class AttachmentKeyboard: CustomKeyboard {
         recentPhotosCollectionView.isHidden = false
     }
 
-    func showRecentPhotosError() {
+    private func showRecentPhotosError() {
         recentPhotosErrorView.hasMediaLibraryAccess = isMediaLibraryAccessGranted
 
         galleryButton.isHidden = true
@@ -116,7 +111,7 @@ class AttachmentKeyboard: CustomKeyboard {
 
     // MARK: Gallery Button
 
-    func setupGalleryButton() {
+    private func setupGalleryButton() {
         addSubview(galleryButton)
         galleryButton.setTemplateImage(#imageLiteral(resourceName: "photo-album-outline-28"), tintColor: .white)
         galleryButton.setBackgroundImage(UIImage(color: UIColor.black.withAlphaComponent(0.7)), for: .normal)
@@ -132,13 +127,13 @@ class AttachmentKeyboard: CustomKeyboard {
     }
 
     @objc
-    func didTapGalleryButton() {
+    private func didTapGalleryButton() {
         delegate?.didTapGalleryButton()
     }
 
     // MARK: Format Picker
 
-    func setupFormatPicker() {
+    private func setupFormatPicker() {
         attachmentFormatPickerView.attachmentFormatPickerDelegate = self
 
         mainStackView.addArrangedSubview(attachmentFormatPickerView)
@@ -154,18 +149,15 @@ class AttachmentKeyboard: CustomKeyboard {
 
     override func willPresent() {
         super.willPresent()
-
-        checkPermissions { [weak self] in
-            self?.updateItemSizes()
-        }
+        checkPermissions()
     }
 
-    @objc
-    func keyboardFrameDidChange() {
+    override func layoutSubviews() {
+        super.layoutSubviews()
         updateItemSizes()
     }
 
-    func updateItemSizes() {
+    private func updateItemSizes() {
         // The items should always expand to fit the height of their collection view.
 
         // If we have space we will show two rows of recent photos (e.g. iPad in landscape).
@@ -183,21 +175,19 @@ class AttachmentKeyboard: CustomKeyboard {
         attachmentFormatPickerView.itemSize = CGSize(square: attachmentFormatPickerView.height)
     }
 
-    func checkPermissions(completion: @escaping () -> Void) {
+    private func checkPermissions() {
         switch mediaLibraryAuthorizationStatus {
         case .authorized, .limited:
             showRecentPhotos()
         case .denied, .restricted:
             showRecentPhotosError()
         case .notDetermined:
-            return PHPhotoLibrary.requestAuthorization { _ in
-                DispatchQueue.main.async { self.checkPermissions(completion: completion) }
+            PHPhotoLibrary.requestAuthorization { _ in
+                DispatchQueue.main.async { self.checkPermissions() }
             }
         @unknown default:
             showRecentPhotosError()
         }
-
-        completion()
     }
 }
 

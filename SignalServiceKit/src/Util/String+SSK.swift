@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -237,9 +238,11 @@ public extension NSMutableAttributedString {
         // Tinting of templated images doesn't work correctly at the start
         // of a string on iOS 11+12, so we need to append a character before
         // the icon. We use a thin space. Zero-width space doesn't work.
-        if #available(iOS 13, *) {
-            // Do nothing.
-        } else if image.renderingMode == .alwaysTemplate && length == 0 {
+        if
+            #unavailable(iOS 13),
+            image.renderingMode == .alwaysTemplate,
+            length == 0
+        {
             append("\u{200a}", attributes: attributes ?? [:])
         }
 
@@ -653,6 +656,17 @@ public extension NSString {
     }
 }
 
+// MARK: - Percent encoding
+
+public extension String {
+    var percentEncodedAsUrlPath: String {
+        var components = URLComponents()
+        components.path = self
+
+        return components.percentEncodedPath
+    }
+}
+
 // MARK: -
 
 public extension String {
@@ -706,5 +720,23 @@ public extension NSString {
             return ""
         }
         return formattedDuration
+    }
+}
+
+// MARK: - Filename
+
+public extension String {
+    private static let permissibleFilenameCharRegex: NSRegularExpression = {
+        let pattern = "^[a-zA-Z0-9\\-_]+$"
+
+        do {
+            return try NSRegularExpression(pattern: pattern)
+        } catch let error {
+            owsFail("Failed to create filename char regex: \(error)")
+        }
+    }()
+
+    var isPermissibleAsFilename: Bool {
+        Self.permissibleFilenameCharRegex.hasMatch(input: self)
     }
 }

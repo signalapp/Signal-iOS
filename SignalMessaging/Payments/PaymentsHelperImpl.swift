@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -268,6 +269,20 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
         return Self.arePaymentsEnabledForUserStore.getBool(uuid.uuidString,
                                                            defaultValue: false,
                                                            transaction: transaction)
+    }
+
+    // MARK: - Version Compatibility
+
+    private let isPaymentsVersionOutdatedCache = AtomicValue<Bool>(false)
+
+    public var isPaymentsVersionOutdated: Bool {
+        isPaymentsVersionOutdatedCache.get()
+    }
+
+    public func setPaymentsVersionOutdated(_ value: Bool) {
+        let oldValue = isPaymentsVersionOutdatedCache.swap(value)
+        guard oldValue != value else { return }
+        NotificationCenter.default.postNotificationNameAsync(PaymentsConstants.isPaymentsVersionOutdatedDidChange, object: nil)
     }
 
     // MARK: - Incoming Messages

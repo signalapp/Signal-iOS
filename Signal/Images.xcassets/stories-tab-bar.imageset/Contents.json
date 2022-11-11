@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "stories_tab_bar.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

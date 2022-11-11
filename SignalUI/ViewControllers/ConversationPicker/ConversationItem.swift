@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -22,14 +23,35 @@ public protocol ConversationItem {
 
     var image: UIImage? { get }
     var isBlocked: Bool { get }
+    var isStory: Bool { get }
     var disappearingMessagesConfig: OWSDisappearingMessagesConfiguration? { get }
 
     func getExistingThread(transaction: SDSAnyReadTransaction) -> TSThread?
     func getOrCreateThread(transaction: SDSAnyWriteTransaction) -> TSThread?
+
+    /// If true, attachments will be segmented into chunks shorter than
+    /// `StoryMessage.videoAttachmentDurationLimit` and limited in quality.
+    var limitsVideoAttachmentLengthForStories: Bool { get }
+
+    /// If non-nill, tooltip text that will be shown when attempting to send a video to this
+    /// conversation that exceeds the story video attachment duration.
+    /// Should be set if `limitsVideoAttachmentLengthForStories` is true.
+    var videoAttachmentStoryLengthTooltipString: String? { get }
 }
 
 extension ConversationItem {
     public var titleWithSneakyTransaction: String { SDSDatabaseStorage.shared.read { title(transaction: $0) } }
+
+    public var videoAttachmentDurationLimit: TimeInterval? {
+        return limitsVideoAttachmentLengthForStories ? StoryMessage.videoAttachmentDurationLimit : nil
+    }
+
+    public var videoAttachmentStoryLengthTooltipString: String? {
+        if limitsVideoAttachmentLengthForStories {
+            owsFailDebug("Should set if limitsVideoAttachmentLengthForStories is true.")
+        }
+        return nil
+    }
 }
 
 // MARK: -
@@ -56,6 +78,8 @@ struct RecentConversationItem {
 extension RecentConversationItem: ConversationItem {
     var outgoingMessageClass: TSOutgoingMessage.Type { unwrapped.outgoingMessageClass }
 
+    var limitsVideoAttachmentLengthForStories: Bool { return unwrapped.limitsVideoAttachmentLengthForStories }
+
     var messageRecipient: MessageRecipient {
         return unwrapped.messageRecipient
     }
@@ -71,6 +95,8 @@ extension RecentConversationItem: ConversationItem {
     var isBlocked: Bool {
         return unwrapped.isBlocked
     }
+
+    var isStory: Bool { return false }
 
     var disappearingMessagesConfig: OWSDisappearingMessagesConfiguration? {
         return unwrapped.disappearingMessagesConfig
@@ -107,6 +133,10 @@ extension ContactConversationItem: Comparable {
 
 extension ContactConversationItem: ConversationItem {
     var outgoingMessageClass: TSOutgoingMessage.Type { TSOutgoingMessage.self }
+
+    var isStory: Bool { return false }
+
+    var limitsVideoAttachmentLengthForStories: Bool { return false }
 
     var messageRecipient: MessageRecipient {
         .contact(address)
@@ -162,6 +192,10 @@ public struct GroupConversationItem: Dependencies {
 extension GroupConversationItem: ConversationItem {
     public var outgoingMessageClass: TSOutgoingMessage.Type { TSOutgoingMessage.self }
 
+    public var isStory: Bool { return false }
+
+    public var limitsVideoAttachmentLengthForStories: Bool { return false }
+
     public var messageRecipient: MessageRecipient {
         .group(groupThreadId)
     }
@@ -199,6 +233,13 @@ public struct StoryConversationItem {
         case privateStory(_ item: PrivateStoryConversationItem)
     }
 
+    public var threadId: String {
+        switch backingItem {
+        case .groupStory(let item): return item.groupThreadId
+        case .privateStory(let item): return item.storyThreadId
+        }
+    }
+
     public let backingItem: ItemType
     var unwrapped: ConversationItem {
         switch backingItem {
@@ -207,44 +248,107 @@ public struct StoryConversationItem {
         }
     }
 
-    public static func allItems(transaction: SDSAnyReadTransaction) -> [StoryConversationItem] {
-        AnyThreadFinder().storyThreads(transaction: transaction)
-            .lazy
-            .sorted { lhs, rhs in
-                if (lhs as? TSPrivateStoryThread)?.isMyStory == true { return true }
-                if (rhs as? TSPrivateStoryThread)?.isMyStory == true { return false }
-                return (lhs.lastSentStoryTimestamp?.uint64Value ?? 0) > (rhs.lastSentStoryTimestamp?.uint64Value ?? 0)
+    public static func allItems(
+        includeImplicitGroupThreads: Bool,
+        excludeHiddenContexts: Bool,
+        prioritizeThreadsCreatedAfter: Date? = nil,
+        transaction: SDSAnyReadTransaction
+    ) -> [StoryConversationItem] {
+        func sortTime(
+            for associatedData: StoryContextAssociatedData?,
+            thread: TSThread
+        ) -> UInt64 {
+            if
+                let thread = thread as? TSGroupThread,
+                associatedData?.lastReceivedTimestamp ?? 0 > thread.lastSentStoryTimestamp?.uint64Value ?? 0
+            {
+                return associatedData?.lastReceivedTimestamp ?? 0
             }
-            .compactMap { thread -> StoryConversationItem.ItemType? in
-                if let groupThread = thread as? TSGroupThread {
-                    guard groupThread.isLocalUserFullMember else {
-                        return nil
-                    }
-                    return .groupStory(GroupConversationItem(
-                        groupThreadId: groupThread.uniqueId,
-                        isBlocked: false,
-                        disappearingMessagesConfig: nil
-                    ))
-                } else if let privateStoryThread = thread as? TSPrivateStoryThread {
-                    return .privateStory(PrivateStoryConversationItem(
-                        storyThreadId: privateStoryThread.uniqueId,
-                        isMyStory: privateStoryThread.isMyStory
-                    ))
-                } else {
-                    owsFailDebug("Unexpected story thread type \(type(of: thread))")
+
+            return thread.lastSentStoryTimestamp?.uint64Value ?? 0
+        }
+
+        return AnyThreadFinder()
+            .storyThreads(
+                includeImplicitGroupThreads: includeImplicitGroupThreads,
+                transaction: transaction
+            )
+            .lazy
+            .compactMap { (thread: TSThread) -> (TSThread, StoryContextAssociatedData?)? in
+                let associatedData = StoryFinder.associatedData(for: thread, transaction: transaction)
+                if excludeHiddenContexts, associatedData?.isHidden ?? false {
                     return nil
                 }
-            }.map { .init(backingItem: $0) }
+                return (thread, associatedData)
+            }
+            .sorted { lhs, rhs in
+                if (lhs.0 as? TSPrivateStoryThread)?.isMyStory == true { return true }
+                if (rhs.0 as? TSPrivateStoryThread)?.isMyStory == true { return false }
+                if let priorityDateThreshold = prioritizeThreadsCreatedAfter {
+                    let lhsCreatedAfterThreshold = lhs.0.creationDate?.isAfter(priorityDateThreshold) ?? false
+                    let rhsCreatedAfterThreshold = rhs.0.creationDate?.isAfter(priorityDateThreshold) ?? false
+                    if lhsCreatedAfterThreshold != rhsCreatedAfterThreshold {
+                        return lhsCreatedAfterThreshold
+                    }
+                }
+                return sortTime(for: lhs.1, thread: lhs.0) > sortTime(for: rhs.1, thread: rhs.0)
+            }
+            .map(\.0)
+            .compactMap { thread -> Self? in
+                return .from(thread: thread)
+            }
+    }
+
+    public static func from(thread: TSThread) -> Self? {
+        let backingItem: StoryConversationItem.ItemType? = {
+            if let groupThread = thread as? TSGroupThread {
+                guard groupThread.isLocalUserFullMember else {
+                    return nil
+                }
+                return .groupStory(GroupConversationItem(
+                    groupThreadId: groupThread.uniqueId,
+                    isBlocked: false,
+                    disappearingMessagesConfig: nil
+                ))
+            } else if let privateStoryThread = thread as? TSPrivateStoryThread {
+                return .privateStory(PrivateStoryConversationItem(
+                    storyThreadId: privateStoryThread.uniqueId,
+                    isMyStory: privateStoryThread.isMyStory
+                ))
+            } else {
+                owsFailDebug("Unexpected story thread type \(type(of: thread))")
+                return nil
+            }
+        }()
+        guard let backingItem = backingItem else {
+            return nil
+        }
+        return .init(backingItem: backingItem)
     }
 }
 
 // MARK: -
 
-extension StoryConversationItem: ConversationItem {
+extension StoryConversationItem: ConversationItem, Dependencies {
     public var outgoingMessageClass: TSOutgoingMessage.Type { OutgoingStoryMessage.self }
+
+    public var limitsVideoAttachmentLengthForStories: Bool { return true }
+
+    public var videoAttachmentStoryLengthTooltipString: String? {
+        return StoryMessage.videoSegmentationTooltip
+    }
 
     public var messageRecipient: MessageRecipient {
         unwrapped.messageRecipient
+    }
+
+    public var isMyStory: Bool {
+        switch backingItem {
+        case .groupStory:
+            return false
+        case .privateStory(let item):
+            return item.isMyStory
+        }
     }
 
     public func title(transaction: SDSAnyReadTransaction) -> String {
@@ -261,6 +365,11 @@ extension StoryConversationItem: ConversationItem {
         switch backingItem {
         case .privateStory(let item):
             if item.isMyStory {
+                guard StoryManager.hasSetMyStoriesPrivacy(transaction: transaction) else {
+                    return OWSLocalizedString(
+                        "MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE",
+                        comment: "Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings.")
+                }
                 switch thread.storyViewMode {
                 case .blockList:
                     guard let thread = thread as? TSPrivateStoryThread else {
@@ -278,7 +387,7 @@ extension StoryConversationItem: ConversationItem {
                             "MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d",
                             tableName: "PluralAware",
                             comment: "Format string representing the excluded viewer count for 'My Story' when accessible to all signal connections. Embeds {{ number of excluded viewers }}.")
-                        return String.localizedStringWithFormat(format, recipientCount)
+                        return String.localizedStringWithFormat(format, thread.addresses.count)
                     }
                 case .explicit:
                     let format = OWSLocalizedString(
@@ -286,7 +395,7 @@ extension StoryConversationItem: ConversationItem {
                         tableName: "PluralAware",
                         comment: "Format string representing the viewer count for 'My Story' when accessible to only an explicit list of viewers. Embeds {{ number of viewers }}.")
                     return String.localizedStringWithFormat(format, recipientCount)
-                case .none:
+                case .default, .disabled:
                     owsFailDebug("Unexpected view mode for my story")
                     return ""
                 }
@@ -313,6 +422,8 @@ extension StoryConversationItem: ConversationItem {
     public var isBlocked: Bool {
         unwrapped.isBlocked
     }
+
+    public var isStory: Bool { return true }
 
     public var disappearingMessagesConfig: OWSDisappearingMessagesConfiguration? {
         unwrapped.disappearingMessagesConfig
@@ -345,7 +456,15 @@ public struct PrivateStoryConversationItem: Dependencies {
 extension PrivateStoryConversationItem: ConversationItem {
     public var outgoingMessageClass: TSOutgoingMessage.Type { OutgoingStoryMessage.self }
 
+    public var limitsVideoAttachmentLengthForStories: Bool { return true }
+
+    public var videoAttachmentStoryLengthTooltipString: String? {
+        return StoryMessage.videoSegmentationTooltip
+    }
+
     public var isBlocked: Bool { false }
+
+    public var isStory: Bool { return true }
 
     public var disappearingMessagesConfig: OWSDisappearingMessagesConfiguration? { nil }
 
@@ -360,7 +479,7 @@ extension PrivateStoryConversationItem: ConversationItem {
     }
 
     public var image: UIImage? {
-        UIImage(named: "private-story-\(Theme.isDarkThemeEnabled ? "dark" : "light")-36")
+        UIImage(named: "custom-story-\(Theme.isDarkThemeEnabled ? "dark" : "light")-36")
     }
 
     public func getExistingThread(transaction: SDSAnyReadTransaction) -> TSThread? {

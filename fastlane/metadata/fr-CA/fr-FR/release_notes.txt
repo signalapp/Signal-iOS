@@ -1,3 +1,0 @@
-• Blocked contacts will no longer show up in your contact list, recipient lists for sending messages or adding to a group, and more.
-• If you have Speak Selection enabled in your iOS settings, you can long press a text and select “Speak” to hear the text message read aloud.
-• Small improvements make it simpler to engage with other members of a group chat.

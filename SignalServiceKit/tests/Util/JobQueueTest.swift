@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -75,15 +76,6 @@ class TestDurableOperation: OWSOperation, DurableOperation {
 }
 
 class JobQueueTest: SSKBaseTestSwift {
-
-    override func setUp() {
-        super.setUp()
-    }
-
-    override func tearDown() {
-        super.tearDown()
-    }
-
     // MARK: 
 
     func buildJobRecord() -> TestJobRecord {

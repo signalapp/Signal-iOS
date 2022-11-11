@@ -1,22 +1,14 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import XCTest
 @testable import SignalServiceKit
 
 class MessageSenderJobQueueTest: SSKBaseTestSwift {
-
-    private var fakeMessageSender: OWSFakeMessageSender {
-        MockSSKEnvironment.shared.messageSender as! OWSFakeMessageSender
-    }
-
-    override func setUp() {
-        super.setUp()
-    }
-
-    override func tearDown() {
-        super.tearDown()
+    private var fakeMessageSender: FakeMessageSender {
+        MockSSKEnvironment.shared.messageSender as! FakeMessageSender
     }
 
     // MARK: 

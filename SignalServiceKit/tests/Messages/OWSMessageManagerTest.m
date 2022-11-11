@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSMessageManager.h"
@@ -8,7 +9,6 @@
 #import "MessageSender.h"
 #import "MockSSKEnvironment.h"
 #import "OWSFakeCallMessageHandler.h"
-#import "OWSFakeMessageSender.h"
 #import "OWSIdentityManager.h"
 #import "OWSSyncGroupsMessage.h"
 #import "SSKBaseTestObjC.h"
@@ -21,7 +21,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kAliceRecipientId = @"+13213214321";
+NSString *const kLocalE164 = @"+13215550198";
+NSString *const kLocalUuidString = @"B0D19730-950B-462C-84E7-60421F879EEF";
 
 @interface OWSMessageManager (Testing)
 
@@ -56,8 +57,9 @@ NSString *const kAliceRecipientId = @"+13213214321";
 - (void)setUp
 {
     [super setUp];
-    [self.tsAccountManager registerForTestsWithLocalNumber:kAliceRecipientId uuid:[NSUUID new]];
-    [self.messageSenderJobQueue setup];
+    [self.tsAccountManager registerForTestsWithLocalNumber:kLocalE164
+                                                      uuid:[[NSUUID alloc] initWithUUIDString:kLocalUuidString]];
+    [self.sskJobQueues.messageSenderJobQueue setup];
 }
 
 #pragma mark -
@@ -82,7 +84,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
     SSKProtoEnvelopeBuilder *envelopeBuilder =
         [SSKProtoEnvelope builderWithTimestamp:12345];
     [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
-    [envelopeBuilder setSourceE164:kAliceRecipientId];
+    [envelopeBuilder setSourceUuid:kLocalUuidString];
     [envelopeBuilder setSourceDevice:1];
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -109,9 +111,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
         XCTAssertNil(thread);
     }];
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder =
-        [SSKProtoEnvelope builderWithTimestamp:12345];
-    [envelopeBuilder setSourceE164:@"+13213214321"];
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builderWithTimestamp:12345];
     [envelopeBuilder setSourceUuid:NSUUID.UUID.UUIDString];
     [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
 
@@ -149,9 +149,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
         XCTAssertNil(thread);
     }];
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder =
-        [SSKProtoEnvelope builderWithTimestamp:12345];
-    [envelopeBuilder setSourceE164:@"+13213214321"];
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builderWithTimestamp:12345];
     [envelopeBuilder setSourceUuid:NSUUID.UUID.UUIDString];
     [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
 

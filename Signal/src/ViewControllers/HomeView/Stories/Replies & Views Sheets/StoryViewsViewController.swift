@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import SignalUI
 import UIKit
 
@@ -15,13 +17,15 @@ private struct Viewer {
 
 class StoryViewsViewController: OWSViewController {
     private(set) var storyMessage: StoryMessage
+    let context: StoryContext
 
     let tableView = UITableView(frame: .zero, style: .grouped)
 
     private let emptyStateView = UIView()
 
-    init(storyMessage: StoryMessage) {
+    init(storyMessage: StoryMessage, context: StoryContext) {
         self.storyMessage = storyMessage
+        self.context = context
         super.init()
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
@@ -52,7 +56,7 @@ class StoryViewsViewController: OWSViewController {
             updateEmptyStateView()
         }
 
-        guard receiptManager.areReadReceiptsEnabled() else {
+        guard StoryManager.areViewReceiptsEnabled else {
             self.viewers = []
             return
         }
@@ -74,20 +78,23 @@ class StoryViewsViewController: OWSViewController {
                 return
             }
 
-            self.viewers = recipientStates.compactMap {
-               guard let viewedTimestamp = $0.value.viewedTimestamp else { return nil }
-                return Viewer(
-                    address: .init(uuid: $0.key),
-                    displayName: contactsManager.displayName(for: .init(uuid: $0.key), transaction: transaction),
-                    comparableName: contactsManager.comparableName(for: .init(uuid: $0.key), transaction: transaction),
-                    viewedTimestamp: viewedTimestamp
-                )
-            }.sorted { lhs, rhs in
-                if lhs.viewedTimestamp == rhs.viewedTimestamp {
-                    return lhs.comparableName.caseInsensitiveCompare(rhs.comparableName) == .orderedAscending
+            self.viewers = recipientStates
+                .lazy
+                .filter { $1.isValidForContext(self.context) }
+                .compactMap {
+                    guard let viewedTimestamp = $0.value.viewedTimestamp else { return nil }
+                    return Viewer(
+                        address: .init(uuid: $0.key),
+                        displayName: Self.contactsManager.displayName(for: .init(uuid: $0.key), transaction: transaction),
+                        comparableName: Self.contactsManager.comparableName(for: .init(uuid: $0.key), transaction: transaction),
+                        viewedTimestamp: viewedTimestamp
+                    )
+                }.sorted { lhs, rhs in
+                    if lhs.viewedTimestamp == rhs.viewedTimestamp {
+                        return lhs.comparableName.caseInsensitiveCompare(rhs.comparableName) == .orderedAscending
+                    }
+                    return lhs.viewedTimestamp > rhs.viewedTimestamp
                 }
-                return lhs.viewedTimestamp > rhs.viewedTimestamp
-            }
         }
     }
 
@@ -98,7 +105,7 @@ class StoryViewsViewController: OWSViewController {
         let label = UILabel()
         label.textAlignment = .center
 
-        if receiptManager.areReadReceiptsEnabled() {
+        if StoryManager.areViewReceiptsEnabled {
             label.font = .ows_dynamicTypeBody
             label.textColor = .ows_gray45
             label.text = NSLocalizedString(
@@ -114,19 +121,18 @@ class StoryViewsViewController: OWSViewController {
             label.textColor = .ows_gray25
             label.text = NSLocalizedString(
                 "STORIES_VIEWS_OFF_DESCRIPTION",
-                comment: "Text explaining that you will not see any views for your story because you have read receipts turned off"
+                comment: "Text explaining that you will not see any views for your story because you have view receipts turned off"
             )
             label.numberOfLines = 0
             label.setContentHuggingVerticalHigh()
 
             let settingsButton = OWSButton { [weak self] in
-                let settingsNav = OWSNavigationController(rootViewController: AppSettingsViewController())
-                settingsNav.pushViewController(PrivacySettingsViewController(), animated: false)
+                let privacySettings = OWSNavigationController(rootViewController: StoryPrivacySettingsViewController())
 
                 // Dismiss the story view and present the privacy settings screen
                 owsAssertDebug(self?.presentingViewController?.presentingViewController is ConversationSplitViewController)
                 self?.presentingViewController?.presentingViewController?.dismiss(animated: true, completion: {
-                    CurrentAppContext().frontmostViewController()?.present(settingsNav, animated: true)
+                    CurrentAppContext().frontmostViewController()?.present(privacySettings, animated: true)
                 })
             }
             settingsButton.setTitle(CommonStrings.goToSettingsButton, for: .normal)

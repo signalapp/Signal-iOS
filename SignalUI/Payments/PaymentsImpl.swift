@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import MobileCoin
+import SignalMessaging
 import SignalServiceKit
 
 @objc
@@ -268,6 +270,9 @@ public class PaymentsImpl: NSObject, PaymentsSwift {
         firstly {
             self.updateCurrentPaymentBalancePromise()
         }.catch { error in
+            let paymentsError = error as? PaymentsError
+            let outdated = paymentsError == .outdatedClient || paymentsError == .attestationVerificationFailed
+            Self.paymentsHelper.setPaymentsVersionOutdated(outdated)
             owsFailDebugUnlessMCNetworkFailure(error)
         }
     }
@@ -1050,7 +1055,7 @@ public extension PaymentsImpl {
                                                     paymentRequest: paymentRequest,
                                                     expiresInSeconds: expiresInSeconds,
                                                     transaction: transaction)
-            Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
             return message
         }
     }
@@ -1085,7 +1090,7 @@ public extension PaymentsImpl {
                                                 paymentRequest: nil,
                                                 expiresInSeconds: expiresInSeconds,
                                                 transaction: transaction)
-        Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+        Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         return message
 
     }
@@ -1112,7 +1117,7 @@ public extension PaymentsImpl {
                                                 paymentRequest: nil,
                                                 expiresInSeconds: expiresInSeconds,
                                                 transaction: transaction)
-        Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+        Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         return message
 
     }
@@ -1146,7 +1151,7 @@ public extension PaymentsImpl {
                                                    receiptData: mcReceiptData,
                                                    isDefragmentation: isDefragmentation)
         let message = OutgoingPaymentSyncMessage(thread: thread, mobileCoin: mobileCoin, transaction: transaction)
-        Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+        Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         return message
     }
 }

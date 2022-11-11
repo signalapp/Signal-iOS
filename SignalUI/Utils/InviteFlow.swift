@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2016 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import ContactsUI
 import Foundation
 import MessageUI
+import SignalMessaging
 import SignalServiceKit
 
 @objc(OWSInviteFlow)
@@ -30,6 +32,15 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
 
     deinit {
         Logger.verbose("deinit")
+    }
+
+    // MARK: - Localized Strings
+
+    public static var unsupportedFeatureMessage: String {
+        OWSLocalizedString(
+            "UNSUPPORTED_FEATURE_ERROR",
+            comment: "When inviting contacts to use Signal, this error is shown if the device doesn't support SMS or if there aren't any registered email accounts."
+        )
     }
 
     // MARK: -

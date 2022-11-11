@@ -1,7 +1,9 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalMessaging
 import SignalUI
 
 public extension ConversationViewController {
@@ -97,7 +99,7 @@ public extension ConversationViewController {
         // We initiated a call, so if there was a pending message request we should accept it.
         ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
 
-        outboundIndividualCallInitiator.initiateCall(thread: contactThread, isVideo: withVideo)
+        callService.initiateCall(thread: contactThread, isVideo: withVideo)
         NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
     }
 

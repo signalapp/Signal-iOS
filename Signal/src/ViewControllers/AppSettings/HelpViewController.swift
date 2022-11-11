@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import SafariServices
+import SignalMessaging
 
 @objc(OWSHelpViewController)
 final class HelpViewController: OWSTableViewController2 {
@@ -79,7 +81,10 @@ final class HelpViewController: OWSTableViewController2 {
 
         let aboutSection = OWSTableSection()
         aboutSection.headerTitle = NSLocalizedString("ABOUT_SECTION_TITLE", comment: "Title for the 'about' help section")
-        aboutSection.footerTitle = NSLocalizedString("SETTINGS_COPYRIGHT", comment: "Footer for the 'about' help section")
+        aboutSection.footerTitle = NSLocalizedString(
+            "SETTINGS_COPYRIGHT",
+            comment: "Footer for the 'about' help section"
+        )
         aboutSection.add(.copyableItem(label: NSLocalizedString("SETTINGS_VERSION", comment: ""),
                                        value: AppVersion.shared().currentAppVersion4))
         aboutSection.add(.disclosureItem(

@@ -1,12 +1,13 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 
 struct DiscoveredContactInfo: Hashable {
-    let e164: String?
-    let uuid: UUID?         // This should be made non-optional when we drop Legacy CDS
+    let e164: String
+    let uuid: UUID
 }
 
 /// An item that fetches contact info from the ContactDiscoveryService
@@ -120,35 +121,29 @@ extension ContactDiscoveryError: IsRetryableProvider {
     }
 }
 
-extension ContactDiscovering {
+struct ContactDiscoveryE164Collection<T: Collection> where T.Element == String {
+    let values: T
+    let encodedValues: Data
 
-    private static func encodeE164(_ e164: String) throws -> UInt64 {
-        guard e164.first == "+" else {
-            throw ContactDiscoveryError.assertionError(description: "unexpected e164 format")
-        }
-
-        let numericPortion = e164.dropFirst()
-        guard let numericIdentifier = UInt64(numericPortion), numericIdentifier > 99 else {
-            throw ContactDiscoveryError.assertionError(description: "unexpectedly short identifier")
-        }
-
-        return numericIdentifier.bigEndian
+    init(_ e164s: T) throws {
+        self.values = e164s
+        self.encodedValues = try Self.buildEncodedValues(for: e164s)
     }
 
-    static func encodeE164s<T>(_ phoneNumbers: T) throws -> Data where T: Collection, T.Element == String {
-        guard phoneNumbers.allSatisfy({ $0.first == "+" }) else {
-            throw ContactDiscoveryError.assertionError(description: "unexpected e164 format")
-        }
-
-        var buffer = Data()
-        buffer.reserveCapacity(8 * phoneNumbers.count)
-
-        return try phoneNumbers.reduce(into: buffer) { partialResult, e164 in
-            let encodedE164 = try encodeE164(e164)
-            withUnsafePointer(to: encodedE164) { pointer in
-                let bufferPointer = UnsafeBufferPointer(start: pointer, count: 1)
-                partialResult.append(bufferPointer)
+    private static func buildEncodedValues(for e164s: T) throws -> Data {
+        var result = Data()
+        result.reserveCapacity(MemoryLayout<UInt64>.size * e164s.count)
+        return try e164s.reduce(into: result) { partialResult, e164 in
+            guard e164.first == "+" else {
+                throw ContactDiscoveryError.assertionError(description: "e164 is missing prefix")
             }
+            guard let numericPortion = UInt64(e164.dropFirst()) else {
+                throw ContactDiscoveryError.assertionError(description: "e164 isn't a number")
+            }
+            guard numericPortion > 99 else {
+                throw ContactDiscoveryError.assertionError(description: "e164 is too short")
+            }
+            partialResult.append(numericPortion.bigEndianData)
         }
     }
 }

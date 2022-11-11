@@ -7,6 +7,19 @@ on:
       - main
       - release/*
 
+# On PRs, "head_ref" is defined and is consistent across updates. On
+# pushes, it's not defined, so we use "run_id", which is unique across
+# every run; as a result, all actions on pushes will run to completion.
+#
+# Reference: https://docs.github.com/en/actions/using-jobs/using-concurrency
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  # Path format pulled from https://github.com/actions/virtual-environments/blob/main/images/macos/macos-11-Readme.md#xcode
+  DEVELOPER_DIR: /Applications/Xcode_14.0.1.app
+
 jobs:
   build_and_test:
     name: Build and Test
@@ -15,6 +28,9 @@ jobs:
 
     runs-on: macos-12
 
+    env:
+      FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 7
+
     steps:
       - uses: actions/checkout@v3
 
@@ -22,40 +38,10 @@ jobs:
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
 
-      - name: Setup environment
-        shell: bash
-        run: |
-          REQUIRED_VERSION=13.2
-          CURRENT_VERSION=$(xcodebuild -version | grep "Xcode" | awk '{print $2}')
-
-          echo "Current Xcode version: $CURRENT_VERSION"
-          echo "Required Xcode version: $REQUIRED_VERSION"
-
-          if [[ $CURRENT_VERSION != $REQUIRED_VERSION ]]; then
-            # Path format pulled from https://github.com/actions/virtual-environments/blob/main/images/macos/macos-11-Readme.md#xcode
-            NEW_XCODE="/Applications/Xcode_$REQUIRED_VERSION.app"
-            echo "Changing selected Xcode to $NEW_XCODE"
-            sudo xcode-select -s $NEW_XCODE
-
-            CURRENT_VERSION=$(xcodebuild -version | grep "Xcode" | awk '{print $2}')
-            echo "$?: Current Xcode version: $CURRENT_VERSION"
-          fi
-
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1 # Reads .ruby-version file by default
-
-      - name: Cache Bundle Install
-        uses: actions/cache@v3
         with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
-
-      - name: Bundle Install
-        run: |
-          bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
+          bundler-cache: true
 
       - name: Build and Test
         run: |
@@ -64,7 +50,13 @@ jobs:
             exit 1
           }
 
-          bundle exec fastlane scan --scheme Signal --output_types junit || formatFailures
+          bundle exec fastlane scan \
+            --scheme Signal \
+            --output_types junit \
+            --skip_package_dependencies_resolution \
+            --disable_package_automatic_updates \
+            --xcargs '-test-timeouts-enabled YES -maximum-test-execution-time-allowance 60' \
+            || formatFailures
 
       - name: Upload build logs
         uses: actions/upload-artifact@v3
@@ -76,7 +68,7 @@ jobs:
   check_autogenstrings:
     name: Check if strings file is outdated
 
-    timeout-minutes: 5
+    timeout-minutes: 10
 
     runs-on: macos-12
 
@@ -100,7 +92,7 @@ jobs:
 
     timeout-minutes: 5
 
-    runs-on: macos-11
+    runs-on: macos-12
 
     if: github.event_name == 'pull_request'
 
@@ -115,7 +107,7 @@ jobs:
 
       - name: Lint files changed in the PR
         run: |
-          python3 Scripts/precommit.py --ref origin/${{ github.base_ref }}
+          python3 Scripts/precommit.py --ref origin/${{ github.base_ref }} --skip_license_header_checks
 
           # https://help.github.com/en/actions/reference/development-tools-for-github-actions#logging-commands
           git diff --name-only | sed -E 's|(.*)|::error file=\1::Incorrectly formatted (Scripts/precommit.py)|'

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -66,6 +67,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         return SDSDatabaseStorage.baseDir.appendingPathComponent(directoryMode.folderName, isDirectory: true)
     }
 
+    @objc
     public static func databaseFileUrl(directoryMode: DirectoryMode = .primary) -> URL {
         let databaseDir = databaseDirUrl(directoryMode: directoryMode)
         OWSFileSystem.ensureDirectoryExists(databaseDir.path)
@@ -78,7 +80,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         return databaseDir.appendingPathComponent("signal.sqlite-wal", isDirectory: false)
     }
 
-    private let databaseUrl: URL
+    private let databaseFileUrl: URL
 
     private let storage: GRDBStorage
 
@@ -94,8 +96,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     // lastSuccessfulCheckpointDate should only be accessed while checkpointLock is acquired.
     private var lastSuccessfulCheckpointDate: Date?
 
-    override init() {
-        databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(directoryMode: .primary)
+    init(databaseFileUrl: URL) {
+        self.databaseFileUrl = databaseFileUrl
 
         do {
             // Crash if keychain is inaccessible.
@@ -106,7 +108,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
         do {
             // Crash if storage can't be initialized.
-            storage = try GRDBStorage(dbURL: databaseUrl, keyspec: GRDBDatabaseStorageAdapter.keyspec)
+            storage = try GRDBStorage(dbURL: databaseFileUrl, keyspec: GRDBDatabaseStorageAdapter.keyspec)
         } catch {
             owsFail("\(error.grdbErrorForLogging)")
         }
@@ -145,7 +147,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             SSKJobRecord.table,
             OWSMessageContentJob.table,
             OWSRecipientIdentity.table,
-            ExperienceUpgrade.table,
             OWSDisappearingMessagesConfiguration.table,
             SignalRecipient.table,
             SignalAccount.table,
@@ -169,10 +170,13 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             MessageSendLog.Message.self,
             ProfileBadge.self,
             StoryMessage.self,
+            StoryContextAssociatedData.self,
             DonationReceipt.self,
             OWSReaction.self,
             TSGroupMember.self,
-            TSMention.self
+            TSMention.self,
+            ExperienceUpgrade.self,
+            CancelledGroupRing.self
         ]
     }
 
@@ -208,7 +212,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     }
 
     private func checkForDatabasePathChange() {
-        if databaseUrl != GRDBDatabaseStorageAdapter.databaseFileUrl() {
+        if databaseFileUrl != GRDBDatabaseStorageAdapter.databaseFileUrl() {
             Logger.warn("Remote process changed the active database path. Exiting...")
             Logger.flush()
             exit(0)
@@ -265,7 +269,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     @objc
     public static var isKeyAccessible: Bool {
         do {
-            return try keyspec.fetchString().count > 0
+            return try !keyspec.fetchString().isEmpty
         } catch {
             owsFailDebug("Key not accessible: \(error)")
             return false
@@ -1005,17 +1009,41 @@ public struct GRDBKeySpecSource {
 
 // MARK: -
 
+fileprivate extension URL {
+    func appendingPathString(_ string: String) -> URL? {
+        guard var components = URLComponents(url: self, resolvingAgainstBaseURL: false) else {
+            return nil
+        }
+        components.path += string
+        return components.url
+    }
+}
+
 extension GRDBDatabaseStorageAdapter {
+    public static func walFileUrl(for databaseFileUrl: URL) -> URL {
+        guard let result = databaseFileUrl.appendingPathString("-wal") else {
+            owsFail("Could not get WAL URL")
+        }
+        return result
+    }
+
+    public static func shmFileUrl(for databaseFileUrl: URL) -> URL {
+        guard let result = databaseFileUrl.appendingPathString("-shm") else {
+            owsFail("Could not get SHM URL")
+        }
+        return result
+    }
+
     public var databaseFilePath: String {
-        return databaseUrl.path
+        return databaseFileUrl.path
     }
 
     public var databaseWALFilePath: String {
-        return databaseUrl.path + "-wal"
+        Self.walFileUrl(for: databaseFileUrl).path
     }
 
     public var databaseSHMFilePath: String {
-        return databaseUrl.path + "-shm"
+        Self.shmFileUrl(for: databaseFileUrl).path
     }
 
     static func removeAllFiles() {

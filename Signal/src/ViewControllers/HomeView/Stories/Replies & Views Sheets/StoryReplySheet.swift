@@ -1,13 +1,16 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import SignalServiceKit
 import SignalUI
 import UIKit
 
 protocol StoryReplySheet: OWSViewController, StoryReplyInputToolbarDelegate, MessageReactionPickerDelegate {
+    var bottomBar: UIView { get }
     var inputToolbar: StoryReplyInputToolbar { get }
     var storyMessage: StoryMessage { get }
     var thread: TSThread? { get }
@@ -57,7 +60,7 @@ extension StoryReplySheet {
 
             let message = builder.build(transaction: transaction)
             message.anyInsert(transaction: transaction)
-            Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
 
             if message.hasRenderableContent() { thread.donateSendMessageIntent(for: message, transaction: transaction) }
 
@@ -141,7 +144,16 @@ extension StoryReplySheet {
     func storyReplyInputToolbarHeightDidChange(_ storyReplyInputToolbar: StoryReplyInputToolbar) {}
 
     func storyReplyInputToolbarMentionPickerPossibleAddresses(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> [SignalServiceAddress] {
-        return thread?.recipientAddressesWithSneakyTransaction ?? []
+        guard let thread = thread, thread.isGroupThread else { return [] }
+        return thread.recipientAddressesWithSneakyTransaction
+    }
+
+    func storyReplyInputToolbarMentionPickerParentView(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> UIView? {
+        view
+    }
+
+    func storyReplyInputToolbarMentionPickerReferenceView(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> UIView? {
+        bottomBar
     }
 }
 

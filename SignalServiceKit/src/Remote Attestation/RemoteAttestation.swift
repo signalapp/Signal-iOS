@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -463,10 +464,7 @@ fileprivate extension RemoteAttestation {
         }
 
         // Only accept signatures from the last 24 hours.
-        guard let timestampDatePlus1Day = Calendar.current.date(byAdding: .day, value: 1, to: timestampDate) else {
-            throw attestationError(reason: "Failed to calculate timestamp date offset by 24 hours")
-        }
-
+        let timestampDatePlus1Day = timestampDate.addingTimeInterval(kDayInterval)
         if Date().isAfter(timestampDatePlus1Day) {
             if DebugFlags.internalLogging {
                 Logger.info("signatureBody: \(signatureBody)")
@@ -484,20 +482,19 @@ fileprivate extension RemoteAttestation {
         let isvEnclaveQuoteStatus: String
         let version: Int
         let advisoryURL: String?
-        let advisoryIDs: [String]?
+        let advisoryIDs: Set<String>?
+
+        private static let allowedAdvisoryIDs = ["INTEL-SA-00334", "INTEL-SA-00615"]
 
         var hasValidStatus: Bool {
             switch isvEnclaveQuoteStatus {
             case "OK": return true
-            // We can safely treat this status as OK IFF the only advisor ID is "INTEL-SA-00334",
-            // because it indicates that the hardware is vulnerable to LVI and the software needs
-            // to implement mitigations for such. Our enclaves all appropriately have mitigations.
-            case "SW_HARDENING_NEEDED": return version == 4 && advisoryIDs == ["INTEL-SA-00334"]
+            case "SW_HARDENING_NEEDED": return (advisoryIDs ?? Set()).isSubset(of: Self.allowedAdvisoryIDs)
             default: return false
             }
         }
 
-        var hasValidVersion: Bool { [3, 4].contains(version) }
+        var hasValidVersion: Bool { version == 4 }
     }
 
     static func parseSignatureBodyEntity(_ signatureBodyEntity: String) throws -> SignatureBodyEntity {

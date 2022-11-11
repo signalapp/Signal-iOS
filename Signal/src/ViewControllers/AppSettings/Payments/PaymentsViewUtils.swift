@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 public class PaymentsViewUtils: NSObject {
@@ -11,8 +13,7 @@ public class PaymentsViewUtils: NSObject {
     private override init() {}
 
     public static func buildMemoLabel(memoMessage: String?) -> UIView? {
-        guard let memoMessage = memoMessage?.ows_stripped(),
-              memoMessage.count > 0 else {
+        guard let memoMessage = memoMessage?.ows_stripped().nilIfEmpty else {
             return nil
         }
 
@@ -353,6 +354,48 @@ public extension TSPaymentModel {
         @unknown default:
             owsFailDebug("Unknown failure type: \(failure.rawValue)")
             return defaultDescription
+        }
+    }
+}
+
+extension OWSActionSheets {
+
+    @discardableResult
+    public class func showPaymentsOutdatedClientSheetIfNeeded(title: OutdatedTitleType) -> Bool {
+        guard self.paymentsHelper.isPaymentsVersionOutdated else { return false }
+        OWSActionSheets.showPaymentsOutdatedClientSheet(title: title)
+        return true
+    }
+
+    public class func showPaymentsOutdatedClientSheet(title: OutdatedTitleType) {
+
+        OWSActionSheets.showConfirmationWithNotNowAlert(title: title.localizedTitle,
+                                              message: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE",
+                                                                         comment: "Message for payments outdated sheet."),
+                                              proceedTitle: NSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON",
+                                                                              comment: "Button for payments outdated sheet."),
+                                              proceedStyle: .default) { _ in
+            let url = TSConstants.appStoreUpdateURL
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        }
+    }
+
+}
+
+public enum OutdatedTitleType {
+    case cantSendPayment
+    case updateRequired
+}
+
+extension OutdatedTitleType {
+    var localizedTitle: String {
+        switch self {
+        case .cantSendPayment:
+            return NSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND",
+                              comment: "Title for payments outdated sheet saying cant send.")
+        case .updateRequired:
+            return NSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE",
+                              comment: "Title for payments outdated sheet saying update required.")
         }
     }
 }

@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 extension ConversationViewController {
     func checkPermissionsAndStartRecordingVoiceMessage() {
@@ -66,7 +68,7 @@ extension ConversationViewController {
 
         clearVoiceMessageDraft()
         viewState.currentVoiceMessageModel = nil
-        inputToolbar?.hideVoiceMemoUI(true)
+        inputToolbar?.hideVoiceMemoUI(animated: true)
         configureScrollDownButtons()
     }
 
@@ -100,7 +102,7 @@ extension ConversationViewController {
     }
 
     func sendVoiceMessageModel(_ voiceMessageModel: VoiceMessageModel) {
-        inputToolbar?.hideVoiceMemoUI(true)
+        inputToolbar?.hideVoiceMemoUI(animated: true)
         configureScrollDownButtons()
 
         do {

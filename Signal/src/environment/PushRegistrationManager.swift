@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -32,7 +33,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
     // Private callout queue that we can use to synchronously wait for our call to start
     // TODO: Rewrite call message routing to be able to synchronously report calls
     private static let calloutQueue = DispatchQueue(
-        label: "org.whispersystems.signal.PKPushRegistry",
+        label: OWSDispatch.createLabel("PKPushRegistry"),
         autoreleaseFrequency: .workItem
     )
     private var calloutQueue: DispatchQueue { Self.calloutQueue }
@@ -48,7 +49,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
     // MARK: Public interface
 
-    public func requestPushTokens() -> Promise<(pushToken: String, voipToken: String?)> {
+    public func requestPushTokens(forceRotation: Bool) -> Promise<(pushToken: String, voipToken: String?)> {
         Logger.info("")
 
         return firstly { () -> Promise<Void> in
@@ -58,7 +59,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
                 throw PushRegistrationError.pushNotSupported(description: "Push not supported on simulators")
             }
 
-            return self.registerForVanillaPushToken().then { vanillaPushToken -> Promise<(pushToken: String, voipToken: String?)> in
+            return self.registerForVanillaPushToken(forceRotation: forceRotation).then { vanillaPushToken -> Promise<(pushToken: String, voipToken: String?)> in
                 self.registerForVoipPushToken().map { voipPushToken in
                     (pushToken: vanillaPushToken, voipToken: voipPushToken)
                 }
@@ -250,7 +251,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         let completionSignal = DispatchSemaphore(value: 0)
         firstly { () -> Promise<Void> in
             let notificationPromise = notificationPresenter.postGenericIncomingMessageNotification()
-            let pushTokensPromise = SyncPushTokensJob(uploadOnlyIfStale: false).run()
+            let pushTokensPromise = SyncPushTokensJob(mode: .forceUpload).run()
             return Promise.when(resolved: [ notificationPromise, pushTokensPromise ]).asVoid()
         }.ensure(on: .global()) {
             completionSignal.signal()
@@ -323,7 +324,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         return true
     }
 
-    private func registerForVanillaPushToken() -> Promise<String> {
+    private func registerForVanillaPushToken(forceRotation: Bool) -> Promise<String> {
         AssertIsOnMainThread()
         Logger.info("")
 
@@ -339,6 +340,9 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
         self.vanillaTokenPromise = promise
         self.vanillaTokenFuture = future
 
+        if forceRotation {
+            UIApplication.shared.unregisterForRemoteNotifications()
+        }
         UIApplication.shared.registerForRemoteNotifications()
 
         return firstly {

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "TSPrivateStoryThread.h"
@@ -20,11 +21,6 @@
 @end
 
 @implementation TSPrivateStoryThread
-
-+ (TSFTSIndexMode)FTSIndexMode
-{
-    return TSFTSIndexModeNever;
-}
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                             name:(NSString *)name
@@ -72,7 +68,6 @@
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
             lastInteractionRowId:(int64_t)lastInteractionRowId
           lastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
-        lastViewedStoryTimestamp:(nullable NSNumber *)lastViewedStoryTimestamp
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
 lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPercentageObsolete
          mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
@@ -94,7 +89,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
             isMarkedUnreadObsolete:isMarkedUnreadObsolete
               lastInteractionRowId:lastInteractionRowId
             lastSentStoryTimestamp:lastSentStoryTimestamp
-          lastViewedStoryTimestamp:lastViewedStoryTimestamp
          lastVisibleSortIdObsolete:lastVisibleSortIdObsolete
 lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageObsolete
            mentionNotificationMode:mentionNotificationMode
@@ -140,6 +134,9 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
            updateStorageService:(BOOL)updateStorageService
                     transaction:(SDSAnyWriteTransaction *)transaction
 {
+    if ([self isMyStory]) {
+        [StoryManager setHasSetMyStoriesPrivacyWithTransaction:transaction shouldUpdateStorageService:YES];
+    }
     [self anyUpdatePrivateStoryThreadWithTransaction:transaction
                                                block:^(TSPrivateStoryThread *thread) {
                                                    thread.storyViewMode = storyViewMode;

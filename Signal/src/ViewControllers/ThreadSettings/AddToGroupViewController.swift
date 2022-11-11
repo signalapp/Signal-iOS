@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 public class AddToGroupViewController: OWSTableViewController2 {
@@ -28,7 +30,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.title = NSLocalizedString("ADD_TO_GROUP_TITLE", comment: "Title of the 'add to group' view.")
+        title = NSLocalizedString("ADD_TO_GROUP_TITLE", comment: "Title of the 'add to group' view.")
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didPressCloseButton))
 
@@ -39,15 +41,17 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
     private var groupThreads = [TSGroupThread]() {
         didSet {
-            DispatchQueue.main.async { [weak self] in
-                self?.updateTableContents()
-            }
+            AssertIsOnMainThread()
+            updateTableContents()
         }
     }
 
     private func updateGroupThreadsAsync() {
         DispatchQueue.sharedUserInitiated.async { [weak self] in
-            self?.groupThreads = Self.fetchGroupThreads()
+            let fetchedGroupThreads = Self.fetchGroupThreads()
+            DispatchQueue.main.async {
+                self?.groupThreads = fetchedGroupThreads
+            }
         }
     }
 
@@ -57,7 +61,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
             do {
                 try AnyThreadFinder().enumerateGroupThreads(transaction: transaction) { thread in
-                    guard thread.groupModel.groupsVersion == .V2 else { return }
+                    guard thread.isGroupV2Thread else { return }
 
                     let threadViewModel = ThreadViewModel(
                         thread: thread,
@@ -85,13 +89,9 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
     // MARK: Helpers
 
-    public override func applyTheme() {
-        super.applyTheme()
-        self.tableView.sectionIndexColor = Theme.primaryTextColor
-    }
-
     public override func themeDidChange() {
         super.themeDidChange()
+        self.tableView.sectionIndexColor = Theme.primaryTextColor
         updateTableContents()
     }
 
@@ -129,35 +129,23 @@ public class AddToGroupViewController: OWSTableViewController2 {
             proceedTitle: NSLocalizedString("ADD_TO_GROUP_ACTION_PROCEED_BUTTON",
                                             comment: "The button on the 'add to group' confirmation to add the user to the group."),
             proceedStyle: .default) { _ in
-                self.addToGroupStep1(groupThread, shortName: shortName)
+                self.addToGroup(groupThread, shortName: shortName)
         }
     }
 
-    private func addToGroupStep1(_ groupThread: TSGroupThread, shortName: String) {
+    private func addToGroup(_ groupThread: TSGroupThread, shortName: String) {
         AssertIsOnMainThread()
-        guard groupThread.isGroupV2Thread else {
-            addToGroupStep2(groupThread, shortName: shortName)
-            return
-        }
-        let doesUserSupportGroupsV2 = GroupManager.doesUserSupportGroupsV2(address: self.address)
-        guard doesUserSupportGroupsV2 else {
+        owsAssert(groupThread.isGroupV2Thread)  // non-gv2 filtered above when fetching groups
+
+        guard let uuid = self.address.uuid else {
             GroupViewUtils.showInvalidGroupMemberAlert(fromViewController: self)
             return
         }
-        addToGroupStep2(groupThread, shortName: shortName)
-    }
 
-    private func addToGroupStep2(_ groupThread: TSGroupThread, shortName: String) {
         let oldGroupModel = groupThread.groupModel
 
-        guard !oldGroupModel.groupMembership.isMemberOfAnyKind(self.address) else {
+        guard !oldGroupModel.groupMembership.isMemberOfAnyKind(uuid) else {
             let error = OWSAssertionError("Receipient is already in group")
-            GroupViewUtils.showUpdateErrorUI(error: error)
-            return
-        }
-
-        guard let uuid = self.address.uuid else {
-            let error = OWSAssertionError("Address missing UUID")
             GroupViewUtils.showUpdateErrorUI(error: error)
             return
         }
@@ -191,7 +179,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
     // MARK: -
 
-    private func item(forGroupThread  groupThread: TSGroupThread) -> OWSTableItem {
+    private func item(forGroupThread groupThread: TSGroupThread) -> OWSTableItem {
         let alreadyAMemberText = NSLocalizedString(
             "ADD_TO_GROUP_ALREADY_A_MEMBER",
             comment: "Text indicating your contact is already a member of the group on the 'add to group' view."

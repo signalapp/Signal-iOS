@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
-import QuickLook
 import PassKit
+import QuickLook
+import SignalMessaging
 import SignalServiceKit
 
 extension ConversationViewController: CVComponentDelegate {
@@ -282,6 +284,11 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
 
+        if SignalProxy.isValidProxyLink(url) {
+            cvc_didTapProxyLink(url: url)
+            return
+        }
+
         if SignalMe.isPossibleUrl(url) { return cvc_didTapSignalMeLink(url: url) }
 
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
@@ -324,6 +331,12 @@ extension ConversationViewController: CVComponentDelegate {
         owsAssertDebug(GroupManager.isPossibleGroupInviteLink(url))
 
         GroupInviteLinksUI.openGroupInviteLink(url, fromViewController: self)
+    }
+
+    public func cvc_didTapProxyLink(url: URL) {
+        AssertIsOnMainThread()
+        guard let vc = ProxyLinkSheetViewController(url: url) else { return }
+        present(vc, animated: true)
     }
 
     public func cvc_willWrapGift(_ messageUniqueId: String) -> Bool { willWrapGift(messageUniqueId) }
@@ -498,7 +511,7 @@ extension ConversationViewController: CVComponentDelegate {
             }
 
             Self.databaseStorage.asyncWrite { transaction in
-                Self.sessionResetJobQueue.add(contactThread: contactThread, transaction: transaction)
+                Self.smJobQueues.sessionResetJobQueue.add(contactThread: contactThread, transaction: transaction)
             }
         })
 

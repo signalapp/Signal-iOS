@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSSyncManager.h"
@@ -72,9 +73,6 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
             OWSAssertDebug(self.contactsManagerImpl.isSetup);
 
             if (self.tsAccountManager.isPrimaryDevice) {
-                if (CurrentAppContext().isNSE) {
-                    return;
-                }
                 // Flush any pending changes.
                 //
                 // sendSyncContactsMessageIfNecessary will skipIfRedundant,
@@ -185,7 +183,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                sendLinkPreviews:sendLinkPreviews
                                                     transaction:transaction];
 
-        [self.messageSenderJobQueue addMessage:syncConfigurationMessage.asPreparer transaction:transaction];
+        [self.sskJobQueues.messageSenderJobQueue addMessage:syncConfigurationMessage.asPreparer
+                                                transaction:transaction];
     });
 }
 
@@ -222,7 +221,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
     TSAttachmentPointer *attachmentPointer = [TSAttachmentPointer attachmentPointerFromProto:syncMessage.blob albumMessage:nil];
     [attachmentPointer anyInsertWithTransaction:transaction];
-    [self.incomingGroupSyncJobQueue addWithAttachmentId:attachmentPointer.uniqueId transaction:transaction];
+    [self.smJobQueues.incomingGroupSyncJobQueue addWithAttachmentId:attachmentPointer.uniqueId transaction:transaction];
 }
 
 - (void)processIncomingContactsSyncMessage:(SSKProtoSyncMessageContacts *)syncMessage transaction:(SDSAnyWriteTransaction *)transaction
@@ -230,7 +229,9 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     TSAttachmentPointer *attachmentPointer = [TSAttachmentPointer attachmentPointerFromProto:syncMessage.blob
                                                                                 albumMessage:nil];
     [attachmentPointer anyInsertWithTransaction:transaction];
-    [self.incomingContactSyncJobQueue addWithAttachmentId:attachmentPointer.uniqueId transaction:transaction];
+    [self.smJobQueues.incomingContactSyncJobQueue addWithAttachmentId:attachmentPointer.uniqueId
+                                                           isComplete:syncMessage.isComplete
+                                                          transaction:transaction];
 }
 
 #pragma mark - Groups Sync
@@ -260,13 +261,13 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                            shouldDeleteOnDeallocation:YES
                                                                 error:&error];
         OWSAssertDebug(error == nil);
-        [self.messageSenderJobQueue addMediaMessage:syncGroupsMessage
-                                         dataSource:dataSource
-                                        contentType:OWSMimeTypeApplicationOctetStream
-                                     sourceFilename:nil
-                                            caption:nil
-                                     albumMessageId:nil
-                              isTemporaryAttachment:YES];
+        [self.sskJobQueues.messageSenderJobQueue addMediaMessage:syncGroupsMessage
+                                                      dataSource:dataSource
+                                                     contentType:OWSMimeTypeApplicationOctetStream
+                                                  sourceFilename:nil
+                                                         caption:nil
+                                                  albumMessageId:nil
+                                           isTemporaryAttachment:YES];
         completion();
     });
 }
@@ -318,7 +319,10 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     static dispatch_queue_t _serialQueue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _serialQueue = dispatch_queue_create("org.whispersystems.contacts.syncing", DISPATCH_QUEUE_SERIAL);
+        NS_VALID_UNTIL_END_OF_SCOPE NSString *label = [OWSDispatch createLabel:@"contacts.syncing"];
+        const char *cStringLabel = [label cStringUsingEncoding:NSUTF8StringEncoding];
+
+        _serialQueue = dispatch_queue_create(cStringLabel, DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
     });
 
     return _serialQueue;
@@ -432,13 +436,13 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                 }
 
                 if (isDurableSend) {
-                    [self.messageSenderJobQueue addMediaMessage:syncContactsMessage
-                                                     dataSource:dataSource
-                                                    contentType:OWSMimeTypeApplicationOctetStream
-                                                 sourceFilename:nil
-                                                        caption:nil
-                                                 albumMessageId:nil
-                                          isTemporaryAttachment:YES];
+                    [self.sskJobQueues.messageSenderJobQueue addMediaMessage:syncContactsMessage
+                                                                  dataSource:dataSource
+                                                                 contentType:OWSMimeTypeApplicationOctetStream
+                                                              sourceFilename:nil
+                                                                     caption:nil
+                                                              albumMessageId:nil
+                                                       isTemporaryAttachment:YES];
                     if (debounce) {
                         self.isRequestInFlight = NO;
                     }
@@ -520,7 +524,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         OWSSyncFetchLatestMessage *syncFetchLatestMessage =
             [[OWSSyncFetchLatestMessage alloc] initWithThread:thread fetchType:fetchType transaction:transaction];
 
-        [self.messageSenderJobQueue addMessage:syncFetchLatestMessage.asPreparer transaction:transaction];
+        [self.sskJobQueues.messageSenderJobQueue addMessage:syncFetchLatestMessage.asPreparer transaction:transaction];
     });
 }
 

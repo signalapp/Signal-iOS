@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -137,7 +138,8 @@ public protocol OWSURLSessionProtocol: AnyObject, Dependencies {
         securityPolicy: OWSHTTPSecurityPolicy,
         configuration: URLSessionConfiguration,
         extraHeaders: [String: String],
-        maxResponseSize: Int?
+        maxResponseSize: Int?,
+        canUseSignalProxy: Bool
     )
 
     // MARK: Request Building
@@ -198,7 +200,8 @@ extension OWSURLSessionProtocol {
         securityPolicy: OWSHTTPSecurityPolicy,
         configuration: URLSessionConfiguration,
         extraHeaders: [String: String] = [:],
-        maxResponseSize: Int? = nil
+        maxResponseSize: Int? = nil,
+        canUseSignalProxy: Bool = false
     ) {
         self.init(
             baseUrl: baseUrl,
@@ -206,7 +209,8 @@ extension OWSURLSessionProtocol {
             securityPolicy: securityPolicy,
             configuration: configuration,
             extraHeaders: extraHeaders,
-            maxResponseSize: maxResponseSize
+            maxResponseSize: maxResponseSize,
+            canUseSignalProxy: canUseSignalProxy
         )
     }
 

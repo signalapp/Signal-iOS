@@ -1,17 +1,22 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 
-public protocol NewStoryHeaderDelegate: OWSTableViewController2 {
+public protocol NewStoryHeaderDelegate: AnyObject, OWSTableViewController2 {
     func newStoryHeaderView(_ newStoryHeaderView: NewStoryHeaderView, didCreateNewStoryItems items: [StoryConversationItem])
 }
 
 public class NewStoryHeaderView: UIStackView {
     weak var delegate: NewStoryHeaderDelegate!
 
-    public init(title: String, delegate: NewStoryHeaderDelegate) {
+    public init(
+        title: String,
+        showsNewStoryButton: Bool = true,
+        delegate: NewStoryHeaderDelegate
+    ) {
         self.delegate = delegate
 
         super.init(frame: .zero)
@@ -21,9 +26,9 @@ public class NewStoryHeaderView: UIStackView {
         isLayoutMarginsRelativeArrangement = true
         layoutMargins = delegate.cellOuterInsetsWithMargin(
             top: (delegate.defaultSpacingBetweenSections ?? 0) + 12,
-            left: OWSTableViewController2.cellHInnerMargin * 0.5,
+            left: CurrentAppContext().isRTL ? 0 : OWSTableViewController2.cellHInnerMargin * 0.5,
             bottom: 10,
-            right: OWSTableViewController2.cellHInnerMargin * 0.5
+            right: CurrentAppContext().isRTL ? OWSTableViewController2.cellHInnerMargin * 0.5 : 0
         )
         layoutMargins.left += delegate.tableView.safeAreaInsets.left
         layoutMargins.right += delegate.tableView.safeAreaInsets.right
@@ -42,18 +47,28 @@ public class NewStoryHeaderView: UIStackView {
                 "NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON",
                 comment: "table section header button to add a new story"
             ),
-            font: UIFont.ows_dynamicTypeSubheadlineClamped,
+            font: UIFont.ows_dynamicTypeFootnoteClamped.ows_semibold,
             titleColor: Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90,
-            backgroundColor: .clear,
+            backgroundColor: delegate.cellBackgroundColor,
             target: self,
             selector: #selector(didTapNewStory)
         )
-        newStoryButton.setImage(#imageLiteral(resourceName: "plus-16").withRenderingMode(.alwaysTemplate))
-        newStoryButton.contentEdgeInsets = UIEdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 12)
+        newStoryButton.setImage(#imageLiteral(resourceName: "plus-12").withRenderingMode(.alwaysTemplate))
+        newStoryButton.contentEdgeInsets = UIEdgeInsets(top: 5, leading: 12, bottom: 5, trailing: 18)
         newStoryButton.titleEdgeInsets = UIEdgeInsets(top: 0, leading: 6, bottom: 0, trailing: -6)
         newStoryButton.tintColor = Theme.primaryIconColor
+        newStoryButton.clipsToBounds = true
+        newStoryButton.isHidden = !showsNewStoryButton
 
-        addArrangedSubview(newStoryButton)
+        let pillWrapper = ManualLayoutView(name: "PillWrapper")
+        pillWrapper.shouldDeactivateConstraints = false
+
+        pillWrapper.addSubview(newStoryButton) { view in
+            newStoryButton.layer.cornerRadius = view.height / 2
+        }
+        newStoryButton.autoPinEdgesToSuperviewEdges()
+
+        addArrangedSubview(pillWrapper)
     }
 
     required init(coder: NSCoder) {

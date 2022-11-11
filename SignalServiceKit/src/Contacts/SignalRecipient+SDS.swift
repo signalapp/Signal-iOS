@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -33,6 +34,7 @@ public struct SignalRecipientRecord: SDSRecord {
     public let devices: Data
     public let recipientPhoneNumber: String?
     public let recipientUUID: String?
+    public let unregisteredAtTimestamp: UInt64?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -41,6 +43,7 @@ public struct SignalRecipientRecord: SDSRecord {
         case devices
         case recipientPhoneNumber
         case recipientUUID
+        case unregisteredAtTimestamp
     }
 
     public static func columnName(_ column: SignalRecipientRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -70,6 +73,7 @@ public extension SignalRecipientRecord {
         devices = row[3]
         recipientPhoneNumber = row[4]
         recipientUUID = row[5]
+        unregisteredAtTimestamp = row[6]
     }
 }
 
@@ -105,12 +109,14 @@ extension SignalRecipient {
             let devices: NSOrderedSet = try SDSDeserialization.unarchive(devicesSerialized, name: "devices")
             let recipientPhoneNumber: String? = record.recipientPhoneNumber
             let recipientUUID: String? = record.recipientUUID
+            let unregisteredAtTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.unregisteredAtTimestamp, name: "unregisteredAtTimestamp", conversion: { NSNumber(value: $0) })
 
             return SignalRecipient(grdbId: recordId,
                                    uniqueId: uniqueId,
                                    devices: devices,
                                    recipientPhoneNumber: recipientPhoneNumber,
-                                   recipientUUID: recipientUUID)
+                                   recipientUUID: recipientUUID,
+                                   unregisteredAtTimestamp: unregisteredAtTimestamp)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -143,6 +149,15 @@ extension SignalRecipient: SDSModel {
     public static var table: SDSTableMetadata {
         SignalRecipientSerializer.table
     }
+
+    public class func anyEnumerateIndexable(
+        transaction: SDSAnyReadTransaction,
+        block: @escaping (SDSIndexableModel) -> Void
+    ) {
+        anyEnumerate(transaction: transaction, batched: false) { model, _ in
+            block(model)
+        }
+    }
 }
 
 // MARK: - DeepCopyable
@@ -166,12 +181,14 @@ extension SignalRecipient: DeepCopyable {
             let devices: NSOrderedSet = try DeepCopies.deepCopy(modelToCopy.devices)
             let recipientPhoneNumber: String? = modelToCopy.recipientPhoneNumber
             let recipientUUID: String? = modelToCopy.recipientUUID
+            let unregisteredAtTimestamp: NSNumber? = modelToCopy.unregisteredAtTimestamp
 
             return SignalRecipient(grdbId: id,
                                    uniqueId: uniqueId,
                                    devices: devices,
                                    recipientPhoneNumber: recipientPhoneNumber,
-                                   recipientUUID: recipientUUID)
+                                   recipientUUID: recipientUUID,
+                                   unregisteredAtTimestamp: unregisteredAtTimestamp)
         }
 
     }
@@ -190,6 +207,7 @@ extension SignalRecipientSerializer {
     static var devicesColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "devices", columnType: .blob) }
     static var recipientPhoneNumberColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true) }
     static var recipientUUIDColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true) }
+    static var unregisteredAtTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "unregisteredAtTimestamp", columnType: .int64, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -202,7 +220,8 @@ extension SignalRecipientSerializer {
         uniqueIdColumn,
         devicesColumn,
         recipientPhoneNumberColumn,
-        recipientUUIDColumn
+        recipientUUIDColumn,
+        unregisteredAtTimestampColumn
         ])
     }
 }
@@ -371,7 +390,7 @@ public extension SignalRecipient {
     // Fetches a single model by "unique id".
     class func anyFetch(uniqueId: String,
                         transaction: SDSAnyReadTransaction) -> SignalRecipient? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
@@ -528,7 +547,7 @@ public extension SignalRecipient {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> Bool {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
@@ -559,7 +578,7 @@ public extension SignalRecipient {
     class func grdbFetchOne(sql: String,
                             arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> SignalRecipient? {
-        assert(sql.count > 0)
+        assert(!sql.isEmpty)
 
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
@@ -600,8 +619,9 @@ class SignalRecipientSerializer: SDSSerializer {
         let devices: Data = requiredArchive(model.devices)
         let recipientPhoneNumber: String? = model.recipientPhoneNumber
         let recipientUUID: String? = model.recipientUUID
+        let unregisteredAtTimestamp: UInt64? = archiveOptionalNSNumber(model.unregisteredAtTimestamp, conversion: { $0.uint64Value })
 
-        return SignalRecipientRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, devices: devices, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID)
+        return SignalRecipientRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, devices: devices, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, unregisteredAtTimestamp: unregisteredAtTimestamp)
     }
 }
 

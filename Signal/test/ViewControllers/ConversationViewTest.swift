@@ -1,16 +1,12 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import XCTest
 @testable import Signal
 
 class ConversationViewTest: SignalBaseTest {
-
-    override func setUp() {
-        super.setUp()
-    }
-
     func testConversationStyleComparison() throws {
         let thread = ContactThreadFactory().create()
 

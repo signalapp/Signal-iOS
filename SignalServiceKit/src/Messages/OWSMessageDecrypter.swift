@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import LibSignalClient
@@ -31,15 +32,6 @@ public struct OWSMessageDecryptResult: Dependencies {
         // Self-sent messages should be discarded during the decryption process.
         let localDeviceId = Self.tsAccountManager.storedDeviceId()
         owsAssertDebug(!(sourceAddress.isLocalAddress && envelope.sourceDevice == localDeviceId))
-
-        // Having received a valid (decryptable) message from this user,
-        // make note of the fact that they have a valid Signal account.
-        SignalRecipient.mark(
-            asRegisteredAndGet: sourceAddress,
-            deviceId: envelope.sourceDevice,
-            trustLevel: .high,
-            transaction: transaction
-        )
     }
 }
 
@@ -236,7 +228,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         transaction.addAsyncCompletionOffMain {
             Self.databaseStorage.write { transaction in
                 let nullMessage = OWSOutgoingNullMessage(contactThread: contactThread, transaction: transaction)
-                Self.messageSenderJobQueue.add(
+                Self.sskJobQueues.messageSenderJobQueue.add(
                     .promise,
                     message: nullMessage.asPreparer,
                     isHighPriority: true,
@@ -285,7 +277,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         transaction.addAsyncCompletionOffMain {
             Self.databaseStorage.write { transaction in
                 let profileKeyMessage = OWSProfileKeyMessage(thread: contactThread, transaction: transaction)
-                Self.messageSenderJobQueue.add(
+                Self.sskJobQueues.messageSenderJobQueue.add(
                     .promise,
                     message: profileKeyMessage.asPreparer,
                     isHighPriority: true,
@@ -352,15 +344,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         let errorMessage: TSErrorMessage?
         if envelope.hasSourceUuid {
-            let remoteUserSupportsSenderKey = GroupManager.doesUserHaveSenderKeyCapability(
-                address: sourceAddress,
-                transaction: transaction)
-            let localUserSupportsSenderKey = GroupManager.doesUserHaveSenderKeyCapability(
-                address: sourceAddress,
-                transaction: transaction)
             let contentSupportsResend = envelopeContentSupportsResend(envelope: envelope, cipherType: cipherType, transaction: transaction)
-            let supportsModernResend =
-                (identity == .aci) && remoteUserSupportsSenderKey && localUserSupportsSenderKey && contentSupportsResend
+            let supportsModernResend = (identity == .aci) && contentSupportsResend
 
             if supportsModernResend && !RemoteConfig.messageResendKillSwitch {
                 Logger.info("Performing modern resend of \(contentHint) content with timestamp \(envelope.timestamp)")
@@ -485,7 +470,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                                      transaction: transaction)
 
         if let resendRequest = resendRequest {
-            messageSenderJobQueue.add(message: resendRequest.asPreparer, transaction: transaction)
+            sskJobQueues.messageSenderJobQueue.add(message: resendRequest.asPreparer, transaction: transaction)
         } else {
             owsFailDebug("Failed to build resend message")
         }
@@ -612,7 +597,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                isRetryable: false)
             }
 
-            let plaintextData = (Data(plaintext) as NSData).removePadding()
+            let plaintextData = Data(plaintext).withoutPadding()
 
             return .success(plaintextData)
         } catch {
@@ -662,6 +647,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     transaction: transaction
                 ) { thread, stop in
                     guard thread.isGroupV2Thread else { return }
+                    guard thread.isLocalUserFullMember else { return }
                     stop.pointee = true
                     needsReactiveProfileKeyMessage = true
                 }
@@ -747,25 +733,31 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
 
         let sourceAddress = decryptResult.senderAddress
-        guard sourceAddress.isValid else {
+        guard
+            sourceAddress.isValid,
+            let sourceUuid = sourceAddress.uuidString
+        else {
             return .failure(OWSAssertionError("Invalid UD sender: \(sourceAddress)"))
         }
 
-        let sourceDeviceId = decryptResult.senderDeviceId
-        guard sourceDeviceId > 0, sourceDeviceId < UInt32.max else {
+        let rawSourceDeviceId = decryptResult.senderDeviceId
+        guard rawSourceDeviceId > 0, rawSourceDeviceId < UInt32.max else {
             return .failure(OWSAssertionError("Invalid UD sender device id."))
         }
+        let sourceDeviceId = UInt32(rawSourceDeviceId)
 
-        let plaintextData = (decryptResult.paddedPayload as NSData).removePadding()
+        SignalRecipient.mark(
+            asRegisteredAndGet: sourceAddress,
+            deviceId: sourceDeviceId,
+            trustLevel: .high,
+            transaction: transaction
+        )
+
+        let plaintextData = decryptResult.paddedPayload.withoutPadding()
 
         let identifiedEnvelopeBuilder = envelope.asBuilder()
-        if let sourceE164 = sourceAddress.phoneNumber {
-            identifiedEnvelopeBuilder.setSourceE164(sourceE164)
-        }
-        if let sourceUuid = sourceAddress.uuidString {
-            identifiedEnvelopeBuilder.setSourceUuid(sourceUuid)
-        }
-        identifiedEnvelopeBuilder.setSourceDevice(UInt32(sourceDeviceId))
+        identifiedEnvelopeBuilder.setSourceUuid(sourceUuid)
+        identifiedEnvelopeBuilder.setSourceDevice(sourceDeviceId)
 
         let identifiedEnvelope: SSKProtoEnvelope
         do {
@@ -887,7 +879,6 @@ private extension SSKProtoEnvelope {
         owsAssert(error.senderAddress.isValid)
 
         let identifiedEnvelopeBuilder = asBuilder()
-        error.senderAddress.phoneNumber.map { identifiedEnvelopeBuilder.setSourceE164($0) }
         error.senderAddress.uuidString.map { identifiedEnvelopeBuilder.setSourceUuid($0) }
         identifiedEnvelopeBuilder.setSourceDevice(error.senderDeviceId)
         identifiedEnvelopeBuilder.setContent(error.unsealedContent)

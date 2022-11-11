@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2014 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "SignalApp.h"
@@ -257,6 +258,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
         [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem cachesDirectoryPath]];
         [OWSFileSystem deleteContentsOfDirectory:OWSTemporaryDirectory()];
         [OWSFileSystem deleteContentsOfDirectory:NSTemporaryDirectory()];
+        [AppDelegate updateApplicationShortcutItemsWithIsRegisteredAndReady:NO];
     });
 
     [DebugLogger.shared wipeLogs];

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "MIMETypeUtil.h"
@@ -19,17 +20,6 @@
 #pragma mark -
 
 @implementation TSThreadTest
-
-- (void)setUp
-{
-    [super setUp];
-}
-
-- (void)tearDown
-{
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-    [super tearDown];
-}
 
 - (void)testDeletingThreadDeletesInteractions
 {

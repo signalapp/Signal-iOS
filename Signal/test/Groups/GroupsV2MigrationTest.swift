@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import XCTest
@@ -7,15 +8,6 @@ import XCTest
 @testable import Signal
 
 class GroupsV2MigrationTest: SignalBaseTest {
-
-    override func setUp() {
-        super.setUp()
-    }
-
-    override func tearDown() {
-        super.tearDown()
-    }
-
     private struct GroupIdVector {
         let groupIdV1String: String
         let masterKeyV2String: String

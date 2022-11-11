@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -447,6 +448,10 @@ public extension UIViewController {
             viewControllerToPresent.modalPresentationStyle = .formSheet
         }
         present(viewControllerToPresent, animated: animated, completion: completion)
+    }
+
+    var owsNavigationController: OWSNavigationController? {
+        return navigationController as? OWSNavigationController
     }
 }
 

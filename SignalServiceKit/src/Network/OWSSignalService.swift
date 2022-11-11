@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -55,6 +56,7 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
             isCensorshipCircumventionManuallyActivatedLock.withLock {
                 writeIsCensorshipCircumventionManuallyActivated(newValue)
             }
+            updateIsCensorshipCircumventionActive()
         }
     }
 
@@ -72,6 +74,7 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
             isCensorshipCircumventionManuallyDisabledLock.withLock {
                 writeIsCensorshipCircumventionManuallyDisabled(newValue)
             }
+            updateIsCensorshipCircumventionActive()
         }
     }
 
@@ -160,11 +163,13 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
             default:
                 securityPolicy = OWSURLSession.signalServiceSecurityPolicy
             }
+
             urlSession = OWSURLSession(
                 baseUrl: baseUrl,
                 securityPolicy: securityPolicy,
                 configuration: OWSURLSession.defaultConfigurationWithoutCaching,
-                extraHeaders: [:]
+                extraHeaders: [:],
+                canUseSignalProxy: true
             )
         }
         urlSession.shouldHandleRemoteDeprecation = signalServiceInfo.shouldHandleRemoteDeprecation
@@ -204,6 +209,12 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
             name: .localNumberDidChange,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(isSignalProxyReadyDidChange),
+            name: .isSignalProxyReadyDidChange,
+            object: nil
+        )
     }
 
     private func updateHasCensoredPhoneNumber() {
@@ -220,7 +231,9 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
     }
 
     private func updateIsCensorshipCircumventionActive() {
-        if self.isCensorshipCircumventionManuallyDisabled {
+        if SignalProxy.isEnabled {
+            self.isCensorshipCircumventionActive = false
+        } else if self.isCensorshipCircumventionManuallyDisabled {
             self.isCensorshipCircumventionActive = false
         } else if self.isCensorshipCircumventionManuallyActivated {
             self.isCensorshipCircumventionActive = true
@@ -251,7 +264,6 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
                 transaction: transaction
             )
         }
-        updateIsCensorshipCircumventionActive()
     }
 
     private func readIsCensorshipCircumventionManuallyDisabled() -> Bool {
@@ -272,7 +284,6 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
                 transaction: transaction
             )
         }
-        updateIsCensorshipCircumventionActive()
     }
 
     private func readCensorshipCircumventionCountryCode() -> String? {
@@ -304,6 +315,11 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
     @objc
     private func localNumberDidChange(_ notification: NSNotification) {
         self.updateHasCensoredPhoneNumber()
+    }
+
+    @objc
+    private func isSignalProxyReadyDidChange() {
+        updateHasCensoredPhoneNumber()
     }
 
     // MARK: - Constants

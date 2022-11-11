@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Signal ۋاسىتە قوشۇمچىسىنى قويۇشتا Apple Music نى ئىشلىتىشى لازىم.";
-NSCameraUsageDescription = "‫Signal سۈرەت تارتىش ۋە سىنلىق پاراڭلىشىشتا كامېرايىڭىزنى ئىشلىتىدۇ.";
-NSContactsUsageDescription = "Signal سىز تونۇيدىغانلارنى ئىزدەش ئۈچۈن ئالاقىداشلىرىڭىزنى ئىشلىتىدۇ. ئالاقىداشلىرىڭىزنى مۇلازىمېتىردا ساقلىمايمىز.";
-NSFaceIDUsageDescription = "Signal نىڭ ئېكران قۇلۇپى چىراي ID سىنى ئىشلىتىدۇ.";
-NSLocationWhenInUseUsageDescription = "‫Signal ھازىرقى ئورنىڭىزنى ھەمبەھىرلەش ئۈچۈن ئورۇن ئۇچۇرىڭىزنى زىيارەت قىلىشى لازىم.";
-NSMicrophoneUsageDescription = "‫Signal تېلېفوندىن چاقىرىش ۋە قوبۇل قىلىش، ھەم ئۈن ئۈچۇرنى خاتىرىلەش ئۈچۈن مىكروفونىڭىزنى زىيارەت قىلىشى لازىم.";
-NSPhotoLibraryAddUsageDescription = "Signal سۈرەتلەرنى سۈرەتدانىڭىزغا ساقلايدۇ.";
-NSPhotoLibraryUsageDescription = "ھەمبەھىرلەيدىغان سۈرەتنى Signal سۈرەتدانىڭىزدىن تاللاتقۇزىدۇ.";
-NSLocalNetworkUsageDescription = "Signal يەرلىك تورنى ئىشلىتىپ ھېساباتىڭىزنى بىۋاسىتە يېڭى تېلېفونغا يۆتكىشىڭىزگە يول قويىدۇ. پەقەت سىز يۆتكەشنى قوزغاتقاندىلا ئاندىن Signal بۇ ھوقۇقنى ئىشلىتىپ يېڭى ئۈسكۈنىگە يۆتكەيدۇ.";

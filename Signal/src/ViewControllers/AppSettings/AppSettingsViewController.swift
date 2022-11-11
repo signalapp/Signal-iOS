@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import SignalUI
 
 @objc
@@ -86,7 +88,7 @@ class AppSettingsViewController: OWSTableViewController2 {
     private var hasExpiredGiftBadge: Bool = false
 
     private func updateHasExpiredGiftBadge() {
-        self.hasExpiredGiftBadge = DonationViewController.shouldShowExpiredGiftBadgeSheetWithSneakyTransaction()
+        self.hasExpiredGiftBadge = DonationSettingsViewController.shouldShowExpiredGiftBadgeSheetWithSneakyTransaction()
     }
 
     @objc
@@ -160,7 +162,10 @@ class AppSettingsViewController: OWSTableViewController2 {
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donate")
             )
         }, actionBlock: { [weak self] in
-            self?.navigationController?.pushViewController(DonationViewController(), animated: true)
+            self?.navigationController?.pushViewController(
+                DonationSettingsViewController(),
+                animated: true
+            )
         }))
         contents.addSection(section1)
 
@@ -183,6 +188,20 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
+        if RemoteConfig.stories {
+            section2.add(.disclosureItem(
+                icon: .settingsStories,
+                name: NSLocalizedString(
+                    "STORY_SETTINGS_TITLE",
+                    comment: "Label for the stories section of the settings view"
+                ),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "stories"),
+                actionBlock: { [weak self] in
+                    let vc = StoryPrivacySettingsViewController()
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                }
+            ))
+        }
         section2.add(.disclosureItem(
             icon: .settingsNotifications,
             name: NSLocalizedString("SETTINGS_NOTIFICATIONS", comment: "The title for the notification settings."),

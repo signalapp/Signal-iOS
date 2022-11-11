@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -102,7 +103,8 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         securityPolicy: OWSHTTPSecurityPolicy,
         configuration: URLSessionConfiguration,
         extraHeaders: [String: String],
-        maxResponseSize: Int?
+        maxResponseSize: Int?,
+        canUseSignalProxy: Bool
     ) {
         self.baseUrl = baseUrl
         self.frontingInfo = frontingInfo
@@ -110,8 +112,19 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         self.configuration = configuration
         self.extraHeaders = extraHeaders
         self.maxResponseSize = maxResponseSize
+        self.canUseSignalProxy = canUseSignalProxy
 
         super.init()
+
+        if canUseSignalProxy {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(isSignalProxyReadyDidChange),
+                name: .isSignalProxyReadyDidChange,
+                object: nil
+            )
+            isSignalProxyReadyDidChange()
+        }
 
         // Ensure this is set so that we don't try to create it in deinit().
         _ = self.delegateBox
@@ -123,7 +136,8 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         frontingInfo: OWSUrlFrontingInfo? = nil,
         securityPolicy: OWSHTTPSecurityPolicy,
         configuration: URLSessionConfiguration,
-        extraHeaders: [String: String] = [:]
+        extraHeaders: [String: String] = [:],
+        canUseSignalProxy: Bool = false
     ) {
         self.init(
             baseUrl: baseUrl,
@@ -131,8 +145,15 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             securityPolicy: securityPolicy,
             configuration: configuration,
             extraHeaders: extraHeaders,
-            maxResponseSize: nil
+            maxResponseSize: nil,
+            canUseSignalProxy: canUseSignalProxy
         )
+    }
+
+    @objc
+    private func isSignalProxyReadyDidChange() {
+        configuration.connectionProxyDictionary = SignalProxy.connectionProxyDictionary
+        session.getAllTasks { $0.forEach { $0.cancel() } }
     }
 
     // MARK: Request Building
@@ -207,7 +228,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             if let responseData = responseData,
                let maxResponseSize = self.maxResponseSize {
                 guard responseData.count <= maxResponseSize else {
-                    self.taskDidFail(requestConfig.task, error: OWSAssertionError("Oversize download."))
+                    self.taskDidFail(requestConfig.task, error: OWSGenericError("Oversize download."))
                     return
                 }
             }
@@ -310,6 +331,8 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
     }()
 
     private let maxResponseSize: Int?
+
+    private let canUseSignalProxy: Bool
 
     // MARK: Deinit
 
@@ -887,8 +910,11 @@ extension OWSURLSession: URLSessionDownloadDelegate {
 extension OWSURLSession: URLSessionWebSocketDelegate {
 
     @available(iOS 13, *)
-    public func webSocketTask(request: URLRequest, didOpenBlock: @escaping (String?) -> Void, didCloseBlock: @escaping (SSKWebSocketNativeError) -> Void) -> URLSessionWebSocketTask {
-        let task = session.webSocketTask(with: request)
+    public func webSocketTask(requestUrl: URL, didOpenBlock: @escaping (String?) -> Void, didCloseBlock: @escaping (SSKWebSocketNativeError) -> Void) -> URLSessionWebSocketTask {
+        // We can't pass a URLRequest here since it prevents the proxy from
+        // operating correctly. See `SSKWebSocketNative.init(...)` for more details
+        // and an example of passing URLRequest options via this web socket.
+        let task = session.webSocketTask(with: requestUrl)
         addTask(task, taskState: WebSocketTaskState(openBlock: didOpenBlock, closeBlock: didCloseBlock))
         return task
     }

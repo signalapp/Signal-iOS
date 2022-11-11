@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "HTTPUtils.h"
@@ -12,8 +13,12 @@ dispatch_queue_t NetworkManagerQueue(void)
 {
     static dispatch_queue_t serialQueue;
     static dispatch_once_t onceToken;
-    dispatch_once(&onceToken,
-        ^{ serialQueue = dispatch_queue_create("org.whispersystems.networkManager", DISPATCH_QUEUE_SERIAL); });
+    dispatch_once(&onceToken, ^{
+        NS_VALID_UNTIL_END_OF_SCOPE NSString *label = [OWSDispatch createLabel:@"networkManager"];
+        const char *cStringLabel = [label cStringUsingEncoding:NSUTF8StringEncoding];
+
+        serialQueue = dispatch_queue_create(cStringLabel, DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
+    });
     return serialQueue;
 }
 

@@ -12,6 +12,19 @@ git_repo_path = os.path.abspath(
     subprocess.check_output(["git", "rev-parse", "--show-toplevel"], text=True).strip()
 )
 
+enum_item_regex = re.compile(r'^(.+?)\s*=\s*(\d+?)\s*;$')
+enum_regex = re.compile(r'^enum\s+(.+?)\s+\{$')
+message_item_regex = re.compile(r'^(optional|required|repeated)?\s*([\w\d\.]+?\s)\s*([\w\d]+?)\s*=\s*(\d+?)\s*(\[default = (.+)\])?;$')
+message_regex = re.compile(r'^message\s+(.+?)\s+\{$')
+multiline_comment_regex = re.compile(r'/\*.*?\*/', re.MULTILINE|re.DOTALL)
+oneof_item_regex = re.compile(r'^(.+?)\s*([\w\d]+?)\s*=\s*(\d+?)\s*;$')
+oneof_regex = re.compile(r'^oneof\s+(.+?)\s+\{$')
+option_regex = re.compile(r'^option ')
+package_regex = re.compile(r'^package\s+(.+);')
+reserved_regex = re.compile(r'^reserved\s+(?:/*[^*]*\*/)?\s*\d+;$')
+syntax_regex = re.compile(r'^syntax\s+=\s+"(.+)";')
+validation_start_regex = re.compile(r'// MARK: - Begin Validation Logic for ([^ ]+) -')
+
 proto_syntax = None
 
 def lower_camel_case(name):
@@ -82,11 +95,13 @@ def swift_type_for_proto_primitive_type(proto_type):
         return 'Data'
     elif proto_type == 'double':
         return 'Double'
+    elif proto_type == 'float':
+        return 'Float'
     else:
         return None
 
 def is_swift_primitive_type(proto_type):
-    return proto_type in ('String', 'UInt64', 'UInt32', 'UInt64', 'Bool', 'Data')
+    return proto_type in ('String', 'UInt64', 'UInt32', 'Int64', 'Int32', 'Bool', 'Data', 'Double', 'Float')
 
 # Provides context for writing an indented block surrounded by braces.
 #
@@ -395,7 +410,8 @@ class FileContext(BaseContext):
 
     def generate(self, writer):
         writer.extend('''//
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -664,9 +680,8 @@ class MessageContext(BaseContext):
                     writer.add('}')
                     writer.newline()
 
-        has_address_helper = uuid_field and e164_field and not args.skip_address_helpers
         address_accessor = ''
-        if has_address_helper:
+        if uuid_field is not None:
             accessor_prefix = uuid_field.name.replace('Uuid', '')
             address_accessor = accessor_prefix + 'Address'
             address_has_accessor = 'hasValid' + accessor_prefix[0].upper() + accessor_prefix[1:]
@@ -715,23 +730,29 @@ class MessageContext(BaseContext):
         for field in explict_fields:
             writer.add('self.%s = %s' % (field.name_swift, field.name_swift))
 
-        if has_address_helper:
+        if uuid_field:
             writer.newline()
 
             if proto_syntax == 'proto3':
                 writer.add('let %s = !proto.%s.isEmpty' % (uuid_field.has_accessor_name(), uuid_field.name_swift))
-                writer.add('let %s = !proto.%s.isEmpty' % (e164_field.has_accessor_name(), e164_field.name_swift))
+                if e164_field:
+                    writer.add('let %s = !proto.%s.isEmpty' % (e164_field.has_accessor_name(), e164_field.name_swift))
             else:
                 writer.add('let %s = proto.%s && !proto.%s.isEmpty' % (uuid_field.has_accessor_name(), uuid_field.has_accessor_name(), uuid_field.name_swift))
-                writer.add('let %s = proto.%s && !proto.%s.isEmpty' % (e164_field.has_accessor_name(), e164_field.has_accessor_name(), e164_field.name_swift))
+                if e164_field:
+                    writer.add('let %s = proto.%s && !proto.%s.isEmpty' % (e164_field.has_accessor_name(), e164_field.has_accessor_name(), e164_field.name_swift))
 
             writer.add('let %s: String? = proto.%s' % (uuid_field.name_swift, uuid_field.name_swift))
-            writer.add('let %s: String? = proto.%s' % (e164_field.name_swift, e164_field.name_swift))
+            if e164_field:
+                writer.add('let %s: String? = proto.%s' % (e164_field.name_swift, e164_field.name_swift))
 
             writer.add('self.%s = {' % address_accessor)
             writer.push_indent()
 
-            writer.add('guard %s || %s else { return nil }' % (e164_field.has_accessor_name(), uuid_field.has_accessor_name()))
+            if e164_field:
+                writer.add(f"guard {uuid_field.has_accessor_name()} || {e164_field.has_accessor_name()} else {{ return nil }}")
+            else:
+                writer.add(f"guard {uuid_field.has_accessor_name()} else {{ return nil }}")
             writer.newline()
 
             writer.add('let uuidString: String? = {')
@@ -750,26 +771,39 @@ class MessageContext(BaseContext):
             writer.add('}()')
             writer.newline()
 
-            writer.add('let phoneNumber: String? = {')
-            writer.push_indent()
-            writer.add('guard %s else {' % e164_field.has_accessor_name())
-            writer.push_indent()
-            writer.add('return nil')
-            writer.pop_indent()
-            writer.add('}')
-            writer.newline()
-            writer.add('return ProtoUtils.parseProtoE164(%s, name: "%s.%s")' % (e164_field.name_swift, wrapped_swift_name, e164_field.name_swift))
-            writer.pop_indent()
-            writer.add('}()')
-            writer.newline()
+            if e164_field:
+                writer.add('let phoneNumber: String? = {')
+                writer.push_indent()
+                writer.add('guard %s else {' % e164_field.has_accessor_name())
+                writer.push_indent()
+                writer.add('return nil')
+                writer.pop_indent()
+                writer.add('}')
+                writer.newline()
+                writer.add('return ProtoUtils.parseProtoE164(%s, name: "%s.%s")' % (e164_field.name_swift, wrapped_swift_name, e164_field.name_swift))
+                writer.pop_indent()
+                writer.add('}()')
+                writer.newline()
 
-            writer.add('let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: %s)' % ('.high' if uuid_field.is_trusted_mapping else '.low'))
-            writer.add('guard address.isValid else {')
+                writer.add("let address = SignalServiceAddress(")
+                writer.push_indent()
+                writer.add("uuidString: uuidString,")
+                writer.add("phoneNumber: phoneNumber,")
+                writer.add(f"trustLevel: .{'high' if uuid_field.is_trusted_mapping else 'low'}")
+                writer.pop_indent()
+                writer.add(")")
+            else:
+                writer.add("guard let uuidString = uuidString else { return nil }")
+                writer.newline()
+
+                writer.add("let address = SignalServiceAddress(uuidString: uuidString)")
+
+            writer.add("guard address.isValid else {")
             writer.push_indent()
             writer.add('owsFailDebug("address was unexpectedly invalid")')
-            writer.add('return nil')
+            writer.add("return nil")
             writer.pop_indent()
-            writer.add('}')
+            writer.add("}")
             writer.newline()
             writer.add('return address')
             writer.pop_indent()
@@ -1235,19 +1269,6 @@ public func serializedData() throws -> Data {
         writer.add('}')
         writer.newline()
 
-        # description
-        if self.args.add_description:
-            writer.add_objc()
-            writer.add('public override var description: String {')
-            writer.push_indent()
-            writer.add('var fields = [String]()')
-            for field in self.fields():
-                writer.add('fields.append("%s: \(proto.%s)")' % ( field.name_swift, field.name_swift, ) )
-            writer.add('return "[" + fields.joined(separator: ", ") + "]"')
-            writer.pop_indent()
-            writer.add('}')
-            writer.newline()
-
         writer.pop_context()
 
         writer.rstrip()
@@ -1329,8 +1350,8 @@ class EnumContext(BaseContext):
 
             max_case_index = 0
             for case_name, case_index in self.case_pairs():
-                if case_name == 'default':
-                    case_name = '`default`'
+                if case_name in ['default', 'true', 'false']:
+                    case_name = "`%s`" % case_name
                 writer.add('case %s // %s' % ( case_name, case_index, ) )
                 max_case_index = max(max_case_index, int(case_index))
                 
@@ -1341,8 +1362,6 @@ class EnumContext(BaseContext):
             writer.add('public init() {')
             writer.push_indent()
             for case_name, case_index in self.case_pairs():
-                if case_name == 'default':
-                    case_name = '`default`'
                 writer.add('self = .%s' % case_name)
                 break
             writer.pop_indent()
@@ -1354,8 +1373,6 @@ class EnumContext(BaseContext):
             writer.add('switch rawValue {')
             writer.push_indent()
             for case_name, case_index in self.case_pairs():
-                if case_name == 'default':
-                    case_name = '`default`'
                 writer.add('case %s: self = .%s' % (case_index, case_name) )
             writer.add('default: self = .UNRECOGNIZED(rawValue)')
             writer.pop_indent()
@@ -1369,8 +1386,6 @@ class EnumContext(BaseContext):
             writer.add('switch self {')
             writer.push_indent()
             for case_name, case_index in self.case_pairs():
-                if case_name == 'default':
-                    case_name = '`default`'
                 writer.add('case .%s: return %s' % ( case_name, case_index, ) )
             writer.add('case .UNRECOGNIZED(let i): return i')
             writer.pop_indent()
@@ -1391,8 +1406,8 @@ class EnumContext(BaseContext):
 
             max_case_index = 0
             for case_name, case_index in self.case_pairs():
-                if case_name == 'default':
-                    case_name = '`default`'
+                if case_name in ['default', 'true', 'false']:
+                    case_name = "`%s`" % case_name
                 writer.add('case %s = %s' % (case_name, case_index,))
                 max_case_index = max(max_case_index, int(case_index))
 
@@ -1610,8 +1625,10 @@ def parse_enum(args, proto_file_path, parser, parent_context, enum_name):
             parent_context.enums.append(context)
             return
 
-        item_regex = re.compile(r'^(.+?)\s*=\s*(\d+?)\s*;$')
-        item_match = item_regex.search(line)
+        if reserved_regex.search(line):
+            continue
+
+        item_match = enum_item_regex.search(line)
         if item_match:
             item_name = item_match.group(1).strip()
             item_index = item_match.group(2).strip()
@@ -1655,8 +1672,7 @@ def parse_oneof(args, proto_file_path, parser, parent_context, oneof_name):
         if line == '}':
             break
 
-        item_regex = re.compile(r'^(.+?)\s*([\w\d]+?)\s*=\s*(\d+?)\s*;$')
-        item_match = item_regex.search(line)
+        item_match = oneof_item_regex.search(line)
         if item_match:
             item_type = item_match.group(1).strip()
             item_name = item_match.group(2).strip()
@@ -1711,14 +1727,12 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
             parent_context.messages.append(context)
             return
 
-        enum_regex = re.compile(r'^enum\s+(.+?)\s+\{$')
         enum_match = enum_regex.search(line)
         if enum_match:
             enum_name = enum_match.group(1).strip()
             parse_enum(args, proto_file_path, parser, context, enum_name)
             continue
 
-        message_regex = re.compile(r'^message\s+(.+?)\s+\{$')
         message_match = message_regex.search(line)
         if message_match:
             message_name = message_match.group(1).strip()
@@ -1726,7 +1740,6 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
             continue
 
         if proto_syntax == 'proto3':
-            oneof_regex = re.compile(r'^oneof\s+(.+?)\s+\{$')
             oneof_match = oneof_regex.search(line)
             if oneof_match:
                 oneof_name = oneof_match.group(1).strip()
@@ -1737,14 +1750,16 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
                 sort_index = sort_index + 1
                 continue
 
+        if reserved_regex.search(line):
+            continue
+
         # Examples:
         #
         # optional bytes  id          = 1;
         # optional bool              isComplete = 2 [default = false];
         #
         # NOTE: optional and required are not valid in proto3.
-        item_regex = re.compile(r'^(optional|required|repeated)?\s*([\w\d\.]+?\s)\s*([\w\d]+?)\s*=\s*(\d+?)\s*(\[default = (.+)\])?;$')
-        item_match = item_regex.search(line)
+        item_match = message_item_regex.search(line)
         if item_match:
             # print 'item_rules:', item_match.groups()
             item_rules = optional_match_group(item_match, 1)
@@ -1810,7 +1825,6 @@ def preserve_validation_logic(args, proto_file_path, dst_file_path):
     if os.path.exists(dst_file_path):
         with open(dst_file_path, 'rt') as f:
             old_text = f.read()
-        validation_start_regex = re.compile(r'// MARK: - Begin Validation Logic for ([^ ]+) -')
         for match in validation_start_regex.finditer(old_text):
             # print 'match'
             name = match.group(1)
@@ -1847,12 +1861,7 @@ def process_proto_file(args, proto_file_path, dst_file_path):
     with open(proto_file_path, 'rt') as f:
         text = f.read()
 
-    multiline_comment_regex = re.compile(r'/\*.*?\*/', re.MULTILINE|re.DOTALL)
     text = multiline_comment_regex.sub('', text)
-
-    syntax_regex = re.compile(r'^syntax\s+=\s+"(.+)";')
-    package_regex = re.compile(r'^package\s+(.+);')
-    option_regex = re.compile(r'^option ')
 
     parser = LineParser(text)
 
@@ -1865,6 +1874,12 @@ def process_proto_file(args, proto_file_path, dst_file_path):
             line = next(parser)
         except StopIteration:
             break
+
+        enum_match = enum_regex.search(line)
+        if enum_match:
+            enum_name = enum_match.group(1).strip()
+            parse_enum(args, proto_file_path, parser, context, enum_name)
+            continue
 
         syntax_match = syntax_regex.search(line)
         if syntax_match:
@@ -1889,7 +1904,6 @@ def process_proto_file(args, proto_file_path, dst_file_path):
                 print('# package:', args.package)
             continue
 
-        message_regex = re.compile(r'^message\s+(.+?)\s+\{$')
         message_match = message_regex.search(line)
         if message_match:
             message_name = message_match.group(1).strip()
@@ -1911,15 +1925,11 @@ def process_proto_file(args, proto_file_path, dst_file_path):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Protocol Buffer Swift Wrapper Generator.')
-    # parser.add_argument('--all', action='store_true', help='process all files in or below current dir')
-    # parser.add_argument('--path', help='used to specify a path to a file.')
     parser.add_argument('--proto-dir', help='dir path of the proto schema file.')
     parser.add_argument('--proto-file', help='filename of the proto schema file.')
     parser.add_argument('--wrapper-prefix', help='name prefix for generated wrappers.')
     parser.add_argument('--proto-prefix', help='name prefix for proto bufs.')
     parser.add_argument('--dst-dir', help='path to the destination directory.')
-    parser.add_argument('--add-description', action='store_true', help='add `description` properties.')
-    parser.add_argument('--skip-address-helpers', action='store_true', help='skip generating address helpers for uuid/e164 fields')
     parser.add_argument('--verbose', action='store_true', help='enables verbose logging')
     args = parser.parse_args()
 

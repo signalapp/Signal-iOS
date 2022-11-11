@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import IntentsUI
+import SignalMessaging
 
 @objc
 class ChatsSettingsViewController: OWSTableViewController2 {
@@ -183,7 +185,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             ),
             proceedStyle: .destructive
         ) { _ in
-            ThreadUtil.deleteAllContent()
+            ThreadUtil.deleteAllContentWithSneakyTransaction()
         }
     }
 }

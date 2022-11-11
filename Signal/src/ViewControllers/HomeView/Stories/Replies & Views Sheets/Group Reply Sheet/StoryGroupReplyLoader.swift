@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import SignalCoreKit
+import SignalMessaging
 
 class StoryGroupReplyLoader: Dependencies {
     private let loadingLock = UnfairLock()
@@ -266,28 +268,23 @@ class StoryGroupReplyLoader: Dependencies {
 
             newReplyItems[message.uniqueId] = replyItem
 
-            if let previousItem = previousItem,
-               previousItem.authorAddress == authorAddress,
-               previousItem.timeString == replyItem.timeString,
-               ![.pending, .uploading, .sending, .failed].contains(previousItem.recipientStatus),
-               replyItem.cellType != .reaction,
-               previousItem.cellType != .reaction {
-                switch previousItem.cellType {
+            if let previousItem = previousItem, canCollapse(item: replyItem, previousItem: previousItem) {
+                switch previousItem.cellType.position {
                 case .standalone:
-                    previousItem.cellType = .top
+                    previousItem.cellType.position = .top
                 case .bottom:
-                    previousItem.cellType = .middle
-                case .top, .middle, .reaction:
+                    previousItem.cellType.position = .middle
+                case .top, .middle:
                     break
                 }
 
-                replyItem.cellType = .bottom
+                replyItem.cellType.position = .bottom
             } else {
-                switch replyItem.cellType {
-                case .standalone, .reaction:
+                switch replyItem.cellType.position {
+                case .standalone:
                     break
                 case .top, .middle, .bottom:
-                    replyItem.cellType = .standalone
+                    replyItem.cellType.position = .standalone
                 }
             }
 
@@ -295,6 +292,17 @@ class StoryGroupReplyLoader: Dependencies {
         }
 
         return newReplyItems
+    }
+
+    private func canCollapse(item: StoryGroupReplyViewItem, previousItem: StoryGroupReplyViewItem) -> Bool {
+        guard previousItem.cellType.kind == item.cellType.kind else { return false }
+        switch item.cellType.kind {
+        case .reaction: return true
+        case .text:
+            return previousItem.authorAddress == item.authorAddress &&
+            previousItem.timeString == item.timeString &&
+            ![.pending, .uploading, .sending, .failed].contains(previousItem.recipientStatus)
+        }
     }
 }
 

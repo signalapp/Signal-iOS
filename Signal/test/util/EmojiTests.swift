@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import XCTest
@@ -7,11 +8,6 @@ import XCTest
 @testable import SignalServiceKit
 
 class EmojiTests: SignalBaseTest {
-
-    override func setUp() {
-        super.setUp()
-    }
-
     func testSimpleEmojiCases() {
         XCTAssertFalse("".isSingleEmojiUsingEmojiWithSkinTones)
         XCTAssertTrue("😃".isSingleEmojiUsingEmojiWithSkinTones)

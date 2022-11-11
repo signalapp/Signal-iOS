@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSOutgoingReactionMessage.h"
@@ -73,10 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (!messageAuthor) {
         OWSFailDebug(@"message is missing author.");
         return nil;
-    }
-
-    if (messageAuthor.phoneNumber && !SSKFeatureFlags.phoneNumberSharing) {
-        reactionBuilder.authorE164 = messageAuthor.phoneNumber;
     }
 
     if (messageAuthor.uuidString) {

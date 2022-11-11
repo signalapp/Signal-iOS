@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2016 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -216,8 +217,6 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         super.init()
 
         allAudioSources = Set(callService.audioService.availableInputs)
-
-        self.shouldUseTheme = false
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateOrientationForPhone),
@@ -496,7 +495,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
             // create checkmark for active audio source.
             if currentAudioSource == audioSource {
-                routeAudioAction.trailingIcon = .checkCircle
+                routeAudioAction.trailingIcon = .checkCircle24
             }
 
             actionSheetController.addAction(routeAudioAction)

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "TSIncomingMessage.h"
@@ -192,14 +193,16 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     // We want to do this without triggering sending read receipts, so we pretend it was
     // read on a linked device.
     [self markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
-                         thread:[self threadWithTransaction:transaction]
-                   circumstance:OWSReceiptCircumstanceOnLinkedDevice
-                    transaction:transaction];
+                          thread:[self threadWithTransaction:transaction]
+                    circumstance:OWSReceiptCircumstanceOnLinkedDevice
+        shouldClearNotifications:YES
+                     transaction:transaction];
 }
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
                        thread:(TSThread *)thread
                  circumstance:(OWSReceiptCircumstance)circumstance
+     shouldClearNotifications:(BOOL)shouldClearNotifications
                   transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
@@ -228,12 +231,9 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
 
     [OWSReceiptManager.shared messageWasRead:self thread:thread circumstance:circumstance transaction:transaction];
 
-    // We don't want to wait until the transaction finishes to cancel the notification,
-    // because it's important it happens as part of "message processing" in the NSE.
-    // Since we wait for message processing to finish with a promise on the main
-    // queue, dispatching to main here *before* it's finished ensures that it always
-    // happens before the processing promise completes.
-    [SSKEnvironment.shared.notificationPresenter cancelNotificationsForMessageId:self.uniqueId];
+    if (shouldClearNotifications) {
+        [SSKEnvironment.shared.notificationPresenter cancelNotificationsForMessageIds:@[ self.uniqueId ]];
+    }
 }
 
 - (void)markAsViewedAtTimestamp:(uint64_t)viewedTimestamp

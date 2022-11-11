@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -13,6 +14,7 @@ public class StoryManager: NSObject {
     public class func setup() {
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             cacheAreStoriesEnabled()
+            cacheAreViewReceiptsEnabled()
 
             // Create My Story thread if necessary
             Self.databaseStorage.asyncWrite { transaction in
@@ -39,20 +41,54 @@ public class StoryManager: NSObject {
             author: author,
             transaction: transaction
         ) == nil else {
-            owsFailDebug("Dropping story message with duplicate timestamp \(timestamp) from author \(author)")
+            Logger.warn("Dropping story message with duplicate timestamp \(timestamp) from author \(author)")
             return
         }
 
-        guard let thread: TSThread = {
-            if let masterKey = storyMessage.group?.masterKey,
-                let contextInfo = try? groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey) {
-                return TSGroupThread.fetch(groupId: contextInfo.groupId, transaction: transaction)
-            } else {
-                return TSContactThread.getWithContactAddress(author, transaction: transaction)
-            }
-        }(), !thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) else {
-            Logger.warn("Dropping story message with timestamp \(timestamp) from author \(author) with pending message request.")
+        guard !blockingManager.isAddressBlocked(author, transaction: transaction) else {
+            Logger.warn("Dropping story message with timestamp \(timestamp) from blocked author \(author)")
             return
+        }
+
+        if let masterKey = storyMessage.group?.masterKey {
+            let contextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
+
+            guard !blockingManager.isGroupIdBlocked(contextInfo.groupId, transaction: transaction) else {
+                Logger.warn("Dropping story message with timestamp \(timestamp) in blocked group")
+                return
+            }
+
+            guard
+                let groupThread = TSGroupThread.fetch(groupId: contextInfo.groupId, transaction: transaction),
+                groupThread.groupMembership.isFullMember(author)
+            else {
+                Logger.warn("Dropping story message with timestamp \(timestamp) from author \(author) not in group")
+                return
+            }
+
+            if
+                let groupModel = groupThread.groupModel as? TSGroupModelV2,
+                groupModel.isAnnouncementsOnly,
+                !groupModel.groupMembership.isFullMemberAndAdministrator(author)
+            {
+                Logger.warn("Dropping story message with timestamp \(timestamp) from non-admin author \(author) in announcement only group")
+                return
+            }
+
+        } else {
+            guard profileManager.isUser(inProfileWhitelist: author, transaction: transaction) else {
+                Logger.warn("Dropping story message with timestamp \(timestamp) from unapproved author \(author).")
+                return
+            }
+        }
+
+        if let profileKey = storyMessage.profileKey {
+            profileManager.setProfileKeyData(
+                profileKey,
+                for: author,
+                userProfileWriter: .localUser,
+                transaction: transaction
+            )
         }
 
         guard let message = try StoryMessage.create(
@@ -62,6 +98,14 @@ public class StoryManager: NSObject {
             author: author,
             transaction: transaction
         ) else { return }
+
+        switch message.context {
+        case .authorUuid(let uuid):
+            // Make sure the thread exists for the contact who sent us this story.
+            _ = TSContactThread.getOrCreateThread(withContactAddress: .init(uuid: uuid), transaction: transaction)
+        case .groupId, .privateStory, .none:
+            break
+        }
 
         startAutomaticDownloadIfNecessary(for: message, transaction: transaction)
 
@@ -132,6 +176,28 @@ public class StoryManager: NSObject {
         return NSNumber(value: timestamp + storyLifetimeMillis)
     }
 
+    private static let hasSetMyStoriesPrivacyKey = "hasSetMyStoriesPrivacyKey"
+
+    @objc
+    public class func hasSetMyStoriesPrivacy(transaction: SDSAnyReadTransaction) -> Bool {
+        return keyValueStore.getBool(hasSetMyStoriesPrivacyKey, defaultValue: false, transaction: transaction)
+    }
+
+    @objc
+    public class func setHasSetMyStoriesPrivacy(
+        transaction: SDSAnyWriteTransaction,
+        shouldUpdateStorageService: Bool = true
+    ) {
+        guard !hasSetMyStoriesPrivacy(transaction: transaction) else {
+            // Don't trigger account record updates unneccesarily!
+            return
+        }
+        keyValueStore.setBool(true, key: hasSetMyStoriesPrivacyKey, transaction: transaction)
+        if shouldUpdateStorageService {
+            Self.storageServiceManager.recordPendingLocalAccountUpdates()
+        }
+    }
+
     private static let perContextAutomaticDownloadLimit = 3
     private static let recentContextAutomaticDownloadLimit: UInt = 20
 
@@ -184,8 +250,11 @@ public class StoryManager: NSObject {
 
         let pinnedThreads = PinnedThreadManager.pinnedThreads(transaction: transaction)
         let recentlyInteractedThreads = AnyThreadFinder().threadsWithRecentInteractions(limit: recentContextAutomaticDownloadLimit, transaction: transaction)
-        let recentlyViewedThreads = AnyThreadFinder().threadsWithRecentlyViewedStories(limit: recentContextAutomaticDownloadLimit, transaction: transaction)
-        let autoDownloadContexts = (pinnedThreads + recentlyInteractedThreads + recentlyViewedThreads).map { $0.storyContext }
+        let recentlyViewedContexts = StoryFinder.associatedDatasWithRecentlyViewedStories(
+            limit: Int(recentContextAutomaticDownloadLimit),
+            transaction: transaction
+        ).map(\.sourceContext.asStoryContext)
+        let autoDownloadContexts = (pinnedThreads + recentlyInteractedThreads).map { $0.storyContext } + recentlyViewedContexts
 
         if autoDownloadContexts.contains(message.context) || autoDownloadContexts.contains(.authorUuid(message.authorUuid)) {
             Logger.info("Automatically downloading attachments for story with timestamp \(message.timestamp) and context \(message.context)")
@@ -210,6 +279,7 @@ extension StoryManager {
 
     private static var areStoriesEnabledCache = AtomicBool(true)
 
+    /// A cache of if stories are enabled for the local user. For convenience, this also factors in whether the overall feature is available to the user.
     @objc
     public static var areStoriesEnabled: Bool { RemoteConfig.stories && areStoriesEnabledCache.get() }
 
@@ -226,6 +296,7 @@ extension StoryManager {
         }
     }
 
+    /// Have stories been enabled by the local user. This never factors in any remote information, like is the feature available to the user.
     public static func areStoriesEnabled(transaction: SDSAnyReadTransaction) -> Bool {
         keyValueStore.getBool(areStoriesEnabledKey, defaultValue: true, transaction: transaction)
     }
@@ -240,11 +311,50 @@ extension StoryManager {
             NotificationCenter.default.post(name: .storiesEnabledStateDidChange, object: nil)
         }
     }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public class func appendStoryHeadersToRequest(_ mutableRequest: NSMutableURLRequest) {
+        var request = mutableRequest as URLRequest
+        appendStoryHeaders(to: &request)
+        mutableRequest.allHTTPHeaderFields = request.allHTTPHeaderFields
+    }
+
+    public static func appendStoryHeaders(to request: inout URLRequest) {
+        request.setValue(areStoriesEnabled ? "true" : "false", forHTTPHeaderField: "X-Signal-Receive-Stories")
+    }
 }
 
 // MARK: -
 
-public enum StoryContext: Equatable, Hashable {
+extension StoryManager {
+    private static let areViewReceiptsEnabledKey = "areViewReceiptsEnabledKey"
+
+    @objc
+    @Atomic
+    public private(set) static var areViewReceiptsEnabled: Bool = false
+
+    public static func areViewReceiptsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
+        keyValueStore.getBool(areViewReceiptsEnabledKey, transaction: transaction) ?? receiptManager.areReadReceiptsEnabled(transaction: transaction)
+    }
+
+    public static func setAreViewReceiptsEnabled(_ enabled: Bool, shouldUpdateStorageService: Bool = true, transaction: SDSAnyWriteTransaction) {
+        keyValueStore.setBool(enabled, key: areViewReceiptsEnabledKey, transaction: transaction)
+        areViewReceiptsEnabled = enabled
+
+        if shouldUpdateStorageService {
+            storageServiceManager.recordPendingLocalAccountUpdates()
+        }
+    }
+
+    private static func cacheAreViewReceiptsEnabled() {
+        areViewReceiptsEnabled = databaseStorage.read { areViewReceiptsEnabled(transaction: $0) }
+    }
+}
+
+// MARK: -
+
+public enum StoryContext: Equatable, Hashable, Dependencies {
     case groupId(Data)
     case authorUuid(UUID)
     case privateStory(String)
@@ -266,6 +376,20 @@ public extension TSThread {
 }
 
 public extension StoryContext {
+
+    var asAssociatedDataContext: StoryContextAssociatedData.SourceContext? {
+        switch self {
+        case .groupId(let data):
+            return .group(groupId: data)
+        case .authorUuid(let uUID):
+            return .contact(contactUuid: uUID)
+        case .privateStory:
+            return nil
+        case .none:
+            return nil
+        }
+    }
+
     func threadUniqueId(transaction: SDSAnyReadTransaction) -> String? {
         switch self {
         case .groupId(let data):
@@ -301,19 +425,36 @@ public extension StoryContext {
         }
     }
 
-    func isHidden(
-        transaction: SDSAnyReadTransaction
-    ) -> Bool {
-        return isHidden(threadUniqueId: self.threadUniqueId(transaction: transaction), transaction: transaction)
+    /// Returns nil only for outgoing contexts (private story contexts) which have no associated data.
+    /// For valid contact and group contexts where the associated data does not yet exists, creates and returns a default one.
+    func associatedData(transaction: SDSAnyReadTransaction) -> StoryContextAssociatedData? {
+        guard let source = self.asAssociatedDataContext else {
+            return nil
+        }
+        return StoryContextAssociatedData.fetchOrDefault(sourceContext: source, transaction: transaction)
     }
 
     func isHidden(
-        threadUniqueId: String?,
         transaction: SDSAnyReadTransaction
     ) -> Bool {
-        guard let threadUniqueId = threadUniqueId else {
-            return false
+        if
+            case .authorUuid(let uuid) = self,
+            SignalServiceAddress(uuid: uuid).isSystemStoryAddress
+        {
+            return Self.systemStoryManager.areSystemStoriesHidden(transaction: transaction)
         }
-        return ThreadAssociatedData.fetchOrDefault(for: threadUniqueId, transaction: transaction).hideStory
+        return self.associatedData(transaction: transaction)?.isHidden ?? false
+    }
+}
+
+public extension StoryContextAssociatedData.SourceContext {
+
+    var asStoryContext: StoryContext {
+        switch self {
+        case .contact(let contactUuid):
+            return .authorUuid(contactUuid)
+        case .group(let groupId):
+            return .groupId(groupId)
+        }
     }
 }

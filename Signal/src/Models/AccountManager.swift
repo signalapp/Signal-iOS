@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2016 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import SignalServiceKit
 
 public enum AccountManagerError: Error {
@@ -32,11 +34,6 @@ public class AccountManager: NSObject {
     }
 
     // MARK: registration
-
-    @objc
-    func requestRegistrationVerificationObjC(e164: String, captchaToken: String?, isSMS: Bool) -> AnyPromise {
-        return AnyPromise(requestRegistrationVerification(e164: e164, captchaToken: captchaToken, isSMS: isSMS))
-    }
 
     func requestRegistrationVerification(e164: String, captchaToken: String?, isSMS: Bool) -> Promise<Void> {
         requestAccountVerification(e164: e164,
@@ -81,7 +78,7 @@ public class AccountManager: NSObject {
 
     func getPreauthChallenge(e164: String) -> Promise<String?> {
         return firstly {
-            return self.pushRegistrationManager.requestPushTokens()
+            return self.pushRegistrationManager.requestPushTokens(forceRotation: false)
         }.then { (vanillaToken: String, voipToken: String?) -> Promise<String?> in
             let (pushPromise, pushFuture) = Promise<String>.pending()
             self.pushRegistrationManager.preauthChallengeFuture = pushFuture
@@ -122,7 +119,7 @@ public class AccountManager: NSObject {
     }
 
     func register(verificationCode: String, pin: String?, checkForAvailableTransfer: Bool) -> Promise<Void> {
-        guard verificationCode.count > 0 else {
+        if verificationCode.isEmpty {
             let error = OWSError(error: .userError,
                                  description: NSLocalizedString("REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
                                                                 comment: "alert body during registration"),
@@ -143,6 +140,7 @@ public class AccountManager: NSObject {
                     // For new users, read receipts are on by default.
                     self.receiptManager.setAreReadReceiptsEnabled(true,
                                                                   transaction: transaction)
+                    StoryManager.setAreViewReceiptsEnabled(true, transaction: transaction)
 
                     // New users also have the onboarding banner cards enabled
                     GetStartedBannerViewController.enableAllCards(writeTx: transaction)
@@ -499,7 +497,7 @@ public class AccountManager: NSObject {
 
     private func syncPushTokens() -> Promise<Void> {
         Logger.info("")
-        let job = SyncPushTokensJob(uploadOnlyIfStale: false)
+        let job = SyncPushTokensJob(mode: .forceUpload)
         return job.run()
     }
 

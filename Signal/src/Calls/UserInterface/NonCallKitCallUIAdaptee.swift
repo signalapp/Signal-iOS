@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2016 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -29,39 +30,75 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         let success = self.audioSession.startAudioActivity(call.audioActivity)
         assert(success)
 
-        self.callService.individualCallService.handleOutgoingCall(call)
+        if call.isIndividualCall {
+            self.callService.individualCallService.handleOutgoingCall(call)
+        } else {
+            switch call.groupCallRingState {
+            case .shouldRing, .ringing:
+                // Let CallService call recipientAcceptedCall when someone joins.
+                break
+            case .ringingEnded:
+                owsFailDebug("ringing ended while we were starting the call")
+                fallthrough
+            case .doNotRing:
+                // Immediately consider ourselves connected.
+                recipientAcceptedCall(call)
+            case .incomingRing:
+                owsFailDebug("should not happen for an outgoing call")
+                // Recover by considering ourselves connected
+                recipientAcceptedCall(call)
+            }
+        }
     }
 
-    func reportIncomingCall(_ call: SignalCall, completion: @escaping (Error?) -> Void) {
+    func reportIncomingCall(_ call: SignalCall,
+                            completion: @escaping (Error?) -> Void) {
         AssertIsOnMainThread()
 
         Logger.debug("")
 
         self.showCall(call)
 
-        startNotifiyingForIncomingCall(call, caller: call.individualCall.remoteAddress)
+        startNotifiyingForIncomingCall(call)
 
         completion(nil)
     }
 
     private var incomingCallNotificationTimer: Timer?
-    private func startNotifiyingForIncomingCall(_ call: SignalCall, caller: SignalServiceAddress) {
+    private func startNotifiyingForIncomingCall(_ call: SignalCall) {
+        // Pull this out up front. Group calls don't necessarily keep the information around.
+        guard let caller = call.caller else {
+            return
+        }
+
         incomingCallNotificationTimer?.invalidate()
-        incomingCallNotificationTimer = nil
 
         // present lock screen notification if we're in the background.
         // we re-present the notifiation every 3 seconds to make sure
         // the user sees that their phone is ringing
-        incomingCallNotificationTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { [weak self] _ in
-            guard call.individualCall.state == .localRinging_ReadyToAnswer else {
-                self?.incomingCallNotificationTimer?.invalidate()
-                self?.incomingCallNotificationTimer = nil
+        incomingCallNotificationTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { [weak self] timer in
+            guard let self = self else {
+                timer.invalidate()
+                return
+            }
+
+            let shouldContinue: Bool
+            if self.callService.currentCall !== call {
+                shouldContinue = false
+            } else if call.isGroupCall {
+                shouldContinue = call.groupCall.localDeviceState.joinState == .notJoined
+            } else {
+                shouldContinue = call.individualCall.state == .localRinging_ReadyToAnswer
+            }
+            guard shouldContinue else {
+                self.incomingCallNotificationTimer?.invalidate()
+                self.incomingCallNotificationTimer = nil
                 return
             }
             if UIApplication.shared.applicationState == .active {
                 Logger.debug("skipping notification since app is already active.")
             } else {
-                self?.notificationPresenter.presentIncomingCall(call, caller: caller)
+                self.notificationPresenter.presentIncomingCall(call, caller: caller)
             }
         }
     }
@@ -90,7 +127,13 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
             return
         }
 
-        self.callService.individualCallService.handleAcceptCall(call)
+        if call.isIndividualCall {
+            self.callService.individualCallService.handleAcceptCall(call)
+        } else {
+            // Explicitly unmute to request permissions.
+            self.callService.updateIsLocalAudioMuted(isLocalAudioMuted: false)
+            self.callService.joinGroupCallIfNecessary(call)
+        }
 
         // Enable audio for locally accepted calls after the session is configured.
         self.audioSession.isRTCAudioEnabled = true
@@ -129,7 +172,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
             return
         }
 
-        self.callService.individualCallService.handleLocalHangupCall(call)
+        callService.handleLocalHangupCall(call)
     }
 
     internal func remoteDidHangupCall(_ call: SignalCall) {

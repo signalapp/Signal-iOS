@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController2 {
 
@@ -107,8 +109,8 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
         updateFirstResponder()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         wordTextfield0.textColor = Theme.primaryTextColor
         wordTextfield1.textColor = Theme.primaryTextColor

@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import SignalServiceKit
 
 #if DEBUG
@@ -15,35 +17,6 @@ public extension DebugUIStress {
             return "Cloned Group"
         }
         return groupName + " Copy"
-    }
-
-    // Creates a new group (by cloning the current group) without informing the,
-    // other members. This can be used to test "group info requests", etc.
-    class func cloneAsV1orV2Group(_ oldGroupThread: TSGroupThread) {
-        firstly { () -> Promise<TSGroupThread> in
-            let groupName = Self.nameForClonedGroup(oldGroupThread)
-            return GroupManager.localCreateNewGroup(members: oldGroupThread.groupModel.groupMembers,
-                                                    groupId: nil,
-                                                    name: groupName,
-                                                    avatarData: oldGroupThread.groupModel.avatarData,
-                                                    disappearingMessageToken: .disabledToken,
-                                                    newGroupSeed: nil,
-                                                    shouldSendMessage: false)
-        }.done { newGroupThread in
-
-            self.databaseStorage.write { transaction in
-                let oldDMConfig = oldGroupThread.disappearingMessagesConfiguration(with: transaction)
-                _ = OWSDisappearingMessagesConfiguration.applyToken(oldDMConfig.asToken,
-                                                                    toThread: newGroupThread,
-                                                                    transaction: transaction)
-            }
-
-            Logger.info("Complete.")
-
-            SignalApp.shared().presentConversation(for: newGroupThread, animated: true)
-        }.catch(on: .global()) { error in
-            owsFailDebug("Error: \(error)")
-        }
     }
 
     // Creates a new group (by cloning the current group) without informing the,
@@ -82,7 +55,7 @@ public extension DebugUIStress {
             for member in members {
                 Logger.verbose("Candidate member: \(member)")
             }
-            return GroupManager.tryToEnableGroupsV2(for: members, isBlocking: true, ignoreErrors: true)
+            return GroupManager.tryToEnableGroupsV2(for: members)
         }.then { () -> Promise<TSGroupThread> in
             guard GroupManager.defaultGroupsVersion == .V2 else {
                 throw OWSAssertionError("Groups v2 not enabled.")
@@ -145,7 +118,7 @@ public extension DebugUIStress {
             for member in membersToAdd {
                 Logger.verbose("Candidate member: \(member)")
             }
-            return GroupManager.tryToEnableGroupsV2(for: Array(membersToAdd), isBlocking: true, ignoreErrors: true)
+            return GroupManager.tryToEnableGroupsV2(for: Array(membersToAdd))
         }.then { () -> Promise<TSGroupThread> in
             let uuidsToAdd: [UUID] = try {
                 let validMembersToAdd: [SignalServiceAddress]

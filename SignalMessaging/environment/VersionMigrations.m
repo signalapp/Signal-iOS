@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2014 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "VersionMigrations.h"
@@ -42,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-        ^{ [self.databaseStorage runGrdbSchemaMigrationsWithCompletion:completion]; });
+        ^{ [self.databaseStorage runGrdbSchemaMigrationsOnMainDatabaseWithCompletion:completion]; });
 }
 
 + (BOOL)isVersion:(NSString *)thisVersionString

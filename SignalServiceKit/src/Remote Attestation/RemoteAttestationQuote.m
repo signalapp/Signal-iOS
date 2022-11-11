@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "RemoteAttestationQuote.h"
@@ -8,15 +9,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static const int64_t SGX_FLAGS_INITTED = 0x0000000000000001LL;
-static const int64_t SGX_FLAGS_DEBUG = 0x0000000000000002LL;
-static const int64_t SGX_FLAGS_MODE64BIT = 0x0000000000000004LL;
-static const int64_t __unused SGX_FLAGS_PROVISION_KEY = 0x0000000000000004LL;
-static const int64_t __unused SGX_FLAGS_EINITTOKEN_KEY = 0x0000000000000004LL;
-static const int64_t SGX_FLAGS_RESERVED = 0xFFFFFFFFFFFFFFC8LL;
-static const int64_t __unused SGX_XFRM_LEGACY = 0x0000000000000003LL;
-static const int64_t __unused SGX_XFRM_AVX = 0x0000000000000006LL;
-static const int64_t SGX_XFRM_RESERVED = 0xFFFFFFFFFFFFFFF8LL;
+static const uint64_t SGX_FLAGS_INITTED = 0x0000000000000001ULL;
+static const uint64_t SGX_FLAGS_DEBUG = 0x0000000000000002ULL;
+static const uint64_t SGX_FLAGS_MODE64BIT = 0x0000000000000004ULL;
+static const uint64_t __unused SGX_FLAGS_PROVISION_KEY = 0x0000000000000004ULL;
+static const uint64_t __unused SGX_FLAGS_EINITTOKEN_KEY = 0x0000000000000004ULL;
+static const uint64_t SGX_FLAGS_RESERVED = 0xFFFFFFFFFFFFFFC8ULL;
+static const uint64_t __unused SGX_XFRM_LEGACY = 0x0000000000000003ULL;
+static const uint64_t __unused SGX_XFRM_AVX = 0x0000000000000006ULL;
+static const uint64_t SGX_XFRM_RESERVED = 0xFFFFFFFFFFFFFFF8ULL;
 
 #pragma mark -
 

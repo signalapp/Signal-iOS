@@ -1,14 +1,15 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2014 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <SignalUI/OWSViewController.h>
+#import <SignalUI/OWSViewControllerObjc.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class SignalServiceAddress;
 
-@interface FingerprintViewController : OWSViewController
+@interface FingerprintViewController : OWSViewControllerObjc
 
 + (void)presentFromViewController:(UIViewController *)viewController address:(SignalServiceAddress *)address;
 

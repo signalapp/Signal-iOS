@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -32,7 +33,7 @@ public class ReverseDispatchQueue: NSObject {
         let workBlock: WorkBlock
         let index: UInt64
 
-        required init(workBlock : @escaping WorkBlock, index: UInt64) {
+        required init(workBlock: @escaping WorkBlock, index: UInt64) {
             self.workBlock = workBlock
             self.index = index
         }
@@ -43,7 +44,7 @@ public class ReverseDispatchQueue: NSObject {
     private var indexCounter: UInt64 = 0
 
     @objc
-    public func async(workBlock : @escaping WorkBlock) {
+    public func async(workBlock: @escaping WorkBlock) {
         serialQueue.async {
             self.indexCounter += 1
             let index = self.indexCounter

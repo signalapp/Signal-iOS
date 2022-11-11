@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -7,15 +8,14 @@ import SignalUI
 
 class StoryPrivateViewsSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [viewsViewController.tableView] }
-    override var minHeight: CGFloat { CurrentAppContext().frame.height * 0.6 }
     override var sheetBackgroundColor: UIColor { .ows_gray90 }
 
     var dismissHandler: (() -> Void)?
 
     let viewsViewController: StoryViewsViewController
 
-    init(storyMessage: StoryMessage) {
-        viewsViewController = StoryViewsViewController(storyMessage: storyMessage)
+    init(storyMessage: StoryMessage, context: StoryContext) {
+        viewsViewController = StoryViewsViewController(storyMessage: storyMessage, context: context)
         super.init()
     }
 
@@ -25,6 +25,8 @@ class StoryPrivateViewsSheet: InteractiveSheetViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        minimizedHeight = CurrentAppContext().frame.height * 0.6
 
         addChild(viewsViewController)
         contentView.addSubview(viewsViewController.view)

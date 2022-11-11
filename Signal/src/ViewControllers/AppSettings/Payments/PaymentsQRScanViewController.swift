@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -18,6 +19,7 @@ public class PaymentsQRScanViewController: OWSViewController {
 
     public required init(delegate: PaymentsQRScanDelegate) {
         self.delegate = delegate
+        super.init()
     }
 
     public override func viewDidLoad() {

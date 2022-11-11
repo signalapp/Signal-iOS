@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
+import SignalMessaging
 import SignalServiceKit
+import UIKit
 
 @objc
 public class GroupTableViewCell: UITableViewCell {

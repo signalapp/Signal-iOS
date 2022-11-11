@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -10,7 +11,7 @@ public class OWSFlatButton: UIView {
 
     public let button: UIButton
 
-    private var pressedBlock : (() -> Void)?
+    private var pressedBlock: (() -> Void)?
 
     private var upColor: UIColor?
     private var downColor: UIColor?

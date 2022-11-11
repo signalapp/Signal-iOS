@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -21,8 +22,6 @@ public struct GroupsV2Request {
 // MARK: -
 
 public extension StorageService {
-
-    typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
 
     static func buildNewGroupRequest(groupProto: GroupsProtoGroup,
                                      groupV2Params: GroupV2Params,

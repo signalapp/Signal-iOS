@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSFakeProfileManager.h"
@@ -25,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *localFullName;
 @property (nonatomic, nullable) NSString *localUsername;
 @property (nonatomic, nullable) NSData *localProfileAvatarData;
+@property (nonatomic, nullable) NSArray<OWSUserProfileBadgeInfo *> *localProfileBadgeInfo;
 
 @end
 
@@ -255,18 +257,6 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
-- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address
-{
-    return [AnyPromise promiseWithValue:@(1)];
-}
-
-- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address
-                                  mainAppOnly:(BOOL)mainAppOnly
-                             ignoreThrottling:(BOOL)ignoreThrottling
-{
-    return [AnyPromise promiseWithValue:@(1)];
-}
-
 - (void)warmCaches
 {
     // Do nothing.
@@ -354,6 +344,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address
+                                    downloadIfMissing:(BOOL)downloadIfMissing
                                           transaction:(SDSAnyReadTransaction *)transaction
 {
     return nil;

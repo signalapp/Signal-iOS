@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -9,17 +10,6 @@ import Curve25519Kit
 @testable import SignalServiceKit
 
 class LRUCacheTest: SSKBaseTestSwift {
-
-    override func setUp() {
-        super.setUp()
-    }
-
-    override func tearDown() {
-        super.tearDown()
-    }
-
-    // MARK: -
-
     func testStringString() {
         let cache = LRUCache<String, String>(maxSize: 16)
         let key1 = "a"

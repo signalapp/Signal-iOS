@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -96,14 +97,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 - (void)setStoredServerAuthToken:(NSString *)authToken
                         deviceId:(UInt32)deviceId
                      transaction:(SDSAnyWriteTransaction *)transaction;
-
-/**
- *  The registration ID is unique to an installation of TextSecure, it allows to know if the app was reinstalled
- *
- *  @return registrationID;
- */
-- (uint32_t)getOrGenerateRegistrationId;
-- (uint32_t)getOrGenerateRegistrationIdWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 - (nullable NSString *)storedDeviceName;
 - (void)setStoredDeviceName:(NSString *)deviceName transaction:(SDSAnyWriteTransaction *)transaction;

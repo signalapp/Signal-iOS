@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import SignalCoreKit
+import SignalMessaging
 
 protocol CurrencyPickerDataSource {
     var currentCurrencyCode: Currency.Code { get }
@@ -47,8 +49,8 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
         updateTableContents()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateTableContents()
     }
@@ -229,12 +231,6 @@ struct StripeCurrencyPickerDataSource: CurrencyPickerDataSource {
 
     var updateTableContents: (() -> Void)?
 
-    init(currentCurrencyCode: Currency.Code) {
-        self.currentCurrencyCode = currentCurrencyCode
-        self.preferredCurrencyInfos = Stripe.preferredCurrencyInfos
-        self.supportedCurrencyInfos = Stripe.supportedCurrencyInfos
-    }
-
     init(currentCurrencyCode: Currency.Code, supportedCurrencyCodes: Set<Currency.Code>) {
         if supportedCurrencyCodes.contains(currentCurrencyCode) {
             self.currentCurrencyCode = currentCurrencyCode
@@ -247,7 +243,11 @@ struct StripeCurrencyPickerDataSource: CurrencyPickerDataSource {
 
         func isSupported(_ info: Currency.Info) -> Bool { supportedCurrencyCodes.contains(info.code) }
         self.preferredCurrencyInfos = Stripe.preferredCurrencyInfos.filter(isSupported)
-        self.supportedCurrencyInfos = Stripe.supportedCurrencyInfos.filter(isSupported)
+        self.supportedCurrencyInfos = Currency.infos(
+            for: supportedCurrencyCodes,
+            ignoreMissingNames: false,
+            shouldSort: true
+        )
     }
 }
 

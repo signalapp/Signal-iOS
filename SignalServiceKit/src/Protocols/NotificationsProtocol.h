@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -49,7 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)clearAllNotifications;
 
-- (void)cancelNotificationsForMessageId:(NSString *)uniqueMessageId NS_SWIFT_NAME(cancelNotifications(messageId:));
+- (void)cancelNotificationsForThreadId:(NSString *)uniqueMessageId NS_SWIFT_NAME(cancelNotifications(threadId:));
+- (void)cancelNotificationsForMessageIds:(NSArray<NSString *> *)uniqueMessageIds
+    NS_SWIFT_NAME(cancelNotifications(messageIds:));
 - (void)cancelNotificationsForReactionId:(NSString *)uniqueReactionId NS_SWIFT_NAME(cancelNotifications(reactionId:));
 
 @end

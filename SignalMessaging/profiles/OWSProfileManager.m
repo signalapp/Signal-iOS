@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSProfileManager.h"
@@ -342,6 +343,11 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     return [self loadProfileAvatarDataWithFilename:filename];
 }
 
+- (nullable NSArray<OWSUserProfileBadgeInfo *> *)localProfileBadgeInfo
+{
+    return self.localUserProfile.profileBadgeInfo;
+}
+
 - (nullable NSString *)localUsername
 {
     return self.localUserProfile.username;
@@ -458,20 +464,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
         return [AnyPromise promiseWithError:OWSErrorMakeAssertionError(@"Missing local address.")];
     }
     return [ProfileFetcherJob fetchProfilePromiseObjcWithAddress:localAddress mainAppOnly:NO ignoreThrottling:YES];
-}
-
-- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address
-{
-    return [ProfileFetcherJob fetchProfilePromiseObjcWithAddress:address mainAppOnly:NO ignoreThrottling:YES];
-}
-
-- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address
-                                  mainAppOnly:(BOOL)mainAppOnly
-                             ignoreThrottling:(BOOL)ignoreThrottling
-{
-    return [ProfileFetcherJob fetchProfilePromiseObjcWithAddress:address
-                                                     mainAppOnly:mainAppOnly
-                                                ignoreThrottling:ignoreThrottling];
 }
 
 - (void)fetchProfileForUsername:(NSString *)username
@@ -1449,6 +1441,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 }
 
 - (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
+                            downloadIfMissing:(BOOL)downloadIfMissing
                                   transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
@@ -1459,7 +1452,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
         return [self loadProfileAvatarWithFilename:userProfile.avatarFileName];
     }
 
-    if (userProfile.avatarUrlPath.length > 0) {
+    if (downloadIfMissing && (userProfile.avatarUrlPath.length > 0)) {
         // Try to fill in missing avatar.
         [self downloadAvatarForUserProfile:userProfile];
     }
@@ -1498,13 +1491,14 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 }
 
 - (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address
+                                    downloadIfMissing:(BOOL)downloadIfMissing
                                           transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
 
     OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
 
-    if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length == 0) {
+    if (downloadIfMissing && userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length == 0) {
         // Try to fill in missing avatar.
         [self downloadAvatarForUserProfile:userProfile];
     }
@@ -1792,28 +1786,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     // downloads.
     if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length < 1) {
         [self downloadAvatarForUserProfile:userProfile];
-    }
-}
-
-- (BOOL)isNullableDataEqual:(NSData *_Nullable)left toData:(NSData *_Nullable)right
-{
-    if (left == nil && right == nil) {
-        return YES;
-    } else if (left == nil || right == nil) {
-        return YES;
-    } else {
-        return [left isEqual:right];
-    }
-}
-
-- (BOOL)isNullableStringEqual:(NSString *_Nullable)left toString:(NSString *_Nullable)right
-{
-    if (left == nil && right == nil) {
-        return YES;
-    } else if (left == nil || right == nil) {
-        return YES;
-    } else {
-        return [left isEqualToString:right];
     }
 }
 

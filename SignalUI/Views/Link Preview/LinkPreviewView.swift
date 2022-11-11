@@ -1,19 +1,18 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import YYImage
 import SignalMessaging
 
-@objc
-public protocol LinkPreviewViewDraftDelegate {
+public protocol LinkPreviewViewDraftDelegate: AnyObject {
     func linkPreviewCanCancel() -> Bool
     func linkPreviewDidCancel()
 }
 
 // MARK: -
 
-@objc
 public class LinkPreviewView: ManualStackViewWithLayer {
     private weak var draftDelegate: LinkPreviewViewDraftDelegate?
 
@@ -50,7 +49,6 @@ public class LinkPreviewView: ManualStackViewWithLayer {
 
     fileprivate var cancelButton: UIView?
 
-    @objc
     public init(draftDelegate: LinkPreviewViewDraftDelegate?) {
         self.draftDelegate = draftDelegate
 
@@ -69,7 +67,6 @@ public class LinkPreviewView: ManualStackViewWithLayer {
     // of outgoing link previews.  In these cases, the view will
     // be embedded within views using iOS auto layout and will need
     // to reconfigure its contents whenever the view size changes.
-    @objc
     public func configureForNonCVC(state: LinkPreviewState,
                                    isDraft: Bool,
                                    hasAsymmetricalRounding: Bool = false) {
@@ -137,7 +134,7 @@ public class LinkPreviewView: ManualStackViewWithLayer {
 
     private static func adapter(forState state: LinkPreviewState,
                                 isDraft: Bool) -> LinkPreviewViewAdapter {
-        if !state.isLoaded() {
+        if !state.isLoaded {
             return LinkPreviewViewAdapterDraftLoading(state: state)
         } else if isDraft {
             return LinkPreviewViewAdapterDraft(state: state)
@@ -147,8 +144,8 @@ public class LinkPreviewView: ManualStackViewWithLayer {
             if state.hasLoadedImage {
                 if Self.sentIsHero(state: state) {
                     return LinkPreviewViewAdapterSentHero(state: state)
-                } else if state.previewDescription()?.isEmpty == false,
-                          state.title()?.isEmpty == false {
+                } else if state.previewDescription?.isEmpty == false,
+                          state.title?.isEmpty == false {
                     return LinkPreviewViewAdapterSentWithDescription(state: state)
                 } else {
                     return LinkPreviewViewAdapterSent(state: state)
@@ -220,7 +217,7 @@ public class LinkPreviewView: ManualStackViewWithLayer {
     }
 
     private static func isSticker(state: LinkPreviewState) -> Bool {
-        guard let urlString = state.urlString() else {
+        guard let urlString = state.urlString else {
             owsFailDebug("Link preview is missing url.")
             return false
         }
@@ -335,7 +332,7 @@ extension LinkPreviewViewAdapter {
     }
 
     func sentTitleLabelConfig(state: LinkPreviewState) -> CVLabelConfig? {
-        guard let text = state.title() else {
+        guard let text = state.title else {
             return nil
         }
         return CVLabelConfig(text: text,
@@ -355,7 +352,7 @@ extension LinkPreviewViewAdapter {
     }
 
     func sentDescriptionLabelConfig(state: LinkPreviewState) -> CVLabelConfig? {
-        guard let text = state.previewDescription() else { return nil }
+        guard let text = state.previewDescription else { return nil }
         return CVLabelConfig(text: text,
                              font: UIFont.ows_dynamicTypeSubheadline,
                              textColor: Theme.primaryTextColor,
@@ -371,13 +368,12 @@ extension LinkPreviewViewAdapter {
 
     func sentDomainLabelConfig(state: LinkPreviewState) -> CVLabelConfig {
         var labelText: String
-        if let displayDomain = state.displayDomain(),
-           displayDomain.count > 0 {
+        if let displayDomain = state.displayDomain?.nilIfEmpty {
             labelText = displayDomain.lowercased()
         } else {
             labelText = OWSLocalizedString("LINK_PREVIEW_UNKNOWN_DOMAIN", comment: "Label for link previews with an unknown host.").uppercased()
         }
-        if let date = state.date() {
+        if let date = state.date {
             labelText.append(" ⋅ \(LinkPreviewView.dateFormatter.string(from: date))")
         }
         return CVLabelConfig(text: labelText,
@@ -479,7 +475,7 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
     }
 
     var titleLabelConfig: CVLabelConfig? {
-        guard let text = state.title()?.nilIfEmpty else {
+        guard let text = state.title?.nilIfEmpty else {
             return nil
         }
         return CVLabelConfig(text: text,
@@ -489,7 +485,7 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
     }
 
     var descriptionLabelConfig: CVLabelConfig? {
-        guard let text = state.previewDescription()?.nilIfEmpty else {
+        guard let text = state.previewDescription?.nilIfEmpty else {
             return nil
         }
         return CVLabelConfig(text: text,
@@ -499,11 +495,11 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
     }
 
     var displayDomainLabelConfig: CVLabelConfig? {
-        guard let displayDomain = state.displayDomain()?.nilIfEmpty else {
+        guard let displayDomain = state.displayDomain?.nilIfEmpty else {
             return nil
         }
         var text = displayDomain.lowercased()
-        if let date = state.date() {
+        if let date = state.date {
             text.append(" ⋅ \(LinkPreviewView.dateFormatter.string(from: date))")
         }
         return CVLabelConfig(text: text,
@@ -1307,11 +1303,11 @@ private class LinkPreviewImageView: CVImageView {
 
     func configureForDraft(state: LinkPreviewState,
                            hasAsymmetricalRounding: Bool) -> UIImageView? {
-        guard state.isLoaded() else {
+        guard state.isLoaded else {
             owsFailDebug("State not loaded.")
             return nil
         }
-        guard state.imageState() == .loaded else {
+        guard state.imageState == .loaded else {
             return nil
         }
         self.rounding = hasAsymmetricalRounding ? .asymmetrical : .standard
@@ -1332,11 +1328,11 @@ private class LinkPreviewImageView: CVImageView {
 
     func configure(state: LinkPreviewState,
                    rounding roundingParam: LinkPreviewImageView.Rounding? = nil) -> UIImageView? {
-        guard state.isLoaded() else {
+        guard state.isLoaded else {
             owsFailDebug("State not loaded.")
             return nil
         }
-        guard state.imageState() == .loaded else {
+        guard state.imageState == .loaded else {
             return nil
         }
         self.rounding = roundingParam ?? .standard

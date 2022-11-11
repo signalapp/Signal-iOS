@@ -1,14 +1,16 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import SignalCoreKit
-import YYImage
-import UIKit
-import SignalUI
-import SafariServices
 import CoreMedia
+import Foundation
+import SafariServices
+import SignalCoreKit
+import SignalMessaging
+import SignalUI
+import UIKit
+import YYImage
 
 protocol StoryItemMediaViewDelegate: ContextMenuButtonDelegate {
     func storyItemMediaViewWantsToPause(_ storyItemMediaView: StoryItemMediaView)
@@ -22,20 +24,10 @@ protocol StoryItemMediaViewDelegate: ContextMenuButtonDelegate {
 
 class StoryItemMediaView: UIView {
     weak var delegate: StoryItemMediaViewDelegate?
-    let item: StoryItem
+    public private(set) var item: StoryItem
 
-    private lazy var gradientProtectionView: UIView = {
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [
-            UIColor.black.withAlphaComponent(0).cgColor,
-            UIColor.black.withAlphaComponent(0.5).cgColor
-        ]
-        let view = OWSLayerView(frame: .zero) { view in
-            gradientLayer.frame = view.bounds
-        }
-        view.layer.addSublayer(gradientLayer)
-        return view
-    }()
+    private lazy var gradientProtectionView = GradientView(colors: [])
+    private var gradientProtectionViewHeightConstraint: NSLayoutConstraint?
 
     private let bottomContentVStack = UIStackView()
 
@@ -57,7 +49,6 @@ class StoryItemMediaView: UIView {
         addSubview(gradientProtectionView)
         gradientProtectionView.autoPinWidthToSuperview()
         gradientProtectionView.autoPinEdge(toSuperviewEdge: .bottom)
-        gradientProtectionView.autoMatch(.height, to: .height, of: self, withMultiplier: 0.4)
 
         bottomContentVStack.axis = .vertical
         bottomContentVStack.spacing = 24
@@ -76,9 +67,11 @@ class StoryItemMediaView: UIView {
         bottomContentVStack.autoPinEdge(toSuperviewEdge: .top, withInset: OWSTableViewController2.defaultHOuterMargin)
 
         bottomContentVStack.addArrangedSubview(.vStretchingSpacer())
+        bottomContentVStack.addArrangedSubview(captionLabel)
+        bottomContentVStack.addArrangedSubview(authorRow)
 
-        createCaptionIfNecessary()
-        createAuthorRow()
+        updateCaption()
+        updateAuthorRow()
     }
 
     required init?(coder: NSCoder) {
@@ -89,9 +82,29 @@ class StoryItemMediaView: UIView {
         videoPlayerLoopCount = 0
         videoPlayer?.seek(to: .zero)
         videoPlayer?.play()
+        yyImageView?.startAnimating()
         updateTimestampText()
         bottomContentVStack.alpha = 1
         gradientProtectionView.alpha = 1
+        lastTruncationWidth = nil
+    }
+
+    func updateItem(_ newItem: StoryItem) {
+        let oldItem = self.item
+        self.item = newItem
+
+        updateTimestampText()
+        updateAuthorRow()
+
+        // Only recreate the media view if the actual attachment changes.
+        if item.attachment != oldItem.attachment {
+            self.pause()
+            updateMediaView()
+            lastTruncationWidth = nil
+            updateCaption()
+        }
+
+        updateGradientProtection()
     }
 
     func updateTimestampText() {
@@ -124,10 +137,19 @@ class StoryItemMediaView: UIView {
         return false
     }
 
+    func willHandlePanGesture(_ gesture: UIPanGestureRecognizer) -> Bool {
+        if contextButton.bounds.contains(gesture.location(in: contextButton)) {
+            return true
+        }
+
+        return false
+    }
+
     // MARK: - Playback
 
     func pause(hideChrome: Bool = false, animateAlongside: (() -> Void)? = nil) {
         videoPlayer?.pause()
+        yyImageView?.stopAnimating()
 
         if hideChrome {
             UIView.animate(withDuration: 0.15, delay: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
@@ -142,6 +164,7 @@ class StoryItemMediaView: UIView {
 
     func play(animateAlongside: @escaping () -> Void) {
         videoPlayer?.play()
+        yyImageView?.startAnimating()
 
         UIView.animate(withDuration: 0.15, delay: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
             self.bottomContentVStack.alpha = 1
@@ -176,6 +199,10 @@ class StoryItemMediaView: UIView {
                     // as it would cause the video to loop leading to weird UX
                     glyphCount = nil
                 }
+            } else if let animatedImageDuration = (yyImageView?.image as? YYAnimatedImage)?.duration {
+                // GIFs should loop 3 times, or play for 5 seconds
+                // whichever is longer.
+                return max(5, animatedImageDuration * 3)
             } else {
                 // System stories play slightly longer.
                 if item.message.authorAddress.isSystemStoryAddress {
@@ -233,7 +260,7 @@ class StoryItemMediaView: UIView {
 
     private lazy var timestampLabel = UILabel()
     private lazy var authorRow = UIStackView()
-    private func createAuthorRow() {
+    private func updateAuthorRow() {
         let (avatarView, nameLabel) = databaseStorage.read { (
             buildAvatarView(transaction: $0),
             buildNameLabel(transaction: $0)
@@ -266,12 +293,11 @@ class StoryItemMediaView: UIView {
             let privateStoryThread = databaseStorage.read(
                 block: { TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: uniqueId, transaction: $0) }
             ),
-            !privateStoryThread.isMyStory
-        {
+            !privateStoryThread.isMyStory {
             // For private stories, other than "My Story", render the name of the story
 
             let contextIcon = UIImageView()
-            contextIcon.setTemplateImageName("lock-16", tintColor: Theme.darkThemePrimaryColor)
+            contextIcon.setTemplateImageName("stories-16", tintColor: Theme.darkThemePrimaryColor)
             contextIcon.autoSetDimensions(to: .square(16))
 
             let contextNameLabel = UILabel()
@@ -296,6 +322,7 @@ class StoryItemMediaView: UIView {
             metadataStackView = nameHStack
         }
 
+        authorRow.removeAllSubviews()
         authorRow.addArrangedSubviews([
             avatarView,
             .spacer(withWidth: 12),
@@ -318,8 +345,6 @@ class StoryItemMediaView: UIView {
         timestampLabel.textColor = Theme.darkThemePrimaryColor
         timestampLabel.alpha = 0.8
         updateTimestampText()
-
-        bottomContentVStack.addArrangedSubview(authorRow)
     }
 
     private func buildAvatarView(transaction: SDSAnyReadTransaction) -> UIView {
@@ -385,6 +410,7 @@ class StoryItemMediaView: UIView {
             for: item.message,
             contactsManager: contactsManager,
             useFullNameForLocalAddress: false,
+            useShortGroupName: false,
             transaction: transaction
         )
         return label
@@ -412,6 +438,12 @@ class StoryItemMediaView: UIView {
         label.adjustsFontSizeToFitWidth = true
         label.minimumScaleFactor = 15/17
         label.textColor = Theme.darkThemePrimaryColor
+
+        label.layer.shadowRadius = 48
+        label.layer.shadowOpacity = 0.8
+        label.layer.shadowColor = UIColor.black.cgColor
+        label.layer.shadowOffset = .zero
+
         return label
     }()
 
@@ -421,20 +453,18 @@ class StoryItemMediaView: UIView {
     private var hasCaption: Bool { fullCaptionText != nil }
 
     private var maxCaptionLines = 5
-    private func createCaptionIfNecessary() {
-        guard let captionText: String = {
+    private func updateCaption() {
+        let captionText: String? = {
             switch item.attachment {
             case .stream(let attachment): return attachment.caption?.nilIfEmpty
             case .pointer(let attachment): return attachment.caption?.nilIfEmpty
             case .text: return nil
             }
-        }() else { return }
+        }()
 
         fullCaptionText = captionText
-
         captionLabel.text = captionText
-
-        bottomContentVStack.addArrangedSubview(captionLabel)
+        updateCaptionTruncation()
     }
 
     private var isCaptionExpanded = false
@@ -572,6 +602,24 @@ class StoryItemMediaView: UIView {
         }
     }
 
+    private func updateGradientProtection() {
+        gradientProtectionViewHeightConstraint?.isActive = false
+
+        if hasCaption {
+            gradientProtectionViewHeightConstraint = gradientProtectionView.autoMatch(.height, to: .height, of: self, withMultiplier: 0.4)
+            gradientProtectionView.colors = [
+                .clear,
+                .black.withAlphaComponent(0.8)
+            ]
+        } else {
+            gradientProtectionViewHeightConstraint = gradientProtectionView.autoMatch(.height, to: .height, of: self, withMultiplier: 0.2)
+            gradientProtectionView.colors = [
+                .clear,
+                .black.withAlphaComponent(0.6)
+            ]
+        }
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
         updateCaptionTruncation()
@@ -582,6 +630,9 @@ class StoryItemMediaView: UIView {
     private weak var mediaView: UIView?
     private func updateMediaView() {
         mediaView?.removeFromSuperview()
+        videoPlayer = nil
+        yyImageView = nil
+        videoPlayerLoopCount = 0
 
         let mediaView = buildMediaView()
         self.mediaView = mediaView
@@ -666,6 +717,7 @@ class StoryItemMediaView: UIView {
         return playerView
     }
 
+    private var yyImageView: YYAnimatedImageView?
     private func buildYYImageView(originalMediaUrl: URL) -> UIView {
         guard let image = YYImage(contentsOfFile: originalMediaUrl.path) else {
             owsFailDebug("Could not load attachment.")
@@ -682,6 +734,7 @@ class StoryItemMediaView: UIView {
         animatedImageView.layer.magnificationFilter = .trilinear
         animatedImageView.layer.allowsEdgeAntialiasing = true
         animatedImageView.image = image
+        self.yyImageView = animatedImageView
         return animatedImageView
     }
 
@@ -722,6 +775,7 @@ class StoryItemMediaView: UIView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.image = thumbnailImage
+        imageView.clipsToBounds = true
 
         let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
         imageView.addSubview(blurView)
@@ -757,7 +811,7 @@ class StoryItemMediaView: UIView {
 class StoryItem: NSObject {
     let message: StoryMessage
     let numberOfReplies: UInt
-    enum Attachment {
+    enum Attachment: Equatable {
         case pointer(TSAttachmentPointer)
         case stream(TSAttachmentStream)
         case text(TextAttachment)

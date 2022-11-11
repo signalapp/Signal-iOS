@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -735,7 +736,12 @@ public extension GroupMembership {
         ) {
             for address in addresses {
                 guard memberStates[address] == nil else {
-                    failOnDupe ? owsFailDebug("Duplicate address.") : Logger.warn("Duplicate address.")
+                    let errorMessage = "Duplicate address."
+                    if failOnDupe {
+                        owsFailDebug(errorMessage)
+                    } else {
+                        Logger.warn(errorMessage)
+                    }
                     continue
                 }
 

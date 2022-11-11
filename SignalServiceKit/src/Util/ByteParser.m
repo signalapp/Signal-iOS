@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "ByteParser.h"
@@ -117,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     uint8_t bytes[length];
     [subdata getBytes:bytes range:NSMakeRange(0, length)];
-    for (int i = 0; i < length; i++) {
+    for (unsigned i = 0; i < length; i++) {
         if (bytes[i] != 0) {
             return NO;
         }

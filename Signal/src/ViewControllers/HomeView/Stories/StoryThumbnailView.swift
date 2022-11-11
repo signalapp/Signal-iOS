@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 
 class StoryThumbnailView: UIView {
-    enum Attachment {
+    enum Attachment: Equatable {
         case file(TSAttachment)
         case text(TextAttachment)
         case missing

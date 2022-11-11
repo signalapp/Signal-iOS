@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -269,6 +270,25 @@ public class SDSKeyValueStore: NSObject {
 
     @objc
     public func setUInt64(_ value: UInt64, key: String, transaction: SDSAnyWriteTransaction) {
+        setObject(NSNumber(value: value), key: key, transaction: transaction)
+    }
+
+    // MARK: - Int64
+
+    public func getInt64(_ key: String, transaction: SDSAnyReadTransaction) -> Int64? {
+        guard let number: NSNumber = read(key, transaction: transaction) else {
+            return nil
+        }
+        return number.int64Value
+    }
+
+    @objc
+    public func getInt64(_ key: String, defaultValue: Int64, transaction: SDSAnyReadTransaction) -> Int64 {
+        return getInt64(key, transaction: transaction) ?? defaultValue
+    }
+
+    @objc
+    public func setInt64(_ value: Int64, key: String, transaction: SDSAnyWriteTransaction) {
         setObject(NSNumber(value: value), key: key, transaction: transaction)
     }
 
@@ -699,7 +719,10 @@ public class SDSKeyValueStore: NSObject {
         do {
             try statement.execute()
         } catch {
-            SSKPreferences.flagDatabaseCorruptionIfNecessary(error: error)
+            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             throw error
         }
     }

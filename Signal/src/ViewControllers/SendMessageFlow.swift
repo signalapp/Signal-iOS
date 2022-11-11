@@ -1,7 +1,9 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalMessaging
 import SignalUI
 
 @objc
@@ -482,7 +484,7 @@ extension SendMessageFlow: ConversationPickerDelegate {
 
 extension SendMessageFlow: TextApprovalViewControllerDelegate {
     func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?, linkPreviewDraft: OWSLinkPreviewDraft?) {
-        assert(messageBody?.text.count ?? 0 > 0)
+        assert(messageBody?.text.nilIfEmpty != nil)
 
         guard let messageBody = messageBody else {
             owsFailDebug("Missing messageBody.")
@@ -580,6 +582,10 @@ extension SendMessageFlow: AttachmentApprovalViewControllerDelegate {
     func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) {
         // TODO: Extend SendMessageFlow to handle camera first capture flow, share extension.
         owsFailDebug("Cannot add more to message forwards.")
+    }
+
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeViewOnceState isViewOnce: Bool) {
+        // We can ignore this event.
     }
 }
 

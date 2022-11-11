@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -22,6 +23,8 @@ public class AddGroupMembersViewController: BaseGroupMemberViewController {
     private var newRecipientSet = OrderedSet<PickedRecipient>()
 
     public required init(groupThread: TSGroupThread) {
+        owsAssertDebug(groupThread.isGroupV2Thread, "Can't add members to v1 threads.")
+
         self.groupThread = groupThread
         self.oldGroupModel = groupThread.groupModel
 
@@ -153,10 +156,6 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
         !newRecipientSet.isEmpty
     }
 
-    var shouldTryToEnableGroupsV2ForMembers: Bool {
-        groupThread.isGroupV2Thread
-    }
-
     func groupMemberViewRemoveRecipient(_ recipient: PickedRecipient) {
         newRecipientSet.remove(recipient)
         updateNavbar()
@@ -168,9 +167,6 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
     }
 
     func groupMemberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool {
-        guard groupThread.isGroupV2Thread else {
-            return true
-        }
         guard let address = recipient.address else {
             owsFailDebug("Invalid recipient.")
             return false
@@ -179,7 +175,7 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
     }
 
     func groupMemberViewShouldShowMemberCount() -> Bool {
-        groupThread.isGroupV2Thread
+        true
     }
 
     func groupMemberViewGroupMemberCountForDisplay() -> Int {
@@ -219,10 +215,6 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
             return !canAddMember
         }
         return false
-    }
-
-    func groupMemberViewIsGroupsV2Required() -> Bool {
-        groupThread.isGroupV2Thread
     }
 
     func groupMemberViewDismiss() {

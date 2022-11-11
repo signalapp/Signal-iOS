@@ -1,10 +1,10 @@
-Miljoonat ihmiset kaikkialla maailmassa käyttävät Signalia joka päivä viestimään ilmaiseksi ja viiveettä. Voit lähettää ja vastaanottaa viestejä korkealla laadulla, osallistua HD-tasoisiin ääni- ja videopuheluihin, sekä käyttää yhteydenpitoon jatkuvasti kehittyviä uusia toimintoja. Signalin korkealaatuinen yksityisyyttä suojaava teknologia on aina käytössä, joten voit keskittyä tärkeiden hetkien jakamiseen tärkeiden henkilöiden kanssa.
+Miljoonat ihmiset käyttävät Signalia päivittäin ilmaiseen ja välittömään viestintään kaikkialla maailmassa. Voit lähettää ja vastaanottaa huolellisesti salattuja viestejä, osallistua HD-tasoisiin ääni- ja videopuheluihin sekä hyödyntää jatkuvasti kehitettäviä uusia toimintoja, jotka auttavat pitämään yhteyttä tuttavien kanssa. Signalin korkealaatuinen yksityisyyttä suojaava teknologia on aina käytössä, joten voit keskittyä tärkeiden hetkien jakamiseen tärkeiden henkilöiden kanssa.
 
-• Sano mitä haluat – Alan parhaimmistoon kuuluva päästä-päähän-salaus (pohjautuu avoimen lähdekoodin Signal Protocoliin) pitää keskustelusi turvallisina. Yksityisyys ei ole valinnaista. Se on Signalin toimintaperiaate. Kaikki viestit ja kaikki puhelut salataan joka hetki.
+• Sano mitä haluat – Alan parhaimmistoon kuuluva päästä-päähän-salaus (pohjautuu avoimen lähdekoodin Signal Protocoliin) pitää keskustelusi turvallisina. Yksityisyys ei ole valinnaista, vaan Signalin toimintaperiaate. Kaikki viestit ja kaikki puhelut salataan joka hetki.
 
-• Ole nopea – Viestit toimitetaan nopeasti ja luotettavasti jopa heikkotasoisella yhteydellä. Signal on optimoitu toimimaan myös rajoitetuissa ympäristöissä.
+• Ole nopea – Viestit toimitetaan nopeasti ja luotettavasti jopa heikkotasoisella yhteydellä. Signal on optimoitu toimimaan myös haastavimmissa tilanteissa.
 
-• Säästää rahaa – Signal on täysin itsenäinen 501c3-luokiteltu voittoa tavoittelematon järjestö. Kehitystyötämme tukevat sinun kaltaisesi käyttäjät. Signalissa ei ole mainoksia tai seurantaevästeitä.
+• Säästää rahaa – Signal on täysin itsenäinen 501c3-voittoa tavoittelematon järjestö. Kehitystyötämme tukevan sinun kaltaisesi käyttäjät. Ei mainoksia tai seurantaevästeitä. Lainkaan.
 
 • Ole oma itsesi – Nykyinen puhelinnumerosi ja yhteystietoluettelosi riittävät, kun viestit turvallisesti ystäviesi kanssa.
 

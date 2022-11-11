@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -13,11 +14,6 @@ class ExperienceUpgradeManager: NSObject {
     // before we display the splash.
     static let splashStartDay = 7
 
-    private static func dismissLastPresented() {
-        lastPresented?.dismiss(animated: false, completion: nil)
-        lastPresented = nil
-    }
-
     @objc
     static func presentNext(fromViewController: UIViewController) -> Bool {
         let optionalNext = databaseStorage.read(block: { transaction in
@@ -25,7 +21,10 @@ class ExperienceUpgradeManager: NSObject {
         })
 
         // If we already have presented this experience upgrade, do nothing.
-        guard let next = optionalNext, lastPresented?.experienceUpgrade.uniqueId != next.uniqueId else {
+        guard
+            let next = optionalNext,
+            lastPresented?.experienceUpgrade.manifest != next.manifest
+        else {
             if optionalNext == nil {
                 dismissLastPresented()
                 return false
@@ -82,68 +81,32 @@ class ExperienceUpgradeManager: NSObject {
 
     @objc
     static func dismissPINReminderIfNecessary() {
-        guard lastPresented?.experienceUpgrade.id == .pinReminder else { return }
-        lastPresented?.dismiss(animated: false, completion: nil)
+        dismissLastPresented(ifMatching: .pinReminder)
     }
 
-    static func clearExperienceUpgradeWithSneakyTransaction(_ experienceUpgradeId: ExperienceUpgradeId) {
-        // Check if we need to do a write, we'll skip opening a write
-        // transaction if we're able.
-        let hasIncomplete = databaseStorage.read { transaction in
-            ExperienceUpgradeFinder.hasIncomplete(
-                experienceUpgradeId: experienceUpgradeId,
-                transaction: transaction.unwrapGrdbRead
-            )
-        }
+    /// Marks the given upgrade as complete, and dismisses it if currently presented.
+    static func clearExperienceUpgrade(_ manifest: ExperienceUpgradeManifest, transaction: GRDBWriteTransaction) {
+        ExperienceUpgradeFinder.markAsComplete(experienceUpgradeManifest: manifest, transaction: transaction)
 
-        guard hasIncomplete else {
-            // If it's currently being presented, dismiss it.
-            guard lastPresented?.experienceUpgrade.id == experienceUpgradeId else { return }
-            lastPresented?.dismiss(animated: false, completion: nil)
+        transaction.addAsyncCompletion(queue: .main) {
+            dismissLastPresented(ifMatching: manifest)
+        }
+    }
+
+    private static func dismissLastPresented(ifMatching manifest: ExperienceUpgradeManifest? = nil) {
+        guard let lastPresented = lastPresented else {
             return
         }
 
-        databaseStorage.asyncWrite { clearExperienceUpgrade(experienceUpgradeId, transaction: $0.unwrapGrdbWrite) }
-    }
-
-    /// Marks the specified type up of upgrade as complete and dismisses it if it is currently presented.
-    static func clearExperienceUpgrade(_ experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
-        ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: experienceUpgradeId, transaction: transaction)
-        transaction.addAsyncCompletion(queue: .main) {
-            // If it's currently being presented, dismiss it.
-            guard lastPresented?.experienceUpgrade.id == experienceUpgradeId else { return }
-            lastPresented?.dismiss(animated: false, completion: nil)
-        }
-    }
-
-    static func snoozeExperienceUpgradeWithSneakyTransaction(_ experienceUpgradeId: ExperienceUpgradeId) {
-        // Check if we need to do a write, we'll skip opening a write
-        // transaction if we're able.
-        let hasUnsnoozed = databaseStorage.read { transaction in
-            ExperienceUpgradeFinder.hasUnsnoozed(
-                experienceUpgradeId: experienceUpgradeId,
-                transaction: transaction.unwrapGrdbRead
-            )
-        }
-
-        guard hasUnsnoozed else {
-            // If it's currently being presented, dismiss it.
-            guard lastPresented?.experienceUpgrade.id == experienceUpgradeId else { return }
-            lastPresented?.dismiss(animated: false, completion: nil)
+        if
+            let manifest = manifest,
+            lastPresented.experienceUpgrade.manifest != manifest
+        {
             return
         }
 
-        databaseStorage.asyncWrite { snoozeExperienceUpgrade(experienceUpgradeId, transaction: $0.unwrapGrdbWrite) }
-    }
-
-    /// Marks the specified type up of upgrade as complete and dismisses it if it is currently presented.
-    static func snoozeExperienceUpgrade(_ experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
-        ExperienceUpgradeFinder.markAsSnoozed(experienceUpgradeId: experienceUpgradeId, transaction: transaction)
-        transaction.addAsyncCompletion(queue: .main) {
-            // If it's currently being presented, dismiss it.
-            guard lastPresented?.experienceUpgrade.id == experienceUpgradeId else { return }
-            lastPresented?.dismiss(animated: false, completion: nil)
-        }
+        lastPresented.dismiss(animated: false, completion: nil)
+        self.lastPresented = nil
     }
 
     // MARK: - Splash
@@ -165,20 +128,25 @@ class ExperienceUpgradeManager: NSObject {
     // MARK: - Megaphone
 
     private static func hasMegaphone(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> Bool {
-        switch experienceUpgrade.id {
-        case .introducingPins,
-             .pinReminder,
-             .notificationPermissionReminder,
-             .contactPermissionReminder,
-             .subscriptionMegaphone:
+        switch experienceUpgrade.manifest {
+        case
+                .introducingPins,
+                .pinReminder,
+                .notificationPermissionReminder,
+                .contactPermissionReminder:
             return true
-        default:
+        case .remoteMegaphone:
+            // Remote megaphones are always presentable. We filter out any with
+            // unpresentable fields (e.g., unrecognized actions) before we get
+            // out of the `ExperienceUpgradeFinder`.
+            return true
+        case .unrecognized:
             return false
         }
     }
 
     fileprivate static func megaphone(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) -> MegaphoneView? {
-        switch experienceUpgrade.id {
+        switch experienceUpgrade.manifest {
         case .introducingPins:
             return IntroducingPinsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .pinReminder:
@@ -187,15 +155,19 @@ class ExperienceUpgradeManager: NSObject {
             return NotificationPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .contactPermissionReminder:
             return ContactPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .subscriptionMegaphone:
-            return DonationMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        default:
+        case .remoteMegaphone(let megaphone):
+            return RemoteMegaphone(
+                experienceUpgrade: experienceUpgrade,
+                remoteMegaphoneModel: megaphone,
+                fromViewController: fromViewController
+            )
+        case .unrecognized:
             return nil
         }
     }
 }
 
-// MARK: -
+// MARK: - ExperienceUpgradeView
 
 protocol ExperienceUpgradeView: AnyObject, Dependencies {
     var experienceUpgrade: ExperienceUpgrade { get }
@@ -205,35 +177,21 @@ protocol ExperienceUpgradeView: AnyObject, Dependencies {
 
 extension ExperienceUpgradeView {
 
-    /// - Parameter transaction: An optional transaction to write the completion in.
-    /// If nil is provided for `transaction` then the write will be performed under a synchronous write transaction
-    func markAsSnoozed(transaction: SDSAnyWriteTransaction? = nil) {
-        let performUpdate: (SDSAnyWriteTransaction) -> Void = { transaction in
+    func markAsSnoozedWithSneakyTransaction() {
+        databaseStorage.write { transaction in
             ExperienceUpgradeFinder.markAsSnoozed(
                 experienceUpgrade: self.experienceUpgrade,
                 transaction: transaction.unwrapGrdbWrite
             )
         }
-        if let transaction = transaction {
-            performUpdate(transaction)
-        } else {
-            databaseStorage.write(block: performUpdate)
-        }
     }
 
-    /// - Parameter transaction: An optional transaction to write the completion in.
-    /// If nil is provided for `transaction` then the write will be performed under a synchronous write transaction
-    func markAsComplete(transaction: SDSAnyWriteTransaction? = nil) {
-        let performUpdate: (SDSAnyWriteTransaction) -> Void = { transaction in
+    func markAsCompleteWithSneakyTransaction() {
+        databaseStorage.write { transaction in
             ExperienceUpgradeFinder.markAsComplete(
                 experienceUpgrade: self.experienceUpgrade,
                 transaction: transaction.unwrapGrdbWrite
             )
-        }
-        if let transaction = transaction {
-            performUpdate(transaction)
-        } else {
-            databaseStorage.write(block: performUpdate)
         }
     }
 }

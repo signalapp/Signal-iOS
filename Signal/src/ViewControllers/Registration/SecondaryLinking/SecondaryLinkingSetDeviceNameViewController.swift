@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -83,7 +84,7 @@ class SecondaryLinkingSetDeviceNameViewController: OnboardingBaseViewController 
         // Because of the keyboard, vertical spacing can get pretty cramped,
         // so we have custom spacer logic.
         stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
-        autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
+        stackView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
     }
 
     // MARK: -
@@ -139,7 +140,7 @@ class SecondaryLinkingSetDeviceNameViewController: OnboardingBaseViewController 
     }
 
     func validateDeviceName() -> String? {
-        guard let deviceName = textField.text?.filterStringForDisplay(), deviceName.count > 0 else {
+        guard let deviceName = textField.text?.filterStringForDisplay(), !deviceName.isEmpty else {
             textFieldValidationError = .empty
             return nil
         }

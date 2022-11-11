@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -236,11 +237,6 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
     }
 
     public static let paymentConversionRatesDidChange = NSNotification.Name("paymentConversionRatesDidChange")
-
-    public var preferredConversionInfos: [CurrencyConversionInfo] {
-        // Always include values for preferred currencies.
-        conversionInfos(for: preferredCurrencyInfos)
-    }
 
     public var supportedConversionInfos: [CurrencyConversionInfo] {
         conversionInfos(for: supportedCurrencyInfos)

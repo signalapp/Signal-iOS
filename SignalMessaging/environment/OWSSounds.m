@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSSounds.h"
@@ -88,10 +89,7 @@ const NSUInteger OWSCustomSoundShift = 16;
     AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(^{
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [OWSSounds migrateLegacySounds];
-
-            if (!CurrentAppContext().isNSE) {
-                [OWSSounds cleanupOrphanedSounds];
-            }
+            [OWSSounds cleanupOrphanedSounds];
         });
     });
 

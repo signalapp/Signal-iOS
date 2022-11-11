@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -213,6 +214,7 @@ public extension TSMessage {
             }
 
             storyMessage.anyRemove(transaction: transaction)
+
             return .success
         } else {
             // The message doesn't exist locally, so nothing to do.
@@ -225,6 +227,6 @@ public extension TSMessage {
     private func markMessageAsRemotelyDeleted(transaction: SDSAnyWriteTransaction) {
         updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
 
-        Self.notificationsManager?.cancelNotifications(messageId: self.uniqueId)
+        Self.notificationsManager?.cancelNotifications(messageIds: [self.uniqueId])
     }
 }

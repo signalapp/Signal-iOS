@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -20,8 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Returns an array of all the results of passing items from this array through the given projection function.
 - (NSArray<ObjectType> *)filter:(BOOL (^)(ObjectType item))predicate;
-
-- (NSDictionary<id, NSArray<ObjectType> *> *)groupBy:(id (^)(id value))keySelector;
 
 @end
 

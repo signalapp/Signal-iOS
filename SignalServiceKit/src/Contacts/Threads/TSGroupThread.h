@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import <SignalServiceKit/TSGroupModel.h>
@@ -58,7 +59,6 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
             lastInteractionRowId:(int64_t)lastInteractionRowId
           lastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
-        lastViewedStoryTimestamp:(nullable NSNumber *)lastViewedStoryTimestamp
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
 lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPercentageObsolete
          mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
@@ -69,7 +69,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
                    storyViewMode:(TSThreadStoryViewMode)storyViewMode
                       groupModel:(TSGroupModel *)groupModel
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNameObsolete:creationDate:isArchivedObsolete:isMarkedUnreadObsolete:lastInteractionRowId:lastSentStoryTimestamp:lastViewedStoryTimestamp:lastVisibleSortIdObsolete:lastVisibleSortIdOnScreenPercentageObsolete:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDateObsolete:mutedUntilTimestampObsolete:shouldThreadBeVisible:storyViewMode:groupModel:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNameObsolete:creationDate:isArchivedObsolete:isMarkedUnreadObsolete:lastInteractionRowId:lastSentStoryTimestamp:lastVisibleSortIdObsolete:lastVisibleSortIdOnScreenPercentageObsolete:mentionNotificationMode:messageDraft:messageDraftBodyRanges:mutedUntilDateObsolete:mutedUntilTimestampObsolete:shouldThreadBeVisible:storyViewMode:groupModel:));
 
 // clang-format on
 

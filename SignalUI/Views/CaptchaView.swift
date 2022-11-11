@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -100,7 +101,7 @@ public class CaptchaView: UIView {
     // h6FPA6hRVbw7lP3r-me1QCykHOfh-V29UVaQ4Fs5upHvwB5rtiViqT_HN8WuGmdIdGcaWxaq
     // y1lQTgFSs2Shdj593wZiXfhJnCWAw9rMn3jSgIZhkFxdXwKOmslQ2E_I8iWkm6
     private func parseCaptchaResult(url: URL) {
-        if let token = url.host, token.count > 0 {
+        if let token = url.host, !token.isEmpty {
             delegate?.captchaView(self, didCompleteCaptchaWithToken: token)
         } else {
             owsFailDebug("Could not parse captcha token: \(url)")

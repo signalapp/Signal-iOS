@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -534,7 +535,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
     private func updateSearchResults(searchText rawSearchText: String) {
 
         let searchText = rawSearchText.stripped
-        guard searchText.count > 0 else {
+        if searchText.isEmpty {
             searchResultSet = HomeScreenSearchResultSet.empty
             lastSearchText = nil
             reloadTableData()
@@ -656,8 +657,7 @@ class EmptySearchResultCell: UITableViewCell {
                 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT",
                 comment: "Format string when search returns no results. Embeds {{search term}}"
             )
-            let messageText: String = NSString(format: format as NSString, searchText) as String
-            messageLabel.text = messageText
+            messageLabel.text = String(format: format, searchText)
 
             messageLabel.textColor = Theme.primaryTextColor
             messageLabel.font = UIFont.ows_dynamicTypeBody

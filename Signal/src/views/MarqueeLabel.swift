@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import UIKit
@@ -234,7 +235,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
         }
     }
 
-    @available(iOS, deprecated: 2.6, message : "Use speed property instead")
+    @available(iOS, deprecated: 2.6, message: "Use speed property instead")
     @IBInspectable open var scrollDuration: CGFloat {
         get {
             switch speed {
@@ -247,7 +248,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
         }
     }
 
-    @available(iOS, deprecated: 2.6, message : "Use speed property instead")
+    @available(iOS, deprecated: 2.6, message: "Use speed property instead")
     @IBInspectable open var scrollRate: CGFloat {
         get {
             switch speed {

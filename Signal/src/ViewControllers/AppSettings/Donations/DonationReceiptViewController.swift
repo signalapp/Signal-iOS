@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import UIKit
 
 class DonationReceiptViewController: OWSTableViewController2 {
@@ -89,7 +91,7 @@ class DonationReceiptViewController: OWSTableViewController2 {
                 let model = self.model
 
                 let amountLabel = UILabel()
-                amountLabel.text = DonationUtilities.formatCurrency(NSDecimalNumber(decimal: model.amount), currencyCode: model.currencyCode)
+                amountLabel.text = DonationUtilities.format(money: model.amount)
                 amountLabel.textColor = Theme.primaryTextColor
                 amountLabel.font = .preferredFont(forTextStyle: .largeTitle)
                 amountLabel.adjustsFontForContentSizeCategory = true
@@ -266,8 +268,7 @@ class DonationReceiptViewController: OWSTableViewController2 {
         private class func amountView(donationReceipt: DonationReceipt) -> UIView {
             let arrangedSubviews = [
                 label(NSLocalizedString("DONATION_RECEIPT_AMOUNT", comment: "Section title for donation amount on receipts")),
-                label(DonationUtilities.formatCurrency(NSDecimalNumber(decimal: donationReceipt.amount), currencyCode: donationReceipt.currencyCode),
-                      isAlignedToEdge: true)
+                label(DonationUtilities.format(money: donationReceipt.amount), isAlignedToEdge: true)
             ]
             let amountView = UIStackView(arrangedSubviews: arrangedSubviews)
             amountView.axis = .horizontal

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -39,17 +40,33 @@ public extension UIDevice {
         case 2532:
             // iPhone 12 Pro
             return true
+        case 2556:
+            // iPhone 14 Pro
+            return true
         case 2688:
             // iPhone X Max
             return true
         case 2778:
             // iPhone 12 Pro Max
             return true
+        case 2796:
+            // iPhone 14 Pro Max
+            return true
         default:
             // Verify all our IOS_DEVICE_CONSTANT tags make sense when adding a new device size.
             owsFailDebug("unknown device format")
             return false
         }
+    }
+
+    var hasDynamicIsland: Bool {
+        // On Xcode 13.X and earlier, UIScreen.main and UIApplication.shared.statusBarHeight both
+        // mis-report pixel heights on the iPhone 14 pro and pro max models. They are, in actuality,
+        // slightly larger and have taller status bars than their previous gen counterparts.
+        // Instead, grab the device identifier info to determine if the current device is one of these
+        // two "Dynamic Island" devices.
+        // TODO: remove this once we move to Xcode 14.
+        return ["iPhone15,2", "iPhone15,3"].contains(String(sysctlKey: "hw.machine"))
     }
 
     var isPlusSizePhone: Bool {
@@ -80,11 +97,17 @@ public extension UIDevice {
         case 2532:
             // iPhone 12 Pro
             return false
+        case 2556:
+            // iPhone 14 Pro
+            return false
         case 2688:
             // iPhone X Max
             return true
         case 2778:
             // iPhone 12 Pro Max
+            return true
+        case 2796:
+            // iPhone 14 Pro Max
             return true
         default:
             // Verify all our IOS_DEVICE_CONSTANT tags make sense when adding a new device size.
@@ -99,6 +122,10 @@ public extension UIDevice {
 
     var isIPhone5OrShorter: Bool {
         return CurrentAppContext().frame.height <= 568
+    }
+
+    var isShorterThaniPhoneX: Bool {
+        return CurrentAppContext().frame.height < 812
     }
 
     var isCompatabilityModeIPad: Bool {

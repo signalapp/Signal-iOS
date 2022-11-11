@@ -1,17 +1,17 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
-import UIKit
+import SignalMessaging
 import SignalServiceKit
+import UIKit
 
 class StoryGroupReplySheet: InteractiveSheetViewController, StoryGroupReplier {
     override var interactiveScrollViews: [UIScrollView] { [groupReplyViewController.tableView] }
-    override var minHeight: CGFloat { maximizedHeight }
     override var sheetBackgroundColor: UIColor { .ows_gray90 }
 
-    weak var interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator?
     private let groupReplyViewController: StoryGroupReplyViewController
 
     var dismissHandler: (() -> Void)?
@@ -23,6 +23,8 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryGroupReplier {
         self.groupReplyViewController = StoryGroupReplyViewController(storyMessage: storyMessage)
 
         super.init()
+
+        self.allowsExpansion = true
     }
 
     public required init() {
@@ -32,13 +34,15 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryGroupReplier {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        minimizedHeight = super.maxHeight
+
         addChild(groupReplyViewController)
         contentView.addSubview(groupReplyViewController.view)
         groupReplyViewController.view.autoPinEdgesToSuperviewEdges()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         groupReplyViewController.inputToolbar.becomeFirstResponder()
     }
 
@@ -47,44 +51,5 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryGroupReplier {
             completion?()
             dismissHandler?()
         }
-    }
-}
-
-extension StoryGroupReplySheet {
-    override func presentationController(
-        forPresented presented: UIViewController,
-        presenting: UIViewController?,
-        source: UIViewController
-    ) -> UIPresentationController? {
-        return nil
-    }
-
-    public func animationController(
-        forPresented presented: UIViewController,
-        presenting: UIViewController,
-        source: UIViewController
-    ) -> UIViewControllerAnimatedTransitioning? {
-        return StoryReplySheetAnimator(
-            isPresenting: true,
-            isInteractive: interactiveTransitionCoordinator != nil,
-            backdropView: backdropView
-        )
-    }
-
-    public func animationController(
-        forDismissed dismissed: UIViewController
-    ) -> UIViewControllerAnimatedTransitioning? {
-        return StoryReplySheetAnimator(
-            isPresenting: false,
-            isInteractive: false,
-            backdropView: backdropView
-        )
-    }
-
-    public func interactionControllerForPresentation(
-        using animator: UIViewControllerAnimatedTransitioning
-    ) -> UIViewControllerInteractiveTransitioning? {
-        interactiveTransitionCoordinator?.mode = .reply
-        return interactiveTransitionCoordinator
     }
 }

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import <SignalServiceKit/OWSReceiptManager.h>
@@ -19,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, readonly, getter=wasRead) BOOL read;
 
+@property (nonatomic, readonly) NSString *uniqueId;
 @property (nonatomic, readonly) uint64_t expireStartedAt;
 @property (nonatomic, readonly) uint64_t sortId;
 @property (nonatomic, readonly) NSString *uniqueThreadId;
@@ -32,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
                        thread:(TSThread *)thread
                  circumstance:(OWSReceiptCircumstance)circumstance
+     shouldClearNotifications:(BOOL)shouldClearNotifications
                   transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end

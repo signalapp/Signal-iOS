@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -264,15 +265,12 @@ extension GroupUpdateCopy {
         case raw(_ value: CVarArg)
         case name(_ string: String, _ address: SignalServiceAddress)
 
-        var forFormatting: CVarArg {
+        var asAttributedFormatArg: AttributedFormatArg {
             switch self {
-            case .raw(let value):
-                return value
-            case .name(let string, _):
-                // Note that some of our formatting logic assumes this is how
-                // we format a `.name`. If you change this, check for other
-                // usages.
-                return string
+            case let .raw(value):
+                return .raw(value)
+            case let .name(value, address):
+                return .string(value, attributes: [.addressOfName: address])
             }
         }
     }
@@ -283,7 +281,10 @@ extension GroupUpdateCopy {
         format: String,
         _ formatArgs: ItemFormatArg...
     ) {
-        let attributedCopy = NSAttributedString.make(fromFormat: format, groupUpdateFormatArgs: formatArgs)
+        let attributedCopy = NSAttributedString.make(
+            fromFormat: format,
+            groupUpdateFormatArgs: formatArgs
+        )
         addItem(type, address: address, attributedCopy: attributedCopy)
     }
 
@@ -317,6 +318,19 @@ public extension NSAttributedString.Key {
     static let addressOfName = NSAttributedString.Key(rawValue: "org.whispersystems.signal.addressOfName")
 }
 
+/// Note that this extension is used in tests as well as this file.
+extension NSAttributedString {
+    static func make(
+        fromFormat format: String,
+        groupUpdateFormatArgs: [GroupUpdateCopy.ItemFormatArg]
+    ) -> NSAttributedString {
+        make(
+            fromFormat: format,
+            attributedFormatArgs: groupUpdateFormatArgs.map { $0.asAttributedFormatArg }
+        )
+    }
+}
+
 public extension NSAttributedString {
     func enumerateAddressesOfNames(
         in range: NSRange? = nil,
@@ -328,187 +342,6 @@ public extension NSAttributedString {
             options: []
         ) { handler($0 as? SignalServiceAddress, $1, $2) }
     }
-}
-
-extension NSAttributedString {
-    /// The challenge here is: given a format string, which may be of either
-    /// Localizable.strings format or PluralAware.stringsdict format (see below
-    /// for examples), and a set of names that will be substituted into the
-    /// format string, add the ``SignalServiceAddress`` corresponding to each
-    /// name as an attribute to the range of the string that contains it, after
-    /// the string has been formatted.
-    ///
-    /// For strings from `Localizable.strings` files, the format arg placeholders
-    /// are well-known and consistent: `%@` for a single-argument format string,
-    /// and `%<arg-number>$@` for a multiple-argument format string. For strings
-    /// from `PluralAware.stringsdict` files there is another layer of
-    /// indirection: the format string is assembled by the system in response to
-    /// the format arg indicating the degree of the plural-aware string (e.g.,
-    /// "zero, one, or more"), and the full format string (w/o substitutions) is
-    /// not available to us. Consequently, we must take an approach that is
-    /// agnostic to the format string, and instead leverages a fully-formatted
-    /// string.
-    ///
-    /// The approach taken here uses placeholders. We substitute into the format
-    /// string, but for each "name" we want to substitute we will instead
-    /// substitute a "placeholder" UUID string we associate with the name. We
-    /// then search for those UUIDs in the formatted string, and assemble a new
-    /// string in which each UUID is replaced with the name for which it is
-    /// placeholding. While replacing, we track the ranges of the names and use
-    /// them to associate that name's ``SignalServiceAddress``.
-    ///
-    /// This approach allows us to avoid collisions between the substituted
-    /// arguments either with each other or the text of the format string. It
-    /// is also agnostic to properties such as RTL, or if the format string or
-    /// arguments contain Unicode.
-    static func make(
-        fromFormat format: String,
-        groupUpdateFormatArgs formatArgs: [GroupUpdateCopy.ItemFormatArg]
-    ) -> NSAttributedString {
-        do {
-            // Confirm format string does not contain Unicode isolates, since
-            // we'll be adding those ourselves later.
-
-            guard !format.contains(where: { c in
-                c == .unicodeFirstStrongIsolate || c == .unicodePopDirectionalIsolate
-            }) else {
-                throw OWSAssertionError("Format string contained unicode isolates!")
-            }
-
-            // Format the string, and get the placeholders in string order
-
-            let (formattedCopyWithPlaceholders, placeholdersInStringOrder) = try formatWithPlaceholders(
-                format: format,
-                groupUpdateFormatArgs: formatArgs
-            )
-
-            // Build an attributed string from the formatted string, replacing
-            // the placeholder values with names attributed with their address.
-
-            let formattedCopyWithNames = NSMutableAttributedString()
-
-            var nextChunkStartIndex = formattedCopyWithPlaceholders.startIndex
-            for (placeholder, range) in placeholdersInStringOrder {
-                // Grab the chunk of the string up to the start of this placeholder...
-                let chunkUpToPlaceholder = formattedCopyWithPlaceholders[nextChunkStartIndex..<range.lowerBound]
-                formattedCopyWithNames.append(String(chunkUpToPlaceholder))
-
-                // ...and mark that the next chunk starts at the end of this placeholder.
-                nextChunkStartIndex = range.upperBound
-
-                // Add the name, attributing it with the address. Always wrap
-                // the name in Unicode isolates, to avoid any potential RTL/LTR
-                // formatting issues.
-                formattedCopyWithNames.append(
-                    "\(Character.unicodeFirstStrongIsolate)\(placeholder.name)\(Character.unicodePopDirectionalIsolate)",
-                    attributes: [.addressOfName: placeholder.address]
-                )
-            }
-
-            let chunkAfterFinalPlaceholder = String(formattedCopyWithPlaceholders[nextChunkStartIndex..<formattedCopyWithPlaceholders.endIndex])
-            formattedCopyWithNames.append(chunkAfterFinalPlaceholder)
-
-            return formattedCopyWithNames
-        } catch let error {
-            // OWSAssertionError has internal logging logic
-            if !(error is OWSAssertionError) {
-                owsFailDebug("Error: \(error)")
-            }
-
-            Logger.warn("Returning unattributed string.")
-
-            // If we failed to add the name attributes for whatever reason,
-            // return an unattributed version.
-            return NSAttributedString(string: String(
-                format: format,
-                locale: NSLocale.current,
-                arguments: formatArgs.map { $0.forFormatting }
-            ))
-        }
-    }
-
-    private struct NameFormatArgPlaceholder {
-        let value: String = UUID().uuidString
-        let name: String
-        let address: SignalServiceAddress
-    }
-
-    private static func formatWithPlaceholders(
-        format: String,
-        groupUpdateFormatArgs formatArgs: [GroupUpdateCopy.ItemFormatArg]
-    ) throws -> (
-        formattedCopyWithPlaceholders: String,
-        placeholdersInStringOrder: [(placeholder: NameFormatArgPlaceholder, range: Range<String.Index>)]
-    ) {
-        var namePlaceholders = [NameFormatArgPlaceholder]()
-        let formattedCopyWithPlaceholders = String(
-            format: format,
-            locale: Locale.current,
-            arguments: formatArgs.map {
-                guard case let .name(value, address) = $0 else {
-                    return $0.forFormatting
-                }
-
-                let placeholder = NameFormatArgPlaceholder(name: value, address: address)
-                namePlaceholders.append(placeholder)
-
-                return placeholder.value
-            }
-        )
-
-        // Find the ranges of the placeholder values, in order
-
-        let placeholdersInStringOrder = try namePlaceholders
-            .map { placeholder throws -> (placeholder: NameFormatArgPlaceholder, range: Range<String.Index>) in
-                guard var range = formattedCopyWithPlaceholders.range(of: placeholder.value) else {
-                    throw OWSAssertionError("Placeholder value unexpectedly missing from formatted copy")
-                }
-
-                // iOS may wrap the placeholder in Unicode isolates
-                // automatically if it thinks it should per the locale,
-                // format string, arg, etc. If it did, we want to include
-                // the isolates in the placeholder range.
-                if
-                    range.lowerBound > formattedCopyWithPlaceholders.startIndex,
-                    range.upperBound < formattedCopyWithPlaceholders.endIndex
-                {
-                    let prevIdx = formattedCopyWithPlaceholders.index(before: range.lowerBound)
-                    let prevChar = formattedCopyWithPlaceholders[prevIdx]
-
-                    // Because ranges are exclusive of the upper bound, the
-                    // "next" char is at the upper bound. This is safe since
-                    // we checked against `.endIndex` above.
-                    let nextChar = formattedCopyWithPlaceholders[range.upperBound]
-
-                    if
-                        prevChar == Character.unicodeFirstStrongIsolate,
-                        nextChar == Character.unicodePopDirectionalIsolate
-                    {
-                        range = prevIdx..<formattedCopyWithPlaceholders.index(after: range.upperBound)
-                    }
-                }
-
-                return (placeholder: placeholder, range: range)
-            }.sorted {
-                $0.range.lowerBound < $1.range.lowerBound
-            }
-
-        return (
-            formattedCopyWithPlaceholders: formattedCopyWithPlaceholders,
-            placeholdersInStringOrder: placeholdersInStringOrder
-        )
-    }
-}
-
-/// Unicode isolates help us avoid RTL/LTR formatting issues when substituting
-/// strings into other strings.
-///
-/// See:
-///     https://www.unicode.org/reports/tr9/#Explicit_Directional_Isolates
-///     https://en.wikipedia.org/wiki/Bidirectional_text#Isolates
-private extension Character {
-    static let unicodeFirstStrongIsolate: Character = "\u{2068}"
-    static let unicodePopDirectionalIsolate: Character = "\u{2069}"
 }
 
 // MARK: -
@@ -548,10 +381,7 @@ extension GroupUpdateCopy {
     mutating func addAttributesUpdates(oldGroupModel: TSGroupModel) {
 
         let groupName = { (groupModel: TSGroupModel) -> String? in
-            if let name = groupModel.groupName?.stripped, name.count > 0 {
-                return name
-            }
-            return nil
+            groupModel.groupName?.stripped.nilIfEmpty
         }
         let oldGroupName = groupName(oldGroupModel)
         let newGroupName = groupName(newGroupModel)
@@ -2263,7 +2093,13 @@ private extension TSInfoMessage.UpdateMessages {
 
                 return (
                     .userMembershipState,
-                    NSAttributedString.make(fromFormat: format, groupUpdateFormatArgs: [.raw(count), .name(updaterName, updaterAddress)])
+                    NSAttributedString.make(
+                        fromFormat: format,
+                        groupUpdateFormatArgs: [
+                            .raw(count),
+                            .name(updaterName, updaterAddress)
+                        ]
+                    )
                 )
             }
         }

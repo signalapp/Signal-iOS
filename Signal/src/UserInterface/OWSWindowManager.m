@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSWindowManager.h"
@@ -53,19 +54,19 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
 #pragma mark -
 
-@interface OWSCallWindowRootNavigationViewController : UINavigationController
+@interface OWSWindowRootNavigationViewController : UINavigationController
 
 @end
 
 #pragma mark -
 
-@implementation OWSCallWindowRootNavigationViewController : UINavigationController
+@implementation OWSWindowRootNavigationViewController : UINavigationController
 
 #pragma mark - Orientation
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIDevice.currentDevice.isIPad ? UIInterfaceOrientationMaskAll : UIInterfaceOrientationMaskPortrait;
+    return UIDevice.currentDevice.defaultSupportedOrientations;
 }
 
 @end
@@ -167,8 +168,8 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     // It adjusts the size of the navigation bar to reflect the
     // call window.  We don't want those adjustments made within
     // the call window itself.
-    OWSCallWindowRootNavigationViewController *navigationController =
-        [[OWSCallWindowRootNavigationViewController alloc] initWithRootViewController:viewController];
+    OWSWindowRootNavigationViewController *navigationController =
+        [[OWSWindowRootNavigationViewController alloc] initWithRootViewController:viewController];
     navigationController.navigationBarHidden = YES;
     OWSAssertDebug(!self.callNavigationController);
     self.callNavigationController = navigationController;
@@ -239,13 +240,12 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     [self.callNavigationController popToRootViewControllerAnimated:NO];
     [self.callNavigationController pushViewController:callViewController animated:NO];
     self.shouldShowCallView = YES;
-
+    // CallViewController only supports portrait for iPhones, but if we're _already_ landscape it won't
+    // automatically switch.
+    if (!UIDevice.currentDevice.isIPad) {
+        [UIDevice.currentDevice ows_setOrientation:UIDeviceOrientationPortrait];
+    }
     [self ensureWindowState];
-    // This shouldn't be necessary, but in practice we've had at least one user end up with the
-    // call view laid out in landscape and then clipped to portrait.
-    // An earlier version of this method used UIDevice.ows_setOrientation();
-    // we don't want to revert to that because it messes up legitimate orientation detection.
-    [UIViewController attemptRotationToDeviceOrientation];
 }
 
 - (void)endCall:(UIViewController<CallViewControllerWindowReference> *)callViewController

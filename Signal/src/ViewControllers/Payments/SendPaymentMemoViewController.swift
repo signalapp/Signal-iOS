@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import UIKit
@@ -71,7 +72,7 @@ public class SendPaymentMemoViewController: OWSViewController {
         rootStack.autoPinEdge(toSuperviewMargin: .leading)
         rootStack.autoPinEdge(toSuperviewMargin: .trailing)
         rootStack.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        autoPinView(toBottomOfViewControllerOrKeyboard: rootStack, avoidNotch: true)
+        rootStack.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
         updateContents()
     }
@@ -123,8 +124,8 @@ public class SendPaymentMemoViewController: OWSViewController {
         ])
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateContents()
     }
@@ -132,8 +133,10 @@ public class SendPaymentMemoViewController: OWSViewController {
     // MARK: -
 
     fileprivate func updateMemoCharacterCount() {
-        guard let strippedMemoMessage = memoTextField.text,
-              strippedMemoMessage.count > 0 else {
+        guard
+            let strippedMemoMessage = memoTextField.text,
+            !strippedMemoMessage.isEmpty
+        else {
             // Use whitespace to reserve space in the layout
             // to avoid jitter.
             memoCharacterCountLabel.text = " "

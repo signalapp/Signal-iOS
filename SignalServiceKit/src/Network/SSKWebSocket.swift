@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -150,17 +151,24 @@ public class SSKWebSocketNative: SSKWebSocket {
     private static let idCounter = AtomicUInt()
     public let id = SSKWebSocketNative.idCounter.increment()
     private var webSocketTask = AtomicOptional<URLSessionWebSocketTask>(nil)
-    private let request: URLRequest
-    private let session = OWSURLSession(
-        securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
-        configuration: OWSURLSession.defaultConfigurationWithoutCaching
-    )
+    private let requestUrl: URL
+    private let session: OWSURLSession
     private let callbackQueue: DispatchQueue
 
-    public init(request: URLRequest,
-                callbackQueue: DispatchQueue? = nil) {
+    public init(request: URLRequest, callbackQueue: DispatchQueue? = nil) {
+        let configuration = OWSURLSession.defaultConfigurationWithoutCaching
 
-        self.request = request
+        // For some reason, `URLSessionWebSocketTask` will only respect the proxy
+        // configuration if started with a URL and not a URLRequest. As a temporary
+        // workaround, port header information from the request to the session.
+        configuration.httpAdditionalHeaders = request.allHTTPHeaderFields
+
+        self.session = OWSURLSession(
+            securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
+            configuration: configuration,
+            canUseSignalProxy: true
+        )
+        self.requestUrl = request.url!
         self.callbackQueue = callbackQueue ?? .main
     }
 
@@ -189,7 +197,7 @@ public class SSKWebSocketNative: SSKWebSocket {
     public func connect() {
         guard webSocketTask.get() == nil else { return }
 
-        let task = session.webSocketTask(request: request, didOpenBlock: { [weak self] _ in
+        let task = session.webSocketTask(requestUrl: requestUrl, didOpenBlock: { [weak self] _ in
             guard let self = self else { return }
             self.isConnected.set(true)
             self.hasEverConnected.set(true)

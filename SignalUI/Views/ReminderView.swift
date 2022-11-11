@@ -1,12 +1,17 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 
 open class ReminderView: UIView {
 
-    let label = UILabel()
+    private let label = UILabel()
+
+    private let actionLabel = UILabel()
+
+    private var disclosureImageView: UIImageView?
 
     public typealias Action = () -> Void
 
@@ -19,6 +24,16 @@ open class ReminderView: UIView {
 
         set(newText) {
             label.text = newText
+        }
+    }
+
+    public var actionTitle: String? {
+        get {
+            return actionLabel.text
+        }
+
+        set(newText) {
+            actionLabel.text = newText
         }
     }
 
@@ -40,15 +55,18 @@ open class ReminderView: UIView {
         fatalError("init(frame:) has not been implemented")
     }
 
-    public init(mode: ReminderViewMode, text: String, tapAction: Action?) {
+    public init(mode: ReminderViewMode, text: String, tapAction: Action?, actionTitle: String? = nil) {
         self.mode = mode
         self.tapAction = tapAction
 
         super.init(frame: .zero)
 
         self.text = text
+        self.actionTitle = actionTitle
 
         setupSubviews()
+        applyTheme()
+        NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
     }
 
     @objc
@@ -57,11 +75,69 @@ open class ReminderView: UIView {
     }
 
     @objc
+    public class func nag(text: String, tapAction: Action?, actionTitle: String) -> ReminderView {
+        return ReminderView(mode: .nag, text: text, tapAction: tapAction, actionTitle: actionTitle)
+    }
+
+    @objc
     public class func explanation(text: String) -> ReminderView {
         return ReminderView(mode: .explanation, text: text, tapAction: nil)
     }
 
-    func setupSubviews() {
+    private func setupSubviews() {
+        self.clipsToBounds = true
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(gestureRecognizer:)))
+        self.addGestureRecognizer(tapGesture)
+
+        let container = UIStackView()
+        container.isLayoutMarginsRelativeArrangement = true
+
+        switch actionTitle {
+        case .some:
+            container.axis = .vertical
+            container.alignment = .fill
+        default:
+            container.axis = .horizontal
+            container.alignment = .center
+        }
+
+        self.addSubview(container)
+        container.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
+        container.autoPinEdgesToSuperviewEdges()
+
+        // Label
+        label.font = UIFont.ows_dynamicTypeSubheadline
+        container.addArrangedSubview(label)
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+
+        switch (actionTitle, tapAction) {
+        case (nil, .some):
+            // Show the disclosure indicator if this nag has a tap action and no action title
+            let iconName = (CurrentAppContext().isRTL ? "system_disclosure_indicator_rtl" : "system_disclosure_indicator")
+            guard let iconImage = UIImage(named: iconName) else {
+                owsFailDebug("missing icon.")
+                return
+            }
+            let iconView = UIImageView(image: iconImage.withRenderingMode(.alwaysTemplate))
+            iconView.contentMode = .scaleAspectFit
+            iconView.autoSetDimension(.width, toSize: 13)
+            container.addArrangedSubview(iconView)
+            disclosureImageView = iconView
+        case (.some, .some):
+            // Show the disclosure indicator if this nag has a tap action and an action title
+            actionLabel.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
+            container.addArrangedSubview(actionLabel)
+            actionLabel.numberOfLines = 1
+            actionLabel.textAlignment = .right
+        default:
+            {}()
+        }
+    }
+
+    @objc
+    private func applyTheme() {
         let textColor: UIColor
         let iconColor: UIColor
         switch mode {
@@ -75,41 +151,9 @@ open class ReminderView: UIView {
             textColor = Theme.primaryTextColor
             iconColor = Theme.secondaryTextAndIconColor
         }
-        self.clipsToBounds = true
-
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(gestureRecognizer:)))
-        self.addGestureRecognizer(tapGesture)
-
-        let container = UIStackView()
-        container.axis = .horizontal
-        container.alignment = .center
-        container.isLayoutMarginsRelativeArrangement = true
-
-        self.addSubview(container)
-        container.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
-        container.autoPinEdgesToSuperviewEdges()
-
-        // Label
-        label.font = UIFont.ows_dynamicTypeSubheadline
-        container.addArrangedSubview(label)
         label.textColor = textColor
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
-
-        // Show the disclosure indicator if this reminder has a tap action.
-        if tapAction != nil {
-            // Icon
-            let iconName = (CurrentAppContext().isRTL ? "system_disclosure_indicator_rtl" : "system_disclosure_indicator")
-            guard let iconImage = UIImage(named: iconName) else {
-                owsFailDebug("missing icon.")
-                return
-            }
-            let iconView = UIImageView(image: iconImage.withRenderingMode(.alwaysTemplate))
-            iconView.contentMode = .scaleAspectFit
-            iconView.tintColor = iconColor
-            iconView.autoSetDimension(.width, toSize: 13)
-            container.addArrangedSubview(iconView)
-        }
+        actionLabel.textColor = textColor
+        disclosureImageView?.tintColor = iconColor
     }
 
     @objc

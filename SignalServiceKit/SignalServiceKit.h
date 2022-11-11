@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import <Foundation/Foundation.h>
@@ -45,7 +46,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/ContactsManagerProtocol.h>
 #import <SignalServiceKit/DarwinNotificationCenter.h>
 #import <SignalServiceKit/DataSource.h>
-#import <SignalServiceKit/ExperienceUpgrade.h>
 #import <SignalServiceKit/FunctionalUtil.h>
 #import <SignalServiceKit/HTTPUtils.h>
 #import <SignalServiceKit/IncomingGroupsV2MessageJob.h>
@@ -64,7 +64,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/NSArray+OWS.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/NSData+keyVersionByte.h>
-#import <SignalServiceKit/NSData+messagePadding.h>
 #import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
@@ -96,7 +95,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSEndSessionMessage.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFakeCallMessageHandler.h>
-#import <SignalServiceKit/OWSFakeMessageSender.h>
 #import <SignalServiceKit/OWSFakeProfileManager.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSFingerprint.h>

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import XCTest
@@ -15,10 +16,6 @@ class PaymentsFormatTest: SignalBaseTest {
 
         SSKEnvironment.shared.paymentsHelperRef = PaymentsHelperImpl()
         SUIEnvironment.shared.paymentsRef = PaymentsImpl()
-    }
-
-    override func tearDown() {
-        super.tearDown()
     }
 
     func test_formatAsFiatCurrency() {

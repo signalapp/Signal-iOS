@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import UIKit
 
 @objc
@@ -239,8 +241,7 @@ public class GroupMigrationActionSheet: UIView {
         owsAssertDebug(isFullMemberOfGroup)
         if isFullMemberOfGroup {
             databaseStorage.read { transaction in
-                let membersToDrop = (migrationInfo.membersWithoutUuids +
-                                        migrationInfo.membersWithoutCapabilities)
+                let membersToDrop = migrationInfo.membersWithoutUuids
                 let membersToInvite = migrationInfo.membersWithoutProfileKeys
                 if !membersToInvite.isEmpty {
                     builder.addVerticalSpacer(height: 20)
@@ -641,24 +642,10 @@ public extension GroupMigrationActionSheet {
         guard groupThread.isLocalUserFullMember else {
             return nil
         }
-
-        var addableMembers = Set<SignalServiceAddress>()
-        Self.databaseStorage.read { transaction in
-            for address in groupModel.droppedMembers {
-                guard address.uuid != nil else {
-                    continue
-                }
-                guard GroupManager.doesUserHaveGroupsV2MigrationCapability(address: address, transaction: transaction) else {
-                    continue
-                }
-                addableMembers.insert(address)
-            }
-        }
+        let addableMembers = Set(groupModel.droppedMembers.lazy.filter { $0.uuid != nil })
         guard !addableMembers.isEmpty else {
             return nil
         }
-        let droppedMembersInfo = DroppedMembersInfo(groupThread: groupThread,
-                                                    addableMembers: addableMembers)
-        return droppedMembersInfo
+        return DroppedMembersInfo(groupThread: groupThread, addableMembers: addableMembers)
     }
 }

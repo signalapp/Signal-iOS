@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import AVFoundation
 import Foundation
+import SignalMessaging
 import SignalUI
 
 extension ConversationViewController: AttachmentApprovalViewControllerDelegate {
@@ -52,6 +54,8 @@ extension ConversationViewController: AttachmentApprovalViewControllerDelegate {
     public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) { }
 
     public func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) { }
+
+    public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeViewOnceState isViewOnce: Bool) { }
 }
 
 extension ConversationViewController: AttachmentApprovalViewControllerDataSource {
@@ -242,7 +246,7 @@ extension ConversationViewController: ConversationHeaderViewDelegate {
     public func didTapConversationHeaderViewAvatar(_ conversationHeaderView: ConversationHeaderView) {
         AssertIsOnMainThread()
 
-        if threadViewModel.storyState != .none && StoryManager.areStoriesEnabled {
+        if conversationHeaderView.avatarView.configuration.hasStoriesToDisplay {
             let vc = StoryPageViewController(context: thread.storyContext)
             present(vc, animated: true)
         } else {
@@ -347,7 +351,7 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
         AssertIsOnMainThread()
 
         updateBottomBarPosition()
-        updateContentInsets(animated: false)
+        updateContentInsets()
     }
 
     public func inputAccessoryPlaceholderKeyboardIsDismissing(animationDuration: TimeInterval,
@@ -362,7 +366,7 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
         AssertIsOnMainThread()
 
         updateBottomBarPosition()
-        updateContentInsets(animated: false)
+        updateContentInsets()
         updateScrollingContent()
     }
 
@@ -385,7 +389,7 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
         }
 
         let isAnimatingQuotedReply = viewState.inputToolbar?.isAnimatingQuotedReply ?? false
-        let duration = isAnimatingQuotedReply ? ConversationInputToolbar.quotedReplyAnimationDuration() : animationDuration
+        let duration = isAnimatingQuotedReply ? ConversationInputToolbar.quotedReplyAnimationDuration : animationDuration
 
         if shouldAnimateKeyboardChanges, duration > 0 {
             if hasViewDidAppearEverCompleted {
@@ -411,12 +415,12 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
             UIView.setAnimationDuration(duration)
             updateBottomBarPosition()
             // To minimize risk, only animatedly update insets when animating quoted reply for now
-            if isAnimatingQuotedReply { updateContentInsets(animated: true) }
+            if isAnimatingQuotedReply { updateContentInsets() }
             UIView.commitAnimations()
-            if !isAnimatingQuotedReply { updateContentInsets(animated: true) }
+            if !isAnimatingQuotedReply { updateContentInsets() }
         } else {
             updateBottomBarPosition()
-            updateContentInsets(animated: false)
+            updateContentInsets()
         }
     }
 }

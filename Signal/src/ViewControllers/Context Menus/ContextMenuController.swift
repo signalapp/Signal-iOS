@@ -1,11 +1,13 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 
 protocol ContextMenuControllerDelegate: AnyObject {
     func contextMenuControllerRequestsDismissal(_ contextMenuController: ContextMenuController)
+    func contextMenuControllerAccessoryFrameOffset(_ contextMenuController: ContextMenuController) -> CGPoint?
 }
 
 private protocol ContextMenuViewDelegate: AnyObject {
@@ -13,6 +15,7 @@ private protocol ContextMenuViewDelegate: AnyObject {
     func contextMenuViewAuxPreviewSourceFrame(_ contextMenuView: ContextMenuHostView) -> CGRect
     func contextMenuViewAnimationState(_ contextMenuView: ContextMenuHostView) -> ContextMenuAnimationState
     func contextMenuViewPreviewFrameForAccessoryLayout(_ contextMenuView: ContextMenuHostView) -> CGRect
+    func contextMenuViewAccessoryFrameOffset(_ contextMenuView: ContextMenuHostView) -> CGPoint?
 }
 
 private enum ContextMenuAnimationState {
@@ -286,6 +289,10 @@ private class ContextMenuHostView: UIView {
         let offset = isLandscape ? accessory.landscapeAccessoryAlignment?.alignmentOffset ?? defaultOffset : defaultOffset
         accessoryFrame.origin = CGPointAdd(accessoryFrame.origin, offset)
 
+        if let accessoryFrameOffset = delegate?.contextMenuViewAccessoryFrameOffset(self) {
+            accessoryFrame.origin = CGPointAdd(accessoryFrame.origin, accessoryFrameOffset)
+        }
+
         return accessoryFrame
     }
 
@@ -299,8 +306,12 @@ private class ContextMenuHostView: UIView {
         }
 
         if accessoryFrame.maxX > contentRect.maxX {
-            let adjust = accessoryFrame.maxX - contentRect.maxX
-            updatedFrame.x -= adjust
+            let adjust = contentRect.maxX - accessoryFrame.maxX
+            updatedFrame.x += adjust
+        }
+        if accessoryFrame.minX < contentRect.minX {
+            let adjust =  contentRect.minX - accessoryFrame.minX
+            updatedFrame.x += adjust
         }
 
         return updatedFrame
@@ -455,8 +466,8 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
         // We can't use `viewWillTransition(to:with:)` here because we're added directly to the window
     }
 
-    override func applyTheme() {
-        super.applyTheme()
+    override func themeDidChange() {
+        super.themeDidChange()
         delegate?.contextMenuControllerRequestsDismissal(self)
 
         // TODO: Support theme changes
@@ -753,6 +764,10 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
         }
 
         return previewView?.frame ?? CGRect.zero
+    }
+
+    fileprivate func contextMenuViewAccessoryFrameOffset(_ contextMenuView: ContextMenuHostView) -> CGPoint? {
+        delegate?.contextMenuControllerAccessoryFrameOffset(self)
     }
 
     // MARK: Private

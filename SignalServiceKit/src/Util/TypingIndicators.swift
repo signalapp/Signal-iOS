@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -333,7 +334,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
                 SDSDatabaseStorage.shared.write { transaction in
                     let message = TypingIndicatorMessage(thread: thread, action: action, transaction: transaction)
 
-                    messageSenderJobQueue.add(
+                    sskJobQueues.messageSenderJobQueue.add(
                         .promise,
                         message: message.asPreparer,
                         limitToCurrentProcessLifetime: true,

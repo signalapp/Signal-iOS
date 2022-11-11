@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import SignalCoreKit
@@ -187,6 +188,7 @@ class ImageEditorViewController: OWSViewController {
     var startEditingTextOnViewAppear = false
     var currentTextItem: (textItem: ImageEditorTextItem, isNewItem: Bool)?
     var pinchFontSizeStart: CGFloat = ImageEditorTextItem.defaultFontSize
+    var textViewContainerBottomConstraint: NSLayoutConstraint? // to bottom of self.view
     lazy var textViewContainer: UIView = {
         let view = UIView(frame: view.bounds)
         view.preservesSuperviewLayoutMargins = true
@@ -198,20 +200,15 @@ class ImageEditorViewController: OWSViewController {
         textView.delegate = self
         return textView
     }()
-    lazy var textToolbar: TextStylingToolbar = {
-        let toolbar = TextStylingToolbar(layout: .photoOverlay, currentColor: currentTextItem?.textItem.color ?? model.color)
-        toolbar.preservesSuperviewLayoutMargins = true
-        toolbar.colorPickerView.delegate = self
-        toolbar.textStyleButton.addTarget(self, action: #selector(didTapTextStyleButton(sender:)), for: .touchUpInside)
-        toolbar.decorationStyleButton.addTarget(self, action: #selector(didTapDecorationStyleButton(sender:)), for: .touchUpInside)
-        return toolbar
-    }()
+    lazy var textViewWrapperView = UIView()
+    lazy var textViewBackgroundView = UIView()
     lazy var textViewAccessoryToolbar: TextStylingToolbar = {
-        let toolbar = TextStylingToolbar(layout: .photoOverlay, currentColor: currentTextItem?.textItem.color ?? model.color)
+        let toolbar = TextStylingToolbar(currentColor: currentTextItem?.textItem.color)
         toolbar.preservesSuperviewLayoutMargins = true
-        toolbar.colorPickerView.delegate = self
+        toolbar.addTarget(self, action: #selector(textColorDidChange), for: .valueChanged)
         toolbar.textStyleButton.addTarget(self, action: #selector(didTapTextStyleButton(sender:)), for: .touchUpInside)
         toolbar.decorationStyleButton.addTarget(self, action: #selector(didTapDecorationStyleButton(sender:)), for: .touchUpInside)
+        toolbar.doneButton.addTarget(self, action: #selector(didTapTextEditingDoneButton(sender:)), for: .touchUpInside)
         return toolbar
     }()
 
@@ -284,6 +281,12 @@ class ImageEditorViewController: OWSViewController {
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
         updateContentLayoutMargins()
+    }
+
+    override func keyboardFrameDidChange(_ newFrame: CGRect, animationDuration: TimeInterval, animationOptions: UIView.AnimationOptions) {
+        super.keyboardFrameDidChange(newFrame, animationDuration: animationDuration, animationOptions: animationOptions)
+
+        updateTextViewContainerBottomLayoutConstraint(forKeyboardFrame: newFrame)
     }
 
     override var prefersStatusBarHidden: Bool {
@@ -537,8 +540,8 @@ extension ImageEditorViewController {
     private func didTapAddText(sender: UIButton) {
         Logger.verbose("")
 
-        let decorationStyle = textToolbar.decorationStyle
-        let textColor = textToolbar.colorPickerView.selectedValue
+        let decorationStyle = textViewAccessoryToolbar.decorationStyle
+        let textColor = textViewAccessoryToolbar.currentColorPickerValue
         let textItem = imageEditorView.createNewTextItem(withColor: textColor, decorationStyle: decorationStyle)
         selectTextItem(textItem, isNewItem: true, startEditing: true)
     }
@@ -556,6 +559,15 @@ extension ImageEditorViewController {
 
         // Second tap on Blur icon switches editor to "text" mode.
         mode = (mode == .blur) ? .text : .blur
+    }
+
+    @objc
+    private func textColorDidChange(sender: TextStylingToolbar) {
+        let textItemColor = sender.currentColorPickerValue
+        imageEditorView.updateSelectedTextItem(withColor: textItemColor)
+        if textView.isFirstResponder {
+            updateTextViewAttributes(using: textViewAccessoryToolbar)
+        }
     }
 }
 
@@ -640,17 +652,6 @@ extension ImageEditorViewController: ColorPickerBarViewDelegate {
         case .draw:
             model.color = color
             updateStrokeWidthPreviewColor()
-
-        case .text:
-            imageEditorView.updateSelectedTextItem(withColor: color)
-            if pickerView == textToolbar.colorPickerView {
-                textViewAccessoryToolbar.colorPickerView.selectedValue = color
-            } else if pickerView == textViewAccessoryToolbar.colorPickerView {
-                textToolbar.colorPickerView.selectedValue = color
-            }
-            if textView.isFirstResponder {
-                updateTextViewAttributes(using: textToolbar)
-            }
 
         default:
             owsAssertDebug(false, "Invalid mode [\(mode)]")

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -28,10 +29,6 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     @objc
     @DecodableDefault.OneFloat
     public private(set) var audioPlaybackRate: Float
-
-    @objc
-    @DecodableDefault.False
-    public private(set) var hideStory: Bool
 
     @objc
     public var isMuted: Bool { mutedUntilTimestamp > Date.ows_millisecondTimestamp() }
@@ -136,15 +133,13 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         isArchived: Bool,
         isMarkedUnread: Bool,
         mutedUntilTimestamp: UInt64,
-        audioPlaybackRate: Float,
-        hideStory: Bool
+        audioPlaybackRate: Float
     ) {
         self.threadUniqueId = threadUniqueId
         self.isArchived = isArchived
         self.isMarkedUnread = isMarkedUnread
         self.mutedUntilTimestamp = mutedUntilTimestamp
         self.audioPlaybackRate = audioPlaybackRate
-        self.hideStory = hideStory
         super.init()
     }
 
@@ -153,7 +148,6 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         isMarkedUnread: Bool? = nil,
         mutedUntilTimestamp: UInt64? = nil,
         audioPlaybackRate: Float? = nil,
-        hideStory: Bool? = nil,
         updateStorageService: Bool,
         transaction: SDSAnyWriteTransaction
     ) {
@@ -162,7 +156,6 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
             || isMarkedUnread != nil
             || mutedUntilTimestamp != nil
             || audioPlaybackRate != nil
-            || hideStory != nil
         else {
             return owsFailDebug("You must set one value")
         }
@@ -190,9 +183,6 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
             if let audioPlaybackRate = audioPlaybackRate {
                 associatedData.audioPlaybackRate = audioPlaybackRate
             }
-            if let hideStory = hideStory {
-                associatedData.hideStory = hideStory
-            }
         }
     }
 
@@ -218,12 +208,6 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     @available(swift, obsoleted: 1.0)
     public func updateWith(audioPlaybackRate: Float, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
         updateWith(updateStorageService: updateStorageService, transaction: transaction) { $0.audioPlaybackRate = audioPlaybackRate }
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func updateWith(hideStory: Bool, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
-        updateWith(updateStorageService: updateStorageService, transaction: transaction) { $0.hideStory = hideStory }
     }
 
     @objc(clearIsArchived:clearIsMarkedUnread:updateStorageService:transaction:)
@@ -304,6 +288,7 @@ public extension TSThread {
                     atTimestamp: Date.ows_millisecondTimestamp(),
                     thread: self,
                     circumstance: circumstance,
+                    shouldClearNotifications: true,
                     transaction: transaction
                 )
             }

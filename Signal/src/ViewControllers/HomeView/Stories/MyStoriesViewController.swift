@@ -1,16 +1,18 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
-import SignalServiceKit
-import UIKit
-import SignalUI
 import PhotosUI
+import SignalMessaging
+import SignalServiceKit
+import SignalUI
+import UIKit
 
 class MyStoriesViewController: OWSViewController {
     private let tableView = UITableView(frame: .zero, style: .grouped)
-    private var items = OrderedDictionary<TSThread, [OutgoingStoryItem]>() {
+    private var items = OrderedDictionary<String, [OutgoingStoryItem]>() {
         didSet { emptyStateLabel.isHidden = items.orderedKeys.count > 0 }
     }
     private lazy var emptyStateLabel: UILabel = {
@@ -25,8 +27,6 @@ class MyStoriesViewController: OWSViewController {
         tableView.backgroundView = label
         return label
     }()
-
-    private lazy var contextMenu = ContextMenuInteraction(delegate: self)
 
     private lazy var contextMenuGenerator = StoryContextMenuGenerator(presentingController: self)
 
@@ -51,7 +51,6 @@ class MyStoriesViewController: OWSViewController {
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 116
-        tableView.addInteraction(contextMenu)
 
         reloadStories()
 
@@ -65,12 +64,13 @@ class MyStoriesViewController: OWSViewController {
         applyTheme()
     }
 
-    override func applyTheme() {
-        super.applyTheme()
+    override func themeDidChange() {
+        super.themeDidChange()
+        applyTheme()
+    }
 
+    private func applyTheme() {
         emptyStateLabel.textColor = Theme.secondaryTextAndIconColor
-
-        contextMenu.dismissMenu(animated: true) {}
 
         tableView.reloadData()
 
@@ -91,12 +91,15 @@ class MyStoriesViewController: OWSViewController {
                 .flatMap { OutgoingStoryItem.build(message: $0, transaction: transaction) }
         }
 
-        let groupedStories = Dictionary(grouping: outgoingStories) { $0.thread }
+        let groupedStories = Dictionary(grouping: outgoingStories) { $0.thread.uniqueId }
 
-        items = .init(keyValueMap: groupedStories, orderedKeys: groupedStories.keys.sorted { lhs, rhs in
+        items = .init(keyValueMap: groupedStories, orderedKeys: groupedStories.keys.sorted { lhsId, rhsId in
+            guard let lhs = groupedStories[lhsId]?.first?.thread, let rhs = groupedStories[rhsId]?.first?.thread else {
+                return false
+            }
             if (lhs as? TSPrivateStoryThread)?.isMyStory == true { return true }
             if (rhs as? TSPrivateStoryThread)?.isMyStory == true { return false }
-            if rhs.lastSentStoryTimestamp == rhs.lastSentStoryTimestamp {
+            if lhs.lastSentStoryTimestamp == rhs.lastSentStoryTimestamp {
                 return storyName(for: lhs).localizedCaseInsensitiveCompare(storyName(for: rhs)) == .orderedAscending
             }
             return (lhs.lastSentStoryTimestamp?.uint64Value ?? 0) > (rhs.lastSentStoryTimestamp?.uint64Value ?? 0)
@@ -120,13 +123,13 @@ class MyStoriesViewController: OWSViewController {
     }
 
     private func thread(for section: Int) -> TSThread? {
-        items.orderedKeys[safe: section]
+        return items.orderedValues[safe: section]?.first?.thread
     }
 
     func cell(for message: StoryMessage, and context: StoryContext) -> SentStoryCell? {
         guard let thread = databaseStorage.read(block: { context.thread(transaction: $0) }) else { return nil }
-        guard let section = items.orderedKeys.firstIndex(of: thread) else { return nil }
-        guard let row = items[thread]?.firstIndex(where: { $0.message.uniqueId == message.uniqueId }) else { return nil }
+        guard let section = items.orderedKeys.firstIndex(of: thread.uniqueId) else { return nil }
+        guard let row = items[thread.uniqueId]?.firstIndex(where: { $0.message.uniqueId == message.uniqueId }) else { return nil }
 
         let indexPath = IndexPath(row: row, section: section)
         guard tableView.indexPathsForVisibleRows?.contains(indexPath) == true else { return nil }
@@ -146,12 +149,63 @@ extension MyStoriesViewController: UITableViewDelegate {
 
         let vc = StoryPageViewController(
             context: thread.storyContext,
-            viewableContexts: items.orderedKeys.map { $0.storyContext },
+            viewableContexts: items.orderedKeys.compactMap { items[$0]?.first?.thread.storyContext },
             loadMessage: item.message,
             onlyRenderMyStories: true
         )
         vc.contextDataSource = self
         present(vc, animated: true)
+    }
+
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard
+            let item = item(for: indexPath),
+            let action = contextMenuGenerator.goToChatContextualAction(thread: item.thread)
+        else {
+            return nil
+        }
+        return .init(actions: [action])
+    }
+
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard
+            let item = item(for: indexPath),
+            let action = contextMenuGenerator.deleteTableRowContextualAction(
+                for: item.message,
+                thread: item.thread
+            )
+        else {
+            return nil
+        }
+        return .init(actions: [action])
+    }
+
+    @available(iOS 13, *)
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard let item = item(for: indexPath) else {
+            return nil
+        }
+
+        let actions = Self.databaseStorage.read { transaction in
+            return self.contextMenuGenerator.nativeContextMenuActions(
+                for: item.message,
+                in: item.thread,
+                attachment: item.attachment,
+                sourceView: { [weak self] in
+                    // refetch the cell in case it changes out from underneath us.
+                    return self?.tableView(tableView, cellForRowAt: indexPath)
+                },
+                hideSaveAction: true,
+                onlyRenderMyStories: true,
+                transaction: transaction
+            )
+        }
+
+        return .init(identifier: indexPath as NSCopying, previewProvider: nil) { _ in .init(children: actions) }
     }
 }
 
@@ -216,88 +270,31 @@ extension MyStoriesViewController: DatabaseChangeDelegate {
     }
 }
 
-extension MyStoriesViewController: ContextMenuInteractionDelegate {
-    fileprivate func contextMenu(
-        for cell: SentStoryCell,
-        at indexPath: IndexPath
-    ) -> ContextMenu? {
-        guard let item = item(for: indexPath) else {
-            return nil
-        }
-
-        let actions = Self.databaseStorage.read { transaction in
-            return self.contextMenuGenerator.contextMenuActions(
-                for: item.message,
-                in: item.thread,
-                attachment: item.attachment,
-                sourceView: cell,
-                transaction: transaction
-            )
-        }
-
-        return .init(actions)
-    }
-
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
-        guard
-            let indexPath = tableView.indexPathForRow(at: location),
-            let cell = tableView.cellForRow(at: indexPath) as? SentStoryCell,
-            let contextMenu = contextMenu(for: cell, at: indexPath)
-        else {
-            return nil
-        }
-        return .init(identifier: indexPath as NSCopying) { _ in contextMenu }
-    }
-
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration) -> ContextMenuTargetedPreview? {
-        guard let indexPath = configuration.identifier as? IndexPath else { return nil }
-
-        guard let cell = tableView.cellForRow(at: indexPath) as? SentStoryCell,
-            let cellSnapshot = cell.contentHStackView.snapshotView(afterScreenUpdates: false) else { return nil }
-
-        // Build a custom preview that wraps the cell contents in a bubble.
-        // Normally, our context menus just present the cell row full width.
-
-        let previewView = UIView()
-        previewView.frame = cell.contentView
-            .convert(cell.contentHStackView.frame, to: cell.superview)
-            .insetBy(dx: -12, dy: -12)
-        previewView.layer.cornerRadius = 18
-        previewView.backgroundColor = Theme.backgroundColor
-        previewView.clipsToBounds = true
-
-        previewView.addSubview(cellSnapshot)
-        cellSnapshot.frame.origin = CGPoint(x: 12, y: 12)
-
-        let preview = ContextMenuTargetedPreview(
-            view: cell,
-            previewView: previewView,
-            alignment: .leading,
-            accessoryViews: []
-        )
-        preview.alignmentOffset = CGPoint(x: 12, y: 12)
-        return preview
-    }
-
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, willDisplayMenuForConfiguration: ContextMenuConfiguration) {}
-
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {}
-
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, didEndForConfiguration configuration: ContextMenuConfiguration) {}
-}
-
 extension MyStoriesViewController: ContextMenuButtonDelegate {
 
     func contextMenuConfiguration(for contextMenuButton: DelegatingContextMenuButton) -> ContextMenuConfiguration? {
         guard
             let indexPath = (contextMenuButton as? IndexPathContextMenuButton)?.indexPath,
-            let cell = tableView.dequeueReusableCell(withIdentifier: SentStoryCell.reuseIdentifier, for: indexPath) as? SentStoryCell,
-            let contextMenu = self.contextMenu(for: cell, at: indexPath)
+            let item = self.item(for: indexPath)
         else {
             return nil
         }
+        let actions = Self.databaseStorage.read { transaction in
+            return self.contextMenuGenerator.contextMenuActions(
+                for: item.message,
+                in: item.thread,
+                attachment: item.attachment,
+                sourceView: { [weak self] in
+                    // refetch the cell in case it changes out from underneath us.
+                    return self?.tableView.dequeueReusableCell(withIdentifier: SentStoryCell.reuseIdentifier, for: indexPath)
+                },
+                hideSaveAction: true,
+                onlyRenderMyStories: true,
+                transaction: transaction
+            )
+        }
         return .init(identifier: nil, actionProvider: { _ in
-            return contextMenu
+            return .init(actions)
         })
     }
 }
@@ -319,8 +316,11 @@ extension MyStoriesViewController: ForwardMessageDelegate {
 }
 
 extension MyStoriesViewController: StoryPageViewControllerDataSource {
-    func storyPageViewControllerAvailableContexts(_ storyPageViewController: StoryPageViewController) -> [StoryContext] {
-        items.orderedKeys.map { $0.storyContext }
+    func storyPageViewControllerAvailableContexts(
+        _ storyPageViewController: StoryPageViewController,
+        hiddenStoryFilter: Bool?
+    ) -> [StoryContext] {
+        return items.orderedValues.compactMap(\.first?.thread.storyContext)
     }
 }
 
@@ -416,18 +416,23 @@ class SentStoryCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    private var attachment: StoryThumbnailView.Attachment?
+
     fileprivate func configure(
         with item: OutgoingStoryItem,
         contextMenuButtonDelegate: ContextMenuButtonDelegate,
         indexPath: IndexPath
     ) {
-        let thumbnailView = StoryThumbnailView(attachment: item.attachment)
-        attachmentThumbnail.removeAllSubviews()
-        attachmentThumbnail.addSubview(thumbnailView)
-        thumbnailView.autoPinEdgesToSuperviewEdges()
+        if self.attachment != item.attachment {
+            self.attachment = item.attachment
+            let thumbnailView = StoryThumbnailView(attachment: item.attachment)
+            attachmentThumbnail.removeAllSubviews()
+            attachmentThumbnail.addSubview(thumbnailView)
+            thumbnailView.autoPinEdgesToSuperviewEdges()
+        }
 
         titleLabel.textColor = Theme.primaryTextColor
-        subtitleLabel.textColor = Theme.secondaryTextAndIconColor
+        subtitleLabel.textColor = Theme.isDarkThemeEnabled ? Theme.secondaryTextAndIconColor : .ows_gray45
 
         switch item.message.sendingState {
         case .pending, .sending:
@@ -437,15 +442,17 @@ class SentStoryCell: UITableViewCell {
         case .failed:
             failedIconView.image = Theme.iconImage(.error16)
             failedIconContainer.isHiddenInStackView = false
-            titleLabel.text = NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
+            titleLabel.text = item.message.hasSentToAnyRecipients
+                ? NSLocalizedString("STORY_SEND_PARTIALLY_FAILED", comment: "Text indicating that the story send has partially failed")
+                : NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
             subtitleLabel.text = NSLocalizedString("STORY_SEND_FAILED_RETRY", comment: "Text indicating that you can tap to retry sending")
         case .sent:
-            if receiptManager.areReadReceiptsEnabled() {
+            if StoryManager.areViewReceiptsEnabled {
                 let format = NSLocalizedString(
                     "STORY_VIEWS_%d", tableName: "PluralAware",
                     comment: "Text explaining how many views a story has. Embeds {{ %d number of views }}"
                 )
-                titleLabel.text = String.localizedStringWithFormat(format, item.message.remoteViewCount)
+                titleLabel.text = String.localizedStringWithFormat(format, item.message.remoteViewCount(in: item.thread.storyContext))
             } else {
                 titleLabel.text = NSLocalizedString(
                     "STORY_VIEWS_OFF",
@@ -459,7 +466,7 @@ class SentStoryCell: UITableViewCell {
         }
 
         saveButton.tintColor = Theme.primaryIconColor
-        saveButton.setImage(Theme.iconImage(.messageActionSave), for: .normal)
+        saveButton.setImage(Theme.iconImage(.messageActionSave20), for: .normal)
         saveButton.setBackgroundImage(UIImage(color: Theme.secondaryBackgroundColor), for: .normal)
 
         if item.attachment.isSaveable {
@@ -471,10 +478,14 @@ class SentStoryCell: UITableViewCell {
         }
 
         contextButton.tintColor = Theme.primaryIconColor
-        contextButton.setImage(Theme.iconImage(.more24), for: .normal)
+        contextButton.setImage(Theme.iconImage(.more16), for: .normal)
         contextButton.setBackgroundImage(UIImage(color: Theme.secondaryBackgroundColor), for: .normal)
         contextButton.delegate = contextMenuButtonDelegate
         contextButton.indexPath = indexPath
+
+        let selectedBackgroundView = UIView()
+        selectedBackgroundView.backgroundColor = Theme.tableCell2SelectedBackgroundColor2
+        self.selectedBackgroundView = selectedBackgroundView
     }
 }
 

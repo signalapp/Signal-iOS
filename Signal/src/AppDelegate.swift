@@ -1,22 +1,80 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
-enum LaunchFailure: UInt {
+enum LaunchFailure: UInt, CustomStringConvertible {
     case none
     case couldNotLoadDatabase
     case unknownDatabaseVersion
     case couldNotRestoreTransferredData
+    case databaseCorruptedAndMightBeRecoverable
     case databaseUnrecoverablyCorrupted
     case lastAppLaunchCrashed
     case lowStorageSpaceAvailable
+
+    public var description: String {
+        switch self {
+        case .none:
+            return "LaunchFailure_None"
+        case .couldNotLoadDatabase:
+            return "LaunchFailure_CouldNotLoadDatabase"
+        case .unknownDatabaseVersion:
+            return "LaunchFailure_UnknownDatabaseVersion"
+        case .couldNotRestoreTransferredData:
+            return "LaunchFailure_CouldNotRestoreTransferredData"
+        case .databaseCorruptedAndMightBeRecoverable:
+            return "LaunchFailure_DatabaseCorruptedAndMightBeRecoverable"
+        case .databaseUnrecoverablyCorrupted:
+            return "LaunchFailure_DatabaseUnrecoverablyCorrupted"
+        case .lastAppLaunchCrashed:
+            return "LaunchFailure_LastAppLaunchCrashed"
+        case .lowStorageSpaceAvailable:
+            return "LaunchFailure_NoDiskSpaceAvailable"
+        }
+    }
 }
 
 extension AppDelegate {
-    @objc(checkSomeDiskSpaceAvailable)
+    // MARK: - App launch
+
+    static func setUpMainAppEnvironment() -> Promise<Void> {
+        let (promise, future) = Promise<Void>.pending()
+        AppSetup.setupEnvironment(
+            paymentsEvents: PaymentsEventsMainApp(),
+            mobileCoinHelper: MobileCoinHelperSDK(),
+            webSocketFactory: WebSocketFactoryHybrid(),
+            appSpecificSingletonBlock: {
+                SUIEnvironment.shared.setup()
+                AppEnvironment.shared.setup()
+                SignalApp.shared().setup()
+            },
+            migrationCompletion: { error in
+                if let error = error {
+                    future.reject(error)
+                } else {
+                    future.resolve()
+                }
+            }
+        )
+        return promise
+    }
+
+    @objc(setUpMainAppEnvironmentWithCompletion:)
+    static func setUpMainAppEnvironment(completion: @escaping (Error?) -> Void) {
+        firstly(on: .main) {
+            setUpMainAppEnvironment()
+        }.done(on: .main) {
+            completion(nil)
+        }.catch(on: .main) { error in
+            completion(error)
+        }
+    }
+
     func checkSomeDiskSpaceAvailable() -> Bool {
         let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
             .appendingPathComponent(UUID().uuidString)
@@ -113,13 +171,17 @@ extension AppDelegate {
                 let linkedDeviceMessage = deviceCount > 1 ? "\(deviceCount) devices including the primary" : "no linked devices"
                 Logger.info("localAddress: \(String(describing: localAddress)), deviceId: \(deviceId) (\(linkedDeviceMessage))")
             }
+        }
 
+        if tsAccountManager.isRegisteredAndReady {
             // This should happen at any launch, background or foreground.
             SyncPushTokensJob.run()
         }
 
         DebugLogger.shared().postLaunchLogCleanup()
         AppVersion.shared().mainAppLaunchDidComplete()
+
+        Self.updateApplicationShortcutItems(isRegisteredAndReady: tsAccountManager.isRegisteredAndReady)
 
         if !Environment.shared.preferences.hasGeneratedThumbnails() {
             databaseStorage.asyncRead(
@@ -155,9 +217,55 @@ extension AppDelegate {
 
     // MARK: - Launch failures
 
+    @objc
+    func launchFailure(didDeviceTransferRestoreSucceed: Bool) -> LaunchFailure {
+        guard checkSomeDiskSpaceAvailable() else {
+            return .lowStorageSpaceAvailable
+        }
+
+        guard didDeviceTransferRestoreSucceed else {
+            return .couldNotRestoreTransferredData
+        }
+
+        // Prevent:
+        // * Users with an unknown GRDB schema revert to using an earlier GRDB schema.
+        guard !StorageCoordinator.hasInvalidDatabaseVersion else {
+            return .unknownDatabaseVersion
+        }
+
+        let userDefaults = CurrentAppContext().appUserDefaults()
+
+        let databaseCorruptionState = DatabaseCorruptionState(userDefaults: userDefaults)
+        switch databaseCorruptionState.status {
+        case .notCorrupted:
+            break
+        case .corrupted, .corruptedButAlreadyDumpedAndRestored:
+            guard !UIDevice.current.isIPad else {
+                // Database recovery theoretically works on iPad,
+                // but we haven't built the UI for it.
+                return .databaseUnrecoverablyCorrupted
+            }
+            guard databaseCorruptionState.count <= 3 else {
+                return .databaseUnrecoverablyCorrupted
+            }
+            return .databaseCorruptedAndMightBeRecoverable
+        }
+
+        let appVersion = AppVersion.shared()
+        let launchAttemptFailureThreshold = DebugFlags.betaLogging ? 2 : 3
+        if
+            appVersion.lastAppVersion == appVersion.currentAppReleaseVersion,
+            userDefaults.integer(forKey: kAppLaunchesAttemptedKey) >= launchAttemptFailureThreshold
+        {
+            return .lastAppLaunchCrashed
+        }
+
+        return .none
+    }
+
     @objc(showUIForLaunchFailure:)
     func showUI(forLaunchFailure launchFailure: LaunchFailure) {
-        Logger.info("launchFailure: \(Self.string(for: launchFailure))")
+        Logger.info("launchFailure: \(launchFailure)")
 
         // Disable normal functioning of app.
         didAppLaunchFail = true
@@ -186,112 +294,204 @@ extension AppDelegate {
 
         window.makeKeyAndVisible()
 
-        let actionSheet = getActionSheet(for: launchFailure, from: viewController) {
-            switch launchFailure {
-            case .lastAppLaunchCrashed:
-                // Pretend we didn't fail!
-                self.didAppLaunchFail = false
-                self.launchToHomeScreen(launchOptions: nil, instrumentsMonitorId: 0)
-            default:
-                owsFail("exiting after sharing debug logs.")
+        switch launchFailure {
+        case .couldNotLoadDatabase, .databaseUnrecoverablyCorrupted:
+            presentLaunchFailureActionSheet(
+                from: viewController,
+                launchFailure: launchFailure,
+                title: NSLocalizedString(
+                    "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
+                    comment: "Error indicating that the app could not launch because the database could not be loaded."
+                ),
+                actions: [.submitDebugLogsWithDatabaseIntegrityCheckAndCrash]
+            )
+        case .unknownDatabaseVersion:
+            presentLaunchFailureActionSheet(
+                from: viewController,
+                launchFailure: launchFailure,
+                title: NSLocalizedString(
+                    "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE",
+                    comment: "Error indicating that the app could not launch without reverting unknown database migrations."
+                ),
+                message: NSLocalizedString(
+                    "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE",
+                    comment: "Error indicating that the app could not launch without reverting unknown database migrations."
+                ),
+                actions: [.submitDebugLogs(and: .crash)]
+            )
+        case .couldNotRestoreTransferredData:
+            presentLaunchFailureActionSheet(
+                from: viewController,
+                launchFailure: launchFailure,
+                title: NSLocalizedString(
+                    "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE",
+                    comment: "Error indicating that the app could not restore transferred data."
+                ),
+                message: NSLocalizedString(
+                    "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE",
+                    comment: "Error indicating that the app could not restore transferred data."
+                ),
+                actions: [.submitDebugLogs(and: .crash)]
+            )
+        case .databaseCorruptedAndMightBeRecoverable:
+            let recoveryViewController = DatabaseRecoveryViewController(
+                setupSskEnvironment: { () -> Promise<Void> in
+                    firstly(on: .main) {
+                        Self.setUpMainAppEnvironment()
+                    }.catch(on: .main) { error in
+                        owsFailDebug("Error: \(error)")
+                        self.showUI(forLaunchFailure: .couldNotLoadDatabase)
+                    }
+                },
+                launchApp: {
+                    // Pretend we didn't fail!
+                    self.didAppLaunchFail = false
+                    self.versionMigrationsDidComplete()
+                    self.launchToHomeScreen(launchOptions: nil, instrumentsMonitorId: 0, isEnvironmentAlreadySetUp: true)
+                }
+            )
+
+            // Prevent dismissal.
+            if #available(iOS 13, *) {
+                recoveryViewController.isModalInPresentation = true
+            } else {
+                // This presents it fullscreen. Not ideal, but only affects old iOS versions, and prevents dismissal.
+                recoveryViewController.modalPresentationStyle = .fullScreen
+            }
+
+            // Show as a half-sheet on iOS 15+. On older versions, the sheet fills the screen, which is okay.
+            if
+                #available(iOS 15, *),
+                let presentationController = recoveryViewController.presentationController as? UISheetPresentationController {
+                presentationController.detents = [.medium()]
+                presentationController.prefersEdgeAttachedInCompactHeight = true
+                presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = true
+            }
+
+            viewController.present(recoveryViewController, animated: true)
+        case .lastAppLaunchCrashed:
+            presentLaunchFailureActionSheet(
+                from: viewController,
+                launchFailure: launchFailure,
+                title: NSLocalizedString(
+                    "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE",
+                    comment: "Error indicating that the app crashed during the previous launch."
+                ),
+                message: NSLocalizedString(
+                    "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE",
+                    comment: "Error indicating that the app crashed during the previous launch."
+                ),
+                actions: [.submitDebugLogs(and: .launchApp), .launchApp]
+            )
+        case .lowStorageSpaceAvailable:
+            presentLaunchFailureActionSheet(
+                from: viewController,
+                launchFailure: launchFailure,
+                title: NSLocalizedString(
+                    "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE",
+                    comment: "Error title indicating that the app crashed because there was low storage space available on the device."
+                ),
+                message: NSLocalizedString(
+                    "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE",
+                    comment: "Error description indicating that the app crashed because there was low storage space available on the device."
+                ),
+                actions: []
+            )
+        case .none:
+            owsFailDebug("Unknown launch failure.")
+            presentLaunchFailureActionSheet(
+                from: viewController,
+                launchFailure: launchFailure,
+                title: NSLocalizedString(
+                    "APP_LAUNCH_FAILURE_ALERT_TITLE",
+                    comment: "Title for the 'app launch failed' alert."
+                ),
+                actions: [.submitDebugLogs(and: .crash)]
+            )
+        }
+    }
+
+    private enum LaunchFailureActionSheetAction {
+        enum ActionAfterSubmittingDebugLogs {
+            case crash
+            case launchApp
+        }
+
+        case submitDebugLogs(and: ActionAfterSubmittingDebugLogs)
+        case submitDebugLogsWithDatabaseIntegrityCheckAndCrash
+        case launchApp
+    }
+
+    private func presentLaunchFailureActionSheet(
+        from viewController: UIViewController,
+        launchFailure: LaunchFailure,
+        title: String,
+        message: String = NSLocalizedString(
+            "APP_LAUNCH_FAILURE_ALERT_MESSAGE",
+            comment: "Default message for the 'app launch failed' alert."
+        ),
+        actions: [LaunchFailureActionSheetAction]
+    ) {
+        let actionSheet = ActionSheetController(title: title, message: message)
+
+        if DebugFlags.internalSettings {
+            actionSheet.addAction(.init(title: "Export Database (internal)") { _ in
+                SignalApp.showExportDatabaseUI(from: viewController) { [weak viewController] in
+                    viewController?.presentActionSheet(actionSheet)
+                }
+            })
+        }
+
+        func addSubmitDebugLogsAction(handler: @escaping () -> Void) {
+            let actionTitle = NSLocalizedString("SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", comment: "")
+            actionSheet.addAction(.init(title: actionTitle) { _ in
+                handler()
+            })
+        }
+
+        lazy var supportTag = String(describing: launchFailure)
+
+        func launchApp() {
+            // Pretend we didn't fail!
+            self.didAppLaunchFail = false
+            self.checkIfAppIsReady()
+            self.launchToHomeScreen(launchOptions: nil, instrumentsMonitorId: 0, isEnvironmentAlreadySetUp: false)
+        }
+
+        for action in actions {
+            switch action {
+            case let .submitDebugLogs(actionAfterSubmitting):
+                addSubmitDebugLogsAction {
+                    Pastelog.submitLogs(withSupportTag: supportTag) {
+                        switch actionAfterSubmitting {
+                        case .crash:
+                            owsFail("Exiting after submitting debug logs")
+                        case .launchApp:
+                            launchApp()
+                        }
+                    }
+                }
+            case .submitDebugLogsWithDatabaseIntegrityCheckAndCrash:
+                addSubmitDebugLogsAction {
+                    SignalApp.showDatabaseIntegrityCheckUI(from: viewController) {
+                        Pastelog.submitLogs(withSupportTag: supportTag) {
+                            owsFail("Exiting after submitting debug logs")
+                        }
+                    }
+                }
+            case .launchApp:
+                // Use a cancel-style button to draw attention.
+                let title = NSLocalizedString(
+                    "APP_LAUNCH_FAILURE_CONTINUE",
+                    comment: "Button to try launching the app even though the last launch failed"
+                )
+                actionSheet.addAction(.init(title: title, style: .cancel) { _ in
+                    launchApp()
+                })
             }
         }
 
         viewController.presentActionSheet(actionSheet)
-    }
-
-    func getActionSheet(for launchFailure: LaunchFailure,
-                        from viewController: UIViewController,
-                        onContinue: @escaping () -> Void) -> ActionSheetController {
-        let title: String
-        var message: String = NSLocalizedString("APP_LAUNCH_FAILURE_ALERT_MESSAGE",
-                                                comment: "Message for the 'app launch failed' alert.")
-        switch launchFailure {
-        case .databaseUnrecoverablyCorrupted, .couldNotLoadDatabase:
-            title = NSLocalizedString("APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
-                                      comment: "Error indicating that the app could not launch because the database could not be loaded.")
-        case .unknownDatabaseVersion:
-            title = NSLocalizedString("APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE",
-                                      comment: "Error indicating that the app could not launch without reverting unknown database migrations.")
-            message = NSLocalizedString("APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE",
-                                        comment: "Error indicating that the app could not launch without reverting unknown database migrations.")
-        case .couldNotRestoreTransferredData:
-            title = NSLocalizedString("APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE",
-                                      comment: "Error indicating that the app could not restore transferred data.")
-            message = NSLocalizedString("APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE",
-                                        comment: "Error indicating that the app could not restore transferred data.")
-        case .lastAppLaunchCrashed:
-            title = NSLocalizedString("APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE",
-                                      comment: "Error indicating that the app crashed during the previous launch.")
-            message = NSLocalizedString("APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE",
-                                        comment: "Error indicating that the app crashed during the previous launch.")
-        case .lowStorageSpaceAvailable:
-            title = NSLocalizedString("APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE",
-                                      comment: "Error title indicating that the app crashed because there was low storage space available on the device.")
-            message = NSLocalizedString("APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE",
-                                        comment: "Error description indicating that the app crashed because there was low storage space available on the device.")
-        case .none:
-            owsFailDebug("Unknown launch failure.")
-            title = NSLocalizedString("APP_LAUNCH_FAILURE_ALERT_TITLE", comment: "Title for the 'app launch failed' alert.")
-        }
-
-        let result = ActionSheetController(title: title, message: message)
-
-        if DebugFlags.internalSettings {
-            result.addAction(.init(title: "Export Database (internal)") { _ in
-                SignalApp.showExportDatabaseUI(from: viewController) { [weak viewController] in
-                    viewController?.presentActionSheet(result)
-                }
-            })
-        }
-
-        if launchFailure != .lowStorageSpaceAvailable {
-            let title = NSLocalizedString("SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", comment: "")
-            result.addAction(.init(title: title) { _ in
-                func submitDebugLogs() {
-                    Pastelog.submitLogs(withSupportTag: Self.string(for: launchFailure),
-                                        completion: onContinue)
-                }
-
-                if launchFailure == .databaseUnrecoverablyCorrupted {
-                    SignalApp.showDatabaseIntegrityCheckUI(from: viewController,
-                                                           completion: submitDebugLogs)
-                } else {
-                    submitDebugLogs()
-                }
-            })
-        }
-
-        if launchFailure == .lastAppLaunchCrashed {
-            // Use a cancel-style button to draw attention.
-            let title = NSLocalizedString("APP_LAUNCH_FAILURE_CONTINUE",
-                                          comment: "Button to try launching the app even though the last launch failed")
-            result.addAction(.init(title: title, style: .cancel) { _ in
-                onContinue()
-            })
-        }
-
-        return result
-    }
-
-    @objc(stringForLaunchFailure:)
-    class func string(for launchFailure: LaunchFailure) -> String {
-        switch launchFailure {
-        case .none:
-            return "LaunchFailure_None"
-        case .couldNotLoadDatabase:
-            return "LaunchFailure_CouldNotLoadDatabase"
-        case .unknownDatabaseVersion:
-            return "LaunchFailure_UnknownDatabaseVersion"
-        case .couldNotRestoreTransferredData:
-            return "LaunchFailure_CouldNotRestoreTransferredData"
-        case .databaseUnrecoverablyCorrupted:
-            return "LaunchFailure_DatabaseUnrecoverablyCorrupted"
-        case .lastAppLaunchCrashed:
-            return "LaunchFailure_LastAppLaunchCrashed"
-        case .lowStorageSpaceAvailable:
-            return "LaunchFailure_NoDiskSpaceAvailable"
-        }
     }
 
     // MARK: - Remote notifications
@@ -344,6 +544,56 @@ extension AppDelegate {
         }
 
         return .notHandled
+    }
+
+    // MARK: - Events
+
+    @objc
+    func registrationStateDidChange() {
+        AssertIsOnMainThread()
+
+        Logger.info("registrationStateDidChange")
+
+        enableBackgroundRefreshIfNecessary()
+
+        let isRegisteredAndReady = tsAccountManager.isRegisteredAndReady
+        if isRegisteredAndReady {
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+                self.databaseStorage.write { transaction in
+                    let localAddress = self.tsAccountManager.localAddress(with: transaction)
+                    Logger.info("localAddress: \(String(describing: localAddress))")
+
+                    ExperienceUpgradeFinder.markAllCompleteForNewUser(transaction: transaction.unwrapGrdbWrite)
+                }
+
+                // Start running the disappearing messages job in case the newly registered user
+                // enables this feature
+                self.disappearingMessagesJob.startIfNecessary()
+            }
+        }
+
+        Self.updateApplicationShortcutItems(isRegisteredAndReady: isRegisteredAndReady)
+    }
+
+    // MARK: - Utilities
+
+    @objc
+    public static func updateApplicationShortcutItems(isRegisteredAndReady: Bool) {
+        guard CurrentAppContext().isMainApp else { return }
+        UIApplication.shared.shortcutItems = applicationShortcutItems(isRegisteredAndReady: isRegisteredAndReady)
+    }
+
+    static func applicationShortcutItems(isRegisteredAndReady: Bool) -> [UIApplicationShortcutItem] {
+        guard isRegisteredAndReady else { return [] }
+        return [.init(
+            type: "\(Bundle.main.bundleIdPrefix).quickCompose",
+            localizedTitle: NSLocalizedString(
+                "APPLICATION_SHORTCUT_NEW_MESSAGE",
+                comment: "On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings."
+            ),
+            localizedSubtitle: nil,
+            icon: UIApplicationShortcutIcon(type: .compose)
+        )]
     }
 }
 

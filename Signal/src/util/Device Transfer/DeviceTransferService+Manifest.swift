@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -209,13 +210,13 @@ extension DeviceTransferService {
 
         // Check if there is enough space on disk to receive the transfer
 
-        guard let fileSystemAttributes = try? FileManager.default.attributesOfFileSystem(
-            forPath: DeviceTransferService.pendingTransferDirectory.path
+        guard let freeSpaceInBytes = try? OWSFileSystem.freeSpaceInBytes(
+            forPath: DeviceTransferService.pendingTransferDirectory
         ) else {
             return self.failTransfer(.assertion, "failed to calculate available disk space")
         }
 
-        guard let freeSpaceInBytes = fileSystemAttributes[.systemFreeSize] as? UInt64, freeSpaceInBytes > manifest.estimatedTotalSize else {
+        guard freeSpaceInBytes > manifest.estimatedTotalSize else {
             return self.failTransfer(.notEnoughSpace, "not enough free space to receive transfer")
         }
     }

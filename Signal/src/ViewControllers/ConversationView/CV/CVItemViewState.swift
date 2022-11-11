@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import SignalServiceKit
 
 // CVItemViewState represents the transient, un-persisted values
@@ -168,7 +170,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         }
 
         let groupNameColors = ChatColors.groupNameColors(forThread: thread)
-        let displayNameCache = DisplayNameCache(transaction: transaction)
+        let displayNameCache = DisplayNameCache()
 
         // Update the properties of the view items.
         //
@@ -213,7 +215,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         }
 
         let groupNameColors = ChatColors.groupNameColors(forThread: thread)
-        let displayNameCache = DisplayNameCache(transaction: transaction)
+        let displayNameCache = DisplayNameCache()
 
         configureItemViewState(item: itemBuilder,
                                previousItem: nil,
@@ -371,7 +373,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                 // the previous message has the same sender name and
                 // no "date break" separates us.
                 var shouldShowSenderName = true
-                let authorName = displayNameCache.displayName(address: incomingSenderAddress)
+                let authorName = displayNameCache.displayName(address: incomingSenderAddress, transaction: transaction)
                 itemViewState.accessibilityAuthorName = authorName
 
                 if let previousItem = previousItem,
@@ -400,7 +402,10 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
             } else {
                 // In a 1:1 thread, we can avoid cluttering up voiceover string with the recipient's
                 // full name. Group thread's will continue to read off the full name.
-                itemViewState.accessibilityAuthorName = displayNameCache.shortDisplayName(address: incomingSenderAddress)
+                itemViewState.accessibilityAuthorName = displayNameCache.shortDisplayName(
+                    address: incomingSenderAddress,
+                    transaction: transaction
+                )
             }
 
         } else if [.call, .info, .error].contains(interaction.interactionType) {
@@ -749,17 +754,10 @@ private class ItemBuilder {
 // MARK: -
 
 class DisplayNameCache: Dependencies {
-    private let transaction: SDSAnyReadTransaction
-
-    required init(transaction: SDSAnyReadTransaction) {
-        self.transaction = transaction
-    }
-
     private var shortDisplayNameCache = [UUID: String]()
 
-    func shortDisplayName(address: SignalServiceAddress) -> String {
-        if let uuid = address.uuid,
-           let value = shortDisplayNameCache[uuid] {
+    func shortDisplayName(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        if let uuid = address.uuid, let value = shortDisplayNameCache[uuid] {
             return value
         }
         let value = contactsManager.shortDisplayName(for: address, transaction: transaction)
@@ -771,9 +769,8 @@ class DisplayNameCache: Dependencies {
 
     private var displayNameCache = [UUID: String]()
 
-    func displayName(address: SignalServiceAddress) -> String {
-        if let uuid = address.uuid,
-           let value = displayNameCache[uuid] {
+    func displayName(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        if let uuid = address.uuid, let value = displayNameCache[uuid] {
             return value
         }
         let value = contactsManager.displayName(for: address, transaction: transaction)

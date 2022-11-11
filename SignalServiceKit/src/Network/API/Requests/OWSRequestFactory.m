@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSRequestFactory.h"
@@ -105,15 +106,18 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
 
 + (TSRequest *)getMessagesRequest
 {
-    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/messages"] method:@"GET" parameters:@{}];
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/messages"] method:@"GET" parameters:@{}];
+    [StoryManager appendStoryHeadersToRequest:request];
+    return request;
 }
 
 + (TSRequest *)getUnversionedProfileRequestWithAddress:(SignalServiceAddress *)address
                                            udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
 {
     OWSAssertDebug(address.isValid);
+    OWSAssertDebug(address.uuid != nil);
 
-    NSString *path = [NSString stringWithFormat:@"v1/profile/%@", address.serviceIdentifier];
+    NSString *path = [NSString stringWithFormat:@"v1/profile/%@", address.uuidString];
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     if (udAccessKey != nil) {
         [self useUDAuthWithRequest:request accessKey:udAccessKey];
@@ -136,7 +140,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     // GET /v1/profile/{uuid}/{version}/{profile_key_credential_request}
     NSString *path;
     if (profileKeyVersion.length > 0 && credentialRequest.length > 0) {
-        path = [NSString stringWithFormat:@"v1/profile/%@/%@/%@",
+        path = [NSString stringWithFormat:@"v1/profile/%@/%@/%@?credentialType=expiringProfileKey",
                          uuidParam,
                          profileKeyVersionParam,
                          credentialRequestParam];
@@ -427,7 +431,13 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
                                              isSecondaryDevice:(BOOL)isSecondaryDevice
 {
     OWSAssertDebug(authKey.length > 0);
-    uint32_t registrationId = [self.tsAccountManager getOrGenerateRegistrationId];
+
+    __block uint32_t registrationId;
+    __block uint32_t pniRegistrationId;
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        registrationId = [self.tsAccountManager getOrGenerateRegistrationIdWithTransaction:transaction];
+        pniRegistrationId = [self.tsAccountManager getOrGeneratePniRegistrationIdWithTransaction:transaction];
+    });
 
     OWSAES256Key *profileKey = [self.profileManager localProfileKey];
     NSError *error;
@@ -446,6 +456,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
         @"fetchesMessages" : @(isManualMessageFetchEnabled), // devices that don't support push must tell the server
                                                              // they fetch messages manually
         @"registrationId" : [NSString stringWithFormat:@"%i", registrationId],
+        @"pniRegistrationId" : [NSString stringWithFormat:@"%i", pniRegistrationId],
         @"unidentifiedAccessKey" : udAccessKey.keyData.base64EncodedString,
         @"unrestrictedUnidentifiedAccess" : @(allowUnrestrictedUD),
     } mutableCopy];
@@ -501,7 +512,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     capabilities[@"gv1-migration"] = @(YES);
     capabilities[@"senderKey"] = @(YES);
 
-    if (RemoteConfig.stories) {
+    if (RemoteConfig.stories || isSecondaryDevice) {
         capabilities[@"stories"] = @(YES);
     }
 
@@ -529,12 +540,15 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
                                    udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
                                       isOnline:(BOOL)isOnline
                                       isUrgent:(BOOL)isUrgent
+                                       isStory:(BOOL)isStory
 {
     // NOTE: messages may be empty; See comments in OWSDeviceManager.
     OWSAssertDebug(recipientAddress.isValid);
     OWSAssertDebug(timestamp > 0);
 
     NSString *path = [self.textSecureMessagesAPI stringByAppendingString:recipientAddress.serviceIdentifier];
+
+    path = [path stringByAppendingFormat:@"?story=%@", isStory ? @"true" : @"false"];
 
     // Returns the per-account-message parameters used when submitting a message to
     // the Signal Web Service.
@@ -555,6 +569,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
                                                       timestamp:(uint64_t)timestamp
                                                        isOnline:(BOOL)isOnline
                                                        isUrgent:(BOOL)isUrgent
+                                                        isStory:(BOOL)isStory
 {
     OWSAssertDebug(ciphertext);
     OWSAssertDebug(udAccessKey);
@@ -567,6 +582,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
         [NSURLQueryItem queryItemWithName:@"ts" value:[@(timestamp) stringValue]],
         [NSURLQueryItem queryItemWithName:@"online" value:isOnline ? @"true" : @"false"],
         [NSURLQueryItem queryItemWithName:@"urgent" value:isUrgent ? @"true" : @"false"],
+        [NSURLQueryItem queryItemWithName:@"story" value:isStory ? @"true" : @"false"],
     ];
     NSURL *url = [components URL];
 
@@ -681,12 +697,6 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     }
     NSString *path = [NSString stringWithFormat:@"v1/directory/feedback-v3/%@", status];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
-}
-
-+ (TSRequest *)hsmDirectoryAuthRequest
-{
-    NSURL *url = [NSURL URLWithString:@"v2/directory/auth"];
-    return [TSRequest requestWithUrl:url method:@"GET" parameters:@{}];
 }
 
 #pragma mark - KBS
@@ -931,23 +941,6 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
 
     NSString *path = [NSString stringWithFormat:@"/v1/messages/report/%@/%@", senderUuid.UUIDString, serverGuid];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"POST" parameters:@{}];
-}
-
-#pragma mark - Donations
-
-+ (TSRequest *)createPaymentIntentWithAmount:(NSUInteger)amount
-                              inCurrencyCode:(NSString *)currencyCode
-                             withDescription:(nullable NSString *)description
-{
-    NSMutableDictionary *parameters =
-        [@{ @"currency" : currencyCode.lowercaseString, @"amount" : @(amount) } mutableCopy];
-    if (description) {
-        parameters[@"description"] = description;
-    }
-
-    return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/donation/authorize-apple-pay"]
-                              method:@"POST"
-                          parameters:parameters];
 }
 
 #pragma mark - Subscriptions

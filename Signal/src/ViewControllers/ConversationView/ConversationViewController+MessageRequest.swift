@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import SafariServices
+import SignalMessaging
 
 @objc
 extension ConversationViewController: MessageRequestDelegate {
@@ -257,7 +259,7 @@ extension ConversationViewController: MessageRequestDelegate {
 
                 // Send our profile key to the sender
                 let profileKeyMessage = OWSProfileKeyMessage(thread: thread, transaction: transaction)
-                Self.messageSenderJobQueue.add(message: profileKeyMessage.asPreparer, transaction: transaction)
+                Self.sskJobQueues.messageSenderJobQueue.add(message: profileKeyMessage.asPreparer, transaction: transaction)
                 NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
             }
         }

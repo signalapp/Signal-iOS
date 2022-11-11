@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -225,7 +226,7 @@ extension TextViewWithPlaceholder: UITextViewDelegate {
     }
 
     public func textViewDidChange(_ textView: UITextView) {
-        let showPlaceholder = (textView.text.count == 0)
+        let showPlaceholder = textView.text.isEmpty
         placeholderTextView.isHidden = !showPlaceholder
 
         delegate?.textViewDidUpdateText(self)

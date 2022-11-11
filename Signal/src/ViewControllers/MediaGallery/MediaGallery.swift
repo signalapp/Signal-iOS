@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -376,9 +377,9 @@ class MediaGallery: Dependencies {
         }
 
         let section = sections.itemsBySection[itemPath.section].value
-        let startOfAlbum = section[..<itemPath.item].suffix { $0?.message.uniqueId == item.message.uniqueId }.startIndex
-        let endOfAlbum = section[itemPath.item...].prefix { $0?.message.uniqueId == item.message.uniqueId }.endIndex
-        let items = section[startOfAlbum..<endOfAlbum].map { $0! }
+        let startOfAlbum = section[..<itemPath.item].suffix { $0.item?.message.uniqueId == item.message.uniqueId }.startIndex
+        let endOfAlbum = section[itemPath.item...].prefix { $0.item?.message.uniqueId == item.message.uniqueId }.endIndex
+        let items = section[startOfAlbum..<endOfAlbum].map { $0.item! }
 
         return MediaGalleryAlbum(items: items, mediaGallery: self)
     }
@@ -653,13 +654,6 @@ class MediaGallery: Dependencies {
         // already at last item
         return nil
     }
-
-    internal var galleryItemCount: Int {
-        return databaseStorage.read { transaction in
-            return Int(mediaGalleryFinder.mediaCount(excluding: deletedAttachmentIds,
-                                                     transaction: transaction.unwrapGrdbRead))
-        }
-    }
 }
 
 extension MediaGallery: DatabaseChangeDelegate {
@@ -688,16 +682,21 @@ extension MediaGallery {
 
         fileprivate unowned var mediaGallery: MediaGallery
 
-        func numberOfItemsInSection(for date: GalleryDate, transaction: SDSAnyReadTransaction) -> Int {
-            Int(mediaGallery.mediaGalleryFinder.mediaCount(in: date.interval,
-                                                            excluding: mediaGallery.deletedAttachmentIds,
-                                                            transaction: transaction.unwrapGrdbRead))
+        func rowIdsOfItemsInSection(for date: GalleryDate,
+                                    offset: Int,
+                                    ascending: Bool,
+                                    transaction: SDSAnyReadTransaction) -> [Int64] {
+            mediaGallery.mediaGalleryFinder.rowIds(in: date.interval,
+                                                   excluding: mediaGallery.deletedAttachmentIds,
+                                                   offset: offset,
+                                                   ascending: ascending,
+                                                   transaction: transaction.unwrapGrdbRead)
         }
 
         func enumerateTimestamps(before date: Date,
                                  count: Int,
                                  transaction: SDSAnyReadTransaction,
-                                 block: (Date) -> Void) -> EnumerationCompletion {
+                                 block: (Date, Int64) -> Void) -> EnumerationCompletion {
             mediaGallery.mediaGalleryFinder.enumerateTimestamps(before: date,
                                                                 excluding: mediaGallery.deletedAttachmentIds,
                                                                 count: count,
@@ -708,7 +707,7 @@ extension MediaGallery {
         func enumerateTimestamps(after date: Date,
                                  count: Int,
                                  transaction: SDSAnyReadTransaction,
-                                 block: (Date) -> Void) -> EnumerationCompletion {
+                                 block: (Date, Int64) -> Void) -> EnumerationCompletion {
             mediaGallery.mediaGalleryFinder.enumerateTimestamps(after: date,
                                                                 excluding: mediaGallery.deletedAttachmentIds,
                                                                 count: count,
@@ -720,12 +719,12 @@ extension MediaGallery {
                             range: Range<Int>,
                             transaction: SDSAnyReadTransaction,
                             block: (_ offset: Int, _ uniqueId: String, _ buildItem: () -> MediaGalleryItem) -> Void) {
-            mediaGallery.mediaGalleryFinder.enumerateMediaAttachments(in: interval,
-                                                                      excluding: mediaGallery.deletedAttachmentIds,
-                                                                      range: NSRange(range),
-                                                                      transaction: transaction.unwrapGrdbRead) {
-                offset, attachment in
-
+            mediaGallery.mediaGalleryFinder.enumerateMediaAttachments(
+                in: interval,
+                excluding: mediaGallery.deletedAttachmentIds,
+                range: NSRange(range),
+                transaction: transaction.unwrapGrdbRead
+            ) { offset, attachment in
                 block(offset, attachment.uniqueId) {
                     guard let item: MediaGalleryItem = mediaGallery.buildGalleryItem(attachment: attachment,
                                                                                      transaction: transaction) else {

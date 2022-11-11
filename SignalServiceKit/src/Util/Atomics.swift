@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -14,6 +15,8 @@ public enum AtomicError: Int, Error {
 public class AtomicLock {
     // The default lock shared by _all_ atomics.
     fileprivate static let shared = AtomicLock()
+
+    public init() {}
 
     private let unfairLock = UnfairLock()
 

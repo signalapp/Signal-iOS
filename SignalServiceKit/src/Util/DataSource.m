@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "DataSource.h"
@@ -8,7 +9,6 @@
 #import "OWSError.h"
 #import "OWSFileSystem.h"
 #import <SignalCoreKit/NSString+OWS.h>
-#import <SignalCoreKit/iOSVersions.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

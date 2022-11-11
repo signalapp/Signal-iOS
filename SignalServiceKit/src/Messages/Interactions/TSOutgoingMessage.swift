@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -148,6 +149,9 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
 }
 
 public extension TSOutgoingMessage {
+    @objc
+    var isStorySend: Bool { isGroupStoryReply }
+
     @objc
     func failedRecipientAddresses(errorCode: Int) -> [SignalServiceAddress] {
         guard let states = recipientAddressStates else { return [] }

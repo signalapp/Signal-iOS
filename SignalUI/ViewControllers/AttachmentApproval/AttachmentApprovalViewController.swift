@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -16,8 +17,14 @@ public protocol AttachmentApprovalViewControllerDelegate: AnyObject {
 
     func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController)
 
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
-                            didChangeMessageBody newMessageBody: MessageBody?)
+    func attachmentApproval(
+        _ attachmentApproval: AttachmentApprovalViewController,
+        didChangeMessageBody newMessageBody: MessageBody?
+    )
+    func attachmentApproval(
+        _ attachmentApproval: AttachmentApprovalViewController,
+        didChangeViewOnceState isViewOnce: Bool
+    )
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment)
 
@@ -45,14 +52,16 @@ public struct AttachmentApprovalViewControllerOptions: OptionSet {
     public static let canAddMore = AttachmentApprovalViewControllerOptions(rawValue: 1 << 0)
     public static let hasCancel = AttachmentApprovalViewControllerOptions(rawValue: 1 << 1)
     public static let canToggleViewOnce = AttachmentApprovalViewControllerOptions(rawValue: 1 << 2)
-    public static let canChangeQualityLevel = AttachmentApprovalViewControllerOptions(rawValue: 1 << 3)
-    public static let isNotFinalScreen = AttachmentApprovalViewControllerOptions(rawValue: 1 << 4)
+    /// Overrides canToggleViewOnce and ensures that option is never enabled.
+    public static let disallowViewOnce = AttachmentApprovalViewControllerOptions(rawValue: 1 << 3)
+    public static let canChangeQualityLevel = AttachmentApprovalViewControllerOptions(rawValue: 1 << 4)
+    public static let isNotFinalScreen = AttachmentApprovalViewControllerOptions(rawValue: 1 << 5)
 }
 
 // MARK: -
 
 @objc
-public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSNavigationChildController {
 
     // MARK: - Properties
 
@@ -61,13 +70,18 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     private var options: AttachmentApprovalViewControllerOptions {
         var options = receivedOptions
 
-        if attachmentApprovalItemCollection.attachmentApprovalItems.count == 1,
+        if
+            attachmentApprovalItemCollection.attachmentApprovalItems.count == 1,
             let firstItem = attachmentApprovalItemCollection.attachmentApprovalItems.first,
-            firstItem.attachment.isValidImage || firstItem.attachment.isValidVideo {
+            firstItem.attachment.isValidImage || firstItem.attachment.isValidVideo,
+            !receivedOptions.contains(.disallowViewOnce)
+        {
             options.insert(.canToggleViewOnce)
         }
 
-        if ImageQualityLevel.max == .high && attachmentApprovalItemCollection.attachmentApprovalItems.filter({ $0.attachment.isValidImage }).count > 0 {
+        if
+            ImageQualityLevel.max == .high,
+            attachmentApprovalItemCollection.attachmentApprovalItems.contains(where: { $0.attachment.isValidImage }) {
             options.insert(.canChangeQualityLevel)
         }
 
@@ -78,7 +92,11 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return options.contains(.canAddMore) && !isViewOnceEnabled
     }
 
-    var isViewOnceEnabled = false
+    var isViewOnceEnabled = false {
+        didSet {
+            approvalDelegate?.attachmentApproval(self, didChangeViewOnceState: isViewOnceEnabled)
+        }
+    }
 
     lazy var outputQualityLevel: ImageQualityLevel = databaseStorage.read { .default(transaction: $0) }
 
@@ -183,6 +201,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     public override var preferredStatusBarStyle: UIStatusBarStyle {
         .lightContent
+    }
+
+    public var prefersNavigationBarHidden: Bool {
+        return true
     }
 
     public override func viewDidLoad() {

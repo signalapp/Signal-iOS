@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -70,7 +71,7 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
         // default always true, but can be overridden on an individual basis.
         guard isReadyToComplete, !isDismissWithoutCompleting else { return }
 
-        markAsComplete()
+        markAsCompleteWithSneakyTransaction()
     }
 
     @objc

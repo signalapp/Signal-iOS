@@ -1,27 +1,28 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
-import UIKit
 import PassKit
+import SignalMessaging
 import SignalServiceKit
+import UIKit
 
 class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     // MARK: - View state
 
     private let badge: ProfileBadge
-    private let price: UInt
-    private let currencyCode: Currency.Code
+    private let price: FiatMoney
     private let thread: TSContactThread
 
-    public init(badge: ProfileBadge,
-                price: UInt,
-                currencyCode: Currency.Code,
-                thread: TSContactThread) {
+    public init(
+        badge: ProfileBadge,
+        price: FiatMoney,
+        thread: TSContactThread
+    ) {
         self.badge = badge
         self.price = price
-        self.currencyCode = currencyCode
         self.thread = thread
     }
 
@@ -76,7 +77,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     /// Times out after 30 seconds.
     private func canReceiveGiftBadgesViaProfileFetch() -> Promise<Bool> {
         firstly {
-            profileManager.fetchProfile(forAddressPromise: self.thread.contactAddress)
+            ProfileFetcherJob.fetchProfilePromise(address: self.thread.contactAddress, ignoreThrottling: true)
         }.timeout(seconds: 30) {
             ProfileFetchError.timeout
         }.map { [weak self] _ in
@@ -173,7 +174,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
             Logger.info("[Gifting] Requesting Apple Pay...")
 
-            let request = DonationUtilities.newPaymentRequest(for: NSDecimalNumber(value: self.price), currencyCode: self.currencyCode)
+            let request = DonationUtilities.newPaymentRequest(for: self.price, isRecurring: false)
 
             let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
             paymentController.delegate = self
@@ -258,7 +259,6 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     private func setUpTableContents() {
         let badge = badge
         let price = price
-        let currencyCode = currencyCode
         let avatarViewDataSource = avatarViewDataSource
         let thread = thread
         let messageTextView = messageTextView
@@ -268,7 +268,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             guard let self = self else { return UITableViewCell() }
             let cell = AppSettingsViewsUtil.newCell(cellOuterInsets: self.cellOuterInsets)
 
-            let badgeCellView = GiftBadgeCellView(badge: badge, price: price, currencyCode: currencyCode)
+            let badgeCellView = GiftBadgeCellView(badge: badge, price: price)
             cell.contentView.addSubview(badgeCellView)
             badgeCellView.autoPinEdgesToSuperviewMargins()
 
@@ -389,7 +389,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             descriptionLabel.numberOfLines = 0
 
             let priceLabel = UILabel()
-            priceLabel.text = DonationUtilities.formatCurrency(NSDecimalNumber(value: price), currencyCode: currencyCode)
+            priceLabel.text = DonationUtilities.format(money: price)
             priceLabel.font = .ows_dynamicTypeBody.ows_semibold
             priceLabel.numberOfLines = 0
 
@@ -484,7 +484,10 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
 
     private func prepareToPay(authorizedPayment: PKPayment) -> Promise<PreparedPayment> {
         firstly {
-            Stripe.createBoostPaymentIntent(for: NSDecimalNumber(value: self.price), in: self.currencyCode, level: .giftBadge(.signalGift))
+            Stripe.createBoostPaymentIntent(
+                for: self.price,
+                level: .giftBadge(.signalGift)
+            )
         }.then { paymentIntent in
             Stripe.createPaymentMethod(with: authorizedPayment).map { paymentMethodId in
                 PreparedPayment(paymentIntent: paymentIntent, paymentMethodId: paymentMethodId)
@@ -553,13 +556,14 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
             // Durably enqueue a job to (1) do the charge (2) redeem the receipt credential (3) enqueue
             // a gift badge message (and optionally a text message) to the recipient. We also want to
             // update the UI partway through the job's execution, and when it completes.
-            let jobRecord = SendGiftBadgeJobQueue.createJob(receiptRequest: try SubscriptionManager.generateReceiptRequest(),
-                                                            amount: self.price,
-                                                            currencyCode: self.currencyCode,
-                                                            paymentIntent: preparedPayment.paymentIntent,
-                                                            paymentMethodId: preparedPayment.paymentMethodId,
-                                                            thread: self.thread,
-                                                            messageText: self.messageText)
+            let jobRecord = SendGiftBadgeJobQueue.createJob(
+                receiptRequest: SubscriptionManager.generateReceiptRequest(),
+                amount: self.price,
+                paymentIntent: preparedPayment.paymentIntent,
+                paymentMethodId: preparedPayment.paymentMethodId,
+                thread: self.thread,
+                messageText: self.messageText
+            )
             let jobId = jobRecord.uniqueId
 
             let (promise, future) = Promise<Void>.pending()
@@ -640,10 +644,6 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                 guard !self.isRecipientBlocked(transaction: transaction) else {
                     throw SendGiftBadgeError.recipientIsBlocked
                 }
-
-                // If we've gotten this far, we want to snooze the megaphone.
-                ExperienceUpgradeManager.snoozeExperienceUpgrade(.subscriptionMegaphone,
-                                                                 transaction: transaction.unwrapGrdbWrite)
 
                 DonationUtilities.sendGiftBadgeJobQueue.addJob(jobRecord, transaction: transaction)
             }

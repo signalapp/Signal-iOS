@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import XCTest
@@ -31,7 +32,7 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
 
         // use the *real* message sender to measure it's perf
         sskEnvironment.messageSenderRef = MessageSender()
-        Self.messageSenderJobQueue.setup()
+        Self.sskJobQueues.messageSenderJobQueue.setup()
 
         try! databaseStorage.grdbStorage.setup()
 

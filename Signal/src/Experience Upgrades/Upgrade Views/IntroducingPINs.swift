@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -21,7 +22,7 @@ class IntroducingPinsMegaphone: MegaphoneView {
                     Logger.error("failed to create pin: \(error)")
                 } else {
                     // success
-                    self?.markAsComplete()
+                    self?.markAsCompleteWithSneakyTransaction()
                 }
                 fromViewController.navigationController?.popToViewController(fromViewController, animated: true) {
                     fromViewController.navigationController?.setNavigationBarHidden(false, animated: false)
@@ -36,15 +37,7 @@ class IntroducingPinsMegaphone: MegaphoneView {
             fromViewController.navigationController?.pushViewController(vc, animated: true)
         }
 
-        let secondaryButton = snoozeButton(fromViewController: fromViewController) {
-            let daysRemaining = ExperienceUpgradeManager.splashStartDay - experienceUpgrade.daysSinceFirstViewed
-            assert(daysRemaining > 0)
-
-            let toastFormat = NSLocalizedString("PINS_MEGAPHONE_SNOOZE_TOAST_%d", tableName: "PluralAware",
-                                                comment: "Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}}")
-
-            return String.localizedStringWithFormat(toastFormat, daysRemaining)
-        }
+        let secondaryButton = snoozeButton(fromViewController: fromViewController)
 
         setButtons(primary: primaryButton, secondary: secondaryButton)
     }

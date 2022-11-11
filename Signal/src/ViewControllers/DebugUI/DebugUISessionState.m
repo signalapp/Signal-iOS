@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "DebugUISessionState.h"
@@ -76,7 +77,8 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSTableItem itemWithTitle:@"Send session reset"
                             actionBlock:^{
                                 DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                                    [self.sessionResetJobQueue addContactThread:thread transaction:transaction];
+                                    [self.smJobQueues.sessionResetJobQueue addContactThread:thread
+                                                                                transaction:transaction];
                                 });
                             }],
         ]];

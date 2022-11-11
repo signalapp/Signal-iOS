@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import Photos
 import PhotosUI
+import SignalMessaging
 
 protocol RecentPhotosDelegate: AnyObject {
     var isMediaLibraryAccessGranted: Bool { get }
@@ -338,8 +340,8 @@ class RecentPhotoCell: UICollectionViewCell {
         contentTypeBadgeView?.sizeToFit()
     }
 
-    private func setMedia(duration: TimeInterval) {
-        guard duration > 0 else {
+    private func setMedia(itemType: PhotoGridItemType) {
+        guard case .video(let duration) = itemType else {
             durationLabel?.isHidden = true
             durationLabelBackground?.isHidden = true
             return
@@ -396,7 +398,7 @@ class RecentPhotoCell: UICollectionViewCell {
             self.image = image
         }
 
-        setMedia(duration: item.duration)
+        setMedia(itemType: item.type)
 
         switch item.type {
         case .animated:

@@ -1,15 +1,14 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 
 @objc
-class PaymentsSendRecipientViewController: OWSViewController {
+class PaymentsSendRecipientViewController: RecipientPickerContainerViewController {
 
     private let isOutgoingTransfer: Bool
-
-    let recipientPicker = RecipientPickerViewController()
 
     public init(isOutgoingTransfer: Bool) {
         self.isOutgoingTransfer = isOutgoingTransfer
@@ -32,11 +31,9 @@ class PaymentsSendRecipientViewController: OWSViewController {
 
         view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
 
-        recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.allowsAddByPhoneNumber = false
         recipientPicker.shouldHideLocalRecipient = true
-        recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
-        recipientPicker.shouldShowGroups = false
+        recipientPicker.groupsToShow = .showNoGroups
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
@@ -48,39 +45,12 @@ class PaymentsSendRecipientViewController: OWSViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(didTapDismiss))
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        recipientPicker.applyTheme(to: self)
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        recipientPicker.removeTheme(from: self)
-    }
-
-    public override func applyTheme() {
-        super.applyTheme()
-
-        view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
-    }
-
     @objc
     func didTapDismiss() {
         dismiss(animated: true)
     }
 
     private func showSendPayment(address: SignalServiceAddress) {
-        let recipientHasPaymentsEnabled = databaseStorage.read { transaction in
-            Self.paymentsHelper.arePaymentsEnabled(for: address, transaction: transaction)
-        }
-        guard recipientHasPaymentsEnabled else {
-            // TODO: Should we try to fill in this state before showing the error alert?
-            ProfileFetcherJob.fetchProfile(address: address, ignoreThrottling: true)
-
-            SendPaymentViewController.showRecipientNotEnabledAlert()
-            return
-        }
-
         guard let navigationController = self.navigationController else {
             owsFailDebug("Missing navigationController.")
             return
@@ -120,19 +90,9 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         willRenderRecipient recipient: PickedRecipient) {
-        // Do nothing.
-    }
-
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise {
         owsFailDebug("This method should not called.")
         return AnyPromise(Promise.value(()))
-    }
-
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         showInvalidRecipientAlert recipient: PickedRecipient) {
-        owsFailDebug("Unexpected error.")
     }
 
     func recipientPicker(

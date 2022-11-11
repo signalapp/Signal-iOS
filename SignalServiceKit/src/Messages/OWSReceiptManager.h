@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import <SignalServiceKit/BaseModel.h>
@@ -7,6 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class GRDBWriteTransaction;
+@class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 @class SSKProtoSyncMessageRead;
@@ -79,11 +81,6 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
                                                               readTimestamp:(uint64_t)readTimestamp
                                                                 transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)markAsReadOnLinkedDevice:(TSMessage *)message
-                          thread:(TSThread *)thread
-                   readTimestamp:(uint64_t)readTimestamp
-                     transaction:(SDSAnyWriteTransaction *)transaction;
-
 /// Returns an array of receipts that had missing messages.
 - (NSArray<SSKProtoSyncMessageViewed *> *)processViewedReceiptsFromLinkedDevice:
                                               (NSArray<SSKProtoSyncMessageViewed *> *)viewedReceiptProtos
@@ -109,6 +106,10 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
             circumstance:(OWSReceiptCircumstance)circumstance
              transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (void)storyWasRead:(StoryMessage *)storyMessage
+        circumstance:(OWSReceiptCircumstance)circumstance
+         transaction:(SDSAnyWriteTransaction *)transaction;
+
 - (void)storyWasViewed:(StoryMessage *)storyMessage
           circumstance:(OWSReceiptCircumstance)circumstance
            transaction:(SDSAnyWriteTransaction *)transaction;
@@ -121,6 +122,9 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 - (void)prepareCachedValues;
 
 - (BOOL)areReadReceiptsEnabled;
+
+- (BOOL)areReadReceiptsEnabledWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(areReadReceiptsEnabled(transaction:));
 
 - (void)setAreReadReceiptsEnabledWithSneakyTransactionAndSyncConfiguration:(BOOL)value;
 

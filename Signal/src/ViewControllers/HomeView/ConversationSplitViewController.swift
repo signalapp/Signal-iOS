@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import MultipeerConnectivity
+import SignalMessaging
 import SignalUI
 
 @objc
@@ -157,8 +159,17 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
             return
         }
 
-        // Ensure the tab bar is on the chat list.
-        homeVC.selectedTab = .chatList
+        if homeVC.selectedTab != .chatList {
+            guard homeVC.presentedViewController == nil else {
+                homeVC.dismiss(animated: true) {
+                    self.presentThread(thread, action: action, focusMessageId: focusMessageId, animated: animated)
+                }
+                return
+            }
+
+            // Ensure the tab bar is on the chat list.
+            homeVC.selectedTab = .chatList
+        }
 
         guard selectedThread?.uniqueId != thread.uniqueId else {
             // If this thread is already selected, pop to the thread if
@@ -174,7 +185,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
         // Update the last viewed thread on the conversation list so it
         // can maintain its scroll position when navigating back.
-        homeVC.chatListViewController.lastViewedThread = thread
+        homeVC.chatListViewController.updateLastViewedThread(thread, animated: animated)
 
         let threadViewModel = databaseStorage.read {
             return ThreadViewModel(thread: thread,
@@ -629,13 +640,16 @@ private class NoSelectedConversationViewController: OWSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.applyTheme), name: .ThemeDidChange, object: nil)
-
         applyTheme()
     }
 
     @objc
-    override func applyTheme() {
+    override func themeDidChange() {
+        super.themeDidChange()
+        applyTheme()
+    }
+
+    private func applyTheme() {
         view.backgroundColor = Theme.backgroundColor
         logoImageView.tintColor = Theme.isDarkThemeEnabled ? UIColor.white.withAlphaComponent(0.12) : UIColor.black.withAlphaComponent(0.12)
     }

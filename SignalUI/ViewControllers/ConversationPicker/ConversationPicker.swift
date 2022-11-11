@@ -1,7 +1,9 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import AVKit
 import Foundation
 import SignalMessaging
 import UIKit
@@ -30,6 +32,11 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     public weak var pickerDelegate: ConversationPickerDelegate?
 
     private let kMaxPickerSelection = 5
+    private let attachments: [SignalAttachment]?
+    private let textAttachment: UnsentTextAttachment?
+    private let maxVideoAttachmentDuration: TimeInterval?
+
+    private let creationDate = Date()
 
     public let selection: ConversationPickerSelection
 
@@ -64,8 +71,45 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         set { footerView.approvalTextMode = newValue }
     }
 
-    public init(selection: ConversationPickerSelection) {
+    /// Include attachments to display an attachment preview at the top (if configured with the `mediaPreview` section option)
+    public convenience init(
+        selection: ConversationPickerSelection,
+        attachments: [SignalAttachment]
+    ) {
+        self.init(selection: selection, attachments: attachments, textAttachment: nil)
+    }
+
+    /// Include a text attachment to display an attachment preview at the top (if configured with the `mediaPreview` section option)
+    public convenience init(
+        selection: ConversationPickerSelection,
+        textAttacment: UnsentTextAttachment
+    ) {
+        self.init(selection: selection, attachments: nil, textAttachment: textAttacment)
+    }
+
+    public init(
+        selection: ConversationPickerSelection,
+        attachments: [SignalAttachment]? = nil,
+        textAttachment: UnsentTextAttachment? = nil
+    ) {
         self.selection = selection
+        self.attachments = attachments
+        self.textAttachment = textAttachment
+
+        let maxVideoAttachmentDuration: TimeInterval? = attachments?
+            .lazy
+            .compactMap { attachment in
+                guard
+                    attachment.isVideo,
+                    let url = attachment.dataUrl
+                else {
+                    return nil
+                }
+                return AVURLAsset(url: url).duration.seconds
+            }
+            .max()
+
+        self.maxVideoAttachmentDuration = maxVideoAttachmentDuration
 
         super.init()
 
@@ -91,6 +135,10 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
+    public override var preferredNavigationBarStyle: OWSNavigationBarStyle {
+        return .solid
+    }
+
     public struct SectionOptions: OptionSet {
         public let rawValue: Int
 
@@ -98,12 +146,14 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             self.rawValue = rawValue
         }
 
-        public static let stories  = SectionOptions(rawValue: 1 << 0)
-        public static let recents  = SectionOptions(rawValue: 1 << 1)
-        public static let contacts = SectionOptions(rawValue: 1 << 2)
-        public static let groups   = SectionOptions(rawValue: 1 << 3)
+        public static let mediaPreview  = SectionOptions(rawValue: 1 << 0)
+        public static let stories       = SectionOptions(rawValue: 1 << 1)
+        public static let recents       = SectionOptions(rawValue: 1 << 2)
+        public static let contacts      = SectionOptions(rawValue: 1 << 3)
+        public static let groups        = SectionOptions(rawValue: 1 << 4)
 
-        public static let all: SectionOptions = [.stories, .recents, .contacts, .groups]
+        public static let storiesOnly: SectionOptions = [.mediaPreview, .stories]
+        public static let allDestinations: SectionOptions = [.stories, .recents, .contacts, .groups]
     }
 
     public var sectionOptions: SectionOptions = [.recents, .contacts, .groups] {
@@ -114,7 +164,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     public var threadFilter: (_ isIncluded: TSThread) -> Bool = { _ in true }
 
-    public var maxStoryConversationsToRender = 2
+    public var maxStoryConversationsToRender = 3
     public var isStorySectionExpanded = false
 
     /// When `true`, each time the user selects an item for sending to we will fetch the identity keys for those recipients
@@ -179,10 +229,11 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         presentationTime = presentationTime ?? Date()
     }
 
-    open override func applyTheme() {
-        super.applyTheme()
+    open override func themeDidChange() {
+        super.themeDidChange()
 
         searchBar.searchFieldBackgroundColorOverride = Theme.searchFieldElevatedBackgroundColor
+        updateTableContents(shouldReload: false)
     }
 
     open override func viewSafeAreaInsetsDidChange() {
@@ -210,16 +261,14 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         updateUIForCurrentSelection(animated: false)
     }
 
-    func buildSearchResults(searchText: String) -> Promise<ComposeScreenSearchResultSet?> {
+    func buildSearchResults(searchText: String) -> Promise<ConversationPickerScreenSearchResultSet?> {
         guard searchText.count > 1 else {
             return Promise.value(nil)
         }
 
         return firstly(on: .global()) {
             Self.databaseStorage.read { transaction in
-                self.fullTextSearcher.searchForComposeScreen(searchText: searchText,
-                                                             omitLocalUser: false,
-                                                             transaction: transaction)
+                self.fullTextSearcher.searchForConvsersationPickerScreen(searchText: searchText, transaction: transaction)
             }
         }
     }
@@ -333,7 +382,19 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 return lhsIndex < rhsIndex
             }.map { $0.value }
 
-            let storyItems = StoryConversationItem.allItems(transaction: transaction)
+            let storyItems = StoryConversationItem.allItems(
+                includeImplicitGroupThreads: true,
+                excludeHiddenContexts: true,
+                prioritizeThreadsCreatedAfter: creationDate,
+                transaction: transaction
+            )
+            if
+                let firstSelectedStoryIndex = storyItems.firstIndex(where: { self.selection.isSelected(conversation: $0)}),
+                firstSelectedStoryIndex >= self.maxStoryConversationsToRender - 1 {
+                // If we've come in already having selected a story in the expanded section,
+                // expand right away.
+                self.isStorySectionExpanded = true
+            }
 
             return ConversationCollection(contactConversations: contactItems,
                                           recentConversations: pinnedItems + recentItems,
@@ -343,7 +404,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
-    fileprivate func buildConversationCollection(searchResults: ComposeScreenSearchResultSet?) -> Promise<ConversationCollection> {
+    fileprivate func buildConversationCollection(searchResults: ConversationPickerScreenSearchResultSet?) -> Promise<ConversationCollection> {
         guard let searchResults = searchResults else {
             return Promise.value(buildConversationCollection())
         }
@@ -358,12 +419,15 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                     return self.buildGroupItem(groupThread, transaction: transaction)
                 }
                 let contactItems = searchResults.signalAccounts.map { self.buildContactItem($0.recipientAddress, transaction: transaction) }
+                let storyItems = searchResults.storyThreads.compactMap { StoryConversationItem.from(thread: $0) }
 
-                return ConversationCollection(contactConversations: contactItems,
-                                              recentConversations: [],
-                                              groupConversations: groupItems,
-                                              storyConversations: [],
-                                              isSearchResults: true)
+                return ConversationCollection(
+                    contactConversations: contactItems,
+                    recentConversations: [],
+                    groupConversations: groupItems,
+                    storyConversations: storyItems,
+                    isSearchResults: true
+                )
             }
         }
     }
@@ -403,20 +467,48 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         var hasContents = false
 
+        // Media Preview Section
+        do {
+            let section = OWSTableSection()
+            if
+                !conversationCollection.isSearchResults,
+                sectionOptions.contains(.mediaPreview),
+                let attachments = attachments,
+                !attachments.isEmpty
+            {
+                addMediaPreview(to: section, attachments: attachments)
+            } else if
+                !conversationCollection.isSearchResults,
+                sectionOptions.contains(.mediaPreview),
+                let textAttachment = textAttachment
+            {
+                addMediaPreview(to: section, textAttachment: textAttachment)
+            }
+            contents.addSection(section)
+        }
+
         // Stories Section
         do {
             let section = OWSTableSection()
             if StoryManager.areStoriesEnabled && sectionOptions.contains(.stories) && !conversationCollection.storyConversations.isEmpty {
-                section.customHeaderView = NewStoryHeaderView(title: Strings.storiesSection, delegate: self)
-
-                addExpandableConversations(
-                    to: section,
-                    sectionIndex: .stories,
-                    conversations: conversationCollection.storyConversations,
-                    maxConversationsToRender: maxStoryConversationsToRender,
-                    isExpanded: isStorySectionExpanded,
-                    markAsExpanded: { [weak self] in self?.isStorySectionExpanded = true }
+                section.customHeaderView = NewStoryHeaderView(
+                    title: Strings.storiesSection,
+                    showsNewStoryButton: !conversationCollection.isSearchResults,
+                    delegate: self
                 )
+
+                if conversationCollection.isSearchResults {
+                    addConversations(to: section, conversations: conversationCollection.storyConversations)
+                } else {
+                    addExpandableConversations(
+                        to: section,
+                        sectionIndex: .stories,
+                        conversations: conversationCollection.storyConversations,
+                        maxConversationsToRender: maxStoryConversationsToRender,
+                        isExpanded: isStorySectionExpanded,
+                        markAsExpanded: { [weak self] in self?.isStorySectionExpanded = true }
+                    )
+                }
                 hasContents = true
             }
             contents.addSection(section)
@@ -492,8 +584,89 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             return cell
         },
         actionBlock: { [weak self] in
-            self?.didToggleSection(conversation: item)
+            self?.didToggleSelection(conversation: item)
         }))
+    }
+
+    private func addMediaPreview(
+        to section: OWSTableSection,
+        attachments: [SignalAttachment]
+    ) {
+        guard let firstAttachment = attachments.first else {
+            owsFailDebug("Cannot add media preview section without attachments")
+            return
+        }
+
+        guard let mediaPreview = makeMediaPreview(firstAttachment) else {
+            return
+        }
+        let container = addPrimaryMediaPreviewView(mediaPreview, to: section)
+
+        if let secondAttachment = attachments[safe: 1], let secondMediaPreview = makeMediaPreview(secondAttachment) {
+            let mediaPreviewBorder = UIView()
+            mediaPreviewBorder.backgroundColor = self.tableBackgroundColor
+            mediaPreviewBorder.layer.masksToBounds = true
+            mediaPreviewBorder.layer.cornerRadius = mediaPreview.layer.cornerRadius
+            container.insertSubview(mediaPreviewBorder, belowSubview: mediaPreview)
+
+            mediaPreviewBorder.autoPin(toEdgesOf: mediaPreview, with: .init(margin: -3))
+
+            secondMediaPreview.layer.masksToBounds = true
+            secondMediaPreview.layer.cornerRadius = 18
+
+            container.insertSubview(secondMediaPreview, belowSubview: mediaPreviewBorder)
+            secondMediaPreview.autoVCenterInSuperview()
+            secondMediaPreview.autoConstrainAttribute(.vertical, to: .vertical, of: mediaPreview, withOffset: -26)
+            secondMediaPreview.autoSetDimensions(to: mediaPreviewSize.applying(.scale(0.85)))
+
+            secondMediaPreview.transform = .identity.rotated(by: (CurrentAppContext().isRTL ? 15 : -15) * CGFloat.pi / 180)
+        }
+    }
+
+    private func makeMediaPreview(_ attachment: SignalAttachment) -> UIView? {
+        if attachment.isVideo || attachment.isImage || attachment.isAnimatedImage {
+            let mediaPreview = MediaMessageView(attachment: attachment, contentMode: .scaleAspectFill)
+            mediaPreview.layer.masksToBounds = true
+            mediaPreview.layer.cornerRadius = 18
+            return mediaPreview
+        }
+        return nil
+    }
+
+    private func addMediaPreview(
+        to section: OWSTableSection,
+        textAttachment: UnsentTextAttachment
+    ) {
+        let previewView = TextAttachmentView(attachment: textAttachment).asThumbnailView()
+        previewView.layer.masksToBounds = true
+        previewView.layer.cornerRadius = 18
+        addPrimaryMediaPreviewView(previewView, to: section)
+    }
+
+    @discardableResult
+    private func addPrimaryMediaPreviewView(
+        _ previewView: UIView,
+        to section: OWSTableSection
+    ) -> UIView {
+        let container = UIView()
+        container.preservesSuperviewLayoutMargins = true
+
+        container.addSubview(previewView)
+        previewView.autoPinEdge(toSuperviewEdge: .top, withInset: 3)
+        previewView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
+        previewView.autoHCenterInSuperview()
+        previewView.autoSetDimensions(to: mediaPreviewSize)
+
+        section.customHeaderView = container
+        return container
+    }
+
+    private var mediaPreviewSize: CGSize {
+        if UIDevice.current.isShorterThaniPhoneX {
+            return .init(width: 90, height: 160)
+        } else {
+            return .init(width: 140, height: 248)
+        }
     }
 
     private func addExpandableConversations(
@@ -507,7 +680,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         var conversationsToRender = conversations
         let hasMoreConversations = !isExpanded && conversationsToRender.count > maxConversationsToRender
         if hasMoreConversations {
-            conversationsToRender = Array(conversationsToRender.prefix(maxConversationsToRender))
+            conversationsToRender = Array(conversationsToRender.prefix(maxConversationsToRender - 1))
         }
 
         for conversation in conversationsToRender {
@@ -569,6 +742,19 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
+    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let conversation = conversation(for: indexPath) else {
+            return
+        }
+        if selection.isSelected(conversation: conversation) {
+            cell.setSelected(true, animated: false)
+            tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
+        } else {
+            cell.setSelected(false, animated: false)
+            tableView.deselectRow(at: indexPath, animated: false)
+        }
+    }
+
     public override func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
         guard let indexPath = super.tableView(tableView, willSelectRowAt: indexPath) else {
             return nil
@@ -589,7 +775,27 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             return nil
         }
 
+        if
+            let maxVideoAttachmentDuration = maxVideoAttachmentDuration,
+            let durationLimit = conversation.videoAttachmentDurationLimit,
+            durationLimit < maxVideoAttachmentDuration
+        {
+            // Show a tooltip the first time this happens, but still let the
+            // user select.
+            showVideoSegmentingTooltip(on: indexPath)
+        } else {
+            // dismiss the tooltip when selecting.
+            currentTooltip = nil
+        }
+
         return indexPath
+    }
+
+    public override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        super.tableView(tableView, didDeselectRowAt: indexPath)
+
+        // dismiss the tooltip when unselecting
+        currentTooltip = nil
     }
 
     private func showUnblockUI(conversation: ConversationItem) {
@@ -627,13 +833,14 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
     }
 
-    fileprivate func didToggleSection(conversation: ConversationItem) {
+    fileprivate func didToggleSelection(conversation: ConversationItem) {
         AssertIsOnMainThread()
 
         if selection.isSelected(conversation: conversation) {
             didDeselect(conversation: conversation)
         } else {
             didSelect(conversation: conversation)
+            searchBar.resignFirstResponder()
         }
     }
 
@@ -653,6 +860,33 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         }
         selection.add(conversation)
         updateUIForCurrentSelection(animated: true)
+
+        if let storyConversationItem = conversation as? StoryConversationItem {
+            if
+                !isStorySectionExpanded,
+                let index = conversationCollection.storyConversations.firstIndex(where: {
+                    ($0 as? StoryConversationItem)?.threadId == storyConversationItem.threadId
+                }),
+                index >= maxStoryConversationsToRender - 1 {
+                // Expand so we can see the selection.
+                isStorySectionExpanded = true
+                updateTableContents(shouldReload: false)
+            }
+
+            if storyConversationItem.isMyStory,
+               Self.databaseStorage.read(block: { !StoryManager.hasSetMyStoriesPrivacy(transaction: $0) }) {
+                // Show first time story privacy settings if selecting my story and settings have'nt been
+                // changed before.
+
+                // Reload the row when we show the sheet, and when it goes away, so we reflect changes.
+                let reloadRowBlock = { [weak self] in
+                    self?.tableView.reloadData()
+                    self?.tableView.selectRow(at: IndexPath(row: 0, section: 0), animated: false, scrollPosition: .none)
+                }
+                let sheetController = MyStorySettingsSheetViewController(willDisappear: reloadRowBlock)
+                self.present(sheetController, animated: true, completion: reloadRowBlock)
+            }
+        }
     }
 
     private func showBlockedByAnnouncementOnlyToast() {
@@ -680,7 +914,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     }
 
     private func showTooManySelectedToast() {
-        Logger.info("")
+        Logger.info("Showing toast for too many chats selected")
 
         let toastFormat = OWSLocalizedString("CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d", tableName: "PluralAware",
                                             comment: "Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected.")
@@ -694,10 +928,97 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         let toastController = ToastController(text: message)
 
-        let bottomInset = (view.bounds.height - tableView.frame.height)
+        let bottomInset = (view.bounds.height - tableView.frame.maxY)
         let kToastInset: CGFloat = bottomInset + 10
         toastController.presentToastView(from: .bottom, of: view, inset: kToastInset)
     }
+
+    private var shownTooltipTypes = Set<ObjectIdentifier>()
+    private var currentTooltip: VideoSegmentingTooltipView? {
+        didSet {
+            oldValue?.removeFromSuperview()
+        }
+    }
+
+    private func showVideoSegmentingTooltip(on indexPath: IndexPath) {
+        guard
+            let conversation = self.conversation(for: indexPath),
+            let cell = tableView.cellForRow(at: indexPath) as? ConversationPickerCell
+        else {
+            owsFailDebug("Showing a video trimming tooltop for an invalid index path")
+            return
+        }
+
+        guard let text = conversation.videoAttachmentStoryLengthTooltipString else {
+            return
+        }
+
+        let typeIdentifier = ObjectIdentifier(conversation.outgoingMessageClass)
+        guard !shownTooltipTypes.contains(typeIdentifier) else {
+            // We've already shown the tooltip for this type.
+            return
+        }
+        shownTooltipTypes.insert(typeIdentifier)
+
+        self.currentTooltip = VideoSegmentingTooltipView(
+            fromView: tableView,
+            widthReferenceView: cell,
+            tailReferenceView: cell.tooltipTailReferenceView,
+            text: text
+        )
+    }
+
+    public override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // dismiss the tooltip when scrolling.
+        currentTooltip = nil
+    }
+}
+
+private class VideoSegmentingTooltipView: TooltipView {
+
+    let text: String
+
+    init(
+        fromView: UIView,
+        widthReferenceView: UIView,
+        tailReferenceView: UIView,
+        text: String
+    ) {
+        self.text = text
+        super.init(
+            fromView: fromView,
+            widthReferenceView: widthReferenceView,
+            tailReferenceView: tailReferenceView,
+            wasTappedBlock: nil
+        )
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    public override func bubbleContentView() -> UIView {
+        let label = UILabel()
+        label.text = text
+        label.font = .ows_dynamicTypeFootnoteClamped
+        label.textColor = .ows_white
+        label.numberOfLines = 0
+
+        let containerView = UIView()
+
+        containerView.addSubview(label)
+        label.autoPinEdgesToSuperviewEdges(with: .init(hMargin: 12, vMargin: 8))
+
+        return containerView
+    }
+
+    public override var bubbleColor: UIColor { .ows_accentBlue }
+    public override var bubbleHSpacing: CGFloat { 28 }
+    public override var bubbleInsets: UIEdgeInsets { .zero }
+    public override var stretchesBubbleHorizontally: Bool { true }
+
+    public override var tailDirection: TooltipView.TailDirection { .up }
+    public override var dismissOnTap: Bool { true }
 }
 
 // MARK: -
@@ -1038,7 +1359,7 @@ public class ConversationPickerSelection: Dependencies {
 // MARK: -
 
 private enum ConversationPickerSection: Int, CaseIterable {
-    case stories, recents, signalContacts, groups
+    case mediaPreview, stories, recents, signalContacts, groups, emptySearchResults
 }
 
 // MARK: -
@@ -1070,6 +1391,11 @@ private struct ConversationCollection {
             return groupConversations
         case .stories:
             return storyConversations
+        case .emptySearchResults:
+            return []
+        case .mediaPreview:
+            owsFailDebug("Should not be fetching conversations for media preview section")
+            return []
         }
     }
 
@@ -1111,7 +1437,7 @@ private struct ConversationCollection {
             owsFailDebug("section was unexpectedly nil")
             return nil
         }
-        return conversations(section: section)[indexPath.row]
+        return conversations(section: section)[safe: indexPath.row]
     }
 
     fileprivate func conversation(for thread: TSThread) -> ConversationItem? {

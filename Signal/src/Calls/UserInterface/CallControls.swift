@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -158,7 +159,11 @@ class CallControls: UIView {
         ringButton.isHidden = joinState == .joined || call.ringRestrictions.intersects([.notApplicable, .callInProgress])
         // Leave the button visible but locked if joining, like the "join call" button.
         ringButton.isUserInteractionEnabled = joinState == .notJoined
-        ringButton.isSelected = call.ringRestrictions.isEmpty && call.userWantsToRing
+        if call.ringRestrictions.isEmpty, case .shouldRing = call.groupCallRingState {
+            ringButton.isSelected = true
+        } else {
+            ringButton.isSelected = false
+        }
         // Leave the button enabled so we can present an explanatory toast, but show it disabled.
         ringButton.shouldDrawAsDisabled = !call.ringRestrictions.isEmpty
 

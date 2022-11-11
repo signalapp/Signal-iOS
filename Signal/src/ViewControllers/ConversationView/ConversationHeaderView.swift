@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -12,7 +13,7 @@ public protocol ConversationHeaderViewDelegate {
     func didTapConversationHeaderViewAvatar(_ conversationHeaderView: ConversationHeaderView)
 }
 
-public class ConversationHeaderView: UIStackView {
+public class ConversationHeaderView: UIView {
 
     public weak var delegate: ConversationHeaderViewDelegate?
 
@@ -57,7 +58,7 @@ public class ConversationHeaderView: UIStackView {
     private var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass {
         traitCollection.verticalSizeClass == .compact ? .twentyFour : .thirtySix
     }
-    private lazy var avatarView = ConversationAvatarView(
+    private(set) lazy var avatarView = ConversationAvatarView(
         sizeClass: avatarSizeClass,
         localUserDisplayMode: .noteToSelf)
 
@@ -74,6 +75,13 @@ public class ConversationHeaderView: UIStackView {
 
         let titleColumns = UIStackView(arrangedSubviews: [titleLabel, titleIconView])
         titleColumns.spacing = 5
+        // There is a strange bug where an initial height of 0
+        // breaks the layout, so set an initial height.
+        titleColumns.autoSetDimension(
+            .height,
+            toSize: titleLabel.font.lineHeight,
+            relation: .greaterThanOrEqual
+        )
 
         subtitleLabel = UILabel()
         subtitleLabel.textColor = Theme.navbarTitleColor
@@ -95,17 +103,21 @@ public class ConversationHeaderView: UIStackView {
 
         super.init(frame: .zero)
 
-        self.layoutMargins = UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0)
-        self.isLayoutMarginsRelativeArrangement = true
+        let rootStack = UIStackView()
+        rootStack.layoutMargins = UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0)
+        rootStack.isLayoutMarginsRelativeArrangement = true
 
-        self.axis = .horizontal
-        self.alignment = .center
-        self.spacing = 0
-        self.addArrangedSubview(avatarView)
-        self.addArrangedSubview(textRows)
+        rootStack.axis = .horizontal
+        rootStack.alignment = .center
+        rootStack.spacing = 0
+        rootStack.addArrangedSubview(avatarView)
+        rootStack.addArrangedSubview(textRows)
+
+        addSubview(rootStack)
+        rootStack.autoPinEdgesToSuperviewEdges()
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapView))
-        self.addGestureRecognizer(tapGesture)
+        rootStack.addGestureRecognizer(tapGesture)
 
         NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .ThemeDidChange, object: nil)
     }
@@ -121,7 +133,7 @@ public class ConversationHeaderView: UIStackView {
     public func configure(threadViewModel: ThreadViewModel) {
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .thread(threadViewModel.threadRecord)
-            config.storyState = StoryManager.areStoriesEnabled ? threadViewModel.storyState : .none
+            config.storyConfiguration = .autoUpdate()
             config.applyConfigurationSynchronously()
         }
     }

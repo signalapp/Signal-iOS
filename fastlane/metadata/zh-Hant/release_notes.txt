@@ -1,3 +1,2 @@
-• Video Call Picture-in-Picture rises above the keyboard when typing
-• Improve group metadata update reliability & error handling
-
+• Signal 現已推出限時動態功能！與選定的好友或群組分享自動銷毀的訊息、圖像和影片更新，這些內容會在 24 小時後自動消失。如果你不想瀏覽或分享限時動態，可以在「設定」中關閉所有相關功能。
+• Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.

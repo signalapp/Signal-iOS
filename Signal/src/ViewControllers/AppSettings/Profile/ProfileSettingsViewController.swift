@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -42,6 +43,10 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         allBadges = snapshot.profileBadgeInfo ?? []
         displayBadgesOnProfile = subscriptionManager.displayBadgesOnProfile
         updateTableContents()
+    }
+
+    override var preferredNavigationBarStyle: OWSNavigationBarStyle {
+        return .clear
     }
 
     private var fullName: String? {
@@ -347,7 +352,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     }
 }
 
-extension ProfileSettingsViewController: OWSNavigationView {
+extension ProfileSettingsViewController {
 
     @available(iOS 13, *)
     override public var isModalInPresentation: Bool {
@@ -355,7 +360,7 @@ extension ProfileSettingsViewController: OWSNavigationView {
         set { /* noop superclass requirement */ }
     }
 
-    public func shouldCancelNavigationBack() -> Bool {
+    public var shouldCancelNavigationBack: Bool {
         let result = hasUnsavedChanges
         if result {
             leaveViewCheckingForUnsavedChanges()

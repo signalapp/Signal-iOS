@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 @objc
 public class OutgoingMessagePreparer: NSObject {
-    @objc
+
     public let message: TSOutgoingMessage
     private let unsavedAttachmentInfos: [OutgoingAttachmentInfo]
     private var didCompletePrep = false
@@ -12,7 +13,6 @@ public class OutgoingMessagePreparer: NSObject {
     @objc
     public var savedAttachmentIds: [String]?
 
-    @objc
     public var unpreparedMessage: TSOutgoingMessage {
         assert(!didCompletePrep)
         return message
@@ -29,7 +29,6 @@ public class OutgoingMessagePreparer: NSObject {
         self.unsavedAttachmentInfos = unsavedAttachmentInfos
     }
 
-    @objc
     public func insertMessage(linkPreviewDraft: OWSLinkPreviewDraft? = nil,
                               transaction: SDSAnyWriteTransaction) {
         unpreparedMessage.anyInsert(transaction: transaction)

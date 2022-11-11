@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import UIKit
@@ -137,7 +138,7 @@ class ImageEditorView: AttachmentPrepContentView {
         }
     }
 
-    func createNewTextItem(withColor color: ColorPickerBarColor? = nil,
+    func createNewTextItem(withColor color: ColorPickerBarColor = ColorPickerBarColor.white,
                            textStyle: MediaTextView.TextStyle = .regular,
                            decorationStyle: MediaTextView.DecorationStyle = .none) -> ImageEditorTextItem {
         Logger.verbose("")
@@ -156,7 +157,7 @@ class ImageEditorView: AttachmentPrepContentView {
         // Similarly, the size of the text item shuo
         let scaling = 1 / model.currentTransform().scaling
 
-        let textItem = ImageEditorTextItem.empty(withColor: color ?? model.color,
+        let textItem = ImageEditorTextItem.empty(withColor: color,
                                                  textStyle: textStyle,
                                                  decorationStyle: decorationStyle,
                                                  unitWidth: textWidthUnit,

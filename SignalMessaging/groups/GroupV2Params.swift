@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -56,7 +57,7 @@ public extension GroupV2Params {
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: groupSecretParams)
         let ciphertext = try clientZkGroupCipher.encryptBlob(plaintext: [UInt8](plaintext)).asData
         assert(ciphertext != plaintext)
-        assert(ciphertext.count > 0)
+        assert(!ciphertext.isEmpty)
 
         if plaintext.count <= Self.decryptedBlobCacheMaxItemSize {
             let cacheKey = (ciphertext + groupSecretParamsData)

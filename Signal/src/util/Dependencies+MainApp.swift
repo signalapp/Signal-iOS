@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import SignalUI
 
 // MARK: - NSObject
@@ -34,28 +36,12 @@ public extension NSObject {
         AppEnvironment.shared.notificationPresenterRef
     }
 
-    final var outboundIndividualCallInitiator: OutboundIndividualCallInitiator {
-        AppEnvironment.shared.outboundIndividualCallInitiatorRef
-    }
-
-    static var outboundIndividualCallInitiator: OutboundIndividualCallInitiator {
-        AppEnvironment.shared.outboundIndividualCallInitiatorRef
-    }
-
     final var pushRegistrationManager: PushRegistrationManager {
         AppEnvironment.shared.pushRegistrationManagerRef
     }
 
     static var pushRegistrationManager: PushRegistrationManager {
         AppEnvironment.shared.pushRegistrationManagerRef
-    }
-
-    final var sessionResetJobQueue: SessionResetJobQueue {
-        AppEnvironment.shared.sessionResetJobQueueRef
-    }
-
-    static var sessionResetJobQueue: SessionResetJobQueue {
-        AppEnvironment.shared.sessionResetJobQueueRef
     }
 
     final var cvAudioPlayer: CVAudioPlayer {
@@ -134,28 +120,12 @@ public extension Dependencies {
         AppEnvironment.shared.notificationPresenterRef
     }
 
-    var outboundIndividualCallInitiator: OutboundIndividualCallInitiator {
-        AppEnvironment.shared.outboundIndividualCallInitiatorRef
-    }
-
-    static var outboundIndividualCallInitiator: OutboundIndividualCallInitiator {
-        AppEnvironment.shared.outboundIndividualCallInitiatorRef
-    }
-
     var pushRegistrationManager: PushRegistrationManager {
         AppEnvironment.shared.pushRegistrationManagerRef
     }
 
     static var pushRegistrationManager: PushRegistrationManager {
         AppEnvironment.shared.pushRegistrationManagerRef
-    }
-
-    var sessionResetJobQueue: SessionResetJobQueue {
-        AppEnvironment.shared.sessionResetJobQueueRef
-    }
-
-    static var sessionResetJobQueue: SessionResetJobQueue {
-        AppEnvironment.shared.sessionResetJobQueueRef
     }
 
     var cvAudioPlayer: CVAudioPlayer {

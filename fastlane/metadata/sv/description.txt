@@ -1,6 +1,6 @@
-Miljontals människor använder Signal varje dag för kostnadsfri och ögonblicklig kommunikation överallt i världen. Skicka och ta emot meddelanden i hög kvalitet, delta i röst-/videosamtal i HD och utforska ett växande antal nya funktioner som hjälper dig att hålla kontakt med folk. Signals avancerade integritetsbevarande teknik är alltid aktiverad så att du kan koncentrera dig på att dela de stunder som betyder något med de människor som betyder något. 
+Miljontals människor använder Signal varje dag för kostnadsfri och ögonblicklig kommunikation överallt i världen. Skicka och ta emot meddelanden i hög kvalitet, delta i röst-/videosamtal i HD och utforska ett växande antal nya funktioner som hjälper dig att hålla kontakt med folk. Signals avancerade integritetsskyddsbevarande teknik är alltid aktiverad så att du kan koncentrera dig på att dela de stunder som betyder något med de människor som betyder något. 
 
-• Säg vad du vill – Ett toppmodernt end-to-end-krypteringsprotokoll (som drivs av Signals protokoll med öppen källkod) håller dina konversationer privata. integritet är inte ett valbart läge – det är bara så Signal fungerar. För varje meddelande, varje samtal och varje gång.
+• Säg vad du vill – Ett toppmodernt ände-till-ände-krypteringsprotokoll (som drivs av Signals protokoll med öppen källkod) håller dina konversationer privata. Integritetsskydd är inte ett valbart läge – det är bara så Signal fungerar. För varje meddelande, varje samtal och varje gång.
 
 • Var snabb – Meddelandena levereras snabbt och pålitligt, även på långsamma nätverk. Signal är optimerat för att fungera i de mest begränsade miljöer.
 
@@ -12,12 +12,12 @@ Miljontals människor använder Signal varje dag för kostnadsfri och ögonblick
 
 • Viska bland skuggorna – Växla till mörkt tema om du inte vill se ljuset.
 
-• Låt bekant – Välj anpassade notiser för var och en av kontakterna, eller inaktivera ljudet helt. Simon & Garfunkel skrev en hitlåt om det 1964, och du kan uppleva "the sound of silence" när du vill genom att välja "Ingen" som ringsignal för notiser.
+• Låt bekant – Välj anpassade aviseringar för var och en av kontakterna, eller inaktivera ljudet helt. Simon & Garfunkel skrev en hitlåt om det 1964, och du kan uppleva "the sound of silence" när du vill genom att välja "Ingen" som ringsignal för notiser.
 
 • Ha bilden klar för dig – Använd de inbyggda bildredigeringsfunktionerna för att skissa, beskära och vända på de foton du ska skicka. Det finns till och med ett textverktyg så att du kan lägga till fler ord än de 1 000 som din bild redan säger.
 
 
-För support, frågor eller mer information, besök:
+För support, frågor eller mer information, vänligen besök:
 https://support.signal.org
 
 Källkod:

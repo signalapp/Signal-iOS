@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
-import UIKit
 import Lottie
+import SignalMessaging
+import UIKit
 
 @objc
 public protocol SendPaymentCompletionDelegate {
@@ -126,8 +128,8 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         helper?.refreshObservedValues()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateContentsForMode()
     }

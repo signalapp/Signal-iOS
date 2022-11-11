@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import SignalUI
 
 class StoryPrivacySettingsViewController: OWSTableViewController2 {
@@ -11,10 +13,14 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
 
         NotificationCenter.default.addObserver(self, selector: #selector(storiesEnabledStateDidChange), name: .storiesEnabledStateDidChange, object: nil)
 
-        title = NSLocalizedString("STORIES_SETTINGS_TITLE", comment: "Title for the story privacy settings view")
-
         if navigationController?.viewControllers.count == 1 {
+            title = NSLocalizedString("STORY_PRIVACY_TITLE", comment: "Title for the story privacy settings view")
             navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
+        } else {
+            title = NSLocalizedString(
+                "STORY_SETTINGS_TITLE",
+                comment: "Label for the stories section of the settings view"
+            )
         }
 
         tableView.register(StoryThreadCell.self, forCellReuseIdentifier: StoryThreadCell.reuseIdentifier)
@@ -69,25 +75,28 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
         let myStoriesSection = OWSTableSection()
         myStoriesSection.customHeaderView = NewStoryHeaderView(
             title: NSLocalizedString(
-                "STORIES_SETTINGS_MY_STORIES_HEADER",
-                comment: "Header for the 'My Stories' section of the stories settings"
+                "STORIES_SETTINGS_STORIES_HEADER",
+                comment: "Header for the 'Stories' section of the stories settings"
             ),
             delegate: self
         )
         myStoriesSection.footerTitle = NSLocalizedString(
-            "STORIES_SETTINGS_MY_STORIES_FOOTER",
-            comment: "Footer for the 'My Stories' section of the stories settings"
+            "STORIES_SETTINGS_STORIES_FOOTER",
+            comment: "Footer for the 'Stories' section of the stories settings"
         )
         contents.addSection(myStoriesSection)
 
         let storyItems = databaseStorage.read { transaction -> [StoryConversationItem] in
             StoryConversationItem
-                .allItems(transaction: transaction)
+                .allItems(includeImplicitGroupThreads: false, excludeHiddenContexts: false, transaction: transaction)
+                .lazy
+                .map { (item: $0, title: $0.title(transaction: transaction)) }
                 .sorted { lhs, rhs in
-                    if case .privateStory(let item) = lhs.backingItem, item.isMyStory { return true }
-                    if case .privateStory(let item) = rhs.backingItem, item.isMyStory { return false }
-                    return lhs.title(transaction: transaction).localizedCaseInsensitiveCompare(rhs.title(transaction: transaction)) == .orderedAscending
+                    if case .privateStory(let item) = lhs.item.backingItem, item.isMyStory { return true }
+                    if case .privateStory(let item) = rhs.item.backingItem, item.isMyStory { return false }
+                    return lhs.title.localizedCaseInsensitiveCompare(rhs.title) == .orderedAscending
                 }
+                .map { $0.item }
         }
 
         for item in storyItems {
@@ -105,6 +114,19 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
             })
         }
 
+        let viewReceiptsSection = OWSTableSection()
+        viewReceiptsSection.footerTitle = NSLocalizedString(
+            "STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER",
+            comment: "Footer for the 'view receipts' section of the stories settings"
+        )
+        viewReceiptsSection.add(.switch(
+            withText: NSLocalizedString("STORIES_SETTINGS_VIEW_RECEIPTS", comment: "Title for the 'view receipts' setting in stories settings"),
+            isOn: { StoryManager.areViewReceiptsEnabled },
+            target: self,
+            selector: #selector(didToggleViewReceipts)
+        ))
+        contents.addSection(viewReceiptsSection)
+
         let turnOffStoriesSection = OWSTableSection()
         turnOffStoriesSection.footerTitle = NSLocalizedString(
             "STORIES_SETTINGS_TURN_OFF_FOOTER",
@@ -119,12 +141,12 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
             textColor: .ows_accentRed,
             accessibilityIdentifier: nil,
             actionBlock: { [weak self] in
-                self?.turnOffStories()
+                self?.turnOffStoriesConfirmation()
             }))
     }
 
-    override func applyTheme() {
-        super.applyTheme()
+    override func themeDidChange() {
+        super.themeDidChange()
         updateTableContents()
     }
 
@@ -162,26 +184,47 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
         navigationController?.pushViewController(vc, animated: true)
     }
 
-    func turnOffStories() {
+    func turnOffStoriesConfirmation() {
         let actionSheet = ActionSheetController(
             message: NSLocalizedString(
-                "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE",
-                comment: "Title for the action sheet confirming you want to turn off stories"
+                "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE",
+                comment: "Title for the action sheet confirming you want to turn off and delete all stories"
             )
         )
         actionSheet.addAction(OWSActionSheets.cancelAction)
         actionSheet.addAction(.init(
             title: NSLocalizedString(
-                "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON",
-                comment: "Button to turn off stories on the story privacy settings view"
+                "STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON",
+                comment: "Button to turn off and delete stories on the story privacy settings view"
             ),
             style: .destructive,
-            handler: { _ in
-                Self.databaseStorage.write { transaction in
-                    StoryManager.setAreStoriesEnabled(false, transaction: transaction)
-                }
+            handler: { [weak self] _ in
+                self?.turnOffStories()
             }))
         presentActionSheet(actionSheet)
+    }
+
+    func turnOffStories() {
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
+            Self.databaseStorage.asyncWrite { transaction in
+                StoryFinder.enumerateOutgoingStories(transaction: transaction) { storyMessage, _ in
+                    storyMessage.remotelyDeleteForAllRecipients(transaction: transaction)
+                }
+
+                StoryManager.setAreStoriesEnabled(false, transaction: transaction)
+
+                transaction.addAsyncCompletionOnMain {
+                    modal.dismiss {}
+                }
+            }
+        }
+    }
+
+    @objc
+    func didToggleViewReceipts(_ sender: UISwitch) {
+        databaseStorage.write {
+            StoryManager.setAreViewReceiptsEnabled(sender.isOn, transaction: $0)
+        }
     }
 }
 

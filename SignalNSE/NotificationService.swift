@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import UserNotifications
@@ -85,7 +86,7 @@ class NotificationService: UNNotificationServiceExtension {
 
         let content = UNMutableNotificationContent()
         content.badge = {
-            if environment.hasAppContent, let nseContext = CurrentAppContext() as? NSEContext {
+            if let nseContext = CurrentAppContext() as? NSEContext {
                 if !timeHasExpired {
                     // If we have time, we might as well get the current up-to-date badge count
                     let freshCount = databaseStorage.read { InteractionFinder.unreadCountInAllThreads(transaction: $0.unwrapGrdbRead) }
@@ -99,6 +100,7 @@ class NotificationService: UNNotificationServiceExtension {
                 }
             } else {
                 // We never set up an NSEContext. Let's leave things as-is:
+                owsFailDebug("Missing NSE context!")
                 return nil
             }
         }()
@@ -132,22 +134,21 @@ class NotificationService: UNNotificationServiceExtension {
         _ request: UNNotificationRequest,
         withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void
     ) {
-        let logger = NSELogger()
+        environment.ensureGlobalState()
 
-        // This should be the first thing we do.
-        environment.ensureAppContext(logger: logger)
+        let logger = NSELogger()
 
         // Detect and handle "no GRDB file" and "no keychain access; device
         // not yet unlocked for first time" cases _before_ calling
         // setupIfNecessary().
         if let errorContent = NSEEnvironment.verifyDBKeysAvailable(logger: logger) {
             if hasShownFirstUnlockError.tryToSetFlag() {
-                logger.error("DB Keys not accessible; showing error.")
+                logger.error("DB Keys not accessible; showing error.", flushImmediately: true)
                 contentHandler(errorContent)
             } else {
                 // Only show a single error if we receive multiple pushes
                 // before first device unlock.
-                logger.error("DB Keys not accessible; completing silently.")
+                logger.error("DB Keys not accessible; completing silently.", flushImmediately: true)
                 let emptyContent = UNMutableNotificationContent()
                 contentHandler(emptyContent)
             }
@@ -159,8 +160,7 @@ class NotificationService: UNNotificationServiceExtension {
             // point, the NSEEnvironment.isSetup flag is already set,
             // but the environment has _not_ been setup successfully.
             // We need to terminate the NSE to return to a good state.
-            logger.warn("Posting error notification and skipping processing.")
-            logger.flush()
+            logger.warn("Posting error notification and skipping processing.", flushImmediately: true)
             contentHandler(errorContent)
             fatalError("Posting error notification and skipping processing.")
         }
@@ -207,23 +207,33 @@ class NotificationService: UNNotificationServiceExtension {
             return completeSilently(logger: logger)
         }
 
+        if SignalProxy.isEnabled {
+            if !SignalProxy.isEnabledAndReady {
+                Logger.info("Waiting for signal proxy to become ready for message fetch.")
+                NotificationCenter.default.observe(once: .isSignalProxyReadyDidChange)
+                    .done { [weak self] _ in
+                        self?.fetchAndProcessMessages(logger: logger)
+                    }
+                SignalProxy.startRelayServer()
+                return
+            }
+
+            Logger.info("Using signal proxy for message fetch.")
+        }
+
         environment.processingMessageCounter.increment()
 
         logger.info("Beginning message fetch.")
 
-        let fetchPromise = messageFetcherJob.run().promise
-        fetchPromise.timeout(seconds: 20, description: "Message Fetch Timeout.") {
-            NotificationServiceError.timeout
-        }.catch(on: .global()) { _ in
-            // Do nothing, Promise.timeout() will log timeouts.
-        }
-        fetchPromise.then(on: .global()) { [weak self] () -> Promise<Void> in
+        firstly {
+            messageFetcherJob.run().promise
+        }.then(on: .global()) { [weak self] () -> Promise<Void> in
             logger.info("Waiting for processing to complete.")
             guard let self = self else { return Promise.value(()) }
 
             let runningAndCompletedPromises = AtomicArray<(String, Promise<Void>)>()
 
-            let processingCompletePromise = firstly { () -> Promise<Void> in
+            return firstly { () -> Promise<Void> in
                 let promise = self.messageProcessor.processingCompletePromise()
                 runningAndCompletedPromises.append(("MessageProcessorCompletion", promise))
                 return promise
@@ -253,25 +263,13 @@ class NotificationService: UNNotificationServiceExtension {
                 runningAndCompletedPromises.append(("Pending notification post", promise))
                 return promise
             }
-            processingCompletePromise.timeout(seconds: 20, ticksWhileSuspended: true, description: "Message Processing Timeout.") {
-                runningAndCompletedPromises.get().filter { $0.1.isSealed == false }.forEach {
-                    logger.warn("Completion promise: \($0.0) did not finish.")
-                }
-                return NotificationServiceError.timeout
-            }.catch { _ in
-                // Do nothing, Promise.timeout() will log timeouts.
-            }
-            return processingCompletePromise
         }.ensure(on: .global()) { [weak self] in
             logger.info("Message fetch completed.")
+            SignalProxy.stopRelayServer()
             environment.processingMessageCounter.decrementOrZero()
             self?.completeSilently(logger: logger)
         }.catch(on: .global()) { error in
             logger.error("Error: \(error)")
         }
-    }
-
-    private enum NotificationServiceError: Error {
-        case timeout
     }
 }

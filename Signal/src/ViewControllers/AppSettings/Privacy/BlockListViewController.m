@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2015 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "BlockListViewController.h"
@@ -27,6 +28,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation BlockListViewController
 
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    self.navbarBackgroundColorOverride = [UIColor clearColor];
+    self.preferredNavigationBarStyle = OWSNavigationBarStyleClear;
+    return self;
+}
+
 - (void)loadView
 {
     [super loadView];
@@ -53,13 +66,6 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewWillAppear:animated];
 
     [self.tableViewController applyThemeToViewController:self];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-
-    [self.tableViewController removeThemeFromViewController:self];
 }
 
 #pragma mark - Table view data source

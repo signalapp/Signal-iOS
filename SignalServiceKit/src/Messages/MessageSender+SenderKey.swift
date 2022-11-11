@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import LibSignalClient
@@ -121,11 +122,6 @@ extension MessageSender {
         intendedRecipients: [SignalServiceAddress],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess]
     ) -> SenderKeyStatus {
-        // Sender key requires GV2
-        guard let localAddress = self.tsAccountManager.localAddress else {
-            owsFailDebug("No local address. Sender key not supported")
-            return .init(fanoutOnlyParticipants: intendedRecipients)
-        }
         guard !RemoteConfig.senderKeyKillSwitch else {
             Logger.info("Sender key kill switch activated. No recipients support sender key.")
             return .init(fanoutOnlyParticipants: intendedRecipients)
@@ -136,11 +132,6 @@ extension MessageSender {
         }
 
         return databaseStorage.read { readTx in
-            guard GroupManager.doesUserHaveSenderKeyCapability(address: localAddress, transaction: readTx) else {
-                Logger.info("Local user does not have sender key capability. Sender key not supported.")
-                return .init(fanoutOnlyParticipants: intendedRecipients)
-            }
-
             let isCurrentKeyValid = senderKeyStore.isKeyValid(for: thread, readTx: readTx)
             let recipientsWithoutSenderKey = senderKeyStore.recipientsInNeedOfSenderKey(
                 for: thread,
@@ -157,9 +148,10 @@ extension MessageSender {
                 }
 
                 // Sender key requires that you're a full member of the group and you support UD
-                guard GroupManager.doesUserHaveSenderKeyCapability(address: candidate, transaction: readTx),
-                      threadRecipients.contains(candidate),
-                      [.enabled, .unrestricted].contains(udAccessMap[candidate]?.udAccess.udAccessMode) else {
+                guard
+                    threadRecipients.contains(candidate),
+                    [.enabled, .unrestricted].contains(udAccessMap[candidate]?.udAccess.udAccessMode)
+                else {
                     senderKeyStatus.participants[candidate] = .FanoutOnly
                     return
                 }
@@ -258,7 +250,7 @@ extension MessageSender {
             guard senderKeyRecipients.count > 0 else {
                 // Something went wrong with the SKDM promise. Exit early.
                 owsAssertDebug(didHitAnyFailure.get())
-                return .init()
+                return .value(())
             }
 
             return firstly { () -> Promise<SenderKeySendResult> in
@@ -397,7 +389,7 @@ extension MessageSender {
                 let skdmMessage = OWSOutgoingSenderKeyDistributionMessage(
                     thread: contactThread,
                     senderKeyDistributionMessageBytes: skdmBytes, transaction: writeTx)
-                skdmMessage.configureAsSentOnBehalfOf(originalMessage)
+                skdmMessage.configureAsSentOnBehalfOf(originalMessage, in: thread)
 
                 let plaintext = skdmMessage.buildPlainTextData(contactThread, transaction: writeTx)
                 let payloadId: NSNumber?
@@ -438,6 +430,12 @@ extension MessageSender {
                     }.map(on: self.senderKeyQueue) { _ -> OWSMessageSend in
                         messageSend
                     }.recover(on: self.senderKeyQueue) { error -> Promise<OWSMessageSend> in
+                        if error is MessageSenderNoSuchSignalRecipientError {
+                            self.databaseStorage.write { transaction in
+                                self.markAddressAsUnregistered(messageSend.address, message: originalMessage, thread: thread, transaction: transaction)
+                            }
+                        }
+
                         // Note that we still rethrow. It's just easier to access the address
                         // while we still have the messageSend in scope.
                         let wrappedError = SenderKeyError.recipientSKDMFailed(error)
@@ -523,11 +521,13 @@ extension MessageSender {
                 timestamp: message.timestamp,
                 isOnline: message.isOnline,
                 isUrgent: message.isUrgent,
+                isStory: message.isStorySend,
                 thread: thread,
                 recipients: recipients,
                 udAccessMap: udAccessMap,
                 senderCertificate: senderCertificate,
-                remainingAttempts: 3)
+                remainingAttempts: 3
+            )
         }
     }
 
@@ -537,6 +537,7 @@ extension MessageSender {
         timestamp: UInt64,
         isOnline: Bool,
         isUrgent: Bool,
+        isStory: Bool,
         thread: TSThread,
         recipients: [Recipient],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
@@ -549,9 +550,11 @@ extension MessageSender {
                 timestamp: timestamp,
                 isOnline: isOnline,
                 isUrgent: isUrgent,
+                isStory: isStory,
                 thread: thread,
                 recipients: recipients,
-                udAccessMap: udAccessMap)
+                udAccessMap: udAccessMap
+            )
         }.map(on: senderKeyQueue) { response -> SenderKeySendResult in
             guard response.responseStatusCode == 200 else { throw
                 OWSAssertionError("Unhandled error")
@@ -576,6 +579,7 @@ extension MessageSender {
                         timestamp: timestamp,
                         isOnline: isOnline,
                         isUrgent: isUrgent,
+                        isStory: isStory,
                         thread: thread,
                         recipients: recipients,
                         udAccessMap: udAccessMap,
@@ -686,7 +690,7 @@ extension MessageSender {
         let distributionId = senderKeyStore.distributionIdForSendingToThread(thread, writeTx: writeTx)
         let ciphertext = try secretCipher.groupEncryptMessage(
             recipients: protocolAddresses,
-            paddedPlaintext: (plaintext as NSData).paddedMessageBody(),
+            paddedPlaintext: plaintext.paddedMessageBody,
             senderCertificate: senderCertificate,
             groupId: groupIdForSending,
             distributionId: distributionId,
@@ -705,6 +709,7 @@ extension MessageSender {
         timestamp: UInt64,
         isOnline: Bool,
         isUrgent: Bool,
+        isStory: Bool,
         thread: TSThread,
         recipients: [Recipient],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess]
@@ -726,7 +731,9 @@ extension MessageSender {
             compositeUDAccessKey: compositeKey,
             timestamp: timestamp,
             isOnline: isOnline,
-            isUrgent: isUrgent)
+            isUrgent: isUrgent,
+            isStory: isStory
+        )
 
         // If we can use the websocket, try that and fail over to REST.
         // If not, go straight to REST.
@@ -801,13 +808,14 @@ fileprivate extension SignalServiceAddress {
         let sessionStore = signalProtocolStore(for: .aci).sessionStore
         return candidateDevices.allSatisfy { deviceId in
             do {
-                guard let sessionRecord = try sessionStore.loadSession(for: self,
-                                                                       deviceId: Int32(deviceId),
-                                                                       transaction: readTx),
-                      sessionRecord.hasCurrentState else {
-                    Logger.warn("No session for address: \(self)")
-                    return false
-                }
+                guard
+                    let sessionRecord = try sessionStore.loadSession(
+                        for: self,
+                        deviceId: Int32(deviceId),
+                        transaction: readTx
+                    ),
+                    sessionRecord.hasCurrentState
+                else { return true }
                 let registrationId = try sessionRecord.remoteRegistrationId()
                 let isValidRegistrationId = (registrationId & 0x3fff == registrationId)
                 owsAssertDebug(isValidRegistrationId)

@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import SignalMessaging
 
 // Outgoing message approval can be a multi-step process.
-@objc
 public enum ApprovalMode: UInt {
     // This is the final step of approval; continuing will send.
     case send
@@ -45,7 +45,7 @@ public class ApprovalFooterView: UIView {
     private var textfieldBackgroundView: UIView?
 
     public var textInput: String? {
-        textfield.text
+        approvalTextMode == .none ? nil : textfield.text
     }
 
     private var approvalMode: ApprovalMode {
@@ -211,6 +211,7 @@ public class ApprovalFooterView: UIView {
         switch approvalTextMode {
         case .none:
             textfieldStack.isHidden = true
+            textfield.resignFirstResponder()
         case .active(let placeholderText):
             textfieldStack.isHidden = false
             textfield.placeholderText = placeholderText

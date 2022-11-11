@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "AppContext.h"
@@ -32,23 +33,16 @@ id<AppContext> CurrentAppContext(void)
     return currentAppContext;
 }
 
-void SetCurrentAppContext(id<AppContext> appContext)
+void SetCurrentAppContext(id<AppContext> appContext, BOOL isRunningTests)
 {
     // The main app context should only be set once.
     //
     // App extensions may be opened multiple times in the same process,
     // so statics will persist.
-    OWSCAssertDebug(!currentAppContext || !currentAppContext.isMainApp);
+    OWSCAssertDebug(!currentAppContext || !currentAppContext.isMainApp || isRunningTests);
 
     currentAppContext = appContext;
 }
-
-#ifdef TESTABLE_BUILD
-void ClearCurrentAppContextForTests()
-{
-    currentAppContext = nil;
-}
-#endif
 
 void ExitShareExtension(void)
 {

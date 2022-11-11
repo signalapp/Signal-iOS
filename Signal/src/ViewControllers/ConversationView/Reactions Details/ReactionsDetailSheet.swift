@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -15,7 +16,6 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
     let emojiCountsCollectionView = EmojiCountsCollectionView()
 
     override var interactiveScrollViews: [UIScrollView] { emojiReactorsViews }
-    override var handlePosition: HandlePosition { .outside }
 
     private var emojiCounts: [InteractionReactionState.EmojiCount] {
         reactionState.emojiCounts

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -82,15 +83,7 @@ extension PrivateStoryAddRecipientsSettingsViewController: MemberViewDelegate {
 
     public func memberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool { true }
 
-    public func memberViewWillRenderRecipient(_ recipient: PickedRecipient) {}
-
     public func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> AnyPromise { AnyPromise(Promise.value(())) }
-
-    public func memberViewShowInvalidRecipientAlert(_ recipient: PickedRecipient) {}
-
-    public func memberViewNoUuidSubtitleForRecipient(_ recipient: PickedRecipient) -> String? { nil }
-
-    public func memberViewGetRecipientStateForRecipient(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> RecipientPickerRecipientState? { nil }
 
     public func memberViewShouldShowMemberCount() -> Bool { false }
 
@@ -102,6 +95,10 @@ extension PrivateStoryAddRecipientsSettingsViewController: MemberViewDelegate {
         guard let address = recipient.address else { return false }
         return thread.addresses.contains(address)
     }
+
+    public func memberViewCustomIconNameForPickedMember(_ recipient: PickedRecipient) -> String? { nil }
+
+    public func memberViewCustomIconColorForPickedMember(_ recipient: PickedRecipient) -> UIColor? { nil }
 
     public func memberViewDismiss() {
         navigationController?.popViewController(animated: true)

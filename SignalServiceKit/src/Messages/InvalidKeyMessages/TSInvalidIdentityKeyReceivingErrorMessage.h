@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import <SignalServiceKit/TSInvalidIdentityKeyErrorMessage.h>
@@ -13,11 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage : TSInvalidIdentityKeyErrorMessage
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-
-// This initializer is only for internal use.
-- (nullable instancetype)initForUnknownIdentityKeyWithTimestamp:(uint64_t)timestamp
-                                                         thread:(TSThread *)thread
-                                               incomingEnvelope:(SSKProtoEnvelope *)envelope NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -65,6 +61,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 #ifdef TESTABLE_BUILD
 + (nullable instancetype)untrustedKeyWithEnvelope:(SSKProtoEnvelope *)envelope
+                                   fakeSourceE164:(NSString *)fakeSourceE164
                                   withTransaction:(SDSAnyWriteTransaction *)transaction;
 #endif
 

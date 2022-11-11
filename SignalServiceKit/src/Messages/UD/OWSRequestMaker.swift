@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -26,29 +27,13 @@ public enum RequestMakerError: Error {
 
 // MARK: -
 
-@objc(OWSRequestMakerResult)
-public class RequestMakerResult: NSObject {
-    @objc
+public struct RequestMakerResult {
     public let response: HTTPResponse
-
-    @objc
     public let wasSentByUD: Bool
-
-    @objc
     public let wasSentByWebsocket: Bool
 
-    @objc
     public var responseJson: Any? {
         response.responseBodyJson
-    }
-
-    @objc
-    public init(response: HTTPResponse,
-                wasSentByUD: Bool,
-                wasSentByWebsocket: Bool) {
-        self.response = response
-        self.wasSentByUD = wasSentByUD
-        self.wasSentByWebsocket = wasSentByWebsocket
     }
 }
 
@@ -56,12 +41,27 @@ public class RequestMakerResult: NSObject {
 //
 // * UD auth-to-Non-UD auth failover.
 // * Websocket-to-REST failover.
-@objc(OWSRequestMaker)
-public class RequestMaker: NSObject {
+public final class RequestMaker: Dependencies {
 
     public typealias RequestFactoryBlock = (SMKUDAccessKey?) -> TSRequest?
     public typealias UDAuthFailureBlock = () -> Void
     public typealias WebsocketFailureBlock = () -> Void
+
+    public struct Options: OptionSet {
+        public let rawValue: Int
+
+        public init(rawValue: Int) {
+            self.rawValue = rawValue
+        }
+
+        /// If the initial request uses UD and that fails, send the request again as
+        /// an identified request.
+        static let allowIdentifiedFallback = Options(rawValue: 1 << 0)
+
+        /// This RequestMaker is used when fetching profiles, so it shouldn't kick
+        /// off additional profile fetches when errors occur.
+        static let isProfileFetch = Options(rawValue: 1 << 1)
+    }
 
     private let label: String
     private let requestFactoryBlock: RequestFactoryBlock
@@ -69,28 +69,24 @@ public class RequestMaker: NSObject {
     private let websocketFailureBlock: WebsocketFailureBlock
     private let address: SignalServiceAddress
     private let udAccess: OWSUDAccess?
-    private let canFailoverUDAuth: Bool
+    private let options: Options
 
-    @objc
-    public init(label: String,
-                requestFactoryBlock : @escaping RequestFactoryBlock,
-                udAuthFailureBlock : @escaping UDAuthFailureBlock,
-                websocketFailureBlock : @escaping WebsocketFailureBlock,
-                address: SignalServiceAddress,
-                udAccess: OWSUDAccess?,
-                canFailoverUDAuth: Bool) {
+    public init(
+        label: String,
+        requestFactoryBlock: @escaping RequestFactoryBlock,
+        udAuthFailureBlock: @escaping UDAuthFailureBlock,
+        websocketFailureBlock: @escaping WebsocketFailureBlock,
+        address: SignalServiceAddress,
+        udAccess: OWSUDAccess?,
+        options: Options
+    ) {
         self.label = label
         self.requestFactoryBlock = requestFactoryBlock
         self.udAuthFailureBlock = udAuthFailureBlock
         self.websocketFailureBlock = websocketFailureBlock
         self.address = address
         self.udAccess = udAccess
-        self.canFailoverUDAuth = canFailoverUDAuth
-    }
-
-    @objc
-    public func makeRequestObjc() -> AnyPromise {
-        AnyPromise(makeRequest())
+        self.options = options
     }
 
     public func makeRequest() -> Promise<RequestMakerResult> {
@@ -148,10 +144,12 @@ public class RequestMaker: NSObject {
                     // If a UD request fails due to service response (as opposed to network
                     // failure), mark address as _not_ in UD mode, then retry.
                     self.udManager.setUnidentifiedAccessMode(.disabled, address: self.address)
-                    self.profileManager.fetchProfile(for: self.address)
+                    if !self.options.contains(.isProfileFetch) {
+                        self.profileManager.fetchProfile(for: self.address)
+                    }
                     self.udAuthFailureBlock()
 
-                    if self.canFailoverUDAuth {
+                    if self.options.contains(.allowIdentifiedFallback) {
                         Logger.info("UD websocket request '\(self.label)' auth failed; failing over to non-UD websocket request.")
                         return self.makeRequestInternal(skipUD: true, skipWebsocket: skipWebsocket)
                     } else {
@@ -203,10 +201,12 @@ public class RequestMaker: NSObject {
                     // If a UD request fails due to service response (as opposed to network
                     // failure), mark recipient as _not_ in UD mode, then retry.
                     self.udManager.setUnidentifiedAccessMode(.disabled, address: self.address)
-                    self.profileManager.fetchProfile(for: self.address)
+                    if !self.options.contains(.isProfileFetch) {
+                        self.profileManager.fetchProfile(for: self.address)
+                    }
                     self.udAuthFailureBlock()
 
-                    if self.canFailoverUDAuth {
+                    if self.options.contains(.allowIdentifiedFallback) {
                         Logger.info("UD REST request '\(self.label)' auth failed; failing over to non-UD REST request.")
                         return self.makeRequestInternal(skipUD: true, skipWebsocket: skipWebsocket)
                     } else {
@@ -234,7 +234,6 @@ public class RequestMaker: NSObject {
         guard udAccess.udAccessMode == .unknown else {
             return
         }
-
         if udAccess.isRandomKey {
             // If a UD request succeeds for an unknown user with a random key,
             // mark address as .unrestricted.
@@ -244,8 +243,13 @@ public class RequestMaker: NSObject {
             // mark address as .enabled.
             udManager.setUnidentifiedAccessMode(.enabled, address: address)
         }
-        DispatchQueue.main.async {
-            self.profileManager.fetchProfile(for: self.address)
+
+        if !self.options.contains(.isProfileFetch) {
+            // If this request isn't a profile fetch, kick off a profile fetch. If it
+            // is a profile fetch, don't bother fetching it *again*.
+            DispatchQueue.main.async {
+                self.profileManager.fetchProfile(for: self.address)
+            }
         }
     }
 }

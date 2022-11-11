@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Signal precisa usar Apple Music para reproducir os ficheiros multimedia.";
-NSCameraUsageDescription = "Signal utiliza a cámara para tomar fotos e facer videochamadas.";
-NSContactsUsageDescription = "Signal usa os teus contactos para atopar usuarios que coñeces. Non gardamos os contactos no servidor.";
-NSFaceIDUsageDescription = "O Bloqueo de Pantalla de Signal usa Face ID.";
-NSLocationWhenInUseUsageDescription = "Signal precisa acceder a túa localización para poder compartir a localización actual.";
-NSMicrophoneUsageDescription = "Signal precisa acceder ao micrófono para facer e recibir chamadas e gravar mensaxes de voz.";
-NSPhotoLibraryAddUsageDescription = "Signal gardará as fotos na biblioteca.";
-NSPhotoLibraryUsageDescription = "Signal permitirache escoller as fotos da biblioteca a enviar.";
-NSLocalNetworkUsageDescription = "Signal uses the local network to allow you to directly transfer your account to a new phone. It will not be used unless you explicitly choose to initiate a transfer to a new device.";

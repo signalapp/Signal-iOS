@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -9,7 +10,7 @@ extension ConversationViewController {
     func presentContextMenu(with messageActions: [MessageAction],
                             focusedOn cell: UICollectionViewCell,
                             andModel model: CVItemViewModelImpl) {
-        let keyboardActive = inputToolbar?.isInputViewFirstResponder() ?? false
+        let keyboardActive = inputToolbar?.isInputViewFirstResponder ?? false
         let interaction = ChatHistoryContextMenuInteraction(delegate: self, itemViewModel: model, thread: thread, messageActions: messageActions, initiatingGestureRecognizer: collectionViewContextMenuGestureRecognizer, keyboardWasActive: keyboardActive)
         collectionViewActiveContextMenuInteraction = interaction
         cell.addInteraction(interaction)

@@ -1,8 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+
+// MARK: - Enqueue messages
 
 @objc
 public extension ThreadUtil {
@@ -44,7 +47,7 @@ public extension ThreadUtil {
 
         Self.enqueueSendAsyncWrite { transaction in
             message.anyInsert(transaction: transaction)
-            self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
             if message.hasRenderableContent() { thread.donateSendMessageIntent(for: message, transaction: transaction) }
         }
 
@@ -60,7 +63,7 @@ public extension ThreadUtil {
 
         let message = builder.build(transaction: transaction)
         message.anyInsert(transaction: transaction)
-        self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+        self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
 
         if message.hasRenderableContent() { thread.donateSendMessageIntent(for: message, transaction: transaction) }
 
@@ -74,7 +77,7 @@ public extension ThreadUtil {
         isHighPriority: Bool = false,
         transaction: SDSAnyWriteTransaction
     ) -> Promise<Void> {
-        let promise = messageSenderJobQueue.add(
+        let promise = sskJobQueues.messageSenderJobQueue.add(
             .promise,
             message: message.asPreparer,
             limitToCurrentProcessLifetime: limitToCurrentProcessLifetime,
@@ -87,6 +90,30 @@ public extension ThreadUtil {
                 .donateSendMessageIntent(for: message, transaction: transaction)
         }
         return promise
+    }
+}
+
+// MARK: - Delete all content
+
+extension ThreadUtil {
+    public static func deleteAllContentWithSneakyTransaction() {
+        Logger.info("")
+
+        databaseStorage.write { transaction in
+            TSThread.anyEnumerate(transaction: transaction, batched: true) { thread, _ in
+                thread.softDelete(with: transaction)
+            }
+
+            TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
+            StoryMessage.anyRemoveAllWithInstantiation(transaction: transaction)
+            TSAttachment.anyRemoveAllWithInstantation(transaction: transaction)
+
+            // Deleting attachments above should be enough to remove any gallery items, but
+            // we redunantly clean up *all* gallery items to be safe.
+            MediaGalleryManager.didRemoveAllContent(transaction: transaction)
+        }
+
+        TSAttachmentStream.deleteAttachmentsFromDisk()
     }
 }
 
@@ -106,6 +133,14 @@ extension TSThread {
         // We never need to do this pre-iOS 13, because sharing
         // suggestions aren't support in previous iOS versions.
         guard #available(iOS 13, *) else { return }
+
+        // Never donate for story sends or replies, we don't want them as share suggestions
+        guard
+            !(outgoingMessage is OutgoingStoryMessage),
+            !outgoingMessage.isGroupStoryReply
+        else {
+            return
+        }
 
         guard SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return }
         guard let sendMessageIntent = generateSendMessageIntent(context: .outgoingMessage(outgoingMessage), transaction: transaction) else { return }
@@ -132,22 +167,6 @@ extension TSThread {
 
         guard SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return nil }
 
-        let sendMessageIntent: INSendMessageIntent?
-
-        if #available(iOS 15, *) {
-            sendMessageIntent = generateRichCommunicationNotificationSendMessageIntent(context: context, transaction: transaction)
-        } else {
-            sendMessageIntent = generateChatSuggestionSendMessageIntent(transaction: transaction)
-        }
-
-        return sendMessageIntent
-    }
-
-    @available(iOS 15, *)
-    private func generateRichCommunicationNotificationSendMessageIntent(
-        context: IntentContext,
-        transaction: SDSAnyReadTransaction
-    ) -> INSendMessageIntent? {
         guard let localAddress = tsAccountManager.localAddress else {
             owsFailDebug("Missing local address")
             return nil
@@ -194,29 +213,41 @@ extension TSThread {
         }
         let inSender = inPersonForRecipient(senderAddress, transaction: transaction)
 
-        let sendMessageIntent = INSendMessageIntent(
-            recipients: recipients,
-            outgoingMessageType: .outgoingMessageText,
-            content: nil,
-            speakableGroupName: isGroupThread ? INSpeakableString(spokenPhrase: threadName) : nil,
-            conversationIdentifier: conversationIdentifier,
-            serviceName: nil,
-            sender: inSender,
-            attachments: nil
-        )
+        let sendMessageIntent: INSendMessageIntent
+        if #available(iOS 14, *) {
+            sendMessageIntent = INSendMessageIntent(
+                recipients: recipients,
+                outgoingMessageType: .outgoingMessageText,
+                content: nil,
+                speakableGroupName: isGroupThread ? INSpeakableString(spokenPhrase: threadName) : nil,
+                conversationIdentifier: conversationIdentifier,
+                serviceName: nil,
+                sender: inSender
+            )
+        } else {
+            sendMessageIntent = INSendMessageIntent(
+                recipients: recipients,
+                content: nil,
+                speakableGroupName: isGroupThread ? INSpeakableString(spokenPhrase: threadName) : nil,
+                conversationIdentifier: conversationIdentifier,
+                serviceName: nil,
+                sender: inSender
+            )
+        }
 
         if isGroupThread {
+            if #available(iOS 15, *) {
+                let donationMetadata = INSendMessageIntentDonationMetadata()
+                donationMetadata.recipientCount = recipientAddresses(with: transaction).count
 
-            let donationMetadata = INSendMessageIntentDonationMetadata()
-            donationMetadata.recipientCount = recipientAddresses(with: transaction).count
+                if let message = message {
+                    let mentionedAddresses = MentionFinder.mentionedAddresses(for: message, transaction: transaction.unwrapGrdbRead)
+                    donationMetadata.mentionsCurrentUser = mentionedAddresses.contains(localAddress)
+                    donationMetadata.isReplyToCurrentUser = message.quotedMessage?.authorAddress.isEqualToAddress(localAddress) ?? false
+                }
 
-            if let message = message {
-                let mentionedAddresses = MentionFinder.mentionedAddresses(for: message, transaction: transaction.unwrapGrdbRead)
-                donationMetadata.mentionsCurrentUser = mentionedAddresses.contains(localAddress)
-                donationMetadata.isReplyToCurrentUser = message.quotedMessage?.authorAddress.isEqualToAddress(localAddress) ?? false
+                sendMessageIntent.donationMetadata = donationMetadata
             }
-
-            sendMessageIntent.donationMetadata = donationMetadata
 
             if let image = intentThreadAvatarImage(transaction: transaction) {
                 sendMessageIntent.setImage(image, forParameterNamed: \.speakableGroupName)
@@ -227,50 +258,29 @@ extension TSThread {
     }
 
     @available(iOS 13, *)
-    private func generateChatSuggestionSendMessageIntent(transaction: SDSAnyReadTransaction) -> INSendMessageIntent {
-        let threadName = contactsManager.displayName(for: self, transaction: transaction)
-
-        let sendMessageIntent = INSendMessageIntent(
-            recipients: nil,
-            content: nil,
-            speakableGroupName: INSpeakableString(spokenPhrase: threadName),
-            conversationIdentifier: uniqueId,
-            serviceName: nil,
-            sender: nil
-        )
-
-        if let image = intentThreadAvatarImage(transaction: transaction) {
-            sendMessageIntent.setImage(image, forParameterNamed: \.speakableGroupName)
-        }
-
-        return sendMessageIntent
-    }
-
-    @available(iOS 15, *)
-    public func generateStartCallIntent(callerAddress: SignalServiceAddress) -> INStartCallIntent? {
+    public func generateIncomingCallIntent(callerAddress: SignalServiceAddress) -> INIntent? {
         databaseStorage.read { transaction in
+            guard !self.isGroupThread else {
+                // Fall back to a "send message" intent for group calls,
+                // because the "start call" intent makes the notification look too much like a 1:1 call.
+                return self.generateSendMessageIntent(context: .senderAddress(callerAddress),
+                                                      transaction: transaction)
+            }
+
             guard SSKPreferences.areIntentDonationsEnabled(transaction: transaction) else { return nil }
 
             let caller = inPersonForRecipient(callerAddress, transaction: transaction)
 
-            let startCallIntent = INStartCallIntent(callRecordFilter: nil,
-                                                    callRecordToCallBack: nil,
-                                                    audioRoute: .unknown,
+            let startCallIntent = INStartCallIntent(audioRoute: .unknown,
                                                     destinationType: .normal,
                                                     contacts: [caller],
+                                                    recordTypeForRedialing: .unknown,
                                                     callCapability: .unknown)
-
-            if self.isGroupThread {
-                if let image = intentThreadAvatarImage(transaction: transaction) {
-                    startCallIntent.setImage(image, forParameterNamed: \.callRecordToCallBack)
-                }
-            }
 
             return startCallIntent
         }
     }
 
-    @available(iOS 15, *)
     private func inPersonForRecipient(_ recipient: SignalServiceAddress,
                                       transaction: SDSAnyReadTransaction) -> INPerson {
 
@@ -291,7 +301,11 @@ extension TSThread {
 
         // Generate avatar
         let image = intentRecipientAvatarImage(recipient: recipient, transaction: transaction)
-        return INPerson(personHandle: handle, nameComponents: nameComponents, displayName: contactName, image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false, suggestionType: suggestionType)
+        if #available(iOS 15, *) {
+            return INPerson(personHandle: handle, nameComponents: nameComponents, displayName: contactName, image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false, suggestionType: suggestionType)
+        } else {
+            return INPerson(personHandle: handle, nameComponents: nameComponents, displayName: contactName, image: image, contactIdentifier: nil, customIdentifier: nil, isMe: false)
+        }
     }
 
     // Use the same point size as chat list avatars, so it's likely cached and ready for the NSE.

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -158,14 +159,14 @@ public class LongTextViewController: OWSViewController {
 
         footer.items = [
             UIBarButtonItem(
-                image: Theme.iconImage(.messageActionShare),
+                image: Theme.iconImage(.messageActionShare24),
                 style: .plain,
                 target: self,
                 action: #selector(shareButtonPressed)
             ),
             UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
             UIBarButtonItem(
-                image: Theme.iconImage(.messageActionForward),
+                image: Theme.iconImage(.messageActionForward24),
                 style: .plain,
                 target: self,
                 action: #selector(forwardButtonPressed)

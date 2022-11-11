@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSChunkedOutputStream.h"
@@ -48,14 +49,15 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     while (YES) {
-        NSInteger written = [self.outputStream write:data.bytes maxLength:data.length];
-        if (written < 1) {
+        NSInteger signed_written = [self.outputStream write:data.bytes maxLength:data.length];
+        if (signed_written < 1) {
             OWSFailDebug(@"could not write to output stream.");
             self.hasError = YES;
             return NO;
         }
-        if (written < data.length) {
-            data = [data subdataWithRange:NSMakeRange(written, data.length - written)];
+        NSUInteger unsigned_written = (NSUInteger)signed_written;
+        if (unsigned_written < data.length) {
+            data = [data subdataWithRange:NSMakeRange(unsigned_written, data.length - unsigned_written)];
         } else {
             return YES;
         }
@@ -67,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     while (YES) {
         if (value <= 0x7F) {
-            return [self writeByte:value];
+            return [self writeByte:(uint8_t)value];
         } else {
             if (![self writeByte:((value & 0x7F) | 0x80)]) {
                 return NO;

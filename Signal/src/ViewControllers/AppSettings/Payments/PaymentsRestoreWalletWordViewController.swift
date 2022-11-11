@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 public class PaymentsRestoreWalletWordViewController: OWSViewController {
@@ -71,8 +73,8 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
         textfield.becomeFirstResponder()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateContents()
     }
@@ -84,7 +86,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
         rootView.alignment = .fill
         view.addSubview(rootView)
         rootView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        autoPinView(toBottomOfViewControllerOrKeyboard: rootView, avoidNotch: true)
+        rootView.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
         rootView.autoPinWidthToSuperviewMargins()
 
         updateContents()

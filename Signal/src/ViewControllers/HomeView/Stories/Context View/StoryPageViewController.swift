@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -7,7 +8,10 @@ import UIKit
 import SignalUI
 
 protocol StoryPageViewControllerDataSource: AnyObject {
-    func storyPageViewControllerAvailableContexts(_ storyPageViewController: StoryPageViewController) -> [StoryContext]
+    func storyPageViewControllerAvailableContexts(
+        _ storyPageViewController: StoryPageViewController,
+        hiddenStoryFilter: Bool?
+    ) -> [StoryContext]
 }
 
 class StoryPageViewController: UIPageViewController {
@@ -28,9 +32,19 @@ class StoryPageViewController: UIPageViewController {
 
     weak var contextDataSource: StoryPageViewControllerDataSource?
     let viewableContexts: [StoryContext]
-    private var interactiveDismissCoordinator: StoryInteractiveTransitionCoordinator?
+    private let hiddenStoryFilter: Bool?
+    private lazy var interactiveDismissCoordinator = StoryInteractiveTransitionCoordinator(pageViewController: self)
 
     private let audioActivity = AudioActivity(audioDescription: "StoriesViewer", behavior: .playbackMixWithOthers)
+
+    private var isUserDraggingScrollView: Bool {
+        guard let scrollView = viewIfLoaded?.subviews.compactMap({ $0 as? UIScrollView }).first else {
+            return false
+        }
+        return scrollView.isDragging || scrollView.isDecelerating
+    }
+
+    private var isTransitioningByScroll = false
 
     // MARK: View Controllers
 
@@ -45,12 +59,14 @@ class StoryPageViewController: UIPageViewController {
     required init(
         context: StoryContext,
         viewableContexts: [StoryContext]? = nil,
+        hiddenStoryFilter: Bool? = nil, /* If true only hidden stories, if false only unhidden. */
         loadMessage: StoryMessage? = nil,
         action: StoryContextViewController.Action = .none,
         onlyRenderMyStories: Bool = false
     ) {
         self.onlyRenderMyStories = onlyRenderMyStories
         self.viewableContexts = viewableContexts ?? [context]
+        self.hiddenStoryFilter = hiddenStoryFilter
         super.init(transitionStyle: .scroll, navigationOrientation: .vertical, options: nil)
         self.currentContext = context
         currentContextViewController.loadMessage = loadMessage
@@ -75,14 +91,14 @@ class StoryPageViewController: UIPageViewController {
         delegate = self
         view.backgroundColor = .black
 
-        interactiveDismissCoordinator = StoryInteractiveTransitionCoordinator(pageViewController: self)
+        // Init the lazy coordinator
+        _ = interactiveDismissCoordinator
     }
 
-    private var isDisplayLinkPaused = false {
-        didSet {
-            displayLink?.isPaused = isDisplayLinkPaused
-        }
-    }
+    /// Doesn't actually call `DisplayLink.isPaused`, but just prevents steps from passing
+    /// down to the current context controller. We keep it going even when "pausing" so we can catch
+    /// UIPageViewController bugs where it gets stuck mid-transition.
+    private var updatesContextForDisplayLink = false
 
     private var displayLink: CADisplayLink?
 
@@ -101,7 +117,6 @@ class StoryPageViewController: UIPageViewController {
             let displayLink = CADisplayLink(target: self, selector: #selector(displayLinkStep))
             displayLink.add(to: .main, forMode: .common)
             self.displayLink = displayLink
-            displayLink.isPaused = isDisplayLinkPaused
         }
         viewIsAppeared = true
     }
@@ -133,13 +148,31 @@ class StoryPageViewController: UIPageViewController {
         viewIsAppeared = false
     }
 
-    @objc func owsApplicationWillEnterForeground() {
+    @objc
+    func owsApplicationWillEnterForeground() {
         // reset mute state if foregrounded while this is on screen.
         self.isMuted = true
     }
 
     @objc
     func displayLinkStep(_ displayLink: CADisplayLink) {
+        // UIPageViewController gets buggy and gives us mismatched willTransition and
+        // didFinishTransitioning delegate callbacks, calling the former and not the latter.
+        // This happens rarely, and only when swiping rapidly between pages and cancelling a swipe.
+        // Since the displaylink is firing off anyway, detect this (if we have pending controllers
+        // and an ongoing paging drag transition but the scrollview isnt dragging) and resolve it
+        // by closing the transition out ourselves.
+        if
+            pendingTransitionViewControllers.isEmpty.negated,
+            isTransitioningByScroll,
+            !isUserDraggingScrollView
+        {
+            didFinishTransitioning(completed: false)
+            return
+        }
+        guard !updatesContextForDisplayLink else {
+            return
+        }
         currentContextViewController.displayLinkStep(displayLink)
     }
 
@@ -259,12 +292,23 @@ class StoryPageViewController: UIPageViewController {
 
 extension StoryPageViewController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
+        willTransition(to: pendingViewControllers)
+    }
+
+    private func willTransition(to pendingViewControllers: [UIViewController], fromDrag: Bool = true) {
         self.pendingTransitionViewControllers = pendingViewControllers
             .map { $0 as! StoryContextViewController }
-        // Note: this also starts playing the next one transitioning in
-        pendingTransitionViewControllers.forEach { $0.resetForPresentation() }
+        pendingTransitionViewControllers.forEach {
+            $0.resetForPresentation()
+            $0.pause()
+        }
 
         currentContextViewController.pause()
+        updatesContextForDisplayLink = true
+        self.view.isUserInteractionEnabled = false
+        if fromDrag {
+            isTransitioningByScroll = true
+        }
     }
 
     func pageViewController(
@@ -276,7 +320,10 @@ extension StoryPageViewController: UIPageViewControllerDelegate {
         guard finished else {
             return
         }
+        didFinishTransitioning(completed: completed)
+    }
 
+    func didFinishTransitioning(completed: Bool) {
         if !completed {
             // The transition was stopped, reverting to the previous controller.
             // Stop the pending ones that are now cancelled.
@@ -284,8 +331,15 @@ extension StoryPageViewController: UIPageViewControllerDelegate {
             // Play the current one (which is the one we started out with and paused
             // when the transition began)
             currentContextViewController.play()
+        } else {
+            currentContextViewController.resetForPresentation()
+            currentContextViewController.play()
         }
         pendingTransitionViewControllers = []
+        updatesContextForDisplayLink = false
+        self.view.isUserInteractionEnabled = true
+        currentContextViewController.pageControllerDidAppear()
+        isTransitioningByScroll = false
     }
 }
 
@@ -304,21 +358,21 @@ extension StoryPageViewController: UIPageViewControllerDataSource {
 extension StoryPageViewController: StoryContextViewControllerDelegate {
     var availableContexts: [StoryContext] {
         guard let contextDataSource = contextDataSource else { return viewableContexts }
-        let availableContexts = contextDataSource.storyPageViewControllerAvailableContexts(self)
+        let availableContexts = contextDataSource.storyPageViewControllerAvailableContexts(self, hiddenStoryFilter: hiddenStoryFilter)
         return viewableContexts.filter { availableContexts.contains($0) }
     }
 
     var previousStoryContext: StoryContext? {
-        guard let contextIndex = viewableContexts.firstIndex(of: currentContext),
-              let contextBefore = viewableContexts[safe: contextIndex.advanced(by: -1)] else {
+        guard let contextIndex = availableContexts.firstIndex(of: currentContext),
+              let contextBefore = availableContexts[safe: contextIndex.advanced(by: -1)] else {
             return nil
         }
         return contextBefore
     }
 
     var nextStoryContext: StoryContext? {
-        guard let contextIndex = viewableContexts.firstIndex(of: currentContext),
-              let contextAfter = viewableContexts[safe: contextIndex.advanced(by: 1)] else {
+        guard let contextIndex = availableContexts.firstIndex(of: currentContext),
+              let contextAfter = availableContexts[safe: contextIndex.advanced(by: 1)] else {
             return nil
         }
         return contextAfter
@@ -328,15 +382,26 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
         _ storyContextViewController: StoryContextViewController,
         loadPositionIfRead: StoryContextViewController.LoadPosition
     ) {
+        guard
+            pendingTransitionViewControllers.isEmpty,
+            storyContextViewController == currentContextViewController
+        else {
+            return
+        }
+
         guard let nextContext = nextStoryContext else {
             dismiss(animated: true)
             return
         }
+        let newControllers = [StoryContextViewController(context: nextContext, loadPositionIfRead: loadPositionIfRead, delegate: self)]
+        self.willTransition(to: newControllers, fromDrag: false)
         setViewControllers(
-            [StoryContextViewController(context: nextContext, loadPositionIfRead: loadPositionIfRead, delegate: self)],
+            newControllers,
             direction: .forward,
             animated: true
-        )
+        ) { completed in
+            self.didFinishTransitioning(completed: completed)
+        }
     }
 
     func storyContextViewControllerWantsTransitionToPreviousContext(
@@ -347,16 +412,20 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
             storyContextViewController.resetForPresentation()
             return
         }
+        let newControllers = [StoryContextViewController(context: previousContext, loadPositionIfRead: loadPositionIfRead, delegate: self)]
+        self.willTransition(to: newControllers, fromDrag: false)
         setViewControllers(
-            [StoryContextViewController(context: previousContext, loadPositionIfRead: loadPositionIfRead, delegate: self)],
+            newControllers,
             direction: .reverse,
             animated: true
-        )
+        ) { completed in
+            self.didFinishTransitioning(completed: completed)
+        }
     }
 
     func storyContextViewController(_ storyContextViewController: StoryContextViewController, contextAfter context: StoryContext) -> StoryContext? {
-        guard let contextIndex = viewableContexts.firstIndex(of: context),
-              let contextAfter = viewableContexts[safe: contextIndex.advanced(by: 1)] else {
+        guard let contextIndex = availableContexts.firstIndex(of: context),
+              let contextAfter = availableContexts[safe: contextIndex.advanced(by: 1)] else {
             return nil
         }
         return contextAfter
@@ -370,11 +439,11 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
         else {
             return
         }
-        isDisplayLinkPaused = true
+        updatesContextForDisplayLink = true
     }
 
     func storyContextViewControllerDidResume(_ storyContextViewController: StoryContextViewController) {
-        isDisplayLinkPaused = false
+        updatesContextForDisplayLink = false
     }
 
     func storyContextViewControllerShouldOnlyRenderMyStories(_ storyContextViewController: StoryContextViewController) -> Bool {
@@ -407,13 +476,13 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
             presentingViewController: presentingViewController,
             isPresenting: false
         ) else {
-            return StorySlideAnimator(interactiveEdge: interactiveDismissCoordinator?.interactiveEdge ?? .none)
+            return StorySlideAnimator(coordinator: interactiveDismissCoordinator)
         }
         return StoryZoomAnimator(storyTransitionContext: storyTransitionContext)
     }
 
     public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        guard let interactiveDismissCoordinator = interactiveDismissCoordinator, interactiveDismissCoordinator.interactionInProgress else { return nil }
+        guard interactiveDismissCoordinator.interactionInProgress else { return nil }
         interactiveDismissCoordinator.mode = animator is StoryZoomAnimator ? .zoom : .slide
         return interactiveDismissCoordinator
     }
@@ -460,15 +529,18 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
             return nil
         }
 
+        guard let storyView = storyView(for: storyMessage) else {
+            return nil
+        }
+
         return .init(
             isPresenting: isPresenting,
             thumbnailView: thumbnailView,
-            storyView: try storyView(for: storyMessage),
+            storyView: storyView,
             storyThumbnailSize: try storyThumbnailSize(for: storyMessage),
             thumbnailRepresentsStoryView: thumbnailRepresentsStoryView,
             pageViewController: self,
-            interactiveGesture: interactiveDismissCoordinator?.interactionInProgress == true
-                ? interactiveDismissCoordinator?.panGestureRecognizer : nil
+            coordinator: interactiveDismissCoordinator
         )
     }
 
@@ -489,12 +561,13 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
         }
     }
 
-    private func storyView(for presentingMessage: StoryMessage) throws -> UIView {
+    private func storyView(for presentingMessage: StoryMessage) -> UIView? {
         let storyView: UIView
         switch presentingMessage.attachment {
         case .file(let attachmentId):
             guard let attachment = databaseStorage.read(block: { TSAttachment.anyFetch(uniqueId: attachmentId, transaction: $0) }) else {
-                throw OWSAssertionError("Unexpectedly missing attachment for story message")
+                // Can happen if the story was deleted by the sender while in the viewer.
+                return nil
             }
 
             let view = UIView()

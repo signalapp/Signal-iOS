@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSDevice.h"
@@ -235,7 +236,7 @@ NSString *const kLastReceivedSyncMessageKey = @"kLastReceivedSyncMessage";
         instance = [MTLValueTransformer transformerUsingForwardBlock:^id(id value, BOOL *success, NSError **error) {
             if ([value isKindOfClass:[NSNumber class]]) {
                 NSNumber *number = (NSNumber *)value;
-                NSDate *result = [NSDate ows_dateWithMillisecondsSince1970:[number longLongValue]];
+                NSDate *result = [NSDate ows_dateWithMillisecondsSince1970:[number unsignedLongLongValue]];
                 if (result) {
                     *success = YES;
                     return result;
@@ -251,7 +252,8 @@ NSString *const kLastReceivedSyncMessageKey = @"kLastReceivedSyncMessage";
             reverseBlock:^id(id value, BOOL *success, NSError **error) {
                 if ([value isKindOfClass:[NSDate class]]) {
                     NSDate *date = (NSDate *)value;
-                    NSNumber *result = [NSNumber numberWithLongLong:[NSDate ows_millisecondsSince1970ForDate:date]];
+                    NSNumber *result =
+                        [NSNumber numberWithUnsignedLongLong:[NSDate ows_millisecondsSince1970ForDate:date]];
                     if (result) {
                         *success = YES;
                         return result;

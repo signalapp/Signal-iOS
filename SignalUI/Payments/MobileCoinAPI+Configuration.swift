@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -113,11 +114,26 @@ extension MobileCoinAPI {
 
     // MARK: - AttestationInfo
 
+    struct AttestationRawInfo {
+        let measurement: Data
+        let hardeningAdvisories: [String]
+
+        static func of(_ measurement: Data, _ hardeningAdvisories: [String] = []) -> Self {
+            return AttestationRawInfo(measurement: measurement, hardeningAdvisories: hardeningAdvisories)
+        }
+    }
+
     private struct AttestationInfo {
         let productId: UInt16
         let minimumSecurityVersion: UInt16
         let allowedConfigAdvisories: [String]
         let allowedHardeningAdvisories: [String]
+        let measurement: Measurement
+
+        enum Measurement {
+            case enclave(data: Data)
+            case signer(data: Data)
+        }
 
         static let CONSENSUS_PRODUCT_ID: UInt16 = 1
         static let CONSENSUS_SECURITY_VERSION: UInt16 = 1
@@ -128,57 +144,87 @@ extension MobileCoinAPI {
         static let FOG_REPORT_PRODUCT_ID: UInt16 = 4
         static let FOG_REPORT_SECURITY_VERSION: UInt16 = 1
 
-        static var allowedHardeningAdvisories: [String] { ["INTEL-SA-00334", "INTEL-SA-00615"] }
+        static var allAllowedHardeningAdvisories: [String] { ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"] }
 
-        init(productId: UInt16,
-             minimumSecurityVersion: UInt16,
-             allowedConfigAdvisories: [String] = [],
-             allowedHardeningAdvisories: [String] = []) {
+        init(
+            measurement: Measurement,
+            productId: UInt16,
+            minimumSecurityVersion: UInt16,
+            allowedConfigAdvisories: [String] = [],
+            allowedHardeningAdvisories: [String] = []
+        ) {
 
+            self.measurement = measurement
             self.productId = productId
             self.minimumSecurityVersion = minimumSecurityVersion
             self.allowedConfigAdvisories = allowedConfigAdvisories
             self.allowedHardeningAdvisories = allowedHardeningAdvisories
         }
 
-        static var consensus: AttestationInfo {
-            .init(productId: CONSENSUS_PRODUCT_ID,
-                  minimumSecurityVersion: CONSENSUS_SECURITY_VERSION,
-                  allowedHardeningAdvisories: Self.allowedHardeningAdvisories)
+        static func consensus(
+            measurement: Measurement,
+            allowedConfigAdvisories: [String] = [],
+            allowedHardeningAdvisories: [String] = []
+        ) -> AttestationInfo {
+            .init(
+                measurement: measurement,
+                productId: CONSENSUS_PRODUCT_ID,
+                minimumSecurityVersion: CONSENSUS_SECURITY_VERSION,
+                allowedConfigAdvisories: allowedConfigAdvisories,
+                allowedHardeningAdvisories: allowedHardeningAdvisories)
         }
 
-        static var fogView: AttestationInfo {
-            .init(productId: FOG_VIEW_PRODUCT_ID,
-                  minimumSecurityVersion: FOG_VIEW_SECURITY_VERSION,
-                  allowedHardeningAdvisories: Self.allowedHardeningAdvisories)
+        static func fogView(
+            measurement: Measurement,
+            allowedConfigAdvisories: [String] = [],
+            allowedHardeningAdvisories: [String] = []
+        ) -> AttestationInfo {
+            .init(
+                measurement: measurement,
+                productId: FOG_VIEW_PRODUCT_ID,
+                minimumSecurityVersion: FOG_VIEW_SECURITY_VERSION,
+                allowedConfigAdvisories: allowedConfigAdvisories,
+                allowedHardeningAdvisories: allowedHardeningAdvisories)
         }
 
-        static var fogKeyImage: AttestationInfo {
-            .init(productId: FOG_LEDGER_PRODUCT_ID,
-                  minimumSecurityVersion: FOG_LEDGER_SECURITY_VERSION,
-                  allowedHardeningAdvisories: Self.allowedHardeningAdvisories)
+        static func fogKeyImage(
+            measurement: Measurement,
+            allowedConfigAdvisories: [String] = [],
+            allowedHardeningAdvisories: [String] = []
+        ) -> AttestationInfo {
+            .init(
+                measurement: measurement,
+                productId: FOG_LEDGER_PRODUCT_ID,
+                minimumSecurityVersion: FOG_LEDGER_SECURITY_VERSION,
+                allowedConfigAdvisories: allowedConfigAdvisories,
+                allowedHardeningAdvisories: allowedHardeningAdvisories)
         }
 
-        static var fogMerkleProof: AttestationInfo {
-            .init(productId: FOG_LEDGER_PRODUCT_ID,
-                  minimumSecurityVersion: FOG_LEDGER_SECURITY_VERSION,
-                  allowedHardeningAdvisories: Self.allowedHardeningAdvisories)
+        static func fogMerkleProof(
+            measurement: Measurement,
+            allowedConfigAdvisories: [String] = [],
+            allowedHardeningAdvisories: [String] = []
+        ) -> AttestationInfo {
+            .init(
+                measurement: measurement,
+                productId: FOG_LEDGER_PRODUCT_ID,
+                minimumSecurityVersion: FOG_LEDGER_SECURITY_VERSION,
+                allowedConfigAdvisories: allowedConfigAdvisories,
+                allowedHardeningAdvisories: allowedHardeningAdvisories)
         }
 
-        static var fogReport: AttestationInfo {
-            .init(productId: FOG_REPORT_PRODUCT_ID,
-                  minimumSecurityVersion: FOG_REPORT_SECURITY_VERSION,
-                  allowedHardeningAdvisories: Self.allowedHardeningAdvisories)
+        static func fogReport(
+            measurement: Measurement,
+            allowedConfigAdvisories: [String] = [],
+            allowedHardeningAdvisories: [String] = []
+        ) -> AttestationInfo {
+            .init(
+                measurement: measurement,
+                productId: FOG_REPORT_PRODUCT_ID,
+                minimumSecurityVersion: FOG_REPORT_SECURITY_VERSION,
+                allowedConfigAdvisories: allowedConfigAdvisories,
+                allowedHardeningAdvisories: allowedHardeningAdvisories)
         }
-    }
-
-    // MARK: - AttestationType
-
-    private enum AttestationType {
-        case mrSigner(mrSignerData: Data)
-        case mrEnclave(mrEnclaveData: Data)
-        case mrEnclaves(mrEnclaveDatas: [Data])
-        case mrSignerAndMrEnclave(mrSignerData: Data, mrEnclaveData: Data)
     }
 
     // MARK: - OWSAttestationConfig
@@ -190,104 +236,126 @@ extension MobileCoinAPI {
         let fogMerkleProof: Attestation
         let fogReport: Attestation
 
-        private static func buildMrSigner(mrSignerData: Data,
-                                          attestationInfo: AttestationInfo) throws -> MobileCoin.Attestation.MrSigner {
-            let result = MobileCoin.Attestation.MrSigner.make(mrSigner: mrSignerData,
-                                                              productId: attestationInfo.productId,
-                                                              minimumSecurityVersion: attestationInfo.minimumSecurityVersion,
-                                                              allowedConfigAdvisories: attestationInfo.allowedConfigAdvisories,
-                                                              allowedHardeningAdvisories: attestationInfo.allowedHardeningAdvisories)
-            switch result {
-            case .success(let mrSigner):
-                return mrSigner
-            case .failure(let error):
-                owsFailDebug("Error: \(error)")
-                throw error
-            }
-        }
-
-        private static func buildMrEnclave(
-            mrEnclaveData: Data,
-            attestationInfo: AttestationInfo
-        ) throws -> MobileCoin.Attestation.MrEnclave {
-            let result = MobileCoin.Attestation.MrEnclave.make(mrEnclave: mrEnclaveData,
-                                                              allowedConfigAdvisories: attestationInfo.allowedConfigAdvisories,
-                                                              allowedHardeningAdvisories: attestationInfo.allowedHardeningAdvisories)
-            switch result {
-            case .success(let mrEnclave):
-                return mrEnclave
-            case .failure(let error):
-                owsFailDebug("Error: \(error)")
-                throw error
-            }
-        }
-
-        private static func buildMrEnclaves(mrEnclaveDatas: [Data],
-                                            attestationInfo: AttestationInfo) throws -> [MobileCoin.Attestation.MrEnclave] {
-            try mrEnclaveDatas.map {
-                try buildMrEnclave(mrEnclaveData: $0,
-                                   attestationInfo: attestationInfo)
-            }
-        }
-
-        private static func buildAttestation(attestationType: AttestationType,
-                                             attestationInfo: AttestationInfo) throws -> MobileCoin.Attestation {
-            switch attestationType {
-            case .mrSigner(let mrSignerData):
-                let mrSigner = try buildMrSigner(mrSignerData: mrSignerData,
-                                                 attestationInfo: attestationInfo)
-                return MobileCoin.Attestation(mrSigners: [mrSigner])
-            case .mrEnclave(let mrEnclaveData):
-                let mrEnclave = try buildMrEnclave(mrEnclaveData: mrEnclaveData,
-                                                   attestationInfo: attestationInfo)
-                return MobileCoin.Attestation(mrEnclaves: [mrEnclave])
-            case .mrEnclaves(let mrEnclaveDatas):
-                let mrEnclaves = try buildMrEnclaves(mrEnclaveDatas: mrEnclaveDatas,
-                                                     attestationInfo: attestationInfo)
-                return MobileCoin.Attestation(mrEnclaves: mrEnclaves)
-            case .mrSignerAndMrEnclave(let mrSignerData, let mrEnclaveData):
-                let mrSigner = try buildMrSigner(mrSignerData: mrSignerData,
-                                                 attestationInfo: attestationInfo)
-                let mrEnclave = try buildMrEnclave(mrEnclaveData: mrEnclaveData,
-                                                   attestationInfo: attestationInfo)
-                return MobileCoin.Attestation(mrEnclaves: [mrEnclave], mrSigners: [mrSigner])
-            }
-        }
-
-        private static func buildAttestationConfig(mrSigner mrSignerData: Data) -> OWSAttestationConfig {
+        private static func buildAttestation(attestationInfo: [AttestationInfo]) throws -> MobileCoin.Attestation {
             do {
-                let attestationType: AttestationType = .mrSigner(mrSignerData: mrSignerData)
-                func _buildAttestation(attestationInfo: AttestationInfo) throws -> MobileCoin.Attestation {
-                    try buildAttestation(attestationType: attestationType, attestationInfo: attestationInfo)
+                let mrEnclaves = try attestationInfo.compactMap { attestationInfo -> MobileCoin.Attestation.MrEnclave? in
+                    guard case let .enclave(measurement) = attestationInfo.measurement else {
+                        return nil
+                    }
+                    return try MobileCoin.Attestation.MrEnclave.make(
+                        mrEnclave: measurement,
+                        allowedConfigAdvisories: attestationInfo.allowedConfigAdvisories,
+                        allowedHardeningAdvisories: attestationInfo.allowedHardeningAdvisories
+                    ).get()
                 }
-                return OWSAttestationConfig(
-                    consensus: try _buildAttestation(attestationInfo: .consensus),
-                    fogView: try _buildAttestation(attestationInfo: .fogView),
-                    fogKeyImage: try _buildAttestation(attestationInfo: .fogKeyImage),
-                    fogMerkleProof: try _buildAttestation(attestationInfo: .fogMerkleProof),
-                    fogReport: try _buildAttestation(attestationInfo: .fogReport))
+
+                let mrSigners = try attestationInfo.compactMap { attestationInfo -> MobileCoin.Attestation.MrSigner? in
+                    guard case let .signer(measurement) = attestationInfo.measurement else {
+                        return nil
+                    }
+                    return try MobileCoin.Attestation.MrSigner.make(
+                        mrSigner: measurement,
+                        productId: attestationInfo.productId,
+                        minimumSecurityVersion: attestationInfo.minimumSecurityVersion,
+                        allowedConfigAdvisories: attestationInfo.allowedConfigAdvisories,
+                        allowedHardeningAdvisories: attestationInfo.allowedHardeningAdvisories
+                    ).get()
+                }
+
+                return MobileCoin.Attestation(mrEnclaves: mrEnclaves, mrSigners: mrSigners)
             } catch {
-                owsFail("Invalid attestationConfig: \(error)")
+                owsFailDebug("Error: \(error)")
+                throw error
             }
         }
 
-        private static func buildAttestationConfig(mrEnclaveConsensus: [Data],
-                                                   mrEnclaveFogView: [Data],
-                                                   mrEnclaveFogKeyImage: [Data],
-                                                   mrEnclaveFogMerkleProof: [Data],
-                                                   mrEnclaveFogReport: [Data]) -> OWSAttestationConfig {
+        private static func buildAttestationConfig(
+            consensus: [AttestationRawInfo],
+            fogView: [AttestationRawInfo],
+            fogLedger: [AttestationRawInfo],
+            fogReport: [AttestationRawInfo]
+        ) -> OWSAttestationConfig {
+            let consensusAttestations = consensus
+                .map { info -> AttestationInfo in
+                    .consensus(
+                        measurement: .enclave(data: info.measurement),
+                        allowedHardeningAdvisories: info.hardeningAdvisories)
+                }
+            let fogViewAttestations = fogView
+                .map { info  -> AttestationInfo in
+                    .fogView(
+                        measurement: .enclave(data: info.measurement),
+                        allowedHardeningAdvisories: info.hardeningAdvisories)
+                }
+            let fogKeyImageAttestations = fogLedger
+                .map { info -> AttestationInfo in
+                    .fogKeyImage(
+                        measurement: .enclave(data: info.measurement),
+                        allowedHardeningAdvisories: info.hardeningAdvisories)
+                }
+            let fogMerkleProofAttestations = fogLedger
+                .map { info -> AttestationInfo in
+                    .fogMerkleProof(
+                        measurement: .enclave(data: info.measurement),
+                        allowedHardeningAdvisories: info.hardeningAdvisories)
+                }
+            let fogReportAttestations = fogReport
+                .map { info -> AttestationInfo in
+                    .fogReport(
+                        measurement: .enclave(data: info.measurement),
+                        allowedHardeningAdvisories: info.hardeningAdvisories)
+                }
+
+            return buildAttestationConfig(
+                consensus: consensusAttestations,
+                fogView: fogViewAttestations,
+                fogKeyImage: fogKeyImageAttestations,
+                fogMerkleProof: fogMerkleProofAttestations,
+                fogReport: fogReportAttestations)
+        }
+
+        private static func buildAttestationConfig(
+            mrSigner mrSignerData: Data,
+            allowedHardeningAdvisories: [String] = AttestationInfo.allAllowedHardeningAdvisories
+        ) -> OWSAttestationConfig {
+            let consensus = AttestationInfo.consensus(
+                measurement: .signer(data: mrSignerData),
+                allowedHardeningAdvisories: allowedHardeningAdvisories)
+            let fogView = AttestationInfo.fogView(
+                measurement: .signer(data: mrSignerData),
+                allowedHardeningAdvisories: allowedHardeningAdvisories)
+            let fogReport = AttestationInfo.fogReport(
+                measurement: .signer(data: mrSignerData),
+                allowedHardeningAdvisories: allowedHardeningAdvisories)
+            let fogMerkleProof = AttestationInfo.fogMerkleProof(
+                measurement: .signer(data: mrSignerData),
+                allowedHardeningAdvisories: allowedHardeningAdvisories)
+            let fogKeyImage = AttestationInfo.fogKeyImage(
+                measurement: .signer(data: mrSignerData),
+                allowedHardeningAdvisories: allowedHardeningAdvisories)
+
+            return buildAttestationConfig(
+                consensus: [consensus],
+                fogView: [fogView],
+                fogKeyImage: [fogKeyImage],
+                fogMerkleProof: [fogMerkleProof],
+                fogReport: [fogReport])
+        }
+
+        private static func buildAttestationConfig(
+            consensus: [AttestationInfo],
+            fogView: [AttestationInfo],
+            fogKeyImage: [AttestationInfo],
+            fogMerkleProof: [AttestationInfo],
+            fogReport: [AttestationInfo]
+        ) -> OWSAttestationConfig {
             do {
                 return OWSAttestationConfig(
-                    consensus: try buildAttestation(attestationType: .mrEnclaves(mrEnclaveDatas: mrEnclaveConsensus),
-                                                    attestationInfo: .consensus),
-                    fogView: try buildAttestation(attestationType: .mrEnclaves(mrEnclaveDatas: mrEnclaveFogView),
-                                                  attestationInfo: .fogView),
-                    fogKeyImage: try buildAttestation(attestationType: .mrEnclaves(mrEnclaveDatas: mrEnclaveFogKeyImage),
-                                                      attestationInfo: .fogKeyImage),
-                    fogMerkleProof: try buildAttestation(attestationType: .mrEnclaves(mrEnclaveDatas: mrEnclaveFogMerkleProof),
-                                                         attestationInfo: .fogMerkleProof),
-                    fogReport: try buildAttestation(attestationType: .mrEnclaves(mrEnclaveDatas: mrEnclaveFogReport),
-                                                    attestationInfo: .fogReport)
+                    consensus: try buildAttestation(attestationInfo: consensus),
+                    fogView: try buildAttestation(attestationInfo: fogView),
+                    fogKeyImage: try buildAttestation(attestationInfo: fogKeyImage),
+                    fogMerkleProof: try buildAttestation(attestationInfo: fogMerkleProof),
+                    fogReport: try buildAttestation(attestationInfo: fogReport)
                 )
             } catch {
                 owsFail("Invalid attestationConfig: \(error)")
@@ -301,44 +369,55 @@ extension MobileCoinAPI {
 
         static var signalMainNet: OWSAttestationConfig {
             // We need the old and new enclave values here.
-            let mrEnclaveConsensus = [
+            let mrEnclaveConsensus: [AttestationRawInfo] = [
                 // ~June 23, 2021
-                Data.data(fromHex: "653228afd2b02a6c28f1dc3b108b1dfa457d170b32ae8ec2978f941bd1655c83")!,
+                .of(Data.data(fromHex: "653228afd2b02a6c28f1dc3b108b1dfa457d170b32ae8ec2978f941bd1655c83")!, ["INTEL-SA-00334"]),
                 // ~July 8th, 2022
-                Data.data(fromHex: "733080d6ece4504f66ba606fa8163dae0a5220f3dbf6ca55fbafbac12c6f1897")!,
+                .of(Data.data(fromHex: "733080d6ece4504f66ba606fa8163dae0a5220f3dbf6ca55fbafbac12c6f1897")!, ["INTEL-SA-00334"]),
                 // ~August 10th, 2022
-                Data.data(fromHex: "d6e54e43c368f0fa2c5f13361afd303ee8f890424e99bd6c367f6164b5fff1b5")!
+                .of(Data.data(fromHex: "d6e54e43c368f0fa2c5f13361afd303ee8f890424e99bd6c367f6164b5fff1b5")!, ["INTEL-SA-00334", "INTEL-SA-00615"]),
+                // ~November 2nd, 2022
+                .of(Data.data(fromHex: "207c9705bf640fdb960034595433ee1ff914f9154fbe4bc7fc8a97e912961e5c")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
             ]
-            let mrEnclaveFogView = [
+
+            let mrEnclaveFogView: [AttestationRawInfo] = [
                 // ~June 23, 2021
-                Data.data(fromHex: "dd84abda7f05116e21fcd1ee6361b0ec29445fff0472131eaf37bf06255b567a")!,
+                .of(Data.data(fromHex: "dd84abda7f05116e21fcd1ee6361b0ec29445fff0472131eaf37bf06255b567a")!, ["INTEL-SA-00334"]),
                 // ~July 8th, 2022
-                Data.data(fromHex: "c64a3b04348b10596442868758875f312dc3a755b450805149774a091d2822d3")!,
+                .of(Data.data(fromHex: "c64a3b04348b10596442868758875f312dc3a755b450805149774a091d2822d3")!, ["INTEL-SA-00334"]),
                 // ~August 10th, 2022
-                Data.data(fromHex: "3d6e528ee0574ae3299915ea608b71ddd17cbe855d4f5e1c46df9b0d22b04cdb")!
+                .of(Data.data(fromHex: "3d6e528ee0574ae3299915ea608b71ddd17cbe855d4f5e1c46df9b0d22b04cdb")!, ["INTEL-SA-00334", "INTEL-SA-00615"]),
+                // ~November 2nd, 2022
+                .of(Data.data(fromHex: "fd4c1c82cca13fa007be15a4c90e2b506c093b21c2e7021a055cbb34aa232f3f")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
             ]
+
             // Report aka Ingest.
-            let mrEnclaveFogReport = [
+            let mrEnclaveFogReport: [AttestationRawInfo] = [
                 // ~June 23, 2021
-                Data.data(fromHex: "f3f7e9a674c55fb2af543513527b6a7872de305bac171783f6716a0bf6919499")!,
+                .of(Data.data(fromHex: "f3f7e9a674c55fb2af543513527b6a7872de305bac171783f6716a0bf6919499")!, ["INTEL-SA-00334"]),
                 // ~July 8th, 2022
-                Data.data(fromHex: "660103d766cde0fd1e1cfb443b99e52da2ce0617d0dee42f8b875f7104942c6b")!,
+                .of(Data.data(fromHex: "660103d766cde0fd1e1cfb443b99e52da2ce0617d0dee42f8b875f7104942c6b")!, ["INTEL-SA-00334"]),
                 // ~August 10th, 2022
-                Data.data(fromHex: "3e9bf61f3191add7b054f0e591b62f832854606f6594fd63faef1e2aedec4021")!
+                .of(Data.data(fromHex: "3e9bf61f3191add7b054f0e591b62f832854606f6594fd63faef1e2aedec4021")!, ["INTEL-SA-00334", "INTEL-SA-00615"]),
+                // ~November 2nd, 2022
+                .of(Data.data(fromHex: "3370f131b41e5a49ed97c4188f7a976461ac6127f8d222a37929ac46b46d560e")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
             ]
-            let mrEnclaveFogLedger = [
+
+            let mrEnclaveFogLedger: [AttestationRawInfo] = [
                 // ~June 23, 2021
-                Data.data(fromHex: "89db0d1684fcc98258295c39f4ab68f7de5917ef30f0004d9a86f29930cebbbd")!,
+                .of(Data.data(fromHex: "89db0d1684fcc98258295c39f4ab68f7de5917ef30f0004d9a86f29930cebbbd")!, ["INTEL-SA-00334"]),
                 // ~July 8th, 2022
-                Data.data(fromHex: "ed8ed6e1b4b6827e5543b25c1c13b9c06b478d819f8df912eb11fa140780fc51")!,
+                .of(Data.data(fromHex: "ed8ed6e1b4b6827e5543b25c1c13b9c06b478d819f8df912eb11fa140780fc51")!, ["INTEL-SA-00334"]),
                 // ~August 10th, 2022
-                Data.data(fromHex: "92fb35d0f603ceb5eaf2988b24a41d4a4a83f8fb9cd72e67c3bc37960d864ad6")!
+                .of(Data.data(fromHex: "92fb35d0f603ceb5eaf2988b24a41d4a4a83f8fb9cd72e67c3bc37960d864ad6")!, ["INTEL-SA-00334", "INTEL-SA-00615"]),
+                // ~November 2nd, 2022
+                .of(Data.data(fromHex: "dca7521ce4564cc2e54e1637e533ea9d1901c2adcbab0e7a41055e719fb0ff9d")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
             ]
-            return buildAttestationConfig(mrEnclaveConsensus: mrEnclaveConsensus,
-                                          mrEnclaveFogView: mrEnclaveFogView,
-                                          mrEnclaveFogKeyImage: mrEnclaveFogLedger,
-                                          mrEnclaveFogMerkleProof: mrEnclaveFogLedger,
-                                          mrEnclaveFogReport: mrEnclaveFogReport)
+
+            return buildAttestationConfig(consensus: mrEnclaveConsensus,
+                                          fogView: mrEnclaveFogView,
+                                          fogLedger: mrEnclaveFogLedger,
+                                          fogReport: mrEnclaveFogReport)
         }
 
         static var mobileCoinTestNet: OWSAttestationConfig {
@@ -348,45 +427,44 @@ extension MobileCoinAPI {
 
         static var signalTestNet: OWSAttestationConfig {
             // We need the old and new enclave values here.
-            let mrEnclaveConsensus = [
+            let mrEnclaveConsensus: [AttestationRawInfo] = [
                 // ~June 2, 2021
-                Data.data(fromHex: "9659ea738275b3999bf1700398b60281be03af5cb399738a89b49ea2496595af")!,
+                .of(Data.data(fromHex: "9659ea738275b3999bf1700398b60281be03af5cb399738a89b49ea2496595af")!, ["INTEL-SA-00334"]),
                 // ~July 13, 2022
-                Data.data(fromHex: "4f134dcfd9c0885956f2f9af0f05c2050d8bdee2dc63b468a640670d7adeb7f8")!,
+                .of(Data.data(fromHex: "4f134dcfd9c0885956f2f9af0f05c2050d8bdee2dc63b468a640670d7adeb7f8")!, ["INTEL-SA-00334"]),
                 // ~Aug 16, 2022
-                Data.data(fromHex: "01746f4dd25f8623d603534425ed45833687eca2b3ba25bdd87180b9471dac28")!
+                .of(Data.data(fromHex: "01746f4dd25f8623d603534425ed45833687eca2b3ba25bdd87180b9471dac28")!, ["INTEL-SA-00334", "INTEL-SA-00615"])
             ]
-            let mrEnclaveFogView = [
+            let mrEnclaveFogView: [AttestationRawInfo] = [
                 // ~June 2, 2021
-                Data.data(fromHex: "e154f108c7758b5aa7161c3824c176f0c20f63012463bf3cc5651e678f02fb9e")!,
+                .of(Data.data(fromHex: "e154f108c7758b5aa7161c3824c176f0c20f63012463bf3cc5651e678f02fb9e")!, ["INTEL-SA-00334"]),
                 // ~July 13, 2022
-                Data.data(fromHex: "719ca43abbe02f507bb91ea11ff8bc900aa86363a7d7e77b8130426fc53d8684")!,
+                .of(Data.data(fromHex: "719ca43abbe02f507bb91ea11ff8bc900aa86363a7d7e77b8130426fc53d8684")!, ["INTEL-SA-00334"]),
                 // ~Aug 16, 2022
-                Data.data(fromHex: "3d6e528ee0574ae3299915ea608b71ddd17cbe855d4f5e1c46df9b0d22b04cdb")!
+                .of(Data.data(fromHex: "3d6e528ee0574ae3299915ea608b71ddd17cbe855d4f5e1c46df9b0d22b04cdb")!, ["INTEL-SA-00334", "INTEL-SA-00615"])
             ]
             // Report aka Ingest.
-            let mrEnclaveFogReport = [
+            let mrEnclaveFogReport: [AttestationRawInfo]  = [
                 // ~June 2, 2021
-                Data.data(fromHex: "a4764346f91979b4906d4ce26102228efe3aba39216dec1e7d22e6b06f919f11")!,
+                .of(Data.data(fromHex: "a4764346f91979b4906d4ce26102228efe3aba39216dec1e7d22e6b06f919f11")!, ["INTEL-SA-00334"]),
                 // ~July 13, 2022
-                Data.data(fromHex: "8f2f3bf81f24bf493fa6d76e29e0f081815022592b1e854f95bda750aece7452")!,
+                .of(Data.data(fromHex: "8f2f3bf81f24bf493fa6d76e29e0f081815022592b1e854f95bda750aece7452")!, ["INTEL-SA-00334"]),
                 // ~Aug 16, 2022
-                Data.data(fromHex: "3e9bf61f3191add7b054f0e591b62f832854606f6594fd63faef1e2aedec4021")!
+                .of(Data.data(fromHex: "3e9bf61f3191add7b054f0e591b62f832854606f6594fd63faef1e2aedec4021")!, ["INTEL-SA-00334", "INTEL-SA-00615"])
             ]
-            let mrEnclaveFogLedger = [
+            let mrEnclaveFogLedger: [AttestationRawInfo]  = [
                 // ~June 2, 2021
-                Data.data(fromHex: "768f7bea6171fb83d775ee8485e4b5fcebf5f664ca7e8b9ceef9c7c21e9d9bf3")!,
+                .of(Data.data(fromHex: "768f7bea6171fb83d775ee8485e4b5fcebf5f664ca7e8b9ceef9c7c21e9d9bf3")!, ["INTEL-SA-00334"]),
                 // ~July 13, 2022
-                Data.data(fromHex: "685481b33f2846585f33506ab65649c98a4a6d1244989651fd0fcde904ebd82f")!,
+                .of(Data.data(fromHex: "685481b33f2846585f33506ab65649c98a4a6d1244989651fd0fcde904ebd82f")!, ["INTEL-SA-00334"]),
                 // ~Aug 16, 2022
-                Data.data(fromHex: "92fb35d0f603ceb5eaf2988b24a41d4a4a83f8fb9cd72e67c3bc37960d864ad6")!
+                .of(Data.data(fromHex: "92fb35d0f603ceb5eaf2988b24a41d4a4a83f8fb9cd72e67c3bc37960d864ad6")!, ["INTEL-SA-00334", "INTEL-SA-00615"])
             ]
-            return buildAttestationConfig(mrEnclaveConsensus: mrEnclaveConsensus,
-                                          mrEnclaveFogView: mrEnclaveFogView,
-                                          mrEnclaveFogKeyImage: mrEnclaveFogLedger,
-                                          mrEnclaveFogMerkleProof: mrEnclaveFogLedger,
-                                          mrEnclaveFogReport: mrEnclaveFogReport)
 
+            return buildAttestationConfig(consensus: mrEnclaveConsensus,
+                                          fogView: mrEnclaveFogView,
+                                          fogLedger: mrEnclaveFogLedger,
+                                          fogReport: mrEnclaveFogReport)
         }
 
         static var mobileCoinAlphaNet: OWSAttestationConfig {

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -94,30 +95,39 @@ class NSEEnvironment: Dependencies {
         })
     }
 
-    // MARK: - Setup
+    // MARK: - Global state
 
-    private let unfairLock = UnfairLock()
-    private var _hasAppContext = false
-    public var hasAppContent: Bool {
-        unfairLock.withLock { _hasAppContext }
-    }
+    private let globalStateLock = UnfairLock()
+    private var isGlobalStateConfigured = false
 
-    // This should be the first thing we do.
-    public func ensureAppContext(logger: NSELogger) {
-        unfairLock.withLock {
-            if _hasAppContext {
+    /// Ensures we have all required global state configured, such as an app
+    /// context and logging.
+    func ensureGlobalState() {
+        globalStateLock.withLock {
+            if isGlobalStateConfigured {
                 return
             }
-            // This should be the first thing we do.
-            SetCurrentAppContext(NSEContext(logger: logger))
-            _hasAppContext = true
+
+            SetCurrentAppContext(NSEContext(), false)
+
+            DebugLogger.shared().enableTTYLogging()
+            if OWSPreferences.isLoggingEnabled() || _isDebugAssertConfiguration() {
+                DebugLogger.shared().enableFileLogging()
+            }
+
+            NSELogger.uncorrelated.info("Logging is now configured and available!", flushImmediately: true)
+
+            isGlobalStateConfigured = true
         }
     }
+
+    // MARK: - Setup
 
     private var isSetup = AtomicBool(false)
 
     func setupIfNecessary(logger: NSELogger) -> UNNotificationContent? {
         guard isSetup.tryToSetFlag() else { return nil }
+        logger.info("Running NSEEnvironment setup!", flushImmediately: true)
         return DispatchQueue.main.sync { setup(logger: logger) }
     }
 
@@ -125,15 +135,7 @@ class NSEEnvironment: Dependencies {
     private func setup(logger: NSELogger) -> UNNotificationContent? {
         AssertIsOnMainThread()
 
-        // This should be the first thing we do.
-        ensureAppContext(logger: logger)
-
-        DebugLogger.shared().enableTTYLogging()
-        if OWSPreferences.isLoggingEnabled() || _isDebugAssertConfiguration() {
-            DebugLogger.shared().enableFileLogging()
-        }
-
-        logger.info("")
+        logger.info("NSEEnvironment setup()", flushImmediately: true)
 
         _ = AppVersion.shared()
 

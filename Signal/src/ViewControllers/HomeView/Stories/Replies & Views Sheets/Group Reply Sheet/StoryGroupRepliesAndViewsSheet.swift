@@ -1,23 +1,19 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
-import UIKit
+import SignalMessaging
 import SignalServiceKit
 import SignalUI
+import UIKit
 
 class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroupReplier {
     override var interactiveScrollViews: [UIScrollView] { [groupReplyViewController.tableView, viewsViewController.tableView] }
-    override var minHeight: CGFloat {
-        switch focusedTab {
-        case .views: return CurrentAppContext().frame.height * 0.6
-        case .replies: return maximizedHeight
-        }
-    }
+
     override var sheetBackgroundColor: UIColor { .ows_gray90 }
 
-    weak var interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator?
     private let groupReplyViewController: StoryGroupReplyViewController
     private let viewsViewController: StoryViewsViewController
     private let pagingScrollView = UIScrollView()
@@ -45,11 +41,14 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
     }
     var focusedTab: Tab = .views
 
-    init(storyMessage: StoryMessage) {
+    init(storyMessage: StoryMessage, context: StoryContext) {
         self.groupReplyViewController = StoryGroupReplyViewController(storyMessage: storyMessage)
-        self.viewsViewController = StoryViewsViewController(storyMessage: storyMessage)
+        self.viewsViewController = StoryViewsViewController(storyMessage: storyMessage, context: context)
 
         super.init()
+
+        self.allowsExpansion = true
+        minimizedHeight = CurrentAppContext().frame.height * 0.6
     }
 
     public required init() {
@@ -98,29 +97,39 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
         groupReplyViewController.view.autoPinHeightToSuperview()
         groupReplyViewController.view.autoPinEdge(.leading, to: .trailing, of: viewsViewController.view)
         groupReplyViewController.view.autoPinEdge(toSuperviewEdge: .trailing)
+
+        pagingScrollViewObservation = pagingScrollView.observe(\.contentSize, changeHandler: { [weak self] _, _ in
+            self?.didUpdatePagingScrollViewContentSize()
+        })
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
 
         switch focusedTab {
-        case .views: break
+        case .views:
+            break
         case .replies:
-            groupReplyViewController.inputToolbar.becomeFirstResponder()
+            maximizeHeight {
+                // Once we maximize, don't let you minimize again or things look weird.
+                self.minimizedHeight = super.maxHeight
+            }
         }
     }
 
-    private var hasCompletedInitialLayout = false
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
+    private var pagingScrollViewObservation: NSKeyValueObservation?
 
-        guard !hasCompletedInitialLayout, view.frame != .zero else { return }
-        hasCompletedInitialLayout = true
+    private func didUpdatePagingScrollViewContentSize() {
+        guard view.frame != .zero, self.pagingScrollView.contentSize.width > 0 else { return }
+        // Only need to trigger once.
+        pagingScrollViewObservation = nil
 
         // Once we have a frame, we need to re-switch to the tab
         switch focusedTab {
         case .views: switchToViewsTab(animated: false)
-        case .replies: switchToRepliesTab(animated: false)
+        case .replies:
+            switchToRepliesTab(animated: false)
+            groupReplyViewController.inputToolbar.becomeFirstResponder()
         }
     }
 
@@ -133,22 +142,24 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
 
     private var isManuallySwitchingTabs = false
     func switchToRepliesTab(animated: Bool) {
-        isManuallySwitchingTabs = true
+        if animated {
+            isManuallySwitchingTabs = true
+        }
         focusedTab = .replies
         repliesButton.isSelected = true
         viewsButton.isSelected = false
         view.layoutIfNeeded()
         pagingScrollView.setContentOffset(CGPoint(x: pagingScrollView.width, y: 0), animated: animated)
-        isManuallySwitchingTabs = false
     }
 
     func switchToViewsTab(animated: Bool) {
-        isManuallySwitchingTabs = true
+        if animated {
+            isManuallySwitchingTabs = true
+        }
         focusedTab = .views
         repliesButton.isSelected = false
         viewsButton.isSelected = true
         pagingScrollView.setContentOffset(.zero, animated: animated)
-        isManuallySwitchingTabs = false
     }
 
     func createToggleButton(title: String, block: @escaping () -> Void) -> UIButton {
@@ -185,49 +196,17 @@ extension StoryGroupRepliesAndViewsSheet: UIScrollViewDelegate {
             focusedTab = .replies
         }
     }
+
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        isManuallySwitchingTabs = false
+    }
 }
 
 extension StoryGroupRepliesAndViewsSheet: StoryGroupReplyDelegate {
     func storyGroupReplyViewControllerDidBeginEditing(_ storyGroupReplyViewController: StoryGroupReplyViewController) {
-        maximizeHeight()
-    }
-}
-
-extension StoryGroupRepliesAndViewsSheet {
-    override func presentationController(
-        forPresented presented: UIViewController,
-        presenting: UIViewController?,
-        source: UIViewController
-    ) -> UIPresentationController? {
-        return nil
-    }
-
-    public func animationController(
-        forPresented presented: UIViewController,
-        presenting: UIViewController,
-        source: UIViewController
-    ) -> UIViewControllerAnimatedTransitioning? {
-        return StoryReplySheetAnimator(
-            isPresenting: true,
-            isInteractive: interactiveTransitionCoordinator != nil,
-            backdropView: backdropView
-        )
-    }
-
-    public func animationController(
-        forDismissed dismissed: UIViewController
-    ) -> UIViewControllerAnimatedTransitioning? {
-        return StoryReplySheetAnimator(
-            isPresenting: false,
-            isInteractive: false,
-            backdropView: backdropView
-        )
-    }
-
-    public func interactionControllerForPresentation(
-        using animator: UIViewControllerAnimatedTransitioning
-    ) -> UIViewControllerInteractiveTransitioning? {
-        interactiveTransitionCoordinator?.mode = .reply
-        return interactiveTransitionCoordinator
+        maximizeHeight {
+            // Once we maximize, don't let you minimize again or things look weird.
+            self.minimizedHeight = super.maxHeight
+        }
     }
 }

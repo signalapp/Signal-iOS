@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -63,7 +64,7 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
             }
 
             let syncKeysMessage = OWSSyncKeysMessage(thread: thread, storageServiceKey: KeyBackupService.DerivedKey.storageService.data, transaction: transaction)
-            self.messageSenderJobQueue.add(message: syncKeysMessage.asPreparer, transaction: transaction)
+            self.sskJobQueues.messageSenderJobQueue.add(message: syncKeysMessage.asPreparer, transaction: transaction)
         }
     }
 
@@ -116,7 +117,7 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
                 }
                 let syncMessage = OWSSyncPniIdentityMessage(thread: thread, keyPair: keyPair, transaction: transaction)
                 Self.pniIdentitySyncMessagePending.set(false)
-                self.messageSenderJobQueue.add(message: syncMessage.asPreparer, transaction: transaction)
+                self.sskJobQueues.messageSenderJobQueue.add(message: syncMessage.asPreparer, transaction: transaction)
             }
         }
     }
@@ -187,7 +188,7 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
         }
 
         let syncMessageRequestResponse = OWSSyncMessageRequestResponseMessage(thread: thread, responseType: responseType, transaction: transaction)
-        messageSenderJobQueue.add(message: syncMessageRequestResponse.asPreparer, transaction: transaction)
+        sskJobQueues.messageSenderJobQueue.add(message: syncMessageRequestResponse.asPreparer, transaction: transaction)
     }
 }
 
@@ -267,7 +268,7 @@ public extension OWSSyncManager {
         }
 
         let syncRequestMessage = OWSSyncRequestMessage(thread: thread, requestType: requestType, transaction: transaction)
-        messageSenderJobQueue.add(message: syncRequestMessage.asPreparer, transaction: transaction)
+        sskJobQueues.messageSenderJobQueue.add(message: syncRequestMessage.asPreparer, transaction: transaction)
     }
 }
 

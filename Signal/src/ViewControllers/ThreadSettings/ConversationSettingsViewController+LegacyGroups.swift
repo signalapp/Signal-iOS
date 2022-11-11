@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import UIKit
 
 class LegacyGroupView: UIView {
@@ -104,8 +106,7 @@ class LegacyGroupView: UIView {
             isUserInteractionEnabled = true
             addGestureRecognizer(UITapGestureRecognizer(target: self,
                                                         action: #selector(didTapTooManyMembers)))
-        case .cantBeMigrated_MembersWithoutUuids,
-             .cantBeMigrated_MembersWithoutCapabilities:
+        case .cantBeMigrated_MembersWithoutUuids:
             configureCantUpgradeDueToMembersContents()
         case .cantBeMigrated_MembersWithoutProfileKey:
             owsFailDebug("Manual migrations should ignore missing profile keys.")

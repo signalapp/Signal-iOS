@@ -13,9 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>صوتی پیغام 1 سیکنڈ</string>
+			<string>صوتی میسج %1$d سیکنڈ</string>
 			<key>other</key>
-			<string>صوتی پیغام %d سیکنڈز</string>
+			<string>صوتی میسج %1$d سیکنڈز</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>"%2$@" میں رکن شامل کریں؟</string>
+			<string>&quot;%2$@&quot; میں ممبر شامل کریں؟</string>
 			<key>other</key>
-			<string>"%2$@" میں %d اراکین شامل کریں؟</string>
+			<string>&quot;%2$@&quot; میں %1$d ممبرز شامل کریں؟</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 آئٹم</string>
+			<string>%1$d</string>
 			<key>other</key>
-			<string>%d آئٹمز</string>
+			<string>%1$d آئٹمز</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>یہ حسب ضرورت رنگ 1 چیٹ میں استعمال کیا جاتا ہے۔ کیا آپ اسے حذف کرنا چاہتے ہیں؟</string>
+			<string>یہ کسٹم رنگ %1$d چیٹ میں استعمال ہوتا ہے۔ کیا آپ اسے ڈیلیٹ کرنا چاہتے ہیں؟</string>
 			<key>other</key>
-			<string>یہ حسب ضرورت رنگ %d چیٹس میں استعمال کیا جاتا ہے۔ کیا آپ اسے تمام چیٹس کے لیے حذف کرنا چاہتے ہیں؟</string>
+			<string>یہ کسٹم رنگ %1$d چیٹس میں استعمال کیا جاتا ہے۔ کیا آپ اسے تمام چیٹس کے لیے ڈیلیٹ کرنا چاہتے ہیں؟</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>یہ رنگ 1 چیٹ میں استعمال کیا جاتا ہے۔ کیا آپ تمام چیٹس کے لیے تبدیلیاں محفوظ کرنا چاہتے ہیں؟</string>
+			<string>یہ رنگ %1$d چیٹ میں استعمال ہوتا ہے۔ کیا آپ تمام چیٹس کیلئے تبدیلیاں محفوظ کرنا چاہتے ہیں؟</string>
 			<key>other</key>
-			<string>یہ رنگ %d چیٹس میں استعمال کیا جاتا ہے۔ کیا آپ تمام چیٹس کے لیے تبدیلیاں محفوظ کرنا چاہتے ہیں؟</string>
+			<string>یہ رنگ %1$d چیٹس میں استعمال کیا جاتا ہے۔ کیا آپ تمام چیٹس کے لیے تبدیلیاں محفوظ کرنا چاہتے ہیں؟</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>چیٹ حذف کریں؟</string>
+			<string>چیٹ ڈیلیٹ کریں؟</string>
 			<key>other</key>
-			<string>%d چیٹس حذف کریں؟</string>
+			<string>%1$d چیٹس ڈیلیٹ کریں؟</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -157,9 +157,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>آپ 1 چیٹ سے زیادہ منتخب نہیں کر سکتے۔</string>
+			<string>آپ %1$d چیٹ سے زیادہ منتخب نہیں کر سکتے۔</string>
 			<key>other</key>
-			<string>آپ %d چیٹس سے زیادہ منتخب نہیں کر سکتے۔</string>
+			<string>آپ %1$d چیٹس سے زیادہ منتخب نہیں کر سکتے۔</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -173,9 +173,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 %2$#@total@</string>
+			<string>%1$d %2$#@total@</string>
 			<key>other</key>
-			<string>%d %2$#@total@</string>
+			<string>%1$d %2$#@total@</string>
 		</dict>
 		<key>total</key>
 		<dict>
@@ -186,7 +186,7 @@
 			<key>one</key>
 			<string>میچ</string>
 			<key>other</key>
-			<string>کُل %d میچز</string>
+			<string>کُل %2$d میچز</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -200,9 +200,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 رکن</string>
+			<string>%1$d ممبر</string>
 			<key>other</key>
-			<string>%d اراکین</string>
+			<string>%1$d ممبرز</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -216,9 +216,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 مشترکہ گروپ</string>
+			<string>%1$d مشترکہ گروپ</string>
 			<key>other</key>
-			<string>%d مشترکہ گروپس</string>
+			<string>%1$d مشترکہ گروپس</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_%d</key>
@@ -232,9 +232,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%dمنٹ</string>
+			<string>%1$dمنٹ</string>
 			<key>other</key>
-			<string>%dمنٹ</string>
+			<string>%1$dمنٹ</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -248,9 +248,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 منٹ پہلے</string>
+			<string>%1$d منٹ پہلے</string>
 			<key>other</key>
-			<string>%d منٹ پہلے</string>
+			<string>%1$d منٹس پہلے</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -264,9 +264,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>پیغام حذف کریں؟</string>
+			<string>میسج ڈیلیٹ کریں؟</string>
 			<key>other</key>
-			<string>%d پیغامات حذف کریں؟</string>
+			<string>%1$d میسجز ڈیلیٹ کریں؟</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -280,9 +280,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d رکن کے گروپ کا سائز اپنی زیادہ سے زیادہ حد کو پہنچ چکا ہے۔</string>
+			<string>%1$d ممبر کے گروپ کا سائز اپنی زیادہ سے زیادہ حد کو پہنچ چکا ہے۔</string>
 			<key>other</key>
-			<string>%d اراکین کے گروپ کا سائز اپنی زیادہ سے زیادہ حد کو پہنچ چکا ہے۔</string>
+			<string>%1$d ممبرز کے گروپ کا سائز اپنی زیادہ سے زیادہ حد کو پہنچ چکا ہے۔</string>
 		</dict>
 	</dict>
 	<key>EXPIRATION_WARNING_%d</key>
@@ -296,9 +296,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>آپ کا Signal کا ورژن 1 دن میں زائد المیعاد ہو جائے گا۔ حالیہ ترین ورژن پر اپ ڈیٹ کرنے کے لیے ٹیپ کریں۔</string>
+			<string>آپ کا Signal کا ورژن %1$d دن میں زائد المیعاد ہو جائے گا۔ تازہ ترین ورژن پر اپ ڈیٹ کرنے کے لیے ٹیپ کریں۔</string>
 			<key>other</key>
-			<string>آپ کا Signal کا ورژن %d دنوں میں زائد المیعاد ہو جائے گا۔ حالیہ ترین ورژن پر اپ ڈیٹ کرنے کے لیے ٹیپ کریں۔</string>
+			<string>آپ کا Signal کا ورژن %1$d دنوں میں زائد المیعاد ہو جائے گا۔ حالیہ ترین ورژن پر اپ ڈیٹ کرنے کے لیے ٹیپ کریں۔</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -312,41 +312,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>پیغام بھیجیں</string>
+			<string>میسج بھیجیں</string>
 			<key>other</key>
-			<string>%d پیغامات بھیجیں</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>یہ گروپ تخلیق نہیں کیا جا سکتا کیونکہ 1 رکن Signal کا پرانا ورژن استعمال کر رہا ہے۔ اس کی جانب سے Signal کو اپ ڈیٹ کرنے کے بعد آپ اس کے ساتھ نیا اسٹائل گروپ تخلیق کر سکتے، یا گروپ تخلیق کرنے سے پہلے اسے ہٹا سکتے ہیں۔ %2$@</string>
-			<key>other</key>
-			<string>یہ گروپ تخلیق نہیں کیا جا سکتا کیونکہ %d اراکین Signal کا پرانا ورژن استعمال کر رہے ہیں۔ان کی جانب سے Signal کو اپ ڈیٹ کرنے کے بعد آپ ان کے ساتھ نیا اسٹائل گروپ تخلیق کر سکتے، یا گروپ تخلیق کرنے سے پہلے انہیں ہٹا سکتے ہیں۔ %2$@</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>یہ گروپ تخلیق نہیں کیا جا سکتا کیونکہ 1 رکن Signal کا پرانا ورژن استعمال کر رہا ہے۔ اس کی جانب سے Signal کو اپ ڈیٹ کرنے کے بعد آپ اس کے ساتھ نیا اسٹائل گروپ تخلیق کر سکتے، یا گروپ بنانے سے پہلے اسے ہٹا سکتے ہیں۔</string>
-			<key>other</key>
-			<string>یہ گروپ تخلیق نہیں کیا جا سکتا کیونکہ %d اراکین Signal کا پرانا ورژن استعمال کر رہے ہیں۔ ان کی جانب سے Signal کو اپ ڈیٹ کرنے کے بعد آپ ان کے ساتھ نیا اسٹائل گروپ تخلیق کر سکتے، یا گروپ بنانے سے پہلے انہیں ہٹا سکتے ہیں۔</string>
+			<string>%1$d میسجز بھیجیں</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -360,9 +328,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 رکن کو  نئے گروپ میں دوبارہ شامل نہیں کیا جا سکا۔ کیا آپ اسے اب شامل کرنا چاہتے ہیں؟</string>
+			<string>%1$d ممبر کو نئے گروپ میں دوبارہ شامل نہیں کیا جا سکا۔ کیا آپ انہیں اب شامل کرنا چاہتے ہیں؟</string>
 			<key>other</key>
-			<string>%d اراکین کو نئے گروپ میں دوبارہ شامل نہیں کیا جا سکا۔ کیا آپ انہیں اب شامل کرنا چاہتے ہیں؟</string>
+			<string>%1$d ممبرز کو نئے گروپ میں دوبارہ شامل نہیں کیا جا سکا۔ کیا آپ انہیں اب شامل کرنا چاہتے ہیں؟</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -376,9 +344,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal گروپس 1 رکن یا کم کے ساتھ بہترین کارکردگی دکھاتے ہیں۔ مزید اراکین کو شامل کرنا پیغامات کو بھیجنے اور وصول کرنے میں تاخیر کی وجہ بنے گا۔</string>
+			<string>Signal گروپس %1$d ممبر یا اس سے کم کے ساتھ بہترین کارکردگی کا مظاہرہ کرتے ہیں۔ مزید ممبرز کو شامل کرنے سے میسجز بھیجنے اور وصول کرنے میں تاخیر ہو گی۔</string>
 			<key>other</key>
-			<string>Signal گروپس %d اراکین یا کم کے ساتھ بہترین کارکردگی دکھاتے ہیں۔ مزید اراکین کو شامل کرنا پیغامات کو بھیجنے اور وصول کرنے میں تاخیر کی وجہ بنے گا۔</string>
+			<string>Signal گروپس %1$d ممبرز یا اس سے کم کے ساتھ بہترین کارکردگی کا مظاہرہ کرتے ہیں۔ مزید ممبرز کو شامل کرنے سے میسجز بھیجنے اور وصول کرنے میں تاخیر ہو گی۔</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -392,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>اس کال کے لیے 1 شریک فرد کی زیادہ سے زیادہ تعداد اپنی حد کو پہنچ چکی ہے۔ بعد میں دوبارہ کوشش کریں۔</string>
+			<string>اس کال کے لئے شریک ہونے والے افراد کی زیادہ سے زیادہ تعداد %1$d فرد تک پہنچ چکی ہے۔ بعد میں دوبارہ کوشش کریں۔</string>
 			<key>other</key>
-			<string>اس کال کے لیے %d شرکاء کی زیادہ سے زیادہ تعداد اپنی حد کو پہنچ چکی ہے۔ بعد میں دوبارہ کوشش کریں۔</string>
+			<string>اس کال کے لئے شریک ہونے والے افراد کی زیادہ سے زیادہ تعداد %1$d شرکاء تک پہنچ چکی ہے۔ بعد میں دوبارہ کوشش کریں۔</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -408,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>اس کال میں 1 فرد</string>
+			<string>اس کال میں · %1$d شخص</string>
 			<key>other</key>
-			<string>اس کال میں ·%d افراد</string>
+			<string>اس کال میں · %1$d افراد</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
@@ -424,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@، %3$@، اور 1 دیگر کو کال کی جا رہی ہے...</string>
+			<string>%2$@، %3$@، اور %1$d دیگر کو کال کی جا رہی ہے…</string>
 			<key>other</key>
-			<string>%2$@، %3$@، اور %d دیگر کو کال کی جا رہی ہے...</string>
+			<string>%2$@، %3$@، اور %1$d دیگر افراد کو کال کی جا رہی ہے…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -440,9 +408,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>اس کال میں %2$@، %3$@، اور 1 دوسرا فرد موجود ہے</string>
+			<string>اس کال میں %2$@، %3$@، اور %1$d دیگر موجود ہیں</string>
 			<key>other</key>
-			<string>اس کال میں %2$@،%3$@، اور%d دیگر موجود ہیں</string>
+			<string>اس کال میں %2$@، %3$@، اور%1$d دیگر افراد موجود ہیں</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -456,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@، %3$@، اور 1 دوسرا فرد کال میں شامل ہوا</string>
+			<string>%2$@، %3$@، اور %1$d دیگر کال میں شامل ہوا</string>
 			<key>other</key>
-			<string>%2$@،%3$@، اور %d دیگر کال میں شامل ہوئے</string>
+			<string>%2$@، %3$@، اور %1$d دیگر افراد کال میں شامل ہوئے</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -472,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@، %3$@، اور 1 دوسرے فرد نے کال چھوڑ دی</string>
+			<string>%2$@، %3$@، اور %1$d مزید نے کال چھوڑ دی</string>
 			<key>other</key>
-			<string>%2$@، %3$@، اور %d نے کال چھوڑ دی</string>
+			<string>%2$@، %3$@، اور %1$d دیگر افراد نے کال چھوڑ دی</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
@@ -488,9 +456,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@، %3$@، اور 1 دیگر کو مطلع کر دیا جائے گا</string>
+			<string>%2$@، %3$@، اور %1$d دیگر کو مطلع کر دیا جائے گا</string>
 			<key>other</key>
-			<string>%2$@، %3$@، اور %d دیگر کو مطلع کر دیا جائے گا</string>
+			<string>%2$@، %3$@، اور %1$d دیگر افراد کو مطلع کر دیا جائے گا</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -504,9 +472,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal %2$@، %3$@، اور 1 دیگر کو کال کرے گا۔</string>
+			<string>Signal %2$@، %3$@، اور %1$d دیگر کو کال کرے گا</string>
 			<key>other</key>
-			<string>Signal %2$@، %3$@، اور %d دیگر کو کال کرے گا۔</string>
+			<string>Signal %2$@، %3$@، اور %1$d دیگر افراد کو کال کرے گا</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -520,9 +488,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>دعوت نامہ بھیجا دیا گیا</string>
+			<string>دعوت نامہ بھیج دیا گیا</string>
 			<key>other</key>
-			<string>%d دعوت نامے بھیج دیے گئے</string>
+			<string>%1$d دعوت نامے بھیج دیے گئے</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
@@ -536,9 +504,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 گروپ کے رکن کا نام مماثل ہے۔</string>
+			<string>گروپ کے %1$d ممبر کا نام مماثل ہے۔</string>
 			<key>other</key>
-			<string>%d گروپ کے اراکین کے نام مماثل ہیں۔</string>
+			<string>گروپ کے %1$d ممبرز کے نام مماثل ہیں۔</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -552,9 +520,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>گروپ کے 1 رکن کا نام مماثل ہے، رکن کا ذیل میں جائزہ لیں یا ایکشن لینے کا انتخاب کریں۔</string>
+			<string>گروپ کے %1$d ممبر کا نام مماثل ہے، ممبر کا ذیل میں جائزہ لیں یا ایکشن لینے کا انتخاب کریں۔</string>
 			<key>other</key>
-			<string>گروپ کے %d اراکین کے نام مماثل ہیں، اراکین کا ذیل میں جائزہ لیں یا ایکشن لینے کا انتخاب کریں۔</string>
+			<string>گروپ کے %1$d ممبرز کے نام مماثل ہیں، ممبرز کا ذیل میں جائزہ لیں یا ایکشن لینے کا انتخاب کریں۔</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -568,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>گروپ کے 1 رکن کا نام مماثل ہے، رکن کا ذیل میں جائزہ لیں یا ایکشن لینے کا انتخاب کریں۔</string>
+			<string>گروپ کے %1$d ممبر کا نام مماثل ہے، ممبر کا ذیل میں جائزہ لیں یا ایکشن لینے کا انتخاب کریں۔</string>
 			<key>other</key>
-			<string>گروپ کے %d اراکین کے نام مماثل ہیں، اراکین کا ذیل میں جائزہ لیں یا ایکشن لینے کا انتخاب کریں۔</string>
+			<string>گروپ کے %1$d ممبرز کے نام مماثل ہیں، ممبرز کا ذیل میں جائزہ لیں یا ایکشن لینے کا انتخاب کریں۔</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -584,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 رکن</string>
+			<string>%1$d ممبر</string>
 			<key>other</key>
-			<string>%d اراکین</string>
+			<string>%1$d ممبرز</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
@@ -600,9 +568,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 رکن</string>
+			<string>%1$d ممبر</string>
 			<key>other</key>
-			<string>%d اراکین</string>
+			<string>%1$d ممبرز</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -616,9 +584,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 فرد کو گروپ پر مدعو کیا گیا تھا۔</string>
+			<string>گروپ میں %1$d فرد کو مدعو کیا گیا تھا۔</string>
 			<key>other</key>
-			<string>%d لوگوں کو گروپ پر مدعو کیا گیا تھا۔</string>
+			<string>گروپ میں %1$d افراد کو مدعو کیا گیا تھا۔</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
@@ -632,9 +600,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ نے 1 فرد کو گروپ پر مدعو کیا تھا۔</string>
+			<string>%2$@ نے %1$d فرد کو گروپ میں مدعو کیا۔</string>
 			<key>other</key>
-			<string>%2$@ نے %d افراد کو گروپ پر مدعو کیا تھا۔</string>
+			<string>%2$@ نے %1$d افراد کو گروپ میں مدعو کیا۔</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -648,9 +616,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 فرد کے لیے گروپ کے دعوت نامے کی تنسیخ کر دی گئی تھی۔</string>
+			<string>%1$d فرد کے لیے گروپ کے دعوت نامے کو کالعدم کر دیا گیا تھا۔</string>
 			<key>other</key>
-			<string>%d افراد کے لیے گروپ کے دعوت ناموں کی تنسیخ کر دی گئی تھی۔ </string>
+			<string>%1$d افراد کے لیے گروپ کے دعوت ناموں کو کالعدم کر دیا گیا تھا۔</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -664,9 +632,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ نے 1 فرد کے لیے گروپ کے دعوت نامے کی تنسیخ کر دی۔</string>
+			<string>%2$@ نے %1$d فرد کے لیے گروپ کے دعوت نامے کو کالعدم کر دیا۔</string>
 			<key>other</key>
-			<string>%2$@ نے %d افراد کے لیے گروپ کے دعوت نامے کی تنسیخ کر دی۔</string>
+			<string>%2$@ نے %1$d افراد کے لیے گروپ کے دعوت نامے کو کالعدم کر دیا۔</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
@@ -680,9 +648,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ نے درخواست سے اور گروپ لنک کے ذریعے شامل ہونے کی ان کی درخواست کو منسوخ کیا۔</string>
+			<string>%2$@ نے درخواست کی اور گروپ لنک کے ذریعے شامل ہونے کی ان کی درخواست کو منسوخ کیا۔</string>
 			<key>other</key>
-			<string>%2$@ نے درخواست کی اور گروپ لنک کے ذریعے شامل ہونے کی %d درخواستوں کو منسوخ کیا۔</string>
+			<string>%2$@ نے درخواست کی اور گروپ لنک کے ذریعے شامل ہونے کی %1$d درخواستوں کو منسوخ کیا۔</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -696,9 +664,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>گروپ اسٹوری 1 ناظر</string>
+			<string>گروپ سٹوری· %1$d ناظر</string>
 			<key>other</key>
-			<string>گروپ اسٹوری · %d ناظرین</string>
+			<string>گروپ سٹوری· %1$d ناظرین</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -712,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>رکن کو نئے گروپ میں شامل نہیں کیا جا سکتا اور اسے گروپ سے ہٹا دیا گیا ہے۔</string>
+			<string>ممبر کو نئے گروپ میں شامل نہیں کیا جا سکا اور اسے گروپ سے ہٹا دیا گیا ہے۔</string>
 			<key>other</key>
-			<string>%d اراکین کو نئے گروپ میں شامل نہیں کیا جا سکتا اور انہیں گروپ سے ہٹا دیا گیا ہے۔</string>
+			<string>%1$d ممبرز کو نئے گروپ میں شامل نہیں کیا جا سکا اور انہیں گروپ سے ہٹا دیا گیا ہے۔</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -728,9 +696,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>رکن کو نئے گروپ میں شامل نہیں کیا جا سکتا اور اسے شامل ہونے کے لیے مدعو کیا گیا ہے۔</string>
+			<string>ممبر کو نئے گروپ میں شامل نہیں کیا جا سکا اور شرکت کی دعوت دی گئی ہے۔</string>
 			<key>other</key>
-			<string>%d اراکین کو نئے گروپ میں شامل نہیں کیا جا سکتا اور انہیں شامل ہونے کے لیے مدعو کیا گیا ہے۔</string>
+			<string>%1$d ممبرز کو نئے گروپ میں شامل نہیں کیا جا سکا اور شرکت کی دعوت دی گئی ہے۔</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -746,7 +714,7 @@
 			<key>one</key>
 			<string>آپ 1 آئٹم سے زیادہ شیئر نہیں کر سکتے۔</string>
 			<key>other</key>
-			<string>آپ %d آئٹمز سے زیادہ شیئر نہیں کر سکتے۔</string>
+			<string>آپ %1$d آئٹمز سے زیادہ شیئر نہیں کر سکتے۔</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -760,9 +728,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 مشترکہ گروپ</string>
+			<string>%1$d مشترکہ گروپ</string>
 			<key>other</key>
-			<string>%d مشترکہ گروپس</string>
+			<string>%1$d مشترکہ گروپس</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
@@ -776,9 +744,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 پیغام حذف کریں</string>
+			<string>%1$d میسج ڈیلیٹ کریں</string>
 			<key>other</key>
-			<string>%d پیغامات حذف کریں</string>
+			<string>%1$d میسجز ڈیلیٹ کریں</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -792,9 +760,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 تصویر</string>
+			<string>%1$d تصویر</string>
 			<key>other</key>
-			<string>%d تصاویر</string>
+			<string>%1$d تصاویر</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
@@ -808,9 +776,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 آئٹم</string>
+			<string>%1$d آئٹم</string>
 			<key>other</key>
-			<string>%d آئٹمز</string>
+			<string>%1$d آئٹمز</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
@@ -824,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>آپ نے اس گروپ کے 1 رکن کو بلاک کیا تھا</string>
+			<string>آپ نے اس گروپ کے %1$d ممبر کو بلاک کیا تھا</string>
 			<key>other</key>
-			<string>آپ نے اس گروپ کے %d اراکین کو بلاک کیا تھا</string>
+			<string>آپ نے اس گروپ کے %1$d ممبرز کو بلاک کیا تھا</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
@@ -840,9 +808,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 منتخب کیا گیا</string>
+			<string>%1$d منتخب کیا گیا</string>
 			<key>other</key>
-			<string>%d منتخب کیے گئے</string>
+			<string>%1$d منتخب کیے گئے</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -856,9 +824,25 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>%1$d خارج کیا گیا</string>
 			<key>other</key>
-			<string>%d Excluded</string>
+			<string>%1$d خارج کئے گئے</string>
+		</dict>
+	</dict>
+	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%1$d ناظر</string>
+			<key>other</key>
+			<string>%1$d ناظرین</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -872,9 +856,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>%1$d ناظر</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%1$d ناظرین</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -888,9 +872,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Viewer</string>
+			<string>تمام Signal کنکشنز · %1$d ناظر</string>
 			<key>other</key>
-			<string>All Signal Connections · %d Viewers</string>
+			<string>تمام Signal کنکشنز · %1$d ناظرین</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -904,9 +888,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Excluded</string>
+			<string>تمام Signal کنکشنز · %1$d خارج</string>
 			<key>other</key>
-			<string>All Signal Connections · %d Excluded</string>
+			<string>تمام Signal کنکشن · %1$d خارج</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -920,9 +904,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Only Share With · 1 Viewer</string>
+			<string>صرف شیئر کریں از · %1$d ناظر</string>
 			<key>other</key>
-			<string>Only Share With · %d Viewers</string>
+			<string>صرف شیئر کریں از · %1$d ناظرین</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -936,9 +920,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 رکن</string>
+			<string>%1$d ممبر</string>
 			<key>other</key>
-			<string>%d اراکین</string>
+			<string>%1$d ممبرز</string>
 		</dict>
 	</dict>
 	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>
@@ -952,9 +936,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 ناظر</string>
+			<string>%1$d ناظر</string>
 			<key>other</key>
-			<string>%d ناظرین</string>
+			<string>%1$d ناظرین</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -968,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>PIN غلط ہے۔ 1 کوشش بقایا ہے۔</string>
+			<string>PIN غلط ہے۔ %1$d کوشش باقی ہے۔</string>
 			<key>other</key>
-			<string>PIN غلط ہے۔ %d کوششیں بقایا ہیں۔</string>
+			<string>PIN غلط ہے۔ %1$d کوششیں باقی ہیں۔</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -984,9 +968,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ نے 1 فرد کو مدعو کیا</string>
+			<string>%2$@ نے %1$d فرد کو مدعو کیا</string>
 			<key>other</key>
-			<string>%2$@ نے %d افراد کو مدعو کیا</string>
+			<string>%2$@ نے %1$d افراد کو مدعو کیا</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -1000,9 +984,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>رکن کی 1 زیر التوا درخواست</string>
+			<string>ممبر کی %1$d زیر التوا درخواست۔</string>
 			<key>other</key>
-			<string>اراکین کی %d زیر التوا درخواستیں۔</string>
+			<string>ممبرز کی %1$d زیر التوا درخواستیں۔</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -1016,9 +1000,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>غلط دعوت نامے کی تنسیخ کریں</string>
+			<string>غلط دعوت ناموں کو کالعدم کریں</string>
 			<key>other</key>
-			<string>%d غلط دعوت ناموں کی تنسیخ کریں</string>
+			<string>%1$d غلط دعوت ناموں کو کالعدم کریں</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -1048,25 +1032,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>"%2$@" کی طرف سے بھیجے گئے گروپ کے دعوت نامے کی تنسیخ کریں؟</string>
+			<string>&quot;%2$@&quot; کی طرف سے بھیجے گئے گروپ دعوت نامے کو کالعدم کریں؟</string>
 			<key>other</key>
-			<string>"%2$@" کی طرف سے بھیجے گئے %d دعوت ناموں کی تنسیخ کریں؟</string>
-		</dict>
-	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>ہم آپ کو بعد میں یاد دہانی کروائیں گے۔ PIN تخلیق کرنا 1 دن میں لازمی ہو جائے گا۔</string>
-			<key>other</key>
-			<string>ہم آپ کو بعد میں یاد دہانی کروائیں گے۔ PIN تخلیق کرنا %d دنوں میں لازمی ہو جائے گا۔</string>
+			<string>&quot;%2$@&quot; کی طرف سے بھیجے گئے %1$d دعوت ناموں کو کالعدم کریں؟</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -1080,9 +1048,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>نجی اسٹوری 1 ناظر</string>
+			<string>کسٹم سٹوری · %1$d ناظر</string>
 			<key>other</key>
-			<string>نجی اسٹوری · %d ناظرین</string>
+			<string>کسٹم سٹوری · %1$d ناظرین</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1096,9 +1064,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>آپ کی 1 کوشش بقایا ہیں۔ اگر آپ کی کوششیں ختم ہو گئیں، تو آپ نیا PIN تخلیق کر سکتے ہیں۔ آپ رجسٹر ہو سکتے اور اپنا اکاؤنٹ استعمال کر سکتے ہیں لیکن آپ اپنی پروفائل کی معلومات جیسی کچھ محفوظ کردہ ترتیبات سے محروم ہو جائیں گے۔</string>
+			<string>آپ کی %1$d کوشش بقایا ہے۔ اگر آپ کی کوششیں ختم ہو گئیں، تو آپ نیا پِن تخلیق کر سکتے ہیں۔ آپ رجسٹر ہو سکتے اور اپنا اکاؤنٹ استعمال کر سکتے ہیں لیکن آپ اپنی پروفائل کی معلومات جیسی کچھ محفوظ کردہ سیٹنگز سے محروم ہو جائیں گے۔</string>
 			<key>other</key>
-			<string>آپ کی %d کوششیں بقایا ہیں۔ اگر آپ کی کوششیں ختم ہو گئیں، تو آپ نیا PIN تخلیق کر سکتے ہیں۔ آپ رجسٹر ہو سکتے اور اپنا اکاؤنٹ استعمال کر سکتے ہیں لیکن آپ اپنی پروفائل کی معلومات جیسی کچھ محفوظ کردہ ترتیبات سے محروم ہو جائیں گے۔</string>
+			<string>آپ کی %1$d کوششیں بقایا ہیں۔ اگر آپ کی کوششیں ختم ہو گئیں، تو آپ نیا پِن تخلیق کر سکتے ہیں۔ آپ رجسٹر ہو سکتے اور اپنا اکاؤنٹ استعمال کر سکتے ہیں لیکن آپ اپنی پروفائل کی معلومات جیسی کچھ محفوظ کردہ سیٹنگز سے محروم ہو جائیں گے۔</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -1112,9 +1080,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>آپ کی 1 کوشش بقایا ہے۔ اگر آپ کی کوششیں ختم ہو گئیں تو آپ کا اکاؤنٹ لاک کر دیا جائے گا۔ غیر فعالیت کے 7 دنوں کے بعد، آپ اپنے PIN کے بغیر دوبارہ رجسٹر ہو سکتے ہیں۔ آپ کا اکاؤنٹ صاف اور تمام مواد حذف کر دیا جائے گا۔</string>
+			<string>آپ کی %1$d کوشش بقایا ہے۔ اگر آپ کی کوششیں ختم ہو گئیں تو آپ کا اکاؤنٹ لاک کر دیا جائے گا۔ غیر فعالیت کے 7 دنوں کے بعد، آپ اپنے پِن کے بغیر دوبارہ رجسٹر ہو سکتے ہیں۔ آپ کا اکاؤنٹ صاف اور تمام مواد ڈیلیٹ کر دیا جائے گا۔</string>
 			<key>other</key>
-			<string>آپ کی %d کوششیں بقایا ہیں۔ اگر آپ کی کوششیں ختم ہو گئیں تو آپ کا اکاؤنٹ لاک کر دیا جائے گا۔ غیر فعالیت کے 7 دنوں کے بعد، آپ اپنے PIN کے بغیر دوبارہ رجسٹر ہو سکتے ہیں۔ آپ کا اکاؤنٹ صاف اور تمام مواد حذف کر دیا جائے گا۔</string>
+			<string>آپ کی %1$d کوششیں بقایا ہیں۔ اگر آپ کی کوششیں ختم ہو گئیں تو آپ کا اکاؤنٹ لاک کر دیا جائے گا۔ غیر فعالیت کے 7 دنوں کے بعد، آپ اپنے پِن کے بغیر دوبارہ رجسٹر ہو سکتے ہیں۔ آپ کا اکاؤنٹ صاف اور تمام مواد ڈیلیٹ کر دیا جائے گا۔</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
@@ -1128,9 +1096,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; جواب</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; جواب</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; جوابات</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; جوابات</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1144,9 +1112,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>%1$d ناظر</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%1$d ناظرین</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1160,9 +1128,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 نکالا گیا</string>
+			<string>%1$d نکالا گیا</string>
 			<key>other</key>
-			<string>%d نکالے گئے</string>
+			<string>%1$d نکالے گئے</string>
 		</dict>
 	</dict>
 	<key>STORY_SENDING_%d</key>
@@ -1176,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>بھیجا جا رہا ہے...</string>
+			<string>بھیج رہا ہے…</string>
 			<key>other</key>
-			<string>%d جا رہا ہے...</string>
+			<string>%1$d بھیج رہا ہے…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1192,15 +1160,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 ویو</string>
+			<string>%1$d ویو</string>
 			<key>other</key>
-			<string>%d ویوز</string>
+			<string>%1$d ویوز</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@views@  %2$#@replies@</string>
+		<string>%1$#@views@ %2$#@replies@</string>
 		<key>replies</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
@@ -1208,9 +1176,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; جواب</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; جواب</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; جوابات</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; جوابات</string>
 		</dict>
 		<key>views</key>
 		<dict>
@@ -1219,9 +1187,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; ویو</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; ویو</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; ویوز</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; ویوز</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
@@ -1235,201 +1203,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; ویو</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; ویو</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; ویوز</string>
-		</dict>
-	</dict>
-	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%2$@، %3$@، اور 1 اضافی گروپ کا رکن</string>
-			<key>other</key>
-			<string>%2$@، %3$@، اور %d اضافی گروپس کا رکن</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_DAYS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 دن</string>
-			<key>other</key>
-			<string>%d دن</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_DAYS_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 دن</string>
-			<key>other</key>
-			<string> %d دن</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_HOURS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 گھنٹہ</string>
-			<key>other</key>
-			<string>%d گھنٹے</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_HOURS_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 گھنٹہ</string>
-			<key>other</key>
-			<string>%d گھنٹہ</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_MINUTES_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 منٹ</string>
-			<key>other</key>
-			<string>%d منٹ</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 منٹ</string>
-			<key>other</key>
-			<string>%d منٹ</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_SECONDS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 سیکنڈ</string>
-			<key>other</key>
-			<string>%d سیکنڈ</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 سیکنڈ</string>
-			<key>other</key>
-			<string>%d سیکنڈ</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_WEEKS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 ہفتہ</string>
-			<key>other</key>
-			<string>%d ہفتے</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 ہفتہ</string>
-			<key>other</key>
-			<string>%d ہفتہ</string>
-		</dict>
-	</dict>
-	<key>TIME_AMOUNT_YEARS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 سال</string>
-			<key>other</key>
-			<string>%d سال</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; ویوز</string>
 		</dict>
 	</dict>
 </dict>

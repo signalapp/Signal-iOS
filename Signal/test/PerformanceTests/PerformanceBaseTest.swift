@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -13,8 +14,7 @@ public class PerformanceBaseTest: XCTestCase {
     public override func setUp() {
         super.setUp()
 
-        ClearCurrentAppContextForTests()
-        SetCurrentAppContext(TestAppContext())
+        SetCurrentAppContext(TestAppContext(), true)
         SDSDatabaseStorage.shouldLogDBQueries = false
 
         MockSSKEnvironment.activate()

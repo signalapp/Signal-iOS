@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -33,6 +34,9 @@ public protocol SDSCodableModel: Codable, FetchableRecord, PersistableRecord, SD
     func anyDidRemove(transaction: SDSAnyWriteTransaction)
 
     static func columnName(_ column: Columns, fullyQualified: Bool) -> String
+
+    static func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String]
+    static func anyRemoveAllWithInstantiation(transaction: SDSAnyWriteTransaction)
 }
 
 public extension SDSCodableModel {
@@ -74,7 +78,7 @@ public extension SDSCodableModel where Columns.RawValue == String {
 
 public extension SDSCodableModel {
     static func anyFetch(uniqueId: String, transaction: SDSAnyReadTransaction) -> Self? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
@@ -125,6 +129,48 @@ public extension SDSCodableModel {
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
         sdsRemove(transaction: transaction)
+    }
+}
+
+public extension SDSCodableModel where Self: AnyObject {
+    /// Get the unique ID of each stored instance of the model.
+    static func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
+        var result = [String]()
+
+        anyEnumerateUniqueIds(transaction: transaction) { uniqueId, _ in
+            result.append(uniqueId)
+        }
+
+        return result
+    }
+
+    /// Remove all stored instances of the model.
+    ///
+    /// Note: implementation based on the SDS-codegen-ed version of this method.
+    static func anyRemoveAllWithInstantiation(transaction: SDSAnyWriteTransaction) {
+        // To avoid mutationDuringEnumerationException, we need
+        // to remove the instances outside the enumeration.
+        let uniqueIds = anyAllUniqueIds(transaction: transaction)
+
+        var index: Int = 0
+        Batching.loop(batchSize: Batching.kDefaultBatchSize,
+                      loopBlock: { stop in
+            guard index < uniqueIds.count else {
+                stop.pointee = true
+                return
+            }
+            let uniqueId = uniqueIds[index]
+            index += 1
+            guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                owsFailDebug("Missing instance.")
+                return
+            }
+            instance.anyRemove(transaction: transaction)
+        })
+
+        if ftsIndexMode != .never {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
     }
 }
 
@@ -264,7 +310,10 @@ fileprivate extension SDSCodableModel {
             recordCopy.id = grdbId
             try recordCopy.update(transaction.database)
         } catch {
-            SSKPreferences.flagDatabaseCorruptionIfNecessary(error: error)
+            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFail("Update failed: \(error.grdbErrorForLogging)")
         }
     }
@@ -273,7 +322,10 @@ fileprivate extension SDSCodableModel {
         do {
             try self.insert(transaction.database)
         } catch {
-            SSKPreferences.flagDatabaseCorruptionIfNecessary(error: error)
+            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFail("Insert failed: \(error.grdbErrorForLogging)")
         }
     }
@@ -293,7 +345,10 @@ fileprivate extension SDSCodableModel {
             statement.setUncheckedArguments(arguments)
             try statement.execute()
         } catch {
-            SSKPreferences.flagDatabaseCorruptionIfNecessary(error: error)
+            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFail("Write failed: \(error.grdbErrorForLogging)")
         }
     }
@@ -351,6 +406,15 @@ public extension SDSCodableModel {
                 }
             }
         )
+    }
+
+    static func anyEnumerateIndexable(
+        transaction: SDSAnyReadTransaction,
+        block: @escaping (SDSIndexableModel) -> Void
+    ) {
+        anyEnumerate(transaction: transaction, batched: false) { model, _ in
+            block(model)
+        }
     }
 
     // Traverses all records' unique ids.

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -209,10 +210,6 @@ public class GroupManager: NSObject {
 
         return firstly { () -> Promise<Void> in
             return self.ensureLocalProfileHasCommitmentIfNecessary()
-        }.then(on: .global()) { () -> Promise<Void> in
-            var memberSet = Set(membersParam)
-            memberSet.insert(localAddress)
-            return self.tryToEnableGroupsV2(for: Array(memberSet), isBlocking: true, ignoreErrors: true)
         }.map(on: .global()) { () throws -> GroupMembership in
             // Build member list.
             //
@@ -808,7 +805,7 @@ public class GroupManager: NSObject {
         }
         let newConfiguration = updateResult.newConfiguration
         let message = OWSDisappearingMessagesConfigurationMessage(configuration: newConfiguration, thread: thread, transaction: transaction)
-        messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+        sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
     }
 
     // MARK: - Accept Invites
@@ -917,7 +914,7 @@ public class GroupManager: NSObject {
         waitForMessageProcessing: Bool,
         transaction: SDSAnyWriteTransaction
     ) -> Promise<TSGroupThread> {
-        self.localLeaveGroupJobQueue.add(
+        sskJobQueues.localUserLeaveGroupJobQueue.add(
             threadId: threadId,
             replacementAdminUuid: replacementAdminUuid,
             waitForMessageProcessing: waitForMessageProcessing,
@@ -1197,49 +1194,22 @@ public class GroupManager: NSObject {
 
     // MARK: - UUIDs
 
-    public static func tryToEnableGroupsV2(for addresses: [SignalServiceAddress],
-                                           isBlocking: Bool,
-                                           ignoreErrors: Bool) -> Promise<Void> {
-        let promise = tryToEnableGroupsV2(for: addresses, isBlocking: isBlocking)
-        if ignoreErrors {
-            return promise.recover { error in
-                Logger.warn("Error: \(error).")
-            }
-        } else {
-            return promise
-        }
-    }
-
-    private static func tryToEnableGroupsV2(for addresses: [SignalServiceAddress],
-                                            isBlocking: Bool) -> Promise<Void> {
+    public static func tryToEnableGroupsV2(for addresses: [SignalServiceAddress]) -> Promise<Void> {
         return firstly { () -> Promise<Void> in
-            for address in addresses {
+            let phoneNumbersWithoutUuids = try addresses.compactMap { address -> String? in
                 guard address.isValid else {
                     throw OWSAssertionError("Invalid address: \(address).")
                 }
+                guard address.uuid == nil else {
+                    return nil
+                }
+                return address.phoneNumber
             }
-            return Promise.value(())
-        }.then(on: .global()) { _ -> Promise<Void> in
-            return self.tryToFillInMissingUuids(for: addresses, isBlocking: isBlocking)
-        }
-    }
-
-    public static func tryToFillInMissingUuids(for addresses: [SignalServiceAddress],
-                                               isBlocking: Bool) -> Promise<Void> {
-
-        let phoneNumbersWithoutUuids = addresses.filter { $0.uuid == nil }.compactMap { $0.phoneNumber }
-        guard phoneNumbersWithoutUuids.count > 0 else {
-            return Promise.value(())
-        }
-
-        if isBlocking {
-            // Block on the outcome.
+            guard phoneNumbersWithoutUuids.count > 0 else {
+                return Promise.value(())
+            }
             let discoveryTask = ContactDiscoveryTask(phoneNumbers: Set(phoneNumbersWithoutUuids))
             return discoveryTask.perform(at: .userInitiated).asVoid()
-        } else {
-            // This will throttle, de-bounce, etc.
-            self.bulkUUIDLookup.lookupUuids(phoneNumbers: phoneNumbersWithoutUuids)
-            return Promise.value(())
         }
     }
 
@@ -1283,7 +1253,7 @@ public class GroupManager: NSObject {
                 message.updateWithSending(toSingleGroupRecipient: singleRecipient, transaction: transaction)
             }
 
-            Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         }
     }
 
@@ -1305,7 +1275,7 @@ public class GroupManager: NSObject {
                 additionalRecipients: Self.invitedMembers(in: thread),
                 transaction: transaction
             )
-            Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            Self.sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         }
     }
 
@@ -1341,7 +1311,7 @@ public class GroupManager: NSObject {
         let message = OutgoingGroupUpdateMessage(in: groupThread,
                                                  groupMetaMessage: .quit,
                                                  transaction: transaction)
-        messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+        sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
     }
 
     public static func resendInvite(groupThread: TSGroupThread,
@@ -1358,7 +1328,7 @@ public class GroupManager: NSObject {
             transaction: transaction
         )
 
-        messageSenderJobQueue.add(
+        sskJobQueues.messageSenderJobQueue.add(
             .promise,
             message: message.asPreparer,
             isHighPriority: true,
@@ -1779,67 +1749,6 @@ public class GroupManager: NSObject {
         storageServiceManager.recordPendingUpdates(groupModel: groupModel)
     }
 
-    // MARK: - Capabilities
-
-    private static let groupsV2MigrationCapabilityStore = SDSKeyValueStore(collection: "GroupManager.groupsV2MigrationCapability")
-    private static let announcementOnlyGroupsCapabilityStore = SDSKeyValueStore(collection: "GroupManager.announcementOnlyGroupsCapability")
-    private static let senderKeyCapabilityStore = SDSKeyValueStore(collection: "GroupManager.senderKeyCapability")
-
-    @objc
-    public static func doesUserHaveGroupsV2MigrationCapability(address: SignalServiceAddress,
-                                                               transaction: SDSAnyReadTransaction) -> Bool {
-        if DebugFlags.groupsV2migrationsIgnoreMigrationCapability {
-            return true
-        }
-        guard let uuid = address.uuid else {
-            return false
-        }
-        return groupsV2MigrationCapabilityStore.getBool(uuid.uuidString, defaultValue: false, transaction: transaction)
-    }
-
-    @objc
-    public static func doesUserHaveAnnouncementOnlyGroupsCapability(address: SignalServiceAddress,
-                                                                    transaction: SDSAnyReadTransaction) -> Bool {
-        guard let uuid = address.uuid else {
-            return false
-        }
-        return announcementOnlyGroupsCapabilityStore.getBool(uuid.uuidString, defaultValue: false, transaction: transaction)
-    }
-
-    @objc
-    public static func doesUserHaveSenderKeyCapability(address: SignalServiceAddress,
-                                                       transaction: SDSAnyReadTransaction) -> Bool {
-        guard let uuid = address.uuid else {
-            return false
-        }
-        return senderKeyCapabilityStore.getBool(uuid.uuidString, defaultValue: false, transaction: transaction)
-    }
-
-    @objc
-    public static func setUserCapabilities(address: SignalServiceAddress,
-                                           hasGroupsV2MigrationCapability: Bool,
-                                           hasAnnouncementOnlyGroupsCapability: Bool,
-                                           hasSenderKeyCapability: Bool,
-                                           transaction: SDSAnyWriteTransaction) {
-        guard let uuid = address.uuid else {
-            Logger.warn("Address without uuid: \(address)")
-            return
-        }
-        let key = uuid.uuidString
-        groupsV2MigrationCapabilityStore.setBoolIfChanged(hasGroupsV2MigrationCapability,
-                                                          defaultValue: false,
-                                                          key: key,
-                                                          transaction: transaction)
-        announcementOnlyGroupsCapabilityStore.setBoolIfChanged(hasAnnouncementOnlyGroupsCapability,
-                                                               defaultValue: false,
-                                                               key: key,
-                                                               transaction: transaction)
-        senderKeyCapabilityStore.setBoolIfChanged(hasSenderKeyCapability,
-                                                  defaultValue: false,
-                                                  key: key,
-                                                  transaction: transaction)
-    }
-
     // MARK: - Profiles
 
     private static func autoWhitelistGroupIfNecessary(oldGroupModel: TSGroupModel?,
@@ -1953,6 +1862,13 @@ public class GroupManager: NSObject {
         profileManager.fillInMissingProfileKeys(profileKeysByAddress, userProfileWriter: .groupState)
     }
 
+    /// Ensure that we have a profile key commitment for our local profile
+    /// available on the service.
+    ///
+    /// We (and other clients) need profile key credentials for group members in
+    /// order to perform GV2 operations. However, other clients can't request
+    /// our profile key credential from the service until we've uploaded a profile
+    /// key commitment to the service.
     public static func ensureLocalProfileHasCommitmentIfNecessary() -> Promise<Void> {
         guard tsAccountManager.isOnboarded() else {
             return Promise.value(())
@@ -1966,27 +1882,35 @@ public class GroupManager: NSObject {
                                                               transaction: transaction)
         }.then(on: .global()) { hasLocalCredential -> Promise<Void> in
             guard !hasLocalCredential else {
-                return Promise.value(())
-            }
-            guard tsAccountManager.isRegisteredPrimaryDevice else {
-                // On secondary devices, just re-fetch the local
-                // profile.
-                return self.profileManager.fetchLocalUsersProfilePromise().asVoid()
+                return .value(())
             }
 
-            // We (and other clients) need a profile key credential for
-            // all group members to use groups v2.  Other clients can't
-            // request our profile key credential from the service until
-            // until we've uploaded a profile key commitment to the service.
-            //
-            // If we've never done a versioned profile update, try to do so now.
-            // This step might or might not be necessary. It's simpler and safer
-            // to always do it. It won't amount to much extra work and we'll
-            // probably do it at most once.  Once we have a profile key credential
-            // for the local user (which should last forever) we'll abort above.
-            // Group v2 actions will use tryToEnsureProfileKeyCredentials()
-            // and we want to set them up to succeed.
-            Logger.info("Re-uploading local profile to update profile credential.")
+            // If we don't have a local profile key credential we should first
+            // check if it is simply expired, by asking for a new one (which we
+            // would get as part of fetching our local profile).
+            return self.profileManager.fetchLocalUsersProfilePromise().asVoid()
+        }.then(on: .global()) { () -> Promise<Void> in
+            let hasProfileKeyCredentialAfterRefresh = databaseStorage.read { transaction in
+                self.groupsV2Swift.hasProfileKeyCredential(for: localAddress, transaction: transaction)
+            }
+
+            if hasProfileKeyCredentialAfterRefresh {
+                // We successfully refreshed our profile key credential, which
+                // means we have previously uploaded a commitment, and all is
+                // well.
+                return .value(())
+            }
+
+            guard
+                tsAccountManager.isRegisteredPrimaryDevice,
+                CurrentAppContext().isMainApp
+            else {
+                Logger.warn("Skipping upload of local profile key commitment, not in main app!")
+                return .value(())
+            }
+
+            // We've never uploaded a profile key commitment - do so now.
+            Logger.info("No profile key credential available for local account - uploading local profile!")
             return self.groupsV2Swift.reuploadLocalProfilePromise()
         }
     }
@@ -2185,108 +2109,5 @@ extension GroupManager {
                 }
             }
         }
-    }
-}
-
-// MARK: - Serialized generic group changes
-
-extension GroupManager {
-    // Serialize group updates by group ID
-    private static var groupUpdateOperationQueues: [Data: OperationQueue] = [:]
-
-    private static func operationQueue(
-        forUpdatingGroup groupModel: TSGroupModel
-    ) -> OperationQueue {
-        if let queue = groupUpdateOperationQueues[groupModel.groupId] {
-            return queue
-        }
-
-        let newQueue = OperationQueue()
-        newQueue.name = "GroupManager.updateQueueForGroup.\(UUID().uuidString)"
-        newQueue.maxConcurrentOperationCount = 1
-
-        groupUpdateOperationQueues[groupModel.groupId] = newQueue
-        return newQueue
-    }
-
-    private class GenericGroupUpdateOperation: OWSOperation {
-        private let groupId: Data
-        private let groupSecretParamsData: Data
-        private let updateDescription: String
-        private let changesBlock: (GroupsV2OutgoingChanges) -> Void
-
-        let promise: Promise<TSGroupThread>
-        private let future: Future<TSGroupThread>
-
-        init(
-            groupId: Data,
-            groupSecretParamsData: Data,
-            updateDescription: String,
-            changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
-        ) {
-            self.groupId = groupId
-            self.groupSecretParamsData = groupSecretParamsData
-            self.updateDescription = updateDescription
-            self.changesBlock = changesBlock
-
-            let (promise, future) = Promise<TSGroupThread>.pending()
-            self.promise = promise
-            self.future = future
-
-            super.init()
-
-            self.remainingRetries = 1
-        }
-
-        public override func run() {
-            firstly {
-                GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
-            }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
-                self.groupsV2Swift.updateGroupV2(
-                    groupId: self.groupId,
-                    groupSecretParamsData: self.groupSecretParamsData,
-                    changesBlock: self.changesBlock
-                )
-            }.done(on: .global()) { groupThread in
-                self.reportSuccess()
-                self.future.resolve(groupThread)
-            }.timeout(
-                seconds: GroupManager.groupUpdateTimeoutDuration,
-                description: description
-            ) {
-                GroupsV2Error.timeout
-            }.catch(on: .global()) { error in
-                switch error {
-                case GroupsV2Error.redundantChange:
-                    // From an operation perspective, this is a success!
-                    self.reportSuccess()
-                    self.future.reject(error)
-                default:
-                    owsFailDebug("Group update failed: \(error)")
-                    self.reportError(error)
-                }
-            }
-        }
-
-        public override func didFail(error: Error) {
-            future.reject(error)
-        }
-    }
-
-    static func updateGroupV2(
-        groupModel: TSGroupModelV2,
-        description: String,
-        changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
-    ) -> Promise<TSGroupThread> {
-        let operation = GenericGroupUpdateOperation(
-            groupId: groupModel.groupId,
-            groupSecretParamsData: groupModel.secretParamsData,
-            updateDescription: description,
-            changesBlock: changesBlock
-        )
-
-        operationQueue(forUpdatingGroup: groupModel).addOperation(operation)
-
-        return operation.promise
     }
 }

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -10,10 +11,10 @@ extern NSNotificationName const WarmCachesNotification;
 @class AppExpiry;
 @class BlockingManager;
 @class BulkProfileFetch;
-@class BulkUUIDLookup;
 @class ChangePhoneNumber;
 @class EarlyMessageManager;
 @class GroupsV2MessageProcessor;
+@class LocalUserLeaveGroupJobQueue;
 @class MessageFetcherJob;
 @class MessageProcessor;
 @class MessageSender;
@@ -31,7 +32,9 @@ extern NSNotificationName const WarmCachesNotification;
 @class OWSOutgoingReceiptManager;
 @class OWSReceiptManager;
 @class PhoneNumberUtil;
+@class RemoteMegaphoneFetcher;
 @class SDSDatabaseStorage;
+@class SSKJobQueues;
 @class SSKPreferences;
 @class SenderKeyStore;
 @class SignalProtocolStore;
@@ -75,7 +78,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
                      linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
                           messageSender:(MessageSender *)messageSender
-                  messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
                  pendingReceiptRecorder:(id<PendingReceiptRecorder>)pendingReceiptRecorder
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          networkManager:(NetworkManager *)networkManager
@@ -110,7 +112,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                          groupV2Updates:(id<GroupV2Updates>)groupV2Updates
                       messageFetcherJob:(MessageFetcherJob *)messageFetcherJob
                        bulkProfileFetch:(BulkProfileFetch *)bulkProfileFetch
-                         bulkUUIDLookup:(BulkUUIDLookup *)bulkUUIDLookup
                       versionedProfiles:(id<VersionedProfiles>)versionedProfiles
                         modelReadCaches:(ModelReadCaches *)modelReadCaches
                     earlyMessageManager:(EarlyMessageManager *)earlyMessageManager
@@ -128,23 +129,18 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                       changePhoneNumber:(ChangePhoneNumber *)changePhoneNumber
                     subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager
                      systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager
-    NS_DESIGNATED_INITIALIZER;
+                 remoteMegaphoneFetcher:(RemoteMegaphoneFetcher *)remoteMegaphoneFetcher
+                           sskJobQueues:(SSKJobQueues *)sskJobQueues NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
 + (void)setShared:(SSKEnvironment *)env;
-
-#ifdef TESTABLE_BUILD
-// Should only be called by tests.
-+ (void)clearSharedForTests;
-#endif
 
 + (BOOL)hasShared;
 
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManagerRef;
 @property (nonatomic, readonly) OWSLinkPreviewManager *linkPreviewManagerRef;
 @property (nonatomic, readonly) MessageSender *messageSenderRef;
-@property (nonatomic, readonly) MessageSenderJobQueue *messageSenderJobQueueRef;
 @property (nonatomic, readonly) id<PendingReceiptRecorder> pendingReceiptRecorderRef;
 @property (nonatomic, readonly) id<ProfileManagerProtocol> profileManagerRef;
 @property (nonatomic, readonly) NetworkManager *networkManagerRef;
@@ -177,7 +173,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 @property (nonatomic, readonly) SSKPreferences *sskPreferencesRef;
 @property (nonatomic, readonly) MessageFetcherJob *messageFetcherJobRef;
 @property (nonatomic, readonly) BulkProfileFetch *bulkProfileFetchRef;
-@property (nonatomic, readonly) BulkUUIDLookup *bulkUUIDLookupRef;
 @property (nonatomic, readonly) id<VersionedProfiles> versionedProfilesRef;
 @property (nonatomic, readonly) ModelReadCaches *modelReadCachesRef;
 @property (nonatomic, readonly) EarlyMessageManager *earlyMessageManagerRef;
@@ -195,6 +190,8 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 @property (nonatomic, readonly) ChangePhoneNumber *changePhoneNumberRef;
 @property (nonatomic, readonly) id<SubscriptionManagerProtocol> subscriptionManagerRef;
 @property (nonatomic, readonly) id<SystemStoryManagerProtocolObjc> systemStoryManagerRef;
+@property (nonatomic, readonly) RemoteMegaphoneFetcher *remoteMegaphoneFetcherRef;
+@property (nonatomic, readonly) SSKJobQueues *sskJobQueuesRef;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandlerRef;

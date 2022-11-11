@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import <SignalServiceKit/TSOutgoingMessage.h>
@@ -21,7 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// typing indicator to a recipient if we need the user to verify a safety number change. Outgoing SKDMs being sent on
 /// behalf of an outgoing typing indicator should inherit this behavior.
 @property (assign, atomic, readonly) BOOL isSentOnBehalfOfOnlineMessage;
-- (void)configureAsSentOnBehalfOf:(TSOutgoingMessage *)message NS_SWIFT_NAME(configureAsSentOnBehalfOf(_:));
+/// Returns YES if this message is being sent as a precondition to sending a story message.
+@property (assign, atomic, readonly) BOOL isSentOnBehalfOfStoryMessage;
+- (void)configureAsSentOnBehalfOf:(TSOutgoingMessage *)message
+                         inThread:(TSThread *)thread NS_SWIFT_NAME(configureAsSentOnBehalfOf(_:in:));
 
 @end
 

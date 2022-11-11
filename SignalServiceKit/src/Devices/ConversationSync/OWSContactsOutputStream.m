@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSContactsOutputStream.h"
@@ -36,6 +37,10 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoContactDetailsBuilder *contactBuilder = [SSKProtoContactDetails builder];
     [contactBuilder setContactE164:signalAccount.recipientAddress.phoneNumber];
     [contactBuilder setContactUuid:signalAccount.recipientAddress.uuidString];
+
+    // TODO: this should be removed after a 90-day timer from when Desktop stops
+    // relying on names in contact sync messages, and is instead using the
+    // `system[Given|Family]Name` fields from StorageService ContactRecords.
     [contactBuilder setName:signalAccount.contact.fullName];
 
     if (isArchived != nil) {
@@ -43,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (inboxPosition != nil) {
-        [contactBuilder setInboxPosition:inboxPosition.intValue];
+        [contactBuilder setInboxPosition:inboxPosition.unsignedIntValue];
     }
 
     if (recipientIdentity != nil) {

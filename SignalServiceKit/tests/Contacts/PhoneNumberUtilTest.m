@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "PhoneNumberUtil.h"
@@ -161,7 +162,7 @@
     // Invalid country code.
     XCTAssertEqualObjects([PhoneNumberUtil countryNameFromCountryCode:@"EK"], @"EK");
     XCTAssertEqualObjects([PhoneNumberUtil countryNameFromCountryCode:@"ZZZ"], @"ZZZ");
-    XCTAssertTrue([PhoneNumberUtil countryNameFromCountryCode:@""].length > 0);
+    XCTAssertNotEqualObjects([PhoneNumberUtil countryNameFromCountryCode:@""], @"");
 }
 
 - (void)testCountryCodesForSearchTerm

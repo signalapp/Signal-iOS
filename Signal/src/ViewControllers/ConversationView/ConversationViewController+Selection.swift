@@ -1,6 +1,9 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
+
+import SignalMessaging
 
 public struct CVSelectionType: OptionSet {
     public let rawValue: UInt

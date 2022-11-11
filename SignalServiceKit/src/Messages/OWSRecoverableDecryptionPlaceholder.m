@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSRecoverableDecryptionPlaceholder.h"
@@ -112,10 +113,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
                        thread:(TSThread *)thread
                  circumstance:(OWSReceiptCircumstance)circumstance
+     shouldClearNotifications:(BOOL)shouldClearNotifications
                   transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSLogInfo(@"Marking placeholder as read. No longer eligible for inline replacement.");
-    [super markAsReadAtTimestamp:readTimestamp thread:thread circumstance:circumstance transaction:transaction];
+    [super markAsReadAtTimestamp:readTimestamp
+                          thread:thread
+                    circumstance:circumstance
+        shouldClearNotifications:shouldClearNotifications
+                     transaction:transaction];
 }
 
 #pragma mark - Testing

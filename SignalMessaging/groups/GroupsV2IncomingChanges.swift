@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -241,21 +242,13 @@ public class GroupsV2IncomingChanges: Dependencies {
         }
 
         for action in changeActionsProto.modifyMemberProfileKeys {
-            guard let presentationData = action.presentation else {
-                throw OWSAssertionError("Missing presentation.")
-            }
-            let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
-            let uuidCiphertext = try presentation.getUuidCiphertext()
-            let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
+            let (aci, _, profileKey) = try action.getAciProperties(groupV2Params: groupV2Params)
 
-            guard oldGroupMembership.isFullMember(uuid) else {
-                throw OWSAssertionError("Invalid membership.")
+            guard oldGroupMembership.isFullMember(aci) else {
+                throw OWSAssertionError("Attempting to modify profile key for ACI that is not a member!")
             }
 
-            let profileKeyCiphertext = try presentation.getProfileKeyCiphertext()
-            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
-                                                          uuid: uuid)
-            profileKeys[uuid] = profileKey
+            profileKeys[aci] = profileKey
         }
 
         for action in changeActionsProto.addPendingMembers {
@@ -352,36 +345,28 @@ public class GroupsV2IncomingChanges: Dependencies {
         }
 
         for action in changeActionsProto.promotePendingMembers {
-            guard let presentationData = action.presentation else {
-                throw OWSAssertionError("Missing presentation.")
-            }
-            let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
-            let uuidCiphertext = try presentation.getUuidCiphertext()
-            let userId = uuidCiphertext.serialize().asData
-            let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
+            let (aci, aciCiphertext, profileKey) = try action.getAciProperties(groupV2Params: groupV2Params)
 
-            guard oldGroupMembership.isInvitedMember(uuid) else {
-                throw OWSAssertionError("Invalid membership.")
+            guard oldGroupMembership.isInvitedMember(aci) else {
+                throw OWSAssertionError("Attempting to promote ACI that is not currently invited!")
             }
-            guard !oldGroupMembership.isFullMember(uuid) else {
-                throw OWSAssertionError("Invalid membership.")
+            guard !oldGroupMembership.isFullMember(aci) else {
+                throw OWSAssertionError("Attempting to promote ACI that is already a full member!")
             }
-            guard let role = oldGroupMembership.role(for: uuid) else {
-                throw OWSAssertionError("Missing role.")
+            guard let role = oldGroupMembership.role(for: aci) else {
+                throw OWSAssertionError("Attempting to promote ACI, but missing invited role")
             }
-            groupMembershipBuilder.removeInvalidInvite(userId: userId)
-            groupMembershipBuilder.remove(uuid)
-            groupMembershipBuilder.addFullMember(uuid, role: role)
 
-            if uuid != changeAuthorUuid {
+            groupMembershipBuilder.removeInvalidInvite(userId: aciCiphertext)
+            groupMembershipBuilder.remove(aci)
+            groupMembershipBuilder.addFullMember(aci, role: role)
+
+            if aci != changeAuthorUuid {
                 // Only the invitee can accept an invitation.
                 owsFailDebug("Cannot accept the invitation.")
             }
 
-            let profileKeyCiphertext = try presentation.getProfileKeyCiphertext()
-            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
-                                                          uuid: uuid)
-            profileKeys[uuid] = profileKey
+            profileKeys[aci] = profileKey
         }
 
         for action in changeActionsProto.addRequestingMembers {
@@ -625,5 +610,67 @@ public class GroupsV2IncomingChanges: Dependencies {
                                  newDisappearingMessageToken: newDisappearingMessageToken,
                                  changeAuthorUuid: changeAuthorUuid,
                                  profileKeys: profileKeys)
+    }
+}
+
+// MARK: - HasAciAndProfileKey
+
+private protocol HasAciAndProfileKey {
+    var userID: Data? { get }
+    var profileKey: Data? { get }
+    var presentation: Data? { get }
+}
+
+extension GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: HasAciAndProfileKey {}
+extension GroupsProtoGroupChangeActionsPromotePendingMemberAction: HasAciAndProfileKey {}
+
+private extension HasAciAndProfileKey {
+    typealias AciProperties = (
+        aci: UUID,
+        aciCiphertext: Data,
+        profileKey: Data
+    )
+
+    func getAciProperties(groupV2Params: GroupV2Params) throws -> AciProperties {
+        if
+            let aciCiphertext = userID,
+            let profileKeyData = profileKey
+        {
+            let aci = try groupV2Params.uuid(forUserId: aciCiphertext)
+
+            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyData))
+            let profileKey = try groupV2Params.profileKey(
+                forProfileKeyCiphertext: profileKeyCiphertext,
+                uuid: aci
+            )
+
+            return (
+                aci: aci,
+                aciCiphertext: aciCiphertext,
+                profileKey: profileKey
+            )
+        } else if let presentationData = presentation {
+            // We should only ever fall back to presentation data if a client
+            // is parsing *old* group history, since the server has been writing
+            // the properties required for the block above for a long time.
+
+            let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
+            let aciCiphertext = try presentation.getUuidCiphertext()
+            let aci = try groupV2Params.uuid(forUuidCiphertext: aciCiphertext)
+
+            let profileKeyCiphertext = try presentation.getProfileKeyCiphertext()
+            let profileKey = try groupV2Params.profileKey(
+                forProfileKeyCiphertext: profileKeyCiphertext,
+                uuid: aci
+            )
+
+            return (
+                aci: aci,
+                aciCiphertext: aciCiphertext.serialize().asData,
+                profileKey: profileKey
+            )
+        } else {
+            throw OWSAssertionError("Malformed proto!")
+        }
     }
 }

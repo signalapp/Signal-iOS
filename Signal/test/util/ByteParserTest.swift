@@ -1,21 +1,12 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import XCTest
 @testable import Signal
 
 class ByteParserTest: SignalBaseTest {
-
-    override func setUp() {
-        super.setUp()
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
-
     func testGetShort_Empty() {
         let parser = ByteParser(data: Data(), littleEndian: true)
         XCTAssertNotNil(parser)

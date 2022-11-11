@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -91,7 +92,7 @@ public class GroupLinkViewController: OWSTableViewController2 {
         if groupModelV2.isGroupInviteLinkEnabled {
             let section = OWSTableSection()
             section.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing))
-            section.add(OWSTableItem.actionItem(icon: .messageActionShare,
+            section.add(OWSTableItem.actionItem(icon: .messageActionShare24,
                                                 name: NSLocalizedString("GROUP_LINK_VIEW_SHARE_LINK",
                                                                         comment: "Label for the 'share link' button in the 'group link' view."),
                                                 accessibilityIdentifier: "group_link_view_share_link",

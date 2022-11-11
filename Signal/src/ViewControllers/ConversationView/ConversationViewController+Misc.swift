@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import ContactsUI
+import Foundation
+import SignalMessaging
 
 public extension ConversationViewController {
 
@@ -17,14 +19,6 @@ public extension ConversationViewController {
         // Try to update the v2 group to latest from the service.
         // This will help keep us in sync if we've missed any group updates, etc.
         groupV2UpdatesObjc.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(groupThread)
-    }
-
-    func presentAddThreadToProfileWhitelist(success: @escaping () -> Void) {
-        AssertIsOnMainThread()
-
-        profileManagerImpl.presentAddThread(toProfileWhitelist: thread,
-                                            from: self,
-                                            success: success)
     }
 
     func showUnblockConversationUI(completion: BlockActionCompletionBlock?) {
@@ -72,8 +66,10 @@ public extension ConversationViewController {
                                                       confirmationText: MessageStrings.sendButton) { didConfirm in
                 if didConfirm {
                     Self.databaseStorage.asyncWrite { transaction in
-                        Self.messageSenderJobQueue.add(message: messageToSend.asPreparer,
-                                                       transaction: transaction)
+                        Self.sskJobQueues.messageSenderJobQueue.add(
+                            message: messageToSend.asPreparer,
+                            transaction: transaction
+                        )
                     }
                 }
             }
@@ -96,8 +92,10 @@ public extension ConversationViewController {
                                                 accessibilityIdentifier: "send_again",
                                                 style: .default) { _ in
             Self.databaseStorage.asyncWrite { transaction in
-                Self.messageSenderJobQueue.add(message: messageToSend.asPreparer,
-                                               transaction: transaction)
+                Self.sskJobQueues.messageSenderJobQueue.add(
+                    message: messageToSend.asPreparer,
+                    transaction: transaction
+                )
             }
         })
 

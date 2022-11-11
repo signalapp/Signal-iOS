@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -709,11 +710,8 @@ public class CommonGenerator: NSObject {
 
     @objc
     static public func e164() -> String {
-        let digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-
-        let randomDigits = (0..<10).map { _ in return digits.randomElement()! }
-
-        return "+1".appending(randomDigits.joined())
+        // note 4 zeros in the last group to mimic the spacing of a phone number
+        return String(format: "+1%010ld", Int.random(in: 0..<1_000_000_0000))
     }
 
     @objc

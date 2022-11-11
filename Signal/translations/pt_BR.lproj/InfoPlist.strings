@@ -1,9 +1,9 @@
-NSAppleMusicUsageDescription = "Signal requer acesso ao Apple Music para tocar anexos de mídia. ";
+NSAppleMusicUsageDescription = "Signal requer acesso ao Apple Music para tocar anexos de mídia.";
 NSCameraUsageDescription = "Signal usa sua câmera para tirar fotos e realizar chamadas de vídeo.";
-NSContactsUsageDescription = "Signal utiliza sua lista de contatos para encontrar outros usuários que você conhece. Nós não armazenamos seus contatos em nossos servidores. ";
+NSContactsUsageDescription = "Signal utiliza sua lista de contatos para encontrar outros usuários que você conhece. Nós não armazenamos seus contatos em nossos servidores.";
 NSFaceIDUsageDescription = "A tela de bloqueio do Signal usa Face ID.";
-NSLocationWhenInUseUsageDescription = "Signal requer acesso à sua localização para poder compartilhar sua localização atual. ";
-NSMicrophoneUsageDescription = "Signal requer acesso ao microfone para realizar e receber chamadas e gravar mensagens de voz. ";
-NSPhotoLibraryAddUsageDescription = "Signal irá salvar as imagens na sua biblioteca. ";
-NSPhotoLibraryUsageDescription = "Signal permite que você escolha quais imagens da sua biblioteca serão enviadas. ";
+NSLocationWhenInUseUsageDescription = "Signal requer acesso à sua localização para poder compartilhar sua localização atual.";
+NSMicrophoneUsageDescription = "Signal requer acesso ao microfone para realizar e receber chamadas e gravar mensagens de voz.";
+NSPhotoLibraryAddUsageDescription = "Signal irá salvar as imagens na sua biblioteca.";
+NSPhotoLibraryUsageDescription = "Signal permite que você escolha quais imagens da sua biblioteca serão enviadas.";
 NSLocalNetworkUsageDescription = "O Signal usa a rede local para permitir que você transfira diretamente sua conta para um novo telefone. Ela não será utilizada a menos que você opte explicitamente por iniciar uma transferência para um novo dispositivo.";

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -47,7 +48,8 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
 
     private let backgroundSession = OWSURLSession(
         securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
-        configuration: .background(withIdentifier: "SSKReachabilityManagerImpl")
+        configuration: .background(withIdentifier: "SSKReachabilityManagerImpl"),
+        canUseSignalProxy: true
     )
 
     // This property should only be accessed on the main thread.

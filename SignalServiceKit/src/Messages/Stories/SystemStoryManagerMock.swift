@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -8,7 +9,7 @@ import Foundation
 public class SystemStoryManagerMock: NSObject, SystemStoryManagerProtocol {
 
     /// In tests, set some other handler to this to return different results when the system under test calls enqueueOnboardingStoryDownload
-    public lazy var downloadOnboardingStoryHandler: () -> Promise<Void> = { [weak self] in
+    public lazy var downloadOnboardingStoryHandler: () -> Promise<Void> = {
         return .value(())
     }
 
@@ -17,7 +18,7 @@ public class SystemStoryManagerMock: NSObject, SystemStoryManagerProtocol {
     }
 
     /// In tests, set some other handler to this to return different results when the system under test calls cleanUpOnboardingStoryIfNeeded
-    public lazy var cleanUpOnboardingStoryHandler: () -> Promise<Void> = { [weak self] in
+    public lazy var cleanUpOnboardingStoryHandler: () -> Promise<Void> = {
         return .value(())
     }
 
@@ -25,10 +26,20 @@ public class SystemStoryManagerMock: NSObject, SystemStoryManagerProtocol {
         return cleanUpOnboardingStoryHandler()
     }
 
+    public var isOnboardingStoryRead: Bool = false
+
+    public func isOnboardingStoryRead(transaction: SDSAnyReadTransaction) -> Bool {
+        return isOnboardingStoryRead
+    }
+
     public var isOnboardingStoryViewed: Bool = false
 
     public func isOnboardingStoryViewed(transaction: SDSAnyReadTransaction) -> Bool {
         return isOnboardingStoryViewed
+    }
+
+    public func setHasReadOnboardingStory(transaction: SDSAnyWriteTransaction, updateStorageService: Bool) {
+        return
     }
 
     public func setHasViewedOnboardingStoryOnAnotherDevice(transaction: SDSAnyWriteTransaction) {
@@ -43,8 +54,10 @@ public class SystemStoryManagerMock: NSObject, SystemStoryManagerProtocol {
         fatalError("Unimplemented for tests")
     }
 
+    public var areSystemStoriesHidden: Bool = false
+
     public func areSystemStoriesHidden(transaction: SDSAnyReadTransaction) -> Bool {
-        fatalError("Unimplemented for tests")
+        return areSystemStoriesHidden
     }
 
     public func setSystemStoriesHidden(_ hidden: Bool, transaction: SDSAnyWriteTransaction) {

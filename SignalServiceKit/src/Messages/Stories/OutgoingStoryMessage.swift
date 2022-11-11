@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -41,6 +42,8 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
 
     @objc
     public override var isUrgent: Bool { false }
+
+    public override var isStorySend: Bool { true }
 
     public override func shouldSyncTranscript() -> Bool { !skipSyncTranscript.boolValue }
 
@@ -90,6 +93,11 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         storyMessage.anyInsert(transaction: transaction)
 
         thread.updateWithLastSentStoryTimestamp(NSNumber(value: storyMessage.timestamp), transaction: transaction)
+
+        // If story sending for a group was implicitly enabled, explicitly enable it
+        if let groupThread = thread as? TSGroupThread, !groupThread.isStorySendExplicitlyEnabled {
+            groupThread.updateWithStorySendEnabled(true, transaction: transaction)
+        }
 
         let outgoingMessage = OutgoingStoryMessage(thread: thread, storyMessage: storyMessage, transaction: transaction)
         return outgoingMessage

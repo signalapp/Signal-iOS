@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -27,7 +28,7 @@ public class OWSUpload: NSObject {
 
     @objc
     public static let serialQueue: DispatchQueue = {
-        return DispatchQueue(label: "org.whispersystems.signal.upload",
+        return DispatchQueue(label: OWSDispatch.createLabel("upload"),
                              qos: .utility,
                              autoreleaseFrequency: .workItem)
     }()

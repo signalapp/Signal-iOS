@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import SignalUI
 import UIKit
 
@@ -16,7 +18,7 @@ protocol BadgeConfigurationDelegate: AnyObject {
     func badgeConfirmationDidCancel(_: BadgeConfigurationViewController)
 }
 
-class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollectionDataSource, OWSNavigationView {
+class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollectionDataSource {
     private weak var badgeConfigDelegate: BadgeConfigurationDelegate?
 
     let availableBadges: [OWSUserProfileBadgeInfo]
@@ -213,7 +215,7 @@ class BadgeConfigurationViewController: OWSTableViewController2, BadgeCollection
         displayBadgeOnProfile = sender.isOn
     }
 
-    func shouldCancelNavigationBack() -> Bool {
+    var shouldCancelNavigationBack: Bool {
         if hasUnsavedChanges {
             didTapCancel()
             return true

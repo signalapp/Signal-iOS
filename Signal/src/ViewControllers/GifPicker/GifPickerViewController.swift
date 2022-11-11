@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -23,7 +24,6 @@ class GifPickerNavigationViewController: OWSNavigationController {
         self.initialMessageBody = initialMessageBody
         super.init()
         pushViewController(gifPickerViewController, animated: false)
-        delegate = self
     }
 }
 
@@ -67,6 +67,8 @@ extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDel
     public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) { }
 
     public func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) { }
+
+    public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeViewOnceState isViewOnce: Bool) { }
 }
 
 extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDataSource {
@@ -84,34 +86,12 @@ extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDat
     }
 }
 
-// MARK: -
-
-extension GifPickerNavigationViewController: UINavigationControllerDelegate {
-
-    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        updateNavigationBarVisibility(for: viewController, animated: animated)
-    }
-
-    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        updateNavigationBarVisibility(for: viewController, animated: animated)
-    }
-
-    private func updateNavigationBarVisibility(for viewController: UIViewController, animated: Bool) {
-        switch viewController {
-        case is AttachmentApprovalViewController:
-            setNavigationBarHidden(true, animated: animated)
-        default:
-            setNavigationBarHidden(false, animated: animated)
-        }
-    }
-}
-
 protocol GifPickerViewControllerDelegate: AnyObject {
     func gifPickerDidSelect(attachment: SignalAttachment)
     func gifPickerDidCancel()
 }
 
-class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate {
+class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate, OWSNavigationChildController {
 
     // MARK: Properties
 
@@ -223,16 +203,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         loadTrending()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        guard let navigationBar = navigationController?.navigationBar as? OWSNavigationBar else {
-            owsFailDebug("navigationBar was nil or unexpected class")
-            return
-        }
-        navigationBar.switchToStyle(.default)
-    }
-
     var hasEverAppeared = false
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -248,6 +218,14 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         progressiveSearchTimer?.invalidate()
         progressiveSearchTimer = nil
+    }
+
+    public var preferredNavigationBarStyle: OWSNavigationBarStyle { .clear }
+
+    public override func themeDidChange() {
+        super.themeDidChange()
+
+        view.backgroundColor = Theme.backgroundColor
     }
 
     // MARK: Views
@@ -313,7 +291,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         bottomBanner.autoPinEdge(toSuperviewEdge: .top)
         bottomBanner.autoPinWidthToSuperview()
-        self.autoPinView(toBottomOfViewControllerOrKeyboard: bottomBanner, avoidNotch: true)
+        bottomBanner.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
         // The Giphy API requires us to "show their trademark prominently" in our GIF experience.
         let logoImage = UIImage(named: "giphy_logo")
@@ -615,8 +593,11 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     private func loadTrending() {
         assert(progressiveSearchTimer == nil)
-        assert(searchBar.text == nil || searchBar.text?.count == 0)
         assert(lastQuery == nil)
+        assert({
+            guard let searchText = searchBar.text else { return true }
+            return searchText.isEmpty
+        }())
 
         firstly {
             GiphyAPI.trending()

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -180,6 +181,11 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         updateNavigationBar()
     }
 
+    override func themeDidChange() {
+        super.themeDidChange()
+        updateTableContents()
+    }
+
     func updateNavigationBar() {
         guard canEditConversationAttributes else {
             navigationItem.rightBarButtonItem = nil
@@ -353,10 +359,6 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     // MARK: - Actions
-
-    var canPresentStories: Bool {
-        threadViewModel.storyState != .none && StoryManager.areStoriesEnabled
-    }
 
     func presentStoryViewController() {
         let vc = StoryPageViewController(context: thread.storyContext)

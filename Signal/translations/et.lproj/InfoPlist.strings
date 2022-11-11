@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Signal vajab meediamanuste mängimiseks juurdepääsu Apple Musicule.";
-NSCameraUsageDescription = "Signal kasutab kaamerat fotode tegemiseks ja videokõnedeks.";
-NSContactsUsageDescription = "Signal kasutab kontakte sulle tuttavate kasutajate leidmiseks. Sinu kontakte ei salvestata serverisse.";
-NSFaceIDUsageDescription = "Signali ekraanilukk kasutab Face ID-d.";
-NSLocationWhenInUseUsageDescription = "Signal vajab sinu asukoha jagamiseks juurdepääsu sinu asukohale.";
-NSMicrophoneUsageDescription = "Signal vajab kõnede vastuvõtmiseks ja tegemiseks ning häälsõnumite salvestamiseks juurdepääsu mikrofonile.";
-NSPhotoLibraryAddUsageDescription = "Signal salvestab fotod sinu pildikogusse.";
-NSPhotoLibraryUsageDescription = "Signal laseb valida, milliseid fotosid pildikogust saata.";
-NSLocalNetworkUsageDescription = "Signal kasutab kohalikku võrku, et võimaldada sul teisaldada konto uude telefoni. Seda ei kasutata muul juhul, kui sa ise algatad  teisaldamise uude seadmesse.";

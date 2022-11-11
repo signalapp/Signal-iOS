@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "TSOutgoingMessage.h"
@@ -1086,7 +1087,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         if (self.storyReactionEmoji) {
             SSKProtoDataMessageReactionBuilder *reactionBuilder =
                 [SSKProtoDataMessageReaction builderWithEmoji:self.storyReactionEmoji
-                                                    timestamp:self.storyTimestamp.longLongValue];
+                                                    timestamp:self.storyTimestamp.unsignedLongLongValue];
             [reactionBuilder setAuthorUuid:self.storyAuthorUuidString];
 
             NSError *error;
@@ -1104,7 +1105,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
         SSKProtoDataMessageStoryContextBuilder *storyContextBuilder = [SSKProtoDataMessageStoryContext builder];
         [storyContextBuilder setAuthorUuid:self.storyAuthorUuidString];
-        [storyContextBuilder setSentTimestamp:self.storyTimestamp.longLongValue];
+        [storyContextBuilder setSentTimestamp:self.storyTimestamp.unsignedLongLongValue];
 
         NSError *error;
         SSKProtoDataMessageStoryContext *_Nullable storyContext = [storyContextBuilder buildAndReturnError:&error];
@@ -1424,14 +1425,11 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     SSKProtoDataMessageQuoteBuilder *quoteBuilder = [SSKProtoDataMessageQuote builderWithId:quotedMessage.timestamp];
 
-    if (quotedMessage.authorAddress.phoneNumber && !SSKFeatureFlags.phoneNumberSharing) {
-        quoteBuilder.authorE164 = quotedMessage.authorAddress.phoneNumber;
-    }
-
     if (quotedMessage.authorAddress.uuidString) {
         quoteBuilder.authorUuid = quotedMessage.authorAddress.uuidString;
     } else {
-        OWSAssertDebug(!SSKFeatureFlags.phoneNumberSharing);
+        OWSFailDebug(@"It should be impossible to quote a message without a UUID");
+        return nil;
     }
 
     BOOL hasQuotedText = NO;

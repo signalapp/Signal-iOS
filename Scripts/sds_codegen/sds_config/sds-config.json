@@ -16,7 +16,9 @@
 		"SSKJobRecord.exclusiveProcessIdentifier": "Int32",
 		"TSMessage.storyTimestamp": "UInt64",
 		"TSThread.lastSentStoryTimestamp": "UInt64",
-		"TSThread.lastViewedStoryTimestamp": "UInt64"
+		"TSThread.lastViewedStoryTimestamp": "UInt64",
+		"SignalRecipient.unregisteredAtTimestamp": "UInt64",
+		"TSThread.lastReceivedStoryTimestamp": "UInt64"
 	},
 	"properties_to_ignore": [
 		"TSYapDatabaseObject.grdbId",

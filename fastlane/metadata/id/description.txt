@@ -1,20 +1,20 @@
 Jutaan orang menggunakan Signal setiap hari untuk berkomunikasi secara instan, bebas, dan gratis di seluruh dunia. Kirim dan terima pesan tanpa terdistorsi, berpartisipasi dalam panggilan suara/video dengan resolusi tinggi (HD), serta jelajahi serangkaian fitur baru yang terus bertambah dan dapat membantu Anda tetap terhubung. Teknologi penjagaan-privasi Signal yang canggih selalu aktif, jadi Anda dapat fokus untuk berbagi momen-momen penting dengan orang-orang yang berharga bagi Anda.
 
-• Katakan apapun – Enkripsi ujung-ke-ujung yang canggih (dipersembahkan oleh Signal Protocol™ yang bersumber terbuka) menjaga percakapan Anda tetap aman. Privasi bukanlah sebuah pilihan — itulah cara Signal bekerja. Setiap pesan, setiap panggilan, setiap saat.
+• Katakan apapun – Enkripsi antar pengguna yang canggih (dipersembahkan oleh Signal Protocol™ yang bersumber terbuka) menjaga percakapan Anda tetap aman. Privasi bukanlah sebuah pilihan — itulah cara Signal bekerja. Setiap pesan, setiap panggilan, setiap saat.
 
-• Cepat – Pesan-pesan disampaikan secara cepat dan andal, bahkan pada jaringan yang lambat. Signal dioptimalkan untuk bekerja di lingkungan yang paling terbatas sekalipun.
+• Cepat – Pesan-pesan disampaikan secara cepat dan andal, bahkan pada jaringan yang lambat. Signal dioptimalkan untuk beroperasi di lingkungan yang paling terbatas sekalipun.
 
 • Lebih bebas – Signal adalah sebuah organisasi nirlaba independen 501c3. Pengembangannya didukung oleh pengguna seperti Anda. Tidak ada iklan. Tidak ada pelacak. Beneran.
 
-• Jadi diri sendiri – Anda dapat menggunakan nomor telepon dan daftar kontak Anda yang ada untuk berkomunikasi secara aman dengan teman-teman Anda.
+• Jadi diri sendiri – Anda dapat menggunakan nomor telepon dan buku alamat Anda yang ada untuk berkomunikasi secara aman dengan teman-teman Anda.
 
 • Bicaralah – Walaupun mereka tinggal di kota seberang atau di seberang lautan, kualitas audio dan video Signal yang telah ditingkatkan akan membuat teman serta keluarga Anda terasa lebih dekat.
 
 • Redupkan – Beralih ke tema gelap jika Anda tidak terlalu nyaman dengan cahaya.
 
-• Terdengar tidak asing – Pilih peringatan khusus untuk setiap kontak, atau matikan suaranya secara keseluruhan. Simon & Garfunkel menulis sebuah lagu hit tentang hal tersebut pada 1964, dan Anda dapat mengalami suara dari kesunyian (the sound of silence) kapanpun Anda inginkan dengan memilih "Mati" sebagai nada dering notifikasi Anda.
+• Terdengar tidak asing – Pilih peringatan khusus untuk setiap kontak, atau matikan suaranya secara keseluruhan. Simon & Garfunkel menulis sebuah lagu hit tentang hal tersebut pada 1964, dan Anda dapat mengalami suara dari kesunyian kapanpun Anda inginkan dengan memilih "Mati" sebagai nada dering notifikasi Anda.
 
-• Gambarkan ini – Gunakan fitur penyuntingan gambar bawaan untuk membuat sketsa, memotong, dan membalikkan foto yang akan Anda kirimkan. Bahkan ada penambah teks sehingga Anda dapat menambahkan lebih banyak kata ke dalam foto Anda yang sudah bernilai 1,000 kata.
+• Gambarkan ini – Gunakan fitur pengeditan gambar bawaan untuk membuat sketsa, memotong, dan membalikkan foto yang akan Anda kirimkan. Bahkan ada alat teks sehingga Anda dapat menambahkan lebih banyak kata ke dalam foto Anda yang sudah bernilai 1,000 kata.
 
 
 Untuk bantuan, pertanyaan, atau informasi lebih lanjut, mohon kunjungi:

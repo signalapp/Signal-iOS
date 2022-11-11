@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -51,10 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
                                 setDefaultTimerIfNecessary:(BOOL)setDefaultTimerIfNecessary
                                                transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(addThreadToProfileWhitelistIfEmptyOrPendingRequest(thread:setDefaultTimerIfNecessary:transaction:));
-
-#pragma mark - Delete Content
-
-+ (void)deleteAllContent;
 
 @end
 

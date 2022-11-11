@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -96,6 +97,8 @@ public protocol CVComponentDelegate: AnyObject {
     func cvc_didTapStickerPack(_ stickerPackInfo: StickerPackInfo)
 
     func cvc_didTapGroupInviteLink(url: URL)
+
+    func cvc_didTapProxyLink(url: URL)
 
     func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl)
 

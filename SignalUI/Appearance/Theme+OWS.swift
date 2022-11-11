@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -37,6 +38,7 @@ public enum ThemeIcon: UInt {
     case settingsLinkedDevices
     case settingsAppearance
     case settingsChats
+    case settingsStories
     case settingsNotifications
     case settingsPrivacy
     case settingsDataUsage
@@ -47,10 +49,8 @@ public enum ThemeIcon: UInt {
     case settingsAbout
     case settingsPayments
     case settingsBadges
-    case settingsBoost
     case settingsReceipts
     case settingsGift
-    case settingsPrivateStory
 
     case stickerButton
     case cameraButton
@@ -66,17 +66,19 @@ public enum ThemeIcon: UInt {
     case attachmentPayment
 
     case messageActionReply
-    case messageActionForward
+    case messageActionForward20
+    case messageActionForward24
     case messageActionCopy
-    case messageActionShare
+    case messageActionShare20
+    case messageActionShare24
     case messageActionDelete
-    case messageActionSave
+    case messageActionSave20
+    case messageActionSave24
     case messageActionSelect
 
     case contextMenuSelect
-    case contextMenuInfo
-
-    case privateStory40
+    case contextMenuInfo20
+    case contextMenuInfo24
 
     case compose24
     case composeNewGroup
@@ -89,16 +91,20 @@ public enum ThemeIcon: UInt {
     case cancel20
     case search20
 
+    case trash20
     case trash24
     case copy24
     case color24
     case text24
     case cancel24
     case xCircle24
+    case open20
     case open24
+    case more16
     case more24
 
-    case checkCircle
+    case checkCircle20
+    case checkCircle24
     case message
     case audioCall
     case videoCall
@@ -152,6 +158,9 @@ public enum ThemeIcon: UInt {
     case empty
 
     case profilePlaceholder
+
+    case hide20
+    case hide24
 }
 
 // MARK: - Colors
@@ -258,6 +267,8 @@ public extension Theme {
             return isDarkThemeEnabled ? "appearance-solid-24" : "appearance-outline-24"
         case .settingsChats:
             return isDarkThemeEnabled ? "message-solid-24" : "message-outline-24"
+        case .settingsStories:
+            return isDarkThemeEnabled ? "stories-24-solid" : "stories-24-outline"
         case .settingsNotifications:
             return isDarkThemeEnabled ? "bell-solid-24" : "bell-outline-24"
         case .settingsPrivacy:
@@ -278,16 +289,10 @@ public extension Theme {
             return isDarkThemeEnabled ? "payments-solid-24" : "payments-outline-24"
         case .settingsBadges:
             return isDarkThemeEnabled ? "badge-solid-24" : "badge-outline-24"
-        case .settingsBoost:
-            return isDarkThemeEnabled ? "boost-solid-24" : "boost-outline-24"
         case .settingsReceipts:
             return isDarkThemeEnabled ? "receipts-solid-24" : "receipts-outline-24"
         case .settingsGift:
             return isDarkThemeEnabled ? "gift-solid-24" : "gift-outline-24"
-        case .settingsPrivateStory:
-            return isDarkThemeEnabled ? "private-story-solid-24" : "private-story-outline-24"
-        case .privateStory40:
-            return isDarkThemeEnabled ? "private-story-solid-40" : "private-story-outline-40"
 
         // Input Toolbar
         case .stickerButton:
@@ -310,28 +315,34 @@ public extension Theme {
             return "payments-outline-32"
         case .messageActionReply:
             return isDarkThemeEnabled ? "reply-filled-24" : "reply-outline-24"
-        case .messageActionForward:
+        case .messageActionForward20:
+            return isDarkThemeEnabled ? "forward-solid-20" : "forward-outline-20"
+        case .messageActionForward24:
             return isDarkThemeEnabled ? "forward-solid-24" : "forward-outline-24"
         case .messageActionCopy:
             return isDarkThemeEnabled ? "copy-solid-24" : "ic_copy"
-        case .messageActionShare:
-            // There is no separate dark theme version of this icon, by design.
-            return "share-ios-24"
+        case .messageActionShare20:
+            return isDarkThemeEnabled ? "share-solid-20" : "share-outline-20"
+        case .messageActionShare24:
+            return isDarkThemeEnabled ? "share-solid-24" : "share-outline-24"
         case .messageActionSpeak:
             return "speaker-solid-28"
         case .messageActionStopSpeaking:
             return "pause-filled-24"
         case .messageActionDelete:
             return isDarkThemeEnabled ? "trash-solid-24" : "trash-outline-24"
-        case .messageActionSave:
-            // There is no separate dark theme version of this icon, by design.
-            return "save-24"
+        case .messageActionSave20:
+            return isDarkThemeEnabled ? "save-solid-20" : "save-outline-20"
+        case .messageActionSave24:
+            return isDarkThemeEnabled ? "save-solid-24" : "save-outline-24"
         case .messageActionSelect:
             return "select-24"
         case .contextMenuSelect:
-            return "check-circle-outline-24"
-        case .contextMenuInfo:
-            return "info-outline-24"
+            return isDarkThemeEnabled ? "check-circle-solid-24" : "check-circle-outline-24"
+        case .contextMenuInfo20:
+            return isDarkThemeEnabled ? "info-solid-20" : "info-outline-20"
+        case .contextMenuInfo24:
+            return isDarkThemeEnabled ? "info-solid-24" : "info-outline-24"
         case .compose24:
             return isDarkThemeEnabled ? "compose-solid-24" : "compose-outline-24"
         case .composeNewGroup:
@@ -356,11 +367,17 @@ public extension Theme {
             return "search-20"
         case .xCircle24:
             return isDarkThemeEnabled ? "x-circle-solid-24" : "x-circle-outline-24"
+        case .open20:
+            return isDarkThemeEnabled ? "open-solid-20" : "open-outline-20"
         case .open24:
-            return "open-24"
+            return isDarkThemeEnabled ? "open-solid-24" : "open-outline-24"
+        case .more16:
+            return "more-horiz-16"
         case .more24:
             return "more-horiz-24"
 
+        case .trash20:
+            return isDarkThemeEnabled ? "trash-solid-20" : "trash-outline-20"
         case .trash24:
             return isDarkThemeEnabled ? "trash-solid-24" : "trash-outline-24"
         case .copy24:
@@ -370,7 +387,9 @@ public extension Theme {
         case .text24:
             return "text-24"
 
-        case .checkCircle:
+        case .checkCircle20:
+            return isDarkThemeEnabled ? "check-circle-solid-20" : "check-circle-outline-20"
+        case .checkCircle24:
             return isDarkThemeEnabled ? "check-circle-solid-24" : "check-circle-outline-24"
         case .message:
             return isDarkThemeEnabled ? "message-solid-24" : "message-outline-24"
@@ -473,6 +492,11 @@ public extension Theme {
 
         case .profilePlaceholder:
             return isDarkThemeEnabled ? "profile-placeholder-dark-56" : "profile-placeholder-56"
+
+        case .hide20:
+            return isDarkThemeEnabled ? "hide-solid-20" : "hide-outline-20"
+        case .hide24:
+            return isDarkThemeEnabled ? "hide-solid-24" : "hide-outline-24"
         }
     }
 }

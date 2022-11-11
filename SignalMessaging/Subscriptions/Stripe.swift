@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -17,48 +18,36 @@ public struct Stripe: Dependencies {
         }
     }
 
-    public static func donate(amount: NSDecimalNumber, in currencyCode: Currency.Code, for payment: PKPayment) -> Promise<Void> {
+    public static func boost(
+        amount: FiatMoney,
+        level: OneTimeBadgeLevel,
+        for payment: PKPayment
+    ) -> Promise<String> {
         firstly { () -> Promise<PaymentIntent> in
-            API.createPaymentIntent(for: amount, in: currencyCode)
-        }.then { intent in
-            confirmPaymentIntent(for: payment, clientSecret: intent.clientSecret, paymentIntentId: intent.id)
-        }
-    }
-
-    public static func boost(amount: NSDecimalNumber,
-                             in currencyCode: Currency.Code,
-                             level: OneTimeBadgeLevel,
-                             for payment: PKPayment) -> Promise<String> {
-        firstly { () -> Promise<PaymentIntent> in
-            createBoostPaymentIntent(for: amount, in: currencyCode, level: level)
+            createBoostPaymentIntent(for: amount, level: level)
         }.then { intent in
             confirmPaymentIntent(for: payment, clientSecret: intent.clientSecret, paymentIntentId: intent.id).map { intent.id }
         }
     }
 
     public static func createBoostPaymentIntent(
-        for amount: NSDecimalNumber,
-        in currencyCode: Currency.Code,
+        for amount: FiatMoney,
         level: OneTimeBadgeLevel
     ) -> Promise<PaymentIntent> {
         firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
-            guard !isAmountTooSmall(amount, in: currencyCode) else {
+            guard !isAmountTooSmall(amount) else {
                 throw OWSAssertionError("Amount too small")
             }
 
-            guard !isAmountTooLarge(amount, in: currencyCode) else {
+            guard !isAmountTooLarge(amount) else {
                 throw OWSAssertionError("Amount too large")
-            }
-
-            guard supportedCurrencyCodes.contains(currencyCode.uppercased()) else {
-                throw OWSAssertionError("Unexpected currency code")
             }
 
             // The description is never translated as it's populated into an
             // english only receipt by Stripe.
             let request = OWSRequestFactory.boostCreatePaymentIntent(
-                withAmount: integralAmount(amount, in: currencyCode),
-                inCurrencyCode: currencyCode,
+                integerMoneyValue: integralAmount(amount),
+                inCurrencyCode: amount.currencyCode,
                 level: level.rawValue
             )
 
@@ -130,31 +119,56 @@ public struct Stripe: Dependencies {
         }
     }
 
-    public static func isAmountTooLarge(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> Bool {
-        // Stripe supports a maximum of 8 integral digits.
-        integralAmount(amount, in: currencyCode) > 99_999_999
+    /// Is an amount of money too large?
+    ///
+    /// According to [Stripe's docs][0], amounts can be "up to twelve digits for
+    /// IDR (for example, a value of 999999999999 for a charge of
+    /// 9,999,999,999.99 IDR), and up to eight digits for all other currencies
+    /// (for example, a value of 99999999 for a charge of 999,999.99 USD).
+    ///
+    /// - Parameter amount: The amount of money.
+    /// - Returns: Whether the amount is too large.
+    ///
+    /// [0]: https://stripe.com/docs/currencies?presentment-currency=US#minimum-and-maximum-charge-amounts
+    public static func isAmountTooLarge(_ amount: FiatMoney) -> Bool {
+        let integerAmount = integralAmount(amount)
+        let maximum: UInt = amount.currencyCode == "IDR" ? 999999999999 : 99999999
+        return integerAmount > maximum
     }
 
-    public static func isAmountTooSmall(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> Bool {
-        // Stripe requires different minimums per currency, but they often depend
-        // on conversion rates which we don't have access to. It's okay to do a best
-        // effort here because stripe will reject the payment anyway, this just allows
-        // us to fail sooner / provide a nicer error to the user.
-        let minimumIntegralAmount = minimumIntegralChargePerCurrencyCode[currencyCode] ?? 50
-        return integralAmount(amount, in: currencyCode) < minimumIntegralAmount
+    /// Is an amount of money too small?
+    ///
+    /// This is a client-side validation, so if we're not sure, we should
+    /// accept the amount.
+    ///
+    /// These minimums are pulled from [Stripe's document minimums][0]. Note
+    /// that Stripe's values are for *settlement* currency (which is always USD
+    /// for Signal), but we use them as helpful minimums anyway.
+    ///
+    /// - Parameter amount: The amount of money.
+    /// - Returns: Whether the amount is too small.
+    ///
+    /// [0]: https://stripe.com/docs/currencies?presentment-currency=US#minimum-and-maximum-charge-amounts
+    public static func isAmountTooSmall(_ amount: FiatMoney) -> Bool {
+        let integerAmount = integralAmount(amount)
+        let minimum = minimumIntegralChargePerCurrencyCode[amount.currencyCode, default: 50]
+        return integerAmount < minimum
     }
 
-    public static func integralAmount(_ amount: NSDecimalNumber, in currencyCode: Currency.Code) -> UInt {
-        let roundedAndScaledAmount: Double
-        if zeroDecimalCurrencyCodes.contains(currencyCode.uppercased()) {
-            roundedAndScaledAmount = amount.doubleValue.rounded(.toNearestOrEven)
+    private static func integralAmount(_ amount: FiatMoney) -> UInt {
+        let scaled: Decimal
+        if zeroDecimalCurrencyCodes.contains(amount.currencyCode.uppercased()) {
+            scaled = amount.value
         } else {
-            roundedAndScaledAmount = (amount.doubleValue * 100).rounded(.toNearestOrEven)
+            scaled = amount.value * 100
         }
 
-        guard roundedAndScaledAmount <= Double(UInt.max) else { return UInt.max }
-        guard roundedAndScaledAmount >= 0 else { return 0 }
-        return UInt(roundedAndScaledAmount)
+        let rounded = scaled.rounded()
+
+        guard rounded >= 0 else { return 0 }
+        guard rounded <= Decimal(UInt.max) else { return UInt.max }
+
+        return (rounded as NSDecimalNumber).uintValue
     }
 }
 
@@ -180,45 +194,6 @@ fileprivate extension Stripe {
                 return components[0]
             } else {
                 throw OWSAssertionError("Invalid client secret")
-            }
-        }
-
-        static func createPaymentIntent(
-            for amount: NSDecimalNumber,
-            in currencyCode: Currency.Code
-        ) -> Promise<(PaymentIntent)> {
-            firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
-                guard !isAmountTooSmall(amount, in: currencyCode) else {
-                    throw OWSAssertionError("Amount too small")
-                }
-
-                guard !isAmountTooLarge(amount, in: currencyCode) else {
-                    throw OWSAssertionError("Amount too large")
-                }
-
-                guard supportedCurrencyCodes.contains(currencyCode.uppercased()) else {
-                    throw OWSAssertionError("Unexpected currency code")
-                }
-
-                // The description is never translated as it's populated into an
-                // english only receipt by Stripe.
-                let request = OWSRequestFactory.createPaymentIntent(
-                        withAmount: integralAmount(amount, in: currencyCode),
-                        inCurrencyCode: currencyCode,
-                        withDescription: LocalizationNotNeeded("Thank you for your donation. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840. No goods or services were provided in exchange for this donation. Please retain this receipt for your tax records.")
-                    )
-
-                return networkManager.makePromise(request: request)
-            }.map(on: .sharedUserInitiated) { response in
-                guard let json = response.responseBodyJson else {
-                    throw OWSAssertionError("Missing or invalid JSON")
-                }
-                guard let parser = ParamParser(responseObject: json) else {
-                    throw OWSAssertionError("Failed to decode JSON response")
-                }
-                return try PaymentIntent(
-                    clientSecret: try parser.required(key: "client_secret")
-                )
             }
         }
 
@@ -316,147 +291,6 @@ fileprivate extension Stripe {
 // See https://stripe.com/docs/currencies
 
 public extension Stripe {
-    static let supportedCurrencyCodes: [Currency.Code] = [
-        "USD",
-        "AED",
-        "AFN",
-        "ALL",
-        "AMD",
-        "ANG",
-        "AOA",
-        "ARS",
-        "AUD",
-        "AWG",
-        "AZN",
-        "BAM",
-        "BBD",
-        "BDT",
-        "BGN",
-        "BIF",
-        "BMD",
-        "BND",
-        "BOB",
-        "BRL",
-        "BSD",
-        "BWP",
-        "BZD",
-        "CAD",
-        "CDF",
-        "CHF",
-        "CLP",
-        "CNY",
-        "COP",
-        "CRC",
-        "CVE",
-        "CZK",
-        "DJF",
-        "DKK",
-        "DOP",
-        "DZD",
-        "EGP",
-        "ETB",
-        "EUR",
-        "FJD",
-        "FKP",
-        "GBP",
-        "GEL",
-        "GIP",
-        "GMD",
-        "GNF",
-        "GTQ",
-        "GYD",
-        "HKD",
-        "HNL",
-        "HRK",
-        "HTG",
-        "HUF",
-        "IDR",
-        "ILS",
-        "INR",
-        "ISK",
-        "JMD",
-        "JPY",
-        "KES",
-        "KGS",
-        "KHR",
-        "KMF",
-        "KRW",
-        "KYD",
-        "KZT",
-        "LAK",
-        "LBP",
-        "LKR",
-        "LRD",
-        "LSL",
-        "MAD",
-        "MDL",
-        "MGA",
-        "MKD",
-        "MMK",
-        "MNT",
-        "MOP",
-        "MRO",
-        "MUR",
-        "MVR",
-        "MWK",
-        "MXN",
-        "MYR",
-        "MZN",
-        "NAD",
-        "NGN",
-        "NIO",
-        "NOK",
-        "NPR",
-        "NZD",
-        "PAB",
-        "PEN",
-        "PGK",
-        "PHP",
-        "PKR",
-        "PLN",
-        "PYG",
-        "QAR",
-        "RON",
-        "RSD",
-        "RUB",
-        "RWF",
-        "SAR",
-        "SBD",
-        "SCR",
-        "SEK",
-        "SGD",
-        "SHP",
-        "SLL",
-        "SOS",
-        "SRD",
-        "STD",
-        "SZL",
-        "THB",
-        "TJS",
-        "TOP",
-        "TRY",
-        "TTD",
-        "TWD",
-        "TZS",
-        "UAH",
-        "UGX",
-        "UYU",
-        "UZS",
-        "VND",
-        "VUV",
-        "WST",
-        "XAF",
-        "XCD",
-        "XOF",
-        "XPF",
-        "YER",
-        "ZAR",
-        "ZMW"
-    ]
-    static let supportedCurrencyInfos: [Currency.Info] = {
-        Currency.infos(for: supportedCurrencyCodes, ignoreMissingNames: false, shouldSort: true)
-    }()
-
     static let preferredCurrencyCodes: [Currency.Code] = [
         "USD",
         "AUD",
@@ -477,7 +311,7 @@ public extension Stripe {
         Currency.infos(for: preferredCurrencyCodes, ignoreMissingNames: true, shouldSort: false)
     }()
 
-    static let zeroDecimalCurrencyCodes: [Currency.Code] = [
+    static let zeroDecimalCurrencyCodes: Set<Currency.Code> = [
         "BIF",
         "CLP",
         "DJF",
@@ -521,12 +355,4 @@ public extension Stripe {
         "SEK": 300,
         "SGD": 50
     ]
-
-    static let defaultCurrencyCode: Currency.Code = {
-        if let localeCurrencyCode = Locale.current.currencyCode?.uppercased(), supportedCurrencyCodes.contains(localeCurrencyCode) {
-            return localeCurrencyCode
-        }
-
-        return "USD"
-    }()
 }

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -58,6 +59,27 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         }
     }
 
+    public var hasSentToAnyRecipients: Bool {
+        switch manifest {
+        case .incoming: return true
+        case .outgoing(let recipientStates):
+            return recipientStates.values.contains { $0.sendingState == .sent }
+        }
+    }
+
+    public var localUserReadTimestamp: UInt64? {
+        switch manifest {
+        case .incoming(let receivedState):
+            return receivedState.readTimestamp
+        case .outgoing:
+            return timestamp
+        }
+    }
+
+    public var isRead: Bool {
+        return localUserReadTimestamp != nil
+    }
+
     public var localUserViewedTimestamp: UInt64? {
         switch manifest {
         case .incoming(let receivedState):
@@ -67,12 +89,20 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         }
     }
 
-    public var remoteViewCount: Int {
+    public var isViewed: Bool {
+        return localUserViewedTimestamp != nil
+    }
+
+    public func remoteViewCount(in context: StoryContext) -> Int {
         switch manifest {
         case .incoming:
             return 0
         case .outgoing(let recipientStates):
-            return recipientStates.values.lazy.filter { $0.viewedTimestamp != nil }.count
+            return recipientStates.values
+                .lazy
+                .filter { $0.isValidForContext(context) }
+                .filter { $0.viewedTimestamp != nil }
+                .count
         }
     }
 
@@ -179,6 +209,9 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         )
         record.anyInsert(transaction: transaction)
 
+        // Nil associated datas are for outgoing contexts, where we don't need to keep track of received timestamp.
+        record.context.associatedData(transaction: transaction)?.update(lastReceivedTimestamp: timestamp, transaction: transaction)
+
         return record
     }
 
@@ -239,6 +272,15 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         )
         record.anyInsert(transaction: transaction)
 
+        for thread in record.threads(transaction: transaction) {
+            thread.updateWithLastSentStoryTimestamp(NSNumber(value: record.timestamp), transaction: transaction)
+
+            // If story sending for a group was implicitly enabled, explicitly enable it
+            if let thread = thread as? TSGroupThread, !thread.isStorySendExplicitlyEnabled {
+                thread.updateWithStorySendEnabled(true, transaction: transaction)
+            }
+        }
+
         return record
     }
 
@@ -258,6 +300,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             receivedState: StoryReceivedState(
                 allowsReplies: false,
                 receivedTimestamp: timestamp,
+                readTimestamp: nil,
                 viewedTimestamp: nil
             )
         )
@@ -281,7 +324,43 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         return record
     }
 
-    // MARK: -
+    // MARK: - Marking Read
+
+    @objc
+    public func markAsRead(at timestamp: UInt64, circumstance: OWSReceiptCircumstance, transaction: SDSAnyWriteTransaction) {
+        anyUpdate(transaction: transaction) { record in
+            guard case .incoming(let receivedState) = record.manifest else {
+                return owsFailDebug("Unexpectedly tried to mark outgoing message as read with wrong method.")
+            }
+            record.manifest = .incoming(receivedState: .init(
+                allowsReplies: receivedState.allowsReplies,
+                receivedTimestamp: receivedState.receivedTimestamp,
+                readTimestamp: timestamp,
+                viewedTimestamp: receivedState.viewedTimestamp
+            ))
+        }
+
+        // Don't send receipts for system stories or outgoing stories.
+        guard !authorAddress.isSystemStoryAddress, direction == .incoming else {
+            return
+        }
+
+        switch context {
+        case .groupId, .authorUuid, .privateStory:
+            // Record on the context when the local user last read the story for this context
+            if let associatedData = context.associatedData(transaction: transaction) {
+                associatedData.update(lastReadTimestamp: timestamp, transaction: transaction)
+            } else {
+                owsFailDebug("Missing associated data for story context \(context)")
+            }
+        case .none:
+            owsFailDebug("Reading invalid story context")
+        }
+
+        receiptManager.storyWasRead(self, circumstance: circumstance, transaction: transaction)
+    }
+
+    // MARK: - Marking Viewed
 
     @objc
     public func markAsViewed(at timestamp: UInt64, circumstance: OWSReceiptCircumstance, transaction: SDSAnyWriteTransaction) {
@@ -292,6 +371,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             record.manifest = .incoming(receivedState: .init(
                 allowsReplies: receivedState.allowsReplies,
                 receivedTimestamp: receivedState.receivedTimestamp,
+                readTimestamp: receivedState.readTimestamp,
                 viewedTimestamp: timestamp
             ))
         }
@@ -304,10 +384,10 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         switch context {
         case .groupId, .authorUuid, .privateStory:
             // Record on the context when the local user last viewed the story for this context
-            if let thread = context.thread(transaction: transaction) {
-                thread.updateWithLastViewedStoryTimestamp(NSNumber(value: timestamp), transaction: transaction)
+            if let associatedData = context.associatedData(transaction: transaction) {
+                associatedData.update(lastViewedTimestamp: timestamp, transaction: transaction)
             } else {
-                owsFailDebug("Missing thread for story context \(context)")
+                owsFailDebug("Missing associated data for story context \(context)")
             }
         case .none:
             owsFailDebug("Viewing invalid story context")
@@ -336,6 +416,8 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             record.manifest = .outgoing(recipientStates: recipientStates)
         }
     }
+
+    // MARK: -
 
     public func updateRecipients(_ recipients: [SSKProtoSyncMessageSentStoryMessageRecipient], transaction: SDSAnyWriteTransaction) {
         anyUpdate(transaction: transaction) { message in
@@ -392,7 +474,12 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             for (address, outgoingMessageState) in outgoingMessageStates {
                 guard let uuid = address.uuid else { continue }
                 guard var recipientState = recipientStates[uuid] else { continue }
-                recipientState.sendingState = outgoingMessageState.state
+
+                // Only take the sending state from the message if we're in a transient state
+                if recipientState.sendingState != .sent {
+                    recipientState.sendingState = outgoingMessageState.state
+                }
+
                 recipientState.sendingErrorCode = outgoingMessageState.errorCode?.intValue
                 recipientStates[uuid] = recipientState
             }
@@ -401,24 +488,49 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         }
     }
 
-    public func threads(transaction: SDSAnyReadTransaction) -> [TSThread] {
-        var threads = [TSThread]()
+    public func updateWithAllSendingRecipientsMarkedAsFailed(transaction: SDSAnyWriteTransaction) {
+        anyUpdate(transaction: transaction) { message in
+            guard case .outgoing(var recipientStates) = message.manifest else {
+                return owsFailDebug("Unexpectedly tried to recipient states as failed on message of wrong type.")
+            }
 
-        if let groupId = groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-            threads.append(groupThread)
+            for (uuid, var recipientState) in recipientStates {
+                guard recipientState.sendingState == .sending else { continue }
+                recipientState.sendingState = .failed
+                recipientStates[uuid] = recipientState
+            }
+
+            message.manifest = .outgoing(recipientStates: recipientStates)
         }
+    }
 
-        if case .outgoing(let recipientStates) = manifest {
-            for context in Set(recipientStates.values.flatMap({ $0.contexts })) {
+    /// If the story is incoming, returns a single-element array with the TSContactThread for the author if the
+    /// story was sent as a private story, or the TSGroupThread if the story was sent to a group.
+    /// If the story is outgoing, returns either a single-element array with the TSGroupThread if the story was sent
+    /// to a group, or an array of TSPrivateStoryThreads for all the private threads the story was sent to.
+    public func threads(transaction: SDSAnyReadTransaction) -> [TSThread] {
+        switch manifest {
+        case .incoming:
+            if let groupId = groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+                return [groupThread]
+            } else if let contactThread = TSContactThread.getWithContactAddress(.init(uuid: authorUuid), transaction: transaction) {
+                return [contactThread]
+            } else {
+                owsFailDebug("No thread found for an incoming story message")
+                return []
+            }
+        case .outgoing(let recipientStates):
+            if let groupId = groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+                return [groupThread]
+            }
+            return Set(recipientStates.values.flatMap({ $0.contexts })).compactMap { context in
                 guard let thread = TSPrivateStoryThread.anyFetch(uniqueId: context.uuidString, transaction: transaction) else {
                     owsFailDebug("Missing thread for story context \(context)")
-                    continue
+                    return nil
                 }
-                threads.append(thread)
+                return thread
             }
         }
-
-        return threads
     }
 
     public func downloadIfNecessary(transaction: SDSAnyWriteTransaction) {
@@ -431,6 +543,12 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(self, transaction: transaction)
     }
 
+    public func remotelyDeleteForAllRecipients(transaction: SDSAnyWriteTransaction) {
+        for thread in threads(transaction: transaction) {
+            remotelyDelete(for: thread, transaction: transaction)
+        }
+    }
+
     public func remotelyDelete(for thread: TSThread, transaction: SDSAnyWriteTransaction) {
         guard case .outgoing(var recipientStates) = manifest else {
             return owsFailDebug("Cannot remotely delete incoming story.")
@@ -438,6 +556,8 @@ public final class StoryMessage: NSObject, SDSCodableModel {
 
         switch thread {
         case thread as TSGroupThread:
+            Logger.info("Remotely deleting group story with timestamp \(timestamp)")
+
             // Group story deletes are simple, just delete for everyone in the group
             let deleteMessage = TSOutgoingDeleteMessage(
                 thread: thread,
@@ -445,7 +565,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
                 skippedRecipients: nil,
                 transaction: transaction
             )
-            messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
+            sskJobQueues.messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
             anyRemove(transaction: transaction)
         case thread as TSPrivateStoryThread:
             // Private story deletes are complicated. We may have sent the private
@@ -459,6 +579,8 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             guard let threadUuid = UUID(uuidString: thread.uniqueId) else {
                 return owsFailDebug("Thread has invalid uniqueId \(thread.uniqueId)")
             }
+
+            Logger.info("Remotely deleting private story with timestamp \(timestamp) from dList \(thread.uniqueId)")
 
             for (uuid, var state) in recipientStates {
                 if state.contexts.contains(threadUuid) {
@@ -481,7 +603,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
                 skippedRecipients: skippedRecipients,
                 transaction: transaction
             )
-            messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
+            sskJobQueues.messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
 
             if hasRemainingRecipients {
                 // Record the updated contexts, so we no longer render it for the one we deleted for.
@@ -498,7 +620,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
                 recipientStates: recipientStates,
                 transaction: transaction
             )
-            messageSenderJobQueue.add(message: sentTranscriptUpdate.asPreparer, transaction: transaction)
+            sskJobQueues.messageSenderJobQueue.add(message: sentTranscriptUpdate.asPreparer, transaction: transaction)
         default:
             owsFailDebug("Cannot remotely delete unexpected thread type \(type(of: thread))")
         }
@@ -542,7 +664,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         }
 
         messages.forEach { message in
-            messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            sskJobQueues.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         }
     }
 
@@ -562,6 +684,9 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             }
             attachment.anyRemove(transaction: transaction)
         }
+
+        // Reload latest unexpired timestamp for the context.
+        self.context.associatedData(transaction: transaction)?.recomputeLatestUnexpiredTimestamp(transaction: transaction)
     }
 
     @objc
@@ -614,12 +739,21 @@ public enum StoryManifest: Codable {
 
 public struct StoryReceivedState: Codable {
     public let allowsReplies: Bool
-    public var viewedTimestamp: UInt64?
     public var receivedTimestamp: UInt64?
+    // All current stories are "read" when the user goes to the stories tab.
+    public var readTimestamp: UInt64?
+    // Stories are "viewed" when the user opens them up individually for viewing.
+    public var viewedTimestamp: UInt64?
 
-    init(allowsReplies: Bool, receivedTimestamp: UInt64?, viewedTimestamp: UInt64? = nil) {
+    init(
+        allowsReplies: Bool,
+        receivedTimestamp: UInt64?,
+        readTimestamp: UInt64? = nil,
+        viewedTimestamp: UInt64? = nil
+    ) {
         self.allowsReplies = allowsReplies
         self.receivedTimestamp = receivedTimestamp
+        self.readTimestamp = readTimestamp
         self.viewedTimestamp = viewedTimestamp
     }
 }
@@ -639,6 +773,23 @@ public struct StoryRecipientState: Codable {
     }
 }
 
+extension StoryRecipientState {
+    public func isValidForContext(_ context: StoryContext) -> Bool {
+        switch context {
+        case .privateStory(let uuidString):
+            guard let uuid = UUID(uuidString: uuidString) else {
+                owsFailDebug("Invalid UUID for private story")
+                return false
+            }
+            return contexts.contains(uuid)
+        case .groupId, .authorUuid:
+            return true
+        case .none:
+            return false
+        }
+    }
+}
+
 extension OWSOutgoingMessageRecipientState: Codable {}
 
 public enum StoryMessageAttachment: Codable {
@@ -646,238 +797,29 @@ public enum StoryMessageAttachment: Codable {
     case text(attachment: TextAttachment)
 }
 
-public struct TextAttachment: Codable {
-    public let text: String?
-
-    public enum TextStyle: Int, Codable {
-        case regular = 0
-        case bold = 1
-        case serif = 2
-        case script = 3
-        case condensed = 4
-    }
-    public let textStyle: TextStyle
-
-    private let textForegroundColorHex: UInt32?
-    public var textForegroundColor: UIColor? { textForegroundColorHex.map { UIColor(argbHex: $0) } }
-
-    private let textBackgroundColorHex: UInt32?
-    public var textBackgroundColor: UIColor? { textBackgroundColorHex.map { UIColor(argbHex: $0) } }
-
-    private enum RawBackground: Codable {
-        case color(hex: UInt32)
-        case gradient(raw: RawGradient)
-        struct RawGradient: Codable {
-            let colors: [UInt32]
-            let positions: [Float]
-            let angle: UInt32
-
-            init(colors: [UInt32], positions: [Float], angle: UInt32) {
-                self.colors = colors
-                self.positions = positions
-                self.angle = angle
-            }
-
-            enum CodingKeysV1: String, CodingKey {
-                case startColorHex, endColorHex, angle
-            }
-
-            init(from decoder: Decoder) throws {
-                let containerV1: KeyedDecodingContainer<CodingKeysV1> = try decoder.container(keyedBy: CodingKeysV1.self)
-                if
-                    let startColorHex = try? containerV1.decode(UInt32.self, forKey: .startColorHex),
-                    let endColorHex = try? containerV1.decode(UInt32.self, forKey: .endColorHex),
-                    let angle = try? containerV1.decode(UInt32.self, forKey: .angle)
-                {
-                    self.colors = [ startColorHex, endColorHex ]
-                    self.positions = [ 0, 1 ]
-                    self.angle = angle
-                    return
-                }
-                let containerV2: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
-                self.colors = try containerV2.decode([UInt32].self, forKey: .colors)
-                self.positions = try containerV2.decode([Float].self, forKey: .positions)
-                self.angle = try containerV2.decode(UInt32.self, forKey: .angle)
-            }
-
-            func buildProto() throws -> SSKProtoTextAttachmentGradient {
-                let builder = SSKProtoTextAttachmentGradient.builder()
-                if let startColor = colors.first {
-                    builder.setStartColor(startColor)
-                }
-                if let endColor = colors.last {
-                    builder.setEndColor(endColor)
-                }
-                builder.setColors(colors)
-                builder.setPositions(positions)
-                builder.setAngle(angle)
-                return try builder.build()
-            }
-        }
-    }
-    private let rawBackground: RawBackground
-
-    public enum Background {
-        case color(UIColor)
-        case gradient(Gradient)
-        public struct Gradient {
-            public init(colors: [UIColor], locations: [CGFloat], angle: UInt32) {
-                self.colors = colors
-                self.locations = locations
-                self.angle = angle
-            }
-            public init(colors: [UIColor]) {
-                let locations: [CGFloat] = colors.enumerated().map { element in
-                    return CGFloat(element.offset) / CGFloat(colors.count - 1)
-                }
-                self.init(colors: colors, locations: locations, angle: 180)
-            }
-            public let colors: [UIColor]
-            public let locations: [CGFloat]
-            public let angle: UInt32
-        }
-    }
-    public var background: Background {
-        switch rawBackground {
-        case .color(let hex):
-            return .color(.init(argbHex: hex))
-        case .gradient(let rawGradient):
-            return .gradient(.init(
-                colors: rawGradient.colors.map { UIColor(argbHex: $0) },
-                locations: rawGradient.positions.map { CGFloat($0) },
-                angle: rawGradient.angle
-            ))
-        }
-    }
-
-    public private(set) var preview: OWSLinkPreview?
-
-    init(from proto: SSKProtoTextAttachment, transaction: SDSAnyWriteTransaction) throws {
-        self.text = proto.text?.nilIfEmpty
-
-        guard let style = proto.textStyle else {
-            throw OWSAssertionError("Missing style for attachment.")
-        }
-
-        switch style {
-        case .default, .regular:
-            self.textStyle = .regular
-        case .bold:
-            self.textStyle = .bold
-        case .serif:
-            self.textStyle = .serif
-        case .script:
-            self.textStyle = .script
-        case .condensed:
-            self.textStyle = .condensed
-        }
-
-        if proto.hasTextForegroundColor {
-            textForegroundColorHex = proto.textForegroundColor
-        } else {
-            textForegroundColorHex = nil
-        }
-
-        if proto.hasTextBackgroundColor {
-            textBackgroundColorHex = proto.textBackgroundColor
-        } else {
-            textBackgroundColorHex = nil
-        }
-
-        if let gradient = proto.gradient {
-            let colors: [UInt32]
-            let positions: [Float]
-            if !gradient.colors.isEmpty && !gradient.positions.isEmpty {
-                colors = gradient.colors
-                positions = gradient.positions
-            } else {
-                colors = [ gradient.startColor, gradient.endColor ]
-                positions = [ 0, 1 ]
-            }
-            rawBackground = .gradient(raw: .init(
-                colors: colors,
-                positions: positions,
-                angle: gradient.angle
-            ))
-        } else if proto.hasColor {
-            rawBackground = .color(hex: proto.color)
-        } else {
-            throw OWSAssertionError("Missing background for attachment.")
-        }
-
-        if let preview = proto.preview {
-            self.preview = try OWSLinkPreview.buildValidatedLinkPreview(proto: preview, transaction: transaction)
-        }
-    }
-
-    public func buildProto(transaction: SDSAnyReadTransaction) throws -> SSKProtoTextAttachment {
-        let builder = SSKProtoTextAttachment.builder()
-
-        if let text = text {
-            builder.setText(text)
-        }
-
-        let textStyle: SSKProtoTextAttachmentStyle = {
-            switch self.textStyle {
-            case .regular: return .regular
-            case .bold: return .bold
-            case .serif: return .serif
-            case .script: return .script
-            case .condensed: return .condensed
-            }
-        }()
-        builder.setTextStyle(textStyle)
-
-        if let textForegroundColorHex = textForegroundColorHex {
-            builder.setTextForegroundColor(textForegroundColorHex)
-        }
-
-        if let textBackgroundColorHex = textBackgroundColorHex {
-            builder.setTextBackgroundColor(textBackgroundColorHex)
-        }
-
-        switch rawBackground {
-        case .color(let hex):
-            builder.setColor(hex)
-        case .gradient(let raw):
-            builder.setGradient(try raw.buildProto())
-        }
-
-        if let preview = preview {
-            builder.setPreview(try preview.buildProto(transaction: transaction))
-        }
-
-        return try builder.build()
-    }
-
-    public init(text: String,
-                textStyle: TextStyle,
-                textForegroundColor: UIColor,
-                textBackgroundColor: UIColor?,
-                background: Background,
-                linkPreview: OWSLinkPreview?) {
-        self.text = text
-        self.textStyle = textStyle
-        self.textForegroundColorHex = textForegroundColor.argbHex
-        self.textBackgroundColorHex = textBackgroundColor?.argbHex
-        self.rawBackground = {
-            switch background {
-            case .color(let color):
-                return .color(hex: color.argbHex)
-
-            case .gradient(let gradient):
-                return .gradient(raw: .init(colors: gradient.colors.map { $0.argbHex },
-                                            positions: gradient.locations.map { Float($0) },
-                                            angle: gradient.angle))
-            }
-        }()
-        self.preview = linkPreview
-    }
-}
-
 extension SignalServiceAddress {
 
     public var isSystemStoryAddress: Bool {
         return self.uuid == StoryMessage.systemStoryAuthorUUID
+    }
+}
+
+// MARK: - Video Duration Limiting
+
+extension StoryMessage {
+
+    // Android rounds _down_ video length for display, so 30.999 seconds
+    // is rendered as "30s". If we didn't allow that length, users might be
+    // confused as to why if all it says is "30s" and we say "up to 30s".
+    public static let videoAttachmentDurationLimit: TimeInterval = 30.999
+
+    public static var videoSegmentationTooltip: String {
+        return String(
+            format: OWSLocalizedString(
+                "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT",
+                comment: "Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }}"
+            ),
+            Int(videoAttachmentDurationLimit)
+        )
     }
 }

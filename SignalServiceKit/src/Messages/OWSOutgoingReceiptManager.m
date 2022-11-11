@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSOutgoingReceiptManager.h"
@@ -97,7 +98,10 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
     static dispatch_queue_t _serialQueue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _serialQueue = dispatch_queue_create("org.whispersystems.outgoingReceipts", DISPATCH_QUEUE_SERIAL);
+        NS_VALID_UNTIL_END_OF_SCOPE NSString *label = [OWSDispatch createLabel:@"outgoingReceipts"];
+        const char *cStringLabel = [label cStringUsingEncoding:NSUTF8StringEncoding];
+
+        _serialQueue = dispatch_queue_create(cStringLabel, DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL);
     });
 
     return _serialQueue;
@@ -254,11 +258,11 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
             }
 
             sendPromise =
-                [self.messageSenderJobQueue addPromiseWithMessage:message.asPreparer
-                                        removeMessageAfterSending:NO
-                                    limitToCurrentProcessLifetime:YES
-                                                   isHighPriority:NO
-                                                      transaction:transaction]
+                [self.sskJobQueues.messageSenderJobQueue addPromiseWithMessage:message.asPreparer
+                                                     removeMessageAfterSending:NO
+                                                 limitToCurrentProcessLifetime:YES
+                                                                isHighPriority:NO
+                                                                   transaction:transaction]
                     .doneInBackground(^(id value) {
                         OWSLogInfo(@"Successfully sent %lu %@ receipts to sender.",
                             (unsigned long)receiptSet.timestamps.count,

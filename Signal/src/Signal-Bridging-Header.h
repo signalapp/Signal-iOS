@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2016 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 // Separate iOS Frameworks from other imports.
@@ -7,8 +8,6 @@
 #import "BlockListViewController.h"
 #import "ChatListViewController.h"
 #import "ConversationCollectionView.h"
-#import "ConversationInputToolbar.h"
-#import "ConversationScrollButton.h"
 #import "ConversationViewController.h"
 #import "DebugContactsUtils.h"
 #import "DebugUIMessages.h"

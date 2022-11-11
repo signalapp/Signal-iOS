@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import UIKit
@@ -13,12 +14,14 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
     var attachments: [SignalAttachment]? {
         didSet {
-            if let attachments = attachments, attachments.allSatisfy({ $0.isValidImage || $0.isValidVideo }) {
-                sectionOptions.insert(.stories)
-            } else {
-                sectionOptions.remove(.stories)
-            }
+            updateStoriesState()
             updateApprovalMode()
+        }
+    }
+
+    private var isViewOnce = false {
+        didSet {
+            updateStoriesState()
         }
     }
 
@@ -37,9 +40,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
     var approvalMessageBody: MessageBody?
     var approvalLinkPreviewDraft: OWSLinkPreviewDraft?
 
-    var outgoingMessages = [TSOutgoingMessage]() {
-        didSet { AssertIsOnMainThread() }
-    }
+    var outgoingMessages = [TSOutgoingMessage]()
 
     var mentionCandidates: [SignalServiceAddress] = []
 
@@ -81,6 +82,20 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
             mentionCandidates = groupThread.recipientAddressesWithSneakyTransaction
         } else {
             mentionCandidates = []
+        }
+    }
+
+    private func updateStoriesState() {
+        if isViewOnce {
+            sectionOptions.remove(.stories)
+        } else {
+            if let attachments = attachments, attachments.allSatisfy({ $0.isValidImage || $0.isValidVideo }) {
+                sectionOptions.insert(.stories)
+            } else if isTextMessage {
+                sectionOptions.insert(.stories)
+            } else {
+                sectionOptions.remove(.stories)
+            }
         }
     }
 }
@@ -150,7 +165,10 @@ extension SharingThreadPickerViewController {
 
         } else {
             let approvalItems = attachments.map { AttachmentApprovalItem(attachment: $0, canSave: false) }
-            let approvalVCOptions: AttachmentApprovalViewControllerOptions = withCancelButton ? [ .hasCancel ] : []
+            var approvalVCOptions: AttachmentApprovalViewControllerOptions = withCancelButton ? [ .hasCancel ] : []
+            if self.selection.conversations.contains(where: \.isStory) {
+                approvalVCOptions.insert(.disallowViewOnce)
+            }
             let approvalView = AttachmentApprovalViewController(options: approvalVCOptions, attachmentApprovalItems: approvalItems)
             approvalVC = approvalView
             approvalView.approvalDelegate = self
@@ -166,47 +184,64 @@ extension SharingThreadPickerViewController {
 extension SharingThreadPickerViewController {
 
     func send() {
-        do {
-            try tryToSend()
-        } catch {
-            shareViewDelegate?.shareViewFailed(error: error)
+        let dismissSendProgress = showSendProgress()
+        firstly {
+            tryToSend()
+        }.done {
+            dismissSendProgress {}
+            self.shareViewDelegate?.shareViewWasCompleted()
+        }.catch { error in
+            dismissSendProgress { self.showSendFailure(error: error) }
         }
     }
 
-    func tryToSend() throws {
+    func tryToSend() -> Promise<Void> {
         outgoingMessages.removeAll()
 
         if isTextMessage {
-            guard let body = approvalMessageBody, body.text.count > 0 else {
-                throw OWSAssertionError("Missing body.")
+            guard let body = approvalMessageBody, !body.text.isEmpty else {
+                return Promise(error: OWSAssertionError("Missing body."))
             }
 
             let linkPreviewDraft = approvalLinkPreviewDraft
 
-            sendToThreads { thread in
-                return firstly(on: .global()) { () -> Promise<Void> in
-                    return self.databaseStorage.write { transaction in
-                        let preparer = OutgoingMessagePreparer(
-                            messageBody: body,
-                            thread: thread,
-                            transaction: transaction
-                        )
-                        preparer.insertMessage(linkPreviewDraft: linkPreviewDraft, transaction: transaction)
-                        self.outgoingMessages.append(preparer.unpreparedMessage)
-                        return ThreadUtil.enqueueMessagePromise(
-                            message: preparer.unpreparedMessage,
-                            isHighPriority: true,
-                            transaction: transaction
-                        )
+            let outgoingMessageConversations = selectedConversations.filter { $0.outgoingMessageClass == TSOutgoingMessage.self }
+            let outgoingMessageSendPromise: Promise<Void>
+            if !outgoingMessageConversations.isEmpty {
+                outgoingMessageSendPromise = sendToOutgoingMessageThreads { thread in
+                    return firstly(on: .global()) { () -> Promise<Void> in
+                        return self.databaseStorage.write { transaction in
+                            let preparer = OutgoingMessagePreparer(
+                                messageBody: body,
+                                thread: thread,
+                                transaction: transaction
+                            )
+                            preparer.insertMessage(linkPreviewDraft: linkPreviewDraft, transaction: transaction)
+                            self.outgoingMessages.append(preparer.unpreparedMessage)
+                            return ThreadUtil.enqueueMessagePromise(
+                                message: preparer.unpreparedMessage,
+                                isHighPriority: true,
+                                transaction: transaction
+                            )
+                        }
                     }
                 }
-            }
-        } else if isContactShare {
-            guard let contactShare = approvedContactShare else {
-                throw OWSAssertionError("Missing contactShare.")
+            } else {
+                outgoingMessageSendPromise = Promise.value(())
             }
 
-            sendToThreads { thread in
+            // Send the text message to any selected story recipients
+            // as a text story with default styling.
+            let storyConversations = selectedConversations.filter { $0.outgoingMessageClass == OutgoingStoryMessage.self }
+            let storySendPromise = StorySharing.sendTextStory(with: body, linkPreviewDraft: linkPreviewDraft, to: storyConversations)
+
+            return Promise<Void>.when(fulfilled: [outgoingMessageSendPromise, storySendPromise])
+        } else if isContactShare {
+            guard let contactShare = approvedContactShare else {
+                return Promise(error: OWSAssertionError("Missing contactShare."))
+            }
+
+            return sendToOutgoingMessageThreads { thread in
                 return firstly(on: .global()) { () -> Promise<Void> in
                     return self.databaseStorage.write { transaction in
                         let builder = TSOutgoingMessageBuilder(thread: thread)
@@ -225,10 +260,10 @@ extension SharingThreadPickerViewController {
             }
         } else {
             guard let approvedAttachments = approvedAttachments else {
-                throw OWSAssertionError("Missing approvedAttachments.")
+                return Promise(error: OWSAssertionError("Missing approvedAttachments."))
             }
 
-            sendToConversations { conversations in
+            return sendToConversations { conversations in
                 return AttachmentMultisend.sendApprovedMediaFromShareExtension(
                     conversations: conversations,
                     approvalMessageBody: self.approvalMessageBody,
@@ -330,32 +365,26 @@ extension SharingThreadPickerViewController {
         }
     }
 
-    func sendToConversations(enqueueBlock: @escaping ([ConversationItem]) -> Promise<[TSThread]>) {
+    func sendToConversations(enqueueBlock: @escaping ([ConversationItem]) -> Promise<[TSThread]>) -> Promise<Void> {
         AssertIsOnMainThread()
 
-        let dismissSendProgress = showSendProgress()
         let conversations = self.selectedConversations
-        firstly {
+
+        return firstly {
             enqueueBlock(conversations)
         }.done { threads in
             for thread in threads {
                 // We're sending a message to this thread, approve any pending message request
                 ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
             }
-
-            dismissSendProgress {}
-            self.shareViewDelegate?.shareViewWasCompleted()
-        }.catch { error in
-            dismissSendProgress { self.showSendFailure(error: error) }
         }
     }
 
-    func sendToThreads(enqueueBlock: @escaping (TSThread) -> Promise<Void>) {
+    func sendToOutgoingMessageThreads(enqueueBlock: @escaping (TSThread) -> Promise<Void>) -> Promise<Void> {
         AssertIsOnMainThread()
 
-        let dismissSendProgress = showSendProgress()
-        let conversations = self.selectedConversations
-        firstly {
+        let conversations = self.selectedConversations.filter { $0.outgoingMessageClass == TSOutgoingMessage.self }
+        return firstly {
             self.threads(for: conversations)
         }.then { (threads: [TSThread]) -> Promise<Void> in
             var sendPromises = [Promise<Void>]()
@@ -366,11 +395,6 @@ extension SharingThreadPickerViewController {
                 ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
             }
             return Promise.when(fulfilled: sendPromises)
-        }.done {
-            dismissSendProgress {}
-            self.shareViewDelegate?.shareViewWasCompleted()
-        }.catch { error in
-            dismissSendProgress { self.showSendFailure(error: error) }
         }
     }
 
@@ -491,7 +515,7 @@ extension SharingThreadPickerViewController {
         var promises = [Promise<Void>]()
         databaseStorage.write { transaction in
             for message in outgoingMessages {
-                promises.append(messageSenderJobQueue.add(
+                promises.append(sskJobQueues.messageSenderJobQueue.add(
                     .promise,
                     message: message.asPreparer,
                     isHighPriority: true,
@@ -542,7 +566,7 @@ extension SharingThreadPickerViewController: ConversationPickerDelegate {
 
 extension SharingThreadPickerViewController: TextApprovalViewControllerDelegate {
     func textApproval(_ textApproval: TextApprovalViewController, didApproveMessage messageBody: MessageBody?, linkPreviewDraft: OWSLinkPreviewDraft?) {
-        assert(messageBody?.text.count ?? 0 > 0)
+        assert(messageBody?.text.nilIfEmpty != nil)
 
         approvalMessageBody = messageBody
         approvalLinkPreviewDraft = linkPreviewDraft
@@ -609,6 +633,10 @@ extension SharingThreadPickerViewController: AttachmentApprovalViewControllerDel
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageBody newMessageBody: MessageBody?) {
         self.approvalMessageBody = newMessageBody
+    }
+
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeViewOnceState isViewOnce: Bool) {
+        self.isViewOnce = isViewOnce
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {

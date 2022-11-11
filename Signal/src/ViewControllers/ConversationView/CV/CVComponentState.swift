@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import SignalUI
 
 public class CVComponentState: Equatable, Dependencies {
@@ -157,15 +159,7 @@ public class CVComponentState: Equatable, Dependencies {
         // MARK: - Equatable
 
         public static func == (lhs: LinkPreview, rhs: LinkPreview) -> Bool {
-            guard let lhs = lhs.state as? NSObject else {
-                owsFailDebug("Invalid value.")
-                return false
-            }
-            guard let rhs = rhs.state as? NSObject else {
-                owsFailDebug("Invalid value.")
-                return false
-            }
-            return NSObject.isNullableObject(lhs, equalTo: rhs)
+            return lhs.state === rhs.state
         }
     }
     let linkPreview: LinkPreview?

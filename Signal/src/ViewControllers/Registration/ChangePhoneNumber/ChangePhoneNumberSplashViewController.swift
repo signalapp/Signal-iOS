@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -7,7 +8,7 @@ import SignalServiceKit
 import UIKit
 import SignalMessaging
 
-class ChangePhoneNumberSplashViewController: OWSViewController {
+class ChangePhoneNumberSplashViewController: OWSViewController, OWSNavigationChildController {
 
     private let changePhoneNumberController: ChangePhoneNumberController
 
@@ -16,6 +17,7 @@ class ChangePhoneNumberSplashViewController: OWSViewController {
 
     public init(changePhoneNumberController: ChangePhoneNumberController) {
         self.changePhoneNumberController = changePhoneNumberController
+        super.init()
     }
 
     override func viewDidLoad() {
@@ -25,6 +27,10 @@ class ChangePhoneNumberSplashViewController: OWSViewController {
                                   comment: "Title for the 'change phone number' views in settings.")
 
         createContents()
+    }
+
+    public var preferredNavigationBarStyle: OWSNavigationBarStyle {
+        return .clear
     }
 
     private func createContents() {
@@ -47,13 +53,13 @@ class ChangePhoneNumberSplashViewController: OWSViewController {
         bottomContainer.autoPinEdge(toSuperviewSafeArea: .leading)
         bottomContainer.autoPinEdge(toSuperviewSafeArea: .trailing)
         bottomContainer.autoPinEdge(.top, to: .bottom, of: scrollView)
-        autoPinView(toBottomOfViewControllerOrKeyboard: bottomContainer, avoidNotch: true)
+        bottomContainer.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 
         updateContents()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateContents()
     }

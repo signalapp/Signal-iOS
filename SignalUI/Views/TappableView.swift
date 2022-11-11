@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 
 public class TappableView: UIView {
-    let actionBlock : (() -> Void)
+    let actionBlock: (() -> Void)
 
     // MARK: - Initializers
 
@@ -14,7 +15,7 @@ public class TappableView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public required init(actionBlock : @escaping () -> Void) {
+    public required init(actionBlock: @escaping () -> Void) {
         self.actionBlock = actionBlock
         super.init(frame: CGRect.zero)
 

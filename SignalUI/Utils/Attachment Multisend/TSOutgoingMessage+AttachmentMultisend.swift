@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 extension TSOutgoingMessage {
     @objc
@@ -24,11 +26,13 @@ extension TSOutgoingMessage {
             )
 
             let message: TSOutgoingMessage
+            let attachmentUUIDs: [UUID]
             switch destination.content {
             case .media(let attachments):
+                attachmentUUIDs = attachments.map(\.id)
                 message = try ThreadUtil.createUnsentMessage(
                     body: messageBodyForContext,
-                    mediaAttachments: attachments,
+                    mediaAttachments: attachments.map(\.value),
                     thread: destination.thread,
                     transaction: transaction
                 )
@@ -42,11 +46,10 @@ extension TSOutgoingMessage {
             state.threads.append(destination.thread)
 
             for (idx, attachmentId) in message.attachmentIds.enumerated() {
-                if state.correspondingAttachmentIds.count > idx {
-                    state.correspondingAttachmentIds[idx] += [attachmentId]
-                } else {
-                    state.correspondingAttachmentIds.append([attachmentId])
-                }
+                let attachmentUUID = attachmentUUIDs[idx]
+                var correspondingIdsForAttachment = state.correspondingAttachmentIds[attachmentUUID] ?? []
+                correspondingIdsForAttachment += [attachmentId]
+                state.correspondingAttachmentIds[attachmentUUID] = correspondingIdsForAttachment
             }
 
             destination.thread.donateSendMessageIntent(for: message, transaction: transaction)

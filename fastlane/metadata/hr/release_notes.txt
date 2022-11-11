@@ -1,3 +1,2 @@
-• Video Call Picture-in-Picture rises above the keyboard when typing
-• Improve group metadata update reliability & error handling
-
+• Priče su stigle na Signal! Dijelite tekstove, fotografije i videozapise koji automatski nestaju nakon 24 sata s odabranim prijateljima ili grupama. Ako ne želite vidjeti niti dijeliti priče, možete ih isključiti u postavkama.
+• Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.

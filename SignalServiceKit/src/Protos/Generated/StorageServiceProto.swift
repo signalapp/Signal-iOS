@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -10,6 +11,56 @@ import SwiftProtobuf
 
 public enum StorageServiceProtoError: Error {
     case invalidProtobuf(description: String)
+}
+
+// MARK: - StorageServiceProtoOptionalBool
+
+public enum StorageServiceProtoOptionalBool: SwiftProtobuf.Enum {
+    public typealias RawValue = Int
+    case unset // 0
+    case `true` // 1
+    case `false` // 2
+    case UNRECOGNIZED(Int)
+
+    public init() {
+        self = .unset
+    }
+
+    public init?(rawValue: Int) {
+        switch rawValue {
+            case 0: self = .unset
+            case 1: self = .true
+            case 2: self = .false
+            default: self = .UNRECOGNIZED(rawValue)
+        }
+    }
+
+    public var rawValue: Int {
+        switch self {
+            case .unset: return 0
+            case .true: return 1
+            case .false: return 2
+            case .UNRECOGNIZED(let i): return i
+        }
+    }
+}
+
+private func StorageServiceProtoOptionalBoolWrap(_ value: StorageServiceProtos_OptionalBool) -> StorageServiceProtoOptionalBool {
+    switch value {
+    case .unset: return .unset
+    case .true: return .true
+    case .false: return .false
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
+private func StorageServiceProtoOptionalBoolUnwrap(_ value: StorageServiceProtoOptionalBool) -> StorageServiceProtos_OptionalBool {
+    switch value {
+    case .unset: return .unset
+    case .true: return .true
+    case .false: return .false
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
 }
 
 // MARK: - StorageServiceProtoStorageItem
@@ -1200,12 +1251,12 @@ public enum StorageServiceProtoContactRecordIdentityState: SwiftProtobuf.Enum {
     case UNRECOGNIZED(Int)
 
     public init() {
-        self = .`default`
+        self = .default
     }
 
     public init?(rawValue: Int) {
         switch rawValue {
-            case 0: self = .`default`
+            case 0: self = .default
             case 1: self = .verified
             case 2: self = .unverified
             default: self = .UNRECOGNIZED(rawValue)
@@ -1214,7 +1265,7 @@ public enum StorageServiceProtoContactRecordIdentityState: SwiftProtobuf.Enum {
 
     public var rawValue: Int {
         switch self {
-            case .`default`: return 0
+            case .default: return 0
             case .verified: return 1
             case .unverified: return 2
             case .UNRECOGNIZED(let i): return i
@@ -1376,6 +1427,43 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
         return true
     }
 
+    public var unregisteredAtTimestamp: UInt64 {
+        return proto.unregisteredAtTimestamp
+    }
+    public var hasUnregisteredAtTimestamp: Bool {
+        return true
+    }
+
+    public var systemGivenName: String? {
+        guard hasSystemGivenName else {
+            return nil
+        }
+        return proto.systemGivenName
+    }
+    public var hasSystemGivenName: Bool {
+        return !proto.systemGivenName.isEmpty
+    }
+
+    public var systemFamilyName: String? {
+        guard hasSystemFamilyName else {
+            return nil
+        }
+        return proto.systemFamilyName
+    }
+    public var hasSystemFamilyName: Bool {
+        return !proto.systemFamilyName.isEmpty
+    }
+
+    public var systemNickname: String? {
+        guard hasSystemNickname else {
+            return nil
+        }
+        return proto.systemNickname
+    }
+    public var hasSystemNickname: Bool {
+        return !proto.systemNickname.isEmpty
+    }
+
     public var hasValidService: Bool {
         return serviceAddress != nil
     }
@@ -1397,7 +1485,7 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
         let serviceUuid: String? = proto.serviceUuid
         let serviceE164: String? = proto.serviceE164
         self.serviceAddress = {
-            guard hasServiceE164 || hasServiceUuid else { return nil }
+            guard hasServiceUuid || hasServiceE164 else { return nil }
 
             let uuidString: String? = {
                 guard hasServiceUuid else { return nil }
@@ -1418,7 +1506,11 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
                 return ProtoUtils.parseProtoE164(serviceE164, name: "StorageServiceProtos_ContactRecord.serviceE164")
             }()
 
-            let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: .high)
+            let address = SignalServiceAddress(
+                uuidString: uuidString,
+                phoneNumber: phoneNumber,
+                trustLevel: .high
+            )
             guard address.isValid else {
                 owsFailDebug("address was unexpectedly invalid")
                 return nil
@@ -1509,6 +1601,18 @@ extension StorageServiceProtoContactRecord {
         }
         if hasHideStory {
             builder.setHideStory(hideStory)
+        }
+        if hasUnregisteredAtTimestamp {
+            builder.setUnregisteredAtTimestamp(unregisteredAtTimestamp)
+        }
+        if let _value = systemGivenName {
+            builder.setSystemGivenName(_value)
+        }
+        if let _value = systemFamilyName {
+            builder.setSystemFamilyName(_value)
+        }
+        if let _value = systemNickname {
+            builder.setSystemNickname(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -1627,6 +1731,40 @@ public struct StorageServiceProtoContactRecordBuilder {
 
     public mutating func setHideStory(_ valueParam: Bool) {
         proto.hideStory = valueParam
+    }
+
+    public mutating func setUnregisteredAtTimestamp(_ valueParam: UInt64) {
+        proto.unregisteredAtTimestamp = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setSystemGivenName(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.systemGivenName = valueParam
+    }
+
+    public mutating func setSystemGivenName(_ valueParam: String) {
+        proto.systemGivenName = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setSystemFamilyName(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.systemFamilyName = valueParam
+    }
+
+    public mutating func setSystemFamilyName(_ valueParam: String) {
+        proto.systemFamilyName = valueParam
+    }
+
+    @available(swift, obsoleted: 1.0)
+    public mutating func setSystemNickname(_ valueParam: String?) {
+        guard let valueParam = valueParam else { return }
+        proto.systemNickname = valueParam
+    }
+
+    public mutating func setSystemNickname(_ valueParam: String) {
+        proto.systemNickname = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -1850,6 +1988,56 @@ extension StorageServiceProtoGroupV1RecordBuilder {
 
 #endif
 
+// MARK: - StorageServiceProtoGroupV2RecordStorySendMode
+
+public enum StorageServiceProtoGroupV2RecordStorySendMode: SwiftProtobuf.Enum {
+    public typealias RawValue = Int
+    case `default` // 0
+    case disabled // 1
+    case enabled // 2
+    case UNRECOGNIZED(Int)
+
+    public init() {
+        self = .default
+    }
+
+    public init?(rawValue: Int) {
+        switch rawValue {
+            case 0: self = .default
+            case 1: self = .disabled
+            case 2: self = .enabled
+            default: self = .UNRECOGNIZED(rawValue)
+        }
+    }
+
+    public var rawValue: Int {
+        switch self {
+            case .default: return 0
+            case .disabled: return 1
+            case .enabled: return 2
+            case .UNRECOGNIZED(let i): return i
+        }
+    }
+}
+
+private func StorageServiceProtoGroupV2RecordStorySendModeWrap(_ value: StorageServiceProtos_GroupV2Record.StorySendMode) -> StorageServiceProtoGroupV2RecordStorySendMode {
+    switch value {
+    case .default: return .default
+    case .disabled: return .disabled
+    case .enabled: return .enabled
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
+private func StorageServiceProtoGroupV2RecordStorySendModeUnwrap(_ value: StorageServiceProtoGroupV2RecordStorySendMode) -> StorageServiceProtos_GroupV2Record.StorySendMode {
+    switch value {
+    case .default: return .default
+    case .disabled: return .disabled
+    case .enabled: return .enabled
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
 // MARK: - StorageServiceProtoGroupV2Record
 
 public struct StorageServiceProtoGroupV2Record: Codable, CustomDebugStringConvertible {
@@ -1900,10 +2088,21 @@ public struct StorageServiceProtoGroupV2Record: Codable, CustomDebugStringConver
         return true
     }
 
-    public var storySendEnabled: Bool {
-        return proto.storySendEnabled
+    public var storySendMode: StorageServiceProtoGroupV2RecordStorySendMode? {
+        guard hasStorySendMode else {
+            return nil
+        }
+        return StorageServiceProtoGroupV2RecordStorySendModeWrap(proto.storySendMode)
     }
-    public var hasStorySendEnabled: Bool {
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    public var unwrappedStorySendMode: StorageServiceProtoGroupV2RecordStorySendMode {
+        if !hasStorySendMode {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: GroupV2Record.storySendMode.")
+        }
+        return StorageServiceProtoGroupV2RecordStorySendModeWrap(proto.storySendMode)
+    }
+    public var hasStorySendMode: Bool {
         return true
     }
 
@@ -1982,8 +2181,8 @@ extension StorageServiceProtoGroupV2Record {
         if hasHideStory {
             builder.setHideStory(hideStory)
         }
-        if hasStorySendEnabled {
-            builder.setStorySendEnabled(storySendEnabled)
+        if let _value = storySendMode {
+            builder.setStorySendMode(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -2037,8 +2236,8 @@ public struct StorageServiceProtoGroupV2RecordBuilder {
         proto.hideStory = valueParam
     }
 
-    public mutating func setStorySendEnabled(_ valueParam: Bool) {
-        proto.storySendEnabled = valueParam
+    public mutating func setStorySendMode(_ valueParam: StorageServiceProtoGroupV2RecordStorySendMode) {
+        proto.storySendMode = StorageServiceProtoGroupV2RecordStorySendModeUnwrap(valueParam)
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -2751,6 +2950,13 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
         return true
     }
 
+    public var myStoryPrivacyHasBeenSet: Bool {
+        return proto.myStoryPrivacyHasBeenSet
+    }
+    public var hasMyStoryPrivacyHasBeenSet: Bool {
+        return true
+    }
+
     public var viewedOnboardingStory: Bool {
         return proto.viewedOnboardingStory
     }
@@ -2762,6 +2968,31 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
         return proto.storiesDisabled
     }
     public var hasStoriesDisabled: Bool {
+        return true
+    }
+
+    public var storyViewReceiptsEnabled: StorageServiceProtoOptionalBool? {
+        guard hasStoryViewReceiptsEnabled else {
+            return nil
+        }
+        return StorageServiceProtoOptionalBoolWrap(proto.storyViewReceiptsEnabled)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    public var unwrappedStoryViewReceiptsEnabled: StorageServiceProtoOptionalBool {
+        if !hasStoryViewReceiptsEnabled {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: AccountRecord.storyViewReceiptsEnabled.")
+        }
+        return StorageServiceProtoOptionalBoolWrap(proto.storyViewReceiptsEnabled)
+    }
+    public var hasStoryViewReceiptsEnabled: Bool {
+        return true
+    }
+
+    public var readOnboardingStory: Bool {
+        return proto.readOnboardingStory
+    }
+    public var hasReadOnboardingStory: Bool {
         return true
     }
 
@@ -2899,11 +3130,20 @@ extension StorageServiceProtoAccountRecord {
         if hasKeepMutedChatsArchived {
             builder.setKeepMutedChatsArchived(keepMutedChatsArchived)
         }
+        if hasMyStoryPrivacyHasBeenSet {
+            builder.setMyStoryPrivacyHasBeenSet(myStoryPrivacyHasBeenSet)
+        }
         if hasViewedOnboardingStory {
             builder.setViewedOnboardingStory(viewedOnboardingStory)
         }
         if hasStoriesDisabled {
             builder.setStoriesDisabled(storiesDisabled)
+        }
+        if let _value = storyViewReceiptsEnabled {
+            builder.setStoryViewReceiptsEnabled(_value)
+        }
+        if hasReadOnboardingStory {
+            builder.setReadOnboardingStory(readOnboardingStory)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -3070,12 +3310,24 @@ public struct StorageServiceProtoAccountRecordBuilder {
         proto.keepMutedChatsArchived = valueParam
     }
 
+    public mutating func setMyStoryPrivacyHasBeenSet(_ valueParam: Bool) {
+        proto.myStoryPrivacyHasBeenSet = valueParam
+    }
+
     public mutating func setViewedOnboardingStory(_ valueParam: Bool) {
         proto.viewedOnboardingStory = valueParam
     }
 
     public mutating func setStoriesDisabled(_ valueParam: Bool) {
         proto.storiesDisabled = valueParam
+    }
+
+    public mutating func setStoryViewReceiptsEnabled(_ valueParam: StorageServiceProtoOptionalBool) {
+        proto.storyViewReceiptsEnabled = StorageServiceProtoOptionalBoolUnwrap(valueParam)
+    }
+
+    public mutating func setReadOnboardingStory(_ valueParam: Bool) {
+        proto.readOnboardingStory = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

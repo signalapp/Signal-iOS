@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "MockSSKEnvironment.h"
@@ -99,11 +100,13 @@ NS_ASSUME_NONNULL_BEGIN
             [message markAsReadAtTimestamp:expireStartedAt
                                     thread:thread
                               circumstance:OWSReceiptCircumstanceOnLinkedDevice
+                  shouldClearNotifications:YES
                                transaction:transaction];
         } else if (markAsRead) {
             [message markAsReadAtTimestamp:self.now - 1000
                                     thread:thread
                               circumstance:OWSReceiptCircumstanceOnLinkedDevice
+                  shouldClearNotifications:YES
                                transaction:transaction];
         }
     }];

@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import SignalServiceKit
 
 /// Container for util methods related to story authors.
@@ -12,6 +14,7 @@ public enum StoryUtil: Dependencies {
         for storyMessage: StoryMessage,
         contactsManager: ContactsManagerProtocol,
         useFullNameForLocalAddress: Bool = true,
+        useShortGroupName: Bool = true,
         transaction: SDSAnyReadTransaction
     ) -> String {
         guard !storyMessage.authorAddress.isSystemStoryAddress else {
@@ -28,6 +31,8 @@ public enum StoryUtil: Dependencies {
                 }
                 return groupThread.groupNameOrDefault
             }()
+
+            if useShortGroupName { return groupName }
 
             let authorShortName: String
             if storyMessage.authorAddress.isLocalAddress {
@@ -90,23 +95,37 @@ public enum StoryUtil: Dependencies {
         )
     }
 
-    static func askToResend(_ message: StoryMessage, in thread: TSThread, from vc: UIViewController) {
+    static func askToResend(_ message: StoryMessage, in thread: TSThread, from vc: UIViewController, completion: @escaping () -> Void = {}) {
         guard !askToConfirmSafetyNumberChangesIfNecessary(for: message, from: vc) else { return }
 
-        let actionSheet = ActionSheetController(message: NSLocalizedString(
-            "STORY_RESEND_MESSAGE_ACTION_SHEET",
-            comment: "Title for the dialog asking user if they wish to resend a failed story message."
-        ))
-        actionSheet.addAction(OWSActionSheets.cancelAction)
+        let title: String
+        if message.hasSentToAnyRecipients {
+            title = NSLocalizedString(
+                "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET",
+                comment: "Title for the dialog asking user if they wish to resend a partially failed story message."
+            )
+        } else {
+            title = NSLocalizedString(
+                "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET",
+                comment: "Title for the dialog asking user if they wish to resend a failed story message."
+            )
+        }
+
+        let actionSheet = ActionSheetController(message: title)
         actionSheet.addAction(.init(title: CommonStrings.deleteButton, style: .destructive, handler: { _ in
             Self.databaseStorage.write { transaction in
                 message.remotelyDelete(for: thread, transaction: transaction)
             }
+            completion()
         }))
         actionSheet.addAction(.init(title: CommonStrings.sendMessage, handler: { _ in
             Self.databaseStorage.write { transaction in
                 message.resendMessageToFailedRecipients(transaction: transaction)
             }
+            completion()
+        }))
+        actionSheet.addAction(.init(title: CommonStrings.cancelButton, style: .cancel, handler: { _ in
+            completion()
         }))
         vc.presentActionSheet(actionSheet, animated: true)
     }

@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import SignalCoreKit
 
 /// The primary interface for discovering contacts through the CDS service
-@objc(OWSContactDiscoveryTask)
 public class ContactDiscoveryTask: NSObject {
 
     // MARK: - Lifecycle
@@ -59,7 +59,7 @@ public class ContactDiscoveryTask: NSObject {
         }
 
         let workQueue = DispatchQueue(
-            label: "org.whispersystems.signal.\(type(of: self))",
+            label: OWSDispatch.createLabel("\(type(of: self))"),
             qos: qos,
             autoreleaseFrequency: .workItem,
             target: targetQueue ?? .sharedQueue(at: qos))
@@ -69,7 +69,7 @@ public class ContactDiscoveryTask: NSObject {
             return discoveryOperation.perform(on: workQueue)
 
         }.map(on: workQueue) { (discoveredContacts: Set<DiscoveredContactInfo>) -> Set<SignalRecipient> in
-            let discoveredIdentifiers = Set(discoveredContacts.compactMap { $0.e164 })
+            let discoveredIdentifiers = Set(discoveredContacts.map { $0.e164 })
 
             let discoveredAddresses = discoveredContacts
                 .map { SignalServiceAddress(uuid: $0.uuid, phoneNumber: $0.e164, trustLevel: .high) }
@@ -98,11 +98,7 @@ public class ContactDiscoveryTask: NSObject {
     // MARK: - Private
 
     private func createContactDiscoveryOperation() -> ContactDiscovering {
-        if FeatureFlags.hsmContactDiscovery {
-            return HSMContactDiscoveryOperation(e164sToLookup: e164FetchSet)
-        } else {
-            return SGXContactDiscoveryOperation(e164sToLookup: e164FetchSet)
-        }
+        return SGXContactDiscoveryOperation(e164sToLookup: e164FetchSet)
     }
 
     private func storeResults(
@@ -147,28 +143,6 @@ public class ContactDiscoveryTask: NSObject {
             }
 
             return recipientSet
-        }
-    }
-}
-
-// MARK: - ObjC Support
-
-@objc
-public extension ContactDiscoveryTask {
-
-    @objc(performAtQoS:callbackQueue:success:failure:)
-    func perform(at rawQoS: qos_class_t,
-                 callbackQueue: DispatchQueue,
-                 success: @escaping (Set<SignalRecipient>) -> Void,
-                 failure: @escaping (Error) -> Void) {
-        firstly { () -> Promise<Set<SignalRecipient>> in
-            let qosClass = DispatchQoS.QoSClass(flooring: rawQoS)
-            let qos = DispatchQoS(qosClass: qosClass, relativePriority: 0)
-            return perform(at: qos)
-        }.done(on: callbackQueue) { (results) in
-            success(results)
-        }.catch(on: callbackQueue) { error in
-            failure(error)
         }
     }
 }

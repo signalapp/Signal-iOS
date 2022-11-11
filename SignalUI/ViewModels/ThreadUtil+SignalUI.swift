@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -45,8 +46,10 @@ public extension ThreadUtil {
             Self.enqueueSendAsyncWrite { writeTransaction in
                 outgoingMessagePreparer.insertMessage(linkPreviewDraft: linkPreviewDraft,
                                                       transaction: writeTransaction)
-                Self.messageSenderJobQueue.add(message: outgoingMessagePreparer,
-                                               transaction: writeTransaction)
+                Self.sskJobQueues.messageSenderJobQueue.add(
+                    message: outgoingMessagePreparer,
+                    transaction: writeTransaction
+                )
                 writeTransaction.addSyncCompletion {
                     benchmarkCompletion()
                 }

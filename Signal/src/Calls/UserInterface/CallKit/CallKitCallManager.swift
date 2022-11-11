@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2016 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import UIKit
@@ -21,6 +22,21 @@ final class CallKitCallManager: NSObject {
 
     @objc
     static let kAnonymousCallHandlePrefix = "Signal:"
+    static let kGroupCallHandlePrefix = "SignalGroup:"
+
+    @objc
+    static func decodeGroupId(fromIntentHandle handle: String) -> Data? {
+        let prefix = handle.prefix(kGroupCallHandlePrefix.count)
+        guard prefix == kGroupCallHandlePrefix else {
+            return nil
+        }
+        do {
+            return try Data.data(fromBase64Url: String(handle[prefix.endIndex...]))
+        } catch {
+            // ignore the error
+            return nil
+        }
+    }
 
     required init(showNamesOnCallScreen: Bool) {
         AssertIsOnMainThread()
@@ -31,31 +47,42 @@ final class CallKitCallManager: NSObject {
         // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
     }
 
-    // MARK: Actions
-
-    func startCall(_ call: SignalCall) {
-        let handle: CXHandle
-
+    func createCallHandleWithSneakyTransaction(for call: SignalCall) -> CXHandle {
         if showNamesOnCallScreen {
             let type: CXHandle.HandleType
             let value: String
-            if let phoneNumber = call.individualCall.remoteAddress.phoneNumber {
+            if call.isGroupCall {
+                type = .generic
+                value = Self.kGroupCallHandlePrefix + call.thread.groupModelIfGroupThread!.groupId.asBase64Url
+            } else if let phoneNumber = call.individualCall.remoteAddress.phoneNumber {
                 type = .phoneNumber
                 value = phoneNumber
             } else {
                 type = .generic
-                value = call.individualCall.remoteAddress.stringForDisplay
+                value = call.individualCall.remoteAddress.uuidString!
             }
-            handle = CXHandle(type: type, value: value)
+            return CXHandle(type: type, value: value)
         } else {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
-            handle = CXHandle(type: .generic, value: callKitId)
             CallKitIdStore.setThread(call.thread, forCallKitId: callKitId)
+            return CXHandle(type: .generic, value: callKitId)
         }
+    }
 
+    // MARK: Actions
+
+    func startCall(_ call: SignalCall) {
+        let handle = createCallHandleWithSneakyTransaction(for: call)
         let startCallAction = CXStartCallAction(call: call.localId, handle: handle)
 
-        startCallAction.isVideo = call.individualCall.offerMediaType == .video
+        if call.isIndividualCall {
+            startCallAction.isVideo = call.individualCall.offerMediaType == .video
+        } else {
+            // All group calls are video calls even if the local video is off,
+            // but what we set here is how the call shows up in the system call log,
+            // which controls what happens if the user starts another call from the system call log.
+            startCallAction.isVideo = !call.groupCall.isOutgoingVideoMuted
+        }
 
         let transaction = CXTransaction()
         transaction.addAction(startCallAction)
@@ -118,15 +145,13 @@ final class CallKitCallManager: NSObject {
 
     func addCall(_ call: SignalCall) {
         Logger.verbose("call: \(call)")
-        owsAssertDebug(call.isIndividualCall)
-        call.individualCall.wasReportedToSystem = true
+        call.markReportedToSystem()
         calls.append(call)
     }
 
     func removeCall(_ call: SignalCall) {
         Logger.verbose("call: \(call)")
-        owsAssertDebug(call.isIndividualCall)
-        call.individualCall.wasRemovedFromSystem = true
+        call.markRemovedFromSystem()
         guard calls.removeFirst(where: { $0 === call }) != nil else {
             Logger.warn("no call matching: \(call) to remove")
             return
@@ -135,7 +160,7 @@ final class CallKitCallManager: NSObject {
 
     func removeAllCalls() {
         Logger.verbose("")
-        calls.forEach { $0.individualCall.wasRemovedFromSystem = true }
+        calls.forEach { $0.markRemovedFromSystem() }
         calls.removeAll()
     }
 }

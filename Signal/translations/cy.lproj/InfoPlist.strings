@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Mae Signal angen defnyddio Apple Music i chwarae atodiadau cyfrwng.";
-NSCameraUsageDescription = "Mae Signal yn defnyddio'ch camera i dynnu lluniau ag ar gyfer galwadau fideo.";
-NSContactsUsageDescription = "Mae Signal yn defnyddio'ch cysylltiadau i ganfod defnyddiwyr rydych chi'n ei nabod. Nid ydym yn cadw y cysylltiadau ar y gweinydd.";
-NSFaceIDUsageDescription = "Mae Clo Sgrîn Signal yn defnyddio Face ID.";
-NSLocationWhenInUseUsageDescription = "Mae Signal angen gwybod eich lleoliad er mwyn rhannu eich lleoliad presennol.";
-NSMicrophoneUsageDescription = "Mae Signal angen clywed eich meicroffon er mwyn gwneud a derbyn galwadau ffôn ac i recordio negeseuon llais.";
-NSPhotoLibraryAddUsageDescription = "Bydd Signal yn cadw lluniau i'ch llyfrgell.";
-NSPhotoLibraryUsageDescription = "Bydd Signal yn gadael i chi ddewis pa luniau o'ch llyfrgell i'w anfon.";
-NSLocalNetworkUsageDescription = "Mae Signal yn defnyddio y rhwydwaith lleol i'ch galluogi i drosglwyddo'ch cyfrif yn uniongyrchol i ffôn newydd. Ni chaiff ei ddefnyddio oni bai eich bod yn dewis yn benodol cychwyn trosglwyddiad i ddyfais newydd.";

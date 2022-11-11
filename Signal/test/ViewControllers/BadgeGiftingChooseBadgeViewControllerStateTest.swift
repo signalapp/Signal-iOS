@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import XCTest
@@ -22,14 +23,28 @@ class BadgeGiftingChooseBadgeViewControllerStateTest: XCTestCase {
         let stuck: [State] = [.initializing, .loading, .loadFailed]
         stuck.forEach { XCTAssertFalse($0.canContinue) }
 
-        let notStuck: State = .loaded(selectedCurrencyCode: "EUR", badge: getGiftBadge(), pricesByCurrencyCode: ["EUR": 123, "USD": 456])
+        let notStuck: State = .loaded(
+            selectedCurrencyCode: "EUR",
+            badge: getGiftBadge(),
+            pricesByCurrencyCode: [
+                "EUR": FiatMoney(currencyCode: "EUR", value: 123),
+                "USD": FiatMoney(currencyCode: "USD", value: 456)
+            ]
+        )
         XCTAssertTrue(notStuck.canContinue)
     }
 
     func testSelectCurrencyCode() throws {
         let badge = getGiftBadge()
 
-        let before = State.loaded(selectedCurrencyCode: "USD", badge: badge, pricesByCurrencyCode: ["EUR": 123, "USD": 456])
+        let before = State.loaded(
+            selectedCurrencyCode: "USD",
+            badge: badge,
+            pricesByCurrencyCode: [
+                "EUR": FiatMoney(currencyCode: "EUR", value: 123),
+                "USD": FiatMoney(currencyCode: "USD", value: 456)
+            ]
+        )
         let after = before.selectCurrencyCode("EUR")
 
         func assertCurrencyCode(_ state: State, expected: Currency.Code) throws {

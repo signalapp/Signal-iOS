@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "PhoneNumberUtil.h"
@@ -24,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // country code -> country name
-+ (nullable NSString *)countryNameFromCountryCode:(NSString *)countryCode
++ (NSString *)countryNameFromCountryCode:(NSString *)countryCode
 {
     OWSAssertDebug(countryCode != nil);
 

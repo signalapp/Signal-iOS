@@ -1,8 +1,8 @@
-/**
- * Copyright (C) 2019 Open Whisper Systems
- *
- * Licensed according to the LICENSE file in this repository.
- */
+//
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+//
+
 syntax = "proto3";
 
 // iOS - package name determines class prefix
@@ -104,6 +104,8 @@ message GroupChange {
 
         message ModifyMemberProfileKeyAction {
             bytes presentation = 1;
+            bytes user_id = 2;
+            bytes profile_key = 3;
         }
 
         message AddPendingMemberAction {
@@ -116,6 +118,8 @@ message GroupChange {
 
         message PromotePendingMemberAction {
             bytes presentation = 1;
+            bytes user_id = 2;
+            bytes profile_key = 3;
         }
 
         message AddRequestingMemberAction {

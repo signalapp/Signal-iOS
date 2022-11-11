@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -262,9 +263,12 @@ class AudioMessageView: ManualStackView {
 
         let dotSize = CGSize(square: 6)
 
-        let playbackTimeLabelConfig = playbackTimeLabelConfig_forMeasurement(audioAttachment: audioAttachment,
-                                                                             isIncoming: isIncoming,
-                                                                             conversationStyle: conversationStyle)
+        let playbackTimeLabelConfig = playbackTimeLabelConfig_forMeasurement(
+            audioAttachment: audioAttachment,
+            isIncoming: isIncoming,
+            conversationStyle: conversationStyle,
+            maxWidth: maxWidth
+        )
         let playbackTimeLabelSize = CVText.measureLabel(config: playbackTimeLabelConfig, maxWidth: maxWidth)
 
         let playbackRateSize = AudioMessagePlaybackRateView.measure(maxWidth: maxWidth)
@@ -344,15 +348,32 @@ class AudioMessageView: ManualStackView {
                                 conversationStyle: conversationStyle)
     }
 
-    private static func playbackTimeLabelConfig_forMeasurement(audioAttachment: AudioAttachment,
-                                                               isIncoming: Bool,
-                                                               conversationStyle: ConversationStyle) -> CVLabelConfig {
+    private static func playbackTimeLabelConfig_forMeasurement(
+        audioAttachment: AudioAttachment,
+        isIncoming: Bool,
+        conversationStyle: ConversationStyle,
+        maxWidth: CGFloat
+    ) -> CVLabelConfig {
         // playbackTimeLabel uses a monospace font, so we measure the
         // worst-case width using the full duration of the audio.
         let text = OWSFormat.localizedDurationString(from: audioAttachment.durationSeconds)
-        return playbackTimeLabelConfig(text: text,
-                                       isIncoming: isIncoming,
-                                       conversationStyle: conversationStyle)
+        let fullDurationConfig = playbackTimeLabelConfig(
+            text: text,
+            isIncoming: isIncoming,
+            conversationStyle: conversationStyle
+        )
+        // Never let it get shorter than "0:00" duration.
+        let minimumWidthText = OWSFormat.localizedDurationString(from: 0)
+        let minimumWidthConfig = playbackTimeLabelConfig(
+            text: minimumWidthText,
+            isIncoming: isIncoming,
+            conversationStyle: conversationStyle
+        )
+        if minimumWidthConfig.measure(maxWidth: maxWidth).width > fullDurationConfig.measure(maxWidth: maxWidth).width {
+            return minimumWidthConfig
+        } else {
+            return fullDurationConfig
+        }
     }
 
     private static func playbackTimeLabelConfig(text: String,
@@ -468,6 +489,9 @@ class AudioMessageView: ManualStackView {
 
     // MARK: Playback State
 
+    private var playPauseAnimationTarget: AnimationProgressTime?
+    private var playPauseAnimationEnd: (() -> Void)?
+
     private func updatePlaybackState(animated: Bool = true) {
         let isPlaying = audioPlaybackState == .playing
         let destination: AnimationProgressTime = isPlaying ? 1 : 0
@@ -475,18 +499,32 @@ class AudioMessageView: ManualStackView {
         // Do nothing if we're already there.
         guard destination != playPauseAnimation.currentProgress else { return }
 
+        // Do nothing if we are already animating.
+        if
+            animated,
+            playPauseAnimation.isAnimationQueued || playPauseAnimation.isAnimationPlaying,
+            playPauseAnimationTarget == destination
+        {
+            return
+        }
+
+        playPauseAnimationTarget = destination
+
         if animated {
+            playPauseAnimationEnd?()
             let endCellAnimation = componentDelegate?.cvc_beginCellAnimation(maximumDuration: 0.2)
+            playPauseAnimationEnd = endCellAnimation
             playPauseAnimation.play(toProgress: destination) { _ in
                 endCellAnimation?()
             }
         } else {
+            playPauseAnimationEnd?()
             playPauseAnimation.currentProgress = destination
         }
     }
 
     private func updateElapsedTime(_ elapsedSeconds: TimeInterval) {
-        let timeRemaining = durationSeconds - elapsedSeconds
+        let timeRemaining = max(0, durationSeconds - elapsedSeconds)
         playbackTimeLabel.text = OWSFormat.localizedDurationString(from: timeRemaining)
     }
 
@@ -523,18 +561,36 @@ class AudioMessageView: ManualStackView {
 
     // MARK: Viewed State
 
+    private var playedDotAnimationTarget: AnimationProgressTime?
+    private var playedDotAnimationEnd: (() -> Void)?
+
     private func updateViewedState(animated: Bool = true) {
         let destination: AnimationProgressTime = isViewed ? 1 : 0
 
         // Do nothing if we're already there.
         guard destination != playedDotAnimation.currentProgress else { return }
 
+        // Do nothing if we are already animating.
+        if
+            animated,
+            playedDotAnimation.isAnimationQueued || playedDotAnimation.isAnimationPlaying,
+            playedDotAnimationTarget == destination
+        {
+            return
+        }
+
+        playedDotAnimationTarget = destination
+        playedDotAnimation.stop()
+
         if animated {
+            playedDotAnimationEnd?()
             let endCellAnimation = componentDelegate?.cvc_beginCellAnimation(maximumDuration: 0.2)
+            playedDotAnimationEnd = endCellAnimation
             playedDotAnimation.play(toProgress: destination) { _ in
                 endCellAnimation?()
             }
         } else {
+            playedDotAnimationEnd?()
             playedDotAnimation.currentProgress = destination
         }
     }

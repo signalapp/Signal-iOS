@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 // TODO: Rename to NewGroupViewController; remove old view.
 @objc
@@ -69,10 +71,6 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
         newGroupState.hasUnsavedChanges
     }
 
-    var shouldTryToEnableGroupsV2ForMembers: Bool {
-        true
-    }
-
     func groupMemberViewRemoveRecipient(_ recipient: PickedRecipient) {
         newGroupState.recipientSet.remove(recipient)
         updateBarButtons()
@@ -84,11 +82,11 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
     }
 
     func groupMemberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool {
-        // GroupsV2 TODO: Currently we can add any user to any new group,
-        // since we'll failover to using a v1 group if any members don't
-        // support v2 groups.  Eventually, we'll want to reject certain
-        // users.
-        true
+        guard let address = recipient.address else {
+            owsFailDebug("Invalid recipient.")
+            return false
+        }
+        return GroupManager.doesUserSupportGroupsV2(address: address)
     }
 
     func groupMemberViewShouldShowMemberCount() -> Bool {
@@ -114,11 +112,6 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
 
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient,
                                             transaction: SDSAnyReadTransaction) -> Bool {
-        false
-    }
-
-    func groupMemberViewIsGroupsV2Required() -> Bool {
-        // No, we can fail over to creating v1 groups.
         false
     }
 

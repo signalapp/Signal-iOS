@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
@@ -32,6 +34,12 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             self,
             selector: #selector(updateTableContents),
             name: .OWSSyncManagerConfigurationSyncDidComplete,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateTableContents),
+            name: .isSignalProxyReadyDidChange,
             object: nil
         )
     }
@@ -137,6 +145,28 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
         }
 
         contents.addSection(censorshipCircumventionSection)
+
+        let proxySection = OWSTableSection()
+        proxySection.footerAttributedTitle = .composed(of: [
+            NSLocalizedString("USE_PROXY_EXPLANATION", comment: "Explanation of when you should use a signal proxy"),
+            " ",
+            CommonStrings.learnMore.styled(with: .link(URL(string: "https://support.signal.org/hc/en-us/articles/360056052052-Proxy-Support")!))
+        ]).styled(
+            with: .font(.ows_dynamicTypeCaption1Clamped),
+            .color(Theme.secondaryTextAndIconColor)
+        )
+        proxySection.add(.disclosureItem(
+            withText: NSLocalizedString(
+                "PROXY_SETTINGS_TITLE",
+                comment: "Title for the signal proxy settings"
+            ),
+            detailText: SignalProxy.isEnabled ? CommonStrings.switchOn : CommonStrings.switchOff,
+            actionBlock: { [weak self] in
+                let vc = ProxySettingsViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+        ))
+        contents.addSection(proxySection)
 
         let relayCallsSection = OWSTableSection()
         relayCallsSection.footerTitle = NSLocalizedString(

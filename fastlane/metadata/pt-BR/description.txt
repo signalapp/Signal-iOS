@@ -1,26 +1,26 @@
-Milhões de pessoas usam o Signal todos os dias para se comunicar de forma livre e instantânea em qualquer lugar do mundo. Envie e receba mensagens com alta-fidelidade, participe de chamadas de voz/vídeo em HD e explore um crescente conjunto de novos recursos que te ajudam a estar conectado. A tecnologia avançada de preservação da privacidade do Signal está sempre ativada, para que você possa focar em compartilhar os momentos importantes com as pessoas que realmente importam.
+Milhões de pessoas usam o Signal todos os dias para a comunicação gratuita e instantânea em qualquer lugar do mundo. Envie e receba mensagens em alta fidelidade, participe em chamadas de voz/vídeo em HD, e explore um crescente conjunto de novos recursos que lhe ajudam a estar conectado. A tecnologia avançada de preservação da privacidade do Signal está sempre ativada, portanto você pode focar em compartilhar os momentos que importam com as pessoas que lhe são importantes.
 
-• Fale com segurança – A criptografia de ponta a ponta de última geração (desenvolvida pelo Signal Protocol™ de código aberto) mantém suas conversas seguras. A privacidade não é um modo opcional — é apenas a forma como o Signal trabalha. Em cada mensagem e cada chamada, a todo momento.
+• Diga o que quiser – A criptografia ponta a ponta de última geração (desenvolvida pelo Signal Protocol™ de código aberto) mantém suas conversas seguras. A privacidade não é um modo opcional — é apenas o modo que o Signal funciona. Cada mensagem, cada chamada, a todo momento.
 
-• Fale com agilidade – As mensagens são entregues rapidamente e com confiabilidade, mesmo em redes lentas. O Signal foi otimizado para operar até nos ambientes mais limitados.
+• Vá rápido – As mensagens são entregues de forma rápida e confiável, mesmo em rede lentas. O Signal está otimizado para operar no ambiente mais limitado possível.
 
-• Fale com liberdade – A Signal é uma entidade sem fins lucrativos 501c3 completamente independente. Seu desenvolvimento é sustentado por usuários como você. Sem publicidade. Sem rastreadores. Sem brincadeira.
+• Sinta-se livre – A Signal é uma organização sem fins lucrativos 501c3 completamente independente. O desenvolvimento é suportado por usuários como você. Sem publicidade. Sem rastreadores. Sem brincadeira.
 
-• Seja você mesmo – Você pode usar seu número de telefone e lista de contatos existentes para se comunicar com segurança com seus amigos.
+• Seja você mesmo – Você pode usar seu número de telefone e agenda de contatos existentes para se comunicar com segurança com seus amigos.
 
-• Use sua voz – Não importa se eles moram do outro lado da cidade ou do outro lado do mundo, a qualidade de áudio e vídeo aprimorada do Signal fará com que seus amigos e familiares pareçam estar mais próximos.
+• Fale mais alto – Se eles moram do outro lado da cidade ou do oceano, a qualidade aprimorada de áudio e vídeo do Signal fará com que seus amigos e familiares pareçam estar mais próximos.
 
-• Sussurre nas sombras – Mude para o tema escuro se você não deseja ver a luz.
+• Sussurre nas sombras – Mude para o tema escuro se você se recusa a ver a luz.
 
 • Pareça familiar – Escolha alertas personalizados para cada contato ou desative completamente os sons. Simon & Garfunkel compuseram uma canção de sucesso sobre isso em 1964, e você pode experimentar o som do silêncio sempre que desejar escolher "Nenhum" como seu toque de notificação.
 
-• Prepare uma imagem – Use os recursos incorporados de edição de imagem para desenhar, recortar e inverter as imagens que irá enviar. Há até uma ferramenta de texto para que você possa adicionar mais palavras à sua já valiosa imagem.
+• Prepare uma imagem – Use os recursos integrados de edição de imagem para esticar, recortar e inverter as imagens que irá enviar. Há até uma ferramenta de texto para que você possa adicionar mais palavras além das 1.000 que a sua imagem já vale.
 
 
-Para assistência técnica, perguntas ou mais informações, acesse:
+Para suporte técnico, perguntas ou mais informações, acesse:
 https://support.signal.org
 
 Código-fonte:
 https://github.com/signalapp
 
-Siga-nos no Twitter (@signalapp) e Instagram (@signal_app) para conhecer as atualizações e avisos mais recentes.
+Siga-nos no Twitter (@signalapp) e Instagram (@signal_app) para todas as atualizações e avisos mais recentes.

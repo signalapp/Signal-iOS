@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2016 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -140,7 +141,7 @@ final public class IndividualCallService: NSObject {
             if callRecord.callType == .outgoingIncomplete {
                 callRecord.updateCallType(.outgoingMissed)
             }
-        } else if [.localRinging_Anticipatory, .localRinging_ReadyToAnswer].contains(call.individualCall.state) {
+        } else if [.localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting].contains(call.individualCall.state) {
             let callRecord = TSCall(
                 callType: .incomingDeclined,
                 offerType: call.individualCall.offerMediaType,

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -32,7 +33,9 @@ public class UUIDBackfillTask: NSObject {
          persistence: PersistenceProvider = .default,
          readiness: ReadinessProvider = .default) {
 
-        self.queue = DispatchQueue(label: "org.whispersystems.signal.\(type(of: self))", target: targetQueue)
+        self.queue = DispatchQueue(
+            label: OWSDispatch.createLabel("\(type(of: self))"),
+            target: targetQueue)
         self.persistence = persistence
         self.readiness = readiness
         super.init()
@@ -66,25 +69,16 @@ public class UUIDBackfillTask: NSObject {
     // MARK: - Private
 
     private var backoffInterval: DispatchTimeInterval {
-        // (Similar code exists elsewhere in the project, this pattern is used in a few places)
-        // (IOS-649: Factor out exponential backoff tracking into class)
-        //
-        // Arbitrary backoff factor...
-        // With backOffFactor of 1.9
-        // attempt 1:  0.00s
-        // attempt 2:  90ms
-        // ...
-        // attempt 5:  1.20s
-        // ...
-        // attempt 11:  61.2s
-        let backoffFactor = 1.9
-        let maxBackoff = 15 * kMinuteInterval
-        let secondsToBackoff = 0.1 * (pow(backoffFactor, Double(attemptCount)) - 1)
-        let secondsCapped = min(maxBackoff, secondsToBackoff)
-        let milliseconds = Int(secondsCapped * 1000)
+        let constantAdjustment: TimeInterval = 0.1
+        var timeInterval = OWSOperation.retryIntervalForExponentialBackoff(
+            failureCount: UInt(attemptCount),
+            maxBackoff: 15 * kMinuteInterval + constantAdjustment
+        ) - constantAdjustment
 
-        let millisecondsToBackoff = testing_shortBackoffInterval ? (milliseconds / 100) : milliseconds
-        return .milliseconds(millisecondsToBackoff)
+        if testing_shortBackoffInterval {
+            timeInterval /= 100
+        }
+        return .milliseconds(Int(timeInterval * 1000))
     }
 
     private func onqueue_start(with completion: @escaping () -> Void) {

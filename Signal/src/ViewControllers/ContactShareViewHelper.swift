@@ -1,11 +1,13 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import SignalServiceKit
 import ContactsUI
+import Foundation
 import MessageUI
+import SignalMessaging
+import SignalServiceKit
 
 @objc
 public protocol ContactShareViewHelperDelegate: AnyObject {
@@ -77,7 +79,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
         guard MFMessageComposeViewController.canSendText() else {
             Logger.info("Device cannot send text")
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("UNSUPPORTED_FEATURE_ERROR", comment: ""))
+            OWSActionSheets.showErrorAlert(message: InviteFlow.unsupportedFeatureMessage)
             return
         }
         let phoneNumbers = contactShare.e164PhoneNumbers()
@@ -112,7 +114,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         fromViewController.presentActionSheet(actionSheet)
     }
 
-    private func showPhoneNumberPicker(phoneNumbers: [String], fromViewController: UIViewController, completion :@escaping ((String) -> Void)) {
+    private func showPhoneNumberPicker(phoneNumbers: [String], fromViewController: UIViewController, completion: @escaping ((String) -> Void)) {
 
         let actionSheet = ActionSheetController(title: nil, message: nil)
 

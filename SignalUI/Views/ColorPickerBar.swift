@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import UIKit
@@ -13,7 +14,7 @@ public protocol ColorPickerBarViewDelegate: AnyObject {
 // We represent picker colors using this (color, phase)
 // tuple so that we can consistently restore palette view state.
 public class ColorPickerBarColor {
-    let color: UIColor
+    public let color: UIColor
 
     // Colors are chosen from a spectrum of colors.
     // This unit value represents the location of the
@@ -34,7 +35,11 @@ public class ColorPickerBarColor {
     }
 
     class var white: ColorPickerBarColor {
-        ColorPickerBarColor(color: UIColor(rgbHex: 0xffffff), palettePhase: 1)
+        ColorPickerBarColor(color: .white, palettePhase: 1)
+    }
+
+    class var black: ColorPickerBarColor {
+        ColorPickerBarColor(color: .black, palettePhase: 0)
     }
 
     static var gradientUIColors: [UIColor] {
@@ -360,5 +365,12 @@ public class ColorPickerBarView: UIView {
         gradientLayer.startPoint = CGPoint.zero
         gradientLayer.endPoint = CGPoint(x: 1, y: 0)
         return gradientView.renderAsImage(opaque: true, scale: UIScreen.main.scale)
+    }
+}
+
+public extension UIColor {
+
+    func isCloseToColor(_ color: UIColor) -> Bool {
+        return isEqualToColor(color, tolerance: 0.1)
     }
 }

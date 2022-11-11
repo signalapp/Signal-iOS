@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import LibSignalClient
@@ -223,14 +224,14 @@ extension OWSMessageManager {
             let resendResponse = OWSOutgoingResendResponse(
                 address: sourceAddress,
                 deviceId: Int64(sourceDeviceId),
-                failedTimestamp: Int64(errorMessage.timestamp),
+                failedTimestamp: errorMessage.timestamp,
                 didResetSession: didPerformSessionReset,
                 transaction: writeTx
             )
 
             let sendBlock = { (transaction: SDSAnyWriteTransaction) in
                 if let resendResponse = resendResponse {
-                    Self.messageSenderJobQueue.add(message: resendResponse.asPreparer, transaction: transaction)
+                    Self.sskJobQueues.messageSenderJobQueue.add(message: resendResponse.asPreparer, transaction: transaction)
                 }
             }
 
@@ -646,6 +647,22 @@ class MessageManagerRequest: NSObject {
                     Logger.info("Discarding message with timestamp \(envelope.timestamp)")
                     return nil
                 }
+
+                if envelope.story && contentProto.dataMessage?.delete == nil {
+                    guard StoryManager.areStoriesEnabled(transaction: transaction) else {
+                        Logger.info("Discarding story message received while stories are disabled")
+                        return nil
+                    }
+                    guard
+                        contentProto.senderKeyDistributionMessage != nil ||
+                        contentProto.storyMessage != nil ||
+                        (contentProto.dataMessage?.storyContext != nil && contentProto.dataMessage?.groupV2 != nil)
+                    else {
+                        owsFailDebug("Discarding story message with invalid content.")
+                        return nil
+                    }
+                }
+
                 kind = .modern(contentProto)
             } catch {
                 owsFailDebug("could not parse proto: \(error)")

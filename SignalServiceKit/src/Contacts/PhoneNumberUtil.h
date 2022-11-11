@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import <libPhoneNumber_iOS/NBPhoneNumberUtil.h>
@@ -15,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString;
 
-+ (nullable NSString *)countryNameFromCountryCode:(NSString *)countryCode;
++ (NSString *)countryNameFromCountryCode:(NSString *)countryCode;
 + (NSArray<NSString *> *)countryCodesForSearchTerm:(nullable NSString *)searchTerm;
 
 // Returns the most likely country code for a calling code based on population.

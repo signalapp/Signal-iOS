@@ -1,21 +1,24 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import SignalCoreKit
 
-public enum OWSWebSocketType: CaseIterable {
-    case identified
-    case unidentified
+@objc
+public enum OWSWebSocketType: Int, CaseIterable {
+    case identified = 0
+    case unidentified = 1
 }
 
 // MARK: -
 
-public enum OWSWebSocketState {
-    case closed
-    case connecting
-    case open
+@objc
+public enum OWSWebSocketState: Int {
+    case closed = 0
+    case connecting = 1
+    case open = 2
 }
 
 // MARK: -
@@ -258,6 +261,10 @@ public class OWSWebSocket: NSObject {
                                                name: .isCensorshipCircumventionActiveDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
+                                               selector: #selector(isSignalProxyReadyDidChange),
+                                               name: .isSignalProxyReadyDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
                                                selector: #selector(deviceListUpdateModifiedDeviceList),
                                                name: OWSDevicesService.deviceListUpdateModifiedDeviceList,
                                                object: nil)
@@ -265,6 +272,7 @@ public class OWSWebSocket: NSObject {
                                                selector: #selector(appExpiryDidChange),
                                                name: AppExpiry.AppExpiryDidChange,
                                                object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(storiesEnabledStateDidChange), name: .storiesEnabledStateDidChange, object: nil)
     }
 
     // MARK: -
@@ -750,6 +758,11 @@ public class OWSWebSocket: NSObject {
             return .closed(reason: "isCensorshipCircumventionActive")
         }
 
+        // Starscream doesn't support the proxy
+        if SignalProxy.isEnabled, #unavailable(iOS 13) {
+            return .closed(reason: "signalProxyIsEnabled")
+        }
+
         if let currentWebSocket = self.currentWebSocket,
            currentWebSocket.hasPendingRequests {
             return .open(reason: "hasPendingRequests")
@@ -959,6 +972,7 @@ public class OWSWebSocket: NSObject {
         var request = URLRequest(url: webSocketConnectURL)
         request.addValue(OWSURLSession.userAgentHeaderValueSignalIos,
                          forHTTPHeaderField: OWSURLSession.userAgentHeaderKey)
+        StoryManager.appendStoryHeaders(to: &request)
         owsAssertDebug(webSocketFactory.canBuildWebSocket)
         guard let webSocket = webSocketFactory.buildSocket(request: request,
                                                            callbackQueue: OWSWebSocket.serialQueue) else {
@@ -1083,6 +1097,17 @@ public class OWSWebSocket: NSObject {
     }
 
     @objc
+    private func isSignalProxyReadyDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        if Self.verboseLogging {
+            Logger.info("\(self.logPrefix)")
+        }
+
+        applyDesiredSocketState()
+    }
+
+    @objc
     private func deviceListUpdateModifiedDeviceList(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
@@ -1102,6 +1127,13 @@ public class OWSWebSocket: NSObject {
         if verboseLogging {
             Logger.info("\(logPrefix) \(appExpiry.isExpired)")
         }
+
+        cycleSocket()
+    }
+
+    @objc
+    private func storiesEnabledStateDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
 
         cycleSocket()
     }

@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Signal, media goşundylaryny oýnamak üçin “Apple Music”-i ulanmaly.";
-NSCameraUsageDescription = "Signal kamerany surata düşürmek we wideo jaňlary üçin ulanýar.";
-NSContactsUsageDescription = "Signal, tanaýan ulanyjylaryňyzy tapmak üçin aragatnaşyklaryňyzy ulanýar. Aragatnaşyklaryňyzy serwerde saklamaýarys.";
-NSFaceIDUsageDescription = "Signal-yň ekran gulpy Face ID ulanýar.";
-NSLocationWhenInUseUsageDescription = "Signal, häzirki ýerleşýän ýeriňizi paýlaşmak üçin ýerleşýän ýeriňizi ulanyp bilmeli.";
-NSMicrophoneUsageDescription = "Signal, telefon jaňlaryny etmek we kabul etmek we ses habarlaryny ýazmak üçin mikrofonyňyzy ulanyp bilmeli.";
-NSPhotoLibraryAddUsageDescription = "Signal suratlaryňyzy kitaphanaňyza ýazdyrar.";
-NSPhotoLibraryUsageDescription = "Signal, kitaphanaňyzdan haýsy suratlary ibermelidigini saýlamaga mümkinçilik berer.";
-NSLocalNetworkUsageDescription = "Signal, hasabyňyzy täze telefona gönüden-göni geçirmäge mümkinçilik bermek üçin ýerli tory ulanýar. Täze enjama geçirmegi aç-açan saýlamasaňyz, ulanylmaz.";

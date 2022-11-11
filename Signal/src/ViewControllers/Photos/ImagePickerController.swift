@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 import Photos
+import SignalMessaging
 import UIKit
 
 protocol ImagePickerGridControllerDelegate: AnyObject {
@@ -22,7 +24,7 @@ protocol ImagePickerGridControllerDataSource: AnyObject {
     var numberOfMediaItems: Int { get }
 }
 
-class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegate, PhotoCollectionPickerDelegate {
+class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegate, PhotoCollectionPickerDelegate, OWSNavigationChildController {
 
     weak var delegate: ImagePickerGridControllerDelegate?
     weak var dataSource: ImagePickerGridControllerDataSource?
@@ -58,6 +60,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
+    }
+
+    var preferredNavigationBarStyle: OWSNavigationBarStyle {
+        return .alwaysDark
     }
 
     override func viewDidLoad() {

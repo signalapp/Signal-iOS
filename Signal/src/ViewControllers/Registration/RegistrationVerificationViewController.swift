@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import UIKit
@@ -43,7 +44,6 @@ class RegistrationVerificationViewModel: NSObject {
 
     var equalSpacerHeightConstraint: NSLayoutConstraint?
     var pinnedSpacerHeightConstraint: NSLayoutConstraint?
-    var keyboardBottomConstraint: NSLayoutConstraint?
     var buttonHeightConstraints: [NSLayoutConstraint] = []
 
     // MARK: - Methods
@@ -156,7 +156,7 @@ class RegistrationVerificationViewModel: NSObject {
         stackView.autoPinEdge(toSuperviewSafeArea: .top, withInset: 0, relation: .greaterThanOrEqual)
         stackView.autoPinEdge(toSuperviewMargin: .top).priority = .defaultHigh
         stackView.autoPinWidthToSuperviewMargins()
-        self.keyboardBottomConstraint = vc.autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
+        stackView.autoPinEdge(.bottom, to: .bottom, of: vc.keyboardLayoutGuideViewSafeArea)
         progressView.autoCenterInSuperview()
 
         // For when things get *really* cramped, here's what's required:
@@ -420,7 +420,6 @@ extension RegistrationVerificationViewController {
     var progressView: AnimatedProgressView { viewModel.progressView }
     var equalSpacerHeightConstraint: NSLayoutConstraint? { viewModel.equalSpacerHeightConstraint }
     var pinnedSpacerHeightConstraint: NSLayoutConstraint? { viewModel.pinnedSpacerHeightConstraint }
-    var keyboardBottomConstraint: NSLayoutConstraint? { viewModel.keyboardBottomConstraint }
     var buttonHeightConstraints: [NSLayoutConstraint] { viewModel.buttonHeightConstraints }
 }
 
@@ -676,9 +675,7 @@ extension RegistrationVerificationCodeView: UITextFieldDelegate {
 
 extension RegistrationVerificationCodeView: RegistrationVerificationCodeTextFieldDelegate {
     public func textFieldDidDeletePrevious() {
-        guard digitText.count > 0 else {
-            return
-        }
+        if digitText.isEmpty { return }
         digitText = digitText.substring(to: currentDigitIndex - 1)
 
         updateViewState()

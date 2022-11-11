@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -273,17 +274,6 @@ class MemberActionSheet: OWSTableSheetViewController {
 
 extension MemberActionSheet: ConversationHeaderDelegate {
     var isBlockedByMigration: Bool { groupViewHelper?.isBlockedByMigration == true }
-    func didTapAvatar() {
-        if threadViewModel.storyState == .none || !StoryManager.areStoriesEnabled {
-            presentAvatarViewController()
-        } else {
-
-        }
-    }
-
-    var canPresentStories: Bool {
-        threadViewModel.storyState != .none && StoryManager.areStoriesEnabled
-    }
 
     func presentStoryViewController() {
         dismiss(animated: true) {

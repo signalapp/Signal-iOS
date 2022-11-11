@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalServiceKit
 import YYImage
 
-@objc
 public enum LinkPreviewImageState: Int {
     case none
     case loading
@@ -14,19 +15,18 @@ public enum LinkPreviewImageState: Int {
 
 // MARK: -
 
-@objc
-public protocol LinkPreviewState {
-    func isLoaded() -> Bool
-    func urlString() -> String?
-    func displayDomain() -> String?
-    func title() -> String?
-    func imageState() -> LinkPreviewImageState
+public protocol LinkPreviewState: AnyObject {
+    var isLoaded: Bool { get }
+    var urlString: String? { get }
+    var displayDomain: String? { get }
+    var title: String? { get }
+    var imageState: LinkPreviewImageState { get }
     func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
                     completion: @escaping (UIImage) -> Void)
     func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> String?
     var imagePixelSize: CGSize { get }
-    func previewDescription() -> String?
-    func date() -> Date?
+    var previewDescription: String? { get }
+    var date: Date? { get }
     var isGroupInviteLink: Bool { get }
     var activityIndicatorStyle: UIActivityIndicatorView.Style { get }
     var conversationStyle: ConversationStyle? { get }
@@ -36,13 +36,12 @@ public protocol LinkPreviewState {
 
 extension LinkPreviewState {
     var hasLoadedImage: Bool {
-        isLoaded() && imageState() == .loaded
+        isLoaded && imageState == .loaded
     }
 }
 
 // MARK: -
 
-@objc
 public enum LinkPreviewLinkType: UInt {
     case preview
     case incomingMessage
@@ -53,35 +52,23 @@ public enum LinkPreviewLinkType: UInt {
 
 // MARK: -
 
-@objc
-public class LinkPreviewLoading: NSObject, LinkPreviewState {
+public class LinkPreviewLoading: LinkPreviewState {
 
     public let linkType: LinkPreviewLinkType
 
-    @objc
-    required init(linkType: LinkPreviewLinkType) {
+    public required init(linkType: LinkPreviewLinkType) {
         self.linkType = linkType
     }
 
-    public func isLoaded() -> Bool {
-        return false
-    }
+    public var isLoaded: Bool { false }
 
-    public func urlString() -> String? {
-        return nil
-    }
+    public var urlString: String? { nil }
 
-    public func displayDomain() -> String? {
-        return nil
-    }
+    public var displayDomain: String? { return nil }
 
-    public func title() -> String? {
-        return nil
-    }
+    public var title: String? { nil }
 
-    public func imageState() -> LinkPreviewImageState {
-        return .none
-    }
+    public var imageState: LinkPreviewImageState { .none }
 
     public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
                            completion: @escaping (UIImage) -> Void) {
@@ -93,15 +80,11 @@ public class LinkPreviewLoading: NSObject, LinkPreviewState {
         return nil
     }
 
-    public let imagePixelSize: CGSize = .zero
+    public var imagePixelSize: CGSize { .zero }
 
-    public func previewDescription() -> String? {
-        return nil
-    }
+    public var previewDescription: String? { nil }
 
-    public func date() -> Date? {
-        return nil
-    }
+    public var date: Date? { nil }
 
     public var isGroupInviteLink: Bool {
         switch linkType {
@@ -129,50 +112,33 @@ public class LinkPreviewLoading: NSObject, LinkPreviewState {
 
 // MARK: -
 
-@objc
-public class LinkPreviewDraft: NSObject, LinkPreviewState {
+public class LinkPreviewDraft: LinkPreviewState {
+
     let linkPreviewDraft: OWSLinkPreviewDraft
 
-    @objc
     public required init(linkPreviewDraft: OWSLinkPreviewDraft) {
         self.linkPreviewDraft = linkPreviewDraft
     }
 
-    public func isLoaded() -> Bool {
-        return true
-    }
+    public var isLoaded: Bool { true }
 
-    public func urlString() -> String? {
-        return linkPreviewDraft.urlString
-    }
+    public var urlString: String? { linkPreviewDraft.urlString }
 
-    public func displayDomain() -> String? {
-        guard let displayDomain = linkPreviewDraft.displayDomain() else {
+    public var displayDomain: String? {
+        guard let displayDomain = linkPreviewDraft.displayDomain else {
             owsFailDebug("Missing display domain")
             return nil
         }
         return displayDomain
     }
 
-    public func title() -> String? {
-        guard let value = linkPreviewDraft.title,
-            value.count > 0 else {
-                return nil
-        }
-        return value
-    }
+    public var title: String? { linkPreviewDraft.title?.nilIfEmpty }
 
-    public func imageState() -> LinkPreviewImageState {
-        if linkPreviewDraft.imageData != nil {
-            return .loaded
-        } else {
-            return .none
-        }
-    }
+    public var imageState: LinkPreviewImageState { linkPreviewDraft.imageData != nil ? .loaded : .none }
 
     public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
                            completion: @escaping (UIImage) -> Void) {
-        owsAssertDebug(imageState() == .loaded)
+        owsAssertDebug(imageState == .loaded)
         guard let imageData = linkPreviewDraft.imageData else {
             owsFailDebug("Missing imageData.")
             return
@@ -187,7 +153,7 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
     }
 
     public func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> String? {
-        guard let urlString = self.urlString() else {
+        guard let urlString = urlString else {
             owsFailDebug("Missing urlString.")
             return nil
         }
@@ -196,12 +162,11 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
 
     private let imagePixelSizeCache = AtomicOptional<CGSize>(nil)
 
-    @objc
     public var imagePixelSize: CGSize {
         if let cachedValue = imagePixelSizeCache.get() {
             return cachedValue
         }
-        owsAssertDebug(imageState() == .loaded)
+        owsAssertDebug(imageState == .loaded)
         guard let imageData = linkPreviewDraft.imageData else {
             owsFailDebug("Missing imageData.")
             return .zero
@@ -222,13 +187,9 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
         return result
     }
 
-    public func previewDescription() -> String? {
-        linkPreviewDraft.previewDescription
-    }
+    public var previewDescription: String? { linkPreviewDraft.previewDescription }
 
-    public func date() -> Date? {
-        linkPreviewDraft.date
-    }
+    public var date: Date? { linkPreviewDraft.date }
 
     public let isGroupInviteLink = false
 
@@ -241,14 +202,13 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
 
 // MARK: -
 
-@objc
-public class LinkPreviewSent: NSObject, LinkPreviewState {
+public class LinkPreviewSent: LinkPreviewState {
+
     private let linkPreview: OWSLinkPreview
     private let imageAttachment: TSAttachment?
 
     public let conversationStyle: ConversationStyle?
 
-    @objc
     public required init(
         linkPreview: OWSLinkPreview,
         imageAttachment: TSAttachment?,
@@ -259,11 +219,9 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
         self.conversationStyle = conversationStyle
     }
 
-    public func isLoaded() -> Bool {
-        return true
-    }
+    public var isLoaded: Bool { true }
 
-    public func urlString() -> String? {
+    public var urlString: String? {
         guard let urlString = linkPreview.urlString else {
             owsFailDebug("Missing url")
             return nil
@@ -271,23 +229,17 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
         return urlString
     }
 
-    public func displayDomain() -> String? {
-        guard let displayDomain = linkPreview.displayDomain() else {
+    public var displayDomain: String? {
+        guard let displayDomain = linkPreview.displayDomain else {
             Logger.error("Missing display domain")
             return nil
         }
         return displayDomain
     }
 
-    public func title() -> String? {
-        guard let value = linkPreview.title?.filterForDisplay,
-            value.count > 0 else {
-                return nil
-        }
-        return value
-    }
+    public var title: String? { linkPreview.title?.filterForDisplay?.nilIfEmpty }
 
-    public func imageState() -> LinkPreviewImageState {
+    public var imageState: LinkPreviewImageState {
         guard linkPreview.imageAttachmentId != nil else {
             return .none
         }
@@ -307,7 +259,7 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
 
     public func imageAsync(thumbnailQuality: AttachmentThumbnailQuality,
                            completion: @escaping (UIImage) -> Void) {
-        owsAssertDebug(imageState() == .loaded)
+        owsAssertDebug(imageState == .loaded)
         guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
             owsFailDebug("Could not load image.")
             return
@@ -352,12 +304,11 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
 
     private let imagePixelSizeCache = AtomicOptional<CGSize>(nil)
 
-    @objc
     public var imagePixelSize: CGSize {
         if let cachedValue = imagePixelSizeCache.get() {
             return cachedValue
         }
-        owsAssertDebug(imageState() == .loaded)
+        owsAssertDebug(imageState == .loaded)
         guard let attachmentStream = imageAttachment as? TSAttachmentStream else {
             return CGSize.zero
         }
@@ -366,13 +317,9 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
         return result
     }
 
-    public func previewDescription() -> String? {
-        linkPreview.previewDescription
-    }
+    public var previewDescription: String? { linkPreview.previewDescription }
 
-    public func date() -> Date? {
-        linkPreview.date
-    }
+    public var date: Date? { linkPreview.date }
 
     public let isGroupInviteLink = false
 

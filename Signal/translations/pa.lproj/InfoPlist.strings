@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Signal ਨੂੰ ਮੀਡੀਆ ਅਟੈਚਮੈਂਟਾਂ ਲਈ Apple Music ਵਰਤਣ ਦੀ ਲੋੜ ਹੈ।";
-NSCameraUsageDescription = "Signal ਫ਼ੋਟੋ ਖਿੱਚਣ ਅਤੇ ਵੀਡੀਓ ਕਾਲਾਂ ਕਰਨ ਲਈ ਤੁਹਾਡਾ ਕੈਮਰਾ ਵਰਤਦਾ ਹੈ।";
-NSContactsUsageDescription = "Signal ਤੁਹਾਡੇ ਵਲੋਂ ਪਛਾਣੇ ਵਰਤੋਂਕਾਰ ਨੂੰ ਲੱਭਣ ਲਈ ਤੁਹਾਡੇ ਸੰਪਰਕਾਂ (contacts) ਨੂੰ ਵਰਤਦਾ ਹੈ। ਅਸੀਂ ਤੁਹਾਡੇ ਸੰਪਰਕਾਂ ਨੂੰ ਸਰਵਰ ਉੱਤੇ ਨਹੀਂ ਸੰਭਾਲਦੇ ਹਾਂ।";
-NSFaceIDUsageDescription = "Signal ਦਾ ਸਕਰੀਨ-ਲਾਕ Face ID ਨੂੰ ਵਰਤਦਾ ਹੈ।";
-NSLocationWhenInUseUsageDescription = "Signal ਨੂੰ ਤੁਹਾਡੇ ਮੌਜੂਦਾ ਟਿਕਾਣੇ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਵਾਸਤੇ ਪਹੁੰਚ ਚਾਹੀਦੀ ਹੈ।";
-NSMicrophoneUsageDescription = "Signal ਨੂੰ ਫ਼ੋਨ ਕਾਲਾਂ ਕਰਨ ਤੇ ਲੈਣ ਅਤੇ ਆਵਾਜ਼ ਸੁਨੇਹੇ ਰਿਕਾਰਡ ਕਰਨ ਵਾਸਤੇ ਤੁਹਾਡੇ ਮਾਈਕਰੋਫ਼ੋਨ ਲਈ ਪਹੁੰਚ ਚਾਹੀਦੀ ਹੈ।";
-NSPhotoLibraryAddUsageDescription = "Signal ਫ਼ੋਟੋਆਂ ਨੂੰ ਤੁਹਾਡੀ ਲਾਇਬਰੇਰੀ ਵਿੱਚ ਸੰਭਾਲੇਗਾ।";
-NSPhotoLibraryUsageDescription = "Signal ਭੇਜਣ ਲਈ ਤੁਹਾਨੂੰ ਤੁਹਾਡੀ ਲਾਇਬਰੇਰੀਆਂ ਵਿੱਚੋਂ ਫੋਟੋ ਚੁਣਨ ਦੇਵੇਗਾ।";
-NSLocalNetworkUsageDescription = "Signal ਨਵੇਂ ਫ਼ੋਨ ਉੱਤੇ ਤੁਹਾਡੇ ਖਾਤੇ ਨੂੰ ਸਿੱਧਾ ਟਰਾਂਸਫਰ ਕਰਨ ਲਈ ਲੋਕਲ ਨੈੱਟਵਰਕ ਨੂੰ ਵਰਤਦਾ ਹੈ। ਤੁਹਾਡੇ ਵਲੋਂ ਨਵੇਂ ਡਿਵਾਈਸ ਲਈ ਖਾਸ ਤੌਰ ਉੱਤੇ ਚੋਣ ਕੀਤੇ ਜਾਣ ਤੋਂ ਬਿਨਾਂ ਇਸ ਨੂੰ ਵਰਤਿਆ ਨਹੀਂ ਜਾਵੇਗਾ।";

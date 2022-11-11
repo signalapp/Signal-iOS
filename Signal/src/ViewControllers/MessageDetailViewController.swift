@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -67,7 +68,6 @@ class MessageDetailViewController: OWSTableViewController2 {
     private var expiryLabelName: String {
         NSLocalizedString(
             "MESSAGE_METADATA_VIEW_DISAPPEARS_IN",
-            value: "Disappears",
             comment: "Label for the 'disappears' field of the 'message metadata' view."
         )
     }
@@ -86,7 +86,6 @@ class MessageDetailViewController: OWSTableViewController2 {
             owsFailDebug("We should never hit this code, because we should never show the label")
             return NSLocalizedString(
                 "MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS",
-                value: "Never",
                 comment: "On the 'message metadata' view, if a message never disappears, this text is shown as a fallback."
             )
         }
@@ -197,7 +196,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         if isIncoming {
             contents.addSection(buildSenderSection())
         } else {
-            buildStatusSections().forEach { contents.addSection($0) }
+            contents.addSections(buildStatusSections())
         }
 
         self.contents = contents
@@ -340,7 +339,8 @@ class MessageDetailViewController: OWSTableViewController2 {
         return section
     }
 
-    @objc private func didTapCell(_ sender: UITapGestureRecognizer) {
+    @objc
+    private func didTapCell(_ sender: UITapGestureRecognizer) {
         // For now, only allow tapping on audio cells. The full gamut of cell types
         // might result in unexpected behaviors if made tappable from the detail view.
         guard renderItem?.componentState.audioAttachment != nil else {
@@ -1072,6 +1072,8 @@ extension MessageDetailViewController: CVComponentDelegate {
     func cvc_didTapGroupInviteLink(url: URL) {
         GroupInviteLinksUI.openGroupInviteLink(url, fromViewController: self)
     }
+
+    func cvc_didTapProxyLink(url: URL) {}
 
     func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {}
 

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -30,11 +31,13 @@ public class ThreadReplyInfo: NSObject {
         internalContents = decoded
     }
 
-    @objc public var timestamp: UInt64 {
+    @objc
+    public var timestamp: UInt64 {
         internalContents.timestamp
     }
 
-    @objc public var author: SignalServiceAddress {
+    @objc
+    public var author: SignalServiceAddress {
         internalContents.author
     }
 

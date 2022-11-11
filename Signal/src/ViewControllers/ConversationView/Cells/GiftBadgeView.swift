@@ -1,12 +1,14 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import BonMot
 import Foundation
 import Lottie
-import SignalUI
 import QuartzCore
-import BonMot
+import SignalMessaging
+import SignalUI
 
 class GiftBadgeView: ManualStackView {
 

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import <Foundation/Foundation.h>
@@ -21,8 +22,7 @@ FOUNDATION_EXPORT const unsigned char SignalUIVersionString[];
 #import <SignalUI/OWSAudioPlayer.h>
 #import <SignalUI/OWSBezierPathView.h>
 #import <SignalUI/OWSBubbleView.h>
-#import <SignalUI/OWSNavigationController.h>
-#import <SignalUI/OWSProfileManager+SignalUI.h>
+#import <SignalUI/OWSNavigationControllerBase.h>
 #import <SignalUI/OWSQuotedReplyModel.h>
 #import <SignalUI/OWSSearchBar.h>
 #import <SignalUI/OWSTableViewController.h>

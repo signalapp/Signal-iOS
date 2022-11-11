@@ -1,3 +1,2 @@
-• Video Call Picture-in-Picture rises above the keyboard when typing
-• Improve group metadata update reliability & error handling
-
+★ ¡Ya han llegado las historias a Signal! Comparte historias temporales de texto, imagen y vídeo con aquellas personas o grupos que tú quieras. Las historias desaparecerán automáticamente después de 24 horas. Si no quieres ver o compartir historias, puedes desactivar esta función en tus Ajustes.
+• Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "Contact.h"
@@ -22,9 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #if TARGET_OS_IOS
 
-- (BOOL)isFromContactSync
+- (BOOL)isFromLocalAddressBook
 {
-    return self.cnContactId == nil;
+    return self.cnContactId != nil;
 }
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId

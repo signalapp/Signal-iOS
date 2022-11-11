@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import UIKit
@@ -17,7 +18,38 @@ class ImageEditorTextItem: ImageEditorItem {
     let fontSize: CGFloat
     static let defaultFontSize: CGFloat = 36
     var font: UIFont {
-        MediaTextView.font(forTextStyle: textStyle, pointSize: fontSize)
+        MediaTextView.font(for: textStyle, withPointSize: fontSize)
+    }
+
+    var textForegroundColor: UIColor {
+        switch decorationStyle {
+        case .none, .whiteBackground: return color.color
+
+        case .coloredBackground:
+            let backgroundColor = color.color
+            return backgroundColor.isCloseToColor(.white) ? .black : .white
+
+        case .outline, .underline: return .white
+        }
+    }
+
+    var textBackgroundColor: UIColor? {
+        switch decorationStyle {
+        case .none, .underline, .outline: return nil
+
+        case .whiteBackground:
+            let textColor = color.color
+            return textColor.isCloseToColor(.white) ? .black : .white
+
+        case .coloredBackground: return color.color
+        }
+    }
+
+    var textDecorationColor: UIColor? {
+        switch decorationStyle {
+        case .none, .whiteBackground, .coloredBackground: return nil
+        case .outline, .underline: return color.color
+        }
     }
 
     // In order to render the text at a consistent size

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -18,7 +19,7 @@ public extension TSGroupThread {
         uniqueId: String,
         transaction: SDSAnyReadTransaction
     ) -> TSGroupThread? {
-        assert(uniqueId.count > 0)
+        assert(!uniqueId.isEmpty)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {
@@ -85,8 +86,7 @@ class TSGroupThreadSerializer: SDSSerializer {
         let name: String? = nil
         let addresses: Data? = nil
         let storyViewMode: UInt = model.storyViewMode.rawValue
-        let lastViewedStoryTimestamp: UInt64? = archiveOptionalNSNumber(model.lastViewedStoryTimestamp, conversion: { $0.uint64Value })
 
-        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId, messageDraftBodyRanges: messageDraftBodyRanges, mentionNotificationMode: mentionNotificationMode, mutedUntilTimestamp: mutedUntilTimestamp, allowsReplies: allowsReplies, lastSentStoryTimestamp: lastSentStoryTimestamp, name: name, addresses: addresses, storyViewMode: storyViewMode, lastViewedStoryTimestamp: lastViewedStoryTimestamp)
+        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId, messageDraftBodyRanges: messageDraftBodyRanges, mentionNotificationMode: mentionNotificationMode, mutedUntilTimestamp: mutedUntilTimestamp, allowsReplies: allowsReplies, lastSentStoryTimestamp: lastSentStoryTimestamp, name: name, addresses: addresses, storyViewMode: storyViewMode)
     }
 }

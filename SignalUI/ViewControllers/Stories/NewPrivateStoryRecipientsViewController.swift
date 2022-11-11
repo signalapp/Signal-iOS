@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -43,12 +44,12 @@ public class NewPrivateStoryRecipientsViewController: BaseMemberViewController {
         navigationItem.rightBarButtonItem?.isEnabled = hasUnsavedChanges
 
         if recipientSet.isEmpty {
-            title = NSLocalizedString(
+            title = OWSLocalizedString(
                 "NEW_PRIVATE_STORY_VIEW_TITLE",
                 comment: "The title for the 'new private story' view.")
 
         } else {
-            let format = NSLocalizedString(
+            let format = OWSLocalizedString(
                 "NEW_PRIVATE_STORY_VIEW_TITLE_%d",
                 tableName: "PluralAware",
                 comment: "The title for the 'new private story' view if already some connections are selected. Embeds {{number}} of connections.")
@@ -89,15 +90,7 @@ extension NewPrivateStoryRecipientsViewController: MemberViewDelegate {
 
     public func memberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool { true }
 
-    public func memberViewWillRenderRecipient(_ recipient: PickedRecipient) {}
-
     public func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> AnyPromise { AnyPromise(Promise.value(())) }
-
-    public func memberViewShowInvalidRecipientAlert(_ recipient: PickedRecipient) {}
-
-    public func memberViewNoUuidSubtitleForRecipient(_ recipient: PickedRecipient) -> String? { nil }
-
-    public func memberViewGetRecipientStateForRecipient(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> RecipientPickerRecipientState? { nil }
 
     public func memberViewShouldShowMemberCount() -> Bool { false }
 
@@ -106,6 +99,10 @@ extension NewPrivateStoryRecipientsViewController: MemberViewDelegate {
     public func memberViewMemberCountForDisplay() -> Int { recipientSet.count }
 
     public func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> Bool { false }
+
+    public func memberViewCustomIconNameForPickedMember(_ recipient: PickedRecipient) -> String? { nil }
+
+    public func memberViewCustomIconColorForPickedMember(_ recipient: PickedRecipient) -> UIColor? { nil }
 
     public func memberViewDismiss() {
         dismiss(animated: true)

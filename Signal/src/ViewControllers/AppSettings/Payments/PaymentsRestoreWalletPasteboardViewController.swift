@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 
 @objc
 public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
@@ -48,8 +50,8 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
         textField.becomeFirstResponder()
     }
 
-    public override func applyTheme() {
-        super.applyTheme()
+    public override func themeDidChange() {
+        super.themeDidChange()
 
         updateContents()
     }

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2017 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 #import "OWSRecipientIdentity.h"
@@ -45,7 +46,6 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithAddress(SignalServiceAddress *
     OWSCAssertDebug(verificationState != OWSVerificationStateNoLongerVerified);
 
     SSKProtoVerifiedBuilder *verifiedBuilder = [SSKProtoVerified builder];
-    verifiedBuilder.destinationE164 = address.phoneNumber;
     verifiedBuilder.destinationUuid = address.uuidString;
     verifiedBuilder.identityKey = identityKey;
     verifiedBuilder.state = OWSVerificationStateToProtoState(verificationState);

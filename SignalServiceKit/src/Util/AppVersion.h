@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -55,6 +56,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isFirstLaunch;
 
+/// Compares the two given version strings. Parses each string as a
+/// dot-separated list of components, and does a pairwise comparison of each
+/// string's corresponding components. If any component is not interpretable as
+/// an integer, the value `0` will be used.
 + (NSComparisonResult)compareAppVersion:(NSString *)lhs with:(NSString *)rhs;
 
 @end

@@ -1,12 +1,13 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2018 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 public extension Collection {
 
     /// Returns the element at the specified index iff it is within bounds, otherwise nil.
     @inlinable
-    subscript (safe index: Index) -> Element? {
+    subscript(safe index: Index) -> Element? {
         return indices.contains(index) ? self[index] : nil
     }
 }

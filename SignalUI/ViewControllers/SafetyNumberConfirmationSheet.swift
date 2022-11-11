@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
 import SignalServiceKit
 
 @objc
@@ -144,8 +146,8 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.font = UIFont.ows_dynamicTypeBody2.ows_semibold
         titleLabel.textColor = theme.headerTitleColor
-        titleLabel.text = NSLocalizedString("SAFETY_NUMBER_CONFIRMATION_TITLE",
-                                            comment: "Title for the 'safety number confirmation' view")
+        titleLabel.text = OWSLocalizedString("SAFETY_NUMBER_CONFIRMATION_TITLE",
+                                             comment: "Title for the 'safety number confirmation' view")
 
         let messageLabel = UILabel()
         messageLabel.textAlignment = .center
@@ -153,8 +155,8 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         messageLabel.lineBreakMode = .byWordWrapping
         messageLabel.font = .ows_dynamicTypeBody2
         messageLabel.textColor = theme.headerMessageColor
-        messageLabel.text = NSLocalizedString("SAFETY_NUMBER_CONFIRMATION_MESSAGE",
-                                              comment: "Message for the 'safety number confirmation' view")
+        messageLabel.text = OWSLocalizedString("SAFETY_NUMBER_CONFIRMATION_MESSAGE",
+                                               comment: "Message for the 'safety number confirmation' view")
 
         let headerStack = UIStackView(arrangedSubviews: [
             titleLabel,
@@ -513,8 +515,8 @@ private class SafetyNumberCell: ContactTableViewCell {
         selectionStyle = .none
 
         button.setTitle(
-            title: NSLocalizedString("SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION",
-                                     comment: "View safety number action for the 'safety number confirmation' view"),
+            title: OWSLocalizedString("SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION",
+                                      comment: "View safety number action for the 'safety number confirmation' view"),
             font: UIFont.ows_dynamicTypeBody2.ows_semibold,
             titleColor: Theme.ActionSheet.default.safetyNumberChangeButtonTextColor
         )
@@ -548,8 +550,8 @@ private class SafetyNumberCell: ContactTableViewCell {
                 previouslyVerified.appendTemplatedImage(named: "check-12", font: UIFont.ows_regularFont(withSize: 11))
                 previouslyVerified.append(" ")
                 previouslyVerified.append(
-                    NSLocalizedString("SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED",
-                                      comment: "Text explaining that the given contact previously had their safety number verified.")
+                    OWSLocalizedString("SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED",
+                                       comment: "Text explaining that the given contact previously had their safety number verified.")
                 )
                 configuration.attributedSubtitle = previouslyVerified
             } else if let displayName = item.displayName {

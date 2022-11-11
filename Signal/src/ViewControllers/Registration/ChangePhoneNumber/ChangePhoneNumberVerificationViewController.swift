@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import UIKit
@@ -25,6 +26,7 @@ public class ChangePhoneNumberVerificationViewController: RegistrationBaseViewCo
         super.init()
 
         viewModel.viewController = self
+        keyboardObservationBehavior = .whileLifecycleVisible
     }
 
     override public func loadView() {
@@ -38,36 +40,19 @@ public class ChangePhoneNumberVerificationViewController: RegistrationBaseViewCo
 
     // MARK: - View Lifecycle
 
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        shouldIgnoreKeyboardChanges = false
-    }
-
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         verificationCodeView.becomeFirstResponder()
     }
 
-    public override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        shouldIgnoreKeyboardChanges = true
-    }
+    public override func keyboardFrameDidChange(_ newFrame: CGRect, animationDuration: TimeInterval, animationOptions: UIView.AnimationOptions) {
+        super.keyboardFrameDidChange(newFrame, animationDuration: animationDuration, animationOptions: animationOptions)
+        let isDismissing = newFrame.height == 0
 
-    public override func updateBottomLayoutConstraint(fromInset before: CGFloat, toInset after: CGFloat) {
-        let isDismissing = (after == 0)
         if isDismissing, equalSpacerHeightConstraint?.isActive == true {
             pinnedSpacerHeightConstraint?.constant = backButtonSpacer?.height ?? 0
             equalSpacerHeightConstraint?.isActive = false
             pinnedSpacerHeightConstraint?.isActive = true
-        }
-
-        // Ignore any minor decreases in height. We want to grow to accommodate the
-        // QuickType bar, but shrinking in response to its dismissal is a bit much.
-        let isKeyboardGrowing = after > (keyboardBottomConstraint?.constant ?? before)
-        let isSignificantlyShrinking = ((before - after) / UIScreen.main.bounds.height) > 0.1
-        if isKeyboardGrowing || isSignificantlyShrinking || isDismissing {
-            super.updateBottomLayoutConstraint(fromInset: before, toInset: after)
-            self.view.layoutIfNeeded()
         }
 
         if !isDismissing {
@@ -88,7 +73,7 @@ public class ChangePhoneNumberVerificationViewController: RegistrationBaseViewCo
         AssertIsOnMainThread()
 
         let filteredCode = verificationCode.digitsOnly
-        guard filteredCode.count > 0 else {
+        if filteredCode.isEmpty {
             owsFailDebug("Invalid code: \(verificationCode)")
             return
         }

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -35,7 +36,7 @@ class GroupCallUpdateMessageHandler: CallServiceObserver, CallObserver, Dependen
 
         SDSDatabaseStorage.shared.asyncWrite { writeTx in
             let updateMessage = OWSOutgoingGroupCallMessage(thread: thread, eraId: eraId, transaction: writeTx)
-            Self.messageSenderJobQueue.add(message: updateMessage.asPreparer, transaction: writeTx)
+            Self.sskJobQueues.messageSenderJobQueue.add(message: updateMessage.asPreparer, transaction: writeTx)
         }
     }
 

@@ -1,8 +1,11 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
+import SignalMessaging
+import UIKit
 
 public class ContextMenuActionsAccessory: ContextMenuTargetedPreviewAccessory, ContextMenuActionsViewDelegate {
 
@@ -150,30 +153,27 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         let attributes: ContextMenuAction.Attributes
         let hostEffect: UIBlurEffect
         let forceDarkTheme: Bool
+        let visualEffectView: UIVisualEffectView
         let titleLabel: UILabel
         let iconView: UIImageView
-        let separatorView: UIVisualEffectView
+        let separatorView: UIView
         var highlightedView: UIView?
         var isHighlighted: Bool {
             didSet {
                 if oldValue != isHighlighted {
                     if isHighlighted {
                         if highlightedView == nil {
-                            let vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: hostEffect))
-                            vibrancyView.frame = bounds
-                            let view = UIView(frame: bounds)
+                            let view = UIView()
+                            view.frame = bounds
+                            view.backgroundColor = forceDarkTheme || Theme.isDarkThemeEnabled
+                                ? UIColor(rgbHex: 0x787880).withAlphaComponent(0.32)
+                                : UIColor(rgbHex: 0x787880).withAlphaComponent(0.16)
                             view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                            view.backgroundColor = forceDarkTheme || Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_gray12
-                            if forceDarkTheme || Theme.isDarkThemeEnabled {
-                                vibrancyView.backgroundColor = UIColor.ows_whiteAlpha20
-                            }
-                            view.alpha = 0.3
-                            vibrancyView.contentView.addSubview(view)
-                            highlightedView = vibrancyView
+                            highlightedView = view
                         }
 
                         if let view = highlightedView {
-                            addSubview(view)
+                            insertSubview(view, at: 1)
                         }
                     } else {
                         highlightedView?.removeFromSuperview()
@@ -186,6 +186,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         let margin: CGFloat = 16
         let verticalPadding: CGFloat = 23
         let iconSize: CGFloat = 20
+        let titleMaxLines = 2
 
         public init(
             title: String,
@@ -197,40 +198,55 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
             titleLabel = UILabel(frame: CGRect.zero)
             titleLabel.text = title
             titleLabel.font = .ows_dynamicTypeBodyClamped
-            titleLabel.numberOfLines = 2
+            titleLabel.numberOfLines = titleMaxLines
 
             self.attributes = attributes
             hostEffect = hostBlurEffect
             self.forceDarkTheme = forceDarkTheme
 
+            /// when made a child of a UIVisualEffectView, UILabel text color is overridden, but a vibrancy effect is added.
+            /// When we aren't using a color anyway, we want the vibrancy effect so we add it as a subview of the visual effect.
+            /// If we want the colors to take effect, however, we make it a subview of the root view.
+            let makeLabelSubviewOfVisualEffectsView: Bool
             if attributes.contains(.destructive) {
                 titleLabel.textColor = Theme.ActionSheet.default.destructiveButtonTextColor
+                makeLabelSubviewOfVisualEffectsView = false
             } else if attributes.contains(.disabled) {
                 titleLabel.textColor = forceDarkTheme ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
+                makeLabelSubviewOfVisualEffectsView = false
             } else {
                 titleLabel.textColor = forceDarkTheme ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
+                makeLabelSubviewOfVisualEffectsView = true
             }
 
             iconView = UIImageView(image: icon)
             iconView.contentMode = .scaleAspectFit
             iconView.tintColor = titleLabel.textColor
 
-            separatorView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: hostBlurEffect))
-            if forceDarkTheme || Theme.isDarkThemeEnabled {
-                separatorView.backgroundColor = UIColor.ows_whiteAlpha20
-            }
-
-            let separator = UIView(frame: separatorView.bounds)
-            separator.backgroundColor = forceDarkTheme || Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_gray22
-            separator.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            separatorView.contentView.addSubview(separator)
+            separatorView = UIView()
+            separatorView.backgroundColor = forceDarkTheme || Theme.isDarkThemeEnabled
+                ? UIColor(rgbHex: 0x545458).withAlphaComponent(0.6)
+                : UIColor(rgbHex: 0x3c3c43).withAlphaComponent(0.3)
+            separatorView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             isHighlighted = false
 
-            super.init(frame: CGRect.zero)
+            if #available(iOS 13, *) {
+                visualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: hostBlurEffect, style: .label))
+            } else {
+                visualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: hostBlurEffect))
+            }
+            super.init(frame: .zero)
 
-            addSubview(titleLabel)
-            addSubview(iconView)
-            addSubview(separatorView)
+            addSubview(visualEffectView)
+            if makeLabelSubviewOfVisualEffectsView {
+                visualEffectView.contentView.addSubview(titleLabel)
+            } else {
+                addSubview(titleLabel)
+            }
+            visualEffectView.contentView.addSubview(iconView)
+            visualEffectView.contentView.addSubview(separatorView)
+
+            visualEffectView.autoPinEdgesToSuperviewEdges()
 
             isAccessibilityElement = true
             accessibilityLabel = titleLabel.text
@@ -250,16 +266,31 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
             var iconViewFrame = CGRect(x: 0, y: 0, width: iconSize, height: iconSize)
 
             titleFrame.y = ceil((bounds.height - titleFrame.height) / 2)
-            iconViewFrame.y = max(0, (bounds.height - iconView.height) / 2)
+            iconViewFrame.y = max(0, (bounds.height - iconViewFrame.height) / 2)
+
+            let titleWidth = bounds.width - iconViewFrame.width - 3 * margin
+            if titleWidth < titleFrame.width {
+                // Give it more height for a second line.
+                let originalHeight = titleLabel.textRect(forBounds: CGRect.infinite, limitedToNumberOfLines: 1).height
+                let multiLineHeight = titleLabel.textRect(
+                    forBounds: CGRect(
+                        origin: .zero,
+                        size: .init(width: titleWidth, height: .infinity)
+                    ),
+                    limitedToNumberOfLines: titleMaxLines
+                ).height
+                let extraHeight = multiLineHeight - originalHeight
+                titleFrame.origin.y -= extraHeight / 2
+                titleFrame.height += extraHeight
+            }
+            titleFrame.width = titleWidth
 
             if !isRTL {
                 titleFrame.x = margin
-                titleFrame.width = bounds.width - iconViewFrame.width - 3*margin
                 iconViewFrame.x = titleFrame.maxX + margin
             } else {
                 iconViewFrame.x = margin
                 titleFrame.x = iconViewFrame.maxX + margin
-                titleFrame.width = bounds.width - iconViewFrame.width  - 3*margin
             }
 
             titleLabel.frame = titleFrame
@@ -310,8 +341,16 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         self.forceDarkTheme = forceDarkTheme
 
         scrollView = UIScrollView(frame: CGRect.zero)
-        let effect = UIBlurEffect(style: .regular)
+        let effect: UIBlurEffect
+        if #available(iOS 13, *) {
+            effect = .init(style: .systemThinMaterial)
+        } else {
+            effect = .init(style: .extraLight)
+        }
         backdropView = UIVisualEffectView(effect: effect)
+        backdropView.backgroundColor = Theme.isDarkThemeEnabled || forceDarkTheme
+            ? .ows_blackAlpha80
+            : .ows_whiteAlpha40
 
         var actionViews: [ContextMenuActionRow] = []
         for action in menu.children {
@@ -339,10 +378,10 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         }
 
         layer.cornerRadius = cornerRadius
-        layer.shadowRadius = 40
-        layer.shadowOffset = CGSize(width: 8, height: 20)
+        layer.shadowRadius = 64
+        layer.shadowOffset = CGSize(width: 0, height: 32)
         layer.shadowColor = UIColor.ows_black.cgColor
-        layer.shadowOpacity = 0.3
+        layer.shadowOpacity = 0.2
 
         backdropView.layer.cornerRadius = cornerRadius
         backdropView.layer.masksToBounds = true

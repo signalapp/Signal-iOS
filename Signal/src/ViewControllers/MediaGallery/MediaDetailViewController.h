@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2014 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <SignalUI/OWSViewController.h>
+#import <SignalUI/OWSViewControllerObjc.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,7 +25,7 @@ typedef NS_OPTIONS(NSInteger, MediaGalleryOption) {
 
 @end
 
-@interface MediaDetailViewController : OWSViewController
+@interface MediaDetailViewController : OWSViewControllerObjc
 
 @property (nonatomic, readonly) UIView *mediaView;
 @property (nonatomic, weak) id<MediaDetailViewControllerDelegate> delegate;

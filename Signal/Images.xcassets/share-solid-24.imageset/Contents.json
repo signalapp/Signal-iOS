@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "share-24-solid.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

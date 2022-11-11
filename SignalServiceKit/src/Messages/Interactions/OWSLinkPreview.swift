@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2019 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
 
-@objc
 public enum LinkPreviewError: Int, Error {
     /// A preview could not be generated from available input
     case noPreview
@@ -20,27 +20,15 @@ public enum LinkPreviewError: Int, Error {
 
 // This contains the info for a link preview "draft".
 public class OWSLinkPreviewDraft: NSObject {
-    @objc
-    public var url: URL
 
-    @objc
+    public var url: URL
     public var urlString: String {
         return url.absoluteString
     }
-
-    @objc
     public var title: String?
-
-    @objc
     public var imageData: Data?
-
-    @objc
     public var imageMimeType: String?
-
-    @objc
     public var previewDescription: String?
-
-    @objc
     public var date: Date?
 
     public init(url: URL, title: String?, imageData: Data? = nil, imageMimeType: String? = nil) {
@@ -48,22 +36,19 @@ public class OWSLinkPreviewDraft: NSObject {
         self.title = title
         self.imageData = imageData
         self.imageMimeType = imageMimeType
-
-        super.init()
     }
 
     fileprivate func isValid() -> Bool {
         var hasTitle = false
         if let titleValue = title {
-            hasTitle = titleValue.count > 0
+            hasTitle = !titleValue.isEmpty
         }
         let hasImage = imageData != nil && imageMimeType != nil
         return hasTitle || hasImage
     }
 
-    @objc
-    public func displayDomain() -> String? {
-        return OWSLinkPreviewManager.displayDomain(forUrl: urlString)
+    public var displayDomain: String? {
+        OWSLinkPreviewManager.displayDomain(forUrl: urlString)
     }
 }
 
@@ -87,7 +72,6 @@ public class OWSLinkPreview: MTLModel, Codable {
     @objc
     public var date: Date?
 
-    @objc
     public init(urlString: String, title: String?, imageAttachmentId: String?) {
         self.urlString = urlString
         self.title = title
@@ -96,17 +80,14 @@ public class OWSLinkPreview: MTLModel, Codable {
         super.init()
     }
 
-    @objc
     public override init() {
         super.init()
     }
 
-    @objc
     public required init!(coder: NSCoder) {
         super.init(coder: coder)
     }
 
-    @objc
     public required init(dictionary dictionaryValue: [String: Any]!) throws {
         try super.init(dictionary: dictionaryValue)
     }
@@ -140,7 +121,6 @@ public class OWSLinkPreview: MTLModel, Codable {
        return try buildValidatedLinkPreview(proto: previewProto, transaction: transaction)
     }
 
-    @objc
     public class func buildValidatedLinkPreview(
         proto: SSKProtoPreview,
         transaction: SDSAnyWriteTransaction
@@ -156,13 +136,13 @@ public class OWSLinkPreview: MTLModel, Codable {
         var previewDescription: String?
         if let rawTitle = proto.title {
             let normalizedTitle = normalizeString(rawTitle, maxLines: 2)
-            if normalizedTitle.count > 0 {
+            if !normalizedTitle.isEmpty {
                 title = normalizedTitle
             }
         }
         if let rawDescription = proto.previewDescription, proto.title != proto.previewDescription {
             let normalizedDescription = normalizeString(rawDescription, maxLines: 3)
-            if normalizedDescription.count > 0 {
+            if !normalizedDescription.isEmpty {
                 previewDescription = normalizedDescription
             }
         }
@@ -186,15 +166,9 @@ public class OWSLinkPreview: MTLModel, Codable {
             linkPreview.date = Date(millisecondsSince1970: proto.date)
         }
 
-        guard linkPreview.isValid() else {
-            Logger.error("Preview has neither title nor image.")
-            throw LinkPreviewError.invalidPreview
-        }
-
         return linkPreview
     }
 
-    @objc
     public class func buildValidatedLinkPreview(fromInfo info: OWSLinkPreviewDraft,
                                                 transaction: SDSAnyWriteTransaction) throws -> OWSLinkPreview {
         guard SSKPreferences.areLinkPreviewsEnabled(transaction: transaction) else {
@@ -207,21 +181,10 @@ public class OWSLinkPreview: MTLModel, Codable {
         let linkPreview = OWSLinkPreview(urlString: info.urlString, title: info.title, imageAttachmentId: imageAttachmentId)
         linkPreview.previewDescription = info.previewDescription
         linkPreview.date = info.date
-
-        guard linkPreview.isValid() else {
-            owsFailDebug("Preview has neither title nor image.")
-            throw LinkPreviewError.invalidPreview
-        }
-
         return linkPreview
     }
 
     public func buildProto(transaction: SDSAnyReadTransaction) throws -> SSKProtoPreview {
-        guard isValid() else {
-            Logger.error("Preview has neither title nor image.")
-            throw LinkPreviewError.invalidPreview
-        }
-
         guard let urlString = urlString else {
             Logger.error("Preview does not have url.")
             throw LinkPreviewError.invalidPreview
@@ -285,16 +248,6 @@ public class OWSLinkPreview: MTLModel, Codable {
         }
     }
 
-    private func isValid() -> Bool {
-        var hasTitle = false
-        if let titleValue = title {
-            hasTitle = titleValue.count > 0
-        }
-        let hasImage = imageAttachmentId != nil
-        return hasTitle || hasImage
-    }
-
-    @objc
     public func removeAttachment(transaction: SDSAnyWriteTransaction) {
         guard let imageAttachmentId = imageAttachmentId else {
             owsFailDebug("No attachment id.")
@@ -307,9 +260,8 @@ public class OWSLinkPreview: MTLModel, Codable {
         attachment.anyRemove(transaction: transaction)
     }
 
-    @objc
-    public func displayDomain() -> String? {
-        return OWSLinkPreviewManager.displayDomain(forUrl: urlString)
+    public var displayDomain: String? {
+        OWSLinkPreviewManager.displayDomain(forUrl: urlString)
     }
 
     // MARK: - Codable
@@ -360,32 +312,25 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
 
     // MARK: - Public
 
-    @objc(findFirstValidUrlInSearchString:)
-    public func findFirstValidUrl(in searchString: String) -> URL? {
-        guard areLinkPreviewsEnabledWithSneakyTransaction() else { return nil }
+    public func findFirstValidUrl(in searchString: String, bypassSettingsCheck: Bool) -> URL? {
+        guard bypassSettingsCheck || areLinkPreviewsEnabledWithSneakyTransaction() else { return nil }
         guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
             owsFailDebug("Could not create NSDataDetector")
             return nil
         }
 
-        let allMatches = detector.matches(
-            in: searchString,
-            options: [],
-            range: searchString.entireRange)
-
-        return allMatches.first(where: {
-            guard let parsedUrl = $0.url else { return false }
-            guard let matchedRange = Range($0.range, in: searchString) else { return false }
+        var result: URL?
+        detector.enumerateMatches(in: searchString, range: searchString.entireRange) { match, _, stop in
+            guard let match = match else { return }
+            guard let parsedUrl = match.url else { return }
+            guard let matchedRange = Range(match.range, in: searchString) else { return }
             let matchedString = String(searchString[matchedRange])
-            return parsedUrl.isPermittedLinkPreviewUrl(parsedFrom: matchedString)
-        })?.url
-    }
-
-    @objc(fetchLinkPreviewForUrl:)
-    @available(swift, obsoleted: 1.0)
-    public func fetchLinkPreview(for url: URL) -> AnyPromise {
-        let promise: Promise<OWSLinkPreviewDraft> = fetchLinkPreview(for: url)
-        return AnyPromise(promise)
+            if parsedUrl.isPermittedLinkPreviewUrl(parsedFrom: matchedString) {
+                result = parsedUrl
+                stop.pointee = true
+            }
+        }
+        return result
     }
 
     public func fetchLinkPreview(for url: URL) -> Promise<OWSLinkPreviewDraft> {
@@ -498,8 +443,7 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
                 Logger.warn("Invalid response: \(statusCode).")
                 throw LinkPreviewError.fetchFailure
             }
-            guard let string = response.responseBodyString,
-                  string.count > 0 else {
+            guard let string = response.responseBodyString, !string.isEmpty else {
                 Logger.warn("Response object could not be parsed")
                 throw LinkPreviewError.invalidPreview
             }
@@ -712,7 +656,7 @@ fileprivate extension URL {
     private static let urlDelimeters: Set<Character> = Set(":/?#[]@")
 
     var mimeType: String? {
-        guard pathExtension.count > 0 else {
+        if pathExtension.isEmpty {
             return nil
         }
         guard let mimeType = MIMETypeUtil.mimeType(forFileExtension: pathExtension) else {
@@ -750,15 +694,18 @@ fileprivate extension URL {
     /// If no sourceString is provided, the validated host will be whatever is returned from `host`, which will always
     /// be ASCII.
     func isPermittedLinkPreviewUrl(parsedFrom sourceString: String? = nil) -> Bool {
-        guard let scheme = scheme?.lowercased(), scheme.count > 0 else { return false }
+        guard let scheme = scheme?.lowercased().nilIfEmpty else { return false }
         guard user == nil else { return false }
         guard password == nil else { return false }
         let rawHostname: String?
 
-        if let sourceString = sourceString {
+        if var sourceString = sourceString {
             let schemePrefix = "\(scheme)://"
+            if let schemeRange = sourceString.range(of: schemePrefix, options: [ .anchored, .caseInsensitive ]) {
+                sourceString.removeSubrange(schemeRange)
+            }
+
             rawHostname = sourceString
-                .dropFirst(schemePrefix.count)
                 .split(maxSplits: 1, whereSeparator: { Self.urlDelimeters.contains($0) }).first
                 .map { String($0) }
         } else {
@@ -783,7 +730,7 @@ fileprivate extension HTMLMetadata {
 // Everything after this line should find a new home at some point
 
 public extension OWSLinkPreviewManager {
-    @objc
+
     class func displayDomain(forUrl urlString: String?) -> String? {
         guard let urlString = urlString else {
             owsFailDebug("Missing url.")

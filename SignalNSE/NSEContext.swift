@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -66,12 +67,12 @@ class NSEContext: NSObject, AppContext {
         queue: .global()
     )
 
-    init(logger: NSELogger) {
+    override init() {
         super.init()
 
-        logger.info("NSEContext init()")
-
         memoryPressureSource.setEventHandler { [weak self] in
+            let logger: NSELogger = .uncorrelated
+
             if let self = self {
                 logger.warn("Memory pressure event: \(self.memoryPressureSource.memoryEventDescription)")
             } else {

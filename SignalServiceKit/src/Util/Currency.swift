@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -31,11 +32,13 @@ public struct Currency {
     }
 
     public static func infos(
-        for codes: [Code],
+        for codes: any Sequence<Code>,
         ignoreMissingNames: Bool,
         shouldSort: Bool
     ) -> [Info] {
-        owsAssertDebug(codes.count == Set(codes).count)
+        #if TESTABLE_BUILD
+        owsAssert(Array(codes).count == Set(codes).count)
+        #endif
         var infos = codes.compactMap { Info(code: $0, ignoreMissingName: ignoreMissingNames) }
         if shouldSort { infos.sort { $0.name < $1.name } }
         return infos

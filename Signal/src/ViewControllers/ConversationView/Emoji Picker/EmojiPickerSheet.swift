@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2020 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -9,7 +10,6 @@ import SignalServiceKit
 @objc
 class EmojiPickerSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [collectionView] }
-    override var handlePosition: HandlePosition { .outside }
 
     let completionHandler: (EmojiWithSkinTones?) -> Void
 
@@ -48,6 +48,8 @@ class EmojiPickerSheet: InteractiveSheetViewController {
         if !allowReactionConfiguration {
             self.backdropColor = .clear
         }
+
+        super.allowsExpansion = true
     }
 
     public required init() {
@@ -88,10 +90,13 @@ class EmojiPickerSheet: InteractiveSheetViewController {
         collectionView.pickerDelegate = self
         collectionView.alwaysBounceVertical = true
 
-        contentView.addSubview(sectionToolbar)
-        sectionToolbar.autoPinWidthToSuperview()
-        let offset: CGFloat = UIDevice.current.hasIPhoneXNotch ? 32 : 0
-        autoPinView(toBottomOfViewControllerOrKeyboard: sectionToolbar, avoidNotch: false, adjustmentWithKeyboardPresented: offset)
+        // NOTE: the toolbar is a subview of the keyboard layout view so it
+        // properly animates as the keyboard rises. making it part of the content view
+        // cancels those animations and makes it pop into place which looks bad.
+        // might be worth ripping apart at some point.
+        keyboardLayoutGuideView.addSubview(sectionToolbar)
+        sectionToolbar.autoPinWidth(toWidthOf: contentView)
+        sectionToolbar.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideView)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -117,16 +122,6 @@ class EmojiPickerSheet: InteractiveSheetViewController {
 
     }
 
-    private func expandSheetAnimated() {
-        guard heightConstraint.constant != maximizedHeight else { return }
-
-        UIView.animate(withDuration: maxAnimationDuration, delay: 0, options: .curveEaseOut, animations: {
-            self.heightConstraint.constant = self.maximizedHeight
-            self.view.layoutIfNeeded()
-            self.backdropView?.alpha = 1
-        })
-    }
-
     @objc
     private func didSelectConfigureButton(sender: UIButton) {
         let configVC = EmojiReactionPickerConfigViewController()
@@ -137,7 +132,7 @@ class EmojiPickerSheet: InteractiveSheetViewController {
 
 extension EmojiPickerSheet: EmojiPickerSectionToolbarDelegate {
     func emojiPickerSectionToolbar(_ sectionToolbar: EmojiPickerSectionToolbar, didSelectSection section: Int) {
-        if let searchText = collectionView.searchText, searchText.count > 0 {
+        if let searchText = collectionView.searchText, !searchText.isEmpty {
             searchBar.text = nil
             collectionView.searchText = nil
 
@@ -150,7 +145,7 @@ extension EmojiPickerSheet: EmojiPickerSectionToolbarDelegate {
             collectionView.scrollToSectionHeader(section, animated: false)
         }
 
-        expandSheetAnimated()
+        maximizeHeight()
     }
 
     func emojiPickerSectionToolbarShouldShowRecentsSection(_ sectionToolbar: EmojiPickerSectionToolbar) -> Bool {
@@ -175,7 +170,7 @@ extension EmojiPickerSheet: EmojiPickerCollectionViewDelegate {
 
 extension EmojiPickerSheet: UISearchBarDelegate {
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        expandSheetAnimated()
+        maximizeHeight()
     }
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {

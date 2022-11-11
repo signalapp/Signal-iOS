@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2021 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import Foundation
@@ -113,6 +114,8 @@ public class ContactCellView: ManualStackView {
         sizeClass: avatarSizeClass,
         localUserDisplayMode: .asUser,
         useAutolayout: false)
+
+    public var tooltipTailReferenceView: UIView { return avatarView }
 
     @objc
     public static let avatarTextHSpacing: CGFloat = 12

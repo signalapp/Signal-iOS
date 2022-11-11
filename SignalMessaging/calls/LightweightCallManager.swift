@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
 //
 
 import SignalServiceKit
@@ -229,7 +230,8 @@ extension LightweightCallManager: HTTPDelegate {
 
         let session = OWSURLSession(
             securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
-            configuration: OWSURLSession.defaultConfigurationWithoutCaching
+            configuration: OWSURLSession.defaultConfigurationWithoutCaching,
+            canUseSignalProxy: true
         )
         session.require2xxOr3xx = false
         session.allowRedirects = true
