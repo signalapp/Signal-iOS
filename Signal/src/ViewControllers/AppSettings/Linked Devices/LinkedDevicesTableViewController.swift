@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalServiceKit
+import SignalUI
 
 @objc
 class LinkedDevicesTableViewController: OWSTableViewController2 {
@@ -204,7 +205,7 @@ class LinkedDevicesTableViewController: OWSTableViewController2 {
             let devicesSection = OWSTableSection()
             for device in devices {
                 let item = OWSTableItem(customCellBlock: { [weak self] in
-                    let cell = OWSDeviceTableViewCell()
+                    let cell = DeviceTableViewCell()
                     OWSTableItem.configureCell(cell)
                     cell.isEditing = self?.isEditing ?? false
                     cell.configure(with: device) {
@@ -373,5 +374,101 @@ extension LinkedDevicesTableViewController: OWSLinkDeviceViewControllerDelegate 
                                             animated: false)
         }
         // END HACK to get refreshControl title to align properly.
+    }
+}
+
+// MARK: -
+
+private class DeviceTableViewCell: UITableViewCell {
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        configure()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    private var unlinkAction: (() -> Void)?
+    private let nameLabel = UILabel()
+    private let linkedLabel = UILabel()
+    private let lastSeenLabel = UILabel()
+    private lazy var unlinkButton: UIButton = {
+        let button = UIButton()
+        button.imageView?.contentMode = .scaleAspectFit
+        button.setImage(UIImage(imageLiteralResourceName: "minus-circle-solid-24"), for: .normal)
+        button.addTarget(self, action: #selector(didTapUnlink(sender:)), for: .touchUpInside)
+        button.tintColor = .ows_accentRed
+        button.isHidden = true
+        button.autoSetDimension(.width, toSize: 24)
+        return button
+    }()
+
+    private func configure() {
+        preservesSuperviewLayoutMargins = true
+        contentView.preservesSuperviewLayoutMargins = true
+
+        let verticalStack = UIStackView(arrangedSubviews: [ nameLabel, linkedLabel, lastSeenLabel ])
+        verticalStack.axis = .vertical
+        verticalStack.alignment = .leading
+        verticalStack.spacing = 2
+
+        let horizontalStack = UIStackView(arrangedSubviews: [ unlinkButton, verticalStack ])
+        horizontalStack.axis = .horizontal
+        horizontalStack.spacing = 16
+        contentView.addSubview(horizontalStack)
+        horizontalStack.autoPinEdgesToSuperviewMargins()
+    }
+
+    @objc
+    private func didTapUnlink(sender: UIButton) {
+        unlinkAction?()
+    }
+
+    func configure(with device: OWSDevice, unlinkAction: @escaping () -> Void) {
+        // TODO: This is not super, but the best we can do until
+        // OWSTableViewController2 supports delete actions for
+        // the inset cell style (which probably means building
+        // custom editing support)
+        self.unlinkAction = unlinkAction
+        unlinkButton.isHidden = !isEditing
+
+        configureLabelColors()
+        nameLabel.font = OWSTableItem.primaryLabelFont
+        linkedLabel.font = .ows_dynamicTypeFootnote
+        lastSeenLabel.font = .ows_dynamicTypeFootnote
+
+        if DebugFlags.internalSettings {
+            nameLabel.text = LocalizationNotNeeded(String(format: "#%ld: %@", device.deviceId, device.displayName()))
+        } else {
+            nameLabel.text = device.displayName()
+        }
+
+        let linkedFormatString = NSLocalizedString("DEVICE_LINKED_AT_LABEL", comment: "{{Short Date}} when device was linked.")
+        linkedLabel.text = String(format: linkedFormatString, DateUtil.dateFormatter().string(from: device.createdAt))
+
+        // lastSeenAt is stored at day granularity. At midnight UTC.
+        // Making it likely that when you first link a device it will
+        // be "last seen" the day before it was created, which looks broken.
+        let displayedLastSeenAt = max(device.createdAt, device.lastSeenAt)
+        let lastSeenFormatString = NSLocalizedString(
+            "DEVICE_LAST_ACTIVE_AT_LABEL",
+            comment: "{{Short Date}} when device last communicated with Signal Server."
+        )
+        lastSeenLabel.text = String(format: lastSeenFormatString, DateUtil.dateFormatter().string(from: displayedLastSeenAt))
+    }
+
+    private func configureLabelColors() {
+        nameLabel.textColor = Theme.primaryTextColor
+        linkedLabel.textColor = Theme.secondaryTextAndIconColor
+        lastSeenLabel.textColor = Theme.secondaryTextAndIconColor
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        OWSTableItem.configureCell(self)
+        configureLabelColors()
     }
 }
