@@ -272,6 +272,18 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     private var layoutConstraints: [NSLayoutConstraint]?
 
+    private class func configuredPropertyAnimator() -> UIViewPropertyAnimator {
+        let animationDuration: TimeInterval = 0.25
+        let dampingFraction: CGFloat = 0.645
+        let response: CGFloat = 0.25
+        let stiffness = pow(2 * .pi / response, 2)
+        let damping = 4 * .pi * dampingFraction / response
+        let timingParameters = UISpringTimingParameters(mass: 1, stiffness: stiffness, damping: damping, initialVelocity: .zero)
+        let animator = UIViewPropertyAnimator(duration: animationDuration, timingParameters: timingParameters)
+        animator.isUserInteractionEnabled = false
+        return animator
+    }
+
     func createContentsWithMessageDraft(
         _ messageDraft: MessageBody?,
         quotedReply: OWSQuotedReplyModel?,
@@ -456,13 +468,9 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         }
 
         if isAnimated {
-            UIView.animate(
-                withDuration: 0.25,
-                delay: 0,
-                usingSpringWithDamping: 0.64,
-                initialSpringVelocity: 0,
-                animations: updateBlock
-            )
+            let animator = ConversationInputToolbar.configuredPropertyAnimator()
+            animator.addAnimations(updateBlock)
+            animator.startAnimation()
         } else {
             updateBlock()
         }
@@ -749,25 +757,20 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             }
 
             isAnimatingAppearance = true
-            let animationDuration: TimeInterval = 0.25
-            UIView.animate(
-                withDuration: 0.5 * animationDuration,
-                delay: appearance == .add ? 0 : 0.05
-            ) {
-                self.updateImageColorAndBackground()
-            }
-            UIView.animate(
-                withDuration: animationDuration,
-                delay: 0,
-                usingSpringWithDamping: 0.7,
-                initialSpringVelocity: 0,
-                animations: {
-                    self.updateImageTransform()
+
+            let animator = ConversationInputToolbar.configuredPropertyAnimator()
+            animator.addAnimations({
+                    self.updateImageColorAndBackground()
                 },
-                completion: { _ in
-                    self.isAnimatingAppearance = false
-                }
+                delayFactor: appearance == .add ? 0 : 0.2
             )
+            animator.addAnimations {
+                self.updateImageTransform()
+            }
+            animator.addCompletion { _ in
+                self.isAnimatingAppearance = false
+            }
+            animator.startAnimation()
         }
 
         private func updateImageColorAndBackground() {
