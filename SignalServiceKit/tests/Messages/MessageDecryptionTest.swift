@@ -21,6 +21,10 @@ class MessageDecryptionTest: SSKBaseTestSwift {
 
     let sealedSenderTrustRoot = Curve25519.generateKeyPair()
 
+    private var fakeMessageSender: FakeMessageSender {
+        MockSSKEnvironment.shared.messageSender as! FakeMessageSender
+    }
+
     // MARK: - Hooks
 
     override func setUp() {
@@ -42,6 +46,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
     private func generateAndDecrypt(type: SSKProtoEnvelopeType,
                                     destinationIdentity: OWSIdentity?,
                                     destinationUuid: UUID? = nil,
+                                    prepareForDecryption: (SDSAnyWriteTransaction) -> Void = { _ in },
                                     handleResult: (Result<OWSMessageDecryptResult, Error>, SSKProtoEnvelope) -> Void) {
         write { transaction in
             let localClient: TestSignalClient
@@ -105,6 +110,8 @@ class MessageDecryptionTest: SSKBaseTestSwift {
             }
 
             let envelope = try! envelopeBuilder.build()
+
+            prepareForDecryption(transaction)
             handleResult(messageDecrypter.decryptEnvelope(envelope, envelopeData: nil, transaction: transaction),
                          envelope)
         }
@@ -129,10 +136,12 @@ class MessageDecryptionTest: SSKBaseTestSwift {
     private func expectDecryptionFailure(type: SSKProtoEnvelopeType,
                                          destinationIdentity: OWSIdentity,
                                          destinationUuid: UUID? = nil,
+                                         prepareForDecryption: (SDSAnyWriteTransaction) -> Void = { _ in },
                                          isExpectedError: (Error) -> Bool) {
         generateAndDecrypt(type: type,
                            destinationIdentity: destinationIdentity,
-                           destinationUuid: destinationUuid) { result, _ in
+                           destinationUuid: destinationUuid,
+                           prepareForDecryption: prepareForDecryption) { result, _ in
             switch result {
             case .success:
                 XCTFail("should not have decrypted successfully")
@@ -195,5 +204,113 @@ class MessageDecryptionTest: SSKBaseTestSwift {
             }
             return false
         }
+    }
+
+    private func waitForResendRequestRatchetKey(line: UInt = #line) -> Promise<PublicKey> {
+        let (promise, future) = Promise<PublicKey>.pending()
+
+        fakeMessageSender.sendMessageWasCalledBlock = { message in
+            guard let resendRequest = message as? OWSOutgoingResendRequest else {
+                return
+            }
+            let decryptionError = try! DecryptionErrorMessage(bytes: resendRequest.decryptionErrorData)
+            if let ratchetKey = decryptionError.ratchetKey {
+                future.resolve(ratchetKey)
+            } else {
+                XCTFail("missing ratchet key", line: line)
+            }
+
+            self.fakeMessageSender.sendMessageWasCalledBlock = nil
+        }
+        return promise
+    }
+
+    private func checkRemoteRatchetKey(expected: PublicKey) {
+        guard let session = try! remoteClient.sessionStore.loadSession(for: localClient.protocolAddress,
+                                                                       context: NullContext()) else {
+            XCTFail("no session established")
+            return
+        }
+        XCTAssert(try! session.currentRatchetKeyMatches(expected))
+    }
+
+    func testMissingSignedPreKey() {
+        sskJobQueues.messageSenderJobQueue.setup()
+
+        let requestRatchetKey = waitForResendRequestRatchetKey()
+
+        expectDecryptionFailure(type: .prekeyBundle,
+                                destinationIdentity: .aci,
+                                prepareForDecryption: { transaction in
+            signalProtocolStore(for: .aci).signedPreKeyStore.removeAll(transaction)
+        }) { error in
+            if let error = error as? OWSError {
+                let underlyingError = error.errorUserInfo[NSUnderlyingErrorKey]
+                if case SSKSignedPreKeyStore.Error.noPreKeyWithId(_)? = underlyingError {
+                    return true
+                }
+            }
+            return false
+        }
+
+        checkRemoteRatchetKey(expected: requestRatchetKey.expect(timeout: 1))
+
+        let sealedSenderResendRequestRatchetKey = waitForResendRequestRatchetKey()
+
+        expectDecryptionFailure(type: .unidentifiedSender,
+                                destinationIdentity: .aci,
+                                prepareForDecryption: { transaction in
+            signalProtocolStore(for: .aci).signedPreKeyStore.removeAll(transaction)
+        }) { error in
+            if let error = error as? OWSError {
+                let underlyingError = error.errorUserInfo[NSUnderlyingErrorKey]
+                if case SSKSignedPreKeyStore.Error.noPreKeyWithId(_)? = underlyingError {
+                    return true
+                }
+            }
+            return false
+        }
+
+        checkRemoteRatchetKey(expected: sealedSenderResendRequestRatchetKey.expect(timeout: 1))
+    }
+
+    func testMissingOneTimePreKey() {
+        sskJobQueues.messageSenderJobQueue.setup()
+
+        let requestRatchetKey = waitForResendRequestRatchetKey()
+
+        expectDecryptionFailure(type: .prekeyBundle,
+                                destinationIdentity: .aci,
+                                prepareForDecryption: { transaction in
+            signalProtocolStore(for: .aci).preKeyStore.removeAll(transaction)
+        }) { error in
+            if let error = error as? OWSError {
+                let underlyingError = error.errorUserInfo[NSUnderlyingErrorKey]
+                if case SSKPreKeyStore.Error.noPreKeyWithId(_)? = underlyingError {
+                    return true
+                }
+            }
+            return false
+        }
+
+        checkRemoteRatchetKey(expected: requestRatchetKey.expect(timeout: 1))
+
+        let sealedSenderResendRequestRatchetKey = waitForResendRequestRatchetKey()
+
+        expectDecryptionFailure(type: .unidentifiedSender,
+                                destinationIdentity: .aci,
+                                prepareForDecryption: { transaction in
+            signalProtocolStore(for: .aci).preKeyStore.removeAll(transaction)
+        }) { error in
+            if let error = error as? OWSError {
+                let underlyingError = error.errorUserInfo[NSUnderlyingErrorKey]
+                if case SSKPreKeyStore.Error.noPreKeyWithId(_)? = underlyingError {
+                    return true
+                }
+            }
+            return false
+        }
+
+        checkRemoteRatchetKey(expected: sealedSenderResendRequestRatchetKey.expect(timeout: 1))
     }
 }

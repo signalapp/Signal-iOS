@@ -514,19 +514,6 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
     }
 
-    @objc
-    private func isSignalClientError(_ error: Error) -> Bool {
-        return error is SignalError
-    }
-
-    @objc
-    private func isSecretSessionSelfSentMessageError(_ error: Error) -> Bool {
-        if case SMKSecretSessionCipherError.selfSentMessage = error {
-            return true
-        }
-        return false
-    }
-
     private func decrypt(_ envelope: SSKProtoEnvelope,
                          sentTo identity: OWSIdentity,
                          cipherType: CiphertextMessage.MessageType,
@@ -784,10 +771,11 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         contentHint: SealedSenderContentHint,
         transaction: SDSAnyWriteTransaction
     ) -> Error {
-        if isSecretSessionSelfSentMessageError(error) {
+        switch error {
+        case SMKSecretSessionCipherError.selfSentMessage:
             // Self-sent messages can be safely discarded. Return as-is.
             return error
-        } else if isSignalClientError(error) {
+        case is SignalError, SSKPreKeyStore.Error.noPreKeyWithId(_), SSKSignedPreKeyStore.Error.noPreKeyWithId(_):
             return processError(error,
                                 envelope: envelope,
                                 sentTo: identity,
@@ -795,7 +783,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                 cipherType: cipherType,
                                 contentHint: contentHint,
                                 transaction: transaction)
-        } else {
+        default:
             owsFailDebug("Could not decrypt UD message: \(error), identified envelope: \(description(for: envelope))")
             return error
         }
