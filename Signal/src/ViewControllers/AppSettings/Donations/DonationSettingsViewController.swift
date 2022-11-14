@@ -624,7 +624,7 @@ extension DonationSettingsViewController: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         if textView == statusLabel {
             DonationViewsUtil.presentBadgeCantBeAddedSheet(
-                viewController: self,
+                from: self,
                 currentSubscription: state.currentSubscription
             )
         }

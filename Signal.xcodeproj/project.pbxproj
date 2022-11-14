@@ -1262,7 +1262,6 @@
 		F96B66AB2912B88B004FFFAA /* DonateViewController+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66A22912B88A004FFFAA /* DonateViewController+State.swift */; };
 		F96B66AC2912B88B004FFFAA /* DonateViewController+DonationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66A32912B88A004FFFAA /* DonateViewController+DonationMode.swift */; };
 		F96B66AD2912B88B004FFFAA /* DonateViewController+OneTimeApplePayDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66A42912B88B004FFFAA /* DonateViewController+OneTimeApplePayDonation.swift */; };
-		F96B66AE2912B88B004FFFAA /* DonateViewController+ErrorSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66A52912B88B004FFFAA /* DonateViewController+ErrorSheets.swift */; };
 		F96B66AF2912B88B004FFFAA /* DonateViewController+PKPaymentAuthorizationControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66A62912B88B004FFFAA /* DonateViewController+PKPaymentAuthorizationControllerDelegate.swift */; };
 		F96B66B02912B88B004FFFAA /* DonateViewController+MonthlySubscriptionLevelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66A72912B88B004FFFAA /* DonateViewController+MonthlySubscriptionLevelView.swift */; };
 		F96B66B12912B88B004FFFAA /* DonateViewController+MonthlyApplePayDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66A82912B88B004FFFAA /* DonateViewController+MonthlyApplePayDonation.swift */; };
@@ -3623,7 +3622,6 @@
 		F96B66A22912B88A004FFFAA /* DonateViewController+State.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DonateViewController+State.swift"; sourceTree = "<group>"; };
 		F96B66A32912B88A004FFFAA /* DonateViewController+DonationMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DonateViewController+DonationMode.swift"; sourceTree = "<group>"; };
 		F96B66A42912B88B004FFFAA /* DonateViewController+OneTimeApplePayDonation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DonateViewController+OneTimeApplePayDonation.swift"; sourceTree = "<group>"; };
-		F96B66A52912B88B004FFFAA /* DonateViewController+ErrorSheets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DonateViewController+ErrorSheets.swift"; sourceTree = "<group>"; };
 		F96B66A62912B88B004FFFAA /* DonateViewController+PKPaymentAuthorizationControllerDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DonateViewController+PKPaymentAuthorizationControllerDelegate.swift"; sourceTree = "<group>"; };
 		F96B66A72912B88B004FFFAA /* DonateViewController+MonthlySubscriptionLevelView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DonateViewController+MonthlySubscriptionLevelView.swift"; sourceTree = "<group>"; };
 		F96B66A82912B88B004FFFAA /* DonateViewController+MonthlyApplePayDonation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DonateViewController+MonthlyApplePayDonation.swift"; sourceTree = "<group>"; };
@@ -6958,7 +6956,6 @@
 				8880179327430DDB00346E9A /* BadgeThanksSheet.swift */,
 				F96B66A12912B88A004FFFAA /* DonateChoosePaymentMethodSheet.swift */,
 				F96B66A32912B88A004FFFAA /* DonateViewController+DonationMode.swift */,
-				F96B66A52912B88B004FFFAA /* DonateViewController+ErrorSheets.swift */,
 				F96B66A82912B88B004FFFAA /* DonateViewController+MonthlyApplePayDonation.swift */,
 				F96B66A72912B88B004FFFAA /* DonateViewController+MonthlySubscriptionLevelView.swift */,
 				F96B66A42912B88B004FFFAA /* DonateViewController+OneTimeApplePayDonation.swift */,
@@ -10283,7 +10280,6 @@
 				340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */,
 				F96B66AA2912B88B004FFFAA /* DonateChoosePaymentMethodSheet.swift in Sources */,
 				F96B66AC2912B88B004FFFAA /* DonateViewController+DonationMode.swift in Sources */,
-				F96B66AE2912B88B004FFFAA /* DonateViewController+ErrorSheets.swift in Sources */,
 				F96B66B12912B88B004FFFAA /* DonateViewController+MonthlyApplePayDonation.swift in Sources */,
 				F96B66B02912B88B004FFFAA /* DonateViewController+MonthlySubscriptionLevelView.swift in Sources */,
 				F96B66AD2912B88B004FFFAA /* DonateViewController+OneTimeApplePayDonation.swift in Sources */,

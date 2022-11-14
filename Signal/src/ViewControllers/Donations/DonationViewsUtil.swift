@@ -366,8 +366,26 @@ public final class DonationViewsUtil {
         UIApplication.shared.open(TSConstants.donateUrl, options: [:], completionHandler: nil)
     }
 
-    public static func presentBadgeCantBeAddedSheet(viewController: UIViewController,
-                                                    currentSubscription: Subscription?) {
+    public static func presentStillProcessingSheet(from viewController: UIViewController) {
+        guard
+            let topViewController = viewController.navigationController?.topViewController,
+            topViewController == viewController
+        else {
+            Logger.info("Not showing the \"still processing\" sheet because we're no longer the top view controller")
+            return
+        }
+
+        let title = NSLocalizedString("SUSTAINER_STILL_PROCESSING_BADGE_TITLE", comment: "Action sheet title for Still Processing Badge sheet")
+        let message = NSLocalizedString("SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE", comment: "Action sheet message for Still Processing Badge sheet")
+        let actionSheet = ActionSheetController(title: title, message: message)
+        actionSheet.addAction(OWSActionSheets.okayAction)
+        topViewController.presentActionSheet(actionSheet)
+    }
+
+    public static func presentBadgeCantBeAddedSheet(
+        from viewController: UIViewController,
+        currentSubscription: Subscription? = nil
+    ) {
         let failureReason = getSubscriptionRedemptionFailureReason(subscription: currentSubscription)
 
         let title = failureReason == .paymentFailed ? NSLocalizedString("SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE", comment: "Action sheet title for Error Processing Payment sheet") : NSLocalizedString("SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE", comment: "Action sheet title for Couldn't Add Badge sheet")

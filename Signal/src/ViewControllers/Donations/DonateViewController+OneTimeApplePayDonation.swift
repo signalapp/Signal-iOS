@@ -77,9 +77,9 @@ extension DonateViewController {
                     guard let self = self else { return }
                     switch error {
                     case .timeout:
-                        self.presentStillProcessingSheet()
+                        DonationViewsUtil.presentStillProcessingSheet(from: self)
                     case .assertion:
-                        self.presentBadgeCantBeAddedSheet()
+                        DonationViewsUtil.presentBadgeCantBeAddedSheet(from: self)
                     }
                 }
             }
