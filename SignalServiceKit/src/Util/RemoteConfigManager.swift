@@ -16,6 +16,8 @@ public class RemoteConfig: BaseFlags {
     private let standardMediaQualityLevel: ImageQualityLevel?
     private let paymentsDisabledRegions: PhoneNumberRegions
     private let applePayDisabledRegions: PhoneNumberRegions
+    private let creditAndDebitCardDisabledRegions: PhoneNumberRegions
+    private let paypalDisabledRegions: PhoneNumberRegions
 
     init(isEnabledFlags: [String: Bool],
          valueFlags: [String: AnyObject]) {
@@ -24,6 +26,8 @@ public class RemoteConfig: BaseFlags {
         self.standardMediaQualityLevel = Self.determineStandardMediaQualityLevel(valueFlags: valueFlags)
         self.paymentsDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .paymentsDisabledRegions)
         self.applePayDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .applePayDisabledRegions)
+        self.creditAndDebitCardDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .creditAndDebitCardDisabledRegions)
+        self.paypalDisabledRegions = Self.parsePhoneNumberRegions(valueFlags: valueFlags, flag: .paypalDisabledRegions)
     }
 
     @objc
@@ -131,6 +135,16 @@ public class RemoteConfig: BaseFlags {
     public static var applePayDisabledRegions: PhoneNumberRegions {
         guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
         return remoteConfig.applePayDisabledRegions
+    }
+
+    public static var creditAndDebitCardDisabledRegions: PhoneNumberRegions {
+        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
+        return remoteConfig.creditAndDebitCardDisabledRegions
+    }
+
+    public static var paypalDisabledRegions: PhoneNumberRegions {
+        guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
+        return remoteConfig.paypalDisabledRegions
     }
 
     private static func determineStandardMediaQualityLevel(valueFlags: [String: AnyObject]) -> ImageQualityLevel? {
@@ -455,6 +469,8 @@ private struct Flags {
         case reactiveProfileKeyAttemptInterval
         case paymentsDisabledRegions
         case applePayDisabledRegions
+        case creditAndDebitCardDisabledRegions
+        case paypalDisabledRegions
         case maxGroupCallRingSize
     }
 
@@ -474,6 +490,8 @@ private struct Flags {
         case messageSendLogEntryLifetime
         case paymentsDisabledRegions
         case applePayDisabledRegions
+        case creditAndDebitCardDisabledRegions
+        case paypalDisabledRegions
         case maxGroupCallRingSize
     }
 }
@@ -496,6 +514,8 @@ private extension FlagType {
         case "cdsSyncInterval": return "cds.syncInterval.seconds"
         case "paymentsDisabledRegions": return "global.payments.disabledRegions"
         case "applePayDisabledRegions": return "global.donations.apayDisabledRegions"
+        case "creditAndDebitCardDisabledRegions": return "global.donations.ccDisabledRegions"
+        case "paypalDisabledRegions": return "global.donations.paypalDisabledRegions"
         case "maxGroupCallRingSize": return "global.calling.maxGroupCallRingSize"
         default: return Flags.prefix + rawValue
         }
