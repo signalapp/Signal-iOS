@@ -52,7 +52,6 @@ public enum ThemeIcon: UInt {
     case settingsReceipts
     case settingsGift
 
-    case stickerButton
     case cameraButton
     case micButton
     case messageActionSpeak
@@ -295,8 +294,6 @@ public extension Theme {
             return isDarkThemeEnabled ? "gift-solid-24" : "gift-outline-24"
 
         // Input Toolbar
-        case .stickerButton:
-            return isDarkThemeEnabled ? "sticker-solid-24" : "sticker-outline-24"
         case .cameraButton:
             return isDarkThemeEnabled ? "camera-solid-24" : "camera-outline-24"
         case .micButton:

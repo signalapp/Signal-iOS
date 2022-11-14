@@ -184,14 +184,34 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     }()
 
     private lazy var stickerButton: UIButton = {
-        let button = UIButton(type: .custom)
+        let imageResourceName = Theme.isDarkThemeEnabled ? "sticker-solid-24" : "sticker-outline-24"
+        let button = UIButton(type: .system)
+        button.tintColor = Theme.primaryIconColor
         button.accessibilityLabel = NSLocalizedString(
             "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL",
-            comment: "accessibility label for the button which shows the sticker picker")
+            comment: "accessibility label for the button which shows the sticker picker"
+        )
         button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "stickerButton")
-        button.setTemplateImage(Theme.iconImage(.stickerButton), tintColor: Theme.primaryIconColor)
+        button.setImage(UIImage(imageLiteralResourceName: imageResourceName), for: .normal)
         button.addTarget(self, action: #selector(stickerButtonPressed), for: .touchUpInside)
-        button.autoSetDimensions(to: CGSize(width: 40, height: LayoutMetrics.minToolbarItemHeight))
+        button.autoSetDimensions(to: CGSize(width: 40, height: LayoutMetrics.minTextViewHeight))
+        button.setContentHuggingHorizontalHigh()
+        button.setCompressionResistanceHorizontalHigh()
+        return button
+    }()
+
+    private lazy var keyboardButton: UIButton = {
+        let imageResourceName = Theme.isDarkThemeEnabled ? "keyboard-solid-24" : "keyboard-outline-24"
+        let button = UIButton(type: .system)
+        button.tintColor = Theme.primaryIconColor
+        button.accessibilityLabel = NSLocalizedString(
+            "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL",
+            comment: "accessibility label for the button which shows the regular keyboard instead of sticker picker"
+        )
+        button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "keyboardButton")
+        button.setImage(UIImage(imageLiteralResourceName: imageResourceName), for: .normal)
+        button.addTarget(self, action: #selector(keyboardButtonPressed), for: .touchUpInside)
+        button.autoSetDimensions(to: CGSize(width: 40, height: LayoutMetrics.minTextViewHeight))
         button.setContentHuggingHorizontalHigh()
         button.setCompressionResistanceHorizontalHigh()
         return button
@@ -367,8 +387,11 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         // Sticker button: looks like is a part of the text input view,
         // but is reality it located a couple levels up in the view hierarchy.
         vStackRoundingView.addSubview(stickerButton)
+        vStackRoundingView.addSubview(keyboardButton)
         stickerButton.autoVCenterInSuperview()
         stickerButton.autoPinEdge(toSuperviewEdge: .right, withInset: 4)
+        keyboardButton.autoAlignAxis(.vertical, toSameAxisOf: stickerButton)
+        keyboardButton.autoAlignAxis(.horizontal, toSameAxisOf: stickerButton)
 
         // Horizontal Stack: Attachment button, message components, Camera|VoiceNote|Send button.
         //
@@ -414,6 +437,24 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         isConfigurationComplete = true
     }
 
+    @discardableResult
+    class func setView(_ view: UIView, hidden isHidden: Bool, usingAnimator animator: UIViewPropertyAnimator?) -> Bool {
+        let viewAlpha: CGFloat = isHidden ? 0 : 1
+
+        guard viewAlpha != view.alpha else { return false }
+
+        let viewUpdateBlock = {
+            view.alpha = viewAlpha
+            view.transform = isHidden ? .scale(0.1) : .identity
+        }
+        if let animator {
+            animator.addAnimations(viewUpdateBlock)
+        } else {
+            viewUpdateBlock()
+        }
+        return true
+    }
+
     private func ensureButtonVisibility(withAnimation isAnimated: Bool, doLayout: Bool) {
 
         var hasLayoutChanged = false
@@ -434,46 +475,69 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             rightEdgeControlsState = hasNonWhitespaceTextInput ? .sendButton : .default
         }
 
-        if rightEdgeControlsView.state != rightEdgeControlsState {
-            hasLayoutChanged = true
+        let animator: UIViewPropertyAnimator?
+        if isAnimated {
+            let animationDuration: TimeInterval = 0.25
+            let dampingFraction: CGFloat = 0.645
+            let response: CGFloat = 0.25
+            let stiffness = pow(2 * .pi / response, 2)
+            let damping = 4 * .pi * dampingFraction / response
+            let timingParameters = UISpringTimingParameters(mass: 1, stiffness: stiffness, damping: damping, initialVelocity: .zero)
+            animator = UIViewPropertyAnimator(duration: animationDuration, timingParameters: timingParameters)
+            animator?.isUserInteractionEnabled = false
+        } else {
+            animator = nil
         }
 
         // Attachment Button
         let hideAttachmentButton = isShowingVoiceMemoUI
-        if setAttachmentButtonHidden(hideAttachmentButton, animated: isAnimated) {
+        if setAttachmentButtonHidden(hideAttachmentButton, usingAnimator: animator) {
             hasLayoutChanged = true
         }
-        attachmentButton.setAppearance(desiredKeyboardType == .attachment ? .close : .add, animated: isAnimated)
 
-        // Sticker button disappears when there's any text input, including whitespace-only.
-        let hasTextInput = !inputTextView.untrimmedText.isEmpty
-        let hideStickerButton = hasTextInput || isShowingVoiceMemoUI || quotedReply != nil
-        stickerButton.setIsHidden(hideStickerButton, animated: isAnimated)
+        // Attachment button has more complex animations and cannot be grouped with the rest.
+        let attachmentButtonAppearance: AttachmentButton.Appearance = desiredKeyboardType == .attachment ? .close : .add
+        attachmentButton.setAppearance(attachmentButtonAppearance, usingAnimator: animator)
 
-        let updateBlock: () -> Void = {
-            if !hideStickerButton {
-                // TODO: check that tint color change animation works properly
-                self.stickerButton.imageView?.tintColor = self.desiredKeyboardType == .sticker ? .ows_accentBlue : Theme.primaryIconColor
+        // Show / hide Sticker or Keyboard buttons inside of the text input field.
+        // Either buttons are only visible if there's no any text input, including whitespace-only.
+        let hideStickerOrKeyboardButton = !inputTextView.untrimmedText.isEmpty || isShowingVoiceMemoUI || quotedReply != nil
+        let hideStickerButton = hideStickerOrKeyboardButton || desiredKeyboardType == .sticker
+        let hideKeyboardButton = hideStickerOrKeyboardButton || !hideStickerButton
+        ConversationInputToolbar.setView(stickerButton, hidden: hideStickerButton, usingAnimator: animator)
+        ConversationInputToolbar.setView(keyboardButton, hidden: hideKeyboardButton, usingAnimator: animator)
+
+        if rightEdgeControlsView.state != rightEdgeControlsState {
+            hasLayoutChanged = true
+
+            if let animator {
+                // `state` in implicitly animatable.
+                animator.addAnimations {
+                    self.rightEdgeControlsView.state = rightEdgeControlsState
+                }
+            } else {
+                rightEdgeControlsView.state = rightEdgeControlsState
+            }
+        }
+
+        if let animator {
+            if doLayout && hasLayoutChanged {
+                animator.addAnimations {
+                    self.mainPanelView.setNeedsLayout()
+                    self.mainPanelView.layoutIfNeeded()
+                }
             }
 
-            // `state` in implicitly animatable.
-            self.rightEdgeControlsView.state = rightEdgeControlsState
-
-            self.updateSuggestedStickers()
-
+            animator.startAnimation()
+        } else {
             if doLayout && hasLayoutChanged {
                 self.mainPanelView.setNeedsLayout()
                 self.mainPanelView.layoutIfNeeded()
             }
         }
 
-        if isAnimated {
-            let animator = ConversationInputToolbar.configuredPropertyAnimator()
-            animator.addAnimations(updateBlock)
-            animator.startAnimation()
-        } else {
-            updateBlock()
-        }
+        // TODO: This will be updated in a separate PR.
+        updateSuggestedStickers()
     }
 
     private var messageContentViewLeftEdgeConstraint: NSLayoutConstraint?
@@ -495,9 +559,8 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         messageContentViewLeftEdgeConstraint = constraint
     }
 
-    private func setAttachmentButtonHidden(_ isHidden: Bool, animated: Bool) -> Bool {
-        guard attachmentButton.isHidden != isHidden else { return false }
-        attachmentButton.setIsHidden(isHidden, animated: animated)
+    private func setAttachmentButtonHidden(_ isHidden: Bool, usingAnimator animator: UIViewPropertyAnimator?) -> Bool {
+        guard ConversationInputToolbar.setView(attachmentButton, hidden: isHidden, usingAnimator: animator) else { return false }
         updateMessageContentViewLeftEdgeConstraint(isViewHidden: isHidden)
         return true
     }
@@ -560,24 +623,21 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         lazy var sendButton: UIButton = {
             let visibleButtonSize: CGFloat = 32
-            let buttonSize = CGSize(width: 48, height: LayoutMetrics.minToolbarItemHeight)
-            let button = RoundMediaButton(
-                image: UIImage(imageLiteralResourceName: "send-arrow-up-20"),
-                backgroundStyle: .solid(.ows_accentBlue)
-            )
+            let buttonImage = UIImage(imageLiteralResourceName: "send-blue-32")
+            let highlightAlpha: CGFloat = Theme.isDarkThemeEnabled ? 0.4 : 0.2
+            let highlightedButtonImage = buttonImage.withAlphaComponent(highlightAlpha)
+            let button = UIButton(type: .custom)
             button.accessibilityLabel = MessageStrings.sendButton
             button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "sendButton")
-            button.tintColor = .white
-            button.bounds.size = buttonSize
-            button.layoutMargins = UIEdgeInsets(
-                hMargin: 0.5 * (buttonSize.width - visibleButtonSize),
-                vMargin: 0.5 * (buttonSize.height - visibleButtonSize)
-            )
+            button.setImage(buttonImage, for: .normal)
+            button.setImage(highlightedButtonImage, for: .highlighted)
+            button.bounds.size = CGSize(width: 48, height: LayoutMetrics.minToolbarItemHeight)
             return button
         }()
 
         lazy var cameraButton: UIButton = {
-            let button = UIButton()
+            let button = UIButton(type: .system)
+            button.tintColor = Theme.primaryIconColor
             button.accessibilityLabel = NSLocalizedString(
                 "CAMERA_BUTTON_LABEL",
                 comment: "Accessibility label for camera button."
@@ -587,13 +647,14 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
                 comment: "Accessibility hint describing what you can do with the camera button"
             )
             button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "cameraButton")
-            button.setTemplateImage(Theme.iconImage(.cameraButton), tintColor: Theme.primaryIconColor)
+            button.setImage(Theme.iconImage(.cameraButton), for: .normal)
             button.bounds.size = CGSize(width: 40, height: LayoutMetrics.minToolbarItemHeight)
             return button
         }()
 
         lazy var voiceMemoButton: UIButton = {
-            let button = UIButton(type: .custom)
+            let button = UIButton(type: .system)
+            button.tintColor = Theme.primaryIconColor
             button.accessibilityLabel = NSLocalizedString(
                 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL",
                 comment: "accessibility label for the button which records voice memos"
@@ -603,7 +664,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
                 comment: "accessibility hint for the button which records voice memos"
             )
             button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "voiceMemoButton")
-            button.setTemplateImage(Theme.iconImage(.micButton), tintColor: Theme.primaryIconColor)
+            button.setImage(Theme.iconImage(.micButton), for: .normal)
             button.bounds.size = CGSize(width: 40, height: LayoutMetrics.minToolbarItemHeight)
             return button
         }()
@@ -721,7 +782,8 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
                 // We don't want changes performed by this method to interfere with animations.
                 guard !isAnimatingAppearance else { return }
 
-                let opacity: CGFloat = isHighlighted ? 0.5 : 1
+                // Mimic behavior of a standard system button.
+                let opacity: CGFloat = isHighlighted ? (Theme.isDarkThemeEnabled ? 0.4 : 0.2) : 1
                 switch appearance {
                 case .add:
                     iconImageView.alpha = opacity
@@ -742,23 +804,21 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         var appearance: Appearance {
             get { _appearance }
-            set { setAppearance(newValue, animated: false) }
+            set { setAppearance(newValue, usingAnimator: nil) }
         }
 
-        func setAppearance(_ appearance: Appearance, animated: Bool) {
+        func setAppearance(_ appearance: Appearance, usingAnimator animator: UIViewPropertyAnimator?) {
             guard appearance != _appearance else { return }
 
             _appearance = appearance
 
-            guard animated else {
+            guard let animator else {
                 updateImageColorAndBackground()
                 updateImageTransform()
                 return
             }
 
             isAnimatingAppearance = true
-
-            let animator = ConversationInputToolbar.configuredPropertyAnimator()
             animator.addAnimations({
                     self.updateImageColorAndBackground()
                 },
@@ -770,7 +830,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             animator.addCompletion { _ in
                 self.isAnimatingAppearance = false
             }
-            animator.startAnimation()
         }
 
         private func updateImageColorAndBackground() {
@@ -1791,6 +1850,15 @@ extension ConversationInputToolbar {
             return
         }
         toggleKeyboardType(.sticker, animated: true)
+    }
+
+    @objc
+    private func keyboardButtonPressed() {
+        Logger.verbose("")
+
+        ImpactHapticFeedback.impactOccured(style: .light)
+
+        toggleKeyboardType(.system, animated: true)
     }
 }
 
