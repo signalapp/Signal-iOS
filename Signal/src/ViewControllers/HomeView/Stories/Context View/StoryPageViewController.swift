@@ -149,12 +149,6 @@ class StoryPageViewController: UIPageViewController {
     }
 
     @objc
-    func owsApplicationWillEnterForeground() {
-        // reset mute state if foregrounded while this is on screen.
-        self.isMuted = true
-    }
-
-    @objc
     func displayLinkStep(_ displayLink: CADisplayLink) {
         // UIPageViewController gets buggy and gives us mismatched willTransition and
         // didFinishTransitioning delegate callbacks, calling the former and not the latter.
@@ -180,6 +174,7 @@ class StoryPageViewController: UIPageViewController {
 
     private struct MuteStatus {
         let isMuted: Bool
+        let shouldInitialRingerStateSetMuteState: Bool
         let appForegroundTime: Date
     }
 
@@ -197,9 +192,10 @@ class StoryPageViewController: UIPageViewController {
             {
                 return muteStatus.isMuted
             }
+            // Start muted, but let the ringer change the setting.
             let muteStatus = MuteStatus(
-                // Audio starts muted until the user unmutes.
                 isMuted: true,
+                shouldInitialRingerStateSetMuteState: true,
                 appForegroundTime: CurrentAppContext().appForegroundTime
             )
             Self.muteStatus = muteStatus
@@ -208,6 +204,7 @@ class StoryPageViewController: UIPageViewController {
         set {
             Self.muteStatus = MuteStatus(
                 isMuted: newValue,
+                shouldInitialRingerStateSetMuteState: false,
                 appForegroundTime: CurrentAppContext().appForegroundTime
             )
             viewControllers?.forEach {
@@ -253,6 +250,7 @@ class StoryPageViewController: UIPageViewController {
     }
 
     private func startAudioSession() {
+        isAudioSessionActive = true
         // AudioSession's activities act like a stack; by adding a story-wide activity here we
         // ensure the session configuration doesn't get needlessly changed every time a player
         // for an individual story starts and stops. The config stays the same as long
@@ -260,15 +258,12 @@ class StoryPageViewController: UIPageViewController {
         let startAudioActivitySuccess = audioSession.startAudioActivity(audioActivity)
         owsAssertDebug(startAudioActivitySuccess, "Starting stories audio activity failed")
 
-        RingerSwitch.shared.addObserver(observer: self)
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(owsApplicationWillEnterForeground),
-            name: .OWSApplicationWillEnterForeground,
-            object: nil
-        )
-        isAudioSessionActive = true
+        // Set initial mute state for each viewer session based
+        // on ringer switch.
+        let isRingerSilent = RingerSwitch.shared.addObserver(observer: self)
+        if Self.muteStatus?.shouldInitialRingerStateSetMuteState ?? true || !isRingerSilent {
+            isMuted = isRingerSilent
+        }
     }
 
     private func stopAudioSession() {
@@ -624,11 +619,8 @@ extension StoryPageViewController: VolumeButtonObserver {
 extension StoryPageViewController: RingerSwitchObserver {
 
     func didToggleRingerSwitch(_ isSilenced: Bool) {
-        guard !isMuted && isSilenced else {
-            // Not muting
-            return
+        if isMuted != isSilenced {
+            isMuted = isSilenced
         }
-        // Mute if unmuted and toggling off.
-        isMuted = true
     }
 }
