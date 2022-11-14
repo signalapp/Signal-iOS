@@ -31,7 +31,9 @@ public class GRDBSchemaMigrator: NSObject {
 
         let grdbStorageAdapter = databaseStorage.grdbStorage
 
-        if hasCreatedInitialSchema(grdbStorageAdapter: grdbStorageAdapter) {
+        let hasCreatedInitialSchema = try! grdbStorageAdapter.read { try Self.hasCreatedInitialSchema(transaction: $0) }
+
+        if hasCreatedInitialSchema {
             do {
                 Logger.info("Using incrementalMigrator.")
                 didPerformIncrementalMigrations = try runIncrementalMigrations(
@@ -99,10 +101,8 @@ public class GRDBSchemaMigrator: NSObject {
         return allAppliedMigrations != previouslyAppliedMigrations
     }
 
-    private static func hasCreatedInitialSchema(grdbStorageAdapter: GRDBDatabaseStorageAdapter) -> Bool {
-        let appliedMigrations = try! grdbStorageAdapter.read { transaction in
-            try! DatabaseMigrator().appliedIdentifiers(transaction.database)
-        }
+    private static func hasCreatedInitialSchema(transaction: GRDBReadTransaction) throws -> Bool {
+        let appliedMigrations = try DatabaseMigrator().appliedIdentifiers(transaction.database)
         Logger.info("appliedMigrations: \(appliedMigrations.sorted()).")
         return appliedMigrations.contains(MigrationId.createInitialSchema.rawValue)
     }
@@ -271,6 +271,14 @@ public class GRDBSchemaMigrator: NSObject {
     private static func newUserMigrator() -> DatabaseMigrator {
         var migrator = DatabaseMigrator()
         migrator.registerMigration(MigrationId.createInitialSchema.rawValue) { db in
+            // Within the transaction this migration opens, check that we haven't already run
+            // the initial schema migration, in case we are racing with another process that
+            // is also running migrations.
+            guard try hasCreatedInitialSchema(transaction: GRDBReadTransaction(database: db)).negated else {
+                // Already done!
+                return
+            }
+
             Logger.info("importing latest schema")
             guard let sqlFile = Bundle(for: GRDBSchemaMigrator.self).url(forResource: "schema", withExtension: "sql") else {
                 owsFail("sqlFile was unexpectedly nil")
@@ -293,17 +301,76 @@ public class GRDBSchemaMigrator: NSObject {
     private class DatabaseMigratorWrapper {
         var migrator = DatabaseMigrator()
 
-        func registerMigration(_ identifier: MigrationId, migrate: @escaping (Database) -> Void) {
+        /**
+         * Registers a database migration to be run asynchronously.
+         *
+         * In short, migrations get registered, GRDB checks which if any haven't been run yet, and runs those.
+         * Each migration is provided a transaction and is allowed to throw exceptions on failures.
+         * Migrations MUST use the provided transaction to guarantee correctness. The same transaction
+         * is used to check migration eligibility and to mark migrations as completed.
+         * Migrations that _do not_ throw an exception will be marked at completed. Failed migrations
+         * _must_ throw an exception to be marked as incomplete and be re-run on next app launch.
+         * Every exception thrown crashes the app.
+         */
+        func registerMigration(
+            _ identifier: MigrationId,
+            migrate: @escaping (GRDBWriteTransaction) throws -> Result<Void, Error>
+        ) {
+            // Hold onto a reference to the migrator, so we can use its `appliedIdentifiers` method
+            // which is really a static method since it uses no instance state, but needs a reference
+            // to an instance (any instance, doesn't matter) anyway.
+            // Don't keep a strong reference to self as that would be a retain cycle, and don't rely
+            // on a weak reference to self because self is not guaranteed to be retained when
+            // the migration actually runs; this class is used primary for migration setup.
+            let migrator = self.migrator
             // Run with immediate foreign key checks so that pre-existing dangling rows
             // don't cause unrelated migrations to fail. We also don't perform schema
             // alterations that would necessitate disabling foreign key checks.
-            migrator.registerMigration(identifier.rawValue, foreignKeyChecks: .immediate) { (database: Database) in
+            self.migrator.registerMigration(identifier.rawValue, foreignKeyChecks: .immediate) { (database: Database) in
                 let startTime = CACurrentMediaTime()
+
+                // Create a transaction with this database connection.
+                // GRDB creates a database connection for each migration applied; this migration
+                // is finalized by GRDB internally. The steps look like:
+                // 1. Create Database connection (in a write transaction)
+                // 2. Run this closure, the migration itself
+                // 3. Write to the grdb_migrations table to mark this migration as done (if we don't throw)
+                // 4. Commit the transaction.
+                //
+                // Notably, it does _not_ check that the migration hasn't been run within the same transaction.
+                // We do that here and just say we succeeded by early returning and not throwing an error.
+                // This catches situations where the migrations are racing across processes.
+                //
+                // As long as we do this within the same DB connection we get as input to this
+                // method, the check happens within the same transaction that writes that
+                // the migration is complete, and we can take advantage of DB locks to enforce
+                // migrations are only run once across processes.
+                guard try migrator
+                    .appliedIdentifiers(database)
+                    .contains(identifier.rawValue)
+                    .negated
+                else {
+                    // Already run! Just succeed.
+                    Logger.info("Attempting to re-run an already-finished migration, exiting: \(identifier)")
+                    return
+                }
+
                 Logger.info("Running migration: \(identifier)")
-                migrate(database)
-                let timeElapsed = CACurrentMediaTime() - startTime
-                let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
-                Logger.info("Migration completed: \(identifier), duration: \(formattedTime)")
+                do {
+                    let transaction = GRDBWriteTransaction(database: database)
+                    let result = try migrate(transaction)
+                    switch result {
+                    case .success:
+                        let timeElapsed = CACurrentMediaTime() - startTime
+                        let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
+                        Logger.info("Migration completed: \(identifier), duration: \(formattedTime)")
+                    case .failure(let error):
+                        owsFail("Migration \(identifier) failed with returned error: \(error)")
+                    }
+                    transaction.finalizeTransaction()
+                } catch {
+                    owsFail("Migration \(identifier) failed with thrown error: \(error)")
+                }
             }
         }
 
@@ -314,165 +381,152 @@ public class GRDBSchemaMigrator: NSObject {
 
     private static func registerSchemaMigrations(migrator: DatabaseMigratorWrapper) {
 
-        // The migration blocks should never throw. If we introduce a crashing
-        // migration, we want the crash logs reflect where it occurred.
-
         migrator.registerMigration(.createInitialSchema) { _ in
             owsFail("This migration should have already been run by the last YapDB migration.")
+            return .success(())
         }
 
-        migrator.registerMigration(.signalAccount_add_contactAvatars) { database in
-            do {
-                let sql = """
-                DROP TABLE "model_SignalAccount";
-                CREATE
-                    TABLE
-                        IF NOT EXISTS "model_SignalAccount" (
-                            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-                            ,"recordType" INTEGER NOT NULL
-                            ,"uniqueId" TEXT NOT NULL UNIQUE
-                                ON CONFLICT FAIL
-                            ,"contact" BLOB
-                            ,"contactAvatarHash" BLOB
-                            ,"contactAvatarJpegData" BLOB
-                            ,"multipleAccountLabelText" TEXT NOT NULL
-                            ,"recipientPhoneNumber" TEXT
-                            ,"recipientUUID" TEXT
-                        );
+        migrator.registerMigration(.signalAccount_add_contactAvatars) { transaction in
+            let sql = """
+            DROP TABLE "model_SignalAccount";
+            CREATE
+                TABLE
+                    IF NOT EXISTS "model_SignalAccount" (
+                        "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+                        ,"recordType" INTEGER NOT NULL
+                        ,"uniqueId" TEXT NOT NULL UNIQUE
+                            ON CONFLICT FAIL
+                        ,"contact" BLOB
+                        ,"contactAvatarHash" BLOB
+                        ,"contactAvatarJpegData" BLOB
+                        ,"multipleAccountLabelText" TEXT NOT NULL
+                        ,"recipientPhoneNumber" TEXT
+                        ,"recipientUUID" TEXT
+                    );
             """
-                try database.execute(sql: sql)
-            } catch {
-                owsFail("Error: \(error)")
-            }
+            try transaction.database.execute(sql: sql)
+            return .success(())
         }
 
-        migrator.registerMigration(.signalAccount_add_contactAvatars_indices) { db in
-            do {
-                let sql = """
-                CREATE
-                    INDEX IF NOT EXISTS "index_model_SignalAccount_on_uniqueId"
-                        ON "model_SignalAccount"("uniqueId"
-                )
-                ;
+        migrator.registerMigration(.signalAccount_add_contactAvatars_indices) { transaction in
+            let sql = """
+            CREATE
+                INDEX IF NOT EXISTS "index_model_SignalAccount_on_uniqueId"
+                    ON "model_SignalAccount"("uniqueId"
+            )
+            ;
 
-                CREATE
-                    INDEX IF NOT EXISTS "index_signal_accounts_on_recipientPhoneNumber"
-                        ON "model_SignalAccount"("recipientPhoneNumber"
-                )
-                ;
+            CREATE
+                INDEX IF NOT EXISTS "index_signal_accounts_on_recipientPhoneNumber"
+                    ON "model_SignalAccount"("recipientPhoneNumber"
+            )
+            ;
 
-                CREATE
-                    INDEX IF NOT EXISTS "index_signal_accounts_on_recipientUUID"
-                        ON "model_SignalAccount"("recipientUUID"
-                )
-                ;
+            CREATE
+                INDEX IF NOT EXISTS "index_signal_accounts_on_recipientUUID"
+                    ON "model_SignalAccount"("recipientUUID"
+            )
+            ;
             """
-                try db.execute(sql: sql)
-            } catch {
-                owsFail("Error: \(error)")
-            }
+            try transaction.database.execute(sql: sql)
+            return .success(())
         }
 
-        migrator.registerMigration(.jobRecords_add_attachmentId) { db in
-            do {
-                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
-                    table.add(column: "attachmentId", .text)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.jobRecords_add_attachmentId) { transaction in
+            try transaction.database.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                table.add(column: "attachmentId", .text)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.createMediaGalleryItems) { db in
-            do {
-                try db.create(table: "media_gallery_items") { table in
-                    table.column("attachmentId", .integer)
-                        .notNull()
-                        .unique()
-                    table.column("albumMessageId", .integer)
-                        .notNull()
-                    table.column("threadId", .integer)
-                        .notNull()
-                    table.column("originalAlbumOrder", .integer)
-                        .notNull()
-                }
-
-                try db.create(index: "index_media_gallery_items_for_gallery",
-                              on: "media_gallery_items",
-                              columns: ["threadId", "albumMessageId", "originalAlbumOrder"])
-
-                try db.create(index: "index_media_gallery_items_on_attachmentId",
-                              on: "media_gallery_items",
-                              columns: ["attachmentId"])
-
-                // Creating gallery records here can crash since it's run in the middle of schema migrations.
-                // It instead has been moved to a separate Data Migration.
-                // see: "dataMigration_populateGalleryItems"
-                // try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.createMediaGalleryItems) { transaction in
+            try transaction.database.create(table: "media_gallery_items") { table in
+                table.column("attachmentId", .integer)
+                    .notNull()
+                    .unique()
+                table.column("albumMessageId", .integer)
+                    .notNull()
+                table.column("threadId", .integer)
+                    .notNull()
+                table.column("originalAlbumOrder", .integer)
+                    .notNull()
             }
+
+            try transaction.database.create(index: "index_media_gallery_items_for_gallery",
+                          on: "media_gallery_items",
+                          columns: ["threadId", "albumMessageId", "originalAlbumOrder"])
+
+            try transaction.database.create(index: "index_media_gallery_items_on_attachmentId",
+                          on: "media_gallery_items",
+                          columns: ["attachmentId"])
+
+            // Creating gallery records here can crash since it's run in the middle of schema migrations.
+            // It instead has been moved to a separate Data Migration.
+            // see: "dataMigration_populateGalleryItems"
+            // try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
+            return .success(())
         }
 
-        migrator.registerMigration(.createReaction) { db in
-            do {
-                try db.create(table: "model_OWSReaction") { table in
-                    table.autoIncrementedPrimaryKey("id")
-                        .notNull()
-                    table.column("recordType", .integer)
-                        .notNull()
-                    table.column("uniqueId", .text)
-                        .notNull()
-                        .unique(onConflict: .fail)
-                    table.column("emoji", .text)
-                        .notNull()
-                    table.column("reactorE164", .text)
-                    table.column("reactorUUID", .text)
-                    table.column("receivedAtTimestamp", .integer)
-                        .notNull()
-                    table.column("sentAtTimestamp", .integer)
-                        .notNull()
-                    table.column("uniqueMessageId", .text)
-                        .notNull()
-                }
-                try db.create(index: "index_model_OWSReaction_on_uniqueId",
-                              on: "model_OWSReaction",
-                              columns: ["uniqueId"])
-                try db.create(index: "index_model_OWSReaction_on_uniqueMessageId_and_reactorE164",
-                              on: "model_OWSReaction",
-                              columns: ["uniqueMessageId", "reactorE164"])
-                try db.create(index: "index_model_OWSReaction_on_uniqueMessageId_and_reactorUUID",
-                              on: "model_OWSReaction",
-                              columns: ["uniqueMessageId", "reactorUUID"])
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.createReaction) { transaction in
+            try transaction.database.create(table: "model_OWSReaction") { table in
+                table.autoIncrementedPrimaryKey("id")
+                    .notNull()
+                table.column("recordType", .integer)
+                    .notNull()
+                table.column("uniqueId", .text)
+                    .notNull()
+                    .unique(onConflict: .fail)
+                table.column("emoji", .text)
+                    .notNull()
+                table.column("reactorE164", .text)
+                table.column("reactorUUID", .text)
+                table.column("receivedAtTimestamp", .integer)
+                    .notNull()
+                table.column("sentAtTimestamp", .integer)
+                    .notNull()
+                table.column("uniqueMessageId", .text)
+                    .notNull()
             }
+            try transaction.database.create(
+                index: "index_model_OWSReaction_on_uniqueId",
+                on: "model_OWSReaction",
+                columns: ["uniqueId"]
+            )
+            try transaction.database.create(
+                index: "index_model_OWSReaction_on_uniqueMessageId_and_reactorE164",
+                on: "model_OWSReaction",
+                columns: ["uniqueMessageId", "reactorE164"]
+            )
+            try transaction.database.create(
+                index: "index_model_OWSReaction_on_uniqueMessageId_and_reactorUUID",
+                on: "model_OWSReaction",
+                columns: ["uniqueMessageId", "reactorUUID"]
+            )
+            return .success(())
         }
 
-        migrator.registerMigration(.dedupeSignalRecipients) { db in
-            do {
-                try autoreleasepool {
-                    let transaction = GRDBWriteTransaction(database: db)
-                    defer { transaction.finalizeTransaction() }
-
-                    try dedupeSignalRecipients(transaction: transaction.asAnyWrite)
-                }
-
-                try db.drop(index: "index_signal_recipients_on_recipientPhoneNumber")
-                try db.drop(index: "index_signal_recipients_on_recipientUUID")
-
-                try db.create(index: "index_signal_recipients_on_recipientPhoneNumber",
-                              on: "model_SignalRecipient",
-                              columns: ["recipientPhoneNumber"],
-                              unique: true)
-
-                try db.create(index: "index_signal_recipients_on_recipientUUID",
-                              on: "model_SignalRecipient",
-                              columns: ["recipientUUID"],
-                              unique: true)
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.dedupeSignalRecipients) { transaction in
+            try autoreleasepool {
+                try dedupeSignalRecipients(transaction: transaction.asAnyWrite)
             }
+
+            try transaction.database.drop(index: "index_signal_recipients_on_recipientPhoneNumber")
+            try transaction.database.drop(index: "index_signal_recipients_on_recipientUUID")
+
+            try transaction.database.create(
+                index: "index_signal_recipients_on_recipientPhoneNumber",
+                on: "model_SignalRecipient",
+                columns: ["recipientPhoneNumber"],
+                unique: true
+            )
+
+            try transaction.database.create(
+                index: "index_signal_recipients_on_recipientUUID",
+                on: "model_SignalRecipient",
+                columns: ["recipientUUID"],
+                unique: true
+            )
+            return .success(())
         }
 
         // Creating gallery records here can crash since it's run in the middle of schema migrations.
@@ -483,659 +537,559 @@ public class GRDBSchemaMigrator: NSObject {
         //     try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
         // }
 
-        migrator.registerMigration(.unreadThreadInteractions) { db in
-            do {
-                try db.create(index: "index_interactions_on_threadId_read_and_id",
-                              on: "model_TSInteraction",
-                              columns: ["uniqueThreadId", "read", "id"],
-                              unique: true)
-            } catch {
-                owsFail("Error: \(error)")
-            }
+        migrator.registerMigration(.unreadThreadInteractions) { transaction in
+            try transaction.database.create(
+                index: "index_interactions_on_threadId_read_and_id",
+                on: "model_TSInteraction",
+                columns: ["uniqueThreadId", "read", "id"],
+                unique: true
+            )
+            return .success(())
         }
 
-        migrator.registerMigration(.createFamilyName) { db in
-            do {
-                try db.alter(table: "model_OWSUserProfile", body: { alteration in
-                    alteration.add(column: "familyName", .text)
-                })
-            } catch {
-                owsFail("Error: \(error)")
-            }
+        migrator.registerMigration(.createFamilyName) { transaction in
+            try transaction.database.alter(table: "model_OWSUserProfile", body: { alteration in
+                alteration.add(column: "familyName", .text)
+            })
+            return .success(())
         }
 
-        migrator.registerMigration(.createIndexableFTSTable) { db in
-            do {
-                try Bench(title: MigrationId.createIndexableFTSTable.rawValue, logInProduction: true) {
-                    try db.create(table: "indexable_text") { table in
-                        table.autoIncrementedPrimaryKey("id")
-                            .notNull()
-                        table.column("collection", .text)
-                            .notNull()
-                        table.column("uniqueId", .text)
-                            .notNull()
-                        table.column("ftsIndexableContent", .text)
-                            .notNull()
-                    }
-
-                    try db.create(index: "index_indexable_text_on_collection_and_uniqueId",
-                                  on: "indexable_text",
-                                  columns: ["collection", "uniqueId"],
-                                  unique: true)
-
-                    try db.create(virtualTable: "indexable_text_fts", using: FTS5()) { table in
-                        // We could use FTS5TokenizerDescriptor.porter(wrapping: FTS5TokenizerDescriptor.unicode61())
-                        //
-                        // Porter does stemming (e.g. "hunting" will match "hunter").
-                        // unicode61 will remove diacritics (e.g. "senor" will match "señor").
-                        //
-                        // GRDB TODO: Should we do stemming?
-                        let tokenizer = FTS5TokenizerDescriptor.unicode61()
-                        table.tokenizer = tokenizer
-
-                        table.synchronize(withTable: "indexable_text")
-
-                        // I thought leveraging the prefix-index feature would speed up as-you-type
-                        // searching, but my measurements showed no substantive change.
-                        // table.prefixes = [2, 4]
-
-                        table.column("ftsIndexableContent")
-                    }
-
-                    // Copy over existing indexable content so we don't have to regenerate content from every indexed object.
-                    try db.execute(sql: "INSERT INTO indexable_text (collection, uniqueId, ftsIndexableContent) SELECT collection, uniqueId, ftsIndexableContent FROM signal_grdb_fts")
-                    try db.drop(table: "signal_grdb_fts")
-                }
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.dropContactQuery) { db in
-            do {
-                try db.drop(table: "model_OWSContactQuery")
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.indexFailedJob) { db in
-            do {
-                // index this query:
-                //      SELECT \(interactionColumn: .uniqueId)
-                //      FROM \(InteractionRecord.databaseTableName)
-                //      WHERE \(interactionColumn: .storedMessageState) = ?
-                try db.create(index: "index_interaction_on_storedMessageState",
-                              on: "model_TSInteraction",
-                              columns: ["storedMessageState"])
-
-                // index this query:
-                //      SELECT \(interactionColumn: .uniqueId)
-                //      FROM \(InteractionRecord.databaseTableName)
-                //      WHERE \(interactionColumn: .recordType) = ?
-                //      AND (
-                //          \(interactionColumn: .callType) = ?
-                //          OR \(interactionColumn: .callType) = ?
-                //      )
-                try db.create(index: "index_interaction_on_recordType_and_callType",
-                              on: "model_TSInteraction",
-                              columns: ["recordType", "callType"])
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.groupsV2MessageJobs) { db in
-            do {
-                try db.create(table: "model_IncomingGroupsV2MessageJob") { table in
+        migrator.registerMigration(.createIndexableFTSTable) { transaction in
+            try Bench(title: MigrationId.createIndexableFTSTable.rawValue, logInProduction: true) {
+                try transaction.database.create(table: "indexable_text") { table in
                     table.autoIncrementedPrimaryKey("id")
                         .notNull()
-                    table.column("recordType", .integer)
+                    table.column("collection", .text)
                         .notNull()
                     table.column("uniqueId", .text)
                         .notNull()
-                        .unique(onConflict: .fail)
-                    table.column("createdAt", .double)
-                        .notNull()
-                    table.column("envelopeData", .blob)
-                        .notNull()
-                    table.column("plaintextData", .blob)
-                    table.column("wasReceivedByUD", .integer)
+                    table.column("ftsIndexableContent", .text)
                         .notNull()
                 }
-                try db.create(index: "index_model_IncomingGroupsV2MessageJob_on_uniqueId", on: "model_IncomingGroupsV2MessageJob", columns: ["uniqueId"])
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
 
-        migrator.registerMigration(.addUserInfoToInteractions) { db in
-            do {
-                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
-                    table.add(column: "infoMessageUserInfo", .blob)
-                }
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.recreateExperienceUpgradeWithNewColumns) { db in
-            do {
-                // It's safe to just throw away old experience upgrade data since
-                // there are no campaigns actively running that we need to preserve
-                try db.drop(table: "model_ExperienceUpgrade")
-                try db.create(table: "model_ExperienceUpgrade", body: { table in
-                    table.autoIncrementedPrimaryKey("id")
-                        .notNull()
-                    table.column("recordType", .integer)
-                        .notNull()
-                    table.column("uniqueId", .text)
-                        .notNull()
-                        .unique(onConflict: .fail)
-                    table.column("firstViewedTimestamp", .double)
-                        .notNull()
-                    table.column("lastSnoozedTimestamp", .double)
-                        .notNull()
-                    table.column("isComplete", .boolean)
-                        .notNull()
-                })
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.recreateExperienceUpgradeIndex) { db in
-            do {
-                try db.create(index: "index_model_ExperienceUpgrade_on_uniqueId", on: "model_ExperienceUpgrade", columns: ["uniqueId"])
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.indexInfoMessageOnType_v2) { db in
-            do {
-                // cleanup typo in index name that was released to a small number of internal testflight users
-                try db.execute(sql: "DROP INDEX IF EXISTS index_model_TSInteraction_on_threadUniqueId_recordType_messagType")
-
-                try db.create(index: "index_model_TSInteraction_on_threadUniqueId_recordType_messageType",
-                              on: "model_TSInteraction",
-                              columns: ["threadUniqueId", "recordType", "messageType"])
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.createPendingReadReceipts) { db in
-            do {
-                try db.create(table: "pending_read_receipts") { table in
-                    table.autoIncrementedPrimaryKey("id")
-                    table.column("threadId", .integer).notNull()
-                    table.column("messageTimestamp", .integer).notNull()
-                    table.column("authorPhoneNumber", .text)
-                    table.column("authorUuid", .text)
-                }
-                try db.create(index: "index_pending_read_receipts_on_threadId",
-                              on: "pending_read_receipts",
-                              columns: ["threadId"])
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.createInteractionAttachmentIdsIndex) { db in
-            do {
-                try db.create(index: "index_model_TSInteraction_on_threadUniqueId_and_attachmentIds",
-                              on: "model_TSInteraction",
-                              columns: ["threadUniqueId", "attachmentIds"])
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.addIsUuidCapableToUserProfiles) { db in
-            do {
-                try db.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
-                    table.add(column: "isUuidCapable", .boolean).notNull().defaults(to: false)
-                }
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.uploadTimestamp) { db in
-            do {
-                try db.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
-                    table.add(column: "uploadTimestamp", .integer).notNull().defaults(to: 0)
-                }
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.addRemoteDeleteToInteractions) { db in
-            do {
-                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
-                    table.add(column: "wasRemotelyDeleted", .boolean)
-                }
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.cdnKeyAndCdnNumber) { db in
-            do {
-                try db.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
-                    table.add(column: "cdnKey", .text).notNull().defaults(to: "")
-                    table.add(column: "cdnNumber", .integer).notNull().defaults(to: 0)
-                }
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.addGroupIdToGroupsV2IncomingMessageJobs) { db in
-            do {
-                try db.alter(table: "model_IncomingGroupsV2MessageJob") { (table: TableAlteration) -> Void in
-                    table.add(column: "groupId", .blob)
-                }
-                try db.create(index: "index_model_IncomingGroupsV2MessageJob_on_groupId_and_id",
-                              on: "model_IncomingGroupsV2MessageJob",
-                              columns: ["groupId", "id"])
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.removeEarlyReceiptTables) { db in
-            do {
-                try db.drop(table: "model_TSRecipientReadReceipt")
-                try db.drop(table: "model_OWSLinkedDeviceReadReceipt")
-
-                let transaction = GRDBWriteTransaction(database: db)
-                defer { transaction.finalizeTransaction() }
-
-                let viewOnceStore = SDSKeyValueStore(collection: "viewOnceMessages")
-                viewOnceStore.removeAll(transaction: transaction.asAnyWrite)
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.addReadToReactions) { db in
-            do {
-                try db.alter(table: "model_OWSReaction") { (table: TableAlteration) -> Void in
-                    table.add(column: "read", .boolean).notNull().defaults(to: false)
-                }
-
-                try db.create(index: "index_model_OWSReaction_on_uniqueMessageId_and_read",
-                              on: "model_OWSReaction",
-                              columns: ["uniqueMessageId", "read"])
-
-                // Mark existing reactions as read
-                try db.execute(sql: "UPDATE model_OWSReaction SET read = 1")
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.addIsMarkedUnreadToThreads) { db in
-            do {
-                try db.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
-                    table.add(column: "isMarkedUnread", .boolean).notNull().defaults(to: false)
-                }
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.addIsMediaMessageToMessageSenderJobQueue) { db in
-            do {
-                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
-                    table.add(column: "isMediaMessage", .boolean)
-                }
-
-                try db.drop(index: "index_model_TSAttachment_on_uniqueId")
-
-                try db.create(
-                    index: "index_model_TSAttachment_on_uniqueId_and_contentType",
-                    on: "model_TSAttachment",
-                    columns: ["uniqueId", "contentType"]
-                )
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.readdAttachmentIndex) { db in
-            do {
-                try db.create(
-                    index: "index_model_TSAttachment_on_uniqueId",
-                    on: "model_TSAttachment",
-                    columns: ["uniqueId"]
-                )
-
-                try db.execute(sql: "UPDATE model_SSKJobRecord SET isMediaMessage = 0")
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.addLastVisibleRowIdToThreads) { db in
-            do {
-                try db.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
-                    table.add(column: "lastVisibleSortIdOnScreenPercentage", .double).notNull().defaults(to: 0)
-                    table.add(column: "lastVisibleSortId", .integer).notNull().defaults(to: 0)
-                }
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.addMarkedUnreadIndexToThread) { db in
-            do {
-                try db.create(
-                    index: "index_model_TSThread_on_isMarkedUnread",
-                    on: "model_TSThread",
-                    columns: ["isMarkedUnread"]
-                )
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.fixIncorrectIndexes) { db in
-            do {
-                try db.drop(index: "index_model_TSInteraction_on_threadUniqueId_recordType_messageType")
-                try db.create(index: "index_model_TSInteraction_on_uniqueThreadId_recordType_messageType",
-                              on: "model_TSInteraction",
-                              columns: ["uniqueThreadId", "recordType", "messageType"])
-
-                try db.drop(index: "index_model_TSInteraction_on_threadUniqueId_and_attachmentIds")
-                try db.create(index: "index_model_TSInteraction_on_uniqueThreadId_and_attachmentIds",
-                              on: "model_TSInteraction",
-                              columns: ["uniqueThreadId", "attachmentIds"])
-
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.resetThreadVisibility) { db in
-            do {
-                try db.execute(sql: "UPDATE model_TSThread SET lastVisibleSortIdOnScreenPercentage = 0, lastVisibleSortId = 0")
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.trackUserProfileFetches) { db in
-            do {
-                try db.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
-                    table.add(column: "lastFetchDate", .double)
-                    table.add(column: "lastMessagingDate", .double)
-                }
-                try db.create(index: "index_model_OWSUserProfile_on_lastFetchDate_and_lastMessagingDate",
-                              on: "model_OWSUserProfile",
-                              columns: ["lastFetchDate", "lastMessagingDate"])
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.addMentions) { db in
-            do {
-                try db.create(table: "model_TSMention") { table in
-                    table.autoIncrementedPrimaryKey("id")
-                        .notNull()
-                    table.column("recordType", .integer)
-                        .notNull()
-                    table.column("uniqueId", .text)
-                        .notNull()
-                        .unique(onConflict: .fail)
-                    table.column("uniqueMessageId", .text)
-                        .notNull()
-                    table.column("uniqueThreadId", .text)
-                        .notNull()
-                    table.column("uuidString", .text)
-                        .notNull()
-                    table.column("creationTimestamp", .double)
-                        .notNull()
-                }
-                try db.create(index: "index_model_TSMention_on_uniqueId",
-                              on: "model_TSMention",
-                              columns: ["uniqueId"])
-                try db.create(index: "index_model_TSMention_on_uuidString_and_uniqueThreadId",
-                              on: "model_TSMention",
-                              columns: ["uuidString", "uniqueThreadId"])
-                try db.create(index: "index_model_TSMention_on_uniqueMessageId_and_uuidString",
-                              on: "model_TSMention",
-                              columns: ["uniqueMessageId", "uuidString"],
+                try transaction.database.create(index: "index_indexable_text_on_collection_and_uniqueId",
+                              on: "indexable_text",
+                              columns: ["collection", "uniqueId"],
                               unique: true)
 
-                try db.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
-                    table.add(column: "messageDraftBodyRanges", .blob)
+                try transaction.database.create(virtualTable: "indexable_text_fts", using: FTS5()) { table in
+                    // We could use FTS5TokenizerDescriptor.porter(wrapping: FTS5TokenizerDescriptor.unicode61())
+                    //
+                    // Porter does stemming (e.g. "hunting" will match "hunter").
+                    // unicode61 will remove diacritics (e.g. "senor" will match "señor").
+                    //
+                    // GRDB TODO: Should we do stemming?
+                    let tokenizer = FTS5TokenizerDescriptor.unicode61()
+                    table.tokenizer = tokenizer
+
+                    table.synchronize(withTable: "indexable_text")
+
+                    // I thought leveraging the prefix-index feature would speed up as-you-type
+                    // searching, but my measurements showed no substantive change.
+                    // table.prefixes = [2, 4]
+
+                    table.column("ftsIndexableContent")
                 }
 
-                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
-                    table.add(column: "bodyRanges", .blob)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+                // Copy over existing indexable content so we don't have to regenerate content from every indexed object.
+                try transaction.database.execute(sql: "INSERT INTO indexable_text (collection, uniqueId, ftsIndexableContent) SELECT collection, uniqueId, ftsIndexableContent FROM signal_grdb_fts")
+                try transaction.database.drop(table: "signal_grdb_fts")
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.addMentionNotificationMode) { db in
-            do {
-                try db.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
-                    table.add(column: "mentionNotificationMode", .integer)
-                        .notNull()
-                        .defaults(to: 0)
-                }
-            } catch {
-                owsFail("Error: \(error)")
-            }
+        migrator.registerMigration(.dropContactQuery) { transaction in
+            try transaction.database.drop(table: "model_OWSContactQuery")
+            return .success(())
         }
 
-        migrator.registerMigration(.addOfferTypeToCalls) { db in
-            do {
-                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
-                    table.add(column: "offerType", .integer)
-                }
+        migrator.registerMigration(.indexFailedJob) { transaction in
+            // index this query:
+            //      SELECT \(interactionColumn: .uniqueId)
+            //      FROM \(InteractionRecord.databaseTableName)
+            //      WHERE \(interactionColumn: .storedMessageState) = ?
+            try transaction.database.create(index: "index_interaction_on_storedMessageState",
+                          on: "model_TSInteraction",
+                          columns: ["storedMessageState"])
 
-                // Backfill all existing calls as "audio" calls.
-                try db.execute(sql: "UPDATE model_TSInteraction SET offerType = 0 WHERE recordType IS \(SDSRecordType.call.rawValue)")
-            } catch {
-                owsFail("Error: \(error)")
-            }
+            // index this query:
+            //      SELECT \(interactionColumn: .uniqueId)
+            //      FROM \(InteractionRecord.databaseTableName)
+            //      WHERE \(interactionColumn: .recordType) = ?
+            //      AND (
+            //          \(interactionColumn: .callType) = ?
+            //          OR \(interactionColumn: .callType) = ?
+            //      )
+            try transaction.database.create(index: "index_interaction_on_recordType_and_callType",
+                          on: "model_TSInteraction",
+                          columns: ["recordType", "callType"])
+            return .success(())
         }
 
-        migrator.registerMigration(.addServerDeliveryTimestamp) { db in
-            do {
-                try db.alter(table: "model_IncomingGroupsV2MessageJob") { (table: TableAlteration) -> Void in
-                    table.add(column: "serverDeliveryTimestamp", .integer).notNull().defaults(to: 0)
-                }
-
-                try db.alter(table: "model_OWSMessageContentJob") { (table: TableAlteration) -> Void in
-                    table.add(column: "serverDeliveryTimestamp", .integer).notNull().defaults(to: 0)
-                }
-
-                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
-                    table.add(column: "serverDeliveryTimestamp", .integer)
-                }
-
-                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
-                    table.add(column: "serverDeliveryTimestamp", .integer)
-                }
-
-                // Backfill all incoming messages with "0" as their timestamp
-                try db.execute(sql: "UPDATE model_TSInteraction SET serverDeliveryTimestamp = 0 WHERE recordType IS \(SDSRecordType.incomingMessage.rawValue)")
-
-                // Backfill all jobs with "0" as their timestamp
-                try db.execute(sql: "UPDATE model_SSKJobRecord SET serverDeliveryTimestamp = 0 WHERE recordType IS \(SDSRecordType.messageDecryptJobRecord.rawValue)")
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.groupsV2MessageJobs) { transaction in
+            try transaction.database.create(table: "model_IncomingGroupsV2MessageJob") { table in
+                table.autoIncrementedPrimaryKey("id")
+                    .notNull()
+                table.column("recordType", .integer)
+                    .notNull()
+                table.column("uniqueId", .text)
+                    .notNull()
+                    .unique(onConflict: .fail)
+                table.column("createdAt", .double)
+                    .notNull()
+                table.column("envelopeData", .blob)
+                    .notNull()
+                table.column("plaintextData", .blob)
+                table.column("wasReceivedByUD", .integer)
+                    .notNull()
             }
+            try transaction.database.create(index: "index_model_IncomingGroupsV2MessageJob_on_uniqueId", on: "model_IncomingGroupsV2MessageJob", columns: ["uniqueId"])
+            return .success(())
         }
 
-        migrator.registerMigration(.updateAnimatedStickers) { db in
-            do {
-                try db.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
-                    table.add(column: "isAnimatedCached", .integer)
-                }
-                try db.alter(table: "model_InstalledSticker") { (table: TableAlteration) -> Void in
-                    table.add(column: "contentType", .text)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addUserInfoToInteractions) { transaction in
+            try transaction.database.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                table.add(column: "infoMessageUserInfo", .blob)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.updateMarkedUnreadIndex) { db in
-            do {
-                try db.drop(index: "index_model_TSThread_on_isMarkedUnread")
-                try db.create(
-                    index: "index_model_TSThread_on_isMarkedUnread_and_shouldThreadBeVisible",
-                    on: "model_TSThread",
-                    columns: ["isMarkedUnread", "shouldThreadBeVisible"]
-                )
-            } catch {
-                owsFail("Error: \(error)")
-            }
+        migrator.registerMigration(.recreateExperienceUpgradeWithNewColumns) { transaction in
+            // It's safe to just throw away old experience upgrade data since
+            // there are no campaigns actively running that we need to preserve
+            try transaction.database.drop(table: "model_ExperienceUpgrade")
+            try transaction.database.create(table: "model_ExperienceUpgrade", body: { table in
+                table.autoIncrementedPrimaryKey("id")
+                    .notNull()
+                table.column("recordType", .integer)
+                    .notNull()
+                table.column("uniqueId", .text)
+                    .notNull()
+                    .unique(onConflict: .fail)
+                table.column("firstViewedTimestamp", .double)
+                    .notNull()
+                table.column("lastSnoozedTimestamp", .double)
+                    .notNull()
+                table.column("isComplete", .boolean)
+                    .notNull()
+            })
+            return .success(())
         }
 
-        migrator.registerMigration(.addGroupCallMessage2) { db in
-            do {
-                try db.alter(table: "model_TSInteraction") { table in
-                    table.add(column: "eraId", .text)
-                    table.add(column: "hasEnded", .boolean)
-                    table.add(column: "creatorUuid", .text)
-                    table.add(column: "joinedMemberUuids", .blob)
-                }
-
-                try db.create(
-                    index: "index_model_TSInteraction_on_uniqueThreadId_and_hasEnded_and_recordType",
-                    on: "model_TSInteraction",
-                    columns: ["uniqueThreadId", "hasEnded", "recordType"]
-                )
-            } catch {
-                owsFail("Error: \(error)")
-            }
+        migrator.registerMigration(.recreateExperienceUpgradeIndex) { transaction in
+            try transaction.database.create(index: "index_model_ExperienceUpgrade_on_uniqueId", on: "model_ExperienceUpgrade", columns: ["uniqueId"])
+            return .success(())
         }
 
-        migrator.registerMigration(.addGroupCallEraIdIndex) { db in
-            do {
-                try db.create(
-                    index: "index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType",
-                    on: "model_TSInteraction",
-                    columns: ["uniqueThreadId", "eraId", "recordType"]
-                )
-            } catch {
-                owsFail("Error: \(error)")
-            }
+        migrator.registerMigration(.indexInfoMessageOnType_v2) { transaction in
+            // cleanup typo in index name that was released to a small number of internal testflight users
+            try transaction.database.execute(sql: "DROP INDEX IF EXISTS index_model_TSInteraction_on_threadUniqueId_recordType_messagType")
+
+            try transaction.database.create(
+                index: "index_model_TSInteraction_on_threadUniqueId_recordType_messageType",
+                on: "model_TSInteraction",
+                columns: ["threadUniqueId", "recordType", "messageType"]
+            )
+            return .success(())
         }
 
-        migrator.registerMigration(.addProfileBio) { db in
-            do {
-                try db.alter(table: "model_OWSUserProfile") { table in
-                    table.add(column: "bio", .text)
-                    table.add(column: "bioEmoji", .text)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.createPendingReadReceipts) { transaction in
+            try transaction.database.create(table: "pending_read_receipts") { table in
+                table.autoIncrementedPrimaryKey("id")
+                table.column("threadId", .integer).notNull()
+                table.column("messageTimestamp", .integer).notNull()
+                table.column("authorPhoneNumber", .text)
+                table.column("authorUuid", .text)
             }
+            try transaction.database.create(
+                index: "index_pending_read_receipts_on_threadId",
+                on: "pending_read_receipts",
+                columns: ["threadId"]
+            )
+            return .success(())
         }
 
-        migrator.registerMigration(.addWasIdentityVerified) { db in
-            do {
-                try db.alter(table: "model_TSInteraction") { table in
-                    table.add(column: "wasIdentityVerified", .boolean)
-                }
-
-                try db.execute(sql: "UPDATE model_TSInteraction SET wasIdentityVerified = 0")
-            } catch {
-                owsFail("Error: \(error)")
-            }
+        migrator.registerMigration(.createInteractionAttachmentIdsIndex) { transaction in
+            try transaction.database.create(
+                index: "index_model_TSInteraction_on_threadUniqueId_and_attachmentIds",
+                on: "model_TSInteraction",
+                columns: ["threadUniqueId", "attachmentIds"]
+            )
+            return .success(())
         }
 
-        migrator.registerMigration(.storeMutedUntilDateAsMillisecondTimestamp) { db in
-            do {
-                try db.alter(table: "model_TSThread") { table in
-                    table.add(column: "mutedUntilTimestamp", .integer).notNull().defaults(to: 0)
-                }
-
-                // Convert any existing mutedUntilDate (seconds) into mutedUntilTimestamp (milliseconds)
-                try db.execute(sql: "UPDATE model_TSThread SET mutedUntilTimestamp = CAST(mutedUntilDate * 1000 AS INT) WHERE mutedUntilDate IS NOT NULL")
-                try db.execute(sql: "UPDATE model_TSThread SET mutedUntilDate = NULL")
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addIsUuidCapableToUserProfiles) { transaction in
+            try transaction.database.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
+                table.add(column: "isUuidCapable", .boolean).notNull().defaults(to: false)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.addPaymentModels15) { db in
-            do {
-                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
-                    table.add(column: "paymentCancellation", .blob)
-                    table.add(column: "paymentNotification", .blob)
-                    table.add(column: "paymentRequest", .blob)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.uploadTimestamp) { transaction in
+            try transaction.database.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
+                table.add(column: "uploadTimestamp", .integer).notNull().defaults(to: 0)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.addPaymentModels40) { db in
-            do {
-                // PAYMENTS TODO: Remove.
-                try db.execute(sql: "DROP TABLE IF EXISTS model_TSPaymentModel")
-                try db.execute(sql: "DROP TABLE IF EXISTS model_TSPaymentRequestModel")
-
-                try db.create(table: "model_TSPaymentModel") { table in
-                    table.autoIncrementedPrimaryKey("id")
-                        .notNull()
-                    table.column("recordType", .integer)
-                        .notNull()
-                    table.column("uniqueId", .text)
-                        .notNull()
-                        .unique(onConflict: .fail)
-                    table.column("addressUuidString", .text)
-                    table.column("createdTimestamp", .integer)
-                        .notNull()
-                    table.column("isUnread", .boolean)
-                        .notNull()
-                    table.column("mcLedgerBlockIndex", .integer)
-                        .notNull()
-                    table.column("mcReceiptData", .blob)
-                    table.column("mcTransactionData", .blob)
-                    table.column("memoMessage", .text)
-                    table.column("mobileCoin", .blob)
-                    table.column("paymentAmount", .blob)
-                    table.column("paymentFailure", .integer)
-                        .notNull()
-                    table.column("paymentState", .integer)
-                        .notNull()
-                    table.column("paymentType", .integer)
-                        .notNull()
-                    table.column("requestUuidString", .text)
-                }
-
-                try db.create(index: "index_model_TSPaymentModel_on_uniqueId", on: "model_TSPaymentModel", columns: ["uniqueId"])
-                try db.create(index: "index_model_TSPaymentModel_on_paymentState", on: "model_TSPaymentModel", columns: ["paymentState"])
-                try db.create(index: "index_model_TSPaymentModel_on_mcLedgerBlockIndex", on: "model_TSPaymentModel", columns: ["mcLedgerBlockIndex"])
-                try db.create(index: "index_model_TSPaymentModel_on_mcReceiptData", on: "model_TSPaymentModel", columns: ["mcReceiptData"])
-                try db.create(index: "index_model_TSPaymentModel_on_mcTransactionData", on: "model_TSPaymentModel", columns: ["mcTransactionData"])
-                try db.create(index: "index_model_TSPaymentModel_on_isUnread", on: "model_TSPaymentModel", columns: ["isUnread"])
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addRemoteDeleteToInteractions) { transaction in
+            try transaction.database.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                table.add(column: "wasRemotelyDeleted", .boolean)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.fixPaymentModels) { db in
+        migrator.registerMigration(.cdnKeyAndCdnNumber) { transaction in
+            try transaction.database.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
+                table.add(column: "cdnKey", .text).notNull().defaults(to: "")
+                table.add(column: "cdnNumber", .integer).notNull().defaults(to: 0)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addGroupIdToGroupsV2IncomingMessageJobs) { transaction in
+            try transaction.database.alter(table: "model_IncomingGroupsV2MessageJob") { (table: TableAlteration) -> Void in
+                table.add(column: "groupId", .blob)
+            }
+            try transaction.database.create(
+                index: "index_model_IncomingGroupsV2MessageJob_on_groupId_and_id",
+                on: "model_IncomingGroupsV2MessageJob",
+                columns: ["groupId", "id"]
+            )
+            return .success(())
+        }
+
+        migrator.registerMigration(.removeEarlyReceiptTables) { transaction in
+            try transaction.database.drop(table: "model_TSRecipientReadReceipt")
+            try transaction.database.drop(table: "model_OWSLinkedDeviceReadReceipt")
+
+            let viewOnceStore = SDSKeyValueStore(collection: "viewOnceMessages")
+            viewOnceStore.removeAll(transaction: transaction.asAnyWrite)
+            return .success(())
+        }
+
+        migrator.registerMigration(.addReadToReactions) { transaction in
+            try transaction.database.alter(table: "model_OWSReaction") { (table: TableAlteration) -> Void in
+                table.add(column: "read", .boolean).notNull().defaults(to: false)
+            }
+
+            try transaction.database.create(
+                index: "index_model_OWSReaction_on_uniqueMessageId_and_read",
+                on: "model_OWSReaction",
+                columns: ["uniqueMessageId", "read"]
+            )
+
+            // Mark existing reactions as read
+            try transaction.database.execute(sql: "UPDATE model_OWSReaction SET read = 1")
+            return .success(())
+        }
+
+        migrator.registerMigration(.addIsMarkedUnreadToThreads) { transaction in
+            try transaction.database.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
+                table.add(column: "isMarkedUnread", .boolean).notNull().defaults(to: false)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addIsMediaMessageToMessageSenderJobQueue) { transaction in
+            try transaction.database.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                table.add(column: "isMediaMessage", .boolean)
+            }
+
+            try transaction.database.drop(index: "index_model_TSAttachment_on_uniqueId")
+
+            try transaction.database.create(
+                index: "index_model_TSAttachment_on_uniqueId_and_contentType",
+                on: "model_TSAttachment",
+                columns: ["uniqueId", "contentType"]
+            )
+            return .success(())
+        }
+
+        migrator.registerMigration(.readdAttachmentIndex) { transaction in
+            try transaction.database.create(
+                index: "index_model_TSAttachment_on_uniqueId",
+                on: "model_TSAttachment",
+                columns: ["uniqueId"]
+            )
+
+            try transaction.database.execute(sql: "UPDATE model_SSKJobRecord SET isMediaMessage = 0")
+            return .success(())
+        }
+
+        migrator.registerMigration(.addLastVisibleRowIdToThreads) { transaction in
+            try transaction.database.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
+                table.add(column: "lastVisibleSortIdOnScreenPercentage", .double).notNull().defaults(to: 0)
+                table.add(column: "lastVisibleSortId", .integer).notNull().defaults(to: 0)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addMarkedUnreadIndexToThread) { transaction in
+            try transaction.database.create(
+                index: "index_model_TSThread_on_isMarkedUnread",
+                on: "model_TSThread",
+                columns: ["isMarkedUnread"]
+            )
+            return .success(())
+        }
+
+        migrator.registerMigration(.fixIncorrectIndexes) { transaction in
+            try transaction.database.drop(index: "index_model_TSInteraction_on_threadUniqueId_recordType_messageType")
+            try transaction.database.create(
+                index: "index_model_TSInteraction_on_uniqueThreadId_recordType_messageType",
+                on: "model_TSInteraction",
+                columns: ["uniqueThreadId", "recordType", "messageType"]
+            )
+
+            try transaction.database.drop(index: "index_model_TSInteraction_on_threadUniqueId_and_attachmentIds")
+            try transaction.database.create(
+                index: "index_model_TSInteraction_on_uniqueThreadId_and_attachmentIds",
+                on: "model_TSInteraction",
+                columns: ["uniqueThreadId", "attachmentIds"]
+            )
+            return .success(())
+        }
+
+        migrator.registerMigration(.resetThreadVisibility) { transaction in
+            try transaction.database.execute(sql: "UPDATE model_TSThread SET lastVisibleSortIdOnScreenPercentage = 0, lastVisibleSortId = 0")
+            return .success(())
+        }
+
+        migrator.registerMigration(.trackUserProfileFetches) { transaction in
+            try transaction.database.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
+                table.add(column: "lastFetchDate", .double)
+                table.add(column: "lastMessagingDate", .double)
+            }
+            try transaction.database.create(
+                index: "index_model_OWSUserProfile_on_lastFetchDate_and_lastMessagingDate",
+                on: "model_OWSUserProfile",
+                columns: ["lastFetchDate", "lastMessagingDate"]
+            )
+            return .success(())
+        }
+
+        migrator.registerMigration(.addMentions) { transaction in
+            try transaction.database.create(table: "model_TSMention") { table in
+                table.autoIncrementedPrimaryKey("id")
+                    .notNull()
+                table.column("recordType", .integer)
+                    .notNull()
+                table.column("uniqueId", .text)
+                    .notNull()
+                    .unique(onConflict: .fail)
+                table.column("uniqueMessageId", .text)
+                    .notNull()
+                table.column("uniqueThreadId", .text)
+                    .notNull()
+                table.column("uuidString", .text)
+                    .notNull()
+                table.column("creationTimestamp", .double)
+                    .notNull()
+            }
+            try transaction.database.create(
+                index: "index_model_TSMention_on_uniqueId",
+                on: "model_TSMention",
+                columns: ["uniqueId"]
+            )
+            try transaction.database.create(
+                index: "index_model_TSMention_on_uuidString_and_uniqueThreadId",
+                on: "model_TSMention",
+                columns: ["uuidString", "uniqueThreadId"]
+            )
+            try transaction.database.create(
+                index: "index_model_TSMention_on_uniqueMessageId_and_uuidString",
+                on: "model_TSMention",
+                columns: ["uniqueMessageId", "uuidString"],
+                unique: true
+            )
+
+            try transaction.database.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
+                table.add(column: "messageDraftBodyRanges", .blob)
+            }
+
+            try transaction.database.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                table.add(column: "bodyRanges", .blob)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addMentionNotificationMode) { transaction in
+            try transaction.database.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
+                table.add(column: "mentionNotificationMode", .integer)
+                    .notNull()
+                    .defaults(to: 0)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addOfferTypeToCalls) { transaction in
+            try transaction.database.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                table.add(column: "offerType", .integer)
+            }
+
+            // Backfill all existing calls as "audio" calls.
+            try transaction.database.execute(sql: "UPDATE model_TSInteraction SET offerType = 0 WHERE recordType IS \(SDSRecordType.call.rawValue)")
+            return .success(())
+        }
+
+        migrator.registerMigration(.addServerDeliveryTimestamp) { transaction in
+            try transaction.database.alter(table: "model_IncomingGroupsV2MessageJob") { (table: TableAlteration) -> Void in
+                table.add(column: "serverDeliveryTimestamp", .integer).notNull().defaults(to: 0)
+            }
+
+            try transaction.database.alter(table: "model_OWSMessageContentJob") { (table: TableAlteration) -> Void in
+                table.add(column: "serverDeliveryTimestamp", .integer).notNull().defaults(to: 0)
+            }
+
+            try transaction.database.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                table.add(column: "serverDeliveryTimestamp", .integer)
+            }
+
+            try transaction.database.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                table.add(column: "serverDeliveryTimestamp", .integer)
+            }
+
+            // Backfill all incoming messages with "0" as their timestamp
+            try transaction.database.execute(sql: "UPDATE model_TSInteraction SET serverDeliveryTimestamp = 0 WHERE recordType IS \(SDSRecordType.incomingMessage.rawValue)")
+
+            // Backfill all jobs with "0" as their timestamp
+            try transaction.database.execute(sql: "UPDATE model_SSKJobRecord SET serverDeliveryTimestamp = 0 WHERE recordType IS \(SDSRecordType.messageDecryptJobRecord.rawValue)")
+            return .success(())
+        }
+
+        migrator.registerMigration(.updateAnimatedStickers) { transaction in
+            try transaction.database.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
+                table.add(column: "isAnimatedCached", .integer)
+            }
+            try transaction.database.alter(table: "model_InstalledSticker") { (table: TableAlteration) -> Void in
+                table.add(column: "contentType", .text)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.updateMarkedUnreadIndex) { transaction in
+            try transaction.database.drop(index: "index_model_TSThread_on_isMarkedUnread")
+            try transaction.database.create(
+                index: "index_model_TSThread_on_isMarkedUnread_and_shouldThreadBeVisible",
+                on: "model_TSThread",
+                columns: ["isMarkedUnread", "shouldThreadBeVisible"]
+            )
+            return .success(())
+        }
+
+        migrator.registerMigration(.addGroupCallMessage2) { transaction in
+            try transaction.database.alter(table: "model_TSInteraction") { table in
+                table.add(column: "eraId", .text)
+                table.add(column: "hasEnded", .boolean)
+                table.add(column: "creatorUuid", .text)
+                table.add(column: "joinedMemberUuids", .blob)
+            }
+
+            try transaction.database.create(
+                index: "index_model_TSInteraction_on_uniqueThreadId_and_hasEnded_and_recordType",
+                on: "model_TSInteraction",
+                columns: ["uniqueThreadId", "hasEnded", "recordType"]
+            )
+            return .success(())
+        }
+
+        migrator.registerMigration(.addGroupCallEraIdIndex) { transaction in
+            try transaction.database.create(
+                index: "index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType",
+                on: "model_TSInteraction",
+                columns: ["uniqueThreadId", "eraId", "recordType"]
+            )
+            return .success(())
+        }
+
+        migrator.registerMigration(.addProfileBio) { transaction in
+            try transaction.database.alter(table: "model_OWSUserProfile") { table in
+                table.add(column: "bio", .text)
+                table.add(column: "bioEmoji", .text)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addWasIdentityVerified) { transaction in
+            try transaction.database.alter(table: "model_TSInteraction") { table in
+                table.add(column: "wasIdentityVerified", .boolean)
+            }
+
+            try transaction.database.execute(sql: "UPDATE model_TSInteraction SET wasIdentityVerified = 0")
+            return .success(())
+        }
+
+        migrator.registerMigration(.storeMutedUntilDateAsMillisecondTimestamp) { transaction in
+            try transaction.database.alter(table: "model_TSThread") { table in
+                table.add(column: "mutedUntilTimestamp", .integer).notNull().defaults(to: 0)
+            }
+
+            // Convert any existing mutedUntilDate (seconds) into mutedUntilTimestamp (milliseconds)
+            try transaction.database.execute(sql: "UPDATE model_TSThread SET mutedUntilTimestamp = CAST(mutedUntilDate * 1000 AS INT) WHERE mutedUntilDate IS NOT NULL")
+            try transaction.database.execute(sql: "UPDATE model_TSThread SET mutedUntilDate = NULL")
+            return .success(())
+        }
+
+        migrator.registerMigration(.addPaymentModels15) { transaction in
+            try transaction.database.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                table.add(column: "paymentCancellation", .blob)
+                table.add(column: "paymentNotification", .blob)
+                table.add(column: "paymentRequest", .blob)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addPaymentModels40) { transaction in
+            // PAYMENTS TODO: Remove.
+            try transaction.database.execute(sql: "DROP TABLE IF EXISTS model_TSPaymentModel")
+            try transaction.database.execute(sql: "DROP TABLE IF EXISTS model_TSPaymentRequestModel")
+
+            try transaction.database.create(table: "model_TSPaymentModel") { table in
+                table.autoIncrementedPrimaryKey("id")
+                    .notNull()
+                table.column("recordType", .integer)
+                    .notNull()
+                table.column("uniqueId", .text)
+                    .notNull()
+                    .unique(onConflict: .fail)
+                table.column("addressUuidString", .text)
+                table.column("createdTimestamp", .integer)
+                    .notNull()
+                table.column("isUnread", .boolean)
+                    .notNull()
+                table.column("mcLedgerBlockIndex", .integer)
+                    .notNull()
+                table.column("mcReceiptData", .blob)
+                table.column("mcTransactionData", .blob)
+                table.column("memoMessage", .text)
+                table.column("mobileCoin", .blob)
+                table.column("paymentAmount", .blob)
+                table.column("paymentFailure", .integer)
+                    .notNull()
+                table.column("paymentState", .integer)
+                    .notNull()
+                table.column("paymentType", .integer)
+                    .notNull()
+                table.column("requestUuidString", .text)
+            }
+
+            try transaction.database.create(index: "index_model_TSPaymentModel_on_uniqueId", on: "model_TSPaymentModel", columns: ["uniqueId"])
+            try transaction.database.create(index: "index_model_TSPaymentModel_on_paymentState", on: "model_TSPaymentModel", columns: ["paymentState"])
+            try transaction.database.create(index: "index_model_TSPaymentModel_on_mcLedgerBlockIndex", on: "model_TSPaymentModel", columns: ["mcLedgerBlockIndex"])
+            try transaction.database.create(index: "index_model_TSPaymentModel_on_mcReceiptData", on: "model_TSPaymentModel", columns: ["mcReceiptData"])
+            try transaction.database.create(index: "index_model_TSPaymentModel_on_mcTransactionData", on: "model_TSPaymentModel", columns: ["mcTransactionData"])
+            try transaction.database.create(index: "index_model_TSPaymentModel_on_isUnread", on: "model_TSPaymentModel", columns: ["isUnread"])
+            return .success(())
+        }
+
+        migrator.registerMigration(.fixPaymentModels) { transaction in
             // We released a build with an out-of-date schema that didn't reflect
             // `addPaymentModels15`. To fix this, we need to run the column adds
             // again to get all users in a consistent state. We can safely skip
             // this migration if it fails.
             do {
-                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                try transaction.database.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
                     table.add(column: "paymentCancellation", .blob)
                     table.add(column: "paymentNotification", .blob)
                     table.add(column: "paymentRequest", .blob)
@@ -1144,1071 +1098,934 @@ public class GRDBSchemaMigrator: NSObject {
                 // We can safely skip this if it fails.
                 Logger.info("Skipping re-add of interaction payment columns.")
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.addGroupMember) { db in
-            do {
-                try db.create(table: "model_TSGroupMember") { table in
-                    table.autoIncrementedPrimaryKey("id")
-                        .notNull()
-                    table.column("recordType", .integer)
-                        .notNull()
-                    table.column("uniqueId", .text)
-                        .notNull()
-                        .unique(onConflict: .fail)
-                    table.column("groupThreadId", .text)
-                        .notNull()
-                    table.column("phoneNumber", .text)
-                    table.column("uuidString", .text)
-                    table.column("lastInteractionTimestamp", .integer)
-                        .notNull().defaults(to: 0)
-                }
-
-                try db.create(index: "index_model_TSGroupMember_on_uniqueId",
-                              on: "model_TSGroupMember",
-                              columns: ["uniqueId"])
-                try db.create(index: "index_model_TSGroupMember_on_groupThreadId",
-                              on: "model_TSGroupMember",
-                              columns: ["groupThreadId"])
-                try db.create(index: "index_model_TSGroupMember_on_uuidString_and_groupThreadId",
-                              on: "model_TSGroupMember",
-                              columns: ["uuidString", "groupThreadId"],
-                              unique: true)
-                try db.create(index: "index_model_TSGroupMember_on_phoneNumber_and_groupThreadId",
-                              on: "model_TSGroupMember",
-                              columns: ["phoneNumber", "groupThreadId"],
-                              unique: true)
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addGroupMember) { transaction in
+            try transaction.database.create(table: "model_TSGroupMember") { table in
+                table.autoIncrementedPrimaryKey("id")
+                    .notNull()
+                table.column("recordType", .integer)
+                    .notNull()
+                table.column("uniqueId", .text)
+                    .notNull()
+                    .unique(onConflict: .fail)
+                table.column("groupThreadId", .text)
+                    .notNull()
+                table.column("phoneNumber", .text)
+                table.column("uuidString", .text)
+                table.column("lastInteractionTimestamp", .integer)
+                    .notNull().defaults(to: 0)
             }
+
+            try transaction.database.create(
+                index: "index_model_TSGroupMember_on_uniqueId",
+                on: "model_TSGroupMember",
+                columns: ["uniqueId"]
+            )
+            try transaction.database.create(
+                index: "index_model_TSGroupMember_on_groupThreadId",
+                on: "model_TSGroupMember",
+                columns: ["groupThreadId"]
+            )
+            try transaction.database.create(
+                index: "index_model_TSGroupMember_on_uuidString_and_groupThreadId",
+                on: "model_TSGroupMember",
+                columns: ["uuidString", "groupThreadId"],
+                unique: true
+            )
+            try transaction.database.create(
+                index: "index_model_TSGroupMember_on_phoneNumber_and_groupThreadId",
+                on: "model_TSGroupMember",
+                columns: ["phoneNumber", "groupThreadId"],
+                unique: true
+            )
+            return .success(())
         }
 
-        migrator.registerMigration(.createPendingViewedReceipts) { db in
-            do {
-                try db.create(table: "pending_viewed_receipts") { table in
-                    table.autoIncrementedPrimaryKey("id")
-                    table.column("threadId", .integer).notNull()
-                    table.column("messageTimestamp", .integer).notNull()
-                    table.column("authorPhoneNumber", .text)
-                    table.column("authorUuid", .text)
-                }
-                try db.create(index: "index_pending_viewed_receipts_on_threadId",
-                              on: "pending_viewed_receipts",
-                              columns: ["threadId"])
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.createPendingViewedReceipts) { transaction in
+            try transaction.database.create(table: "pending_viewed_receipts") { table in
+                table.autoIncrementedPrimaryKey("id")
+                table.column("threadId", .integer).notNull()
+                table.column("messageTimestamp", .integer).notNull()
+                table.column("authorPhoneNumber", .text)
+                table.column("authorUuid", .text)
             }
+            try transaction.database.create(
+                index: "index_pending_viewed_receipts_on_threadId",
+                on: "pending_viewed_receipts",
+                columns: ["threadId"]
+            )
+            return .success(())
         }
 
-        migrator.registerMigration(.addViewedToInteractions) { db in
-            do {
-                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
-                    table.add(column: "viewed", .boolean)
-                }
-
-                try db.execute(sql: "UPDATE model_TSInteraction SET viewed = 0")
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addViewedToInteractions) { transaction in
+            try transaction.database.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                table.add(column: "viewed", .boolean)
             }
+
+            try transaction.database.execute(sql: "UPDATE model_TSInteraction SET viewed = 0")
+            return .success(())
         }
 
-        migrator.registerMigration(.createThreadAssociatedData) { db in
-            do {
-                try db.create(table: "thread_associated_data") { table in
-                    table.autoIncrementedPrimaryKey("id")
-                    table.column("threadUniqueId", .text)
-                        .notNull()
-                        .unique(onConflict: .fail)
-                    table.column("isArchived", .boolean)
-                        .notNull()
-                        .defaults(to: false)
-                    table.column("isMarkedUnread", .boolean)
-                        .notNull()
-                        .defaults(to: false)
-                    table.column("mutedUntilTimestamp", .integer)
-                        .notNull()
-                        .defaults(to: 0)
-                }
-
-                try db.create(index: "index_thread_associated_data_on_threadUniqueId",
-                              on: "thread_associated_data",
-                              columns: ["threadUniqueId"],
-                              unique: true)
-                try db.create(index: "index_thread_associated_data_on_threadUniqueId_and_isMarkedUnread",
-                              on: "thread_associated_data",
-                              columns: ["threadUniqueId", "isMarkedUnread"])
-                try db.create(index: "index_thread_associated_data_on_threadUniqueId_and_isArchived",
-                              on: "thread_associated_data",
-                              columns: ["threadUniqueId", "isArchived"])
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.createThreadAssociatedData) { transaction in
+            try transaction.database.create(table: "thread_associated_data") { table in
+                table.autoIncrementedPrimaryKey("id")
+                table.column("threadUniqueId", .text)
+                    .notNull()
+                    .unique(onConflict: .fail)
+                table.column("isArchived", .boolean)
+                    .notNull()
+                    .defaults(to: false)
+                table.column("isMarkedUnread", .boolean)
+                    .notNull()
+                    .defaults(to: false)
+                table.column("mutedUntilTimestamp", .integer)
+                    .notNull()
+                    .defaults(to: 0)
             }
+
+            try transaction.database.create(
+                index: "index_thread_associated_data_on_threadUniqueId",
+                on: "thread_associated_data",
+                columns: ["threadUniqueId"],
+                unique: true
+            )
+            try transaction.database.create(
+                index: "index_thread_associated_data_on_threadUniqueId_and_isMarkedUnread",
+                on: "thread_associated_data",
+                columns: ["threadUniqueId", "isMarkedUnread"]
+            )
+            try transaction.database.create(
+                index: "index_thread_associated_data_on_threadUniqueId_and_isArchived",
+                on: "thread_associated_data",
+                columns: ["threadUniqueId", "isArchived"]
+            )
+            return .success(())
         }
 
-        migrator.registerMigration(.addServerGuidToInteractions) { db in
-            do {
-                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
-                    table.add(column: "serverGuid", .text)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addServerGuidToInteractions) { transaction in
+            try transaction.database.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                table.add(column: "serverGuid", .text)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.addMessageSendLog) { db in
-            do {
-                // Records all sent payloads
-                // The sentTimestamp is the timestamp of the outgoing payload
-                try db.create(table: "MessageSendLog_Payload") { table in
-                    table.autoIncrementedPrimaryKey("payloadId")
-                        .notNull()
-                    table.column("plaintextContent", .blob)
-                        .notNull()
-                    table.column("contentHint", .integer)
-                        .notNull()
-                    table.column("sentTimestamp", .date)
-                        .notNull()
-                    table.column("uniqueThreadId", .text)
-                        .notNull()
-                }
+        migrator.registerMigration(.addMessageSendLog) { transaction in
+            // Records all sent payloads
+            // The sentTimestamp is the timestamp of the outgoing payload
+            try transaction.database.create(table: "MessageSendLog_Payload") { table in
+                table.autoIncrementedPrimaryKey("payloadId")
+                    .notNull()
+                table.column("plaintextContent", .blob)
+                    .notNull()
+                table.column("contentHint", .integer)
+                    .notNull()
+                table.column("sentTimestamp", .date)
+                    .notNull()
+                table.column("uniqueThreadId", .text)
+                    .notNull()
+            }
 
-                // This table tracks a many-to-many relationship mapping
-                // TSInteractions to related payloads. This is tracked so
-                // when a given interaction is deleted, all related payloads
-                // can be queried and deleted.
-                //
-                // An interaction can have multiple payloads (e.g. the message,
-                // reactions, read receipts).
-                // A payload can have multiple associated interactions (e.g.
-                // a single receipt message marking multiple messages as read).
-                try db.create(table: "MessageSendLog_Message") { table in
-                    table.column("payloadId", .integer)
-                        .notNull()
-                    table.column("uniqueId", .text)
-                        .notNull()
+            // This table tracks a many-to-many relationship mapping
+            // TSInteractions to related payloads. This is tracked so
+            // when a given interaction is deleted, all related payloads
+            // can be queried and deleted.
+            //
+            // An interaction can have multiple payloads (e.g. the message,
+            // reactions, read receipts).
+            // A payload can have multiple associated interactions (e.g.
+            // a single receipt message marking multiple messages as read).
+            try transaction.database.create(table: "MessageSendLog_Message") { table in
+                table.column("payloadId", .integer)
+                    .notNull()
+                table.column("uniqueId", .text)
+                    .notNull()
 
-                    table.primaryKey(["payloadId", "uniqueId"])
-                    table.foreignKey(
-                        ["payloadId"],
-                        references: "MessageSendLog_Payload",
-                        columns: ["payloadId"],
-                        onDelete: .cascade,
-                        onUpdate: .cascade)
-                }
+                table.primaryKey(["payloadId", "uniqueId"])
+                table.foreignKey(
+                    ["payloadId"],
+                    references: "MessageSendLog_Payload",
+                    columns: ["payloadId"],
+                    onDelete: .cascade,
+                    onUpdate: .cascade)
+            }
 
-                // Records all intended recipients for an intended payload
-                // A trigger will ensure that once all recipients have acked,
-                // the corresponding payload is deleted.
-                try db.create(table: "MessageSendLog_Recipient") { table in
-                    table.column("payloadId", .integer)
-                        .notNull()
-                    table.column("recipientUUID", .text)
-                        .notNull()
-                    table.column("recipientDeviceId", .integer)
-                        .notNull()
+            // Records all intended recipients for an intended payload
+            // A trigger will ensure that once all recipients have acked,
+            // the corresponding payload is deleted.
+            try transaction.database.create(table: "MessageSendLog_Recipient") { table in
+                table.column("payloadId", .integer)
+                    .notNull()
+                table.column("recipientUUID", .text)
+                    .notNull()
+                table.column("recipientDeviceId", .integer)
+                    .notNull()
 
-                    table.primaryKey(["payloadId", "recipientUUID", "recipientDeviceId"])
-                    table.foreignKey(
-                        ["payloadId"],
-                        references: "MessageSendLog_Payload",
-                        columns: ["payloadId"],
-                        onDelete: .cascade,
-                        onUpdate: .cascade)
-                }
+                table.primaryKey(["payloadId", "recipientUUID", "recipientDeviceId"])
+                table.foreignKey(
+                    ["payloadId"],
+                    references: "MessageSendLog_Payload",
+                    columns: ["payloadId"],
+                    onDelete: .cascade,
+                    onUpdate: .cascade)
+            }
 
-                // This trigger ensures that once every intended recipient of
-                // a payload has responded with a delivery receipt that the
-                // payload is deleted.
-                try db.execute(sql: """
-                    CREATE TRIGGER MSLRecipient_deliveryReceiptCleanup
-                    AFTER DELETE ON MessageSendLog_Recipient
-                    WHEN 0 = (
-                        SELECT COUNT(*) FROM MessageSendLog_Recipient
-                        WHERE payloadId = old.payloadId
-                    )
-                    BEGIN
-                        DELETE FROM MessageSendLog_Payload
-                        WHERE payloadId = old.payloadId;
-                    END;
-                """)
-
-                // This trigger ensures that if a given interaction is deleted,
-                // all associated payloads are also deleted.
-                try db.execute(sql: """
-                    CREATE TRIGGER MSLMessage_payloadCleanup
-                    AFTER DELETE ON MessageSendLog_Message
-                    BEGIN
-                        DELETE FROM MessageSendLog_Payload WHERE payloadId = old.payloadId;
-                    END;
-                """)
-
-                // When we receive a decryption failure message, we need to look up
-                // the content proto based on the date sent
-                try db.create(
-                    index: "MSLPayload_sentTimestampIndex",
-                    on: "MessageSendLog_Payload",
-                    columns: ["sentTimestamp"]
+            // This trigger ensures that once every intended recipient of
+            // a payload has responded with a delivery receipt that the
+            // payload is deleted.
+            try transaction.database.execute(sql: """
+                CREATE TRIGGER MSLRecipient_deliveryReceiptCleanup
+                AFTER DELETE ON MessageSendLog_Recipient
+                WHEN 0 = (
+                    SELECT COUNT(*) FROM MessageSendLog_Recipient
+                    WHERE payloadId = old.payloadId
                 )
+                BEGIN
+                    DELETE FROM MessageSendLog_Payload
+                    WHERE payloadId = old.payloadId;
+                END;
+            """)
 
-                // When deleting an interaction, we'll need to be able to lookup all
-                // payloads associated with that interaction.
-                try db.create(
-                    index: "MSLMessage_relatedMessageId",
-                    on: "MessageSendLog_Message",
-                    columns: ["uniqueId"]
+            // This trigger ensures that if a given interaction is deleted,
+            // all associated payloads are also deleted.
+            try transaction.database.execute(sql: """
+                CREATE TRIGGER MSLMessage_payloadCleanup
+                AFTER DELETE ON MessageSendLog_Message
+                BEGIN
+                    DELETE FROM MessageSendLog_Payload WHERE payloadId = old.payloadId;
+                END;
+            """)
+
+            // When we receive a decryption failure message, we need to look up
+            // the content proto based on the date sent
+            try transaction.database.create(
+                index: "MSLPayload_sentTimestampIndex",
+                on: "MessageSendLog_Payload",
+                columns: ["sentTimestamp"]
+            )
+
+            // When deleting an interaction, we'll need to be able to lookup all
+            // payloads associated with that interaction.
+            try transaction.database.create(
+                index: "MSLMessage_relatedMessageId",
+                on: "MessageSendLog_Message",
+                columns: ["uniqueId"]
+            )
+            return .success(())
+        }
+
+        migrator.registerMigration(.updatePendingReadReceipts) { transaction in
+            try transaction.database.alter(table: "pending_read_receipts") { (table: TableAlteration) -> Void in
+                table.add(column: "messageUniqueId", .text)
+            }
+            try transaction.database.alter(table: "pending_viewed_receipts") { (table: TableAlteration) -> Void in
+                table.add(column: "messageUniqueId", .text)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addSendCompletionToMessageSendLog) { transaction in
+            try transaction.database.alter(table: "MessageSendLog_Payload") { (table: TableAlteration) -> Void in
+                table.add(column: "sendComplete", .boolean).notNull().defaults(to: false)
+            }
+
+            // All existing entries are assumed to have completed.
+            try transaction.database.execute(sql: "UPDATE MessageSendLog_Payload SET sendComplete = 1")
+
+            // Update the trigger to include the new column: "AND sendComplete = true"
+            try transaction.database.execute(sql: """
+                DROP TRIGGER MSLRecipient_deliveryReceiptCleanup;
+
+                CREATE TRIGGER MSLRecipient_deliveryReceiptCleanup
+                AFTER DELETE ON MessageSendLog_Recipient
+                WHEN 0 = (
+                    SELECT COUNT(*) FROM MessageSendLog_Recipient
+                    WHERE payloadId = old.payloadId
                 )
-            } catch {
-                owsFail("Error: \(error)")
-            }
+                BEGIN
+                    DELETE FROM MessageSendLog_Payload
+                    WHERE payloadId = old.payloadId AND sendComplete = true;
+                END;
+            """)
+            return .success(())
         }
 
-        migrator.registerMigration(.updatePendingReadReceipts) { db in
-            do {
-                try db.alter(table: "pending_read_receipts") { (table: TableAlteration) -> Void in
-                    table.add(column: "messageUniqueId", .text)
-                }
-                try db.alter(table: "pending_viewed_receipts") { (table: TableAlteration) -> Void in
-                    table.add(column: "messageUniqueId", .text)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addExclusiveProcessIdentifierAndHighPriorityToJobRecord) { transaction in
+            try transaction.database.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                table.add(column: "exclusiveProcessIdentifier", .text)
+                table.add(column: "isHighPriority", .boolean)
             }
+            try transaction.database.execute(sql: "UPDATE model_SSKJobRecord SET isHighPriority = 0")
+            return .success(())
         }
 
-        migrator.registerMigration(.addSendCompletionToMessageSendLog) { db in
-            do {
-                try db.alter(table: "MessageSendLog_Payload") { (table: TableAlteration) -> Void in
-                    table.add(column: "sendComplete", .boolean).notNull().defaults(to: false)
-                }
+        migrator.registerMigration(.updateMessageSendLogColumnTypes) { transaction in
+            // Since the MessageSendLog hasn't shipped yet, we can get away with just dropping and rebuilding
+            // the tables instead of performing a more expensive migration.
+            try transaction.database.drop(table: "MessageSendLog_Payload")
+            try transaction.database.drop(table: "MessageSendLog_Message")
+            try transaction.database.drop(table: "MessageSendLog_Recipient")
 
-                // All existing entries are assumed to have completed.
-                try db.execute(sql: "UPDATE MessageSendLog_Payload SET sendComplete = 1")
-
-                // Update the trigger to include the new column: "AND sendComplete = true"
-                try db.execute(sql: """
-                    DROP TRIGGER MSLRecipient_deliveryReceiptCleanup;
-
-                    CREATE TRIGGER MSLRecipient_deliveryReceiptCleanup
-                    AFTER DELETE ON MessageSendLog_Recipient
-                    WHEN 0 = (
-                        SELECT COUNT(*) FROM MessageSendLog_Recipient
-                        WHERE payloadId = old.payloadId
-                    )
-                    BEGIN
-                        DELETE FROM MessageSendLog_Payload
-                        WHERE payloadId = old.payloadId AND sendComplete = true;
-                    END;
-                """)
-            } catch {
-                owsFail("Error: \(error)")
+            try transaction.database.create(table: "MessageSendLog_Payload") { table in
+                table.autoIncrementedPrimaryKey("payloadId")
+                    .notNull()
+                table.column("plaintextContent", .blob)
+                    .notNull()
+                table.column("contentHint", .integer)
+                    .notNull()
+                table.column("sentTimestamp", .integer)
+                    .notNull()
+                table.column("uniqueThreadId", .text)
+                    .notNull()
+                table.column("sendComplete", .boolean)
+                    .notNull().defaults(to: false)
             }
-        }
 
-        migrator.registerMigration(.addExclusiveProcessIdentifierAndHighPriorityToJobRecord) { db in
-            do {
-                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
-                    table.add(column: "exclusiveProcessIdentifier", .text)
-                    table.add(column: "isHighPriority", .boolean)
-                }
-                try db.execute(sql: "UPDATE model_SSKJobRecord SET isHighPriority = 0")
-            } catch {
-                owsFail("Error: \(error)")
+            try transaction.database.create(table: "MessageSendLog_Message") { table in
+                table.column("payloadId", .integer)
+                    .notNull()
+                table.column("uniqueId", .text)
+                    .notNull()
+
+                table.primaryKey(["payloadId", "uniqueId"])
+                table.foreignKey(
+                    ["payloadId"],
+                    references: "MessageSendLog_Payload",
+                    columns: ["payloadId"],
+                    onDelete: .cascade,
+                    onUpdate: .cascade)
             }
-        }
 
-        migrator.registerMigration(.updateMessageSendLogColumnTypes) { db in
-            do {
-                // Since the MessageSendLog hasn't shipped yet, we can get away with just dropping and rebuilding
-                // the tables instead of performing a more expensive migration.
-                try db.drop(table: "MessageSendLog_Payload")
-                try db.drop(table: "MessageSendLog_Message")
-                try db.drop(table: "MessageSendLog_Recipient")
+            try transaction.database.create(table: "MessageSendLog_Recipient") { table in
+                table.column("payloadId", .integer)
+                    .notNull()
+                table.column("recipientUUID", .text)
+                    .notNull()
+                table.column("recipientDeviceId", .integer)
+                    .notNull()
 
-                try db.create(table: "MessageSendLog_Payload") { table in
-                    table.autoIncrementedPrimaryKey("payloadId")
-                        .notNull()
-                    table.column("plaintextContent", .blob)
-                        .notNull()
-                    table.column("contentHint", .integer)
-                        .notNull()
-                    table.column("sentTimestamp", .integer)
-                        .notNull()
-                    table.column("uniqueThreadId", .text)
-                        .notNull()
-                    table.column("sendComplete", .boolean)
-                        .notNull().defaults(to: false)
-                }
+                table.primaryKey(["payloadId", "recipientUUID", "recipientDeviceId"])
+                table.foreignKey(
+                    ["payloadId"],
+                    references: "MessageSendLog_Payload",
+                    columns: ["payloadId"],
+                    onDelete: .cascade,
+                    onUpdate: .cascade)
+            }
 
-                try db.create(table: "MessageSendLog_Message") { table in
-                    table.column("payloadId", .integer)
-                        .notNull()
-                    table.column("uniqueId", .text)
-                        .notNull()
-
-                    table.primaryKey(["payloadId", "uniqueId"])
-                    table.foreignKey(
-                        ["payloadId"],
-                        references: "MessageSendLog_Payload",
-                        columns: ["payloadId"],
-                        onDelete: .cascade,
-                        onUpdate: .cascade)
-                }
-
-                try db.create(table: "MessageSendLog_Recipient") { table in
-                    table.column("payloadId", .integer)
-                        .notNull()
-                    table.column("recipientUUID", .text)
-                        .notNull()
-                    table.column("recipientDeviceId", .integer)
-                        .notNull()
-
-                    table.primaryKey(["payloadId", "recipientUUID", "recipientDeviceId"])
-                    table.foreignKey(
-                        ["payloadId"],
-                        references: "MessageSendLog_Payload",
-                        columns: ["payloadId"],
-                        onDelete: .cascade,
-                        onUpdate: .cascade)
-                }
-
-                try db.execute(sql: """
-                    CREATE TRIGGER MSLRecipient_deliveryReceiptCleanup
-                    AFTER DELETE ON MessageSendLog_Recipient
-                    WHEN 0 = (
-                        SELECT COUNT(*) FROM MessageSendLog_Recipient
-                        WHERE payloadId = old.payloadId
-                    )
-                    BEGIN
-                        DELETE FROM MessageSendLog_Payload
-                        WHERE payloadId = old.payloadId AND sendComplete = true;
-                    END;
-
-                    CREATE TRIGGER MSLMessage_payloadCleanup
-                    AFTER DELETE ON MessageSendLog_Message
-                    BEGIN
-                        DELETE FROM MessageSendLog_Payload WHERE payloadId = old.payloadId;
-                    END;
-                """)
-
-                try db.create(
-                    index: "MSLPayload_sentTimestampIndex",
-                    on: "MessageSendLog_Payload",
-                    columns: ["sentTimestamp"]
+            try transaction.database.execute(sql: """
+                CREATE TRIGGER MSLRecipient_deliveryReceiptCleanup
+                AFTER DELETE ON MessageSendLog_Recipient
+                WHEN 0 = (
+                    SELECT COUNT(*) FROM MessageSendLog_Recipient
+                    WHERE payloadId = old.payloadId
                 )
-                try db.create(
-                    index: "MSLMessage_relatedMessageId",
-                    on: "MessageSendLog_Message",
-                    columns: ["uniqueId"]
-                )
-            } catch {
-                owsFail("Error: \(error)")
-            }
+                BEGIN
+                    DELETE FROM MessageSendLog_Payload
+                    WHERE payloadId = old.payloadId AND sendComplete = true;
+                END;
+
+                CREATE TRIGGER MSLMessage_payloadCleanup
+                AFTER DELETE ON MessageSendLog_Message
+                BEGIN
+                    DELETE FROM MessageSendLog_Payload WHERE payloadId = old.payloadId;
+                END;
+            """)
+
+            try transaction.database.create(
+                index: "MSLPayload_sentTimestampIndex",
+                on: "MessageSendLog_Payload",
+                columns: ["sentTimestamp"]
+            )
+            try transaction.database.create(
+                index: "MSLMessage_relatedMessageId",
+                on: "MessageSendLog_Message",
+                columns: ["uniqueId"]
+            )
+            return .success(())
         }
 
-        migrator.registerMigration(.addRecordTypeIndex) { db in
-            do {
-                try db.create(
-                    index: "index_model_TSInteraction_on_nonPlaceholders_uniqueThreadId_id",
-                    on: "model_TSInteraction",
-                    columns: ["uniqueThreadId", "id"],
-                    condition: "\(interactionColumn: .recordType) IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)"
-                )
-            } catch {
-                owsFail("Error: \(error)")
-            }
+        migrator.registerMigration(.addRecordTypeIndex) { transaction in
+            try transaction.database.create(
+                index: "index_model_TSInteraction_on_nonPlaceholders_uniqueThreadId_id",
+                on: "model_TSInteraction",
+                columns: ["uniqueThreadId", "id"],
+                condition: "\(interactionColumn: .recordType) IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)"
+            )
+            return .success(())
         }
 
-        migrator.registerMigration(.tunedConversationLoadIndices) { db in
-            do {
-                // These two indices are hyper-tuned for queries used to fetch the conversation load window. Specifically:
-                // - GRDBInteractionFinder.count(excludingPlaceholders:transaction:)
-                // - GRDBInteractionFinder.distanceFromLatest(interactionUniqueId:excludingPlaceholders:transaction:)
-                // - GRDBInteractionFinder.enumerateInteractions(range:excludingPlaceholders:transaction:block:)
-                //
-                // These indices are partial, covering and as small as possible. The columns selected appear
-                // redundant, but this is to avoid the SQLite query planner from selecting a less-optimal,
-                // non-covering index that it thinks may be more optimal since it's less bytes/row.
-                // More detailed info is included in the commit message.
-                //
-                // Note: These are not generated using the GRDB index creation syntax. In my testing it seems that
-                // placing quotes around the column name in the WHERE clause will trick the SQLite query planner
-                // into thinking these indices can't be applied to the queries we're optimizing for.
-                try db.execute(sql: """
-                    DROP INDEX IF EXISTS index_model_TSInteraction_on_nonPlaceholders_uniqueThreadId_id;
+        migrator.registerMigration(.tunedConversationLoadIndices) { transaction in
+            // These two indices are hyper-tuned for queries used to fetch the conversation load window. Specifically:
+            // - GRDBInteractionFinder.count(excludingPlaceholders:transaction:)
+            // - GRDBInteractionFinder.distanceFromLatest(interactionUniqueId:excludingPlaceholders:transaction:)
+            // - GRDBInteractionFinder.enumerateInteractions(range:excludingPlaceholders:transaction:block:)
+            //
+            // These indices are partial, covering and as small as possible. The columns selected appear
+            // redundant, but this is to avoid the SQLite query planner from selecting a less-optimal,
+            // non-covering index that it thinks may be more optimal since it's less bytes/row.
+            // More detailed info is included in the commit message.
+            //
+            // Note: These are not generated using the GRDB index creation syntax. In my testing it seems that
+            // placing quotes around the column name in the WHERE clause will trick the SQLite query planner
+            // into thinking these indices can't be applied to the queries we're optimizing for.
+            try transaction.database.execute(sql: """
+                DROP INDEX IF EXISTS index_model_TSInteraction_on_nonPlaceholders_uniqueThreadId_id;
 
-                    CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionCount
-                    ON model_TSInteraction(uniqueThreadId, recordType)
-                    WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
+                CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionCount
+                ON model_TSInteraction(uniqueThreadId, recordType)
+                WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
 
-                    CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionDistance
-                    ON model_TSInteraction(uniqueThreadId, id, recordType, uniqueId)
-                    WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
-                """)
-            } catch {
-                owsFail("Error: \(error)")
-            }
+                CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionDistance
+                ON model_TSInteraction(uniqueThreadId, id, recordType, uniqueId)
+                WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
+            """)
+            return .success(())
         }
 
-        migrator.registerMigration(.messageDecryptDeduplicationV6) { db in
-            do {
-                if try db.tableExists("MessageDecryptDeduplication") {
-                    try db.drop(table: "MessageDecryptDeduplication")
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.messageDecryptDeduplicationV6) { transaction in
+            if try transaction.database.tableExists("MessageDecryptDeduplication") {
+                try transaction.database.drop(table: "MessageDecryptDeduplication")
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.createProfileBadgeTable) { db in
-            do {
-                try db.alter(table: "model_OWSUserProfile", body: { alteration in
-                    alteration.add(column: "profileBadgeInfo", .blob)
-                })
+        migrator.registerMigration(.createProfileBadgeTable) { transaction in
+            try transaction.database.alter(table: "model_OWSUserProfile", body: { alteration in
+                alteration.add(column: "profileBadgeInfo", .blob)
+            })
 
-                try db.create(table: "model_ProfileBadgeTable") { table in
-                    table.column("id", .text).primaryKey()
-                    table.column("rawCategory", .text).notNull()
-                    table.column("localizedName", .text).notNull()
-                    table.column("localizedDescriptionFormatString", .text).notNull()
-                    table.column("resourcePath", .text).notNull()
+            try transaction.database.create(table: "model_ProfileBadgeTable") { table in
+                table.column("id", .text).primaryKey()
+                table.column("rawCategory", .text).notNull()
+                table.column("localizedName", .text).notNull()
+                table.column("localizedDescriptionFormatString", .text).notNull()
+                table.column("resourcePath", .text).notNull()
 
-                    table.column("badgeVariant", .text).notNull()
-                    table.column("localization", .text).notNull()
-                }
-            } catch {
-                owsFail("Error: \(error)")
+                table.column("badgeVariant", .text).notNull()
+                table.column("localization", .text).notNull()
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.createSubscriptionDurableJob) { db in
-            do {
-                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
-                    table.add(column: "receiptCredentailRequest", .blob)
-                    table.add(column: "receiptCredentailRequestContext", .blob)
-                    table.add(column: "priorSubscriptionLevel", .integer)
-                    table.add(column: "subscriberID", .blob)
-                    table.add(column: "targetSubscriptionLevel", .integer)
-                    table.add(column: "boostPaymentIntentID", .text)
-                    table.add(column: "isBoost", .boolean)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.createSubscriptionDurableJob) { transaction in
+            try transaction.database.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                table.add(column: "receiptCredentailRequest", .blob)
+                table.add(column: "receiptCredentailRequestContext", .blob)
+                table.add(column: "priorSubscriptionLevel", .integer)
+                table.add(column: "subscriberID", .blob)
+                table.add(column: "targetSubscriptionLevel", .integer)
+                table.add(column: "boostPaymentIntentID", .text)
+                table.add(column: "isBoost", .boolean)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.addReceiptPresentationToSubscriptionDurableJob) { db in
-            do {
-                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
-                    table.add(column: "receiptCredentialPresentation", .blob)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addReceiptPresentationToSubscriptionDurableJob) { transaction in
+            try transaction.database.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                table.add(column: "receiptCredentialPresentation", .blob)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.createStoryMessageTable) { db in
-            do {
-                try db.create(table: "model_StoryMessage") { table in
-                    table.autoIncrementedPrimaryKey("id")
-                        .notNull()
-                    table.column("recordType", .integer)
-                        .notNull()
-                    table.column("uniqueId", .text)
-                        .notNull()
-                        .unique(onConflict: .fail)
-                    table.column("timestamp", .integer)
-                        .notNull()
-                    table.column("authorUuid", .text)
-                        .notNull()
-                    table.column("groupId", .blob)
-                    table.column("direction", .integer)
-                        .notNull()
-                    table.column("manifest", .blob)
-                        .notNull()
-                    table.column("attachment", .blob)
-                        .notNull()
-                }
+        migrator.registerMigration(.createStoryMessageTable) { transaction in
+            try transaction.database.create(table: "model_StoryMessage") { table in
+                table.autoIncrementedPrimaryKey("id")
+                    .notNull()
+                table.column("recordType", .integer)
+                    .notNull()
+                table.column("uniqueId", .text)
+                    .notNull()
+                    .unique(onConflict: .fail)
+                table.column("timestamp", .integer)
+                    .notNull()
+                table.column("authorUuid", .text)
+                    .notNull()
+                table.column("groupId", .blob)
+                table.column("direction", .integer)
+                    .notNull()
+                table.column("manifest", .blob)
+                    .notNull()
+                table.column("attachment", .blob)
+                    .notNull()
+            }
 
-                try db.create(index: "index_model_StoryMessage_on_uniqueId", on: "model_StoryMessage", columns: ["uniqueId"])
+            try transaction.database.create(index: "index_model_StoryMessage_on_uniqueId", on: "model_StoryMessage", columns: ["uniqueId"])
 
-                try db.create(
-                    index: "index_model_StoryMessage_on_timestamp_and_authorUuid",
-                    on: "model_StoryMessage",
-                    columns: ["timestamp", "authorUuid"]
-                )
-                try db.create(
-                    index: "index_model_StoryMessage_on_direction",
-                    on: "model_StoryMessage",
-                    columns: ["direction"]
-                )
-                try db.execute(sql: """
-                    CREATE
-                        INDEX index_model_StoryMessage_on_incoming_viewedTimestamp
-                            ON model_StoryMessage (
-                            json_extract (
-                                manifest
-                                ,'$.incoming.viewedTimestamp'
-                            )
+            try transaction.database.create(
+                index: "index_model_StoryMessage_on_timestamp_and_authorUuid",
+                on: "model_StoryMessage",
+                columns: ["timestamp", "authorUuid"]
+            )
+            try transaction.database.create(
+                index: "index_model_StoryMessage_on_direction",
+                on: "model_StoryMessage",
+                columns: ["direction"]
+            )
+            try transaction.database.execute(sql: """
+                CREATE
+                    INDEX index_model_StoryMessage_on_incoming_viewedTimestamp
+                        ON model_StoryMessage (
+                        json_extract (
+                            manifest
+                            ,'$.incoming.viewedTimestamp'
                         )
-                    ;
-                """)
-            } catch {
-                owsFail("Error: \(error)")
-            }
+                    )
+                ;
+            """)
+            return .success(())
         }
 
-        migrator.registerMigration(.addColumnsForStoryContextRedux) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-            guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
-
-            do {
-                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
-                    table.add(column: "storyAuthorUuidString", .text)
-                    table.add(column: "storyTimestamp", .integer)
-                    table.add(column: "isGroupStoryReply", .boolean).defaults(to: false)
-                    table.add(column: "storyReactionEmoji", .text)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addColumnsForStoryContextRedux) { transaction in
+            guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else {
+                return .success(())
             }
+
+            try transaction.database.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                table.add(column: "storyAuthorUuidString", .text)
+                table.add(column: "storyTimestamp", .integer)
+                table.add(column: "isGroupStoryReply", .boolean).defaults(to: false)
+                table.add(column: "storyReactionEmoji", .text)
+            }
+            return .success(())
         }
 
-        migrator.registerMigration(.addIsStoriesCapableToUserProfiles) { db in
-            do {
-                try db.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
-                    table.add(column: "isStoriesCapable", .boolean).notNull().defaults(to: false)
-                }
-
-                try db.execute(sql: "ALTER TABLE model_OWSUserProfile DROP COLUMN isUuidCapable")
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addIsStoriesCapableToUserProfiles) { transaction in
+            try transaction.database.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
+                table.add(column: "isStoriesCapable", .boolean).notNull().defaults(to: false)
             }
+
+            try transaction.database.execute(sql: "ALTER TABLE model_OWSUserProfile DROP COLUMN isUuidCapable")
+            return .success(())
         }
 
-        migrator.registerMigration(.createDonationReceiptTable) { db in
-            do {
-                try db.create(table: "model_DonationReceipt") { table in
-                    table.autoIncrementedPrimaryKey("id")
-                        .notNull()
-                    table.column("uniqueId", .text)
-                        .notNull()
-                        .unique(onConflict: .fail)
-                    table.column("timestamp", .integer)
-                        .notNull()
-                    table.column("subscriptionLevel", .integer)
-                    table.column("amount", .numeric)
-                        .notNull()
-                    table.column("currencyCode", .text)
-                        .notNull()
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.createDonationReceiptTable) { transaction in
+            try transaction.database.create(table: "model_DonationReceipt") { table in
+                table.autoIncrementedPrimaryKey("id")
+                    .notNull()
+                table.column("uniqueId", .text)
+                    .notNull()
+                    .unique(onConflict: .fail)
+                table.column("timestamp", .integer)
+                    .notNull()
+                table.column("subscriptionLevel", .integer)
+                table.column("amount", .numeric)
+                    .notNull()
+                table.column("currencyCode", .text)
+                    .notNull()
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.addBoostAmountToSubscriptionDurableJob) { db in
-            do {
-                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
-                    table.add(column: "amount", .numeric)
-                    table.add(column: "currencyCode", .text)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addBoostAmountToSubscriptionDurableJob) { transaction in
+            try transaction.database.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                table.add(column: "amount", .numeric)
+                table.add(column: "currencyCode", .text)
             }
+            return .success(())
         }
 
         // These index migrations are *expensive* for users with large interaction tables. For external
         // users who don't yet have access to stories and don't have need for the indices, we will perform
         // one migration per release to keep the blocking time low (ideally one 5-7s migration per release).
-        migrator.registerMigration(.updateConversationLoadInteractionCountIndex) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-            guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
-
-            do {
-                try db.execute(sql: """
-                    DROP INDEX index_model_TSInteraction_ConversationLoadInteractionCount;
-
-                    CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionCount
-                    ON model_TSInteraction(uniqueThreadId, isGroupStoryReply, recordType)
-                    WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
-                """)
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.updateConversationLoadInteractionCountIndex) { transaction in
+            guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else {
+                return .success(())
             }
+
+            try transaction.database.execute(sql: """
+                DROP INDEX index_model_TSInteraction_ConversationLoadInteractionCount;
+
+                CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionCount
+                ON model_TSInteraction(uniqueThreadId, isGroupStoryReply, recordType)
+                WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
+            """)
+            return .success(())
         }
 
-        migrator.registerMigration(.updateConversationLoadInteractionDistanceIndex) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-            guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
-
-            do {
-                try db.execute(sql: """
-                    DROP INDEX index_model_TSInteraction_ConversationLoadInteractionDistance;
-
-                    CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionDistance
-                    ON model_TSInteraction(uniqueThreadId, id, isGroupStoryReply, recordType, uniqueId)
-                    WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
-                """)
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.updateConversationLoadInteractionDistanceIndex) { transaction in
+            guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else {
+                return .success(())
             }
+
+            try transaction.database.execute(sql: """
+                DROP INDEX index_model_TSInteraction_ConversationLoadInteractionDistance;
+
+                CREATE INDEX index_model_TSInteraction_ConversationLoadInteractionDistance
+                ON model_TSInteraction(uniqueThreadId, id, isGroupStoryReply, recordType, uniqueId)
+                WHERE recordType IS NOT \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue);
+            """)
+            return .success(())
         }
 
-        migrator.registerMigration(.updateConversationUnreadCountIndex) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-            guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else { return }
-
-            do {
-                try db.execute(sql: """
-                    DROP INDEX IF EXISTS index_interactions_unread_counts;
-                    DROP INDEX IF EXISTS index_model_TSInteraction_UnreadCount;
-
-                    CREATE INDEX index_model_TSInteraction_UnreadCount
-                    ON model_TSInteraction(read, isGroupStoryReply, uniqueThreadId, recordType);
-                """)
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.updateConversationUnreadCountIndex) { transaction in
+            guard !hasRunMigration("addColumnsForStoryContext", transaction: transaction) else {
+                return .success(())
             }
+
+            try transaction.database.execute(sql: """
+                DROP INDEX IF EXISTS index_interactions_unread_counts;
+                DROP INDEX IF EXISTS index_model_TSInteraction_UnreadCount;
+
+                CREATE INDEX index_model_TSInteraction_UnreadCount
+                ON model_TSInteraction(read, isGroupStoryReply, uniqueThreadId, recordType);
+            """)
+            return .success(())
         }
 
-        migrator.registerMigration(.addStoryContextIndexToInteractions) { db in
-            do {
-                try db.create(
-                    index: "index_model_TSInteraction_on_StoryContext",
-                    on: "model_TSInteraction",
-                    columns: ["storyTimestamp", "storyAuthorUuidString", "isGroupStoryReply"]
-                )
-            } catch {
-                owsFail("Error: \(error)")
-            }
+        migrator.registerMigration(.addStoryContextIndexToInteractions) { transaction in
+            try transaction.database.create(
+                index: "index_model_TSInteraction_on_StoryContext",
+                on: "model_TSInteraction",
+                columns: ["storyTimestamp", "storyAuthorUuidString", "isGroupStoryReply"]
+            )
+            return .success(())
         }
 
-        migrator.registerMigration(.improvedDisappearingMessageIndices) { db in
-            do {
-                // The old index was created in an order that made it practically useless for the query
-                // we needed it for. This rebuilds it as a partial index.
-                try db.execute(sql: """
-                    DROP INDEX index_interactions_on_threadUniqueId_storedShouldStartExpireTimer_and_expiresAt;
+        migrator.registerMigration(.improvedDisappearingMessageIndices) { transaction in
+            // The old index was created in an order that made it practically useless for the query
+            // we needed it for. This rebuilds it as a partial index.
+            try transaction.database.execute(sql: """
+                DROP INDEX index_interactions_on_threadUniqueId_storedShouldStartExpireTimer_and_expiresAt;
 
-                    CREATE INDEX index_interactions_on_threadUniqueId_storedShouldStartExpireTimer_and_expiresAt
-                    ON model_TSInteraction(uniqueThreadId, uniqueId)
-                    WHERE
-                        storedShouldStartExpireTimer IS TRUE
-                    AND
-                        (expiresAt IS 0 OR expireStartedAt IS 0)
-                    ;
-                """)
-            } catch {
-                owsFail("Error: \(error)")
-            }
+                CREATE INDEX index_interactions_on_threadUniqueId_storedShouldStartExpireTimer_and_expiresAt
+                ON model_TSInteraction(uniqueThreadId, uniqueId)
+                WHERE
+                    storedShouldStartExpireTimer IS TRUE
+                AND
+                    (expiresAt IS 0 OR expireStartedAt IS 0)
+                ;
+            """)
+            return .success(())
         }
 
-        migrator.registerMigration(.addProfileBadgeDuration) { db in
-            do {
-                try db.alter(table: "model_ProfileBadgeTable") { (table: TableAlteration) -> Void in
-                    table.add(column: "duration", .numeric)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addProfileBadgeDuration) { transaction in
+            try transaction.database.alter(table: "model_ProfileBadgeTable") { (table: TableAlteration) -> Void in
+                table.add(column: "duration", .numeric)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.addGiftBadges) { db in
-            do {
-                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
-                    table.add(column: "giftBadge", .blob)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addGiftBadges) { transaction in
+            try transaction.database.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                table.add(column: "giftBadge", .blob)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.addCanReceiveGiftBadgesToUserProfiles) { db in
-            do {
-                try db.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
-                    table.add(column: "canReceiveGiftBadges", .boolean).notNull().defaults(to: false)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addCanReceiveGiftBadgesToUserProfiles) { transaction in
+            try transaction.database.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
+                table.add(column: "canReceiveGiftBadges", .boolean).notNull().defaults(to: false)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.addStoryThreadColumns) { db in
-            do {
-                try db.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
-                    table.add(column: "allowsReplies", .boolean).defaults(to: false)
-                    table.add(column: "lastSentStoryTimestamp", .integer)
-                    table.add(column: "name", .text)
-                    table.add(column: "addresses", .blob)
-                    table.add(column: "storyViewMode", .integer).defaults(to: 0)
-                }
-
-                try db.create(index: "index_model_TSThread_on_storyViewMode", on: "model_TSThread", columns: ["storyViewMode", "lastSentStoryTimestamp", "allowsReplies"])
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addStoryThreadColumns) { transaction in
+            try transaction.database.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
+                table.add(column: "allowsReplies", .boolean).defaults(to: false)
+                table.add(column: "lastSentStoryTimestamp", .integer)
+                table.add(column: "name", .text)
+                table.add(column: "addresses", .blob)
+                table.add(column: "storyViewMode", .integer).defaults(to: 0)
             }
+
+            try transaction.database.create(index: "index_model_TSThread_on_storyViewMode", on: "model_TSThread", columns: ["storyViewMode", "lastSentStoryTimestamp", "allowsReplies"])
+            return .success(())
         }
 
-        migrator.registerMigration(.addUnsavedMessagesToSendToJobRecord) { db in
-            do {
-                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
-                    table.add(column: "unsavedMessagesToSend", .blob)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addUnsavedMessagesToSendToJobRecord) { transaction in
+            try transaction.database.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                table.add(column: "unsavedMessagesToSend", .blob)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.addColumnsForSendGiftBadgeDurableJob) { db in
-            do {
-                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
-                    table.add(column: "messageText", .text)
-                    table.add(column: "paymentIntentClientSecret", .text)
-                    table.add(column: "paymentMethodId", .text)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addColumnsForSendGiftBadgeDurableJob) { transaction in
+            try transaction.database.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                table.add(column: "messageText", .text)
+                table.add(column: "paymentIntentClientSecret", .text)
+                table.add(column: "paymentMethodId", .text)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.addDonationReceiptTypeColumn) { db in
-            do {
-                try db.alter(table: "model_DonationReceipt") { (table: TableAlteration) -> Void in
-                    table.add(column: "receiptType", .numeric)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addDonationReceiptTypeColumn) { transaction in
+            try transaction.database.alter(table: "model_DonationReceipt") { (table: TableAlteration) -> Void in
+                table.add(column: "receiptType", .numeric)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.addAudioPlaybackRateColumn) { db in
-            do {
-                try db.alter(table: "thread_associated_data") { table in
-                    table.add(column: "audioPlaybackRate", .double)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addAudioPlaybackRateColumn) { transaction in
+            try transaction.database.alter(table: "thread_associated_data") { table in
+                table.add(column: "audioPlaybackRate", .double)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.addSchemaVersionToAttachments) { db in
-            do {
-                try db.alter(table: "model_TSAttachment") { table in
-                    table.add(column: "attachmentSchemaVersion", .integer).defaults(to: 0)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addSchemaVersionToAttachments) { transaction in
+            try transaction.database.alter(table: "model_TSAttachment") { table in
+                table.add(column: "attachmentSchemaVersion", .integer).defaults(to: 0)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.makeAudioPlaybackRateColumnNonNull) { db in
-            do {
-                // Up until when this is merged, there has been no way for users
-                // to actually set an audio playback rate, so its okay to drop the column
-                // just to reset the schema constraints to non-null.
-                try db.alter(table: "thread_associated_data") { table in
-                    table.drop(column: "audioPlaybackRate")
-                    table.add(column: "audioPlaybackRate", .double).notNull().defaults(to: 1)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.makeAudioPlaybackRateColumnNonNull) { transaction in
+            // Up until when this is merged, there has been no way for users
+            // to actually set an audio playback rate, so its okay to drop the column
+            // just to reset the schema constraints to non-null.
+            try transaction.database.alter(table: "thread_associated_data") { table in
+                table.drop(column: "audioPlaybackRate")
+                table.add(column: "audioPlaybackRate", .double).notNull().defaults(to: 1)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.addLastViewedStoryTimestampToTSThread) { db in
-            do {
-                try db.alter(table: "model_TSThread") { table in
-                    table.add(column: "lastViewedStoryTimestamp", .integer)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addLastViewedStoryTimestampToTSThread) { transaction in
+            try transaction.database.alter(table: "model_TSThread") { table in
+                table.add(column: "lastViewedStoryTimestamp", .integer)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.convertStoryIncomingManifestStorageFormat) { db in
-            do {
-                // Nest the "incoming" state under the "receivedState" key to make
-                // future migrations more future proof.
-                try db.execute(sql: """
-                    UPDATE model_StoryMessage
-                    SET manifest = json_replace(
-                        manifest,
-                        '$.incoming',
-                        json_object(
-                            'receivedState',
-                            json_extract(
-                                manifest,
-                                '$.incoming'
-                            )
+        migrator.registerMigration(.convertStoryIncomingManifestStorageFormat) { transaction in
+            // Nest the "incoming" state under the "receivedState" key to make
+            // future migrations more future proof.
+            try transaction.database.execute(sql: """
+                UPDATE model_StoryMessage
+                SET manifest = json_replace(
+                    manifest,
+                    '$.incoming',
+                    json_object(
+                        'receivedState',
+                        json_extract(
+                            manifest,
+                            '$.incoming'
                         )
                     )
-                    WHERE json_extract(manifest, '$.incoming') IS NOT NULL;
-                """)
-            } catch {
-                owsFail("Error: \(error)")
-            }
+                )
+                WHERE json_extract(manifest, '$.incoming') IS NOT NULL;
+            """)
+            return .success(())
         }
 
-        migrator.registerMigration(.recreateStoryIncomingViewedTimestampIndex) { db in
-            do {
-                try db.drop(index: "index_model_StoryMessage_on_incoming_viewedTimestamp")
-                try db.execute(sql: """
-                    CREATE
-                        INDEX index_model_StoryMessage_on_incoming_receivedState_viewedTimestamp
-                            ON model_StoryMessage (
-                            json_extract (
-                                manifest
-                                ,'$.incoming.receivedState.viewedTimestamp'
-                            )
+        migrator.registerMigration(.recreateStoryIncomingViewedTimestampIndex) { transaction in
+            try transaction.database.drop(index: "index_model_StoryMessage_on_incoming_viewedTimestamp")
+            try transaction.database.execute(sql: """
+                CREATE
+                    INDEX index_model_StoryMessage_on_incoming_receivedState_viewedTimestamp
+                        ON model_StoryMessage (
+                        json_extract (
+                            manifest
+                            ,'$.incoming.receivedState.viewedTimestamp'
                         )
-                    ;
-                """)
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.addColumnsForLocalUserLeaveGroupDurableJob) { db in
-            do {
-                try db.alter(table: "model_SSKJobRecord") { table in
-                    table.add(column: "replacementAdminUuid", .text)
-                    table.add(column: "waitForMessageProcessing", .boolean)
-                }
-            } catch let error {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.addStoriesHiddenStateToThreadAssociatedData) { db in
-            do {
-                try db.alter(table: "thread_associated_data") { table in
-                    table.add(column: "hideStory", .boolean).notNull().defaults(to: false)
-                }
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.addUnregisteredAtTimestampToSignalRecipient) { db in
-            do {
-                try db.alter(table: "model_SignalRecipient") { table in
-                    table.add(column: "unregisteredAtTimestamp", .integer)
-                }
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.addLastReceivedStoryTimestampToTSThread) { db in
-            do {
-                try db.alter(table: "model_TSThread") { table in
-                    table.add(column: "lastReceivedStoryTimestamp", .integer)
-                }
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.addStoryContextAssociatedDataTable) { db in
-            do {
-                try db.create(table: StoryContextAssociatedData.databaseTableName) { table in
-                    table.autoIncrementedPrimaryKey(StoryContextAssociatedData.columnName(.id))
-                        .notNull()
-                    table.column(StoryContextAssociatedData.columnName(.recordType), .integer)
-                        .notNull()
-                    table.column(StoryContextAssociatedData.columnName(.uniqueId))
-                        .notNull()
-                        .unique(onConflict: .fail)
-                    table.column(StoryContextAssociatedData.columnName(.contactUuid), .text)
-                    table.column(StoryContextAssociatedData.columnName(.groupId), .blob)
-                    table.column(StoryContextAssociatedData.columnName(.isHidden), .boolean)
-                        .notNull()
-                        .defaults(to: false)
-                    table.column(StoryContextAssociatedData.columnName(.latestUnexpiredTimestamp), .integer)
-                    table.column(StoryContextAssociatedData.columnName(.lastReceivedTimestamp), .integer)
-                    table.column(StoryContextAssociatedData.columnName(.lastViewedTimestamp), .integer)
-                }
-                try db.create(
-                    index: "index_story_context_associated_data_contact_on_contact_uuid",
-                    on: StoryContextAssociatedData.databaseTableName,
-                    columns: [StoryContextAssociatedData.columnName(.contactUuid)]
-                )
-                try db.create(
-                    index: "index_story_context_associated_data_contact_on_group_id",
-                    on: StoryContextAssociatedData.databaseTableName,
-                    columns: [StoryContextAssociatedData.columnName(.groupId)]
-                )
-            } catch {
-                owsFail("Error: \(error)")
-            }
-        }
-
-        migrator.registerMigration(.populateStoryContextAssociatedDataTableAndRemoveOldColumns) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
-            do {
-                // All we need to do is iterate over ThreadAssociatedData; one exists for every
-                // thread, so we can pull hidden state from the associated data and received/viewed
-                // timestamps from their threads and have a copy of everything we need.
-                try Row.fetchCursor(db, sql: """
-                    SELECT * FROM thread_associated_data
-                """).forEach { threadAssociatedDataRow in
-                    guard
-                        let hideStory = (threadAssociatedDataRow["hideStory"] as? NSNumber)?.boolValue,
-                        let threadUniqueId = threadAssociatedDataRow["threadUniqueId"] as? String
-                    else {
-                        owsFailDebug("Did not find hideStory or threadUniqueId columnds on ThreadAssociatedData table")
-                        return
-                    }
-                    let insertSQL = """
-                    INSERT INTO model_StoryContextAssociatedData (
-                        recordType,
-                        uniqueId,
-                        contactUuid,
-                        groupId,
-                        isHidden,
-                        latestUnexpiredTimestamp,
-                        lastReceivedTimestamp,
-                        lastViewedTimestamp
                     )
-                    VALUES ('0', ?, ?, ?, ?, ?, ?, ?)
-                    """
+                ;
+            """)
+            return .success(())
+        }
 
+        migrator.registerMigration(.addColumnsForLocalUserLeaveGroupDurableJob) { transaction in
+            try transaction.database.alter(table: "model_SSKJobRecord") { table in
+                table.add(column: "replacementAdminUuid", .text)
+                table.add(column: "waitForMessageProcessing", .boolean)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addStoriesHiddenStateToThreadAssociatedData) { transaction in
+            try transaction.database.alter(table: "thread_associated_data") { table in
+                table.add(column: "hideStory", .boolean).notNull().defaults(to: false)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addUnregisteredAtTimestampToSignalRecipient) { transaction in
+            try transaction.database.alter(table: "model_SignalRecipient") { table in
+                table.add(column: "unregisteredAtTimestamp", .integer)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addLastReceivedStoryTimestampToTSThread) { transaction in
+            try transaction.database.alter(table: "model_TSThread") { table in
+                table.add(column: "lastReceivedStoryTimestamp", .integer)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addStoryContextAssociatedDataTable) { transaction in
+            try transaction.database.create(table: StoryContextAssociatedData.databaseTableName) { table in
+                table.autoIncrementedPrimaryKey(StoryContextAssociatedData.columnName(.id))
+                    .notNull()
+                table.column(StoryContextAssociatedData.columnName(.recordType), .integer)
+                    .notNull()
+                table.column(StoryContextAssociatedData.columnName(.uniqueId))
+                    .notNull()
+                    .unique(onConflict: .fail)
+                table.column(StoryContextAssociatedData.columnName(.contactUuid), .text)
+                table.column(StoryContextAssociatedData.columnName(.groupId), .blob)
+                table.column(StoryContextAssociatedData.columnName(.isHidden), .boolean)
+                    .notNull()
+                    .defaults(to: false)
+                table.column(StoryContextAssociatedData.columnName(.latestUnexpiredTimestamp), .integer)
+                table.column(StoryContextAssociatedData.columnName(.lastReceivedTimestamp), .integer)
+                table.column(StoryContextAssociatedData.columnName(.lastViewedTimestamp), .integer)
+            }
+            try transaction.database.create(
+                index: "index_story_context_associated_data_contact_on_contact_uuid",
+                on: StoryContextAssociatedData.databaseTableName,
+                columns: [StoryContextAssociatedData.columnName(.contactUuid)]
+            )
+            try transaction.database.create(
+                index: "index_story_context_associated_data_contact_on_group_id",
+                on: StoryContextAssociatedData.databaseTableName,
+                columns: [StoryContextAssociatedData.columnName(.groupId)]
+            )
+            return .success(())
+        }
+
+        migrator.registerMigration(.populateStoryContextAssociatedDataTableAndRemoveOldColumns) { transaction in
+            // All we need to do is iterate over ThreadAssociatedData; one exists for every
+            // thread, so we can pull hidden state from the associated data and received/viewed
+            // timestamps from their threads and have a copy of everything we need.
+            try Row.fetchCursor(transaction.database, sql: """
+                SELECT * FROM thread_associated_data
+            """).forEach { threadAssociatedDataRow in
+                guard
+                    let hideStory = (threadAssociatedDataRow["hideStory"] as? NSNumber)?.boolValue,
+                    let threadUniqueId = threadAssociatedDataRow["threadUniqueId"] as? String
+                else {
+                    owsFailDebug("Did not find hideStory or threadUniqueId columnds on ThreadAssociatedData table")
+                    return
+                }
+                let insertSQL = """
+                INSERT INTO model_StoryContextAssociatedData (
+                    recordType,
+                    uniqueId,
+                    contactUuid,
+                    groupId,
+                    isHidden,
+                    latestUnexpiredTimestamp,
+                    lastReceivedTimestamp,
+                    lastViewedTimestamp
+                )
+                VALUES ('0', ?, ?, ?, ?, ?, ?, ?)
+                """
+
+                if
+                    let threadRow = try? Row.fetchOne(
+                        transaction.database,
+                        sql: """
+                            SELECT * FROM model_TSThread
+                            WHERE uniqueId = ?
+                        """,
+                        arguments: [threadUniqueId]
+                    )
+                {
+                    let lastReceivedStoryTimestamp = (threadRow["lastReceivedStoryTimestamp"] as? NSNumber)?.uint64Value
+                    let latestUnexpiredTimestamp = (lastReceivedStoryTimestamp ?? 0) > Date().ows_millisecondsSince1970 - kDayInMs
+                        ? lastReceivedStoryTimestamp : nil
+                    let lastViewedStoryTimestamp = (threadRow["lastViewedStoryTimestamp"] as? NSNumber)?.uint64Value
                     if
-                        let threadRow = try? Row.fetchOne(
-                            db,
-                            sql: """
-                                SELECT * FROM model_TSThread
-                                WHERE uniqueId = ?
-                            """,
-                            arguments: [threadUniqueId]
-                        )
+                        let groupModelData = threadRow["groupModel"] as? Data,
+                        let unarchivedObject = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(groupModelData),
+                        let groupId = (unarchivedObject as? TSGroupModel)?.groupId
                     {
-                        let lastReceivedStoryTimestamp = (threadRow["lastReceivedStoryTimestamp"] as? NSNumber)?.uint64Value
-                        let latestUnexpiredTimestamp = (lastReceivedStoryTimestamp ?? 0) > Date().ows_millisecondsSince1970 - kDayInMs
-                            ? lastReceivedStoryTimestamp : nil
-                        let lastViewedStoryTimestamp = (threadRow["lastViewedStoryTimestamp"] as? NSNumber)?.uint64Value
-                        if
-                            let groupModelData = threadRow["groupModel"] as? Data,
-                            let unarchivedObject = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(groupModelData),
-                            let groupId = (unarchivedObject as? TSGroupModel)?.groupId
-                        {
-                            try db.execute(
-                                sql: insertSQL,
-                                arguments: [
-                                    UUID().uuidString,
-                                    nil,
-                                    groupId,
-                                    hideStory,
-                                    latestUnexpiredTimestamp,
-                                    lastReceivedStoryTimestamp,
-                                    lastViewedStoryTimestamp
-                                ]
-                            )
-                        } else if
-                            let contactUuidString = threadRow["contactUUID"] as? String
-                        {
-                            // Okay to ignore e164 addresses because we can't have updated story metadata
-                            // for those contact threads anyway.
-                            try db.execute(
-                                sql: insertSQL,
-                                arguments: [
-                                    UUID().uuidString,
-                                    contactUuidString,
-                                    nil,
-                                    hideStory,
-                                    latestUnexpiredTimestamp,
-                                    lastReceivedStoryTimestamp,
-                                    lastViewedStoryTimestamp
-                                ]
-                            )
-                        }
-                    } else {
-                        // If we couldn't find a thread, that means this associated data was
-                        // created for a group we don't know about yet.
-                        // Stories is in beta at the time of this migration, so we will just drop it.
-                        Logger.info("Dropping StoryContextAssociatedData migration for ThreadAssociatedData without a TSThread")
+                        try transaction.database.execute(
+                            sql: insertSQL,
+                            arguments: [
+                                UUID().uuidString,
+                                nil,
+                                groupId,
+                                hideStory,
+                                latestUnexpiredTimestamp,
+                                lastReceivedStoryTimestamp,
+                                lastViewedStoryTimestamp
+                            ]
+                        )
+                    } else if
+                        let contactUuidString = threadRow["contactUUID"] as? String
+                    {
+                        // Okay to ignore e164 addresses because we can't have updated story metadata
+                        // for those contact threads anyway.
+                        try transaction.database.execute(
+                            sql: insertSQL,
+                            arguments: [
+                                UUID().uuidString,
+                                contactUuidString,
+                                nil,
+                                hideStory,
+                                latestUnexpiredTimestamp,
+                                lastReceivedStoryTimestamp,
+                                lastViewedStoryTimestamp
+                            ]
+                        )
                     }
-
+                } else {
+                    // If we couldn't find a thread, that means this associated data was
+                    // created for a group we don't know about yet.
+                    // Stories is in beta at the time of this migration, so we will just drop it.
+                    Logger.info("Dropping StoryContextAssociatedData migration for ThreadAssociatedData without a TSThread")
                 }
 
-                // Drop the old columns since they are no longer needed.
-                try db.alter(table: "model_TSThread") { alteration in
-                    alteration.drop(column: "lastViewedStoryTimestamp")
-                    alteration.drop(column: "lastReceivedStoryTimestamp")
-                }
-                try db.alter(table: "thread_associated_data") { alteration in
-                    alteration.drop(column: "hideStory")
-                }
-
-            } catch {
-                owsFail("Error \(error)")
             }
+
+            // Drop the old columns since they are no longer needed.
+            try transaction.database.alter(table: "model_TSThread") { alteration in
+                alteration.drop(column: "lastViewedStoryTimestamp")
+                alteration.drop(column: "lastReceivedStoryTimestamp")
+            }
+            try transaction.database.alter(table: "thread_associated_data") { alteration in
+                alteration.drop(column: "hideStory")
+            }
+            return .success(())
         }
 
-        migrator.registerMigration(.addColumnForExperienceUpgradeManifest) { db in
-            do {
-                try db.alter(table: "model_ExperienceUpgrade") { table in
-                    table.add(column: "manifest", .blob)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addColumnForExperienceUpgradeManifest) { transaction in
+            try transaction.database.alter(table: "model_ExperienceUpgrade") { table in
+                table.add(column: "manifest", .blob)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.addStoryContextAssociatedDataReadTimestampColumn) { db in
-            do {
-                try db.alter(table: "model_StoryContextAssociatedData") { table in
-                    table.add(column: "lastReadTimestamp", .integer)
-                }
-            } catch {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addStoryContextAssociatedDataReadTimestampColumn) { transaction in
+            try transaction.database.alter(table: "model_StoryContextAssociatedData") { table in
+                table.add(column: "lastReadTimestamp", .integer)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.addIsCompleteToContactSyncJob) { db in
-            do {
-                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
-                    table.add(column: "isCompleteContactSync", .boolean).defaults(to: false)
-                }
-            } catch let error {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addIsCompleteToContactSyncJob) { transaction in
+            try transaction.database.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                table.add(column: "isCompleteContactSync", .boolean).defaults(to: false)
             }
+            return .success(())
         } // end: .addIsCompleteToContactSyncJob
 
-        migrator.registerMigration(.addSnoozeCountToExperienceUpgrade) { db in
-            do {
-                try db.alter(table: "model_ExperienceUpgrade") { (table: TableAlteration) in
-                    table.add(column: "snoozeCount", .integer)
-                        .notNull()
-                        .defaults(to: 0)
-                }
-
-                let populateSql = """
-                    UPDATE model_ExperienceUpgrade
-                    SET snoozeCount = 1
-                    WHERE lastSnoozedTimestamp > 0
-                """
-                try db.execute(sql: populateSql)
-            } catch let error {
-                owsFail("Error: \(error)")
+        migrator.registerMigration(.addSnoozeCountToExperienceUpgrade) { transaction in
+            try transaction.database.alter(table: "model_ExperienceUpgrade") { (table: TableAlteration) in
+                table.add(column: "snoozeCount", .integer)
+                    .notNull()
+                    .defaults(to: 0)
             }
+
+            let populateSql = """
+                UPDATE model_ExperienceUpgrade
+                SET snoozeCount = 1
+                WHERE lastSnoozedTimestamp > 0
+            """
+            try transaction.database.execute(sql: populateSql)
+            return .success(())
         }
 
-        migrator.registerMigration(.addCancelledGroupRingsTable) { db in
-            do {
-                try db.create(table: CancelledGroupRing.databaseTableName) { table in
-                    table.column("id", .integer).primaryKey().notNull()
-                    table.column("timestamp", .integer).notNull()
-                }
-            } catch {
-                owsFail("\(error)")
+        migrator.registerMigration(.addCancelledGroupRingsTable) { transaction in
+            try transaction.database.create(table: CancelledGroupRing.databaseTableName) { table in
+                table.column("id", .integer).primaryKey().notNull()
+                table.column("timestamp", .integer).notNull()
             }
+            return .success(())
         }
 
         // MARK: - Schema Migration Insertion Point
@@ -2219,85 +2036,70 @@ public class GRDBSchemaMigrator: NSObject {
         // The migration blocks should never throw. If we introduce a crashing
         // migration, we want the crash logs reflect where it occurred.
 
-        migrator.registerMigration(.dataMigration_populateGalleryItems) { db in
-            do {
-                let transaction = GRDBWriteTransaction(database: db)
-                defer { transaction.finalizeTransaction() }
-
-                try createInitialGalleryRecords(transaction: transaction)
-            } catch {
-                owsFail("Error: \(error)")
-            }
+        migrator.registerMigration(.dataMigration_populateGalleryItems) { transaction in
+            try createInitialGalleryRecords(transaction: transaction)
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_markOnboardedUsers_v2) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
+        migrator.registerMigration(.dataMigration_markOnboardedUsers_v2) { transaction in
             if TSAccountManager.shared.isRegistered(transaction: transaction.asAnyWrite) {
                 Logger.info("marking existing user as onboarded")
                 TSAccountManager.shared.setIsOnboarded(true, transaction: transaction.asAnyWrite)
             }
+            return .success(())
         }
 
         migrator.registerMigration(.dataMigration_clearLaunchScreenCache) { _ in
             OWSFileSystem.deleteFileIfExists(NSHomeDirectory() + "/Library/SplashBoard")
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_enableV2RegistrationLockIfNecessary) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
-            guard KeyBackupService.hasMasterKey(transaction: transaction.asAnyWrite) else { return }
+        migrator.registerMigration(.dataMigration_enableV2RegistrationLockIfNecessary) { transaction in
+            guard KeyBackupService.hasMasterKey(transaction: transaction.asAnyWrite) else {
+                return .success(())
+            }
 
             OWS2FAManager.keyValueStore().setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction.asAnyWrite)
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_resetStorageServiceData) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
+        migrator.registerMigration(.dataMigration_resetStorageServiceData) { transaction in
             Self.storageServiceManager.resetLocalData(transaction: transaction.asAnyWrite)
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_markAllInteractionsAsNotDeleted) { db in
-            do {
-                try db.execute(sql: "UPDATE model_TSInteraction SET wasRemotelyDeleted = 0")
-            } catch {
-                owsFail("Error: \(error)")
-            }
+        migrator.registerMigration(.dataMigration_markAllInteractionsAsNotDeleted) { transaction in
+            try transaction.database.execute(sql: "UPDATE model_TSInteraction SET wasRemotelyDeleted = 0")
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_recordMessageRequestInteractionIdEpoch) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
+        migrator.registerMigration(.dataMigration_recordMessageRequestInteractionIdEpoch) { transaction in
             // Set the epoch only if we haven't already, this lets us track and grandfather
             // conversations that existed before the message request feature was launched.
-            guard SSKPreferences.messageRequestInteractionIdEpoch(transaction: transaction) == nil else { return }
+            guard SSKPreferences.messageRequestInteractionIdEpoch(transaction: transaction) == nil else {
+                return .success(())
+            }
 
             let maxId = GRDBInteractionFinder.maxRowId(transaction: transaction)
             SSKPreferences.setMessageRequestInteractionIdEpoch(maxId, transaction: transaction)
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_indexSignalRecipients) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
+        migrator.registerMigration(.dataMigration_indexSignalRecipients) { transaction in
             // This migration was initially created as a schema migration instead of a data migration.
             // If we already ran it there, we need to skip it here since we're doing inserts below that
             // cannot be repeated.
-            guard !hasRunMigration("indexSignalRecipients", transaction: transaction) else { return }
+            guard !hasRunMigration("indexSignalRecipients", transaction: transaction) else {
+                return .success(())
+            }
 
             SignalRecipient.anyEnumerate(transaction: transaction.asAnyWrite) { (signalRecipient: SignalRecipient, _: UnsafeMutablePointer<ObjCBool>) in
                 GRDBFullTextSearchFinder.modelWasInserted(model: signalRecipient, transaction: transaction)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_kbsStateCleanup) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
+        migrator.registerMigration(.dataMigration_kbsStateCleanup) { transaction in
             if KeyBackupService.hasMasterKey(transaction: transaction.asAnyRead) {
                 KeyBackupService.setMasterKeyBackedUp(true, transaction: transaction.asAnyWrite)
             }
@@ -2305,16 +2107,16 @@ public class GRDBSchemaMigrator: NSObject {
             guard let isUsingRandomPinKey = OWS2FAManager.keyValueStore().getBool(
                 "isUsingRandomPinKey",
                 transaction: transaction.asAnyRead
-            ), isUsingRandomPinKey else { return }
+            ), isUsingRandomPinKey else {
+                return .success(())
+            }
 
             OWS2FAManager.keyValueStore().removeValue(forKey: "isUsingRandomPinKey", transaction: transaction.asAnyWrite)
             KeyBackupService.useDeviceLocalMasterKey(transaction: transaction.asAnyWrite)
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_turnScreenSecurityOnForExistingUsers) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
+        migrator.registerMigration(.dataMigration_turnScreenSecurityOnForExistingUsers) { transaction in
             // Declare the key value store here, since it's normally only
             // available in SignalMessaging (OWSPreferences).
             let preferencesKeyValueStore = SDSKeyValueStore(collection: "SignalPreferences")
@@ -2322,15 +2124,15 @@ public class GRDBSchemaMigrator: NSObject {
             guard !preferencesKeyValueStore.hasValue(
                 forKey: screenSecurityKey,
                 transaction: transaction.asAnyRead
-            ) else { return }
+            ) else {
+                return .success(())
+            }
 
             preferencesKeyValueStore.setBool(true, key: screenSecurityKey, transaction: transaction.asAnyWrite)
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_groupIdMapping) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
+        migrator.registerMigration(.dataMigration_groupIdMapping) { transaction in
             TSThread.anyEnumerate(transaction: transaction.asAnyWrite) { (thread: TSThread, _: UnsafeMutablePointer<ObjCBool>) in
                 guard let groupThread = thread as? TSGroupThread else {
                     return
@@ -2339,19 +2141,17 @@ public class GRDBSchemaMigrator: NSObject {
                                                 forGroupId: groupThread.groupModel.groupId,
                                                 transaction: transaction.asAnyWrite)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_disableSharingSuggestionsForExistingUsers) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
+        migrator.registerMigration(.dataMigration_disableSharingSuggestionsForExistingUsers) { transaction in
             SSKPreferences.setAreIntentDonationsEnabled(false, transaction: transaction.asAnyWrite)
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_removeOversizedGroupAvatars) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
-            TSGroupThread.anyEnumerate(transaction: transaction.asAnyWrite) { (thread: TSThread, _) in
+        migrator.registerMigration(.dataMigration_removeOversizedGroupAvatars) { transaction in
+            var thrownError: Error?
+            TSGroupThread.anyEnumerate(transaction: transaction.asAnyWrite) { (thread: TSThread, stop: UnsafeMutablePointer<ObjCBool>) in
                 guard let groupThread = thread as? TSGroupThread else { return }
                 guard let avatarData = groupThread.groupModel.legacyAvatarData else { return }
                 guard !TSGroupModel.isValidGroupAvatarData(avatarData) else { return }
@@ -2364,88 +2164,74 @@ public class GRDBSchemaMigrator: NSObject {
                     let newGroupModel = try builder.build()
                     groupThread.update(with: newGroupModel, transaction: transaction.asAnyWrite)
                 } catch {
-                    owsFail("Failed to remove invalid group avatar during migration: \(error)")
+                    thrownError = error
+                    stop.pointee = true
                 }
             }
+            return thrownError.map { .failure($0) } ?? .success(())
         }
 
-        migrator.registerMigration(.dataMigration_scheduleStorageServiceUpdateForMutedThreads) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
+        migrator.registerMigration(.dataMigration_scheduleStorageServiceUpdateForMutedThreads) { transaction in
+            let cursor = TSThread.grdbFetchCursor(
+                sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .mutedUntilTimestamp) > 0",
+                transaction: transaction
+            )
 
-            do {
-                let cursor = TSThread.grdbFetchCursor(
-                    sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .mutedUntilTimestamp) > 0",
-                    transaction: transaction
-                )
-
-                while let thread = try cursor.next() {
-                    if let thread = thread as? TSContactThread {
-                        Self.storageServiceManager.recordPendingUpdates(updatedAddresses: [thread.contactAddress])
-                    } else if let thread = thread as? TSGroupThread {
-                        Self.storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
-                    } else {
-                        owsFail("Unexpected thread type \(thread)")
-                    }
+            while let thread = try cursor.next() {
+                if let thread = thread as? TSContactThread {
+                    Self.storageServiceManager.recordPendingUpdates(updatedAddresses: [thread.contactAddress])
+                } else if let thread = thread as? TSGroupThread {
+                    Self.storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
+                } else {
+                    owsFail("Unexpected thread type \(thread)")
                 }
-            } catch {
-                owsFail("Error: \(error)")
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_populateGroupMember) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
+        migrator.registerMigration(.dataMigration_populateGroupMember) { transaction in
+            let cursor = TSThread.grdbFetchCursor(
+                sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
+                transaction: transaction
+            )
 
-            do {
-                let cursor = TSThread.grdbFetchCursor(
-                    sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
-                    transaction: transaction
-                )
-
-                while let thread = try cursor.next() {
-                    guard let groupThread = thread as? TSGroupThread else {
-                        owsFail("Unexpected thread type \(thread)")
-                    }
-                    let interactionFinder = InteractionFinder(threadUniqueId: groupThread.uniqueId)
-                    groupThread.groupMembership.fullMembers.forEach { address in
-                        // Group member addresses are low-trust, and the address cache has
-                        // not been populated yet at this point in time. We want to record
-                        // as close to a fully qualified address as we can in the database,
-                        // so defer to the address from the signal recipient (if one exists)
-                        let recipient = GRDBSignalRecipientFinder().signalRecipient(for: address, transaction: transaction)
-                        let memberAddress = recipient?.address ?? address
-
-                        let latestInteraction = interactionFinder.latestInteraction(from: memberAddress, transaction: transaction.asAnyWrite)
-                        let memberRecord = TSGroupMember(
-                            address: memberAddress,
-                            groupThreadId: groupThread.uniqueId,
-                            lastInteractionTimestamp: latestInteraction?.timestamp ?? 0
-                        )
-                        memberRecord.anyInsert(transaction: transaction.asAnyWrite)
-                    }
+            while let thread = try cursor.next() {
+                guard let groupThread = thread as? TSGroupThread else {
+                    owsFail("Unexpected thread type \(thread)")
                 }
-            } catch {
-                owsFail("Error: \(error)")
+                let interactionFinder = InteractionFinder(threadUniqueId: groupThread.uniqueId)
+                groupThread.groupMembership.fullMembers.forEach { address in
+                    // Group member addresses are low-trust, and the address cache has
+                    // not been populated yet at this point in time. We want to record
+                    // as close to a fully qualified address as we can in the database,
+                    // so defer to the address from the signal recipient (if one exists)
+                    let recipient = GRDBSignalRecipientFinder().signalRecipient(for: address, transaction: transaction)
+                    let memberAddress = recipient?.address ?? address
+
+                    let latestInteraction = interactionFinder.latestInteraction(from: memberAddress, transaction: transaction.asAnyWrite)
+                    let memberRecord = TSGroupMember(
+                        address: memberAddress,
+                        groupThreadId: groupThread.uniqueId,
+                        lastInteractionTimestamp: latestInteraction?.timestamp ?? 0
+                    )
+                    memberRecord.anyInsert(transaction: transaction.asAnyWrite)
+                }
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_cullInvalidIdentityKeySendingErrors) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
+        migrator.registerMigration(.dataMigration_cullInvalidIdentityKeySendingErrors) { transaction in
             let sql = """
                 DELETE FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .recordType) = ?
             """
             transaction.executeUpdate(sql: sql, arguments: [SDSRecordType.invalidIdentityKeySendingErrorMessage.rawValue])
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_moveToThreadAssociatedData) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
-            TSThread.anyEnumerate(transaction: transaction.asAnyWrite) { thread, _ in
+        migrator.registerMigration(.dataMigration_moveToThreadAssociatedData) { transaction in
+            var thrownError: Error?
+            TSThread.anyEnumerate(transaction: transaction.asAnyWrite) { (thread, stop: UnsafeMutablePointer<ObjCBool>) in
                 do {
                     try ThreadAssociatedData(
                         threadUniqueId: thread.uniqueId,
@@ -2456,91 +2242,77 @@ public class GRDBSchemaMigrator: NSObject {
                         audioPlaybackRate: 1
                     ).insert(transaction.database)
                 } catch {
-                    owsFail("Error \(error)")
+                    thrownError = error
+                    stop.pointee = true
                 }
             }
+            return thrownError.map { .failure($0) } ?? .success(())
         }
 
-        migrator.registerMigration(.dataMigration_senderKeyStoreKeyIdMigration) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
+        migrator.registerMigration(.dataMigration_senderKeyStoreKeyIdMigration) { transaction in
             SenderKeyStore.performKeyIdMigration(transaction: transaction.asAnyWrite)
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarDataFixed) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
+        migrator.registerMigration(.dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarDataFixed) { transaction in
+            let threadCursor = TSThread.grdbFetchCursor(
+                sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
+                transaction: transaction
+            )
 
-            do {
-                let threadCursor = TSThread.grdbFetchCursor(
-                    sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
-                    transaction: transaction
-                )
-
-                while let thread = try threadCursor.next() as? TSGroupThread {
-                    try autoreleasepool {
-                        try thread.groupModel.attemptToMigrateLegacyAvatarDataToDisk()
-                        thread.anyUpsert(transaction: transaction.asAnyWrite)
-                        GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: transaction)
-                    }
+            while let thread = try threadCursor.next() as? TSGroupThread {
+                try autoreleasepool {
+                    try thread.groupModel.attemptToMigrateLegacyAvatarDataToDisk()
+                    thread.anyUpsert(transaction: transaction.asAnyWrite)
+                    GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: transaction)
                 }
-
-                // There was a broken version of this migration that did not persist the avatar migration. It's now fixed, but for
-                // users who ran it we need to skip the re-index of the group members because we can't perform a second "insert"
-                // query. This is superfluous anyways, so it's safe to skip.
-                guard !hasRunMigration("dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarData", transaction: transaction) else { return }
-
-                let memberCursor = try TSGroupMember.fetchCursor(db)
-
-                while let member = try memberCursor.next() {
-                    autoreleasepool {
-                        GRDBFullTextSearchFinder.modelWasInsertedOrUpdated(model: member, transaction: transaction)
-                    }
-                }
-            } catch {
-                owsFail("Error: \(error)")
             }
+
+            // There was a broken version of this migration that did not persist the avatar migration. It's now fixed, but for
+            // users who ran it we need to skip the re-index of the group members because we can't perform a second "insert"
+            // query. This is superfluous anyways, so it's safe to skip.
+            guard !hasRunMigration("dataMigration_reindexGroupMembershipAndMigrateLegacyAvatarData", transaction: transaction) else {
+                return .success(())
+            }
+
+            let memberCursor = try TSGroupMember.fetchCursor(transaction.database)
+
+            while let member = try memberCursor.next() {
+                autoreleasepool {
+                    GRDBFullTextSearchFinder.modelWasInsertedOrUpdated(model: member, transaction: transaction)
+                }
+            }
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_repairAvatar) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
+        migrator.registerMigration(.dataMigration_repairAvatar) { transaction in
             // Declare the key value store here, since it's normally only
             // available in SignalMessaging (OWSPreferences).
             let preferencesKeyValueStore = SDSKeyValueStore(collection: Self.migrationSideEffectsCollectionName)
             let key = Self.avatarRepairAttemptCount
             preferencesKeyValueStore.setInt(0, key: key, transaction: transaction.asAnyWrite)
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_dropEmojiAvailabilityStore) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
+        migrator.registerMigration(.dataMigration_dropEmojiAvailabilityStore) { transaction in
             // This is a bit of a layering violation, since these tables were previously managed in the app layer.
             // In the long run we'll have a general "unused SDSKeyValueStore cleaner" migration,
             // but for now this should drop 2000 or so rows for free.
             SDSKeyValueStore(collection: "Emoji+availableStore").removeAll(transaction: transaction.asAnyWrite)
             SDSKeyValueStore(collection: "Emoji+metadataStore").removeAll(transaction: transaction.asAnyWrite)
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_dropSentStories) { db in
+        migrator.registerMigration(.dataMigration_dropSentStories) { transaction in
             let sql = """
                 DELETE FROM \(StoryMessage.databaseTableName)
                 WHERE \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.outgoing.rawValue)
             """
-            do {
-                try db.execute(sql: sql)
-            } catch {
-                owsFail("Error \(error)")
-            }
+            try transaction.database.execute(sql: sql)
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_indexMultipleNameComponentsForReceipients) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
+        migrator.registerMigration(.dataMigration_indexMultipleNameComponentsForReceipients) { transaction in
             // We updated how we generate text for the search index for a
             // recipient, and consequently should touch all recipients so that
             // we regenerate the index text.
@@ -2548,91 +2320,75 @@ public class GRDBSchemaMigrator: NSObject {
             SignalRecipient.anyEnumerate(transaction: transaction.asAnyWrite) { (signalRecipient: SignalRecipient, _: UnsafeMutablePointer<ObjCBool>) in
                 GRDBFullTextSearchFinder.modelWasUpdated(model: signalRecipient, transaction: transaction)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_syncGroupStories) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
+        migrator.registerMigration(.dataMigration_syncGroupStories) { transaction in
             for thread in AnyThreadFinder().storyThreads(includeImplicitGroupThreads: false, transaction: transaction.asAnyRead) {
                 guard let thread = thread as? TSGroupThread else { continue }
                 self.storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_deleteOldGroupCapabilities) { db in
+        migrator.registerMigration(.dataMigration_deleteOldGroupCapabilities) { transaction in
             let sql = """
                 DELETE FROM \(SDSKeyValueStore.tableName)
                 WHERE \(SDSKeyValueStore.collectionColumn.columnName)
                 IN ("GroupManager.senderKeyCapability", "GroupManager.announcementOnlyGroupsCapability", "GroupManager.groupsV2MigrationCapability")
             """
-            do {
-                try db.execute(sql: sql)
-            } catch {
-                owsFail("Error \(error)")
-            }
+            try transaction.database.execute(sql: sql)
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_updateStoriesDisabledInAccountRecord) { db in
+        migrator.registerMigration(.dataMigration_updateStoriesDisabledInAccountRecord) { transaction in
             storageServiceManager.recordPendingLocalAccountUpdates()
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_removeGroupStoryRepliesFromSearchIndex) { db in
-            do {
-                let uniqueIdSql = """
-                    SELECT \(interactionColumn: .uniqueId)
-                    FROM \(InteractionRecord.databaseTableName)
-                    WHERE \(interactionColumn: .isGroupStoryReply) = 1
-                """
-                let uniqueIds = try String.fetchAll(db, sql: uniqueIdSql)
+        migrator.registerMigration(.dataMigration_removeGroupStoryRepliesFromSearchIndex) { transaction in
+            let uniqueIdSql = """
+                SELECT \(interactionColumn: .uniqueId)
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .isGroupStoryReply) = 1
+            """
+            let uniqueIds = try String.fetchAll(transaction.database, sql: uniqueIdSql)
 
-                guard !uniqueIds.isEmpty else { return }
-
-                let indexUpdateSql = """
-                    DELETE FROM \(GRDBFullTextSearchFinder.contentTableName)
-                    WHERE \(GRDBFullTextSearchFinder.uniqueIdColumn) IN (\(uniqueIds.map { "\"\($0)\"" }.joined(separator: ", ")))
-                    AND \(GRDBFullTextSearchFinder.collectionColumn) = "\(TSInteraction.collection())"
-                """
-                try db.execute(sql: indexUpdateSql)
-            } catch {
-                owsFail("Error \(error)")
+            guard !uniqueIds.isEmpty else {
+                return .success(())
             }
+
+            let indexUpdateSql = """
+                DELETE FROM \(GRDBFullTextSearchFinder.contentTableName)
+                WHERE \(GRDBFullTextSearchFinder.uniqueIdColumn) IN (\(uniqueIds.map { "\"\($0)\"" }.joined(separator: ", ")))
+                AND \(GRDBFullTextSearchFinder.collectionColumn) = "\(TSInteraction.collection())"
+            """
+            try transaction.database.execute(sql: indexUpdateSql)
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_populateStoryContextAssociatedDataLastReadTimestamp) { db in
-            do {
-                let sql = """
-                    UPDATE model_StoryContextAssociatedData
-                    SET lastReadTimestamp = lastViewedTimestamp
-                """
-                try db.execute(sql: sql)
-            } catch {
-                owsFail("Error: \(error)")
-            }
+        migrator.registerMigration(.dataMigration_populateStoryContextAssociatedDataLastReadTimestamp) { transaction in
+            let sql = """
+                UPDATE model_StoryContextAssociatedData
+                SET lastReadTimestamp = lastViewedTimestamp
+            """
+            try transaction.database.execute(sql: sql)
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_indexPrivateStoryThreadNames) { db in
-            do {
-                let transaction = GRDBWriteTransaction(database: db)
-                defer { transaction.finalizeTransaction() }
-
-                let sql = "SELECT * FROM model_TSThread WHERE recordType IS \(SDSRecordType.privateStoryThread.rawValue)"
-                let cursor = TSThread.grdbFetchCursor(sql: sql, transaction: transaction)
-                while let thread = try cursor.next() {
-                    guard let storyThread = thread as? TSPrivateStoryThread else {
-                        continue
-                    }
-                    GRDBFullTextSearchFinder.modelWasInserted(model: storyThread, transaction: transaction)
+        migrator.registerMigration(.dataMigration_indexPrivateStoryThreadNames) { transaction in
+            let sql = "SELECT * FROM model_TSThread WHERE recordType IS \(SDSRecordType.privateStoryThread.rawValue)"
+            let cursor = TSThread.grdbFetchCursor(sql: sql, transaction: transaction)
+            while let thread = try cursor.next() {
+                guard let storyThread = thread as? TSPrivateStoryThread else {
+                    continue
                 }
-            } catch {
-                owsFail("Error: \(error)")
+                GRDBFullTextSearchFinder.modelWasInserted(model: storyThread, transaction: transaction)
             }
+            return .success(())
         }
 
-        migrator.registerMigration(.dataMigration_scheduleStorageServiceUpdateForSystemContacts) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
+        migrator.registerMigration(.dataMigration_scheduleStorageServiceUpdateForSystemContacts) { transaction in
             // We've added fields on the StorageService ContactRecord proto for
             // their "system name", or the name of their associated system
             // contact, if present. Consequently, for all Signal contacts with
@@ -2642,7 +2398,7 @@ public class GRDBSchemaMigrator: NSObject {
             // the primary device's system contacts are synced.
 
             guard tsAccountManager.isPrimaryDevice else {
-                return
+                return .success(())
             }
 
             var accountsToRemove: Set<SignalAccount> = []
@@ -2660,6 +2416,7 @@ public class GRDBSchemaMigrator: NSObject {
             }
 
             storageServiceManager.recordPendingUpdates(updatedAddresses: accountsToRemove.map { $0.recipientAddress })
+            return .success(())
         }
 
         // MARK: - Data Migration Insertion Point
