@@ -804,13 +804,13 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
         let bodyTextLabel = componentView.bodyTextLabel
         if let item = bodyTextLabel.itemForGesture(sender: sender) {
-            componentDelegate.cvc_didTapBodyTextItem(item)
+            componentDelegate.didTapBodyTextItem(item)
             return true
         }
 
         if hasTapForMore {
             let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-            componentDelegate.cvc_didTapTruncatedTextMessage(itemViewModel)
+            componentDelegate.didTapTruncatedTextMessage(itemViewModel)
             return true
         }
 

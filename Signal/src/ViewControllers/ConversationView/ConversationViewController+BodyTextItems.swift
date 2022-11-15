@@ -7,6 +7,8 @@ import Foundation
 import MessageUI
 import SignalCoreKit
 import SignalMessaging
+import SignalServiceKit
+import SignalUI
 
 // This extension reproduces some of the UITextView link interaction behavior.
 // This is how UITextView behaves:
@@ -138,7 +140,7 @@ extension ConversationViewController {
                                                                                  comment: "Label for button to open a sticker pack."),
                                                         accessibilityIdentifier: "link_open_sticker_pack",
                                                         style: .default) { [weak self] _ in
-                    self?.cvc_didTapStickerPack(stickerPackInfo)
+                    self?.didTapStickerPack(stickerPackInfo)
                 })
             } else {
                 owsFailDebug("Invalid URL: \(dataItem.url)")
@@ -148,14 +150,14 @@ extension ConversationViewController {
                                                                              comment: "Label for button to open a group invite."),
                                                     accessibilityIdentifier: "link_open_group_invite",
                                                     style: .default) { [weak self] _ in
-                self?.cvc_didTapGroupInviteLink(url: dataItem.url)
+                self?.didTapGroupInviteLink(url: dataItem.url)
             })
         } else if SignalProxy.isValidProxyLink(dataItem.url) {
             actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_LINK_OPEN_PROXY",
                                                                              comment: "Label for button to open a signal proxy."),
                                                     accessibilityIdentifier: "link_open_proxy",
                                                     style: .default) { [weak self] _ in
-                self?.cvc_didTapProxyLink(url: dataItem.url)
+                self?.didTapProxyLink(url: dataItem.url)
             })
         } else {
             actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_LINK_OPEN_LINK",
@@ -323,11 +325,11 @@ extension ConversationViewController {
                 owsFailDebug("Invalid URL: \(dataItem.url)")
                 return
             }
-            cvc_didTapStickerPack(stickerPackInfo)
+            didTapStickerPack(stickerPackInfo)
         } else if GroupManager.isPossibleGroupInviteLink(dataItem.url) {
-            cvc_didTapGroupInviteLink(url: dataItem.url)
+            didTapGroupInviteLink(url: dataItem.url)
         } else if SignalProxy.isValidProxyLink(dataItem.url) {
-            cvc_didTapProxyLink(url: dataItem.url)
+            didTapProxyLink(url: dataItem.url)
         } else if SignalMe.isPossibleUrl(dataItem.url) {
             cvc_didTapSignalMeLink(url: dataItem.url)
         } else if isMailtoUrl(dataItem.url) {

@@ -145,7 +145,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             // Not yet downloaded.
             return false
         }
-        componentDelegate.cvc_didTapStickerPack(stickerMetadata.packInfo)
+        componentDelegate.didTapStickerPack(stickerMetadata.packInfo)
         return true
     }
 

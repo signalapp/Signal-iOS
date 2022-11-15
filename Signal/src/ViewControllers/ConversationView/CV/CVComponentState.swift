@@ -953,19 +953,19 @@ fileprivate extension CVComponentState.Builder {
         if hasSendTextButton {
             let action = CVMessageAction(title: CommonStrings.sendMessage,
                                          accessibilityIdentifier: "send_message_to_contact_share",
-                                         action: .cvc_didTapSendMessage(contactShare: contactShare))
+                                         action: .didTapSendMessage(contactShare: contactShare))
             bottomButtonsActions.append(action)
         } else if hasInviteButton {
             let action = CVMessageAction(title: NSLocalizedString("ACTION_INVITE",
                                                                   comment: "Label for 'invite' button in contact view."),
                                          accessibilityIdentifier: "invite_contact_share",
-                                         action: .cvc_didTapSendInvite(contactShare: contactShare))
+                                         action: .didTapSendInvite(contactShare: contactShare))
             bottomButtonsActions.append(action)
         } else if hasAddToContactsButton {
             let action = CVMessageAction(title: NSLocalizedString("CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
                                                                   comment: "Message shown in conversation view that offers to add an unknown user to your phone's contacts."),
                                          accessibilityIdentifier: "add_to_contacts",
-                                         action: .cvc_didTapAddToContacts(contactShare: contactShare))
+                                         action: .didTapAddToContacts(contactShare: contactShare))
             bottomButtonsActions.append(action)
         }
 

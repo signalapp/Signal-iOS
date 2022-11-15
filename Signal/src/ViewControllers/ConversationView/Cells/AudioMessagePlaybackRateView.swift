@@ -230,7 +230,7 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
         self.cvAudioPlayer.setPlaybackRate(newPlaybackRate.rawValue, forThreadUniqueId: threadUniqueId)
 
         // Hold off updates until we animate the change.
-        let animationCompletion = componentDelegate?.cvc_beginCellAnimation(
+        let animationCompletion = componentDelegate?.beginCellAnimation(
             maximumDuration: Constants.maxAnimationDuration
         )
 
@@ -264,7 +264,7 @@ class AudioMessagePlaybackRateView: ManualLayoutViewWithLayer {
             // to reload only ThreadAssociatedData without a heavy refactor.
             // This only happens on direct user input, anyway, so its probably not a
             // big deal since it therefore only happens on human timescales.
-            componentDelegate?.cvc_enqueueReloadWithoutCaches()
+            componentDelegate?.enqueueReloadWithoutCaches()
         }
 
         return true

@@ -512,7 +512,7 @@ class AudioMessageView: ManualStackView {
 
         if animated {
             playPauseAnimationEnd?()
-            let endCellAnimation = componentDelegate?.cvc_beginCellAnimation(maximumDuration: 0.2)
+            let endCellAnimation = componentDelegate?.beginCellAnimation(maximumDuration: 0.2)
             playPauseAnimationEnd = endCellAnimation
             playPauseAnimation.play(toProgress: destination) { _ in
                 endCellAnimation?()
@@ -584,7 +584,7 @@ class AudioMessageView: ManualStackView {
 
         if animated {
             playedDotAnimationEnd?()
-            let endCellAnimation = componentDelegate?.cvc_beginCellAnimation(maximumDuration: 0.2)
+            let endCellAnimation = componentDelegate?.beginCellAnimation(maximumDuration: 0.2)
             playedDotAnimationEnd = endCellAnimation
             playedDotAnimation.play(toProgress: destination) { _ in
                 endCellAnimation?()

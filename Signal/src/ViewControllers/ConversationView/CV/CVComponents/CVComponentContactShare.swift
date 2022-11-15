@@ -52,7 +52,7 @@ public class CVComponentContactShare: CVComponentBase, CVComponent {
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {
 
-        componentDelegate.cvc_didTapContactShare(contactShare)
+        componentDelegate.didTapContactShare(contactShare)
         return true
     }
 

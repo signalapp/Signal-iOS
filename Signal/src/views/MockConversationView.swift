@@ -274,100 +274,100 @@ private class MockOutgoingMessage: TSOutgoingMessage {
 
 extension MockConversationView: CVComponentDelegate {
 
-    func cvc_enqueueReload() {}
+    func enqueueReload() {}
 
-    func cvc_enqueueReloadWithoutCaches() {}
+    func enqueueReloadWithoutCaches() {}
 
-    func cvc_didTapBodyTextItem(_ item: CVTextLabel.Item) {}
+    func didTapBodyTextItem(_ item: CVTextLabel.Item) {}
 
-    func cvc_didLongPressBodyTextItem(_ item: CVTextLabel.Item) {}
+    func didLongPressBodyTextItem(_ item: CVTextLabel.Item) {}
 
-    func cvc_didTapSystemMessageItem(_ item: CVTextLabel.Item) {}
+    func didTapSystemMessageItem(_ item: CVTextLabel.Item) {}
 
-    func cvc_didLongPressTextViewItem(_ cell: CVCell,
-                                      itemViewModel: CVItemViewModelImpl,
-                                      shouldAllowReply: Bool) {}
+    func didLongPressTextViewItem(_ cell: CVCell,
+                                  itemViewModel: CVItemViewModelImpl,
+                                  shouldAllowReply: Bool) {}
 
-    func cvc_didLongPressMediaViewItem(_ cell: CVCell,
-                                       itemViewModel: CVItemViewModelImpl,
-                                       shouldAllowReply: Bool) {}
+    func didLongPressMediaViewItem(_ cell: CVCell,
+                                   itemViewModel: CVItemViewModelImpl,
+                                   shouldAllowReply: Bool) {}
 
-    func cvc_didLongPressQuote(_ cell: CVCell,
-                               itemViewModel: CVItemViewModelImpl,
-                               shouldAllowReply: Bool) {}
+    func didLongPressQuote(_ cell: CVCell,
+                           itemViewModel: CVItemViewModelImpl,
+                           shouldAllowReply: Bool) {}
 
-    func cvc_didLongPressSystemMessage(_ cell: CVCell,
-                                       itemViewModel: CVItemViewModelImpl) {}
+    func didLongPressSystemMessage(_ cell: CVCell,
+                                   itemViewModel: CVItemViewModelImpl) {}
 
-    func cvc_didLongPressSticker(_ cell: CVCell,
-                                 itemViewModel: CVItemViewModelImpl,
-                                 shouldAllowReply: Bool) {}
+    func didLongPressSticker(_ cell: CVCell,
+                             itemViewModel: CVItemViewModelImpl,
+                             shouldAllowReply: Bool) {}
 
-    func cvc_didChangeLongpress(_ itemViewModel: CVItemViewModelImpl) {}
+    func didChangeLongPress(_ itemViewModel: CVItemViewModelImpl) {}
 
-    func cvc_didEndLongpress(_ itemViewModel: CVItemViewModelImpl) {}
+    func didEndLongPress(_ itemViewModel: CVItemViewModelImpl) {}
 
-    func cvc_didCancelLongpress(_ itemViewModel: CVItemViewModelImpl) {}
+    func didCancelLongPress(_ itemViewModel: CVItemViewModelImpl) {}
 
     // MARK: -
 
-    func cvc_didTapReplyToItem(_ itemViewModel: CVItemViewModelImpl) {}
+    func didTapReplyToItem(_ itemViewModel: CVItemViewModelImpl) {}
 
-    func cvc_didTapSenderAvatar(_ interaction: TSInteraction) {}
+    func didTapSenderAvatar(_ interaction: TSInteraction) {}
 
-    func cvc_shouldAllowReplyForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool { false }
+    func shouldAllowReplyForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool { false }
 
-    func cvc_didTapReactions(reactionState: InteractionReactionState,
-                             message: TSMessage) {}
+    func didTapReactions(reactionState: InteractionReactionState,
+                         message: TSMessage) {}
 
-    func cvc_didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModelImpl) {}
+    func didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModelImpl) {}
 
-    var cvc_hasPendingMessageRequest: Bool { false }
+    var hasPendingMessageRequest: Bool { false }
 
-    func cvc_didTapFailedOrPendingDownloads(_ message: TSMessage) {}
+    func didTapFailedOrPendingDownloads(_ message: TSMessage) {}
 
-    func cvc_didTapBrokenVideo() {}
+    func didTapBrokenVideo() {}
 
     // MARK: - Messages
 
-    func cvc_didTapBodyMedia(itemViewModel: CVItemViewModelImpl,
-                             attachmentStream: TSAttachmentStream,
-                             imageView: UIView) {}
+    func didTapBodyMedia(itemViewModel: CVItemViewModelImpl,
+                         attachmentStream: TSAttachmentStream,
+                         imageView: UIView) {}
 
-    func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) -> CVAttachmentTapAction { .default }
+    func didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) -> CVAttachmentTapAction { .default }
 
-    func cvc_didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel) {}
+    func didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel) {}
 
-    func cvc_didTapLinkPreview(_ linkPreview: OWSLinkPreview) {}
+    func didTapLinkPreview(_ linkPreview: OWSLinkPreview) {}
 
-    func cvc_didTapContactShare(_ contactShare: ContactShareViewModel) {}
+    func didTapContactShare(_ contactShare: ContactShareViewModel) {}
 
-    func cvc_didTapSendMessage(toContactShare contactShare: ContactShareViewModel) {}
+    func didTapSendMessage(toContactShare contactShare: ContactShareViewModel) {}
 
-    func cvc_didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {}
+    func didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {}
 
-    func cvc_didTapAddToContacts(contactShare: ContactShareViewModel) {}
+    func didTapAddToContacts(contactShare: ContactShareViewModel) {}
 
-    func cvc_didTapStickerPack(_ stickerPackInfo: StickerPackInfo) {}
+    func didTapStickerPack(_ stickerPackInfo: StickerPackInfo) {}
 
-    func cvc_didTapGroupInviteLink(url: URL) {}
+    func didTapGroupInviteLink(url: URL) {}
 
-    func cvc_didTapProxyLink(url: URL) {}
+    func didTapProxyLink(url: URL) {}
 
-    func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {}
+    func didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {}
 
     // Never wrap gifts on the mock conversation view
-    func cvc_willWrapGift(_ messageUniqueId: String) -> Bool { false }
+    func willWrapGift(_ messageUniqueId: String) -> Bool { false }
 
-    func cvc_willShakeGift(_ messageUniqueId: String) -> Bool { false }
+    func willShakeGift(_ messageUniqueId: String) -> Bool { false }
 
-    func cvc_willUnwrapGift(_ itemViewModel: CVItemViewModelImpl) {}
+    func willUnwrapGift(_ itemViewModel: CVItemViewModelImpl) {}
 
-    func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge, isExpired: Bool, isRedeemed: Bool) {}
+    func didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge, isExpired: Bool, isRedeemed: Bool) {}
 
-    func cvc_prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {}
+    func prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {}
 
-    func cvc_beginCellAnimation(maximumDuration: TimeInterval) -> EndCellAnimation {
+    func beginCellAnimation(maximumDuration: TimeInterval) -> EndCellAnimation {
         return {}
     }
 
@@ -383,58 +383,58 @@ extension MockConversationView: CVComponentDelegate {
 
     // MARK: - System Cell
 
-    func cvc_didTapPreviouslyVerifiedIdentityChange(_ address: SignalServiceAddress) {}
+    func didTapPreviouslyVerifiedIdentityChange(_ address: SignalServiceAddress) {}
 
-    func cvc_didTapUnverifiedIdentityChange(_ address: SignalServiceAddress) {}
+    func didTapUnverifiedIdentityChange(_ address: SignalServiceAddress) {}
 
-    func cvc_didTapInvalidIdentityKeyErrorMessage(_ message: TSInvalidIdentityKeyErrorMessage) {}
+    func didTapInvalidIdentityKeyErrorMessage(_ message: TSInvalidIdentityKeyErrorMessage) {}
 
-    func cvc_didTapCorruptedMessage(_ message: TSErrorMessage) {}
+    func didTapCorruptedMessage(_ message: TSErrorMessage) {}
 
-    func cvc_didTapSessionRefreshMessage(_ message: TSErrorMessage) {}
+    func didTapSessionRefreshMessage(_ message: TSErrorMessage) {}
 
-    func cvc_didTapResendGroupUpdateForErrorMessage(_ errorMessage: TSErrorMessage) {}
+    func didTapResendGroupUpdateForErrorMessage(_ errorMessage: TSErrorMessage) {}
 
-    func cvc_didTapShowFingerprint(_ address: SignalServiceAddress) {}
+    func didTapShowFingerprint(_ address: SignalServiceAddress) {}
 
-    func cvc_didTapIndividualCall(_ call: TSCall) {}
+    func didTapIndividualCall(_ call: TSCall) {}
 
-    func cvc_didTapGroupCall() {}
+    func didTapGroupCall() {}
 
-    func cvc_didTapPendingOutgoingMessage(_ message: TSOutgoingMessage) {}
+    func didTapPendingOutgoingMessage(_ message: TSOutgoingMessage) {}
 
-    func cvc_didTapFailedOutgoingMessage(_ message: TSOutgoingMessage) {}
+    func didTapFailedOutgoingMessage(_ message: TSOutgoingMessage) {}
 
-    func cvc_didTapShowGroupMigrationLearnMoreActionSheet(infoMessage: TSInfoMessage,
-                                                          oldGroupModel: TSGroupModel,
-                                                          newGroupModel: TSGroupModel) {}
+    func didTapShowGroupMigrationLearnMoreActionSheet(infoMessage: TSInfoMessage,
+                                                      oldGroupModel: TSGroupModel,
+                                                      newGroupModel: TSGroupModel) {}
 
-    func cvc_didTapGroupInviteLinkPromotion(groupModel: TSGroupModel) {}
+    func didTapGroupInviteLinkPromotion(groupModel: TSGroupModel) {}
 
-    func cvc_didTapViewGroupDescription(groupModel: TSGroupModel?) {}
+    func didTapViewGroupDescription(groupModel: TSGroupModel?) {}
 
-    func cvc_didTapShowConversationSettings() {}
+    func didTapShowConversationSettings() {}
 
-    func cvc_didTapShowConversationSettingsAndShowMemberRequests() {}
+    func didTapShowConversationSettingsAndShowMemberRequests() {}
 
-    func cvc_didTapBlockRequest(
+    func didTapBlockRequest(
         groupModel: TSGroupModelV2,
         requesterName: String,
         requesterUuid: UUID
     ) {}
 
-    func cvc_didTapShowUpgradeAppUI() {}
+    func didTapShowUpgradeAppUI() {}
 
-    func cvc_didTapUpdateSystemContact(_ address: SignalServiceAddress,
-                                       newNameComponents: PersonNameComponents) {}
+    func didTapUpdateSystemContact(_ address: SignalServiceAddress,
+                                   newNameComponents: PersonNameComponents) {}
 
-    func cvc_didTapPhoneNumberChange(uuid: UUID, phoneNumberOld: String, phoneNumberNew: String) {}
+    func didTapPhoneNumberChange(uuid: UUID, phoneNumberOld: String, phoneNumberNew: String) {}
 
-    func cvc_didTapViewOnceAttachment(_ interaction: TSInteraction) {}
+    func didTapViewOnceAttachment(_ interaction: TSInteraction) {}
 
-    func cvc_didTapViewOnceExpired(_ interaction: TSInteraction) {}
+    func didTapViewOnceExpired(_ interaction: TSInteraction) {}
 
-    func cvc_didTapUnknownThreadWarningGroup() {}
-    func cvc_didTapUnknownThreadWarningContact() {}
-    func cvc_didTapDeliveryIssueWarning(_ message: TSErrorMessage) {}
+    func didTapUnknownThreadWarningGroup() {}
+    func didTapUnknownThreadWarningContact() {}
+    func didTapDeliveryIssueWarning(_ message: TSErrorMessage) {}
 }

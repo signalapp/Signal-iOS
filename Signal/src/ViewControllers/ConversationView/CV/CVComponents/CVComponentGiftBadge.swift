@@ -112,7 +112,7 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
         let giftBadgeView = componentView.giftBadgeView
 
         if giftBadgeView.giftWrap != nil {
-            componentDelegate.cvc_willUnwrapGift(itemViewModel)
+            componentDelegate.willUnwrapGift(itemViewModel)
             giftBadgeView.animateUnwrap()
             return true
         }
@@ -132,7 +132,7 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
         }
 
         let giftBadge = self.giftBadge
-        componentDelegate.cvc_didTapGiftBadge(
+        componentDelegate.didTapGiftBadge(
             itemViewModel,
             profileBadge: profileBadge,
             isExpired: giftBadge.expirationDate.isBeforeNow,
@@ -162,12 +162,12 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
                 let giftWrap = self.giftBadgeView.giftWrap,
                 let componentDelegate = self.componentDelegate,
                 let messageUniqueId = self.messageUniqueId,
-                componentDelegate.cvc_willShakeGift(messageUniqueId)
+                componentDelegate.willShakeGift(messageUniqueId)
             else {
                 return
             }
 
-            _ = componentDelegate.cvc_beginCellAnimation(maximumDuration: GiftWrap.shakeAnimationDuration)
+            _ = componentDelegate.beginCellAnimation(maximumDuration: GiftWrap.shakeAnimationDuration)
             giftWrap.animateShake()
         }
 

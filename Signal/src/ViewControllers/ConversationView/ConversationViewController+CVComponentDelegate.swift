@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import PassKit
 import QuickLook
 import SignalMessaging
 import SignalServiceKit
+import SignalUI
 
 extension ConversationViewController: CVComponentDelegate {
 
@@ -17,37 +17,19 @@ extension ConversationViewController: CVComponentDelegate {
 
     public var wallpaperBlurProvider: WallpaperBlurProvider? { backgroundContainer }
 
-    public func cvc_enqueueReload() {
+    public func enqueueReload() {
         self.loadCoordinator.enqueueReload()
     }
 
-    public func cvc_enqueueReloadWithoutCaches() {
+    public func enqueueReloadWithoutCaches() {
         self.loadCoordinator.enqueueReloadWithoutCaches()
-    }
-
-    // MARK: - Body Text Items
-
-    public func cvc_didTapBodyTextItem(_ item: CVTextLabel.Item) {
-        AssertIsOnMainThread()
-
-        didTapBodyTextItem(item)
-    }
-
-    public func cvc_didLongPressBodyTextItem(_ item: CVTextLabel.Item) {
-        didLongPressBodyTextItem(item)
-    }
-
-    // MARK: - System Message Items
-
-    public func cvc_didTapSystemMessageItem(_ item: CVTextLabel.Item) {
-        didTapSystemMessageItem(item)
     }
 
     // MARK: - Long Press
 
-    public func cvc_didLongPressTextViewItem(_ cell: CVCell,
-                                             itemViewModel: CVItemViewModelImpl,
-                                             shouldAllowReply: Bool) {
+    public func didLongPressTextViewItem(_ cell: CVCell,
+                                         itemViewModel: CVItemViewModelImpl,
+                                         shouldAllowReply: Bool) {
         AssertIsOnMainThread()
 
         let messageActions = MessageActions.textActions(itemViewModel: itemViewModel,
@@ -56,9 +38,9 @@ extension ConversationViewController: CVComponentDelegate {
         self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
     }
 
-    public func cvc_didLongPressMediaViewItem(_ cell: CVCell,
-                                              itemViewModel: CVItemViewModelImpl,
-                                              shouldAllowReply: Bool) {
+    public func didLongPressMediaViewItem(_ cell: CVCell,
+                                          itemViewModel: CVItemViewModelImpl,
+                                          shouldAllowReply: Bool) {
         AssertIsOnMainThread()
 
         let messageActions = MessageActions.mediaActions(itemViewModel: itemViewModel,
@@ -67,9 +49,9 @@ extension ConversationViewController: CVComponentDelegate {
         self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
     }
 
-    public func cvc_didLongPressQuote(_ cell: CVCell,
-                                      itemViewModel: CVItemViewModelImpl,
-                                      shouldAllowReply: Bool) {
+    public func didLongPressQuote(_ cell: CVCell,
+                                  itemViewModel: CVItemViewModelImpl,
+                                  shouldAllowReply: Bool) {
         AssertIsOnMainThread()
 
         let messageActions = MessageActions.quotedMessageActions(itemViewModel: itemViewModel,
@@ -78,8 +60,8 @@ extension ConversationViewController: CVComponentDelegate {
         self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
     }
 
-    public func cvc_didLongPressSystemMessage(_ cell: CVCell,
-                                              itemViewModel: CVItemViewModelImpl) {
+    public func didLongPressSystemMessage(_ cell: CVCell,
+                                          itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
         let messageActions = MessageActions.infoMessageActions(itemViewModel: itemViewModel,
@@ -87,9 +69,9 @@ extension ConversationViewController: CVComponentDelegate {
         self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
     }
 
-    public func cvc_didLongPressSticker(_ cell: CVCell,
-                                        itemViewModel: CVItemViewModelImpl,
-                                        shouldAllowReply: Bool) {
+    public func didLongPressSticker(_ cell: CVCell,
+                                    itemViewModel: CVItemViewModelImpl,
+                                    shouldAllowReply: Bool) {
         AssertIsOnMainThread()
 
         let messageActions = MessageActions.mediaActions(itemViewModel: itemViewModel,
@@ -98,19 +80,19 @@ extension ConversationViewController: CVComponentDelegate {
         self.presentContextMenu(with: messageActions, focusedOn: cell, andModel: itemViewModel)
     }
 
-    public func cvc_didChangeLongpress(_ itemViewModel: CVItemViewModelImpl) {
+    public func didChangeLongPress(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
         collectionViewActiveContextMenuInteraction?.initiatingGestureRecognizerDidChange()
     }
 
-    public func cvc_didEndLongpress(_ itemViewModel: CVItemViewModelImpl) {
+    public func didEndLongPress(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
         collectionViewActiveContextMenuInteraction?.initiatingGestureRecognizerDidEnd()
     }
 
-    public func cvc_didCancelLongpress(_ itemViewModel: CVItemViewModelImpl) {
+    public func didCancelLongPress(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
         collectionViewActiveContextMenuInteraction?.initiatingGestureRecognizerDidEnd()
@@ -118,13 +100,13 @@ extension ConversationViewController: CVComponentDelegate {
 
     // MARK: -
 
-    public func cvc_didTapReplyToItem(_ itemViewModel: CVItemViewModelImpl) {
+    public func didTapReplyToItem(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
         populateReplyForMessage(itemViewModel)
     }
 
-    public func cvc_didTapSenderAvatar(_ interaction: TSInteraction) {
+    public func didTapSenderAvatar(_ interaction: TSInteraction) {
         AssertIsOnMainThread()
 
         guard let incomingMessage = interaction as? TSIncomingMessage else {
@@ -135,7 +117,7 @@ extension ConversationViewController: CVComponentDelegate {
         showMemberActionSheet(forAddress: incomingMessage.authorAddress, withHapticFeedback: false)
     }
 
-    public func cvc_shouldAllowReplyForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool {
+    public func shouldAllowReplyForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool {
         AssertIsOnMainThread()
 
         if thread.isGroupThread && !thread.isLocalUserFullMemberOfThread {
@@ -165,8 +147,8 @@ extension ConversationViewController: CVComponentDelegate {
         return true
     }
 
-    public func cvc_didTapReactions(reactionState: InteractionReactionState,
-                                    message: TSMessage) {
+    public func didTapReactions(reactionState: InteractionReactionState,
+                                message: TSMessage) {
         AssertIsOnMainThread()
 
         if !reactionState.hasReactions {
@@ -179,33 +161,36 @@ extension ConversationViewController: CVComponentDelegate {
         self.reactionsDetailSheet = detailSheet
     }
 
-    public var cvc_hasPendingMessageRequest: Bool {
+    public var hasPendingMessageRequest: Bool {
         AssertIsOnMainThread()
 
         return self.threadViewModel.hasPendingMessageRequest
     }
 
-    public func cvc_didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModelImpl) {
+    public func didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModelImpl) {
         AssertIsOnMainThread()
 
         expandTruncatedTextOrPresentLongTextView(itemViewModel)
     }
 
-    public func cvc_didTapFailedOrPendingDownloads(_ message: TSMessage) {
+    public func didTapFailedOrPendingDownloads(_ message: TSMessage) {
         AssertIsOnMainThread()
 
-        attachmentDownloads.enqueueDownloadOfAttachments(forMessageId: message.uniqueId,
-                                                         attachmentGroup: .allAttachmentsIncoming,
-                                                         downloadBehavior: .bypassAll,
-                                                         touchMessageImmediately: true,
-                                                         success: { _ in
-                                                            Logger.info("Successfully re-downloaded attachment.")
-                                                         }, failure: { error in
-                                                            Logger.warn("Failed to redownload message with error: \(error)")
-                                                         })
+        attachmentDownloads.enqueueDownloadOfAttachments(
+            forMessageId: message.uniqueId,
+            attachmentGroup: .allAttachmentsIncoming,
+            downloadBehavior: .bypassAll,
+            touchMessageImmediately: true,
+            success: { _ in
+                Logger.info("Successfully re-downloaded attachment.")
+            },
+            failure: { error in
+                Logger.warn("Failed to redownload message with error: \(error)")
+            }
+        )
     }
 
-    public func cvc_didTapBrokenVideo() {
+    public func didTapBrokenVideo() {
         let toastText = NSLocalizedString("VIDEO_BROKEN",
                                           comment: "Toast alert text shown when tapping on a video that cannot be played.")
         presentToastCVC(toastText)
@@ -213,9 +198,9 @@ extension ConversationViewController: CVComponentDelegate {
 
     // MARK: - Messages
 
-    public func cvc_didTapBodyMedia(itemViewModel: CVItemViewModelImpl,
-                                    attachmentStream: TSAttachmentStream,
-                                    imageView: UIView) {
+    public func didTapBodyMedia(itemViewModel: CVItemViewModelImpl,
+                                attachmentStream: TSAttachmentStream,
+                                imageView: UIView) {
         AssertIsOnMainThread()
 
         dismissKeyBoard()
@@ -225,7 +210,7 @@ extension ConversationViewController: CVComponentDelegate {
         self.present(pageVC, animated: true, completion: nil)
     }
 
-    public func cvc_didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) -> CVAttachmentTapAction {
+    public func didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) -> CVAttachmentTapAction {
         AssertIsOnMainThread()
 
         if attachment.canQuickLook {
@@ -243,7 +228,7 @@ extension ConversationViewController: CVComponentDelegate {
         }
     }
 
-    public func cvc_didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel) {
+    public func didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel) {
         AssertIsOnMainThread()
         owsAssertDebug(quotedReply.timestamp > 0)
         owsAssertDebug(quotedReply.authorAddress.isValid)
@@ -277,7 +262,7 @@ extension ConversationViewController: CVComponentDelegate {
         }
     }
 
-    public func cvc_didTapLinkPreview(_ linkPreview: OWSLinkPreview) {
+    public func didTapLinkPreview(_ linkPreview: OWSLinkPreview) {
         AssertIsOnMainThread()
 
         guard let urlString = linkPreview.urlString,
@@ -297,12 +282,12 @@ extension ConversationViewController: CVComponentDelegate {
         }
 
         if GroupManager.isPossibleGroupInviteLink(url) {
-            cvc_didTapGroupInviteLink(url: url)
+            didTapGroupInviteLink(url: url)
             return
         }
 
         if SignalProxy.isValidProxyLink(url) {
-            cvc_didTapProxyLink(url: url)
+            didTapProxyLink(url: url)
             return
         }
 
@@ -311,74 +296,64 @@ extension ConversationViewController: CVComponentDelegate {
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
     }
 
-    public func cvc_didTapContactShare(_ contactShare: ContactShareViewModel) {
+    public func didTapContactShare(_ contactShare: ContactShareViewModel) {
         AssertIsOnMainThread()
 
         let view = ContactViewController(contactShare: contactShare)
         navigationController?.pushViewController(view, animated: true)
     }
 
-    public func cvc_didTapSendMessage(toContactShare contactShare: ContactShareViewModel) {
+    public func didTapSendMessage(toContactShare contactShare: ContactShareViewModel) {
         AssertIsOnMainThread()
 
         contactShareViewHelper.sendMessage(contactShare: contactShare, fromViewController: self)
     }
 
-    public func cvc_didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {
+    public func didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {
         AssertIsOnMainThread()
 
         contactShareViewHelper.showInviteContact(contactShare: contactShare, fromViewController: self)
     }
 
-    public func cvc_didTapAddToContacts(contactShare: ContactShareViewModel) {
+    public func didTapAddToContacts(contactShare: ContactShareViewModel) {
         AssertIsOnMainThread()
 
         contactShareViewHelper.showAddToContacts(contactShare: contactShare, fromViewController: self)
     }
 
-    public func cvc_didTapStickerPack(_ stickerPackInfo: StickerPackInfo) {
+    public func didTapStickerPack(_ stickerPackInfo: StickerPackInfo) {
         AssertIsOnMainThread()
 
         let packView = StickerPackViewController(stickerPackInfo: stickerPackInfo)
         packView.present(from: self, animated: true)
     }
 
-    public func cvc_didTapGroupInviteLink(url: URL) {
+    public func didTapGroupInviteLink(url: URL) {
         AssertIsOnMainThread()
         owsAssertDebug(GroupManager.isPossibleGroupInviteLink(url))
 
         GroupInviteLinksUI.openGroupInviteLink(url, fromViewController: self)
     }
 
-    public func cvc_didTapProxyLink(url: URL) {
+    public func didTapProxyLink(url: URL) {
         AssertIsOnMainThread()
         guard let vc = ProxyLinkSheetViewController(url: url) else { return }
         present(vc, animated: true)
-    }
-
-    public func cvc_willWrapGift(_ messageUniqueId: String) -> Bool { willWrapGift(messageUniqueId) }
-
-    public func cvc_willShakeGift(_ messageUniqueId: String) -> Bool { willShakeGift(messageUniqueId) }
-
-    public func cvc_willUnwrapGift(_ itemViewModel: CVItemViewModelImpl) { willUnwrapGift(itemViewModel) }
-
-    public func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge, isExpired: Bool, isRedeemed: Bool) {
-        didTapGiftBadge(itemViewModel, profileBadge: profileBadge, isExpired: isExpired, isRedeemed: isRedeemed)
     }
 
     public func cvc_didTapSignalMeLink(url: URL) {
         SignalMe.openChat(url: url, fromViewController: self)
     }
 
-    public func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {
+    public func didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {
         showDetailView(itemViewModel)
     }
 
-    public func cvc_prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {
+    public func prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {
         prepareDetailViewForInteractivePresentation(itemViewModel)
     }
 
-    public func cvc_beginCellAnimation(maximumDuration: TimeInterval) -> EndCellAnimation {
+    public func beginCellAnimation(maximumDuration: TimeInterval) -> EndCellAnimation {
         AssertIsOnMainThread()
 
         if maximumDuration > 0.8 {
@@ -410,7 +385,7 @@ extension ConversationViewController: CVComponentDelegate {
 
     // MARK: - System Cell
 
-    public func cvc_didTapPreviouslyVerifiedIdentityChange(_ address: SignalServiceAddress) {
+    public func didTapPreviouslyVerifiedIdentityChange(_ address: SignalServiceAddress) {
         AssertIsOnMainThread()
 
         showFingerprint(address: address)
@@ -426,7 +401,7 @@ extension ConversationViewController: CVComponentDelegate {
         FingerprintViewController.present(from: self, address: address)
     }
 
-    public func cvc_didTapUnverifiedIdentityChange(_ address: SignalServiceAddress) {
+    public func didTapUnverifiedIdentityChange(_ address: SignalServiceAddress) {
         AssertIsOnMainThread()
         owsAssertDebug(address.isValid)
 
@@ -461,7 +436,7 @@ extension ConversationViewController: CVComponentDelegate {
         presentActionSheet(actionSheet)
     }
 
-    public func cvc_didTapInvalidIdentityKeyErrorMessage(_ message: TSInvalidIdentityKeyErrorMessage) {
+    public func didTapInvalidIdentityKeyErrorMessage(_ message: TSInvalidIdentityKeyErrorMessage) {
         AssertIsOnMainThread()
 
         let keyOwner = contactsManager.displayName(for: message.theirSignalAddress())
@@ -503,7 +478,7 @@ extension ConversationViewController: CVComponentDelegate {
         self.presentActionSheet(actionSheet)
     }
 
-    public func cvc_didTapCorruptedMessage(_ message: TSErrorMessage) {
+    public func didTapCorruptedMessage(_ message: TSErrorMessage) {
         AssertIsOnMainThread()
 
         let threadName = databaseStorage.read { transaction in
@@ -536,7 +511,7 @@ extension ConversationViewController: CVComponentDelegate {
         self.presentActionSheet(alert)
     }
 
-    public func cvc_didTapSessionRefreshMessage(_ message: TSErrorMessage) {
+    public func didTapSessionRefreshMessage(_ message: TSErrorMessage) {
         dismissKeyBoard()
 
         let headerImageView = UIImageView(image: UIImage(named: "chat-session-refresh"))
@@ -566,7 +541,7 @@ extension ConversationViewController: CVComponentDelegate {
     }
 
     // See: resendGroupUpdate
-    public func cvc_didTapResendGroupUpdateForErrorMessage(_ message: TSErrorMessage) {
+    public func didTapResendGroupUpdateForErrorMessage(_ message: TSErrorMessage) {
         AssertIsOnMainThread()
 
         guard let groupThread = self.thread as? TSGroupThread else {
@@ -586,7 +561,7 @@ extension ConversationViewController: CVComponentDelegate {
         }
     }
 
-    public func cvc_didTapShowFingerprint(_ address: SignalServiceAddress) {
+    public func didTapShowFingerprint(_ address: SignalServiceAddress) {
         AssertIsOnMainThread()
 
         showFingerprint(address: address)
@@ -594,7 +569,7 @@ extension ConversationViewController: CVComponentDelegate {
 
     // MARK: -
 
-    public func cvc_didTapIndividualCall(_ call: TSCall) {
+    public func didTapIndividualCall(_ call: TSCall) {
         AssertIsOnMainThread()
         owsAssertDebug(self.inputToolbar != nil)
 
@@ -627,13 +602,13 @@ extension ConversationViewController: CVComponentDelegate {
         self.presentActionSheet(alert)
     }
 
-    public func cvc_didTapGroupCall() {
+    public func didTapGroupCall() {
         AssertIsOnMainThread()
 
         showGroupLobbyOrActiveCall()
     }
 
-    public func cvc_didTapPendingOutgoingMessage(_ message: TSOutgoingMessage) {
+    public func didTapPendingOutgoingMessage(_ message: TSOutgoingMessage) {
         AssertIsOnMainThread()
         if spamChallengeResolver.isPausingMessages {
             SpamCaptchaViewController.presentActionSheet(from: self)
@@ -643,15 +618,15 @@ extension ConversationViewController: CVComponentDelegate {
 
     }
 
-    public func cvc_didTapFailedOutgoingMessage(_ message: TSOutgoingMessage) {
+    public func didTapFailedOutgoingMessage(_ message: TSOutgoingMessage) {
         AssertIsOnMainThread()
 
         resendFailedOutgoingMessage(message)
     }
 
-    public func cvc_didTapShowGroupMigrationLearnMoreActionSheet(infoMessage: TSInfoMessage,
-                                                                 oldGroupModel: TSGroupModel,
-                                                                 newGroupModel: TSGroupModel) {
+    public func didTapShowGroupMigrationLearnMoreActionSheet(infoMessage: TSInfoMessage,
+                                                             oldGroupModel: TSGroupModel,
+                                                             newGroupModel: TSGroupModel) {
         AssertIsOnMainThread()
 
         guard let groupThread = thread as? TSGroupThread else {
@@ -665,13 +640,13 @@ extension ConversationViewController: CVComponentDelegate {
         actionSheet.present(fromViewController: self)
     }
 
-    public func cvc_didTapGroupInviteLinkPromotion(groupModel: TSGroupModel) {
+    public func didTapGroupInviteLinkPromotion(groupModel: TSGroupModel) {
         AssertIsOnMainThread()
 
         showGroupLinkPromotionActionSheet()
     }
 
-    public func cvc_didTapViewGroupDescription(groupModel: TSGroupModel?) {
+    public func didTapViewGroupDescription(groupModel: TSGroupModel?) {
         AssertIsOnMainThread()
 
         func getGroupModel() -> TSGroupModel? {
@@ -693,19 +668,19 @@ extension ConversationViewController: CVComponentDelegate {
         self.presentFormSheet(navigationController, animated: true)
     }
 
-    public func cvc_didTapShowConversationSettings() {
+    public func didTapShowConversationSettings() {
         AssertIsOnMainThread()
 
         showConversationSettings()
     }
 
-    public func cvc_didTapShowConversationSettingsAndShowMemberRequests() {
+    public func didTapShowConversationSettingsAndShowMemberRequests() {
         AssertIsOnMainThread()
 
         showConversationSettingsAndShowMemberRequests()
     }
 
-    public func cvc_didTapBlockRequest(
+    public func didTapBlockRequest(
         groupModel: TSGroupModelV2,
         requesterName: String,
         requesterUuid: UUID
@@ -755,15 +730,15 @@ extension ConversationViewController: CVComponentDelegate {
         OWSActionSheets.showActionSheet(actionSheet, fromViewController: self)
     }
 
-    public func cvc_didTapShowUpgradeAppUI() {
+    public func didTapShowUpgradeAppUI() {
         AssertIsOnMainThread()
 
         let url = "https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8"
         UIApplication.shared.open(URL(string: url)!, options: [:], completionHandler: nil)
     }
 
-    public func cvc_didTapUpdateSystemContact(_ address: SignalServiceAddress,
-                                              newNameComponents: PersonNameComponents) {
+    public func didTapUpdateSystemContact(_ address: SignalServiceAddress,
+                                          newNameComponents: PersonNameComponents) {
         AssertIsOnMainThread()
 
         guard contactsManagerImpl.supportsContactEditing else {
@@ -782,9 +757,9 @@ extension ConversationViewController: CVComponentDelegate {
         navigationController?.pushViewController(contactViewController, animated: true)
     }
 
-    public func cvc_didTapPhoneNumberChange(uuid: UUID,
-                                            phoneNumberOld: String,
-                                            phoneNumberNew: String) {
+    public func didTapPhoneNumberChange(uuid: UUID,
+                                        phoneNumberOld: String,
+                                        phoneNumberNew: String) {
         AssertIsOnMainThread()
 
         guard contactsManagerImpl.supportsContactEditing else {
@@ -812,13 +787,13 @@ extension ConversationViewController: CVComponentDelegate {
         navigationController?.pushViewController(contactViewController, animated: true)
     }
 
-    public func cvc_didTapViewOnceAttachment(_ interaction: TSInteraction) {
+    public func didTapViewOnceAttachment(_ interaction: TSInteraction) {
         AssertIsOnMainThread()
 
         ViewOnceMessageViewController.tryToPresent(interaction: interaction, from: self)
     }
 
-    public func cvc_didTapViewOnceExpired(_ interaction: TSInteraction) {
+    public func didTapViewOnceExpired(_ interaction: TSInteraction) {
         AssertIsOnMainThread()
 
         if interaction is TSOutgoingMessage {
@@ -828,19 +803,19 @@ extension ConversationViewController: CVComponentDelegate {
         }
     }
 
-    public func cvc_didTapUnknownThreadWarningGroup() {
+    public func didTapUnknownThreadWarningGroup() {
         AssertIsOnMainThread()
 
         showUnknownThreadWarningAlert()
     }
 
-    public func cvc_didTapUnknownThreadWarningContact() {
+    public func didTapUnknownThreadWarningContact() {
         AssertIsOnMainThread()
 
         showUnknownThreadWarningAlert()
     }
 
-    public func cvc_didTapDeliveryIssueWarning(_ message: TSErrorMessage) {
+    public func didTapDeliveryIssueWarning(_ message: TSErrorMessage) {
         AssertIsOnMainThread()
         guard let senderAddress = message.sender else {
             owsFailDebug("Expected a sender address")

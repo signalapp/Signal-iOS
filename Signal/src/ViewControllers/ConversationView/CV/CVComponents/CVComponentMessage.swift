@@ -1589,10 +1589,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             switch outgoingMessage.messageState {
             case .failed:
                 // Tap to retry.
-                componentDelegate.cvc_didTapFailedOutgoingMessage(outgoingMessage)
+                componentDelegate.didTapFailedOutgoingMessage(outgoingMessage)
                 return true
             case .pending:
-                componentDelegate.cvc_didTapPendingOutgoingMessage(outgoingMessage)
+                componentDelegate.didTapPendingOutgoingMessage(outgoingMessage)
             case .sending:
                 // Ignore taps on outgoing messages being sent.
                 return true
@@ -1603,7 +1603,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
         if hasSenderAvatar,
            componentView.avatarView.containsGestureLocation(sender) {
-            componentDelegate.cvc_didTapSenderAvatar(interaction)
+            componentDelegate.didTapSenderAvatar(interaction)
             return true
         }
 
@@ -1623,7 +1623,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if let message = interaction as? TSMessage,
            nil != componentState.failedOrPendingDownloads {
             Logger.verbose("Retrying failed downloads.")
-            componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
+            componentDelegate.didTapFailedOrPendingDownloads(message)
             return true
         }
 
@@ -2273,7 +2273,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             // only become active if this message allows
             // swipe-to-reply.
             let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-            if componentDelegate.cvc_shouldAllowReplyForItem(itemViewModel) {
+            if componentDelegate.shouldAllowReplyForItem(itemViewModel) {
                 activeDirection = .right
             } else {
                 activeDirection = .none
@@ -2298,7 +2298,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             case .left:
                 ImpactHapticFeedback.impactOccured(style: .light)
                 panHandler.percentDrivenTransition = UIPercentDrivenInteractiveTransition()
-                componentDelegate.cvc_didTapShowMessageDetail(CVItemViewModelImpl(renderItem: renderItem))
+                componentDelegate.didTapShowMessageDetail(CVItemViewModelImpl(renderItem: renderItem))
             case .none:
                 panHandler.percentDrivenTransition?.cancel()
                 panHandler.percentDrivenTransition = nil
@@ -2310,7 +2310,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         if isStarting {
             // Prepare the message detail view as soon as we start doing
             // any gesture, we may or may not want to present it.
-            componentDelegate.cvc_prepareMessageDetailForInteractivePresentation(CVItemViewModelImpl(renderItem: renderItem))
+            componentDelegate.prepareMessageDetailForInteractivePresentation(CVItemViewModelImpl(renderItem: renderItem))
         }
 
         if isStarting || didChangeActiveDirection {
@@ -2358,7 +2358,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                 }
             case .right:
                 let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-                componentDelegate.cvc_didTapReplyToItem(itemViewModel)
+                componentDelegate.didTapReplyToItem(itemViewModel)
             case .none:
                 break
             }

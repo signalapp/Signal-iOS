@@ -286,7 +286,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                                    renderItem: CVRenderItem) -> Bool {
 
         if attachmentStream != nil {
-            switch componentDelegate.cvc_didTapGenericAttachment(self) {
+            switch componentDelegate.didTapGenericAttachment(self) {
             case .handledByDelegate:
                 break
             case .default:
@@ -299,7 +299,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                     owsFailDebug("Invalid interaction.")
                     return true
                 }
-                componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
+                componentDelegate.didTapFailedOrPendingDownloads(message)
             case .enqueued, .downloading:
                 break
             default:

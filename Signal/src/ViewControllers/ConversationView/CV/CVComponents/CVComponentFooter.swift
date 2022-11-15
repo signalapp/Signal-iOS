@@ -367,7 +367,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             return false
         }
         let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        componentDelegate.cvc_didTapTruncatedTextMessage(itemViewModel)
+        componentDelegate.didTapTruncatedTextMessage(itemViewModel)
         return true
     }
 

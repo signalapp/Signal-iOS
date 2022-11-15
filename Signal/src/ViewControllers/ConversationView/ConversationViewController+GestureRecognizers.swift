@@ -216,7 +216,7 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         }
 
         let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        let shouldAllowReply = cvc_shouldAllowReplyForItem(itemViewModel)
+        let shouldAllowReply = shouldAllowReplyForItem(itemViewModel)
         let messageActions: [MessageAction]
         if itemViewModel.messageCellType == .systemMessage {
             messageActions = MessageActions.infoMessageActions(itemViewModel: itemViewModel,
@@ -351,28 +351,28 @@ public struct CVLongPressHandler {
             return
         }
 
-        let shouldAllowReply = delegate.cvc_shouldAllowReplyForItem(itemViewModel)
+        let shouldAllowReply = delegate.shouldAllowReplyForItem(itemViewModel)
 
         switch gestureLocation {
         case .`default`:
             // TODO: Rename from "Text view item" to "default"?
-            delegate.cvc_didLongPressTextViewItem(cell,
-                                                  itemViewModel: itemViewModel,
-                                                  shouldAllowReply: shouldAllowReply)
+            delegate.didLongPressTextViewItem(cell,
+                                              itemViewModel: itemViewModel,
+                                              shouldAllowReply: shouldAllowReply)
         case .media:
-            delegate.cvc_didLongPressMediaViewItem(cell,
-                                                   itemViewModel: itemViewModel,
-                                                   shouldAllowReply: shouldAllowReply)
+            delegate.didLongPressMediaViewItem(cell,
+                                               itemViewModel: itemViewModel,
+                                               shouldAllowReply: shouldAllowReply)
         case .sticker:
-            delegate.cvc_didLongPressSticker(cell,
-                                             itemViewModel: itemViewModel,
-                                             shouldAllowReply: shouldAllowReply)
+            delegate.didLongPressSticker(cell,
+                                         itemViewModel: itemViewModel,
+                                         shouldAllowReply: shouldAllowReply)
         case .quotedReply:
-            delegate.cvc_didLongPressQuote(cell,
-                                           itemViewModel: itemViewModel,
-                                           shouldAllowReply: shouldAllowReply)
+            delegate.didLongPressQuote(cell,
+                                       itemViewModel: itemViewModel,
+                                       shouldAllowReply: shouldAllowReply)
         case .systemMessage:
-            delegate.cvc_didLongPressSystemMessage(cell, itemViewModel: itemViewModel)
+            delegate.didLongPressSystemMessage(cell, itemViewModel: itemViewModel)
         case .bodyText:
             break
         }
@@ -386,7 +386,7 @@ public struct CVLongPressHandler {
 
         switch gestureLocation {
         case .bodyText(let item):
-            delegate.cvc_didLongPressBodyTextItem(item)
+            delegate.didLongPressBodyTextItem(item)
         default:
             // Case will be handled by context menu gesture recognizer
             break
@@ -404,11 +404,11 @@ public struct CVLongPressHandler {
             // We use startGesture(cell:) to start handling the gesture.
             owsFailDebug("Unexpected state.")
         case .changed:
-            delegate.cvc_didChangeLongpress(itemViewModel)
+            delegate.didChangeLongPress(itemViewModel)
         case .ended:
-            delegate.cvc_didEndLongpress(itemViewModel)
+            delegate.didEndLongPress(itemViewModel)
         case .failed, .cancelled:
-            delegate.cvc_didCancelLongpress(itemViewModel)
+            delegate.didCancelLongPress(itemViewModel)
         case .possible:
             owsFailDebug("Unexpected state.")
         @unknown default:

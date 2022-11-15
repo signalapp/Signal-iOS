@@ -62,7 +62,7 @@ public class CVComponentLinkPreview: CVComponentBase, CVComponent {
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {
 
-        componentDelegate.cvc_didTapLinkPreview(linkPreviewState.linkPreview)
+        componentDelegate.didTapLinkPreview(linkPreviewState.linkPreview)
         return true
     }
 

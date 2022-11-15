@@ -60,7 +60,7 @@ public class CVComponentReactions: CVComponentBase, CVComponent {
             owsFailDebug("Invalid interaction.")
             return false
         }
-        componentDelegate.cvc_didTapReactions(reactionState: reactionState, message: message)
+        componentDelegate.didTapReactions(reactionState: reactionState, message: message)
         return true
     }
 

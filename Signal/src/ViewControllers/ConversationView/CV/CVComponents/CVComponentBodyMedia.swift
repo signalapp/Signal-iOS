@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
 public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
@@ -317,7 +317,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             return false
         }
         if hasDownloadButton {
-            componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
+            componentDelegate.didTapFailedOrPendingDownloads(message)
             return true
         }
         let albumView = componentView.albumView
@@ -330,7 +330,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
         if isMoreItemsWithMediaView,
            mediaAlbumHasFailedAttachment {
-            componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
+            componentDelegate.didTapFailedOrPendingDownloads(message)
             return true
         }
 
@@ -338,7 +338,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         if let attachmentPointer = attachment as? TSAttachmentPointer {
             switch attachmentPointer.state {
             case .failed, .pendingMessageRequest, .pendingManualDownload:
-                componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
+                componentDelegate.didTapFailedOrPendingDownloads(message)
                 return true
             case .enqueued, .downloading:
                 Logger.warn("Media attachment not yet downloaded.")
@@ -354,12 +354,12 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
         let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
         if let item = items.first(where: { $0.attachment.uniqueId == attachment.uniqueId }), item.isBroken {
-            componentDelegate.cvc_didTapBrokenVideo()
+            componentDelegate.didTapBrokenVideo()
             return true
         }
-        componentDelegate.cvc_didTapBodyMedia(itemViewModel: itemViewModel,
-                                              attachmentStream: attachmentStream,
-                                              imageView: mediaView)
+        componentDelegate.didTapBodyMedia(itemViewModel: itemViewModel,
+                                          attachmentStream: attachmentStream,
+                                          imageView: mediaView)
         return true
     }
 

@@ -81,7 +81,7 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
                                    componentView: CVComponentView,
                                    renderItem: CVRenderItem) -> Bool {
 
-        componentDelegate.cvc_didTapQuotedReply(quotedReplyModel)
+        componentDelegate.didTapQuotedReply(quotedReplyModel)
         return true
     }
 

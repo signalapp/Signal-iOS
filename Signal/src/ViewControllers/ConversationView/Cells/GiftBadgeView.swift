@@ -257,7 +257,7 @@ class GiftBadgeView: ManualStackView {
         switch state.badge {
         case .notLoaded(let loadPromise):
             loadPromise().done { [weak componentDelegate] in
-                componentDelegate?.cvc_enqueueReload()
+                componentDelegate?.enqueueReload()
             }.cauterize()
             // TODO: (GB) If an error occurs, we'll be stuck with a spinner.
 
@@ -300,7 +300,7 @@ class GiftBadgeView: ManualStackView {
             subviews: [self.innerStack, self.buttonStack]
         )
 
-        if state.wrapState == .unwrapped || !componentDelegate.cvc_willWrapGift(state.messageUniqueId) {
+        if state.wrapState == .unwrapped || !componentDelegate.willWrapGift(state.messageUniqueId) {
             self.giftWrap = nil
         } else if self.giftWrap?.isIncoming != state.isIncoming {
             // If `giftWrap` is nil, we'll also fall into this case.

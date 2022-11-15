@@ -163,7 +163,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
         } else if let message = interaction as? TSMessage {
             Logger.debug("Retrying download for message: \(message.uniqueId)")
-            componentDelegate.cvc_didTapFailedOrPendingDownloads(message)
+            componentDelegate.didTapFailedOrPendingDownloads(message)
             return true
 
         } else {
@@ -186,7 +186,7 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             return nil
         }
         let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        guard componentDelegate.cvc_shouldAllowReplyForItem(itemViewModel) else {
+        guard componentDelegate.shouldAllowReplyForItem(itemViewModel) else {
             return nil
         }
         guard nil != attachmentStream else {

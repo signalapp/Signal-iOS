@@ -7,7 +7,8 @@ import Foundation
 import SignalCoreKit
 
 extension ConversationViewController {
-    func didTapSystemMessageItem(_ item: CVTextLabel.Item) {
+
+    public func didTapSystemMessageItem(_ item: CVTextLabel.Item) {
         AssertIsOnMainThread()
 
         guard case .referencedUser(let referencedUserItem) = item else {

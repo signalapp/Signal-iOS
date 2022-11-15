@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
 import SignalServiceKit
 
@@ -467,7 +466,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         }
 
         if let item = componentView.textLabel.itemForGesture(sender: sender) {
-            componentDelegate.cvc_didTapSystemMessageItem(item)
+            componentDelegate.didTapSystemMessageItem(item)
             return true
         }
 
@@ -892,14 +891,14 @@ extension CVComponentSystemMessage {
 
             let action = Action(title: CommonStrings.learnMore,
                                 accessibilityIdentifier: "unknown_thread_warning",
-                                action: .cvc_didTapUnknownThreadWarningGroup)
+                                action: .didTapUnknownThreadWarningGroup)
             return buildComponentState(title: labelText, action: action)
         } else {
             let title = NSLocalizedString("SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT",
                                           comment: "Indicator warning about an unknown contact thread.")
             let action = Action(title: CommonStrings.learnMore,
                                 accessibilityIdentifier: "unknown_thread_warning",
-                                action: .cvc_didTapUnknownThreadWarningContact)
+                                action: .didTapUnknownThreadWarningContact)
             return buildComponentState(title: title.attributedString(), action: action)
         }
     }
@@ -967,11 +966,11 @@ extension CVComponentSystemMessage {
                 return Action(title: NSLocalizedString("SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
                                                        comment: "Label for button to verify a user's safety number."),
                               accessibilityIdentifier: "verify_safety_number",
-                              action: .cvc_didTapPreviouslyVerifiedIdentityChange(address: address))
+                              action: .didTapPreviouslyVerifiedIdentityChange(address: address))
             } else {
                 return Action(title: CommonStrings.learnMore,
                               accessibilityIdentifier: "learn_more",
-                              action: .cvc_didTapUnverifiedIdentityChange(address: address))
+                              action: .didTapUnverifiedIdentityChange(address: address))
             }
         case .wrongTrustedIdentityKey:
             guard let message = message as? TSInvalidIdentityKeyErrorMessage else {
@@ -981,7 +980,7 @@ extension CVComponentSystemMessage {
             return Action(title: NSLocalizedString("SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
                                                    comment: "Label for button to verify a user's safety number."),
                           accessibilityIdentifier: "verify_safety_number",
-                          action: .cvc_didTapInvalidIdentityKeyErrorMessage(errorMessage: message))
+                          action: .didTapInvalidIdentityKeyErrorMessage(errorMessage: message))
         case .invalidKeyException,
              .missingKeyId,
              .noSession,
@@ -989,15 +988,15 @@ extension CVComponentSystemMessage {
             return Action(title: NSLocalizedString("FINGERPRINT_SHRED_KEYMATERIAL_BUTTON",
                                                    comment: "Label for button to reset a session."),
                           accessibilityIdentifier: "reset_session",
-                          action: .cvc_didTapCorruptedMessage(errorMessage: message))
+                          action: .didTapCorruptedMessage(errorMessage: message))
         case .sessionRefresh:
             return Action(title: CommonStrings.learnMore,
                           accessibilityIdentifier: "learn_more",
-                          action: .cvc_didTapSessionRefreshMessage(errorMessage: message))
+                          action: .didTapSessionRefreshMessage(errorMessage: message))
         case .decryptionFailure:
             return Action(title: CommonStrings.learnMore,
                           accessibilityIdentifier: "learn_more",
-                          action: .cvc_didTapDeliveryIssueWarning(errorMessage: message))
+                          action: .didTapDeliveryIssueWarning(errorMessage: message))
         case .duplicateMessage,
              .invalidVersion:
             return nil
@@ -1007,7 +1006,7 @@ extension CVComponentSystemMessage {
         case .groupCreationFailed:
             return Action(title: CommonStrings.retryButton,
                           accessibilityIdentifier: "retry_send_group",
-                          action: .cvc_didTapResendGroupUpdate(errorMessage: message))
+                          action: .didTapResendGroupUpdate(errorMessage: message))
         }
     }
 
@@ -1041,7 +1040,7 @@ extension CVComponentSystemMessage {
                 return Action(title: NSLocalizedString("GROUPS_INVITE_FRIENDS_BUTTON",
                                                        comment: "Label for 'invite friends to group' button."),
                               accessibilityIdentifier: "group_invite_friends",
-                              action: .cvc_didTapGroupInviteLinkPromotion(groupModel: newGroupModel))
+                              action: .didTapGroupInviteLinkPromotion(groupModel: newGroupModel))
             }
             guard let oldGroupModel = infoMessage.oldGroupModel else {
                 return nil
@@ -1058,7 +1057,7 @@ extension CVComponentSystemMessage {
                     return Action(
                         title: CommonStrings.learnMore,
                         accessibilityIdentifier: "group_migration_learn_more",
-                        action: .cvc_didTapShowGroupMigrationLearnMoreActionSheet(
+                        action: .didTapShowGroupMigrationLearnMoreActionSheet(
                             infoMessage: infoMessage,
                             oldGroupModel: oldGroupModel,
                             newGroupModel: newGroupModel
@@ -1068,7 +1067,7 @@ extension CVComponentSystemMessage {
                     return Action(
                         title: CommonStrings.viewButton,
                         accessibilityIdentifier: "group_description_view",
-                        action: .cvc_didTapViewGroupDescription(groupModel: newGroupModel)
+                        action: .didTapViewGroupDescription(groupModel: newGroupModel)
                     )
                 default:
                     break
@@ -1115,7 +1114,7 @@ extension CVComponentSystemMessage {
                             comment: "Label for button that lets the user block a request to join the group."
                         ),
                         accessibilityIdentifier: "block_join_request_button",
-                        action: .cvc_didTapBlockRequest(
+                        action: .didTapBlockRequest(
                             groupModel: mostRecentGroupModel,
                             requesterName: contactsManager.shortDisplayName(
                                 for: requesterAddress,
@@ -1141,7 +1140,7 @@ extension CVComponentSystemMessage {
                 return Action(
                     title: title,
                     accessibilityIdentifier: "show_group_requests_button",
-                    action: .cvc_didTapShowConversationSettingsAndShowMemberRequests
+                    action: .didTapShowConversationSettingsAndShowMemberRequests
                 )
             }
         case .typeGroupQuit:
@@ -1157,7 +1156,7 @@ extension CVComponentSystemMessage {
             return Action(title: NSLocalizedString("UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON",
                                                    comment: "Label for button that lets users upgrade the app."),
                           accessibilityIdentifier: "show_upgrade_app_ui",
-                          action: .cvc_didTapShowUpgradeAppUI)
+                          action: .didTapShowUpgradeAppUI)
         case .typeDisappearingMessagesUpdate,
              .verificationStateChange,
              .userJoinedSignal,
@@ -1195,14 +1194,14 @@ extension CVComponentSystemMessage {
 
             return Action(title: NSLocalizedString("UPDATE_CONTACT_ACTION", comment: "Action sheet item"),
                           accessibilityIdentifier: "update_contact",
-                          action: .cvc_didTapUpdateSystemContact(address: profileChangeAddress,
-                                                                 newNameComponents: profileChangeNewNameComponents))
+                          action: .didTapUpdateSystemContact(address: profileChangeAddress,
+                                                             newNameComponents: profileChangeNewNameComponents))
 
         case .phoneNumberChange:
             guard let uuidString = infoMessage.infoMessageUserInfo?[.changePhoneNumberUuid] as? String,
                   let uuid = UUID(uuidString: uuidString),
                   let phoneNumberOld = infoMessage.infoMessageUserInfo?[.changePhoneNumberOld] as? String,
-                        let phoneNumberNew = infoMessage.infoMessageUserInfo?[.changePhoneNumberNew] as? String else {
+                  let phoneNumberNew = infoMessage.infoMessageUserInfo?[.changePhoneNumberNew] as? String else {
                 owsFailDebug("Invalid info message.")
                 return nil
             }
@@ -1219,9 +1218,9 @@ extension CVComponentSystemMessage {
 
             return Action(title: NSLocalizedString("UPDATE_CONTACT_ACTION", comment: "Action sheet item"),
                           accessibilityIdentifier: "update_contact",
-                          action: .cvc_didTapPhoneNumberChange(uuid: uuid,
-                                                               phoneNumberOld: phoneNumberOld,
-                                                               phoneNumberNew: phoneNumberNew))
+                          action: .didTapPhoneNumberChange(uuid: uuid,
+                                                           phoneNumberOld: phoneNumberOld,
+                                                           phoneNumberNew: phoneNumberNew))
         }
     }
 
@@ -1250,7 +1249,7 @@ extension CVComponentSystemMessage {
             // TODO: cvc_didTapGroupCall?
             return Action(title: NSLocalizedString("CALLBACK_BUTTON_TITLE", comment: "notification action"),
                           accessibilityIdentifier: "call_back",
-                          action: .cvc_didTapIndividualCall(call: call))
+                          action: .didTapIndividualCall(call: call))
         case .outgoing,
              .outgoingMissed:
             guard !hasPendingMessageRequest() else {
@@ -1260,7 +1259,7 @@ extension CVComponentSystemMessage {
             return Action(title: NSLocalizedString("CALL_AGAIN_BUTTON_TITLE",
                                                    comment: "Label for button that lets users call a contact again."),
                           accessibilityIdentifier: "call_again",
-                          action: .cvc_didTapIndividualCall(call: call))
+                          action: .didTapIndividualCall(call: call))
         case .outgoingIncomplete,
              .incomingIncomplete:
             return nil
@@ -1293,6 +1292,6 @@ extension CVComponentSystemMessage {
 
         return Action(title: title,
                       accessibilityIdentifier: "group_call_button",
-                      action: .cvc_didTapGroupCall)
+                      action: .didTapGroupCall)
     }
 }
