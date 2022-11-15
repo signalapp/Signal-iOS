@@ -362,11 +362,6 @@ private final class EnterPublicKeyVC: UIViewController {
         result.spacing = UIDevice.current.isIPad ? Values.iPadButtonSpacing : Values.mediumSpacing
         result.distribution = .fillEqually
         
-        if (UIDevice.current.isIPad) {
-            result.layoutMargins = UIEdgeInsets(top: 0, left: Values.iPadButtonContainerMargin, bottom: 0, right: Values.iPadButtonContainerMargin)
-            result.isLayoutMarginsRelativeArrangement = true
-        }
-        
         return result
     }()
     
@@ -473,6 +468,12 @@ private final class EnterPublicKeyVC: UIViewController {
             viewHeight = view.set(.height, to: size.height)
         } else {
             viewHeight?.constant = size.height
+        }
+        
+        if (UIDevice.current.isIPad) {
+            let iPadButtonContainerMargin: CGFloat = (size.width - Values.iPadButtonSpacing) / 2 - Values.iPadButtonWidth - Values.largeSpacing
+            buttonContainer.layoutMargins = UIEdgeInsets(top: 0, left: iPadButtonContainerMargin, bottom: 0, right: iPadButtonContainerMargin)
+            buttonContainer.isLayoutMarginsRelativeArrangement = true
         }
     }
 
