@@ -597,7 +597,7 @@ class NotificationActionHandler {
                     interactionId: try thread.interactions
                         .select(.id)
                         .order(Interaction.Columns.timestampMs.desc)
-                        .asRequest(of: Int64?.self)
+                        .asRequest(of: Int64.self)
                         .fetchOne(db),
                     threadId: thread.id,
                     includingOlder: true,

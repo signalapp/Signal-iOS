@@ -227,6 +227,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         
         // Remaining constraints
         authorLabel.pin(.leading, to: .leading, of: snContentView, withInset: VisibleMessageCell.authorLabelInset)
+        authorLabel.pin(.trailing, to: .trailing, of: self, withInset: -Values.mediumSpacing)
         
         // Under bubble content
         addSubview(underBubbleStackView)
@@ -1052,6 +1053,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     ) -> TappableLabel {
         let isOutgoing: Bool = (cellViewModel.variant == .standardOutgoing)
         let result: TappableLabel = TappableLabel()
+        result.setContentCompressionResistancePriority(.required, for: .vertical)
         result.themeBackgroundColor = .clear
         result.isOpaque = false
         result.isUserInteractionEnabled = true

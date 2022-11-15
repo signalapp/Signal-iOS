@@ -594,3 +594,4 @@
 "DISAPPERING_MESSAGES_INFO_DISABLE" = "%@ ناپدید‌شدن پیام ها را خاموش کرده است";
 "MESSAGE_STATE_READ" = "خوانده شد";
 "MESSAGE_STATE_SENT" = "ارسال شد";
+"MESSAGE_REQUEST_PENDING_APPROVAL_INFO" = "You will be able to send voice messages and attachments once the recipient has approved this message request";

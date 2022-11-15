@@ -138,7 +138,7 @@ public final class JobRunner {
         guard canStartJob else { return }
         
         // Start the job runner if needed
-        db.afterNextTransactionCommit { _ in
+        db.afterNextTransaction { _ in
             queues.wrappedValue[updatedJob.variant]?.start()
         }
     }
@@ -154,7 +154,7 @@ public final class JobRunner {
         queues.wrappedValue[job.variant]?.upsert(job, canStartJob: canStartJob)
         
         // Start the job runner if needed
-        db.afterNextTransactionCommit { _ in
+        db.afterNextTransaction { _ in
             queues.wrappedValue[job.variant]?.start()
         }
     }
@@ -177,7 +177,7 @@ public final class JobRunner {
         queues.wrappedValue[updatedJob.variant]?.insert(updatedJob, before: otherJob)
         
         // Start the job runner if needed
-        db.afterNextTransactionCommit { _ in
+        db.afterNextTransaction { _ in
             queues.wrappedValue[updatedJob.variant]?.start()
         }
         

@@ -113,7 +113,9 @@ public struct ControlMessageProcessRecord: Codable, FetchableRecord, Persistable
         self.serverExpirationTimestamp = serverExpirationTimestamp
     }
     
-    public func insert(_ db: Database) throws {
+    // MARK: - Custom Database Interaction
+    
+    public func willInsert(_ db: Database) throws {
         // If this isn't a legacy entry then check if there is a single entry and, if so,
         // try to create a "legacy entry" version of this record to see if a unique constraint
         // conflict occurs
@@ -132,8 +134,6 @@ public struct ControlMessageProcessRecord: Codable, FetchableRecord, Persistable
                 ).insert(db)
             }
         }
-        
-        try performInsert(db)
     }
 }
 
