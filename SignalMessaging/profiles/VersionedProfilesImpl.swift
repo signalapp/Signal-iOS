@@ -119,7 +119,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
         AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
             // Once we think all clients in the world have migrated to expiring
             // credentials we can remove this.
-            self.databaseStorage.write { transaction in
+            self.databaseStorage.asyncWrite { transaction in
                 CredentialStore.dropDeprecatedCredentialsIfNecessary(transaction: transaction)
             }
         }
