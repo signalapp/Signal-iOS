@@ -130,7 +130,8 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                     subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager
                      systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager
                  remoteMegaphoneFetcher:(RemoteMegaphoneFetcher *)remoteMegaphoneFetcher
-                           sskJobQueues:(SSKJobQueues *)sskJobQueues NS_DESIGNATED_INITIALIZER;
+                           sskJobQueues:(SSKJobQueues *)sskJobQueues
+                contactDiscoveryManager:(id)contactDiscoveryManager NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -192,6 +193,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 @property (nonatomic, readonly) id<SystemStoryManagerProtocolObjc> systemStoryManagerRef;
 @property (nonatomic, readonly) RemoteMegaphoneFetcher *remoteMegaphoneFetcherRef;
 @property (nonatomic, readonly) SSKJobQueues *sskJobQueuesRef;
+@property (nonatomic, readonly) id contactDiscoveryManagerRef;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandlerRef;

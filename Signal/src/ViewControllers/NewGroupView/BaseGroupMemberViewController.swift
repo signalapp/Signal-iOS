@@ -157,27 +157,22 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
     }
 
     public func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> AnyPromise {
+        return AnyPromise(tryToEnableGroupsV2(for: recipient))
+    }
+
+    private func tryToEnableGroupsV2(for recipient: PickedRecipient) -> Promise<Void> {
         guard let address = recipient.address else {
             owsFailDebug("Invalid recipient.")
-            return AnyPromise(Promise.value(()))
+            return .value(())
         }
-        guard !doesRecipientSupportGroupsV2(recipient) else {
+        guard !GroupManager.doesUserSupportGroupsV2(address: address) else {
             // Recipient already supports groups v2.
-            return AnyPromise(Promise.value(()))
+            return .value(())
         }
-        return AnyPromise(tryToEnableGroupsV2ForAddress(address))
-    }
-
-    private func doesRecipientSupportGroupsV2(_ recipient: PickedRecipient) -> Bool {
-        guard let address = recipient.address else {
-            owsFailDebug("Invalid recipient.")
-            return false
+        guard let phoneNumber = address.phoneNumber, !phoneNumber.isEmpty else {
+            return Promise(error: OWSAssertionError("Invalid address: \(address)."))
         }
-        return GroupManager.doesUserSupportGroupsV2(address: address)
-    }
-
-    func tryToEnableGroupsV2ForAddress(_ address: SignalServiceAddress) -> Promise<Void> {
-        GroupManager.tryToEnableGroupsV2(for: [address])
+        return contactDiscoveryManager.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest).asVoid()
     }
 
     public func memberViewShouldShowMemberCount() -> Bool {

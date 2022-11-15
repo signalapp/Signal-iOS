@@ -1192,27 +1192,6 @@ public class GroupManager: NSObject {
         }
     }
 
-    // MARK: - UUIDs
-
-    public static func tryToEnableGroupsV2(for addresses: [SignalServiceAddress]) -> Promise<Void> {
-        return firstly { () -> Promise<Void> in
-            let phoneNumbersWithoutUuids = try addresses.compactMap { address -> String? in
-                guard address.isValid else {
-                    throw OWSAssertionError("Invalid address: \(address).")
-                }
-                guard address.uuid == nil else {
-                    return nil
-                }
-                return address.phoneNumber
-            }
-            guard phoneNumbersWithoutUuids.count > 0 else {
-                return Promise.value(())
-            }
-            let discoveryTask = ContactDiscoveryTask(phoneNumbers: Set(phoneNumbersWithoutUuids))
-            return discoveryTask.perform(at: .userInitiated).asVoid()
-        }
-    }
-
     // MARK: - Messages
 
     @objc

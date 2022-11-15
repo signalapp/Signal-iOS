@@ -736,27 +736,11 @@ extension MessageSender {
             return Promise.value(addresses)
         }
 
-        let knownUndiscoverable = ContactDiscoveryTask.addressesRecentlyMarkedAsUndiscoverableForMessageSends(invalidRecipients)
-        if Set(knownUndiscoverable) == Set(invalidRecipients) {
-            // If CDS has recently indicated that all of the invalid recipients are undiscoverable,
-            // assume they are still undiscoverable and skip them.
-            //
-            // If _any_ invalid recipient isn't known to be undiscoverable,
-            // use CDS to look up all invalid recipients.
-            Logger.warn("Skipping invalid recipient(s) which are known to be undiscoverable: \(invalidRecipients.count)")
-            let validRecipients = Set(addresses).subtracting(invalidRecipients)
-            return Promise.value(Array(validRecipients))
-        }
-
         let phoneNumbersToFetch = invalidRecipients.compactMap { $0.phoneNumber }
-        guard !phoneNumbersToFetch.isEmpty else {
-            owsFailDebug("Invalid recipients have neither phone number nor UUID.")
-            let validRecipients = Set(addresses).subtracting(invalidRecipients)
-            return Promise.value(Array(validRecipients))
-        }
+        owsAssertDebug(!phoneNumbersToFetch.isEmpty, "Invalid recipients have neither phone number nor UUID.")
 
-        return firstly(on: .global()) { () -> Promise<Set<SignalRecipient>> in
-            return ContactDiscoveryTask(phoneNumbers: Set(phoneNumbersToFetch)).perform()
+        return firstly { () -> Promise<Set<SignalRecipient>> in
+            contactDiscoveryManager.lookUp(phoneNumbers: Set(phoneNumbersToFetch), mode: .outgoingMessage)
         }.map(on: .sharedUtility) { (signalRecipients: Set<SignalRecipient>) -> [SignalServiceAddress] in
             for signalRecipient in signalRecipients {
                 owsAssertDebug(signalRecipient.address.phoneNumber != nil)

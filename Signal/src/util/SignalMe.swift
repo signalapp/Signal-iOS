@@ -26,32 +26,23 @@ class SignalMe: NSObject {
         guard let phoneNumber = pattern.parseFirstMatch(inText: url.absoluteString.lowercased()) else { return }
 
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController, canCancel: true) { modal in
-            firstly(on: .sharedUserInitiated) { () -> Promise<SignalRecipient?> in
+            firstly(on: .sharedUserInitiated) { () -> Promise<Set<SignalRecipient>> in
                 let existingRecipient = databaseStorage.read { transaction in
                     AnySignalRecipientFinder().signalRecipientForPhoneNumber(phoneNumber, transaction: transaction)
                 }
                 if let existingRecipient = existingRecipient, existingRecipient.devices.count > 0 {
-                    return Promise.value(existingRecipient)
+                    return Promise.value([existingRecipient])
                 }
-
-                return ContactDiscoveryTask(phoneNumbers: [phoneNumber]).perform(at: .userInitiated).map { $0.first }
-            }.done(on: .main) { recipient in
-                AssertIsOnMainThread()
-
-                guard !modal.wasCancelled else { return }
-
-                modal.dismiss {
-                    guard let recipient = recipient else {
+                return contactDiscoveryManager.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest)
+            }.done(on: .main) { signalRecipients in
+                modal.dismissIfNotCanceled {
+                    guard let recipient = signalRecipients.first else {
                         return OWSActionSheets.showErrorAlert(message: MessageSenderNoSuchSignalRecipientError().userErrorDescription)
                     }
-
                     block(recipient.address)
                 }
             }.catch(on: .main) { error in
-                AssertIsOnMainThread()
-                guard !modal.wasCancelled else { return }
-
-                modal.dismiss {
+                modal.dismissIfNotCanceled {
                     OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
                 }
             }

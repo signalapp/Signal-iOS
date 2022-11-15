@@ -758,8 +758,10 @@
 		500FE4E0288A11B000FA090C /* ConversationViewController+GiftBadges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */; };
 		500FE4E2288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */; };
 		500FE5042890510800FA090C /* BadgeGiftingStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE5032890510800FA090C /* BadgeGiftingStrings.swift */; };
+		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
 		503614CF282AF657008128B4 /* GiftBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503614CE282AF657008128B4 /* GiftBadgeView.swift */; };
 		5042EAA3287F96FB00C9B19F /* VisibleBadgeResolverTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5042EAA2287F96FB00C9B19F /* VisibleBadgeResolverTest.swift */; };
+		506A924F28FA232100A2EFC2 /* ContactDiscoveryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A924E28FA232100A2EFC2 /* ContactDiscoveryManager.swift */; };
 		506A92512900888900A2EFC2 /* RecipientPickerContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */; };
 		506A9252290326A600A2EFC2 /* TextHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextHelper.swift */; };
 		5075004628B09CE6001922C9 /* ContactDiscoveryOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4BC6C22102D697004040C9 /* ContactDiscoveryOperationTest.swift */; };
@@ -1219,7 +1221,6 @@
 		F942627E289B1B5600460798 /* SignalRecipientTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426213289B1B5500460798 /* SignalRecipientTest.swift */; };
 		F942627F289B1B5600460798 /* TSThreadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F9426214289B1B5500460798 /* TSThreadTest.m */; };
 		F9426280289B1B5600460798 /* PhoneNumberTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F9426215289B1B5500460798 /* PhoneNumberTest.m */; };
-		F9426282289B1B5600460798 /* ContactDiscoveryTaskTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426217289B1B5500460798 /* ContactDiscoveryTaskTest.swift */; };
 		F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426218289B1B5500460798 /* BlockingManagerTests.swift */; };
 		F9426284289B1B5600460798 /* UUIDBackfillTaskTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426219289B1B5500460798 /* UUIDBackfillTaskTest.swift */; };
 		F9426286289B1B5600460798 /* ContactSortingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F942621B289B1B5500460798 /* ContactSortingTest.m */; };
@@ -3028,12 +3029,14 @@
 		500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+GiftBadges.swift"; sourceTree = "<group>"; };
 		500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingAlreadyRedeemedSheet.swift; sourceTree = "<group>"; };
 		500FE5032890510800FA090C /* BadgeGiftingStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingStrings.swift; sourceTree = "<group>"; };
+		50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManagerTest.swift; sourceTree = "<group>"; };
 		503614CE282AF657008128B4 /* GiftBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftBadgeView.swift; sourceTree = "<group>"; };
 		503614D0282C5703008128B4 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ro; path = translations/ro.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D1282C5728008128B4 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fi; path = translations/fi.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D2282C572F008128B4 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = id; path = translations/id.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D6282C7B76008128B4 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = zh_CN; path = translations/zh_CN.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		5042EAA2287F96FB00C9B19F /* VisibleBadgeResolverTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisibleBadgeResolverTest.swift; sourceTree = "<group>"; };
+		506A924E28FA232100A2EFC2 /* ContactDiscoveryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManager.swift; sourceTree = "<group>"; };
 		506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerContainerViewController.swift; sourceTree = "<group>"; };
 		509913BD2913274100F34F8E /* PhoneNumberFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberFinderTests.swift; sourceTree = "<group>"; };
 		509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+SSKTest.swift"; sourceTree = "<group>"; };
@@ -3576,7 +3579,6 @@
 		F9426213289B1B5500460798 /* SignalRecipientTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalRecipientTest.swift; sourceTree = "<group>"; };
 		F9426214289B1B5500460798 /* TSThreadTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSThreadTest.m; sourceTree = "<group>"; };
 		F9426215289B1B5500460798 /* PhoneNumberTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberTest.m; sourceTree = "<group>"; };
-		F9426217289B1B5500460798 /* ContactDiscoveryTaskTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryTaskTest.swift; sourceTree = "<group>"; };
 		F9426218289B1B5500460798 /* BlockingManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockingManagerTests.swift; sourceTree = "<group>"; };
 		F9426219289B1B5500460798 /* UUIDBackfillTaskTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UUIDBackfillTaskTest.swift; sourceTree = "<group>"; };
 		F942621B289B1B5500460798 /* ContactSortingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactSortingTest.m; sourceTree = "<group>"; };
@@ -5931,6 +5933,7 @@
 		5075004528B09CCC001922C9 /* Discovery */ = {
 			isa = PBXGroup;
 			children = (
+				50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */,
 				4C4BC6C22102D697004040C9 /* ContactDiscoveryOperationTest.swift */,
 			);
 			path = Discovery;
@@ -7082,7 +7085,6 @@
 				5075004528B09CCC001922C9 /* Discovery */,
 				F9426208289B1B5500460798 /* BlockingManagerStateTests.swift */,
 				F9426218289B1B5500460798 /* BlockingManagerTests.swift */,
-				F9426217289B1B5500460798 /* ContactDiscoveryTaskTest.swift */,
 				F942621B289B1B5500460798 /* ContactSortingTest.m */,
 				F9426210289B1B5500460798 /* OWSDisappearingMessagesConfigurationTest.m */,
 				F942620F289B1B5500460798 /* OWSRecipientIdentityTest.swift */,
@@ -7712,6 +7714,7 @@
 		F9C5C9D5289453B100548EEE /* Discovery */ = {
 			isa = PBXGroup;
 			children = (
+				506A924E28FA232100A2EFC2 /* ContactDiscoveryManager.swift */,
 				F9C5C9DC289453B100548EEE /* ContactDiscoveryOperation.swift */,
 				F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */,
 				F9C5C9D7289453B100548EEE /* SGXContactDiscoveryOperation.swift */,
@@ -10674,6 +10677,7 @@
 				F9C5CCE5289453B300548EEE /* Contact+Swift.swift in Sources */,
 				F9C5CCB5289453B300548EEE /* Contact.m in Sources */,
 				F9C5CCE4289453B300548EEE /* Contact.swift in Sources */,
+				506A924F28FA232100A2EFC2 /* ContactDiscoveryManager.swift in Sources */,
 				F9C5CCC3289453B300548EEE /* ContactDiscoveryOperation.swift in Sources */,
 				F9C5CDC1289453B400548EEE /* ContactDiscoveryService.swift in Sources */,
 				F9C5CCC0289453B300548EEE /* ContactDiscoveryTask.swift in Sources */,
@@ -11217,8 +11221,8 @@
 				F9426273289B1B5500460798 /* BlockingManagerStateTests.swift in Sources */,
 				F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */,
 				661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */,
+				50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */,
 				5075004628B09CE6001922C9 /* ContactDiscoveryOperationTest.swift in Sources */,
-				F9426282289B1B5600460798 /* ContactDiscoveryTaskTest.swift in Sources */,
 				F9426286289B1B5600460798 /* ContactSortingTest.m in Sources */,
 				509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */,
 				F97217FB28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift in Sources */,

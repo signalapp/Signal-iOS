@@ -11,7 +11,7 @@ struct DiscoveredContactInfo: Hashable {
 }
 
 /// An item that fetches contact info from the ContactDiscoveryService
-/// Intended to be used by ContactDiscoveryTask. You probably don't want to use this directly.
+/// Intended to be used by ContactDiscoveryTaskQueue. You probably don't want to use this directly.
 protocol ContactDiscovering {
     /// Constructs a ContactDiscovering object from a set of e164 phone numbers
     init(e164sToLookup: Set<String>)

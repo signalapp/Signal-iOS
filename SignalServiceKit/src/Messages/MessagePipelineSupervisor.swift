@@ -130,8 +130,15 @@ public class MessagePipelineSupervisor: NSObject {
                                   !CurrentAppContext().isRunningTests
         if shouldBackfillUUIDs {
             let uuidBackfillSuspension = suspendMessageProcessing(for: "UUID Backfill")
-            UUIDBackfillTask().performWithCompletion {
-                uuidBackfillSuspension.invalidate()
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+                firstly {
+                    UUIDBackfillTask(
+                        contactDiscoveryManager: self.contactDiscoveryManager,
+                        databaseStorage: self.databaseStorage
+                    ).perform()
+                }.ensure(on: .global()) {
+                    uuidBackfillSuspension.invalidate()
+                }.cauterize()
             }
         }
     }

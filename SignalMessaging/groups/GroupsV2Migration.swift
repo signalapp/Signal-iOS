@@ -247,22 +247,17 @@ fileprivate extension GroupsV2Migration {
         let groupMembership = unmigratedState.groupThread.groupModel.groupMembership
 
         return firstly(on: .global()) { () -> Promise<Void> in
-            let membersToFetchUuids = membersToTryToMigrate(groupMembership: groupMembership)
-            let phoneNumbersWithoutUuids = membersToFetchUuids.compactMap { (address: SignalServiceAddress) -> String? in
-                if address.uuid != nil {
-                    return nil
-                }
-                return address.phoneNumber
-            }
+            let phoneNumbersWithoutUuids = Set(
+                groupMembership.allMembersOfAnyKind.lazy.filter { $0.uuid == nil }.compactMap { $0.phoneNumber }
+            )
             guard !phoneNumbersWithoutUuids.isEmpty else {
                 return Promise.value(())
             }
 
             Logger.info("Trying to fill in missing uuids: \(phoneNumbersWithoutUuids.count)")
 
-            let discoveryTask = ContactDiscoveryTask(phoneNumbers: Set(phoneNumbersWithoutUuids))
             return firstly {
-                discoveryTask.perform().asVoid()
+                contactDiscoveryManager.lookUp(phoneNumbers: phoneNumbersWithoutUuids, mode: .groupMigration).asVoid()
             }.recover(on: .global()) { error -> Promise<Void> in
                 owsFailDebugUnlessNetworkFailure(error)
                 return Promise.value(())
@@ -688,23 +683,6 @@ fileprivate extension GroupsV2Migration {
                                      membersWithoutUuids: membersWithoutUuids,
                                      membersWithoutProfileKeys: membersWithoutProfileKeys,
                                      state: state)
-    }
-
-    static func membersToTryToMigrate(groupMembership: GroupMembership) -> Set<SignalServiceAddress> {
-
-        let allMembers = groupMembership.allMembersOfAnyKind
-        let addressesWithoutUuids = Array(allMembers).filter { $0.uuid == nil }
-        let knownUndiscoverable = Set(ContactDiscoveryTask.addressesRecentlyMarkedAsUndiscoverableForGroupMigrations(addressesWithoutUuids))
-
-        var result = Set<SignalServiceAddress>()
-        for address in allMembers {
-            if nil == address.uuid, knownUndiscoverable.contains(address) {
-                Logger.warn("Ignoring unregistered member without uuid: \(address).")
-                continue
-            }
-            result.insert(address)
-        }
-        return result
     }
 }
 

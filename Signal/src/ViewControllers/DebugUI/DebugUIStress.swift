@@ -50,21 +50,12 @@ public extension DebugUIStress {
     // Creates a new group (by cloning the current group) without informing the,
     // other members. This can be used to test "group info requests", etc.
     class func cloneAsV2Group(_ oldGroupThread: TSGroupThread) {
-        firstly { () -> Promise<Void> in
-            let members: [SignalServiceAddress] = oldGroupThread.groupModel.groupMembers
-            for member in members {
-                Logger.verbose("Candidate member: \(member)")
-            }
-            return GroupManager.tryToEnableGroupsV2(for: members)
-        }.then { () -> Promise<TSGroupThread> in
+        firstly { () -> Promise<TSGroupThread> in
             guard GroupManager.defaultGroupsVersion == .V2 else {
                 throw OWSAssertionError("Groups v2 not enabled.")
             }
             let members: [SignalServiceAddress] = oldGroupThread.groupModel.groupMembers.filter { address in
                 GroupManager.doesUserSupportGroupsV2(address: address)
-            }
-            guard GroupManager.canUseV2(for: Set(members)) else {
-                throw OWSAssertionError("Error filtering users.")
             }
             for member in members {
                 Logger.verbose("Member: \(member)")
@@ -113,35 +104,12 @@ public extension DebugUIStress {
 
     class func copyToAnotherGroup(srcGroupThread: TSGroupThread, dstGroupThread: TSGroupThread) {
         let membersToAdd = srcGroupThread.groupMembership.allMembersOfAnyKind.subtracting(dstGroupThread.groupMembership.allMembersOfAnyKind)
-
-        firstly { () -> Promise<Void> in
-            for member in membersToAdd {
-                Logger.verbose("Candidate member: \(member)")
-            }
-            return GroupManager.tryToEnableGroupsV2(for: Array(membersToAdd))
-        }.then { () -> Promise<TSGroupThread> in
-            let uuidsToAdd: [UUID] = try {
-                let validMembersToAdd: [SignalServiceAddress]
-                if dstGroupThread.isGroupV1Thread {
-                    validMembersToAdd = membersToAdd.filter { $0.phoneNumber != nil }
-                } else {
-                    validMembersToAdd = membersToAdd.filter { address in
-                        GroupManager.doesUserSupportGroupsV2(address: address)
-                    }
-                }
-
-                for member in validMembersToAdd {
-                    Logger.verbose("Adding: \(member)")
-                }
-                Logger.verbose("Adding: \(validMembersToAdd.count)")
-                guard !validMembersToAdd.isEmpty else {
-                    throw OWSAssertionError("No valid members to add.")
-                }
-
-                return validMembersToAdd.compactMap { $0.uuid }
-            }()
-
-            return GroupManager.addOrInvite(
+        let uuidsToAdd = membersToAdd.compactMap { $0.uuid }
+        for uuid in uuidsToAdd {
+            Logger.verbose("Adding: \(uuid)")
+        }
+        firstly {
+            GroupManager.addOrInvite(
                 aciOrPniUuids: uuidsToAdd,
                 toExistingGroup: dstGroupThread.groupModel
             )

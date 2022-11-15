@@ -502,6 +502,16 @@ public extension NSObject {
     static var sskJobQueues: SSKJobQueues {
         SSKEnvironment.shared.sskJobQueuesRef
     }
+
+    @nonobjc
+    var contactDiscoveryManager: ContactDiscoveryManager {
+        SSKEnvironment.shared.contactDiscoveryManagerRef as! ContactDiscoveryManager
+    }
+
+    @nonobjc
+    static var contactDiscoveryManager: ContactDiscoveryManager {
+        SSKEnvironment.shared.contactDiscoveryManagerRef as! ContactDiscoveryManager
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -990,6 +1000,14 @@ public extension Dependencies {
 
     static var sskJobQueues: SSKJobQueues {
         SSKEnvironment.shared.sskJobQueuesRef
+    }
+
+    var contactDiscoveryManager: ContactDiscoveryManager {
+        SSKEnvironment.shared.contactDiscoveryManagerRef as! ContactDiscoveryManager
+    }
+
+    static var contactDiscoveryManager: ContactDiscoveryManager {
+        SSKEnvironment.shared.contactDiscoveryManagerRef as! ContactDiscoveryManager
     }
 }
 

@@ -133,6 +133,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                      systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager
                  remoteMegaphoneFetcher:(RemoteMegaphoneFetcher *)remoteMegaphoneFetcher
                            sskJobQueues:(SSKJobQueues *)sskJobQueues
+                contactDiscoveryManager:(id)contactDiscoveryManager
 {
     self = [super init];
     if (!self) {
@@ -195,6 +196,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _systemStoryManagerRef = systemStoryManager;
     _remoteMegaphoneFetcherRef = remoteMegaphoneFetcher;
     _sskJobQueuesRef = sskJobQueues;
+    _contactDiscoveryManagerRef = contactDiscoveryManager;
 
     return self;
 }

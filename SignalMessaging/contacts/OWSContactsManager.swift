@@ -949,7 +949,10 @@ extension OWSContactsManager {
         owsAssertDebug(retryDelaySeconds > 0)
 
         firstly {
-            ContactDiscoveryTask(phoneNumbers: phoneNumbers).perform(at: .userInitiated)
+            contactDiscoveryManager.lookUp(
+                phoneNumbers: phoneNumbers,
+                mode: .contactIntersection
+            )
         }.done(on: .global()) { signalRecipients in
             Logger.info("Successfully intersected contacts.")
             success(signalRecipients)

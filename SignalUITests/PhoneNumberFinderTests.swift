@@ -8,6 +8,14 @@ import XCTest
 
 final class PhoneNumberFinderTests: XCTestCase {
 
+    private struct MockContactDiscoveryManager: ContactDiscoveryManager {
+        var lookUpBlock: ((Set<String>) -> Promise<Set<SignalRecipient>>)?
+
+        func lookUp(phoneNumbers: Set<String>, mode: ContactDiscoveryMode) -> Promise<Set<SignalRecipient>> {
+            lookUpBlock?(phoneNumbers) ?? .value([])
+        }
+    }
+
     override func setUp() {
         super.setUp()
 
@@ -24,7 +32,10 @@ final class PhoneNumberFinderTests: XCTestCase {
     }
 
     func testParseResults() {
-        let finder = PhoneNumberFinder(localNumber: "+16505550100")
+        let finder = PhoneNumberFinder(
+            localNumber: "+16505550100",
+            contactDiscoveryManager: MockContactDiscoveryManager()
+        )
         struct TestCase {
             var searchText: String
             var searchResults: [String]
@@ -56,7 +67,6 @@ final class PhoneNumberFinderTests: XCTestCase {
     }
 
     func testLookUp() throws {
-        let finder = PhoneNumberFinder(localNumber: "+16505550100")
         struct TestCase {
             var searchResult: PhoneNumberFinder.SearchResult
             var isValid: Bool
@@ -70,10 +80,14 @@ final class PhoneNumberFinderTests: XCTestCase {
         ]
         for testCase in testCases {
             let context = "searchResult: \(testCase.searchResult)"
-            let resultPromise = finder.lookUp(phoneNumber: testCase.searchResult) { validE164 in
-                XCTAssertTrue(testCase.isValid, context)
-                return .value(testCase.isFound ? [SignalRecipient(uuidString: UUID().uuidString)] : [])
-            }
+            let finder = PhoneNumberFinder(
+                localNumber: "+16505550100",
+                contactDiscoveryManager: MockContactDiscoveryManager(lookUpBlock: { phoneNumbers in
+                    XCTAssertTrue(testCase.isValid)
+                    return .value(testCase.isFound ? [SignalRecipient(uuidString: UUID().uuidString)] : [])
+                })
+            )
+            let resultPromise = finder.lookUp(phoneNumber: testCase.searchResult)
             let lookupResult = try XCTUnwrap(resultPromise.result).get()
             switch lookupResult {
             case .success:

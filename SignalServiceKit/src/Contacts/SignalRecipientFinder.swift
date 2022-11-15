@@ -106,9 +106,13 @@ class GRDBSignalRecipientFinder: NSObject {
 
     fileprivate func registeredRecipientsWithoutUUID(transaction: GRDBReadTransaction) -> [SignalRecipient] {
         let sql = """
-        SELECT * FROM \(SignalRecipientRecord.databaseTableName) WHERE
-        \(signalRecipientColumn: .recipientUUID) IS NULL OR
-        \(signalRecipientColumn: .recipientUUID) IS ""
+        SELECT * FROM \(SignalRecipientRecord.databaseTableName)
+        WHERE (
+            \(signalRecipientColumn: .recipientUUID) IS NULL OR
+            \(signalRecipientColumn: .recipientUUID) IS ""
+        ) AND (
+            \(signalRecipientColumn: .recipientPhoneNumber) IS NOT NULL
+        )
         """
         let cursor = SignalRecipient.grdbFetchCursor(sql: sql, transaction: transaction)
 

@@ -5,178 +5,96 @@
 
 import Foundation
 
-@objc(OWSUUIDBackfillTask)
-public class UUIDBackfillTask: NSObject {
+public class UUIDBackfillTask {
 
     // MARK: - Properties
 
+    private let contactDiscoveryManager: ContactDiscoveryManager
+    private let databaseStorage: SDSDatabaseStorage
+
     private let queue: DispatchQueue
-    private var phoneNumbersToFetch: [(persisted: String, e164: String?)] = []
-    private var completionBlock: (() -> Void)?
-
-    private var didStart: Bool = false
+    private var e164sToFetch = Set<String>()
     private var attemptCount = 0
-
-    // MARK: - Properties (External Dependencies)
-    private let readiness: ReadinessProvider
-    private let persistence: PersistenceProvider
 
     // MARK: - Lifecycle
 
-    public convenience init(targetQueue: DispatchQueue = .sharedUtility) {
-        self.init(targetQueue: targetQueue,
-                  persistence: .default,
-                  readiness: .default)
-    }
+    init(contactDiscoveryManager: ContactDiscoveryManager, databaseStorage: SDSDatabaseStorage) {
+        self.contactDiscoveryManager = contactDiscoveryManager
+        self.databaseStorage = databaseStorage
 
-    init(targetQueue: DispatchQueue = .sharedUtility,
-         persistence: PersistenceProvider = .default,
-         readiness: ReadinessProvider = .default) {
-
-        self.queue = DispatchQueue(
-            label: OWSDispatch.createLabel("\(type(of: self))"),
-            target: targetQueue)
-        self.persistence = persistence
-        self.readiness = readiness
-        super.init()
+        self.queue = DispatchQueue(label: "uuid-backfill-task", target: .sharedUserInitiated)
     }
 
     // MARK: - Public
 
-    func performWithCompletion(_ completion: @escaping () -> Void = {}) {
-        readiness.runNowOrWhenAppDidBecomeReadySync {
-            self.queue.async {
-                self.onqueue_start(with: completion)
-            }
+    func perform() -> Guarantee<Void> {
+        let (guarantee, future) = Guarantee<Void>.pending()
+        self.queue.async {
+            self.onqueue_start(resolving: future)
         }
-    }
-
-    // MARK: - Testing
-
-    internal var testing_shortBackoffInterval = false
-    internal var testing_backoffInterval: DispatchTimeInterval {
-        return backoffInterval
-    }
-    internal var testing_attemptCount: Int {
-        get {
-            return attemptCount
-        }
-        set {
-            attemptCount = newValue
-        }
+        return guarantee
     }
 
     // MARK: - Private
 
     private var backoffInterval: DispatchTimeInterval {
         let constantAdjustment: TimeInterval = 0.1
-        var timeInterval = OWSOperation.retryIntervalForExponentialBackoff(
+        let timeInterval = OWSOperation.retryIntervalForExponentialBackoff(
             failureCount: UInt(attemptCount),
             maxBackoff: 15 * kMinuteInterval + constantAdjustment
         ) - constantAdjustment
-
-        if testing_shortBackoffInterval {
-            timeInterval /= 100
-        }
         return .milliseconds(Int(timeInterval * 1000))
     }
 
-    private func onqueue_start(with completion: @escaping () -> Void) {
+    private func onqueue_start(resolving future: GuaranteeFuture<Void>) {
         assertOnQueue(queue)
 
-        guard self.didStart == false else {
-            owsFailDebug("perform() invoked multiple times")
+        let allRecipientsWithoutUUID = databaseStorage.read { transaction in
+            return AnySignalRecipientFinder().registeredRecipientsWithoutUUID(transaction: transaction)
+        }
+
+        e164sToFetch.formUnion(
+            allRecipientsWithoutUUID
+                .lazy
+                .compactMap { $0.recipientPhoneNumber }
+                .compactMap { PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: $0)?.toE164() }
+        )
+
+        guard !e164sToFetch.isEmpty else {
+            Logger.info("Completing early, no phone numbers to fetch.")
+            future.resolve()
             return
         }
-        self.didStart = true
-        self.completionBlock = completion
 
-        let allRecipientsWithoutUUID = self.persistence.fetchRegisteredRecipientsWithoutUUID()
-        assert(allRecipientsWithoutUUID.allSatisfy({ (recipient) in
-            recipient.recipientPhoneNumber != nil &&
-            recipient.recipientUUID == nil
-        }), "Invalid recipient returned from persistence")
-
-        self.phoneNumbersToFetch = allRecipientsWithoutUUID
-            .compactMap { $0.recipientPhoneNumber }
-            .map { (persisted: $0, e164: PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: $0)?.toE164()) }
-
-        if self.phoneNumbersToFetch.isEmpty {
-            Logger.info("Completing early, no phone numbers to fetch.")
-            self.onqueue_complete()
-
-        } else {
-            Logger.info("Scheduling a fetch for \(self.phoneNumbersToFetch.count) phone numbers.")
-            self.onqueue_schedule()
-        }
+        Logger.info("Scheduling a fetch for \(e164sToFetch.count) phone numbers.")
+        onqueue_performCDSFetch(resolving: future)
     }
 
-    private func onqueue_schedule(for date: Date? = nil) {
+    private func onqueue_performCDSFetch(resolving future: GuaranteeFuture<Void>) {
         assertOnQueue(queue)
-
-        let delay: DispatchTimeInterval
-        if let date = date {
-            let msDelay = max(date.timeIntervalSinceNow * 1000, 0)
-            delay = .milliseconds(Int(msDelay))
-        } else {
-            delay = backoffInterval
-        }
-
-        queue.asyncAfter(deadline: .now() + delay, execute: onqueue_performCDSFetch)
-    }
-
-    private func onqueue_performCDSFetch() {
-        assertOnQueue(queue)
-        let e164Numbers = Set(phoneNumbersToFetch.compactMap { $0.e164 })
 
         attemptCount += 1
-        Logger.info("Beginning ContactDiscovery for UUID backfill")
+        Logger.info("UUID Backfill starting attempt \(attemptCount)")
 
-        let discoveryTask = ContactDiscoveryTask(phoneNumbers: e164Numbers)
-        discoveryTask.isCriticalPriority = true
-
-        discoveryTask.perform()
-            .done(on: queue) { _ in self.onqueue_complete() }
-            .recover(on: queue) { error in self.onqueue_handleError(error: error) }
-    }
-
-    func onqueue_handleError(error: Error) {
-        assertOnQueue(queue)
-        Logger.error("UUID Backfill failed: \(error). Scheduling retry...")
-        onqueue_schedule(for: (error as? ContactDiscoveryError)?.retryAfterDate)
-    }
-
-    func onqueue_complete() {
-        Logger.info("UUID Backfill complete")
-        assertOnQueue(queue)
-        completionBlock?()
-        completionBlock = nil
-    }
-}
-
-// MARK: -
-
-extension UUIDBackfillTask {
-
-    // This extension encapsulates some of UUIDBackfillTask's cross-class dependencies
-    // Default versions of these structs are passed in at init(), but they can be customized
-    // and overridden to shim out any dependencies for testing.
-
-    class PersistenceProvider {
-        static var `default`: PersistenceProvider { return PersistenceProvider() }
-
-        func fetchRegisteredRecipientsWithoutUUID() -> [SignalRecipient] {
-            SDSDatabaseStorage.shared.read { (readTx) in
-                return AnySignalRecipientFinder().registeredRecipientsWithoutUUID(transaction: readTx)
+        firstly {
+            contactDiscoveryManager.lookUp(
+                phoneNumbers: e164sToFetch,
+                mode: .uuidBackfill
+            ).asVoid()
+        }.done(on: queue) {
+            Logger.info("UUID Backfill complete")
+            future.resolve()
+        }.catch(on: queue) { error in
+            Logger.error("UUID Backfill failed: \(error). Scheduling retry...")
+            let retryDelay: DispatchTimeInterval
+            if let retryAfter = (error as? ContactDiscoveryError)?.retryAfterDate {
+                retryDelay = .milliseconds(Int(retryAfter.timeIntervalSinceNow * 1000))
+            } else {
+                retryDelay = self.backoffInterval
             }
-        }
-    }
-
-    class ReadinessProvider {
-        static var `default`: ReadinessProvider { return ReadinessProvider() }
-
-        func runNowOrWhenAppDidBecomeReadySync(_ workItem: @escaping () -> Void) {
-            AppReadiness.runNowOrWhenAppDidBecomeReadySync(workItem)
+            self.queue.asyncAfter(deadline: .now() + retryDelay) {
+                self.onqueue_performCDSFetch(resolving: future)
+            }
         }
     }
 }

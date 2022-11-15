@@ -11,7 +11,7 @@ struct CDSRegisteredContact: Hashable {
 }
 
 /// Fetches contact info from the ContactDiscoveryService
-/// Intended to be used by ContactDiscoveryTask. You probably don't want to use this directly.
+/// Intended to be used by ContactDiscoveryTaskQueue. You probably don't want to use this directly.
 class SGXContactDiscoveryOperation: ContactDiscovering {
     static let batchSize = 2048
 

@@ -186,6 +186,7 @@ extension RecipientPickerViewController {
 
 struct PhoneNumberFinder {
     var localNumber: String?
+    var contactDiscoveryManager: ContactDiscoveryManager
 
     /// A list of all [+1, +20, ..., +N] known calling codes.
     static let validCallingCodes: [String] = {
@@ -334,10 +335,7 @@ struct PhoneNumberFinder {
         case notValid(invalidE164: String)
     }
 
-    func lookUp(
-        phoneNumber searchResult: SearchResult,
-        discoveryOperation: (_ validE164: String) -> Promise<Set<SignalRecipient>>
-    ) -> Promise<LookupResult> {
+    func lookUp(phoneNumber searchResult: SearchResult) -> Promise<LookupResult> {
         let validE164ToLookUp: String
         switch searchResult {
         case .valid(validE164: let validE164):
@@ -351,7 +349,9 @@ struct PhoneNumberFinder {
             }
             validE164ToLookUp = validE164
         }
-        return discoveryOperation(validE164ToLookUp).map { signalRecipients in
+        return firstly {
+            contactDiscoveryManager.lookUp(phoneNumbers: [validE164ToLookUp], mode: .oneOffUserRequest)
+        }.map { signalRecipients in
             if let signalRecipient = signalRecipients.first {
                 return .success(signalRecipient)
             } else {
@@ -374,7 +374,10 @@ extension RecipientPickerViewController {
         for searchResults: ComposeScreenSearchResultSet,
         skipping alreadyMatchedPhoneNumbers: Set<String>
     ) -> OWSTableSection? {
-        let phoneNumberFinder = PhoneNumberFinder(localNumber: TSAccountManager.localNumber)
+        let phoneNumberFinder = PhoneNumberFinder(
+            localNumber: TSAccountManager.localNumber,
+            contactDiscoveryManager: contactDiscoveryManager
+        )
         var phoneNumberResults = phoneNumberFinder.parseResults(for: searchResults.searchText)
         // Don't show phone numbers that are visible in other sections.
         phoneNumberResults.removeAll { alreadyMatchedPhoneNumbers.contains($0.maybeValidE164) }
@@ -420,8 +423,8 @@ extension RecipientPickerViewController {
     /// - Parameter phoneNumberResult: The search result the user tapped.
     private func findByNumber(_ phoneNumberResult: PhoneNumberFinder.SearchResult, using finder: PhoneNumberFinder) {
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { modal in
-            finder.lookUp(phoneNumber: phoneNumberResult) { validE164 in
-                ContactDiscoveryTask(phoneNumbers: [validE164]).perform(at: .userInitiated)
+            firstly {
+                finder.lookUp(phoneNumber: phoneNumberResult)
             }.done(on: .main) { [weak self] lookupResult in
                 modal.dismissIfNotCanceled {
                     guard let self = self else { return }

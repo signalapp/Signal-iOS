@@ -215,30 +215,19 @@ public class FindByPhoneNumberViewController: OWSViewController, OWSNavigationCh
         phoneNumberTextField.resignFirstResponder()
 
         if requiresRegisteredNumber {
-            ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { [weak self] modal in
-                let discoveryTask = ContactDiscoveryTask(phoneNumbers: [phoneNumber])
+            ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { modal in
                 firstly { () -> Promise<Set<SignalRecipient>> in
-                    discoveryTask.perform(at: .userInitiated)
-
-                }.done(on: .main) { recipients in
-                    AssertIsOnMainThread()
-
-                    guard !modal.wasCancelled else { return }
-                    guard let self = self else { return }
-
-                    modal.dismiss {
+                    Self.contactDiscoveryManager.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest)
+                }.done(on: .main) { [weak self] recipients in
+                    modal.dismissIfNotCanceled {
+                        guard let self = self else { return }
                         guard let recipient = recipients.first else {
                             return OWSActionSheets.showErrorAlert(message: MessageSenderNoSuchSignalRecipientError().userErrorDescription)
                         }
-
                         self.delegate?.findByPhoneNumber(self, didSelectAddress: recipient.address)
                     }
-
                 }.catch(on: .main) { error in
-                    AssertIsOnMainThread()
-                    guard !modal.wasCancelled else { return }
-
-                    modal.dismiss {
+                    modal.dismissIfNotCanceled {
                         OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
                     }
                 }

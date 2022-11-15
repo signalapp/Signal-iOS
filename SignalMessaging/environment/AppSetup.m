@@ -123,6 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
         SystemStoryManager *systemStoryManager = [SystemStoryManager new];
         RemoteMegaphoneFetcher *remoteMegaphoneFetcher = [RemoteMegaphoneFetcher new];
         SSKJobQueues *sskJobQueues = [SSKJobQueues new];
+        id contactDiscoveryManager = [ContactDiscoveryManagerImpl new];
 
         [Environment setShared:[[Environment alloc] initWithLaunchJobs:launchJobs
                                                            preferences:preferences
@@ -187,7 +188,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                               subscriptionManager:subscriptionManager
                                                                systemStoryManager:systemStoryManager
                                                            remoteMegaphoneFetcher:remoteMegaphoneFetcher
-                                                                     sskJobQueues:sskJobQueues]];
+                                                                     sskJobQueues:sskJobQueues
+                                                          contactDiscoveryManager:contactDiscoveryManager]];
 
         appSpecificSingletonBlock();
 
