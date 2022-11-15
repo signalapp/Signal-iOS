@@ -695,7 +695,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.isViewVisible = NO;
 
     [self.searchResultsController viewWillDisappear:animated];
-    [self.navigationController setNavigationBarHidden:NO animated:animated];
 }
 
 - (void)updateLastViewedThread:(TSThread *)thread animated:(BOOL)animated
@@ -769,13 +768,14 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)ensureSearchBarCancelButton
 {
     BOOL shouldShowCancelButton = (self.searchBar.isFirstResponder || self.searchBar.text.length > 0);
-    BOOL shouldHideNavigationBar = shouldShowCancelButton && self.isViewVisible;
+    BOOL shouldHideNavigationBar = shouldShowCancelButton;
     if (self.searchBar.showsCancelButton != shouldShowCancelButton) {
         [self.searchBar setShowsCancelButton:shouldShowCancelButton animated:self.isViewVisible];
     }
-    if (self.navigationController != nil) {
-        if (self.navigationController.isNavigationBarHidden != shouldHideNavigationBar) {
-            [self.navigationController setNavigationBarHidden:shouldHideNavigationBar animated: self.isViewVisible];
+    if (self.prefersNavigationBarHidden != shouldHideNavigationBar) {
+        self.prefersNavigationBarHidden = shouldHideNavigationBar;
+        if (self.owsNavigationController != nil) {
+            [self.owsNavigationController updateNavbarAppearanceWithAnimated:YES];
         }
     }
 }
