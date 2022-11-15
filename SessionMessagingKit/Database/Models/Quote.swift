@@ -89,51 +89,7 @@ public extension Quote {
         self.interactionId = interactionId
         self.timestampMs = Int64(quoteProto.id)
         self.authorId = quoteProto.author
-
-        // Prefer to generate the text snippet locally if available.
-        let quotedInteraction: Interaction? = try? thread
-            .interactions
-            .filter(Interaction.Columns.authorId == quoteProto.author)
-            .filter(Interaction.Columns.timestampMs == Double(quoteProto.id))
-            .fetchOne(db)
-        
-        if let quotedInteraction: Interaction = quotedInteraction, quotedInteraction.body?.isEmpty == false {
-            self.body = quotedInteraction.body
-        }
-        else if let body: String = quoteProto.text, !body.isEmpty {
-            self.body = body
-        }
-        else {
-            self.body = nil
-        }
-        
-        // We only use the first attachment
-        if let attachment = quoteProto.attachments.first(where: { $0.thumbnail != nil })?.thumbnail {
-            self.attachmentId = try quotedInteraction
-                .map { quotedInteraction -> Attachment? in
-                    // If the quotedInteraction has an attachment then try clone it
-                    if let attachment: Attachment = try? quotedInteraction.attachments.fetchOne(db) {
-                        return attachment.cloneAsQuoteThumbnail()
-                    }
-                    
-                    // Otherwise if the quotedInteraction has a link preview, try clone that
-                    return try? quotedInteraction.linkPreview
-                        .fetchOne(db)?
-                        .attachment
-                        .fetchOne(db)?
-                        .cloneAsQuoteThumbnail()
-                }
-                .defaulting(to: Attachment(proto: attachment))
-                .inserted(db)
-                .id
-        }
-        else {
-            self.attachmentId = nil
-        }
-        
-        // Make sure the quote is valid before completing
-        if self.body == nil && self.attachmentId == nil {
-            return nil
-        }
+        self.body = nil
+        self.attachmentId = nil
     }
 }
