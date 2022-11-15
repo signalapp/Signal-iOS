@@ -79,6 +79,32 @@ class OpenGroupSpec: QuickSpec {
                         .to(equal("OpenGroup(server: \"server\", roomToken: \"room\", id: \"server.room\", publicKey: \"1234\", isActive: true, name: \"name\", roomDescription: null, imageId: null, userCount: 0, infoUpdates: 0, sequenceNumber: 0, inboxLatestMessageId: 0, outboxLatestMessageId: 0, pollFailureCount: 0, permissions: ---)"))
                 }
             }
+            
+            context("when generating an id") {
+                it("generates correctly") {
+                    expect(OpenGroup.idFor(roomToken: "room", server: "server")).to(equal("server.room"))
+                }
+                
+                it("converts the server to lowercase") {
+                    expect(OpenGroup.idFor(roomToken: "room", server: "SeRVeR")).to(equal("server.room"))
+                }
+                
+                it("maintains the casing of the roomToken") {
+                    expect(OpenGroup.idFor(roomToken: "RoOM", server: "server")).to(equal("server.RoOM"))
+                }
+            }
+            
+            context("when generating a url") {
+                it("generates the url correctly") {
+                    expect(OpenGroup.urlFor(server: "server", roomToken: "room", publicKey: "key"))
+                        .to(equal("server/room?public_key=key"))
+                }
+                
+                it("maintains the casing provided") {
+                    expect(OpenGroup.urlFor(server: "SeRVer", roomToken: "RoOM", publicKey: "KEy"))
+                        .to(equal("SeRVer/RoOM?public_key=KEy"))
+                }
+            }
         }
     }
 }

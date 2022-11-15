@@ -219,6 +219,10 @@ public extension OpenGroup {
         // Always force the server to lowercase
         return "\(server.lowercased()).\(roomToken)"
     }
+    
+    static func urlFor(server: String, roomToken: String, publicKey: String) -> String {
+        return "\(server)/\(roomToken)?public_key=\(publicKey)"
+    }
 }
 
 extension OpenGroup: CustomStringConvertible, CustomDebugStringConvertible {
@@ -241,53 +245,5 @@ extension OpenGroup: CustomStringConvertible, CustomDebugStringConvertible {
             "pollFailureCount: \(pollFailureCount)",
             "permissions: \(permissions?.toString() ?? "---"))"
         ].joined(separator: ", ")
-    }
-}
-
-// MARK: - Objective-C Support
-
-// TODO: Remove this when possible
-
-@objc(SMKOpenGroup)
-public class SMKOpenGroup: NSObject {
-    @objc(inviteUsers:toOpenGroupFor:)
-    public static func invite(selectedUsers: Set<String>, openGroupThreadId: String) {
-        Storage.shared.write { db in
-            guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: openGroupThreadId) else { return }
-            
-            let urlString: String = "\(openGroup.server)/\(openGroup.roomToken)?public_key=\(openGroup.publicKey)"
-            
-            try selectedUsers.forEach { userId in
-                let thread: SessionThread = try SessionThread.fetchOrCreate(db, id: userId, variant: .contact)
-                
-                try LinkPreview(
-                    url: urlString,
-                    variant: .openGroupInvitation,
-                    title: openGroup.name
-                )
-                .save(db)
-                
-                let interaction: Interaction = try Interaction(
-                    threadId: thread.id,
-                    authorId: userId,
-                    variant: .standardOutgoing,
-                    timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000)),
-                    expiresInSeconds: try? DisappearingMessagesConfiguration
-                        .select(.durationSeconds)
-                        .filter(id: userId)
-                        .filter(DisappearingMessagesConfiguration.Columns.isEnabled == true)
-                        .asRequest(of: TimeInterval.self)
-                        .fetchOne(db),
-                    linkPreviewUrl: urlString
-                )
-                .inserted(db)
-                
-                try MessageSender.send(
-                    db,
-                    interaction: interaction,
-                    in: thread
-                )
-            }
-        }
     }
 }

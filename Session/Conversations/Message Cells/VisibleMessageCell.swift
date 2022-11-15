@@ -503,7 +503,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                         let quoteView: QuoteView = QuoteView(
                             for: .regular,
                             authorId: quote.authorId,
-                            quotedText: quote.body,
+                            quotedText: quote.body ?? "QUOTED_MESSAGE_NOT_FOUND".localized(),
                             threadVariant: cellViewModel.threadVariant,
                             currentUserPublicKey: cellViewModel.currentUserPublicKey,
                             currentUserBlindedPublicKey: cellViewModel.currentUserBlindedPublicKey,
