@@ -3,19 +3,18 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+import SignalUI
 
-@objc
-public class VoiceMessageTooltip: TooltipView {
-    @objc
-    public class func present(fromView: UIView,
-                              widthReferenceView: UIView,
-                              tailReferenceView: UIView,
-                              wasTappedBlock: (() -> Void)?) -> VoiceMessageTooltip {
+class VoiceMessageTooltip: TooltipView {
+
+    class func present(fromView: UIView,
+                       widthReferenceView: UIView,
+                       tailReferenceView: UIView,
+                       wasTappedBlock: (() -> Void)?) -> VoiceMessageTooltip {
         return VoiceMessageTooltip(fromView: fromView, widthReferenceView: widthReferenceView, tailReferenceView: tailReferenceView, wasTappedBlock: wasTappedBlock)
     }
 
-    public override func bubbleContentView() -> UIView {
+    override func bubbleContentView() -> UIView {
         let label = UILabel()
         label.text = NSLocalizedString(
             "VOICE_MESSAGE_TOO_SHORT_TOOLTIP",
@@ -27,8 +26,7 @@ public class VoiceMessageTooltip: TooltipView {
         return horizontalStack(forSubviews: [label])
     }
 
-    public override var bubbleColor: UIColor { Theme.backgroundColor }
-    public override var bubbleHSpacing: CGFloat { 8 }
-
-    public override var tailDirection: TooltipView.TailDirection { .down }
+    override var bubbleColor: UIColor { Theme.backgroundColor }
+    override var bubbleHSpacing: CGFloat { 8 }
+    override var tailDirection: TooltipView.TailDirection { .down }
 }

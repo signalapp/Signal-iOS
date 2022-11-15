@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
+import SignalServiceKit
+import SignalUI
 
-public class VoiceMemoLockView: UIView {
+class VoiceMemoLockView: UIView {
 
     private var offsetConstraint: NSLayoutConstraint!
 
@@ -40,15 +41,14 @@ public class VoiceMemoLockView: UIView {
 
     // MARK: -
 
-    public func update(ratioComplete: CGFloat) {
+    func update(ratioComplete: CGFloat) {
         offsetConstraint.constant = CGFloatLerp(0, chevronTravel, ratioComplete)
     }
 
     // MARK: - Subviews
 
     private lazy var lockIconView: UIImageView = {
-        let imageTemplate = #imageLiteral(resourceName: "lock-solid-24").withRenderingMode(.alwaysTemplate)
-        let imageView = UIImageView(image: imageTemplate)
+        let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "lock-solid-24"))
         imageView.tintColor = Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_gray75
         imageView.autoSetDimensions(to: CGSize(square: 24))
         return imageView

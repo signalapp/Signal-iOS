@@ -3,11 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Lottie
+import SignalUI
 
-@objc
-class VoiceMessageDraftView: UIStackView, OWSAudioPlayerDelegate {
+class VoiceMessageDraftView: UIStackView {
     private let playbackTimeLabel = UILabel()
     private let waveformView: AudioWaveformProgressView
     private let voiceMessageModel: VoiceMessageModel
@@ -15,7 +14,6 @@ class VoiceMessageDraftView: UIStackView, OWSAudioPlayerDelegate {
 
     var audioPlaybackState: AudioPlaybackState = .stopped
 
-    @objc
     init(voiceMessageModel: VoiceMessageModel,
          mediaCache: CVMediaCache,
          didDeleteCallback: @escaping () -> Void) {
@@ -86,8 +84,9 @@ class VoiceMessageDraftView: UIStackView, OWSAudioPlayerDelegate {
     }
 
     private var isScrubbing = false
+
     @objc
-    public func handlePan(_ sender: UIPanGestureRecognizer) {
+    private func handlePan(_ sender: UIPanGestureRecognizer) {
         let location = sender.location(in: waveformView)
         var progress = CGFloatClamp01(location.x / waveformView.width)
 
@@ -125,11 +124,14 @@ class VoiceMessageDraftView: UIStackView, OWSAudioPlayerDelegate {
     }
 
     @objc
-    func didTogglePlayPause() {
+    private func didTogglePlayPause() {
         cvAudioPlayer.stopAll()
         playPauseButton.setSelected(!playPauseButton.isSelected, animated: true)
         voiceMessageModel.audioPlayer.togglePlayState()
     }
+}
+
+extension VoiceMessageDraftView: OWSAudioPlayerDelegate {
 
     func setAudioProgress(_ progress: TimeInterval, duration: TimeInterval, playbackRate: Float) {
         guard !isScrubbing else { return }
