@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import AVKit
 import GRDB
 import DifferenceKit
 import SessionUIKit
@@ -28,6 +29,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     var shouldHighlightNextScrollToInteraction: Bool = false
     var scrollButtonBottomConstraint: NSLayoutConstraint?
     var scrollButtonMessageRequestsBottomConstraint: NSLayoutConstraint?
+    var scrollButtonPendingMessageRequestInfoBottomConstraint: NSLayoutConstraint?
     var messageRequestsViewBotomConstraint: NSLayoutConstraint?
     
     // Search
@@ -53,9 +55,10 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     var scrollDistanceToBottomBeforeUpdate: CGFloat?
     var baselineKeyboardHeight: CGFloat = 0
     
-    /// This flag is true between `viewDidAppear` and `viewWillDisappear` and is used to prevent keyboard changes
-    /// from trying to animate (as the animations can cause staggering with push transitions)
-    var viewIsFocussed = false
+    /// These flags are true between `viewDid/Will Appear/Disappear` and is used to prevent keyboard changes
+    /// from trying to animate (as the animations can cause buggy transitions)
+    var viewIsDisappearing = false
+    var viewIsAppearing = false
     
     // Reaction
     var currentReactionListSheet: ReactionListSheet?
@@ -233,7 +236,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         result.text = "MESSAGE_REQUESTS_INFO".localized()
         result.themeTextColor = .textSecondary
         result.textAlignment = .center
-        result.numberOfLines = 2
+        result.numberOfLines = 0
 
         return result
     }()
@@ -265,6 +268,23 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         result.setThemeTitleColor(.danger, for: .normal)
         result.addTarget(self, action: #selector(block), for: .touchUpInside)
 
+        return result
+    }()
+    
+    private lazy var pendingMessageRequestExplanationLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.setContentCompressionResistancePriority(.required, for: .vertical)
+        result.font = UIFont.systemFont(ofSize: 12)
+        result.text = "MESSAGE_REQUEST_PENDING_APPROVAL_INFO".localized()
+        result.themeTextColor = .textSecondary
+        result.textAlignment = .center
+        result.numberOfLines = 0
+        result.isHidden = (
+            !self.messageRequestView.isHidden ||
+            self.viewModel.threadData.threadRequiresApproval == false
+        )
+        
         return result
     }()
 
@@ -321,6 +341,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         // Message requests view & scroll to bottom
         view.addSubview(scrollButton)
         view.addSubview(messageRequestView)
+        view.addSubview(pendingMessageRequestExplanationLabel)
 
         messageRequestView.addSubview(messageRequestBlockButton)
         messageRequestView.addSubview(messageRequestDescriptionLabel)
@@ -334,6 +355,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         self.scrollButtonBottomConstraint = scrollButton.pin(.bottom, to: .bottom, of: view, withInset: -16)
         self.scrollButtonBottomConstraint?.isActive = false // Note: Need to disable this to avoid a conflict with the other bottom constraint
         self.scrollButtonMessageRequestsBottomConstraint = scrollButton.pin(.bottom, to: .top, of: messageRequestView, withInset: -16)
+        self.scrollButtonPendingMessageRequestInfoBottomConstraint = scrollButton.pin(.bottom, to: .top, of: pendingMessageRequestExplanationLabel, withInset: -16)
         
         messageRequestBlockButton.pin(.top, to: .top, of: messageRequestView, withInset: 10)
         messageRequestBlockButton.center(.horizontal, in: messageRequestView)
@@ -351,6 +373,10 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         messageRequestDeleteButton.pin(.right, to: .right, of: messageRequestView, withInset: -20)
         messageRequestDeleteButton.pin(.bottom, to: .bottom, of: messageRequestView)
         messageRequestDeleteButton.set(.width, to: .width, of: messageRequestAcceptButton)
+        
+        pendingMessageRequestExplanationLabel.pin(.left, to: .left, of: messageRequestView, withInset: 40)
+        pendingMessageRequestExplanationLabel.pin(.right, to: .right, of: messageRequestView, withInset: -40)
+        pendingMessageRequestExplanationLabel.pin(.bottom, to: .bottom, of: messageRequestView, withInset: -16)
 
         // Unread count view
         view.addSubview(unreadCountView)
@@ -398,6 +424,8 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         super.viewWillAppear(animated)
         
         startObservingChanges()
+        
+        viewIsAppearing = true
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -406,7 +434,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         // Flag that the initial layout has been completed (the flag blocks and unblocks a number
         // of different behaviours)
         didFinishInitialLayout = true
-        viewIsFocussed = true
+        viewIsAppearing = false
         
         if delayFirstResponder || isShowingSearchUI {
             delayFirstResponder = false
@@ -425,7 +453,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        viewIsFocussed = false
+        viewIsDisappearing = true
         
         // Don't set the draft or resign the first responder if we are replacing the thread (want the keyboard
         // to appear to remain focussed)
@@ -441,6 +469,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         
         mediaCache.removeAllObjects()
         hasReloadedThreadDataAfterDisappearance = false
+        viewIsDisappearing = false
     }
     
     @objc func applicationDidBecomeActive(_ notification: Notification) {
@@ -575,23 +604,49 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         {
             updateNavBarButtons(threadData: updatedThreadData, initialVariant: viewModel.initialThreadVariant)
             
-            let messageRequestsViewWasVisible: Bool = (messageRequestView.isHidden == false)
+            let messageRequestsViewWasVisible: Bool = (
+                messageRequestView.isHidden == false
+            )
+            let pendingMessageRequestInfoWasVisible: Bool = (
+                pendingMessageRequestExplanationLabel.isHidden == false
+            )
             
             UIView.animate(withDuration: 0.3) { [weak self] in
                 self?.messageRequestView.isHidden = (
                     updatedThreadData.threadIsMessageRequest == false ||
                     updatedThreadData.threadRequiresApproval == true
                 )
+                self?.pendingMessageRequestExplanationLabel.isHidden = (
+                    self?.messageRequestView.isHidden == false ||
+                    updatedThreadData.threadRequiresApproval == false
+                )
             
                 self?.scrollButtonMessageRequestsBottomConstraint?.isActive = (
-                    updatedThreadData.threadIsMessageRequest == true
+                    self?.messageRequestView.isHidden == false
                 )
-                self?.scrollButtonBottomConstraint?.isActive = (updatedThreadData.threadIsMessageRequest == false)
+                self?.scrollButtonPendingMessageRequestInfoBottomConstraint?.isActive = (
+                    self?.scrollButtonPendingMessageRequestInfoBottomConstraint?.isActive == false &&
+                    self?.pendingMessageRequestExplanationLabel.isHidden == false
+                )
+                self?.scrollButtonBottomConstraint?.isActive = (
+                    self?.scrollButtonMessageRequestsBottomConstraint?.isActive == false &&
+                    self?.scrollButtonPendingMessageRequestInfoBottomConstraint?.isActive == false
+                )
                 
                 // Update the table content inset and offset to account for
                 // the dissapearance of the messageRequestsView
                 if messageRequestsViewWasVisible {
                     let messageRequestsOffset: CGFloat = ((self?.messageRequestView.bounds.height ?? 0) + 16)
+                    let oldContentInset: UIEdgeInsets = (self?.tableView.contentInset ?? UIEdgeInsets.zero)
+                    self?.tableView.contentInset = UIEdgeInsets(
+                        top: 0,
+                        leading: 0,
+                        bottom: max(oldContentInset.bottom - messageRequestsOffset, 0),
+                        trailing: 0
+                    )
+                }
+                else if pendingMessageRequestInfoWasVisible {
+                    let messageRequestsOffset: CGFloat = ((self?.pendingMessageRequestExplanationLabel.bounds.height ?? 0) + (16 * 2))
                     let oldContentInset: UIEdgeInsets = (self?.tableView.contentInset ?? UIEdgeInsets.zero)
                     self?.tableView.contentInset = UIEdgeInsets(
                         top: 0,
@@ -1066,7 +1121,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     // MARK: - Notifications
 
     @objc func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
-        guard viewIsFocussed || !didFinishInitialLayout else { return }
+        guard !viewIsDisappearing else { return }
         
         // Please refer to https://github.com/mapbox/mapbox-navigation-ios/issues/1600
         // and https://stackoverflow.com/a/25260930 to better understand what we are
@@ -1091,11 +1146,12 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         
         let keyboardTop = (UIScreen.main.bounds.height - keyboardRect.minY)
         let messageRequestsOffset: CGFloat = (messageRequestView.isHidden ? 0 : messageRequestView.bounds.height + 16)
+        let pendingMessageRequestsOffset: CGFloat = (pendingMessageRequestExplanationLabel.isHidden ? 0 : (pendingMessageRequestExplanationLabel.bounds.height + (16  * 2)))
         let oldContentInset: UIEdgeInsets = tableView.contentInset
         let newContentInset: UIEdgeInsets = UIEdgeInsets(
             top: 0,
             leading: 0,
-            bottom: (Values.mediumSpacing + keyboardTop + messageRequestsOffset),
+            bottom: (Values.mediumSpacing + keyboardTop + messageRequestsOffset + pendingMessageRequestsOffset),
             trailing: 0
         )
         let newContentOffsetY: CGFloat = (tableView.contentOffset.y + (newContentInset.bottom - oldContentInset.bottom))
@@ -1114,7 +1170,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         }
 
         // Perform the changes (don't animate if the initial layout hasn't been completed)
-        guard hasDoneLayout && didFinishInitialLayout else {
+        guard hasDoneLayout && didFinishInitialLayout && !viewIsAppearing else {
             UIView.performWithoutAnimation {
                 changes()
             }
@@ -1131,8 +1187,6 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     }
 
     @objc func handleKeyboardWillHideNotification(_ notification: Notification) {
-        guard viewIsFocussed else { return }
-        
         // Please refer to https://github.com/mapbox/mapbox-navigation-ios/issues/1600
         // and https://stackoverflow.com/a/25260930 to better understand what we are
         // doing with the UIViewAnimationOptions

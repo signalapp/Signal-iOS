@@ -125,9 +125,7 @@ public struct SessionThread: Codable, Identifiable, Equatable, FetchableRecord, 
     
     // MARK: - Custom Database Interaction
     
-    public func insert(_ db: Database) throws {
-        try performInsert(db)
-        
+    public func willInsert(_ db: Database) throws {
         db[.hasSavedThread] = true
     }
 }
@@ -347,76 +345,6 @@ public extension SessionThread {
         
         return blindedKeyPair.map { keyPair -> String in
             SessionId(.blinded, publicKey: keyPair.publicKey).hexString
-        }
-    }
-}
-
-// MARK: - Objective-C Support
-
-// FIXME: Remove when possible
-
-@objc(SMKThread)
-public class SMKThread: NSObject {
-    @objc(deleteAll)
-    public static func deleteAll() {
-        Storage.shared.writeAsync { db in
-            _ = try SessionThread.deleteAll(db)
-        }
-    }
-    
-    @objc(isThreadMuted:)
-    public static func isThreadMuted(_ threadId: String) -> Bool {
-        return Storage.shared.read { db in
-            let mutedUntilTimestamp: TimeInterval? = try SessionThread
-                .select(SessionThread.Columns.mutedUntilTimestamp)
-                .filter(id: threadId)
-                .asRequest(of: TimeInterval?.self)
-                .fetchOne(db)
-            
-            return (mutedUntilTimestamp != nil)
-        }
-        .defaulting(to: false)
-    }
-    
-    @objc(isOnlyNotifyingForMentions:)
-    public static func isOnlyNotifyingForMentions(_ threadId: String) -> Bool {
-        return Storage.shared.read { db in
-            return try SessionThread
-                .select(SessionThread.Columns.onlyNotifyForMentions)
-                .filter(id: threadId)
-                .asRequest(of: Bool.self)
-                .fetchOne(db)
-        }
-        .defaulting(to: false)
-    }
-    
-    @objc(setIsOnlyNotifyingForMentions:to:)
-    public static func isOnlyNotifyingForMentions(_ threadId: String, isEnabled: Bool) {
-        Storage.shared.write { db in
-            try SessionThread
-                .filter(id: threadId)
-                .updateAll(db, SessionThread.Columns.onlyNotifyForMentions.set(to: isEnabled))
-        }
-    }
-    
-    @objc(mutedUntilDateFor:)
-    public static func mutedUntilDateFor(_ threadId: String) -> Date? {
-        return Storage.shared.read { db in
-            return try SessionThread
-                .select(SessionThread.Columns.mutedUntilTimestamp)
-                .filter(id: threadId)
-                .asRequest(of: TimeInterval.self)
-                .fetchOne(db)
-        }
-        .map { Date(timeIntervalSince1970: $0) }
-    }
-    
-    @objc(updateWithMutedUntilDateTo:forThreadId:)
-    public static func updateWithMutedUntilDate(to date: Date?, threadId: String) {
-        Storage.shared.write { db in
-            try SessionThread
-                .filter(id: threadId)
-                .updateAll(db, SessionThread.Columns.mutedUntilTimestamp.set(to: date?.timeIntervalSince1970))
         }
     }
 }

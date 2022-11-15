@@ -98,32 +98,14 @@ public class MessageRequestsViewModel {
                 orderSQL: SessionThreadViewModel.messageRequetsOrderSQL
             ),
             onChangeUnsorted: { [weak self] updatedData, updatedPageInfo in
-                guard
-                    let currentData: [SectionModel] = self?.threadData,
-                    let updatedThreadData: [SectionModel] = self?.process(data: updatedData, for: updatedPageInfo)
-                else { return }
-                
-                let changeset: StagedChangeset<[SectionModel]> = StagedChangeset(
-                    source: currentData,
-                    target: updatedThreadData
-                )
-                
-                // No need to do anything if there were no changes
-                guard !changeset.isEmpty else { return }
-                
-                // Run any changes on the main thread (as they will generally trigger UI updates)
-                DispatchQueue.main.async {
-                    // If we have the callback then trigger it, otherwise just store the changes to be sent
-                    // to the callback if we ever start observing again (when we have the callback it needs
-                    // to do the data updating as it's tied to UI updates and can cause crashes if not updated
-                    // in the correct order)
-                    guard let onThreadChange: (([SectionModel], StagedChangeset<[SectionModel]>) -> ()) = self?.onThreadChange else {
-                        self?.unobservedThreadDataChanges = (updatedThreadData, changeset)
-                        return
+                PagedData.processAndTriggerUpdates(
+                    updatedData: self?.process(data: updatedData, for: updatedPageInfo),
+                    currentDataRetriever: { self?.threadData },
+                    onDataChange: self?.onThreadChange,
+                    onUnobservedDataChange: { updatedData, changeset in
+                        self?.unobservedThreadDataChanges = (updatedData, changeset)
                     }
-                    
-                    onThreadChange(updatedThreadData, changeset)
-                }
+                )
             }
         )
         

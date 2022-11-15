@@ -100,7 +100,7 @@ class OpenGroupManagerSpec: QuickSpec {
                 mockOGMCache = MockOGMCache()
                 mockGeneralCache = MockGeneralCache()
                 mockStorage = Storage(
-                    customWriter: DatabaseQueue(),
+                    customWriter: try! DatabaseQueue(),
                     customMigrations: [
                         SNUtilitiesKit.migrations(),
                         SNMessagingKit.migrations()
@@ -500,7 +500,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                             db,
                                             roomToken: "testRoom",
                                             server: "testServer",
-                                            publicKey: "testKey",
+                                            publicKey: TestConstants.serverPublicKey,
                                             dependencies: dependencies
                                         )
                                 }
@@ -515,7 +515,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                             db,
                                             roomToken: "testRoom",
                                             server: "http://testServer",
-                                            publicKey: "testKey",
+                                            publicKey: TestConstants.serverPublicKey,
                                             dependencies: dependencies
                                         )
                                 }
@@ -530,7 +530,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                             db,
                                             roomToken: "testRoom",
                                             server: "https://testServer",
-                                            publicKey: "testKey",
+                                            publicKey: TestConstants.serverPublicKey,
                                             dependencies: dependencies
                                         )
                                 }
@@ -551,7 +551,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                             db,
                                             roomToken: "testRoom",
                                             server: "testServer",
-                                            publicKey: "testKey",
+                                            publicKey: TestConstants.serverPublicKey,
                                             dependencies: dependencies
                                         )
                                 }
@@ -566,7 +566,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                             db,
                                             roomToken: "testRoom",
                                             server: "http://testServer",
-                                            publicKey: "testKey",
+                                            publicKey: TestConstants.serverPublicKey,
                                             dependencies: dependencies
                                         )
                                 }
@@ -581,7 +581,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                             db,
                                             roomToken: "testRoom",
                                             server: "https://testServer",
-                                            publicKey: "testKey",
+                                            publicKey: TestConstants.serverPublicKey,
                                             dependencies: dependencies
                                         )
                                 }
@@ -602,7 +602,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                             db,
                                             roomToken: "testRoom",
                                             server: "testServer",
-                                            publicKey: "testKey",
+                                            publicKey: TestConstants.serverPublicKey,
                                             dependencies: dependencies
                                         )
                                 }
@@ -617,7 +617,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                             db,
                                             roomToken: "testRoom",
                                             server: "http://testServer",
-                                            publicKey: "testKey",
+                                            publicKey: TestConstants.serverPublicKey,
                                             dependencies: dependencies
                                         )
                                 }
@@ -632,7 +632,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                             db,
                                             roomToken: "testRoom",
                                             server: "https://testServer",
-                                            publicKey: "testKey",
+                                            publicKey: TestConstants.serverPublicKey,
                                             dependencies: dependencies
                                         )
                                 }
@@ -665,7 +665,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                         db,
                                         roomToken: "testRoom",
                                         server: "http://open.getsession.org",
-                                        publicKey: "testKey",
+                                        publicKey: TestConstants.serverPublicKey,
                                         dependencies: dependencies
                                     )
                             }
@@ -697,7 +697,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                         db,
                                         roomToken: "testRoom",
                                         server: "http://116.203.70.33",
-                                        publicKey: "testKey",
+                                        publicKey: TestConstants.serverPublicKey,
                                         dependencies: dependencies
                                     )
                             }
@@ -715,7 +715,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                     db,
                                     roomToken: "testRoom",
                                     server: "%%%",
-                                    publicKey: "testKey",
+                                    publicKey: TestConstants.serverPublicKey,
                                     dependencies: dependencies
                                 )
                         }
@@ -732,7 +732,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                     db,
                                     roomToken: "testRoom",
                                     server: "testServer",
-                                    publicKey: "testKey",
+                                    publicKey: TestConstants.serverPublicKey,
                                     dependencies: dependencies
                                 )
                         }
@@ -752,7 +752,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                     db,
                                     roomToken: "testRoom",
                                     server: "testServer",
-                                    publicKey: "testKey",
+                                    publicKey: TestConstants.serverPublicKey,
                                     dependencies: dependencies
                                 )
                         }
@@ -785,7 +785,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                     db,
                                     roomToken: "testRoom",
                                     server: "testServer",
-                                    publicKey: "testKey",
+                                    publicKey: TestConstants.serverPublicKey,
                                     isConfigMessage: false,
                                     dependencies: dependencies
                                 )
@@ -816,7 +816,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                     db,
                                     roomToken: "testRoom",
                                     server: "testServer",
-                                    publicKey: "testKey",
+                                    publicKey: TestConstants.serverPublicKey,
                                     isConfigMessage: false,
                                     dependencies: dependencies
                                 )
@@ -853,7 +853,9 @@ class OpenGroupManagerSpec: QuickSpec {
                                         db,
                                         roomToken: "testRoom",
                                         server: "testServer",
-                                        publicKey: "testKey",
+                                        publicKey: TestConstants.serverPublicKey
+                                            .replacingOccurrences(of: "c3", with: "00")
+                                            .replacingOccurrences(of: "b3", with: "00"),
                                         isConfigMessage: false,
                                         dependencies: dependencies
                                     )
@@ -905,7 +907,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                         db,
                                         roomToken: "testRoom",
                                         server: "testServer",
-                                        publicKey: "testKey",
+                                        publicKey: TestConstants.serverPublicKey,
                                         isConfigMessage: false,
                                         dependencies: dependencies
                                     )

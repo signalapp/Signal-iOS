@@ -314,7 +314,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
             .trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         
         guard !updatedName.isEmpty else {
-            return showError(title: "vc_create_closed_group_group_name_missing_error".lowercased())
+            return showError(title: "vc_create_closed_group_group_name_missing_error".localized())
         }
         guard updatedName.count < 64 else {
             return showError(title: "vc_create_closed_group_group_name_too_long_error".localized())

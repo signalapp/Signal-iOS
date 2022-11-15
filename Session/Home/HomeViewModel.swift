@@ -150,42 +150,14 @@ public class HomeViewModel {
                 orderSQL: SessionThreadViewModel.homeOrderSQL
             ),
             onChangeUnsorted: { [weak self] updatedData, updatedPageInfo in
-                guard
-                    let currentData: [SectionModel] = self?.threadData,
-                    let updatedThreadData: [SectionModel] = self?.process(data: updatedData, for: updatedPageInfo)
-                else { return }
-                
-                let changeset: StagedChangeset<[SectionModel]> = StagedChangeset(
-                    source: currentData,
-                    target: updatedThreadData
-                )
-                
-                // No need to do anything if there were no changes
-                guard !changeset.isEmpty else { return }
-                
-                let performUpdates = {
-                    // If we have the callback then trigger it, otherwise just store the changes to be sent
-                    // to the callback if we ever start observing again (when we have the callback it needs
-                    // to do the data updating as it's tied to UI updates and can cause crashes if not updated
-                    // in the correct order)
-                    guard let onThreadChange: (([SectionModel], StagedChangeset<[SectionModel]>) -> ()) = self?.onThreadChange else {
-                        self?.unobservedThreadDataChanges = (updatedThreadData, changeset)
-                        return
+                PagedData.processAndTriggerUpdates(
+                    updatedData: self?.process(data: updatedData, for: updatedPageInfo),
+                    currentDataRetriever: { self?.threadData },
+                    onDataChange: self?.onThreadChange,
+                    onUnobservedDataChange: { updatedData, changeset in
+                        self?.unobservedThreadDataChanges = (updatedData, changeset)
                     }
-                    
-                    onThreadChange(updatedThreadData, changeset)
-                }
-                
-                // Note: On the initial launch the data will be fetched on the main thread and we want it
-                // to block so don't dispatch to the next run loop
-                guard !Thread.isMainThread else {
-                    return performUpdates()
-                }
-                
-                // Run any changes on the main thread (as they will generally trigger UI updates)
-                DispatchQueue.main.async {
-                    performUpdates()
-                }
+                )
             }
         )
         
@@ -246,20 +218,15 @@ public class HomeViewModel {
             data: currentData.flatMap { $0.elements },
             for: currentPageInfo
         )
-        let changeset: StagedChangeset<[SectionModel]> = StagedChangeset(
-            source: currentData,
-            target: updatedThreadData
+        
+        PagedData.processAndTriggerUpdates(
+            updatedData: updatedThreadData,
+            currentDataRetriever: { [weak self] in (self?.unobservedThreadDataChanges?.0 ?? self?.threadData) },
+            onDataChange: onThreadChange,
+            onUnobservedDataChange: { [weak self] updatedThreadData, changeset in
+                self?.unobservedThreadDataChanges = (updatedThreadData, changeset)
+            }
         )
-        
-        // No need to do anything if there were no changes
-        guard !changeset.isEmpty else { return }
-        
-        guard let onThreadChange: (([SectionModel], StagedChangeset<[SectionModel]>) -> ()) = self.onThreadChange else {
-            self.unobservedThreadDataChanges = (updatedThreadData, changeset)
-            return
-        }
-        
-        onThreadChange(updatedThreadData, changeset)
     }
     
     // MARK: - Thread Data

@@ -651,6 +651,7 @@ public extension MessageViewModel {
             let groupMemberRoleColumnLiteral: SQL = SQL(stringLiteral: GroupMember.Columns.role.name)
             
             let numColumnsBeforeLinkedRecords: Int = 20
+            let finalGroupSQL: SQL = (groupSQL ?? "")
             let request: SQLRequest<ViewModel> = """
                 SELECT
                     \(thread[.id]) AS \(ViewModel.threadIdKey),
@@ -749,7 +750,7 @@ public extension MessageViewModel {
                     \(SQL("\(groupMemberAdminTableLiteral).\(groupMemberRoleColumnLiteral) = \(GroupMember.Role.admin)"))
                 )
                 WHERE \(interaction.alias[Column.rowID]) IN \(rowIds)
-                \(groupSQL ?? "")
+                \(finalGroupSQL)
                 ORDER BY \(orderSQL)
             """
             

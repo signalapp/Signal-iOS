@@ -18,7 +18,7 @@ enum _002_SetupStandardJobs: Migration {
                 variant: .getSnodePool,
                 behaviour: .recurringOnLaunch,
                 shouldBlock: true
-            ).inserted(db)
+            ).migrationSafeInserted(db)
             
             // Note: We also want this job to run both onLaunch and onActive as we want it to block
             // 'onLaunch' and 'onActive' doesn't support blocking jobs
@@ -26,7 +26,7 @@ enum _002_SetupStandardJobs: Migration {
                 variant: .getSnodePool,
                 behaviour: .recurringOnActive,
                 shouldSkipLaunchBecomeActive: true
-            ).inserted(db)
+            ).migrationSafeInserted(db)
         }
         
         Storage.update(progress: 1, for: self, in: target) // In case this is the last migration

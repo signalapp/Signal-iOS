@@ -91,27 +91,27 @@ enum _003_YDBToGRDBMigration: Migration {
             try Identity(
                 variant: .seed,
                 data: Data(hex: seedHexString)
-            ).insert(db)
+            ).migrationSafeInsert(db)
             
             try Identity(
                 variant: .ed25519SecretKey,
                 data: Data(hex: userEd25519SecretKeyHexString)
-            ).insert(db)
+            ).migrationSafeInsert(db)
             
             try Identity(
                 variant: .ed25519PublicKey,
                 data: Data(hex: userEd25519PublicKeyHexString)
-            ).insert(db)
+            ).migrationSafeInsert(db)
             
             try Identity(
                 variant: .x25519PrivateKey,
                 data: userX25519KeyPair.privateKey
-            ).insert(db)
+            ).migrationSafeInsert(db)
             
             try Identity(
                 variant: .x25519PublicKey,
                 data: userX25519KeyPair.publicKey
-            ).insert(db)
+            ).migrationSafeInsert(db)
         }
         
         Storage.update(progress: 1, for: self, in: target) // In case this is the last migration
