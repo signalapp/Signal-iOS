@@ -178,7 +178,8 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
                         }
                     }
                 }
-                frontVc()?.present(donateVc, animated: true)
+                let navigationVc = OWSNavigationController(rootViewController: donateVc)
+                frontVc()?.present(navigationVc, animated: true)
             } else {
                 DonationViewsUtil.openDonateWebsite()
             }

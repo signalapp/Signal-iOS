@@ -33,10 +33,6 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         return result
     }
 
-    private var navigationBar: OWSNavigationBar? {
-        navigationController?.navigationBar as? OWSNavigationBar
-    }
-
     // MARK: - Initialization
 
     internal var state: State {
@@ -73,6 +69,15 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+        let isPresentedStandalone = navigationController?.viewControllers.first == self
+        if isPresentedStandalone {
+            navigationItem.leftBarButtonItem = .init(
+                barButtonSystemItem: .cancel,
+                target: self,
+                action: #selector(didTapCancel)
+            )
+        }
+
         render(oldState: nil)
         loadAndUpdateState()
 
@@ -81,13 +86,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         stackView.autoPinHeightToSuperview()
 
         let margin: CGFloat = 20
-        let topMargin: CGFloat = navigationBar == nil ? margin : 0
-        stackView.layoutMargins = .init(
-            top: topMargin,
-            leading: margin,
-            bottom: margin,
-            trailing: margin
-        )
+        stackView.layoutMargins = .init(top: 0, leading: margin, bottom: margin, trailing: margin)
         stackView.isLayoutMarginsRelativeArrangement = true
 
         view.addSubview(scrollView)
@@ -109,6 +108,11 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     }
 
     // MARK: - Events
+
+    @objc
+    private func didTapCancel() {
+        dismiss(animated: true)
+    }
 
     @objc
     private func didDonationModeChange() {
