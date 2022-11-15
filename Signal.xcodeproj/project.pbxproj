@@ -554,7 +554,6 @@
 		34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0784203E6B77005C4D61 /* ringback_tone_ansi.caf */; };
 		34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */; };
 		34D1F0501F7D45A60066283D /* GifPickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F04F1F7D45A60066283D /* GifPickerCell.swift */; };
-		34D1F0B41F86D31D0066283D /* ConversationCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0B31F86D31D0066283D /* ConversationCollectionView.m */; };
 		34D1F0C01F8EC1760066283D /* MessageRecipientStatusUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0BF1F8EC1760066283D /* MessageRecipientStatusUtils.swift */; };
 		34D21DA227297FBF00D891F4 /* DebugLogger+Payments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D21DA127297FBE00D891F4 /* DebugLogger+Payments.swift */; };
 		34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */; };
@@ -2785,8 +2784,6 @@
 		34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = end_call_tone_cept.caf; path = Signal/AudioFiles/end_call_tone_cept.caf; sourceTree = SOURCE_ROOT; };
 		34D1F04F1F7D45A60066283D /* GifPickerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerCell.swift; sourceTree = "<group>"; };
 		34D1F06D1F8678AA0066283D /* ConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationViewController.h; sourceTree = "<group>"; };
-		34D1F0B21F86D31D0066283D /* ConversationCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationCollectionView.h; sourceTree = "<group>"; };
-		34D1F0B31F86D31D0066283D /* ConversationCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationCollectionView.m; sourceTree = "<group>"; };
 		34D1F0BF1F8EC1760066283D /* MessageRecipientStatusUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageRecipientStatusUtils.swift; sourceTree = "<group>"; };
 		34D21DA127297FBE00D891F4 /* DebugLogger+Payments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DebugLogger+Payments.swift"; sourceTree = "<group>"; };
 		34D2CCD82062E7D000CB1A14 /* OWSScreenLockUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSScreenLockUI.h; sourceTree = "<group>"; };
@@ -4837,8 +4834,6 @@
 				8855DF85238F1DEE0066D96F /* Reactions Details */,
 				3491899A269CD68D008A18AF /* BlockingAnnouncementOnlyView.swift */,
 				347DE5BB2548967900C32CDC /* BlockingGroupMigrationView.swift */,
-				34D1F0B21F86D31D0066283D /* ConversationCollectionView.h */,
-				34D1F0B31F86D31D0066283D /* ConversationCollectionView.m */,
 				3457794226828A9A00732869 /* ConversationCollectionView.swift */,
 				45DDA6232090CEB500DE97F8 /* ConversationHeaderView.swift */,
 				8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */,
@@ -10133,7 +10128,6 @@
 				F0FB6B20269E625A00AC2A41 /* ContextMenuController.swift in Sources */,
 				F0B872B6269CF6D900D26481 /* ContextMenuInteraction.swift in Sources */,
 				F0EE4DB626A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift in Sources */,
-				34D1F0B41F86D31D0066283D /* ConversationCollectionView.m in Sources */,
 				3457794326828A9A00732869 /* ConversationCollectionView.swift in Sources */,
 				34E20D4C24256563002C011E /* ConversationHeaderBuilder.swift in Sources */,
 				45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */,

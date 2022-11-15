@@ -7,7 +7,6 @@
 #import "AppDelegate.h"
 #import "BlockListViewController.h"
 #import "ChatListViewController.h"
-#import "ConversationCollectionView.h"
 #import "ConversationViewController.h"
 #import "DebugContactsUtils.h"
 #import "DebugUIMessages.h"
