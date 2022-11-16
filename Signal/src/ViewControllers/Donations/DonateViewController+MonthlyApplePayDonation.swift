@@ -32,7 +32,7 @@ extension DonateViewController {
            ),
            let subscriberID = monthly.subscriberID {
             firstly {
-                try SubscriptionManager.updateSubscriptionLevel(
+                SubscriptionManager.updateSubscriptionLevel(
                     for: subscriberID,
                     to: selectedSubscriptionLevel,
                     payment: payment,

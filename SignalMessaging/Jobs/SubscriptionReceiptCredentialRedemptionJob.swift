@@ -222,7 +222,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
 
         getMoneyPromise.then(on: .global()) {
             getReceiptCredentialPresentationPromise.then(on: .global()) {
-                try SubscriptionManager.redeemReceiptCredentialPresentation(receiptCredentialPresentation: $0)
+                SubscriptionManager.redeemReceiptCredentialPresentation(receiptCredentialPresentation: $0)
             }
         }.done(on: .global()) {
             Logger.info("[Donations] Successfully redeemed receipt credential presentation")

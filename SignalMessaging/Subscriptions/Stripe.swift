@@ -109,7 +109,10 @@ public struct Stripe: Dependencies {
                          idempotencyKey: idempotencyKey)
     }
 
-    public static func confirmSetupIntent(for paymentIntentID: String, clientSecret: String, payment: PKPayment) throws -> Promise<HTTPResponse> {
+    public static func confirmSetupIntent(
+        for paymentIntentID: String,
+        clientSecret: String
+    ) -> Promise<HTTPResponse> {
         firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
             let setupIntentId = try API.id(for: clientSecret)
             return try API.postForm(endpoint: "setup_intents/\(setupIntentId)/confirm", parameters: [

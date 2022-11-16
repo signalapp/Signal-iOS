@@ -345,17 +345,17 @@ public class SubscriptionManager: NSObject {
 
     // MARK: Subscription management
 
-    private class func setupNewSubscriberID() throws -> Promise<Data> {
+    private class func setupNewSubscriberID() -> Promise<Data> {
         Logger.info("[Donations] Setting up new subscriber ID")
         let newSubscriberID = generateSubscriberID()
         return firstly {
-            try self.postSubscriberID(subscriberID: newSubscriberID)
+            self.postSubscriberID(subscriberID: newSubscriberID)
         }.map(on: .global()) { _ in
             return newSubscriberID
         }
     }
 
-    private class func postSubscriberID(subscriberID: Data) throws -> Promise<Void> {
+    private class func postSubscriberID(subscriberID: Data) -> Promise<Void> {
         let request = OWSRequestFactory.setSubscriptionIDRequest(subscriberID.asBase64Url)
         return firstly {
             networkManager.makePromise(request: request)
@@ -372,7 +372,11 @@ public class SubscriptionManager: NSObject {
         return Cryptography.generateRandomBytes(UInt(32))
     }
 
-    public class func setupNewSubscription(subscription: SubscriptionLevel, payment: PKPayment, currencyCode: String) throws -> Promise<Void> {
+    public class func setupNewSubscription(
+        subscription: SubscriptionLevel,
+        payment: PKPayment,
+        currencyCode: Currency.Code
+    ) -> Promise<Void> {
         Logger.info("[Donations] Setting up new subscription")
 
         var generatedSubscriberID = Data()
@@ -380,7 +384,7 @@ public class SubscriptionManager: NSObject {
         var generatedPaymentID = ""
 
         return firstly {
-            return try setupNewSubscriberID()
+            setupNewSubscriberID()
 
         // Create Stripe SetupIntent against new subscriberID
         }.then(on: .sharedUserInitiated) { subscriberID -> Promise<String> in
@@ -399,7 +403,7 @@ public class SubscriptionManager: NSObject {
                 self.storageServiceManager.recordPendingLocalAccountUpdates()
             }
 
-            return try createPaymentMethod(for: subscriberID)
+            return createPaymentMethod(for: subscriberID)
 
         // Create new payment method
         }.then(on: .sharedUserInitiated) { clientSecret -> Promise<String> in
@@ -417,7 +421,10 @@ public class SubscriptionManager: NSObject {
             }
 
             generatedPaymentID = paymentID
-            return try Stripe.confirmSetupIntent(for: generatedPaymentID, clientSecret: generatedClientSecret, payment: payment)
+            return Stripe.confirmSetupIntent(
+                for: generatedPaymentID,
+                clientSecret: generatedClientSecret
+            )
 
         // Update payment on server
         }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
@@ -425,7 +432,7 @@ public class SubscriptionManager: NSObject {
                 throw OWSGenericError("Transaction chain cancelled")
             }
 
-            return try setDefaultPaymentMethod(for: generatedSubscriberID, paymentID: generatedPaymentID)
+            return setDefaultPaymentMethod(for: generatedSubscriberID, paymentID: generatedPaymentID)
 
         // Select subscription level
         }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
@@ -437,16 +444,22 @@ public class SubscriptionManager: NSObject {
                 Self.clearMostRecentSubscriptionBadgeChargeFailure(transaction: $0)
             }
 
-            return setSubscription(for: generatedSubscriberID, subscription: subscription, currency: currencyCode)
+            return setSubscription(
+                for: generatedSubscriberID,
+                subscription: subscription,
+                currencyCode: currencyCode
+            )
 
         // Report success and dismiss sheet
         }
     }
 
-    public class func updateSubscriptionLevel(for subscriberID: Data,
-                                              to subscription: SubscriptionLevel,
-                                              payment: PKPayment,
-                                              currencyCode: String) throws -> Promise<Void> {
+    public class func updateSubscriptionLevel(
+        for subscriberID: Data,
+        to subscription: SubscriptionLevel,
+        payment: PKPayment,
+        currencyCode: Currency.Code
+    ) -> Promise<Void> {
         Logger.info("[Donations] Updating subscription level")
 
         let failureReason: SubscriptionRedemptionFailureReason = databaseStorage.read { transaction in
@@ -458,15 +471,14 @@ public class SubscriptionManager: NSObject {
             return firstly {
                 self.cancelSubscription(for: subscriberID)
             }.then(on: .sharedUserInitiated) {
-                try self.setupNewSubscription(subscription: subscription, payment: payment, currencyCode: currencyCode)
+                self.setupNewSubscription(subscription: subscription, payment: payment, currencyCode: currencyCode)
             }
         }
 
         var generatedClientSecret = ""
         var generatedPaymentID = ""
         return firstly {
-            try createPaymentMethod(for: subscriberID)
-            // Create new payment method
+            createPaymentMethod(for: subscriberID)
         }.then(on: .sharedUserInitiated) { clientSecret -> Promise<String> in
             guard !self.terminateTransactionIfPossible else {
                 throw OWSGenericError("Transaction chain cancelled")
@@ -482,7 +494,10 @@ public class SubscriptionManager: NSObject {
             }
 
             generatedPaymentID = paymentID
-            return try Stripe.confirmSetupIntent(for: generatedPaymentID, clientSecret: generatedClientSecret, payment: payment)
+            return Stripe.confirmSetupIntent(
+                for: generatedPaymentID,
+                clientSecret: generatedClientSecret
+            )
 
             // Update payment on server
         }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
@@ -490,7 +505,7 @@ public class SubscriptionManager: NSObject {
                 throw OWSGenericError("Transaction chain cancelled")
             }
 
-            return try setDefaultPaymentMethod(for: subscriberID, paymentID: generatedPaymentID)
+            return setDefaultPaymentMethod(for: subscriberID, paymentID: generatedPaymentID)
 
             // Select subscription level
         }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
@@ -498,7 +513,11 @@ public class SubscriptionManager: NSObject {
                 throw OWSGenericError("Transaction chain cancelled")
             }
 
-            return setSubscription(for: subscriberID, subscription: subscription, currency: currencyCode)
+            return setSubscription(
+                for: subscriberID,
+                subscription: subscription,
+                currencyCode: currencyCode
+            )
             // Report success and dismiss sheet
         }
 
@@ -525,7 +544,7 @@ public class SubscriptionManager: NSObject {
         }
     }
 
-    private class func createPaymentMethod(for subscriberID: Data) throws -> Promise<String> {
+    private class func createPaymentMethod(for subscriberID: Data) -> Promise<String> {
         let request = OWSRequestFactory.subscriptionCreatePaymentMethodRequest(subscriberID.asBase64Url)
         return firstly {
             networkManager.makePromise(request: request)
@@ -553,7 +572,10 @@ public class SubscriptionManager: NSObject {
         }
     }
 
-    private class func setDefaultPaymentMethod(for subscriberID: Data, paymentID: String) throws -> Promise<Void> {
+    private class func setDefaultPaymentMethod(
+        for subscriberID: Data,
+        paymentID: String
+    ) -> Promise<Void> {
         let request = OWSRequestFactory.subscriptionSetDefaultPaymentMethodRequest(subscriberID.asBase64Url, paymentID: paymentID)
         return firstly {
             networkManager.makePromise(request: request)
@@ -565,14 +587,21 @@ public class SubscriptionManager: NSObject {
         }
     }
 
-    private class func setSubscription(for subscriberID: Data,
-                                       subscription: SubscriptionLevel,
-                                       currency: String) -> Promise<Void> {
+    private class func setSubscription(
+        for subscriberID: Data,
+        subscription: SubscriptionLevel,
+        currencyCode: Currency.Code
+    ) -> Promise<Void> {
 
         let subscriberIDURL = subscriberID.asBase64Url
         let key = Cryptography.generateRandomBytes(UInt(32)).asBase64Url
         let level = String(subscription.level)
-        let request = OWSRequestFactory.subscriptionSetSubscriptionLevelRequest(subscriberIDURL, level: level, currency: currency, idempotencyKey: key)
+        let request = OWSRequestFactory.subscriptionSetSubscriptionLevelRequest(
+            subscriberIDURL,
+            level: level,
+            currency: currencyCode,
+            idempotencyKey: key
+        )
         return firstly {
             networkManager.makePromise(request: request)
         }.then(on: .global()) { response -> Promise<Subscription?> in
@@ -735,7 +764,9 @@ public class SubscriptionManager: NSObject {
         }
     }
 
-    public class func redeemReceiptCredentialPresentation(receiptCredentialPresentation: ReceiptCredentialPresentation) throws -> Promise<Void> {
+    public class func redeemReceiptCredentialPresentation(
+        receiptCredentialPresentation: ReceiptCredentialPresentation
+    ) -> Promise<Void> {
         let expiresAtForLogging: String = {
             guard let result = try? receiptCredentialPresentation.getReceiptExpirationTime() else { return "UNKNOWN" }
             return String(result)
@@ -788,7 +819,7 @@ public class SubscriptionManager: NSObject {
         var lastKeepAliveHeartbeat: Date?
         var lastSubscriptionExpiration: Date?
         var subscriberID: Data?
-        var currencyCode: String?
+        var currencyCode: Currency.Code?
         databaseStorage.read { transaction in
             lastKeepAliveHeartbeat = self.subscriptionKVS.getDate(self.lastSubscriptionHeartbeatKey, transaction: transaction)
             lastSubscriptionExpiration = self.subscriptionKVS.getDate(self.lastSubscriptionExpirationKey, transaction: transaction)
@@ -826,10 +857,8 @@ public class SubscriptionManager: NSObject {
         }
 
         firstly(on: .sharedBackground) {
-            // Post subscriberID, if it exists
-            try self.postSubscriberID(subscriberID: subscriberID)
+            self.postSubscriberID(subscriberID: subscriberID)
         }.then(on: .sharedBackground) {
-            // Fetch current subscription
             self.getCurrentSubscriptionStatus(for: subscriberID)
         }.done(on: .sharedBackground) { subscription in
             guard let subscription = subscription else {
@@ -955,7 +984,10 @@ extension SubscriptionManager {
         return subscriberCurrencyCode
     }
 
-    public static func setSubscriberCurrencyCode(_ currencyCode: String?, transaction: SDSAnyWriteTransaction) {
+    public static func setSubscriberCurrencyCode(
+        _ currencyCode: Currency.Code?,
+        transaction: SDSAnyWriteTransaction
+    ) {
         subscriptionKVS.setObject(currencyCode,
                                   key: subscriberCurrencyCodeKey,
                                   transaction: transaction)
