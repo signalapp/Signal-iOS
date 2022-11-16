@@ -6367,6 +6367,9 @@
 /* Title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
 "STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Partially Sent";
 
+/* Subtitle shown when failing to send an incompatible file to stories via the sharesheet. */
+"STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_SUBTITLE" = "The file type selected is not supported.";
+
 /* Title shown when failing to send an incompatible file to stories via the sharesheet. */
 "STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_TITLE" = "Unable To Send";
 

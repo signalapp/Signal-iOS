@@ -69,27 +69,31 @@ public class ConversationPickerFailedRecipientsSheet: OWSTableSheetViewControlle
         headerSection.separatorInsetLeading = NSNumber(value: OWSTableViewController2.cellHInnerMargin + 32)
 
         let headerTitle: String
+        let headerSubtitle: String
         if remainingConversationItems.isEmpty {
             headerTitle = OWSLocalizedString(
                 "STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_TITLE",
                 comment: "Title shown when failing to send an incompatible file to stories via the sharesheet."
+            )
+            headerSubtitle = OWSLocalizedString(
+                "STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_SUBTITLE",
+                comment: "Subtitle shown when failing to send an incompatible file to stories via the sharesheet."
             )
         } else {
             headerTitle = OWSLocalizedString(
                 "STORIES_SHARESHEET_PARTIAL_SEND_TITLE",
                 comment: "Title shown when failing to send an incompatible file to stories, but still sending to non-story conversations."
             )
+            let subtitleFormat = OWSLocalizedString(
+                "STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d",
+                tableName: "PluralAware",
+                comment: "Subtitle shown when failing to send a single incompatible file to stories via the sharesheet."
+            )
+            headerSubtitle = String.localizedStringWithFormat(
+                subtitleFormat,
+                failedStoryConversationItems.count
+            )
         }
-
-        let subtitleFormat = OWSLocalizedString(
-            "STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d",
-            tableName: "PluralAware",
-            comment: "Subtitle shown when failing to send a single incompatible file to stories via the sharesheet."
-        )
-        let headerSubtitle = String.localizedStringWithFormat(
-            subtitleFormat,
-            failedStoryConversationItems.count
-        )
 
         let headerView = SheetHeaderView(
             title: headerTitle,
