@@ -388,8 +388,8 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
             return
         }
 
-        let isAnimatingQuotedReply = viewState.inputToolbar?.isAnimatingQuotedReply ?? false
-        let duration = isAnimatingQuotedReply ? ConversationInputToolbar.quotedReplyAnimationDuration : animationDuration
+        let isAnimatingHeightChange = viewState.inputToolbar?.isAnimatingHeightChange ?? false
+        let duration = isAnimatingHeightChange ? ConversationInputToolbar.heightChangeAnimationDuration : animationDuration
 
         if shouldAnimateKeyboardChanges, duration > 0 {
             if hasViewDidAppearEverCompleted {
@@ -415,9 +415,9 @@ extension ConversationViewController: InputAccessoryViewPlaceholderDelegate {
             UIView.setAnimationDuration(duration)
             updateBottomBarPosition()
             // To minimize risk, only animatedly update insets when animating quoted reply for now
-            if isAnimatingQuotedReply { updateContentInsets() }
+            if isAnimatingHeightChange { updateContentInsets() }
             UIView.commitAnimations()
-            if !isAnimatingQuotedReply { updateContentInsets() }
+            if !isAnimatingHeightChange { updateContentInsets() }
         } else {
             updateBottomBarPosition()
             updateContentInsets()

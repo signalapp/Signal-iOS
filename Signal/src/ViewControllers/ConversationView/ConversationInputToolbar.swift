@@ -127,7 +127,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
             // Compensate for autolayout frame/bounds changes when animating in/out the quoted reply view.
             // This logic ensures the input toolbar stays pinned to the keyboard visually
-            if isAnimatingQuotedReply && inputTextView.isFirstResponder {
+            if isAnimatingHeightChange && inputTextView.isFirstResponder {
                 var frame = frame
                 frame.origin.y = 0
                 // In this conditional, bounds change is captured in an animation block, which we don't want here.
@@ -289,6 +289,26 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     private var textViewHeight: CGFloat = 0
     private var textViewHeightConstraint: NSLayoutConstraint?
+    class var heightChangeAnimationDuration: TimeInterval { 0.25 }
+    private(set) var isAnimatingHeightChange = false
+
+    private class func springViewPropertyAnimator(
+        duration: TimeInterval,
+        dampingFraction: CGFloat,
+        response: CGFloat
+    ) -> UIViewPropertyAnimator {
+        let stiffness = pow(2 * .pi / response, 2)
+        let damping = 4 * .pi * dampingFraction / response
+        let timingParameters = UISpringTimingParameters(
+            mass: 1,
+            stiffness: stiffness,
+            damping: damping,
+            initialVelocity: .zero
+        )
+        let animator = UIViewPropertyAnimator(duration: duration, timingParameters: timingParameters)
+        animator.isUserInteractionEnabled = false
+        return animator
+    }
 
     private var layoutConstraints: [NSLayoutConstraint]?
 
@@ -465,14 +485,11 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         let animator: UIViewPropertyAnimator?
         if isAnimated {
-            let animationDuration: TimeInterval = 0.25
-            let dampingFraction: CGFloat = 0.645
-            let response: CGFloat = 0.25
-            let stiffness = pow(2 * .pi / response, 2)
-            let damping = 4 * .pi * dampingFraction / response
-            let timingParameters = UISpringTimingParameters(mass: 1, stiffness: stiffness, damping: damping, initialVelocity: .zero)
-            animator = UIViewPropertyAnimator(duration: animationDuration, timingParameters: timingParameters)
-            animator?.isUserInteractionEnabled = false
+            animator = ConversationInputToolbar.springViewPropertyAnimator(
+                duration: 0.25,
+                dampingFraction: 0.645,
+                response: 0.25
+            )
         } else {
             animator = nil
         }
@@ -896,10 +913,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     // MARK: Quoted Reply
 
-    class var quotedReplyAnimationDuration: TimeInterval { 0.25 }
-
-    private(set) var isAnimatingQuotedReply = false
-
     var quotedReply: OWSQuotedReplyModel? {
         didSet {
             guard oldValue != quotedReply else { return }
@@ -937,15 +950,15 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         updateInputLinkPreview()
 
         if animated, quotedReplyWrapper.isHidden {
-            isAnimatingQuotedReply = true
+            isAnimatingHeightChange = true
 
             UIView.animate(
-                withDuration: ConversationInputToolbar.quotedReplyAnimationDuration,
+                withDuration: ConversationInputToolbar.heightChangeAnimationDuration,
                 animations: {
                     self.quotedReplyWrapper.isHidden = false
                 },
                 completion: { _ in
-                    self.isAnimatingQuotedReply = false
+                    self.isAnimatingHeightChange = false
                 }
             )
         } else {
@@ -957,14 +970,15 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         owsAssertDebug(quotedReply == nil)
 
         if animated {
-            isAnimatingQuotedReply = true
+            isAnimatingHeightChange = true
+
             UIView.animate(
-                withDuration: ConversationInputToolbar.quotedReplyAnimationDuration,
+                withDuration: ConversationInputToolbar.heightChangeAnimationDuration,
                 animations: {
                     self.quotedReplyWrapper.isHidden = true
                 },
                 completion: { _ in
-                    self.isAnimatingQuotedReply = false
+                    self.isAnimatingHeightChange = false
                     self.quotedReplyWrapper.removeAllSubviews()
                 }
             )
@@ -1889,10 +1903,33 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
 
         guard newHeight != textViewHeight else { return }
 
+        guard let textViewHeightConstraint else {
+            owsFailDebug("textViewHeightConstraint == nil")
+            return
+        }
+
         textViewHeight = newHeight
-        owsAssertDebug(textViewHeightConstraint != nil)
-        textViewHeightConstraint?.constant = newHeight
-        invalidateIntrinsicContentSize()
+        textViewHeightConstraint.constant = newHeight
+
+        if let superview, inputToolbarDelegate != nil {
+            isAnimatingHeightChange = true
+
+            let animator = ConversationInputToolbar.springViewPropertyAnimator(
+                duration: ConversationInputToolbar.heightChangeAnimationDuration,
+                dampingFraction: 1,
+                response: 0.25
+            )
+            animator.addAnimations {
+                self.invalidateIntrinsicContentSize()
+                superview.layoutIfNeeded()
+            }
+            animator.addCompletion { _ in
+                self.isAnimatingHeightChange = false
+            }
+            animator.startAnimation()
+        } else {
+            invalidateIntrinsicContentSize()
+        }
     }
 
     func textViewDidChange(_ textView: UITextView) {

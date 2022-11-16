@@ -4,9 +4,9 @@
 //
 
 import CoreServices
-import Foundation
 import Photos
 import SignalMessaging
+import SignalUI
 
 extension ConversationViewController: ConversationInputToolbarDelegate {
 
