@@ -1,2 +1,2 @@
-★ Story đã có mặt trên Signal! Chia sẻ các cập nhật văn bản, hình ảnh, và video với những người bạn hoặc nhóm bạn chọn, tự động biến mất sau 24 giờ. Nếu bạn không muốn chia sẻ hoặc thấy story, bạn có thể tắt tính năng này trong mục Cài đặt.
-• Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.
+• Redesigned the input bar for a better look and feel as you send messages
+• Bug fixes and improvements for sharing and viewing stories

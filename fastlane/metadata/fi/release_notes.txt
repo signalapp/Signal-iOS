@@ -1,2 +1,2 @@
-• Tarinat ovat nyt käytettävissä Signalissa! Jaa katoavia teksti-, kuva- ja videopäivityksiä valituille ystäville tai ryhmille. Tarinat katoavat automaattisesti 24 tunnin kuluttua. Jos et halua nähdä tai jakaa tarinoita, voit poistaa ne kokonaan käytöstä asetuksissa.
-• Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.
+• Redesigned the input bar for a better look and feel as you send messages
+• Bug fixes and improvements for sharing and viewing stories

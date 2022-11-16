@@ -1,2 +1,2 @@
-• Relacje już dostępne w Signal! Udostępniaj wybranym znajomym lub grupom tekst, obrazy i wideo — udostępnione treści znikają automatycznie po 24 godzinach. Jeśli nie chcesz oglądać ani udostępniać relacji, możesz z nich zrezygnować w Ustawieniach.
-• Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.
+• Redesigned the input bar for a better look and feel as you send messages
+• Bug fixes and improvements for sharing and viewing stories

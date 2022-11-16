@@ -1,2 +1,2 @@
-• Signal 现在推出动态功能啦！您现在可以给选定的好友或群组分享限时文本、图片和视频动态。这些动态将会在 24 小时后自动消失。如果您不想浏览其他人的动态，也不想分享动态，您可以在设置中选择退出此功能。
-• Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.
+• Redesigned the input bar for a better look and feel as you send messages
+• Bug fixes and improvements for sharing and viewing stories
