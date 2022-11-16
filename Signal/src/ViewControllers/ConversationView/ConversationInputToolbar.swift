@@ -265,7 +265,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         let view = StickerHorizontalListView(cellSize: suggestedStickerSize, cellInset: 0, spacing: suggestedStickerSpacing)
         view.backgroundColor = Theme.conversationButtonBackgroundColor
         view.contentInset = stickerListContentInset
-        view.isHiddenInStackView = true
         view.autoSetDimension(.height, toSize: suggestedStickerSize + stickerListContentInset.bottom + stickerListContentInset.top)
         return view
     }()
@@ -278,12 +277,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         return view
     }()
 
-    private lazy var outerStack: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        return stackView
-    }()
+    private let mainPanelWrapperView = UIView.container()
 
     private var isConfigurationComplete = false
 
@@ -328,32 +322,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         layoutMargins = .zero
         autoresizingMask = .flexibleHeight
         isUserInteractionEnabled = true
-
-        // When presenting or dismissing the keyboard, there may be a slight
-        // gap between the keyboard and the bottom of the input bar during
-        // the animation. Extend the background below the toolbar's bounds
-        // by this much to mask that extra space.
-        let backgroundExtension: CGFloat = 500
-
-        if UIAccessibility.isReduceTransparencyEnabled {
-            backgroundColor = Theme.toolbarBackgroundColor
-
-            let extendedBackground = UIView()
-            extendedBackground.backgroundColor = Theme.toolbarBackgroundColor
-            addSubview(extendedBackground)
-            extendedBackground.autoPinWidthToSuperview()
-            extendedBackground.autoPinEdge(.top, to: .bottom, of: self)
-            extendedBackground.autoSetDimension(.height, toSize: backgroundExtension)
-        } else {
-            backgroundColor = Theme.toolbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
-
-            let blurEffectView = UIVisualEffectView(effect: Theme.barBlurEffect)
-            blurEffectView.layer.zPosition = -1
-            addSubview(blurEffectView)
-            blurEffectView.autoPinWidthToSuperview()
-            blurEffectView.autoPinEdge(toSuperviewEdge: .top)
-            blurEffectView.autoPinEdge(toSuperviewEdge: .bottom, withInset: -backgroundExtension)
-        }
 
         // NOTE: Don't set inputTextViewDelegate until configuration is complete.
         inputTextView.mentionDelegate = mentionDelegate
@@ -420,24 +388,60 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         messageContentView.autoPinEdge(.right, to: .left, of: rightEdgeControlsView)
         updateMessageContentViewLeftEdgeConstraint(isViewHidden: false)
 
-        // Outer Vertical Stack: Suggested Stickers View, Main Panel.
-        outerStack.addArrangedSubviews([ suggestedStickerView, mainPanelView ])
-        addSubview(outerStack)
-        outerStack.autoPinEdge(toSuperviewEdge: .top)
-        outerStack.autoPinEdge(toSuperviewSafeArea: .bottom)
+        // Put main panel view into a wrapper view that would also contain background view.
+        mainPanelWrapperView.addSubview(mainPanelView)
+        mainPanelView.autoPinEdge(toSuperviewEdge: .top)
+        mainPanelView.autoPinEdge(toSuperviewEdge: .bottom)
         // Horizontal constraints are added in `updateContentLayout`.
+
+        // "Suggested Stickers": must be placed before `mainPanelWrapperView`
+        // as it will animated from behind main chat input bar.
+        addSubview(suggestedStickerView)
+        suggestedStickerView.autoPinEdge(toSuperviewEdge: .top)
+        // Horizontal constraints are added in `updateContentLayout`.
+
+        // Wrapper for the main panel: contains background and also defines safe area insets (see updateContentLayout).
+        addSubview(mainPanelWrapperView)
+        mainPanelWrapperView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+
+        // Vertical constraints for `mainPanelWrapperView` and `suggestedStickerView` are updated based
+        // on whether suggested stickers should be visible or not.
+        // If visible `suggestedStickerView` and `mainPanelWrapperView` are stacked vertically.
+        // If not visible `mainPanelWrapperView` is constrained to all edges of ConversationInputToolbar
+        // and `suggestedStickerView` is hidden beneath.
+        updateSuggestedStickersViewConstraint()
+
+        // When presenting or dismissing the keyboard, there may be a slight
+        // gap between the keyboard and the bottom of the input bar during
+        // the animation. Extend the background below the toolbar's bounds
+        // by this much to mask that extra space.
+        let backgroundExtension: CGFloat = 500
+        let extendedBackgroundView = UIView()
+        if UIAccessibility.isReduceTransparencyEnabled {
+            extendedBackgroundView.backgroundColor = Theme.toolbarBackgroundColor
+        } else {
+            extendedBackgroundView.backgroundColor = Theme.toolbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+
+            let blurEffectView = UIVisualEffectView(effect: Theme.barBlurEffect)
+            extendedBackgroundView.addSubview(blurEffectView)
+            blurEffectView.autoPinEdgesToSuperviewEdges()
+        }
+        mainPanelWrapperView.insertSubview(extendedBackgroundView, at: 0)
+        extendedBackgroundView.autoPinWidthToSuperview()
+        extendedBackgroundView.autoPinEdge(toSuperviewEdge: .top)
+        extendedBackgroundView.autoPinEdge(toSuperviewEdge: .bottom, withInset: -backgroundExtension)
 
         // See comments on updateContentLayout:.
         suggestedStickerView.insetsLayoutMarginsFromSafeArea = false
         messageContentVStack.insetsLayoutMarginsFromSafeArea = false
         messageContentView.insetsLayoutMarginsFromSafeArea = false
-        outerStack.insetsLayoutMarginsFromSafeArea = false
+        mainPanelWrapperView.insetsLayoutMarginsFromSafeArea = false
         insetsLayoutMarginsFromSafeArea = false
 
         suggestedStickerView.preservesSuperviewLayoutMargins = false
         messageContentVStack.preservesSuperviewLayoutMargins = false
         messageContentView.preservesSuperviewLayoutMargins = false
-        outerStack.preservesSuperviewLayoutMargins = false
+        mainPanelWrapperView.preservesSuperviewLayoutMargins = false
         preservesSuperviewLayoutMargins = false
 
         setMessageBody(messageDraft, animated: false, doLayout: false)
@@ -541,8 +545,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             }
         }
 
-        // TODO: This will be updated in a separate PR.
-        updateSuggestedStickers()
+        updateSuggestedStickers(animated: isAnimated)
     }
 
     private var messageContentViewLeftEdgeConstraint: NSLayoutConstraint?
@@ -582,8 +585,10 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         }
 
         layoutConstraints = [
-            outerStack.autoPinEdge(toSuperviewEdge: .left, withInset: receivedSafeAreaInsets.left),
-            outerStack.autoPinEdge(toSuperviewEdge: .right, withInset: receivedSafeAreaInsets.right)
+            mainPanelView.autoPinEdge(toSuperviewEdge: .left, withInset: receivedSafeAreaInsets.left),
+            mainPanelView.autoPinEdge(toSuperviewEdge: .right, withInset: receivedSafeAreaInsets.right),
+            suggestedStickerView.autoPinEdge(toSuperviewEdge: .left, withInset: receivedSafeAreaInsets.left),
+            suggestedStickerView.autoPinEdge(toSuperviewEdge: .right, withInset: receivedSafeAreaInsets.right)
         ]
     }
 
@@ -1132,25 +1137,45 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     private let suggestedStickerViewCache = StickerViewCache(maxSize: 12)
 
-    private var suggestedStickerInfos: [StickerInfo] = [] {
-        didSet {
-            guard suggestedStickerInfos != oldValue else { return }
-            updateSuggestedStickerView()
+    private var suggestedStickerInfos: [StickerInfo] = []
+
+    private var suggestedStickersViewConstraint: NSLayoutConstraint?
+
+    private func updateSuggestedStickersViewConstraint() {
+        if let suggestedStickersViewConstraint {
+            removeConstraint(suggestedStickersViewConstraint)
         }
+
+        let constraint: NSLayoutConstraint
+        if isSuggestedStickersViewHidden {
+            constraint = suggestedStickerView.topAnchor.constraint(equalTo: mainPanelWrapperView.topAnchor)
+        } else {
+            constraint = suggestedStickerView.bottomAnchor.constraint(equalTo: mainPanelWrapperView.topAnchor)
+        }
+        addConstraint(constraint)
+        suggestedStickersViewConstraint = constraint
     }
 
-    private func updateSuggestedStickers() {
-        suggestedStickerInfos = StickerManager.shared.suggestedStickers(forTextInput: inputTextView.trimmedText).map { $0.info }
-    }
+    private var isSuggestedStickersViewHidden = true
 
-    private func updateSuggestedStickerView() {
+    private func updateSuggestedStickers(animated: Bool) {
+        let suggestedStickerInfos = StickerManager.shared.suggestedStickers(forTextInput: inputTextView.trimmedText).map { $0.info }
+
+        guard suggestedStickerInfos != self.suggestedStickerInfos else { return }
+
+        self.suggestedStickerInfos = suggestedStickerInfos
+
         guard !suggestedStickerInfos.isEmpty else {
-            suggestedStickerView.isHiddenInStackView = true
-            layoutIfNeeded()
+            hideSuggestedStickersView(animated: animated)
             return
         }
 
-        let shouldReset = suggestedStickerView.isHidden
+        showSuggestedStickersView(animated: animated)
+    }
+
+    private func showSuggestedStickersView(animated: Bool) {
+        owsAssertDebug(!suggestedStickerInfos.isEmpty)
+
         suggestedStickerView.items = suggestedStickerInfos.map { stickerInfo in
             StickerHorizontalListViewItemSticker(
                 stickerInfo: stickerInfo,
@@ -1160,15 +1185,67 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
                 cache: suggestedStickerViewCache
             )
         }
-        suggestedStickerView.isHiddenInStackView = false
-        layoutIfNeeded()
 
-        if shouldReset {
-            suggestedStickerView.contentOffset = CGPoint(
-                x: -suggestedStickerView.contentInset.left,
-                y: -suggestedStickerView.contentInset.top
+        guard isSuggestedStickersViewHidden else { return }
+
+        isSuggestedStickersViewHidden = false
+
+        UIView.performWithoutAnimation {
+            self.suggestedStickerView.alpha = 1
+            self.suggestedStickerView.layoutIfNeeded()
+            self.suggestedStickerView.contentOffset = CGPoint(
+                x: -self.suggestedStickerView.contentInset.left,
+                y: -self.suggestedStickerView.contentInset.top
             )
         }
+
+        guard animated else {
+            updateSuggestedStickersViewConstraint()
+            return
+        }
+
+        isAnimatingHeightChange = true
+        let animator = ConversationInputToolbar.springViewPropertyAnimator(
+            duration: ConversationInputToolbar.heightChangeAnimationDuration,
+            dampingFraction: 0.9,
+            response: 0.3
+        )
+        animator.addAnimations {
+            self.updateSuggestedStickersViewConstraint()
+            self.layoutIfNeeded()
+        }
+        animator.addCompletion { _ in
+            self.isAnimatingHeightChange = false
+        }
+        animator.startAnimation()
+    }
+
+    private func hideSuggestedStickersView(animated: Bool) {
+        guard !isSuggestedStickersViewHidden else { return }
+
+        isSuggestedStickersViewHidden = true
+
+        guard animated else {
+            suggestedStickerView.alpha = 0
+            updateSuggestedStickersViewConstraint()
+            return
+        }
+
+        isAnimatingHeightChange = true
+        let animator = ConversationInputToolbar.springViewPropertyAnimator(
+            duration: ConversationInputToolbar.heightChangeAnimationDuration,
+            dampingFraction: 0.9,
+            response: 0.3
+        )
+        animator.addAnimations {
+            self.updateSuggestedStickersViewConstraint()
+            self.layoutIfNeeded()
+        }
+        animator.addCompletion { _ in
+            self.suggestedStickerView.alpha = 0
+            self.isAnimatingHeightChange = false
+        }
+        animator.startAnimation()
     }
 
     private func didSelectSuggestedSticker(_ stickerInfo: StickerInfo) {
