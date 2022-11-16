@@ -10,8 +10,6 @@ final class ScanQRCodeWrapperVC: BaseVC {
     private let message: String?
     private let scanQRCodeVC = QRCodeScanningViewController()
     
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask { return .portrait }
-    
     // MARK: - Lifecycle
     
     init(message: String?) {
@@ -47,7 +45,7 @@ final class ScanQRCodeWrapperVC: BaseVC {
         scanQRCodeVCView.autoPinEdge(.top, to: .top, of: view)
         
         if let message = message {
-            scanQRCodeVCView.autoPinToSquareAspectRatio()
+            scanQRCodeVCView.set(.height, lessThanOrEqualTo: UIScreen.main.bounds.width)
             
             // Set up bottom view
             let bottomView = UIView()
@@ -77,8 +75,6 @@ final class ScanQRCodeWrapperVC: BaseVC {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        UIDevice.current.ows_setOrientation(.portrait)
         
         self.scanQRCodeVC.startCapture()
     }

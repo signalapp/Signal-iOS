@@ -477,6 +477,7 @@
 "EMOJI_REACTS_NOTIFICATION" = "%@  به پیامی با %@ واکنش نشان می‌دهد. ";
 "EMOJI_REACTS_MORE_REACTORS_ONE" = "و ۱ نفر دیگر به این پیام واکنش %@ نشان داده است.";
 "EMOJI_REACTS_MORE_REACTORS_MUTIPLE" = "و %@ نفر دیگر به این پیام واکنش %@ نشان داده‌اند.";
+"EMOJI_REACTS_SHOW_LESS" = "Show less";
 "EMOJI_REACTS_RATE_LIMIT_TOAST" = "Slow down! You've sent too many emoji reacts. Try again soon.";
 /* New conversation screen*/
 "vc_new_conversation_title" = "مکالمه جدید";

@@ -16,6 +16,16 @@ class RemoteVideoView: TargetView {
     override func renderFrame(_ frame: RTCVideoFrame?) {
         super.renderFrame(frame)
         guard let frame = frame else { return }
+        if UIDevice.current.isIPad {
+            DispatchMainThreadSafe {
+#if targetEnvironment(simulator)
+                self.contentMode = .scaleAspectFit
+#else
+                self.videoContentMode = .scaleAspectFit
+#endif
+            }
+            return
+        }
         
         DispatchMainThreadSafe {
             let frameRatio = Double(frame.height) / Double(frame.width)
@@ -78,8 +88,8 @@ class RemoteVideoView: TargetView {
 
 class LocalVideoView: TargetView {
     
-    static let width: CGFloat = 80
-    static let height: CGFloat = 173
+    static let width: CGFloat = UIDevice.current.isIPad ? 160 : 80
+    static let height: CGFloat = UIDevice.current.isIPad ? 346: 173
     
     override func renderFrame(_ frame: RTCVideoFrame?) {
         super.renderFrame(frame)

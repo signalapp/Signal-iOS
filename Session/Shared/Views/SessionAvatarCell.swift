@@ -114,17 +114,7 @@ class SessionAvatarCell: UITableViewCell {
         stackView.alignment = .center
         stackView.distribution = .fillEqually
         stackView.spacing = (UIDevice.current.isIPad ? Values.iPadButtonSpacing : Values.mediumSpacing)
-        
-        if (UIDevice.current.isIPad) {
-            stackView.layoutMargins = UIEdgeInsets(
-                top: 0,
-                left: Values.iPadButtonContainerMargin,
-                bottom: 0,
-                right: Values.iPadButtonContainerMargin
-            )
-            stackView.isLayoutMarginsRelativeArrangement = true
-        }
-        
+
         return stackView
     }()
     
@@ -242,6 +232,10 @@ class SessionAvatarCell: UITableViewCell {
         descriptionSeparator.update(title: style.separatorTitle)
         descriptionSeparator.isHidden = (style.separatorTitle == nil)
         
+        if (UIDevice.current.isIPad) {
+            descriptionActionStackView.addArrangedSubview(UIView.hStretchingSpacer())
+        }
+        
         style.descriptionActions.forEach { action in
             let result: SessionButton = SessionButton(style: .bordered, size: .medium)
             result.setTitle(action.title, for: UIControl.State.normal)
@@ -251,6 +245,10 @@ class SessionAvatarCell: UITableViewCell {
                 .store(in: &self.disposables)
             
             descriptionActionStackView.addArrangedSubview(result)
+        }
+        
+        if (UIDevice.current.isIPad) {
+            descriptionActionStackView.addArrangedSubview(UIView.hStretchingSpacer())
         }
         descriptionActionStackView.isHidden = style.descriptionActions.isEmpty
     }

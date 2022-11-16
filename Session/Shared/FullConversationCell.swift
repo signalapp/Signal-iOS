@@ -190,7 +190,7 @@ public final class FullConversationCell: UITableViewCell {
         
         let labelContainerView = UIStackView(arrangedSubviews: [ topLabelStackView, bottomLabelStackView ])
         labelContainerView.axis = .vertical
-        labelContainerView.alignment = .leading
+        labelContainerView.alignment = .fill
         labelContainerView.spacing = 6
         labelContainerView.isUserInteractionEnabled = false
         
@@ -206,12 +206,10 @@ public final class FullConversationCell: UITableViewCell {
         accentLineView.pin(.bottom, to: .bottom, of: contentView)
         timestampLabel.setContentCompressionResistancePriority(.required, for: NSLayoutConstraint.Axis.horizontal)
         
-        // HACK: The six lines below are part of a workaround for a weird layout bug
-        topLabelStackView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - profilePictureViewSize - 3 * Values.mediumSpacing)
+        // HACK: The 4 lines below are part of a workaround for a weird layout bug
         topLabelStackView.set(.height, to: 20)
         topLabelSpacer.set(.height, to: 20)
         
-        bottomLabelStackView.set(.width, to: UIScreen.main.bounds.width - Values.accentLineThickness - profilePictureViewSize - 3 * Values.mediumSpacing)
         bottomLabelStackView.set(.height, to: 18)
         bottomLabelSpacer.set(.height, to: 18)
         
@@ -223,12 +221,8 @@ public final class FullConversationCell: UITableViewCell {
         typingIndicatorView.pin(.leading, to: .leading, of: snippetLabelContainer)
         typingIndicatorView.centerYAnchor.constraint(equalTo: snippetLabel.centerYAnchor).isActive = true
         
-        stackView.pin(.leading, to: .leading, of: contentView)
-        stackView.pin(.top, to: .top, of: contentView)
-        
-        // HACK: The two lines below are part of a workaround for a weird layout bug
-        stackView.set(.width, to: UIScreen.main.bounds.width - Values.mediumSpacing)
-        stackView.set(.height, to: cellHeight)
+        stackView.pin([ UIView.VerticalEdge.bottom, UIView.VerticalEdge.top, UIView.HorizontalEdge.leading ], to: contentView)
+        stackView.pin(.trailing, to: .trailing, of: contentView, withInset: -Values.mediumSpacing)
     }
     
     // MARK: - Content

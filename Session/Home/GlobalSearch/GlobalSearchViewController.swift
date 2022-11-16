@@ -57,6 +57,8 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
         
         return result
     }()
+    
+    private var searchBarWidth: NSLayoutConstraint?
 
     internal lazy var tableView: UITableView = {
         let result: UITableView = UITableView(frame: .zero, style: .grouped)
@@ -98,6 +100,11 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
         super.viewWillDisappear(animated)
         searchBar.resignFirstResponder()
     }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        searchBarWidth?.constant = size.width - 32
+    }
 
     private func setupNavigationBar() {
         // This is a workaround for a UI issue that the navigation bar can be a bit higher if
@@ -108,7 +115,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
         searchBar.sizeToFit()
         searchBar.layoutMargins = UIEdgeInsets.zero
         searchBarContainer.set(.height, to: 44)
-        searchBarContainer.set(.width, to: UIScreen.main.bounds.width - 32)
+        searchBarWidth = searchBarContainer.set(.width, to: UIScreen.main.bounds.width - 32)
         searchBarContainer.addSubview(searchBar)
         navigationItem.titleView = searchBarContainer
         

@@ -235,8 +235,8 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         loadingConversationsLabel.isHidden = true
         
         // Show the empty state if there is no data
-        clearAllButton.isHidden = updatedData.isEmpty
-        emptyStateLabel.isHidden = !updatedData.isEmpty
+        clearAllButton.isHidden = !(updatedData.first?.elements.isEmpty == false)
+        emptyStateLabel.isHidden = !clearAllButton.isHidden
         
         CATransaction.begin()
         CATransaction.setCompletionBlock { [weak self] in

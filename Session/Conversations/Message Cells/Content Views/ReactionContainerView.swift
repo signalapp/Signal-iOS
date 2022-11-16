@@ -13,7 +13,6 @@ final class ReactionContainerView: UIView {
     private var collapsedCount: Int = 0
     private var showingAllReactions: Bool = false
     private var showNumbers: Bool = true
-    private var maxEmojisPerLine = isIPhone6OrSmaller ? 5 : 6
     private var oldSize: CGSize = .zero
     
     var reactions: [ReactionViewModel] = []
@@ -65,7 +64,7 @@ final class ReactionContainerView: UIView {
         textLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         textLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         textLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
-        textLabel.text = "Show less"
+        textLabel.text = "EMOJI_REACTS_SHOW_LESS".localized()
         textLabel.themeTextColor = .textPrimary
         
         let result: UIView = UIView()
