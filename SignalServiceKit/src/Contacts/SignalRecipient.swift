@@ -390,6 +390,9 @@ extension SignalRecipient {
                                phoneNumberColumn: "\(signalAccountColumn: .recipientPhoneNumber)"),
                 DBTableMapping(databaseTableName: "pending_read_receipts",
                                uuidColumn: "authorUuid",
+                               phoneNumberColumn: "authorPhoneNumber"),
+                DBTableMapping(databaseTableName: "pending_viewed_receipts",
+                               uuidColumn: "authorUuid",
                                phoneNumberColumn: "authorPhoneNumber")
             ]
         }
