@@ -292,19 +292,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     private var layoutConstraints: [NSLayoutConstraint]?
 
-    private class func configuredPropertyAnimator() -> UIViewPropertyAnimator {
-        let animationDuration: TimeInterval = 0.25
-        let dampingFraction: CGFloat = 0.645
-        let response: CGFloat = 0.25
-        let stiffness = pow(2 * .pi / response, 2)
-        let damping = 4 * .pi * dampingFraction / response
-        let timingParameters = UISpringTimingParameters(mass: 1, stiffness: stiffness, damping: damping, initialVelocity: .zero)
-        let animator = UIViewPropertyAnimator(duration: animationDuration, timingParameters: timingParameters)
-        animator.isUserInteractionEnabled = false
-        return animator
-    }
-
-    func createContentsWithMessageDraft(
+    private func createContentsWithMessageDraft(
         _ messageDraft: MessageBody?,
         quotedReply: OWSQuotedReplyModel?,
         inputTextViewDelegate: ConversationInputTextViewDelegate,
@@ -388,8 +376,8 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         // but is reality it located a couple levels up in the view hierarchy.
         vStackRoundingView.addSubview(stickerButton)
         vStackRoundingView.addSubview(keyboardButton)
-        stickerButton.autoVCenterInSuperview()
-        stickerButton.autoPinEdge(toSuperviewEdge: .right, withInset: 4)
+        stickerButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 4)
+        stickerButton.autoAlignAxis(.horizontal, toSameAxisOf: inputTextView)
         keyboardButton.autoAlignAxis(.vertical, toSameAxisOf: stickerButton)
         keyboardButton.autoAlignAxis(.horizontal, toSameAxisOf: stickerButton)
 
@@ -908,7 +896,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     // MARK: Quoted Reply
 
-    class var quotedReplyAnimationDuration: TimeInterval { 0.2 }
+    class var quotedReplyAnimationDuration: TimeInterval { 0.25 }
 
     private(set) var isAnimatingQuotedReply = false
 
@@ -918,52 +906,71 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
             layer.removeAllAnimations()
 
-            guard let quotedReply = quotedReply else {
-                isAnimatingQuotedReply = true
-                UIView.animate(
-                    withDuration: ConversationInputToolbar.quotedReplyAnimationDuration,
-                    animations: {
-                        self.quotedReplyWrapper.isHidden = true
-                    },
-                    completion: { _ in
-                        self.isAnimatingQuotedReply = false
-                        self.quotedReplyWrapper.removeAllSubviews()
-                        self.layoutIfNeeded()
-                    }
-                )
-                ensureButtonVisibility(withAnimation: false, doLayout: true)
-                return
+            let animateChanges = window != nil
+            if quotedReply != nil {
+                showQuotedReplyView(animated: animateChanges)
+            } else {
+                hideQuotedReplyView(animated: animateChanges)
             }
-
-            quotedReplyWrapper.removeAllSubviews()
-
-            let quotedMessagePreview = QuotedReplyPreview(quotedReply: quotedReply, conversationStyle: conversationStyle)
-            quotedMessagePreview.delegate = self
-            quotedMessagePreview.setContentHuggingHorizontalLow()
-            quotedMessagePreview.setCompressionResistanceHorizontalLow()
-            quotedMessagePreview.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "quotedMessagePreview")
-
-            quotedReplyWrapper.layoutMargins = .zero
-            quotedReplyWrapper.addSubview(quotedMessagePreview)
-            quotedMessagePreview.autoPinEdgesToSuperviewMargins()
-
-            // hasAsymmetricalRounding may have changed.
-            clearLinkPreviewView()
-            updateInputLinkPreview()
-            if quotedReplyWrapper.isHidden {
-                isAnimatingQuotedReply = true
-                UIView.animate(
-                    withDuration: ConversationInputToolbar.quotedReplyAnimationDuration,
-                    animations: {
-                        self.quotedReplyWrapper.isHidden = false
-                    },
-                    completion: { _ in
-                        self.isAnimatingQuotedReply = false
-                    }
-                )
-            }
-
+            // This would show / hide Stickers|Keyboard button.
+            ensureButtonVisibility(withAnimation: true, doLayout: false)
             clearDesiredKeyboard()
+        }
+    }
+
+    private func showQuotedReplyView(animated: Bool) {
+        guard let quotedReply else {
+            owsFailDebug("quotedReply == nil")
+            return
+        }
+
+        let quotedMessagePreview = QuotedReplyPreview(quotedReply: quotedReply, conversationStyle: conversationStyle)
+        quotedMessagePreview.delegate = self
+        quotedMessagePreview.setContentHuggingHorizontalLow()
+        quotedMessagePreview.setCompressionResistanceHorizontalLow()
+        quotedMessagePreview.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "quotedMessagePreview")
+        quotedReplyWrapper.addSubview(quotedMessagePreview)
+        quotedMessagePreview.autoPinEdgesToSuperviewEdges()
+
+        // hasAsymmetricalRounding may have changed.
+        clearLinkPreviewView()
+        updateInputLinkPreview()
+
+        if animated, quotedReplyWrapper.isHidden {
+            isAnimatingQuotedReply = true
+
+            UIView.animate(
+                withDuration: ConversationInputToolbar.quotedReplyAnimationDuration,
+                animations: {
+                    self.quotedReplyWrapper.isHidden = false
+                },
+                completion: { _ in
+                    self.isAnimatingQuotedReply = false
+                }
+            )
+        } else {
+            quotedReplyWrapper.isHidden = false
+        }
+    }
+
+    private func hideQuotedReplyView(animated: Bool) {
+        owsAssertDebug(quotedReply == nil)
+
+        if animated {
+            isAnimatingQuotedReply = true
+            UIView.animate(
+                withDuration: ConversationInputToolbar.quotedReplyAnimationDuration,
+                animations: {
+                    self.quotedReplyWrapper.isHidden = true
+                },
+                completion: { _ in
+                    self.isAnimatingQuotedReply = false
+                    self.quotedReplyWrapper.removeAllSubviews()
+                }
+            )
+        } else {
+            quotedReplyWrapper.isHidden = true
+            quotedReplyWrapper.removeAllSubviews()
         }
     }
 

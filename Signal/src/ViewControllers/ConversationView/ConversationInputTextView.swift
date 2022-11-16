@@ -47,7 +47,10 @@ class ConversationInputTextView: MentionTextView {
         contentMode = .redraw
         dataDetectorTypes = []
 
-        placeholderView.text = NSLocalizedString("new_message", comment: "")
+        placeholderView.text = NSLocalizedString(
+            "INPUT_TOOLBAR_MESSAGE_PLACEHOLDER",
+            comment: "Placeholder text displayed in empty input box in chat screen."
+        )
         placeholderView.textColor = Theme.placeholderColor
         placeholderView.isUserInteractionEnabled = false
         addSubview(placeholderView)
