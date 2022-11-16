@@ -25,6 +25,14 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (nullable NSNumber *)nextExpirationTimestampWithTransaction:(SDSAnyReadTransaction *_Nonnull)transaction;
 
+#ifdef DEBUG
+
+- (NSArray<TSMessage *> *)fetchExpiredMessagesWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (NSArray<TSMessage *> *)fetchUnstartedExpiringMessagesInThread:(TSThread *)thread
+                                                     transaction:(SDSAnyReadTransaction *)transaction;
+
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END
