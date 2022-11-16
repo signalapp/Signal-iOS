@@ -162,12 +162,17 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         guard let oneTime = state.oneTime else {
             owsFail("[Donations] Expected one-time state but it was not loaded")
         }
-        state = state.selectOneTimeAmount(.choseCustomAmount(
-            amount: FiatMoney(currencyCode: oneTime.selectedCurrencyCode, value: 0)
-        ))
+
+        switch oneTime.selectedAmount {
+        case .nothingSelected, .selectedPreset:
+            state = state.selectOneTimeAmount(.choseCustomAmount(
+                amount: FiatMoney(currencyCode: oneTime.selectedCurrencyCode, value: 0)
+            ))
+        case .choseCustomAmount:
+            break
+        }
 
         oneTimeCustomAmountTextField.becomeFirstResponder()
-
         scrollToOneTimeContinueButtonWhenKeyboardAppears = true
     }
 
