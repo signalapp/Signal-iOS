@@ -2,6 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Not all items could be sent to the story you selected because the file type is not supported.</string>
+			<key>other</key>
+			<string>Not all items could be sent to the stories you selected because the file type is not supported.</string>
+		</dict>
+	</dict>
 	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1146,7 +1162,7 @@
 			<key>one</key>
 			<string>Gönderiliyor…</string>
 			<key>other</key>
-			<string>%1$d gönderiliyor...</string>
+			<string>%1$d gönderiliyor…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

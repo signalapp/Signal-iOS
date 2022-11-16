@@ -362,22 +362,22 @@
 "BADGE_CONFIGURATION_TITLE" = "Значки";
 
 /* When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button. */
-"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Donate Now";
+"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Пожертвовать сейчас";
+
+/* When viewing someone else's donor badge, you'll see a sheet. This is the title on that sheet. Embeds {badge owner's short name} */
+"BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "%1$@ supports Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Ваш значок буста истёк и больше не может быть показан в вашем профиле.";
+"BADGE_EXPIRED_BOOST_BODY" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly donor.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Ваш значок «Ускорение» истёк и больше не виден в вашем профиле.\n\nВы можете реактивировать свой значок «Ускорение» ещё на 30 дней, сделав одноразовое пожертвование.";
-
-/* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Стать Поддерживающим";
-
-/* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Добавить Ускорение";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time donation.";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Значок истёк";
+"BADGE_EXPIRED_BOOST_TITLE" = "Badge expired";
+
+/* Button text when a badge expires, asking users to donate */
+"BADGE_EXPIRED_DONATE_BUTTON" = "Donate";
 
 /* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
 "BADGE_EXPIRED_GIFT_BODY" = "Ваш значок, полученный в подарок, истёк и больше не может быть показан в вашем профиле.";
@@ -388,17 +388,8 @@
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "Узнать больше.";
 
-/* Shown when a non-monthly badge expires to suggest starting a recurring donation. */
-"BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION" = "Вы можете продолжить пользоваться Signal, но чтобы поддерживать технологию, созданную для вас, подумайте о том, чтобы сделать пожертвование, повторяющееся ежемесячно.";
-
-/* Button title to donate monthly on the badge expiration sheet. */
-"BADGE_EXPIRED_RENEWAL_MONTHLY" = "Сделать ежемесячное пожертвование";
-
-/* Button text when a badge expires, asking you to renew your subscription */
-"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Продлить подписку";
-
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Ежемесячное пожертвование отменено";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly donation canceled";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
 "BADGE_GIFT_THANKS_BODY" = "Вы подарили значок %1$@. Когда получатель примет его, он сможет выбрать, показать или скрыть свой значок.";
@@ -502,11 +493,11 @@
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
 "BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "Вы получили значок от %1$@. Покажите этот значок в своём профиле, чтобы повысить осведомлённость о пожертвованиях в Signal.";
 
-/* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Ваше пожертвование, повторяющееся ежемесячно, было автоматически отменено. %1$@ Ваш значок «%2$@» больше не виден в вашем профиле.";
+/* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. $1%1$@ Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment details and donate again.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Ваше пожертвование, повторяющееся ежемесячно, было автоматически отменено, потому что вы были неактивны слишком долго. Ваш значок «%1$@» больше не виден в вашем профиле.\n\nВы можете продолжить пользоваться Signal, но чтобы поддержать приложение и заново активировать свой значок, продлите сейчас.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically canceled because you were inactive for too long. Your %1$@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, donate now.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "Вы заработали значок донора от Signal! Добавьте его в свой профиль, чтобы продемонстрировать свою поддержку.";
@@ -686,19 +677,19 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "Требуется доступ к микрофону";
 
 /* label for button shown when an incoming call rings */
-"CALL_CONTROLS_INCOMING_ANSWER" = "answer";
+"CALL_CONTROLS_INCOMING_ANSWER" = "ответить";
 
 /* Label for button shown when an incoming call rings. This particular label has room for two lines; you may insert a manual linebreak with '\n' as long as both lines are 15 characters or shorter (8 fullwidth characters or shorter), as in the English translation. */
-"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "answer\nwithout video";
+"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "ответить\nбез видео";
 
 /* label for button shown when an incoming call rings */
-"CALL_CONTROLS_INCOMING_DECLINE" = "decline";
+"CALL_CONTROLS_INCOMING_DECLINE" = "отклонить";
 
 /* Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Incoming group call…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Входящий групповой звонок…";
 
 /* Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}} */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ is ringing the group…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ звонит в группу...";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Звонок пропущен, так как код безопасности звонившего изменился.";
@@ -926,10 +917,10 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Группы";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Find by Number";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Найти по номеру";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Find by Username";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Поиск по имени пользователя";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Вы можете разрешить доступ к контактам в приложении «Настройки», чтобы видеть, какие из ваших контактов являются пользователями Signal.";
@@ -1766,46 +1757,46 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Местоположение обхода цензуры";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Get the %1$@ badge";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Получите значок «%1$@»";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Earn the %1$@ badge for one month";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Получите значок «%1$@» на один месяц";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Donate %1$@ to Signal";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Пожертвовать Signal %1$@";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Donate %1$@ to Signal";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Пожертвовать Signal %1$@";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
-"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Select an amount to donate.";
+"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Выберите сумму пожертвования.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "Выберите бо́льшую сумму для пожертвования.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too large, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "Выберите меньшую сумму для пожертвования.";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
-"DONATE_SCREEN_MONTHLY_CHOICE" = "Monthly";
+"DONATE_SCREEN_MONTHLY_CHOICE" = "Ежемесячно";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these and it expires soon, this text is shown below it indicating when it will expire. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "Expires %1$@";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "Истекает %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these, this text is shown below it indicating when it will renew. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Renews %1$@";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Продлится %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown in the subtitle of each level, telling you which badge you'll get. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Get a %1$@ badge";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Получите значок «%1$@»";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown as the title for each level, telling you the price per month. Embeds {{currency string}}, such as \"$5\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/month";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/месяц";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
-"DONATE_SCREEN_ONE_TIME_CHOICE" = "One-Time";
+"DONATE_SCREEN_ONE_TIME_CHOICE" = "Одноразовые";
 
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
-"DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Update Subscription";
+"DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Обновить подписку";
 
 /* Donation payment error for decline failures where authentication is required. */
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Попробуйте другой способ оплаты или свяжитесь со своим банком для получения дополнительной информации.";
@@ -1895,7 +1886,7 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "Если вы переустановили Signal, квитанции о ранее сделанных пожертвованиях не будут доступны.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
-"DONATION_SCREEN_DONATE_BUTTON" = "Donate";
+"DONATION_SCREEN_DONATE_BUTTON" = "Пожертвовать";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
 "DONATION_SCREENS_HEADER_DESCRIPTION" = "Безопасный мессенджер, существующий благодаря вашей поддержке. Без рекламы, без трекеров, без компромиссов. Пожертвуйте сейчас, чтобы поддержать Signal.";
@@ -2324,7 +2315,7 @@
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Для этого звонка было достигнуто максимальное количество участников. Попробуйте ещё раз позже.";
 
 /* Text explaining that someone has sent a ring to the group. Embeds {ring sender name} */
-"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ is calling the group";
+"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ звонит в группу";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "Звонок заполнен";
@@ -2377,8 +2368,11 @@
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "Переподключаемся";
 
+/* notification body when you join a group call and an already-joined participant has an untrusted safety number */
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "A call participant has a safety number change. Tap to view.";
+
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Кто-то с изменившимся кодом безопасности присоединился к этому звонку.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "A call participant who joined has a safety number change. Tap to view.";
 
 /* Toast view text informing user about swiping to screen share */
 "GROUP_CALL_SCREEN_SHARE_TOAST" = "Проведите вверх, чтобы просмотреть показ экрана";
@@ -3259,6 +3253,12 @@
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ теперь в Signal!";
 
+/* accessibility label for the button which shows the regular keyboard instead of sticker picker */
+"INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "Keyboard";
+
+/* Placeholder text displayed in empty input box in chat screen. */
+"INPUT_TOOLBAR_MESSAGE_PLACEHOLDER" = "Message";
+
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Стикеры";
 
@@ -3898,9 +3898,6 @@
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Выберите группу";
 
-/* No comment provided by engineer. */
-"new_message" = "Новое сообщение";
-
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Поиск";
 
@@ -4184,7 +4181,7 @@
 "OUTAGE_WARNING" = "У Signal возникли технические неполадки. Мы прилагаем все усилия, чтобы как можно быстрее восстановить обслуживание.";
 
 /* Label for action link when the user has an outdated payment client */
-"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Обновиться";
+"OUTDATED_PAYMENT_CLIENT_ACTION_TITLE" = "Обновить";
 
 /* Label warning the user that they should update Signal to continue using payments. */
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Обновите Signal, чтобы и дальше использовать платежи. Ваш баланс может быть неактуальным.";
@@ -4973,19 +4970,19 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Пользователь не может быть выбран.";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ is not a Signal user. Try again with a valid phone number.";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ не является пользователем Signal. Повторите попытку с корректным номером телефона.";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Invalid Phone Number";
+"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Некорректный номер телефона";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
-"RECIPIENT_PICKER_INVITE_ACTION" = "Message";
+"RECIPIENT_PICKER_INVITE_ACTION" = "Сообщение";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ is not a Signal user. Would you like to invite this number?";
+"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ не является пользователем Signal. Вы хотите пригласить этот номер?";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_TITLE" = "Invite to Signal";
+"RECIPIENT_PICKER_INVITE_TITLE" = "Пригласить в Signal";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Я забыл свой PIN-код.";
@@ -6302,7 +6299,7 @@
 "STORIES_INFO_ACTION" = "Информация";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.";
+"STORIES_NO_RECENT_MESSAGES" = "Пока обновлений нет.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Ещё нет ответов";
@@ -6360,6 +6357,21 @@
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Поделиться";
+
+/* Section title shown when sending to non-story conversations but failing to send the file to stories. */
+"STORIES_SHARESHEET_PARTIAL_SEND_REMAINING_SECTION_TITLE" = "Sent To";
+
+/* Section title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
+"STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "Not Sent To";
+
+/* Title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
+"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Partially Sent";
+
+/* Subtitle shown when failing to send an incompatible file to stories via the sharesheet. */
+"STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_SUBTITLE" = "The file type selected is not supported.";
+
+/* Title shown when failing to send an incompatible file to stories via the sharesheet. */
+"STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_TITLE" = "Unable To Send";
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "Истории";
@@ -6449,10 +6461,10 @@
 "STORY_SEND_FAILED" = "Отправка не удалась";
 
 /* Text indicating that you can tap to retry sending */
-"STORY_SEND_FAILED_RETRY" = "Нажмите, чтобы попробовать ещё раз";
+"STORY_SEND_FAILED_RETRY" = "Попробовать ещё раз";
 
 /* Text indicating that the story send has failed */
-"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Отправка не удалась Нажмите, чтобы попробовать ещё раз";
+"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Отправка не удалась. Нажмите, чтобы попробовать ещё раз";
 
 /* Text indicating that the story send has partially failed */
 "STORY_SEND_PARTIALLY_FAILED" = "Отправлено не полностью";
@@ -6628,9 +6640,6 @@
 /* Update Subscription? Action sheet title */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Обновить подписку?";
 
-/* Update Subscription? Action sheet confirm button */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Обновить";
-
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Отключён";
 
@@ -6692,7 +6701,7 @@
 "TIME_AMOUNT_MINUTES" = "%1$@ мин.";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%1$@м";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%1$@мин";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%1$@ секунд";

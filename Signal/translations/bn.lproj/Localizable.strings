@@ -362,22 +362,22 @@
 "BADGE_CONFIGURATION_TITLE" = "ব্যাজ";
 
 /* When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button. */
-"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Donate Now";
+"BADGE_DETAILS_DONATE_TO_SIGNAL" = "এখনই ডোনেট করুন";
+
+/* When viewing someone else's donor badge, you'll see a sheet. This is the title on that sheet. Embeds {badge owner's short name} */
+"BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "%1$@ supports Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "আপনার বুস্ট ব্যাজের মেয়াদ শেষ হয়ে গেছে এবং আপনার প্রোফাইলে তা আর দেখা যাবে না৷";
+"BADGE_EXPIRED_BOOST_BODY" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly donor.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "আপনার বুস্ট ব্যাজের মেয়াদ শেষ হয়ে গেছে এবং এটি আপনার প্রোফাইলে আর দেখা যাবে না।\n\n আপনি আপনার বুস্ট ব্যাজ আরও 30 দিনের জন্য এককালীন আর্থিক অবদান প্রদান করার মাধ্যমে পুনরায় সক্রিয় করতে পারেন।";
-
-/* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "একজন সাসটেইনার হয়ে উঠুন";
-
-/* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "একটি বুস্ট যোগ করুন";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time donation.";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "ব্যাজের মেয়াদ শেষ";
+"BADGE_EXPIRED_BOOST_TITLE" = "Badge expired";
+
+/* Button text when a badge expires, asking users to donate */
+"BADGE_EXPIRED_DONATE_BUTTON" = "Donate";
 
 /* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
 "BADGE_EXPIRED_GIFT_BODY" = "আপনার গিফট ব্যাজের মেয়াদ শেষ হয়ে গেছে এবং আপনার প্রোফাইলে তা আর দেখা যাবে না৷";
@@ -388,17 +388,8 @@
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "আরও জানুন।";
 
-/* Shown when a non-monthly badge expires to suggest starting a recurring donation. */
-"BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION" = "আপনি Signal ব্যবহার চালিয়ে যেতে পারেন তবে আপনার জন্য তৈরি এই প্রযুক্তিকে সমর্থন করার জন্য, মাসিক ডোনেশন দিয়ে একজন সাসটেইনার হওয়ার কথা বিবেচনা করুন।";
-
-/* Button title to donate monthly on the badge expiration sheet. */
-"BADGE_EXPIRED_RENEWAL_MONTHLY" = "মাসিক ডোনেশন দিন";
-
-/* Button text when a badge expires, asking you to renew your subscription */
-"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "নতুন করে সাবস্ক্রিপশন নিন";
-
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "মাসিক ডোনেশন বাতিল";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly donation canceled";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
 "BADGE_GIFT_THANKS_BODY" = "আপনি %1$@-কে একটি ব্যাজ উপহার দিয়েছেন। তারা এটি গ্রহণ করলে, ব্যাজ দেখানোর বা লুকিয়ে রাখার জন্য তাদেরকে একটি অপশন দেওয়া হবে।";
@@ -502,11 +493,11 @@
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
 "BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "আপনি %1$@-এর কাছ থেকে একটি গিফট ব্যাজ পেয়েছেন। Signal-এ অনুদান দেয়ার জন্য সচেতনতা তৈরি করতে আপনার প্রোফাইলে এই ব্যাজটি প্রদর্শন করুন৷";
 
-/* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "আপনার পুনরাবৃত্ত মাসিক ডোনেশন স্বয়ংক্রিয়ভাবে বাতিল হয়ে গেছে। %1$@ আপনার %2$@ ব্যাজ আপনার প্রোফাইলে আর দৃশ্যমান নয়৷";
+/* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. $1%1$@ Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment details and donate again.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "অনেক দিন ধরে নিষ্ক্রিয় থাকার কারণে আপনার পুনরাবৃত্ত মাসিক ডোনেশন স্বয়ংক্রিয়ভাবে বাতিল হয়ে গেছে। আপনার %1$@ ব্যাজ আপনার প্রোফাইলে আর দৃশ্যমান নয়৷\n\nআপনি Signal ব্যবহার চালিয়ে যেতে পারেন তবে অ্যাপ সমর্থন করতে এবং আপনার ব্যাজ আবারো সক্রিয় করতে, এখনই আবারো নবায়ন করুন।";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically canceled because you were inactive for too long. Your %1$@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, donate now.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "আপনি Signal থেকে একটি ডোনর ব্যাজ অর্জন করেছেন! আপনার সমর্থন দেখাতে আপনার প্রোফাইলে এটি প্রদর্শন করুন।";
@@ -686,19 +677,19 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "মাইক্রোফোন অ্যাক্সেস প্রয়োজন";
 
 /* label for button shown when an incoming call rings */
-"CALL_CONTROLS_INCOMING_ANSWER" = "answer";
+"CALL_CONTROLS_INCOMING_ANSWER" = "উত্তর দিন";
 
 /* Label for button shown when an incoming call rings. This particular label has room for two lines; you may insert a manual linebreak with '\n' as long as both lines are 15 characters or shorter (8 fullwidth characters or shorter), as in the English translation. */
-"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "answer\nwithout video";
+"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "উত্তর দিন\nভিডিও ছাড়াই";
 
 /* label for button shown when an incoming call rings */
-"CALL_CONTROLS_INCOMING_DECLINE" = "decline";
+"CALL_CONTROLS_INCOMING_DECLINE" = "প্রত্যাখ্যান করুন";
 
 /* Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Incoming group call…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 গ্ৰুপ কল এসেছে…";
 
 /* Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}} */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ is ringing the group…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ গ্ৰুপে কল করেছেন…";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ মিস করা কল, কারণ কলারের নিরাপত্তা নাম্বার পরিবর্তিত হয়েছে।";
@@ -926,10 +917,10 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "গ্রুপ সমূহ";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Find by Number";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "নম্বর দিয়ে খুঁজুন";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Find by Username";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "ব্যবহারকারীর নাম দিয়ে খুঁজুন";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "আপনার পরিচিতি গুলির মধ্যে কোনটি Signal ব্যবহারকারী তা দেখতে আপনি iOS সেটিংস অ্যাপ থেকে পরিচিতি অ্যাক্সেস সক্ষম করতে পারেন।";
@@ -1766,46 +1757,46 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "সেন্সরশিপ এড়ানো স্থান";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Get the %1$@ badge";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "%1$@ ব্যাজ নিন";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Earn the %1$@ badge for one month";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "এক মাসের জন্য %1$@ ব্যাজ অর্জন করুন";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Donate %1$@ to Signal";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Signal-এ %1$@ ডোনেট করুন";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Donate %1$@ to Signal";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Signal-এ %1$@ ডোনেট করুন";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
-"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Select an amount to donate.";
+"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "ডোনেট করার জন্য অর্থের পরিমাণ বেছে নিন।";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "ডোনেট করার জন্য বেশি পরিমাণ অর্থ বেছে নিন।";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too large, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "অনুদানের জন্য অল্প পরিমাণ অর্থ বেছে নিন।";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
-"DONATE_SCREEN_MONTHLY_CHOICE" = "Monthly";
+"DONATE_SCREEN_MONTHLY_CHOICE" = "মাসিক";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these and it expires soon, this text is shown below it indicating when it will expire. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "Expires %1$@";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "মেয়াদ %1$@ পর্যন্ত";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these, this text is shown below it indicating when it will renew. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Renews %1$@";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "%1$@ তারিখে নবায়ন হবে";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown in the subtitle of each level, telling you which badge you'll get. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Get a %1$@ badge";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "একটি %1$@ ব্যাজ নিন";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown as the title for each level, telling you the price per month. Embeds {{currency string}}, such as \"$5\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/month";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/মাস";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
-"DONATE_SCREEN_ONE_TIME_CHOICE" = "One-Time";
+"DONATE_SCREEN_ONE_TIME_CHOICE" = "এককালীন";
 
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
-"DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Update Subscription";
+"DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "সাবস্ক্রিপশন আপডেট করুন";
 
 /* Donation payment error for decline failures where authentication is required. */
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "অন্য পেমেন্ট পদ্ধতি ব্যবহার করে দেখুন বা আরো তথ্যের জন্য আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।";
@@ -1895,7 +1886,7 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "আপনি যদি Signal পুনরায় ইনস্টল করে থাকেন, তবে পূর্ববর্তী ডোনেশনের রিসিপ্ট পাওয়া যাবে না।";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
-"DONATION_SCREEN_DONATE_BUTTON" = "Donate";
+"DONATION_SCREEN_DONATE_BUTTON" = "ডোনেট করুন";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
 "DONATION_SCREENS_HEADER_DESCRIPTION" = "ব্যক্তিগত ম্যাসেজিং, আপনার দ্বারাই অর্থায়িত। নেই কোনো বিজ্ঞাপন, নেই কোনো ট্র্যাকিং, নেই কোনো আপোষ। Signal-কে সমর্থন করতে এখনই অনুদান দিন।";
@@ -2324,7 +2315,7 @@
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "এই কলের জন্য সর্বোচ্চ অংশগ্রহণকারীর সংখ্যায় পৌঁছেছে। পরে আবার চেষ্টা করুন।";
 
 /* Text explaining that someone has sent a ring to the group. Embeds {ring sender name} */
-"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ is calling the group";
+"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ গ্ৰুপে কল করছেন";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "কলটিতে জায়গা নেই";
@@ -2377,8 +2368,11 @@
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "পুনঃসংযুক্ত হচ্ছে";
 
+/* notification body when you join a group call and an already-joined participant has an untrusted safety number */
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "A call participant has a safety number change. Tap to view.";
+
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "কেউ একজন এই কলে এমন একটি নিরাপত্তা নাম্বার দিয়ে যোগ দিয়েছেন যা পরিবর্তিত হয়েছে।";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "A call participant who joined has a safety number change. Tap to view.";
 
 /* Toast view text informing user about swiping to screen share */
 "GROUP_CALL_SCREEN_SHARE_TOAST" = "স্ক্রিন শেয়ার দেখতে উপরের দিকে সোয়াইপ করুন";
@@ -3259,6 +3253,12 @@
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ Signal এ যোগ দিয়েছে!";
 
+/* accessibility label for the button which shows the regular keyboard instead of sticker picker */
+"INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "Keyboard";
+
+/* Placeholder text displayed in empty input box in chat screen. */
+"INPUT_TOOLBAR_MESSAGE_PLACEHOLDER" = "Message";
+
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "স্টিকারসমূহ";
 
@@ -3897,9 +3897,6 @@
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "গ্ৰুপ বেছে নিন";
-
-/* No comment provided by engineer. */
-"new_message" = "নতুন বার্তা";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "খুঁজুন";
@@ -4973,19 +4970,19 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "ইউজারকে বেছে নেওয়া যাবে না।";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ is not a Signal user. Try again with a valid phone number.";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ Signal ব্যবহারকারী নন। একটি সঠিক ফোন নাম্বার দিয়ে আবার চেষ্টা করুন।";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Invalid Phone Number";
+"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "ভুল ফোন নম্বর";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
-"RECIPIENT_PICKER_INVITE_ACTION" = "Message";
+"RECIPIENT_PICKER_INVITE_ACTION" = "ম্যাসেজ";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ is not a Signal user. Would you like to invite this number?";
+"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ Signal ব্যবহারকারী নন। আপনি কি এই নম্বরটিকে আমন্ত্রণ জানাতে চান?";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_TITLE" = "Invite to Signal";
+"RECIPIENT_PICKER_INVITE_TITLE" = "Signal-এ আমন্ত্রণ জানান";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "আমি আমার পিন ভুলে গেছি";
@@ -6302,7 +6299,7 @@
 "STORIES_INFO_ACTION" = "তথ্য";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.";
+"STORIES_NO_RECENT_MESSAGES" = "এই মুহূর্তে দেখানোর জন্য কোনো আপডেট নেই।";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "এখন পর্যন্ত কোন রিপ্লাই নেই";
@@ -6360,6 +6357,21 @@
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "শেয়ার করুন";
+
+/* Section title shown when sending to non-story conversations but failing to send the file to stories. */
+"STORIES_SHARESHEET_PARTIAL_SEND_REMAINING_SECTION_TITLE" = "Sent To";
+
+/* Section title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
+"STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "Not Sent To";
+
+/* Title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
+"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Partially Sent";
+
+/* Subtitle shown when failing to send an incompatible file to stories via the sharesheet. */
+"STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_SUBTITLE" = "The file type selected is not supported.";
+
+/* Title shown when failing to send an incompatible file to stories via the sharesheet. */
+"STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_TITLE" = "Unable To Send";
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "স্টোরি";
@@ -6449,7 +6461,7 @@
 "STORY_SEND_FAILED" = "পাঠাতে ব্যর্থ হয়েছে";
 
 /* Text indicating that you can tap to retry sending */
-"STORY_SEND_FAILED_RETRY" = "পুনরায় চেষ্টা করতে ট্যাপ করুন";
+"STORY_SEND_FAILED_RETRY" = "আবার চেষ্টায় ট্যাপ";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED_TAP_FOR_DETAILS" = "পাঠাতে ব্যর্থ হয়েছে। পুনরায় চেষ্টা করতে ট্যাপ করুন";
@@ -6627,9 +6639,6 @@
 
 /* Update Subscription? Action sheet title */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "সদস্যতা আপডেট করবেন?";
-
-/* Update Subscription? Action sheet confirm button */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "আপডেট করুন";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "বন্ধ";

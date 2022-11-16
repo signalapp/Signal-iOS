@@ -362,22 +362,22 @@
 "BADGE_CONFIGURATION_TITLE" = "Suaitheantais";
 
 /* When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button. */
-"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Donate Now";
+"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Tabhair Airgead Anois";
+
+/* When viewing someone else's donor badge, you'll see a sheet. This is the title on that sheet. Embeds {badge owner's short name} */
+"BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "%1$@ supports Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Tá do Shuaitheantas Spreagtha imithe as feidhm agus níl sé ar fáil le taispeáint ar do phróifíl a thuilleadh.";
+"BADGE_EXPIRED_BOOST_BODY" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly donor.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Tá do Shuaitheantas Spreagtha imithe as feidhm agus níl sé ar fáil le taispeáint ar do phróifíl a thuilleadh.\n\nIs féidir leat do Shuaitheantas Spreagtha a athghníomhachtú go ceann 30 lá eile le deonachán aonuaire.";
-
-/* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Become a Sustainer";
-
-/* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Add a Boost";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time donation.";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
+"BADGE_EXPIRED_BOOST_TITLE" = "Badge expired";
+
+/* Button text when a badge expires, asking users to donate */
+"BADGE_EXPIRED_DONATE_BUTTON" = "Donate";
 
 /* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
 "BADGE_EXPIRED_GIFT_BODY" = "Tá do shuaitheantas bronntanais imithe as feidhm agus níl sé ar fáil le taispeáint ar do phróifíl a thuilleadh.";
@@ -388,17 +388,8 @@
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "Learn more.";
 
-/* Shown when a non-monthly badge expires to suggest starting a recurring donation. */
-"BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION" = "Is féidir leat leanúint le húsáid Signal ach chun tacú leis an teicneolaíocht atá á dtógáil duitse, smaoinigh faoi dheonú uair sa mhí mar chothaitheoir.";
-
-/* Button title to donate monthly on the badge expiration sheet. */
-"BADGE_EXPIRED_RENEWAL_MONTHLY" = "Tabhair Deonú Míosúil";
-
-/* Button text when a badge expires, asking you to renew your subscription */
-"BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
-
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly donation canceled";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
 "BADGE_GIFT_THANKS_BODY" = "Thug tú suaitheantas do %1$@ mar bhronntanas. Agus é fuascailte, tabharfar rogha an suaitheantas a thaispeáint nó a fholú.";
@@ -502,11 +493,11 @@
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
 "BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "Fuair tú suaitheantas bronntanais ó %1$@. Taispeáin an suaitheantas seo ar do phróifíl le feasacht ar dheonú do Signal a chothú.";
 
-/* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %1$@ Your %2$@ badge is no longer visible on your profile.";
+/* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. $1%1$@ Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment details and donate again.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %1$@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically canceled because you were inactive for too long. Your %1$@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, donate now.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "Thuill tú suaitheantas bronntóra ó Signal! Taispeáin ar do phróifíl é le do thacaíocht a léiriú.";
@@ -686,19 +677,19 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "Rochtain ar an Micreafón ag Teastáil";
 
 /* label for button shown when an incoming call rings */
-"CALL_CONTROLS_INCOMING_ANSWER" = "answer";
+"CALL_CONTROLS_INCOMING_ANSWER" = "freagair";
 
 /* Label for button shown when an incoming call rings. This particular label has room for two lines; you may insert a manual linebreak with '\n' as long as both lines are 15 characters or shorter (8 fullwidth characters or shorter), as in the English translation. */
-"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "answer\nwithout video";
+"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "freagair\ngan físeán";
 
 /* label for button shown when an incoming call rings */
-"CALL_CONTROLS_INCOMING_DECLINE" = "decline";
+"CALL_CONTROLS_INCOMING_DECLINE" = "diúltaigh dó";
 
 /* Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Incoming group call…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Grúpghlao isteach…";
 
 /* Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}} */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ is ringing the group…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 Tá %1$@ ag glaoch ar an ngrúpa…";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Glao caillte toisc gur athraíodh uimhir shábháilteachta an ghlaoiteora.";
@@ -926,10 +917,10 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Grúpaí";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Find by Number";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Aimsigh de réir Uimhreach";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Find by Username";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Aimsigh de réir Ainm Úsáideora";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Is féidir leat rochtain ar do chuid teagmhálaithe a thabhairt do Signal sna Socruithe iOS le fáil amach cé acu atá ag úsáid Signal.";
@@ -1766,46 +1757,46 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Tír ó thaobh Shárú na Cinsireachta";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Get the %1$@ badge";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Faigh an suaitheantas %1$@";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Earn the %1$@ badge for one month";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Tuill an suaitheantas %1$@ ar feadh míosa";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Donate %1$@ to Signal";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Tabhair %1$@ do Signal";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Donate %1$@ to Signal";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Tabhair %1$@ do Signal";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
-"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Select an amount to donate.";
+"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Roghnaigh méid le tabhairt.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "Roghnaigh méid níos mó le tabhairt.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too large, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "Roghnaigh méid níos lú le tabhairt.";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
-"DONATE_SCREEN_MONTHLY_CHOICE" = "Monthly";
+"DONATE_SCREEN_MONTHLY_CHOICE" = "Míosúil";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these and it expires soon, this text is shown below it indicating when it will expire. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "Expires %1$@";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "As feidhm %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these, this text is shown below it indicating when it will renew. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Renews %1$@";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Athnuachan %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown in the subtitle of each level, telling you which badge you'll get. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Get a %1$@ badge";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Faigh suaitheantas %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown as the title for each level, telling you the price per month. Embeds {{currency string}}, such as \"$5\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/month";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/mí";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
-"DONATE_SCREEN_ONE_TIME_CHOICE" = "One-Time";
+"DONATE_SCREEN_ONE_TIME_CHOICE" = "Aonuaire";
 
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
-"DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Update Subscription";
+"DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Nuashonraigh Síntiús";
 
 /* Donation payment error for decline failures where authentication is required. */
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Try another payment method or contact your bank for more information.";
@@ -1895,7 +1886,7 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "If you have reinstalled Signal, receipts from previous donations will not be available.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
-"DONATION_SCREEN_DONATE_BUTTON" = "Donate";
+"DONATION_SCREEN_DONATE_BUTTON" = "Tabhair airgead";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
 "DONATION_SCREENS_HEADER_DESCRIPTION" = "Teachtaireachtaí príobháideacha, maoinithe agatsa. Gan aon fhógraí, gan aon rianairí, gan aon chomhghéilleadh. Bronn airgead ar Signal anois chun tacú leis.";
@@ -2324,7 +2315,7 @@
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "The maximum number of participants has been reached for this call. Try again later.";
 
 /* Text explaining that someone has sent a ring to the group. Embeds {ring sender name} */
-"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ is calling the group";
+"GROUP_CALL_INCOMING_RING_FORMAT" = "Tá %1$@ ag glaoch ar an ngrúpa";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "Call is Full";
@@ -2377,8 +2368,11 @@
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "Reconnecting";
 
+/* notification body when you join a group call and an already-joined participant has an untrusted safety number */
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "A call participant has a safety number change. Tap to view.";
+
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "Someone has joined this call with a safety number that has changed.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "A call participant who joined has a safety number change. Tap to view.";
 
 /* Toast view text informing user about swiping to screen share */
 "GROUP_CALL_SCREEN_SHARE_TOAST" = "Swipe up to view screen share";
@@ -3259,6 +3253,12 @@
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "Úsáideann %1$@ Signal!";
 
+/* accessibility label for the button which shows the regular keyboard instead of sticker picker */
+"INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "Keyboard";
+
+/* Placeholder text displayed in empty input box in chat screen. */
+"INPUT_TOOLBAR_MESSAGE_PLACEHOLDER" = "Message";
+
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Greamáin";
 
@@ -3897,9 +3897,6 @@
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Roghnaigh Grúpa";
-
-/* No comment provided by engineer. */
-"new_message" = "Teachtaireacht Nua";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Cuardach";
@@ -4973,19 +4970,19 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Ní féidir an t-úsáideoir seo a roghnú.";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ is not a Signal user. Try again with a valid phone number.";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "Ní úsáideoir Signal é/í %1$@. Bain triail eile as le huimhir ghutháin atá bailí.";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Invalid Phone Number";
+"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Uimhir Ghutháin Neamhbhailí";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
-"RECIPIENT_PICKER_INVITE_ACTION" = "Message";
+"RECIPIENT_PICKER_INVITE_ACTION" = "Seol Tcht";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ is not a Signal user. Would you like to invite this number?";
+"RECIPIENT_PICKER_INVITE_MESSAGE" = "Ní úsáideoir Signal é/í %1$@. Ar mhaith leat cuireadh a thabhairt don uimhir seo?";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_TITLE" = "Invite to Signal";
+"RECIPIENT_PICKER_INVITE_TITLE" = "Tabhair cuireadh chuig Signal";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Dhearmad mé m'UAP.";
@@ -6302,7 +6299,7 @@
 "STORIES_INFO_ACTION" = "Faisnéis";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.";
+"STORIES_NO_RECENT_MESSAGES" = "Níl aon nuashonruithe le taispeáint díreach anois.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "No replies yet";
@@ -6360,6 +6357,21 @@
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Comhroinn";
+
+/* Section title shown when sending to non-story conversations but failing to send the file to stories. */
+"STORIES_SHARESHEET_PARTIAL_SEND_REMAINING_SECTION_TITLE" = "Sent To";
+
+/* Section title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
+"STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "Not Sent To";
+
+/* Title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
+"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Partially Sent";
+
+/* Subtitle shown when failing to send an incompatible file to stories via the sharesheet. */
+"STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_SUBTITLE" = "The file type selected is not supported.";
+
+/* Title shown when failing to send an incompatible file to stories via the sharesheet. */
+"STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_TITLE" = "Unable To Send";
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "Scéalta";
@@ -6627,9 +6639,6 @@
 
 /* Update Subscription? Action sheet title */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Update Subscription?";
-
-/* Update Subscription? Action sheet confirm button */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Nuashonraigh";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "As";
