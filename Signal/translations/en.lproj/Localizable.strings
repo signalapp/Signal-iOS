@@ -6358,6 +6358,18 @@
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Share";
 
+/* Section title shown when sending to non-story conversations but failing to send the file to stories. */
+"STORIES_SHARESHEET_PARTIAL_SEND_REMAINING_SECTION_TITLE" = "Sent To";
+
+/* Section title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
+"STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "Not Sent To";
+
+/* Title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
+"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Partially Sent";
+
+/* Title shown when failing to send an incompatible file to stories via the sharesheet. */
+"STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_TITLE" = "Unable To Send";
+
 /* Title for the stories view. */
 "STORIES_TITLE" = "Stories";
 

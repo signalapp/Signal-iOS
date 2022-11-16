@@ -914,7 +914,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         updateUIForCurrentSelection(animated: true)
     }
 
-    private func updateUIForCurrentSelection(animated: Bool) {
+    public func updateUIForCurrentSelection(animated: Bool) {
         let conversations = selection.conversations
         let labelText = conversations.map { $0.titleWithSneakyTransaction }.joined(separator: ", ")
         footerView.setNamesText(labelText, animated: animated)
@@ -1169,7 +1169,7 @@ extension ConversationPickerViewController {
 
 // MARK: - ConversationPickerCell
 
-private class ConversationPickerCell: ContactTableViewCell {
+internal class ConversationPickerCell: ContactTableViewCell {
     open override class var reuseIdentifier: String { "ConversationPickerCell" }
 
     // MARK: - UITableViewCell
@@ -1233,6 +1233,12 @@ private class ConversationPickerCell: ContactTableViewCell {
 
         selectionStyle = .none
         applySelection()
+    }
+
+    public var showsSelectionUI: Bool = true {
+        didSet {
+            selectionView.isHidden = !showsSelectionUI
+        }
     }
 
     // MARK: - Subviews

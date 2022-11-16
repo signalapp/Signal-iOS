@@ -773,6 +773,7 @@
 		661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */; };
 		661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */; };
 		661602A428BEB94400C1932D /* StoryListDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661602A328BEB94400C1932D /* StoryListDataSource.swift */; };
+		663D6A7C292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */; };
 		66586D3729005A1B00DDA9B9 /* story_viewer_onboarding_2.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3429005A1B00DDA9B9 /* story_viewer_onboarding_2.json */; };
 		66586D3829005A1B00DDA9B9 /* story_viewer_onboarding_1.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3529005A1B00DDA9B9 /* story_viewer_onboarding_1.json */; };
 		66586D3929005A1B00DDA9B9 /* story_viewer_onboarding_3.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3629005A1B00DDA9B9 /* story_viewer_onboarding_3.json */; };
@@ -3048,6 +3049,7 @@
 		661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromise.swift; sourceTree = "<group>"; };
 		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
 		661602A328BEB94400C1932D /* StoryListDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListDataSource.swift; sourceTree = "<group>"; };
+		663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPickerFailedRecipientsSheet.swift; sourceTree = "<group>"; };
 		6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		66586D3429005A1B00DDA9B9 /* story_viewer_onboarding_2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = story_viewer_onboarding_2.json; sourceTree = "<group>"; };
 		66586D3529005A1B00DDA9B9 /* story_viewer_onboarding_1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = story_viewer_onboarding_1.json; sourceTree = "<group>"; };
@@ -5420,6 +5422,7 @@
 			children = (
 				34A9557C271B510500B05242 /* ConversationItem.swift */,
 				34A9557B271B510500B05242 /* ConversationPicker.swift */,
+				663D6A7B292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift */,
 			);
 			path = ConversationPicker;
 			sourceTree = "<group>";
@@ -9734,6 +9737,7 @@
 				3402AA75271D9E180084CBAE /* ConversationAvatarView.swift in Sources */,
 				3402AA37271D9DCD0084CBAE /* ConversationItem.swift in Sources */,
 				3402AA33271D9DCD0084CBAE /* ConversationPicker.swift in Sources */,
+				663D6A7C292319BC00CABC49 /* ConversationPickerFailedRecipientsSheet.swift in Sources */,
 				3402AA03271D9DB50084CBAE /* ConversationStyle.swift in Sources */,
 				34ACA7F72733183000E47AD4 /* CountryCodeViewController.swift in Sources */,
 				3402AA7B271D9E180084CBAE /* CustomKeyboard.swift in Sources */,

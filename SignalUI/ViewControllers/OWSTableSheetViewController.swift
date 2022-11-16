@@ -36,6 +36,7 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
         // `maximumHeight` prevents the view's height from extending into top safe area.)
         return tableView.contentSize.height
             + tableView.contentInset.totalHeight
+            + footerStack.frame.height
             + bottomSafeAreaContentPadding
     }
 
@@ -57,12 +58,25 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
         contentSizeObservation?.invalidate()
     }
 
+    open var footerStack: UIStackView = {
+        let view = UIStackView()
+        view.axis = .vertical
+        view.distribution = .fill
+        view.alignment = .center
+        view.preservesSuperviewLayoutMargins = true
+        return view
+    }()
+
     public override func viewDidLoad() {
         super.viewDidLoad()
 
         addChild(tableViewController)
         contentView.addSubview(tableViewController.view)
-        tableViewController.view.autoPinEdgesToSuperviewEdges()
+        contentView.addSubview(footerStack)
+
+        tableViewController.view.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+        footerStack.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+        tableViewController.view.autoPinEdge(.bottom, to: .top, of: footerStack)
 
         minimizedHeight = contentSizeHeight
 

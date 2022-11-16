@@ -522,6 +522,16 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 throw OWSAssertionError("no input item")
             }
             let result = try self.itemsToLoad(inputItems: inputItems)
+            DispatchQueue.main.async { [weak self] in
+                self?.conversationPicker.areAttachmentStoriesCompatPrecheck = result.allSatisfy { item in
+                    switch item.itemType {
+                    case .movie, .image, .webUrl, .text:
+                        return true
+                    default:
+                        return false
+                    }
+                }
+            }
             return Promise.value(result)
         }.then(on: .sharedUserInitiated) { [weak self] (unloadedItems: [UnloadedItem]) -> Promise<[LoadedItem]> in
             guard let self = self else { throw PromiseError.cancelled }

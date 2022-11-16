@@ -12,6 +12,25 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
     weak var shareViewDelegate: ShareViewDelegate?
 
+    /// It can take a while to fully process attachments, and until we do we aren't
+    /// fully sure if the attachments are stories-compatible. To speed things up,
+    /// we do some fast pre-checks and store the result here.
+    /// True if these pre-checks determine all attachments are stories-compatible.
+    /// Once this is set, we show stories forever, even if the attachments end up being
+    /// incompatible, because it would be weird to have the stories destinations disappear.
+    /// Instead, we show an error when actually sending if stories are selected.
+    public var areAttachmentStoriesCompatPrecheck: Bool? {
+        didSet {
+            // If we've already processed attachments, ignore the setting.
+            guard attachments == nil else {
+                areAttachmentStoriesCompatPrecheck = nil
+                return
+            }
+            updateStoriesState()
+            updateApprovalMode()
+        }
+    }
+
     var attachments: [SignalAttachment]? {
         didSet {
             updateStoriesState()
@@ -89,7 +108,9 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
         if isViewOnce {
             sectionOptions.remove(.stories)
         } else {
-            if let attachments = attachments, attachments.allSatisfy({ $0.isValidImage || $0.isValidVideo }) {
+            if areAttachmentStoriesCompatPrecheck == true {
+                sectionOptions.insert(.stories)
+            } else if let attachments = attachments, attachments.allSatisfy({ $0.isValidImage || $0.isValidVideo }) {
                 sectionOptions.insert(.stories)
             } else if isTextMessage {
                 sectionOptions.insert(.stories)
@@ -542,6 +563,36 @@ extension SharingThreadPickerViewController: ConversationPickerDelegate {
     }
 
     func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
+        // Check if the attachments are compatible with sending to stories.
+        let storySelections = selection.conversations.compactMap({ $0 as? StoryConversationItem })
+        if !storySelections.isEmpty, let attachments = attachments {
+            let areImagesOrVideos = attachments.allSatisfy({ $0.isValidImage || $0.isValidVideo })
+            let isTextMessage = attachments.count == 1 && attachments.first.map {
+                $0.isConvertibleToTextMessage && $0.dataLength < kOversizeTextMessageSizeThreshold
+            } ?? false
+            if !areImagesOrVideos && !isTextMessage {
+                // Can't send to stories!
+                storySelections.forEach { self.selection.remove($0) }
+                self.updateUIForCurrentSelection(animated: false)
+                self.tableView.reloadData()
+                let vc = ConversationPickerFailedRecipientsSheet(
+                    failedAttachments: attachments,
+                    failedStoryConversationItems: storySelections,
+                    remainingConversationItems: self.selection.conversations,
+                    onApprove: { [weak self] in
+                        guard
+                            let strongSelf = self,
+                            strongSelf.selection.conversations.isEmpty.negated
+                        else {
+                            return
+                        }
+                        strongSelf.conversationPickerDidCompleteSelection(strongSelf)
+                    })
+                self.present(vc, animated: true)
+                return
+            }
+        }
+
         approve()
     }
 
