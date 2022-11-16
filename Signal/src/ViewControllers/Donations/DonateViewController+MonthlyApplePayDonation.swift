@@ -34,7 +34,6 @@ extension DonateViewController {
             firstly {
                 try SubscriptionManager.updateSubscriptionLevel(
                     for: subscriberID,
-                    from: priorSubscriptionLevel,
                     to: selectedSubscriptionLevel,
                     payment: payment,
                     currencyCode: selectedCurrencyCode

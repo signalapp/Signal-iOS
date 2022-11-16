@@ -444,7 +444,6 @@ public class SubscriptionManager: NSObject {
     }
 
     public class func updateSubscriptionLevel(for subscriberID: Data,
-                                              from priorSubscription: SubscriptionLevel,
                                               to subscription: SubscriptionLevel,
                                               payment: PKPayment,
                                               currencyCode: String) throws -> Promise<Void> {
