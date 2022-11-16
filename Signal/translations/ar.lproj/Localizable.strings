@@ -362,7 +362,7 @@
 "BADGE_CONFIGURATION_TITLE" = "الشارات";
 
 /* When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button. */
-"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Donate Now";
+"BADGE_DETAILS_DONATE_TO_SIGNAL" = "تبرّع الآن";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "انتهت صلاحية شارة الدعم الخاصة بك ولم تعُد ظاهرة للآخرين على حسابك الشخصي.";
@@ -686,19 +686,19 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "إذن استخدام الميكروفون ضروري";
 
 /* label for button shown when an incoming call rings */
-"CALL_CONTROLS_INCOMING_ANSWER" = "الإجابة";
+"CALL_CONTROLS_INCOMING_ANSWER" = "إجابة";
 
 /* Label for button shown when an incoming call rings. This particular label has room for two lines; you may insert a manual linebreak with '\n' as long as both lines are 15 characters or shorter (8 fullwidth characters or shorter), as in the English translation. */
-"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "أجِب بلا فيديو";
+"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "أجِب\nبدون فيديو";
 
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "رفض";
 
 /* Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Incoming group call…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 مكالمة جماعية واردة…";
 
 /* Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}} */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ is ringing the group…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 يتصل %1$@ بالمجموعة…";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ مُكالمة فائتة لأن رقم الأمان للمستخدم قد تغيّر.";
@@ -926,10 +926,10 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "المجموعات";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Find by Number";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "العثور برقم الهاتف";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "العثور عبر اسم المستخدم";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "العثور باسم المستخدم";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "يمكنك تفعيل الوصول إلى جهات الاتصال من خلال تطبيق إعدادات iOS لترى من يستخدم Signal من جهات الاتصالك.";
@@ -1766,10 +1766,10 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "مكان التحايل على الرقابة";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Get the %1$@ badge";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "احصل على شارة %1$@";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Earn the %1$@ badge for one month";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "احصل على شارة %1$@ لشهر واحد";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "تبرّع بـ %1$@ لـ Signal";
@@ -1778,13 +1778,13 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "تبرّع بـ %1$@ لـ Signal";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
-"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Select an amount to donate.";
+"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "يُرجى تحديد مبلغ للتبرع به.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "يُرجى تحديد مبلغ أكبر للتبرع به.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too large, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "يُرجى تحديد مبلغ أصغر للتبرع به.";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "شهريًا";
@@ -1793,7 +1793,7 @@
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "سَتنتهي الصلاحية في %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these, this text is shown below it indicating when it will renew. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "يتجدد %1$@";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "يتجدد كل %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown in the subtitle of each level, telling you which badge you'll get. Embeds {{localized badge name}}, such as \"Planet\". */
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "احصل على شارة %1$@";
@@ -1895,7 +1895,7 @@
 "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "إذا أعدت تثبيت Signal، فلن تصبح وصولات التبرعات السابقة متاحة.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
-"DONATION_SCREEN_DONATE_BUTTON" = "تبرع";
+"DONATION_SCREEN_DONATE_BUTTON" = "تبرّع";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
 "DONATION_SCREENS_HEADER_DESCRIPTION" = "تراسل خاص، مُموّل من طرفك. بدون إعلانات، بدون مُتعقبات، بدون رقابة. تبرّع الآن لدعم Signal.";
@@ -2324,7 +2324,7 @@
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "وصل عدد المُشاركين إلى  الحد الأقصى في هذه المكالمة. يُرجى المُحاولة مرة أُخرى لاحقاً.";
 
 /* Text explaining that someone has sent a ring to the group. Embeds {ring sender name} */
-"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ is calling the group";
+"GROUP_CALL_INCOMING_RING_FORMAT" = "يتصل %1$@ بالمجموعة";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "المُكالمة ممتلئة";
@@ -3440,7 +3440,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "إضافة رسالة";
 
 /* Shown in place of message input text in media editor when 'View Once' is on. */
-"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "وسائط للمشاهدة مرة واحدة";
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "وسائط للمُشاهدة مرة واحدة";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
@@ -4973,16 +4973,16 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "يتعذّر تحديد المُستخدم.";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ is not a Signal user. Try again with a valid phone number.";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "لم يعُد %1$@ من مستخدمي Signal. أعد المحاولة مرة أخرى باستخدام رقم هاتف صحيح.";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "رقم هاتف غير صالح";
+"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "رقم الهاتف خاطئ";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
 "RECIPIENT_PICKER_INVITE_ACTION" = "رسالة";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ is not a Signal user. Would you like to invite this number?";
+"RECIPIENT_PICKER_INVITE_MESSAGE" = "لم يعُد %1$@ من مستخدمي Signal. هل تريد دعوة هذا الرقم؟";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_TITLE" = "ادعُ إلى Signal";
@@ -6302,7 +6302,7 @@
 "STORIES_INFO_ACTION" = "معلومات";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.";
+"STORIES_NO_RECENT_MESSAGES" = "لا توجد تحديثات أخيرة للعرض حاليًا.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "لا جواب حاليا";
@@ -6449,7 +6449,7 @@
 "STORY_SEND_FAILED" = "فشل الإرسال";
 
 /* Text indicating that you can tap to retry sending */
-"STORY_SEND_FAILED_RETRY" = "يُرجى اللمس لإعادة المحاولة";
+"STORY_SEND_FAILED_RETRY" = "انقر لإعادة المحاولة";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED_TAP_FOR_DETAILS" = "فشل الإرسال. يُرجى النقر لإعادة المحاولة";

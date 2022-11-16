@@ -362,7 +362,7 @@
 "BADGE_CONFIGURATION_TITLE" = "徽章";
 
 /* When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button. */
-"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Donate Now";
+"BADGE_DETAILS_DONATE_TO_SIGNAL" = "立即捐款";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "你的捐款徽章已過期，且不會再在你的個人檔案上顯示。";
@@ -689,16 +689,16 @@
 "CALL_CONTROLS_INCOMING_ANSWER" = "接聽";
 
 /* Label for button shown when an incoming call rings. This particular label has room for two lines; you may insert a manual linebreak with '\n' as long as both lines are 15 characters or shorter (8 fullwidth characters or shorter), as in the English translation. */
-"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "接聽電話，但不開啟視像";
+"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "接聽電話\n，但不開啟視訊";
 
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "拒絕";
 
 /* Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Incoming group call…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 群組通話來電…";
 
 /* Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}} */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ is ringing the group…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ 正在致電群組…";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ 因為來電者已更改安全號碼所以錯過了通話。";
@@ -926,10 +926,10 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "群組";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Find by Number";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "以電話號碼搜尋";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "以使用者名稱搜尋";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "以用戶名稱搜尋";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "您可以在設定中允許 Signal 存取聯絡人資料來查看在您的聯絡人中有誰是 Signal 用戶。";
@@ -1766,10 +1766,10 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "審查規避地點";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Get the %1$@ badge";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "獲得 %1$@ 徽章";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Earn the %1$@ badge for one month";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "獲得為期一個月的 %1$@ 徽章";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "捐款 %1$@ 給 Signal";
@@ -1778,13 +1778,13 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "捐款 %1$@ 給 Signal";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
-"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Select an amount to donate.";
+"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "請選擇要捐贈的金額。";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "請選擇較大的捐贈金額。";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too large, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "請選擇較小的捐贈金額。";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "每月";
@@ -1796,10 +1796,10 @@
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "%1$@ 續期";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown in the subtitle of each level, telling you which badge you'll get. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "獲得一枚「%1$@」徽章";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "獲得 %1$@ 徽章";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown as the title for each level, telling you the price per month. Embeds {{currency string}}, such as \"$5\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/月";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "每月 %1$@";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_ONE_TIME_CHOICE" = "單次";
@@ -2324,7 +2324,7 @@
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "參與此通話的人數已達到上限。請稍後再試。";
 
 /* Text explaining that someone has sent a ring to the group. Embeds {ring sender name} */
-"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ is calling the group";
+"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ 正在致電群組";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "通話人數已滿";
@@ -4973,7 +4973,7 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "無法選擇使用者。";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ is not a Signal user. Try again with a valid phone number.";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ 不是 Signal 用戶。請使用有效的電話號碼重試。";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "電話號碼無效";
@@ -4982,7 +4982,7 @@
 "RECIPIENT_PICKER_INVITE_ACTION" = "訊息";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ is not a Signal user. Would you like to invite this number?";
+"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ 不是 Signal 用戶。你想向此號碼發出邀請嗎？";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_TITLE" = "邀請加入 Signal";
@@ -6302,7 +6302,7 @@
 "STORIES_INFO_ACTION" = "資訊";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.";
+"STORIES_NO_RECENT_MESSAGES" = "目前沒有要顯示的更新。";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "未有回覆";

@@ -362,7 +362,7 @@
 "BADGE_CONFIGURATION_TITLE" = "배지";
 
 /* When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button. */
-"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Donate Now";
+"BADGE_DETAILS_DONATE_TO_SIGNAL" = "지금 기부하기";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "부스트 배지가 만료되어 더 이상 프로필에 표시되지 않습니다.";
@@ -689,16 +689,16 @@
 "CALL_CONTROLS_INCOMING_ANSWER" = "응답";
 
 /* Label for button shown when an incoming call rings. This particular label has room for two lines; you may insert a manual linebreak with '\n' as long as both lines are 15 characters or shorter (8 fullwidth characters or shorter), as in the English translation. */
-"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "카메라 끄고 응답";
+"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "카메라 끄고\n응답";
 
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "거절";
 
 /* Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Incoming group call…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 그룹 통화 수신 중…";
 
 /* Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}} */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ is ringing the group…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ 님이 그룹에 전화를 거는 중입니다…";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ 발신자의 안전 번호가 변경되어 부재중 전화로 처리됨";
@@ -926,10 +926,10 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "그룹";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Find by Number";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "번호로 검색";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "사용자명으로 검색";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "사용자 이름으로 검색";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "iOS 설정 앱에서 연락처 권한을 허용하면 내 연락처에서 누가 Signal을 사용하고 있는지 알 수 있습니다.";
@@ -1766,10 +1766,10 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "검열 우회 위치";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Get the %1$@ badge";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "%1$@ 배지 받기";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Earn the %1$@ badge for one month";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "한 달 동안 %1$@ 배지 받기";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Signal에 %1$@ 기부";
@@ -1778,19 +1778,19 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Signal에 %1$@ 기부";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
-"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Select an amount to donate.";
+"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "기부할 금액을 선택하세요.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "기부할 금액을 조금 더 많이 선택해 주세요.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too large, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "기부할 금액을 조금 더 적게 선택해 주세요.";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "월간";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these and it expires soon, this text is shown below it indicating when it will expire. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "%1$@에 만료됨";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "%1$@ 만료";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these, this text is shown below it indicating when it will renew. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "%1$@ 갱신";
@@ -1802,7 +1802,7 @@
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/월";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
-"DONATE_SCREEN_ONE_TIME_CHOICE" = "1회성 기부";
+"DONATE_SCREEN_ONE_TIME_CHOICE" = "일회성 기부";
 
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "구독 업데이트";
@@ -2324,7 +2324,7 @@
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "이 통화에 대한 최대 참가자 수에 도달했습니다. 나중에 다시 시도하세요.";
 
 /* Text explaining that someone has sent a ring to the group. Embeds {ring sender name} */
-"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ is calling the group";
+"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ 님이 그룹에 전화를 거는 중입니다.";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "통화 참가자 수 최대";
@@ -4973,7 +4973,7 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "사용자를 선택할 수 없습니다.";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ is not a Signal user. Try again with a valid phone number.";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ 님은 Signal 사용자가 아닙니다. 올바른 전화번호로 다시 시도하세요.";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "잘못된 전화번호";
@@ -4982,7 +4982,7 @@
 "RECIPIENT_PICKER_INVITE_ACTION" = "메시지";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ is not a Signal user. Would you like to invite this number?";
+"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ 님은 Signal 사용자가 아닙니다. 이 전화번호를 초대할까요?";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_TITLE" = "Signal로 초대";
@@ -6302,7 +6302,7 @@
 "STORIES_INFO_ACTION" = "정보";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.";
+"STORIES_NO_RECENT_MESSAGES" = "지금은 표시할 업데이트가 없습니다.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "회신 없음";

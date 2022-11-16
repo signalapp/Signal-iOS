@@ -362,7 +362,7 @@
 "BADGE_CONFIGURATION_TITLE" = "Badges";
 
 /* When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button. */
-"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Donate Now";
+"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Donér nu";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "Dit Boost-badge er udløbet og kan ikke længere vises på din profil.";
@@ -695,10 +695,10 @@
 "CALL_CONTROLS_INCOMING_DECLINE" = "Afvis";
 
 /* Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Incoming group call…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Indgående gruppeopkald...";
 
 /* Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}} */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ is ringing the group…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ ringer til gruppen...";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Ubesvaret opkald, fordi opkalderens sikkerhedsnummer er ændret";
@@ -926,7 +926,7 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Grupper";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Find by Number";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Find ud fra nummer";
 
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Find ud fra brugernavn";
@@ -1766,25 +1766,25 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Område for censuromgåelse";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Get the %1$@ badge";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Få et %1$@-badge";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Earn the %1$@ badge for one month";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Få %1$@ -badget i en måned";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Doner %1$@ til Signal";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Donér %1$@ til Signal";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Doner %1$@ til Signal";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Donér %1$@ til Signal";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
-"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Select an amount to donate.";
+"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Vælg et beløb, du vil donere.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "Vælg et større beløb, du vil donere.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too large, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "Vælg et mindre beløb, du vil donere.";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "Månedlig";
@@ -1796,7 +1796,7 @@
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Fornyes %1$@";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown in the subtitle of each level, telling you which badge you'll get. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Få en %1$@-badge";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Få et %1$@-badge";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown as the title for each level, telling you the price per month. Embeds {{currency string}}, such as \"$5\". */
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/måned";
@@ -2324,7 +2324,7 @@
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "Det maksimale antal deltagere er nået for dette opkald. Prøv igen senere.";
 
 /* Text explaining that someone has sent a ring to the group. Embeds {ring sender name} */
-"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ is calling the group";
+"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ ringer til gruppen";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "Opkaldet er fuldt";
@@ -4973,7 +4973,7 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Bruger kan ikke vælges";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ is not a Signal user. Try again with a valid phone number.";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ bruger ikke Signal. Prøv igen med et gyldigt telefonnummer.";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Ugyldigt telefonnummer";
@@ -4982,7 +4982,7 @@
 "RECIPIENT_PICKER_INVITE_ACTION" = "Besked";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ is not a Signal user. Would you like to invite this number?";
+"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ bruger ikke Signal. Vil du invitere dette nummer?";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_TITLE" = "Invitér til Signal";
@@ -6302,7 +6302,7 @@
 "STORIES_INFO_ACTION" = "Information";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.";
+"STORIES_NO_RECENT_MESSAGES" = "Der er ingen nye opdateringer at vise lige nu.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Ingen svar endnu";
@@ -6449,7 +6449,7 @@
 "STORY_SEND_FAILED" = "Kunne ikke sende";
 
 /* Text indicating that you can tap to retry sending */
-"STORY_SEND_FAILED_RETRY" = "Tryk for at prøve igen";
+"STORY_SEND_FAILED_RETRY" = "Tryk og prøv igen";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Kunne ikke sendes. Klik for at prøve igen";

@@ -362,7 +362,7 @@
 "BADGE_CONFIGURATION_TITLE" = "Jelvények";
 
 /* When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button. */
-"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Donate Now";
+"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Adományozás most";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "A Boost-jelvény érvényessége lejárt, és már nem kerül megjelenítésre a profilodon.";
@@ -686,19 +686,19 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "Mikrofon hozzáférés szükséges";
 
 /* label for button shown when an incoming call rings */
-"CALL_CONTROLS_INCOMING_ANSWER" = "Válasz";
+"CALL_CONTROLS_INCOMING_ANSWER" = "válasz";
 
 /* Label for button shown when an incoming call rings. This particular label has room for two lines; you may insert a manual linebreak with '\n' as long as both lines are 15 characters or shorter (8 fullwidth characters or shorter), as in the English translation. */
-"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "Válasz videó nélkül";
+"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "válasz\nvideó nélkül";
 
 /* label for button shown when an incoming call rings */
-"CALL_CONTROLS_INCOMING_DECLINE" = "Elutasítás";
+"CALL_CONTROLS_INCOMING_DECLINE" = "elutasít";
 
 /* Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Incoming group call…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Bejövő csoportos hívás…";
 
 /* Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}} */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ is ringing the group…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ hívja a csoportot…";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "Nem fogadott hívás. A hívó biztonsági azonosítója megváltozott.";
@@ -926,7 +926,7 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Csoportok";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Find by Number";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Keresés szám szerint";
 
 /* Table section header for username search when composing a new message */
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Keresés felhasználónév alapján";
@@ -1766,10 +1766,10 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Cenzúramegkerülés innen";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Get the %1$@ badge";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Szerezd meg a(z) %1$@-jelvényt";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Earn the %1$@ badge for one month";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Szerezd meg a(z) %1$@-jelvényt egy hónapra";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Adományozz %1$@ összeget a Signalnak";
@@ -1778,13 +1778,13 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Adományozz %1$@ összeget a Signalnak";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
-"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Select an amount to donate.";
+"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Válassz egy adomány összeget!";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "Válassz egy magasabb adomány összeget!";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too large, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "Válassz egy alacsonyabb adomány összeget!";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "Havi";
@@ -1793,13 +1793,13 @@
 "DONATE_SCREEN_MONTHLY_SUBSCRIPTION_EXPIRES_ON_DATE" = "%1$@ dátummal lejár";
 
 /* On the donation screen, you can see a list of monthly subscription levels. If you already have one of these, this text is shown below it indicating when it will renew. Embeds {{formatted renewal date}}, such as \"June 9, 2010\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "Megújul %1$@";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_RENEWS_ON_DATE" = "%1$@ dátummal megújul";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown in the subtitle of each level, telling you which badge you'll get. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Szerezz egy %1$@ kitűzőt";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_SUBTITLE" = "Szerezz egy %1$@-jelvényt";
 
 /* On the donation screen, you can see a list of monthly subscription levels. This text will be shown as the title for each level, telling you the price per month. Embeds {{currency string}}, such as \"$5\". */
-"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/hó";
+"DONATE_SCREEN_MONTHLY_SUBSCRIPTION_TITLE" = "%1$@/hónap";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_ONE_TIME_CHOICE" = "Egyszeri";
@@ -2324,7 +2324,7 @@
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "A csoporthívás elérte a maximális létszámot. Kérlek próbáld később.";
 
 /* Text explaining that someone has sent a ring to the group. Embeds {ring sender name} */
-"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ is calling the group";
+"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ hívja a csoportot";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "A hívás betelt";
@@ -4973,7 +4973,7 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "A felhasználó nem kiválasztható.";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ is not a Signal user. Try again with a valid phone number.";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ nem Signal-felhasználó. Próbáld újra egy érvényes telefonszámmal!";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
 "RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "Hibás telefonszám";
@@ -4982,10 +4982,10 @@
 "RECIPIENT_PICKER_INVITE_ACTION" = "Üzenet";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ is not a Signal user. Would you like to invite this number?";
+"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ nem Signal-felhasználó. Szeretnéd meghívni ezt a számot?";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_TITLE" = "Meghívás Signalba";
+"RECIPIENT_PICKER_INVITE_TITLE" = "Meghívás a Signalba";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Elfelejtettem a PIN kódom.";
@@ -6302,7 +6302,7 @@
 "STORIES_INFO_ACTION" = "Részletek";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.";
+"STORIES_NO_RECENT_MESSAGES" = "Jelenleg nincsenek megjeleníthető frissítések.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Még nem érkeztek reakciók";
@@ -6449,7 +6449,7 @@
 "STORY_SEND_FAILED" = "Küldés sikertelen";
 
 /* Text indicating that you can tap to retry sending */
-"STORY_SEND_FAILED_RETRY" = "Az újrapróbálkozáshoz koppints";
+"STORY_SEND_FAILED_RETRY" = "Újrapróbálkozás";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Küldés sikertelen. Az újrapróbálkozáshoz koppints";

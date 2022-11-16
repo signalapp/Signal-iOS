@@ -1,2 +1,2 @@
 Signal heeft nu verhalen! Deel verdwijnende teksten, afbeeldingen, en video-updates met geselecteerde vrienden of groepen die automatisch na 24 uur verdwijnen. Als je geen verhalen wilt zien of delen, kun je je hiervoor afmelden in je instellingen.
-• Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.
+• Bugfixes en verbeteringen met betrekking tot spraakberichten, toevoegen van nieuwe leden aan groepen en algemene UI-conformiteit.

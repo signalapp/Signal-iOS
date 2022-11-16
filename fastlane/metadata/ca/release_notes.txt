@@ -1,2 +1,2 @@
 • Ja han arribat les històries a Signal! Comparteix històries temporals de text, imatge i vídeo amb aquelles persones o grups que vulguis. Les històries desapareixeran automàticament després de 24 hores. Si no vols veure o compartir històries, pots desactivar aquesta funció als teus Ajustos.
-• Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.
+• Correccions d'errors i millores relacionades amb els missatges de veu, l'addició de nous membres als grups i la coherència general de la interfície d'usuari.

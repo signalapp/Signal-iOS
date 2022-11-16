@@ -1,2 +1,2 @@
 • Hikayeler artık Signal'de! 24 saat sonra otomatik olarak kaybolan metin, resim ve videoları belirli arkadaşlarınla veya gruplarınla paylaş. Hikayeleri görmek veya paylaşmak istemiyorsan, Ayarlar'a girerek hikayeleri devre dışı bırakabilirsin.
-• Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.
+• Sesli mesajlar, gruplara yeni üye ekleme ve genel kullanıcı ara yüzü tutarlılığı ile ilgili hata düzeltmeleri ve iyileştirmeler.

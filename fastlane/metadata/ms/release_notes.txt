@@ -1,2 +1,2 @@
 • Cerita kini dalam Signal! Kongsi kemas kini teks, imej dan video yang boleh hilang dengan rakan atau kumpulan terpilih. Ia akan hilang secara automatik selepas 24 jam. Jika anda tidak mahu melihat atau berkongsi cerita, anda boleh menarik diri daripada semua itu dalam Tetapan anda.
-• Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.
+• Pembaikan pepijat dan penambahbaikan yang berkaitan dengan mesej suara, penambahan ahli baru kepada kumpulan dan ketekalan UI keseluruhan.

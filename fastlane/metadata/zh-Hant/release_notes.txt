@@ -1,2 +1,2 @@
 • Signal 現已推出限時動態功能！與選定的好友或群組分享自動銷毀的訊息、圖像和影片更新，這些內容會在 24 小時後自動消失。如果你不想瀏覽或分享限時動態，可以在「設定」中關閉所有相關功能。
-• Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.
+• 針對語音訊息、加入群組成員以及整體用戶介面一致性等進行錯誤修復及改善。

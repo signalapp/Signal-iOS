@@ -1,2 +1,2 @@
 • Os stories chegaram ao Signal! Compartilhe atualizações de texto, imagens e vídeos com amigos ou grupos. Os stories desaparecerão automaticamente após 24 horas. Se você não quiser ver ou compartilhar stories, recuse o recurso nas Configurações.
-• Bug fixes and improvements related to voice messages, adding new members to groups, and overall UI consistency.
+• Correção de bugs e melhorias relacionadas a mensagens de voz, adição de novos membros aos grupos e consistência geral da interface do usuário.

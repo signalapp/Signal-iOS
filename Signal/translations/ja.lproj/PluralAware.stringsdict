@@ -792,7 +792,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>一部とのみ共有 · %1$d%1$d 人の閲覧者</string>
+			<string>一部とのみ共有 · %1$d 人の閲覧者</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>

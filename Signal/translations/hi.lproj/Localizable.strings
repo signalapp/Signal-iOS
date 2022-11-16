@@ -362,7 +362,7 @@
 "BADGE_CONFIGURATION_TITLE" = "बैज";
 
 /* When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button. */
-"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Donate Now";
+"BADGE_DETAILS_DONATE_TO_SIGNAL" = "अभी दान दें";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "आपका बूस्ट बैज समाप्त हो गया है और आपकी प्रोफ़ाइल पर दर्शाए जाने के लिए अब उपलब्ध नहीं है।";
@@ -686,19 +686,19 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "माइक्रोफ़ोन इस्तेमाल करने की अनुमति चाहिए";
 
 /* label for button shown when an incoming call rings */
-"CALL_CONTROLS_INCOMING_ANSWER" = "उत्तर";
+"CALL_CONTROLS_INCOMING_ANSWER" = "जवाब दें";
 
 /* Label for button shown when an incoming call rings. This particular label has room for two lines; you may insert a manual linebreak with '\n' as long as both lines are 15 characters or shorter (8 fullwidth characters or shorter), as in the English translation. */
-"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "वीडियो के बिना जवाब दें";
+"CALL_CONTROLS_INCOMING_ANSWER_WITHOUT_VIDEO" = "वीडियो के बिना\nजवाब दें";
 
 /* label for button shown when an incoming call rings */
 "CALL_CONTROLS_INCOMING_DECLINE" = "रद्द करें";
 
 /* Body for the repeating notification shown while an incoming group call is ringing, if the user has chosen not to include contact names in notifications */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 Incoming group call…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_ANONYMOUS" = "📹 ग्रुप कॉल आ रहा है…";
 
 /* Body for the repeating notification shown while an incoming group call is ringing. Embeds {{caller name}} */
-"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ is ringing the group…";
+"CALL_GROUP_INCOMING_NOTIFICATION_BODY_FORMAT" = "📹 %1$@ द्वारा ग्रुप में रिंग किया जा रहा है…";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ कॉल करने वाले का सुरक्षा नंबर बदल जाने की वजह से कॉल मिस हो गयी।";
@@ -926,10 +926,10 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "ग्रुप";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Find by Number";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "नंबर से ढूँढ़ें";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "यूज़रनेम द्वारा खोजें";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "यूज़रनेम से ढूँढ़ें";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "आपके कितने संपर्क Signal उपभोगकर्ता हैं, यह जानने के लिये iOS सेटिंग्स ऐप में जा कर Signal को आपके संपर्क पढने की अनुमति दें।";
@@ -1766,10 +1766,10 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "सेंसरशिप से बचाव के लिये इस्तेमाल हो रही जगह";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Get the %1$@ badge";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "%1$@ बैज पाएँ";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Earn the %1$@ badge for one month";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "एक महीने के लिए %1$@ बैज कमाएँ";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Signal को %1$@ का दान दें";
@@ -1778,13 +1778,13 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Signal को %1$@ का दान दें";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
-"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Select an amount to donate.";
+"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "दान करने के लिए किसी धनराशि का चयन करें।";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "दान करने के लिए बड़ी धनराशि का चयन करें।";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too large, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "Select a smaller amount to donate.";
+"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "दान करने के लिए छोटी धनराशि का चयन करें।";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "मासिक";
@@ -2324,7 +2324,7 @@
 "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT" = "इस कॉल के लिए भागीदारों की अधिकतम संख्या पूरी हो चुकी है। बाद में दोबारा प्रयास करें।";
 
 /* Text explaining that someone has sent a ring to the group. Embeds {ring sender name} */
-"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ is calling the group";
+"GROUP_CALL_INCOMING_RING_FORMAT" = "%1$@ द्वारा ग्रुप को कॉल किया जा रहा है";
 
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "कॉल पूर्ण है";
@@ -4973,19 +4973,19 @@
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "यूज़र को चुना नहीं जा सकता।";
 
 /* Alert text. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ is not a Signal user. Try again with a valid phone number.";
+"RECIPIENT_PICKER_INVALID_NUMBER_MESSAGE" = "%1$@ एक Signal यूज़र नहीं है। किसी मान्य फ़ोन नंबर से फिर से प्रयास करें।";
 
 /* Alert title. Shown after selecting a phone number that isn't valid. */
-"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "अवैध फ़ोन नंबर";
+"RECIPIENT_PICKER_INVALID_NUMBER_TITLE" = "अमान्य फ़ोन नंबर";
 
 /* Button. Shown after selecting a phone number that isn't a Signal user. Tapping the button will open a view that allows the user to send an SMS message to specified phone number. */
 "RECIPIENT_PICKER_INVITE_ACTION" = "मेसेज";
 
 /* Alert text. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ is not a Signal user. Would you like to invite this number?";
+"RECIPIENT_PICKER_INVITE_MESSAGE" = "%1$@ एक Signal यूज़र नहीं है। क्या आप इस नंबर को आमंत्रित करना चाहेंगे?";
 
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
-"RECIPIENT_PICKER_INVITE_TITLE" = "Signal का उपयोग करने के लिए आमंत्रित करें";
+"RECIPIENT_PICKER_INVITE_TITLE" = "Signal के लिए आमंत्रित करें";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "मैं अपना पिन भूल गया।";
@@ -6302,7 +6302,7 @@
 "STORIES_INFO_ACTION" = "जानकारी";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.";
+"STORIES_NO_RECENT_MESSAGES" = "अभी दिखाने के लिए कोई अपडेट नहीं है।";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "कोई जवाब नहीं";
@@ -6449,7 +6449,7 @@
 "STORY_SEND_FAILED" = "भेजना विफल रहा";
 
 /* Text indicating that you can tap to retry sending */
-"STORY_SEND_FAILED_RETRY" = "फिर से प्रयास करने के लिए टैप करें";
+"STORY_SEND_FAILED_RETRY" = "रीट्राई हेतु टैप";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED_TAP_FOR_DETAILS" = "भेजना विफल रहा। फिर से प्रयास करने के लिए टैप करें";
