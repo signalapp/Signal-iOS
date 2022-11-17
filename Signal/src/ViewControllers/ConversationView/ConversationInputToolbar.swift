@@ -632,15 +632,10 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         static let cameraButtonHMargin: CGFloat = 8
 
         lazy var sendButton: UIButton = {
-            let visibleButtonSize: CGFloat = 32
-            let buttonImage = UIImage(imageLiteralResourceName: "send-blue-32")
-            let highlightAlpha: CGFloat = Theme.isDarkThemeEnabled ? 0.4 : 0.2
-            let highlightedButtonImage = buttonImage.withAlphaComponent(highlightAlpha)
-            let button = UIButton(type: .custom)
+            let button = UIButton(type: .system)
             button.accessibilityLabel = MessageStrings.sendButton
             button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "sendButton")
-            button.setImage(buttonImage, for: .normal)
-            button.setImage(highlightedButtonImage, for: .highlighted)
+            button.setImage(UIImage(imageLiteralResourceName: "send-blue-32"), for: .normal)
             button.bounds.size = CGSize(width: 48, height: LayoutMetrics.minToolbarItemHeight)
             return button
         }()

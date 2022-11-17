@@ -89,7 +89,7 @@ class StoryReplyInputToolbar: UIView {
 
         textView.mentionDelegate = self
 
-        let sendButton = OWSButton.sendButton(imageName: "send-solid-24") { [weak self] in
+        let sendButton = OWSButton.sendButton(imageName: "arrow-up-24") { [weak self] in
             self?.didTapSend()
         }
         sendButtonContainer.addSubview(sendButton)

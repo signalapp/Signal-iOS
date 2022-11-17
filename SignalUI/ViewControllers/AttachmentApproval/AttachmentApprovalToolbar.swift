@@ -17,7 +17,12 @@ class AttachmentApprovalToolbar: UIView {
         var canToggleViewOnce = true
         var canChangeMediaQuality = true
         var canSaveMedia = false
-        var doneButtonAssetResourceName = "send-solid-24"
+        var doneButtonIcon: DoneButtonIcon = .send
+
+        enum DoneButtonIcon: String {
+            case send = "send-blue-42"
+            case next = "chevron-right-colored-42"
+        }
     }
 
     var configuration: Configuration
@@ -173,7 +178,7 @@ class AttachmentApprovalToolbar: UIView {
         // to get a nice animation.
         mediaToolbar.isHiddenInStackView = isEditingMediaMessage
 
-        mediaToolbar.sendButton.setImage(UIImage(named: configuration.doneButtonAssetResourceName), for: .normal)
+        mediaToolbar.sendButton.setImage(UIImage(imageLiteralResourceName: configuration.doneButtonIcon.rawValue), for: .normal)
         mediaToolbar.setIsMediaQualityHigh(enabled: configuration.isMediaHighQualityEnabled, animated: animated)
 
         let availableButtons: MediaToolbar.AvailableButtons = {
@@ -403,8 +408,14 @@ private class MediaToolbar: UIView {
     let mediaQualityButton: UIButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-quality"), backgroundStyle: .solid(buttonBackgroundColor))
     let saveMediaButton: UIButton = RoundMediaButton(image: #imageLiteral(resourceName: "save-outline-24"), backgroundStyle: .solid(buttonBackgroundColor))
     let sendButton: UIButton = {
-        let button = RoundMediaButton(image: #imageLiteral(resourceName: "send-solid-24"), backgroundStyle: .solid(.ows_accentBlue))
+        let button = UIButton(type: .system)
+        button.setImage(
+            UIImage(imageLiteralResourceName: AttachmentApprovalToolbar.Configuration.DoneButtonIcon.send.rawValue),
+            for: .normal
+        )
+        button.contentEdgeInsets = UIEdgeInsets(margin: 8)
         button.accessibilityLabel = MessageStrings.sendButton
+        button.sizeToFit()
         return button
     }()
 

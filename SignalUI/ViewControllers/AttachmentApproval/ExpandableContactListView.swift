@@ -42,9 +42,9 @@ class ExpandableContactListView: UIView {
         pillView.addSubview(backgroundView)
         backgroundView.autoPinEdgesToSuperviewEdges()
 
-        let arrowView = UIImageView(image: #imageLiteral(resourceName: "arrow-right-16"))
+        let arrowView = UIImageView(image: UIImage(imageLiteralResourceName: "arrow-up-16"))
         pillView.addSubview(arrowView)
-        arrowView.autoPinEdge(toSuperviewMargin: .leading)
+        arrowView.autoPinEdge(toSuperviewMargin: .leading, withInset: 2)
         arrowView.autoVCenterInSuperview()
 
         scrollViewContainer.clipsToBounds = true

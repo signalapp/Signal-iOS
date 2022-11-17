@@ -17,7 +17,7 @@ class AttachmentApprovalTopBar: MediaTopBar {
     }()
 
     let backButton: UIButton = {
-        let backButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-back"), backgroundStyle: .blur)
+        let backButton = RoundMediaButton(image: UIImage(imageLiteralResourceName: "chevron-left-28"), backgroundStyle: .blur)
         backButton.accessibilityLabel = CommonStrings.backButton
         return backButton
     }()

@@ -375,19 +375,22 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     private func updateBottomToolView(animated: Bool) {
         guard let currentPageViewController = currentPageViewController else { return }
 
-        let doneButtonAssetResourceName = options.contains(.isNotFinalScreen) ? "arrow-right-24" : "send-solid-24"
-        let configuration =
-        AttachmentApprovalToolbar.Configuration(isAddMoreVisible: isAddMoreVisible,
-                                                isMediaStripVisible: attachmentApprovalItems.count > 1,
-                                                isMediaHighQualityEnabled: outputQualityLevel == .high,
-                                                isViewOnceOn: isViewOnceEnabled,
-                                                canToggleViewOnce: options.contains(.canToggleViewOnce),
-                                                canChangeMediaQuality: options.contains(.canChangeQualityLevel),
-                                                canSaveMedia: currentPageViewController.canSaveMedia,
-                                                doneButtonAssetResourceName: doneButtonAssetResourceName)
-        bottomToolView.update(currentAttachmentItem: currentPageViewController.attachmentApprovalItem,
-                              configuration: configuration,
-                              animated: animated)
+        let isScreenNotFinal = options.contains(.isNotFinalScreen)
+        let configuration = AttachmentApprovalToolbar.Configuration(
+            isAddMoreVisible: isAddMoreVisible,
+            isMediaStripVisible: attachmentApprovalItems.count > 1,
+            isMediaHighQualityEnabled: outputQualityLevel == .high,
+            isViewOnceOn: isViewOnceEnabled,
+            canToggleViewOnce: options.contains(.canToggleViewOnce),
+            canChangeMediaQuality: options.contains(.canChangeQualityLevel),
+            canSaveMedia: currentPageViewController.canSaveMedia,
+            doneButtonIcon: isScreenNotFinal ? .next : .send
+        )
+        bottomToolView.update(
+            currentAttachmentItem: currentPageViewController.attachmentApprovalItem,
+            configuration: configuration,
+            animated: animated
+        )
     }
 
     public var messageBody: MessageBody? {

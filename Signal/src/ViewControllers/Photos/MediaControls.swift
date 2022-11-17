@@ -1447,7 +1447,13 @@ class CameraBottomBar: UIView {
 
     let photoLibraryButton = MediaPickerThumbnailButton()
     let switchCameraButton = CameraChooserButton(backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor))
-    let proceedButton = RoundMediaButton(image: UIImage(imageLiteralResourceName: "arrow-right-24"), backgroundStyle: .solid(.ows_accentBlue))
+    let proceedButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(imageLiteralResourceName: "chevron-right-colored-42"), for: .normal)
+        button.contentEdgeInsets = UIEdgeInsets(margin: 8)
+        button.sizeToFit()
+        return button
+    }()
     let controlButtonsLayoutGuide = UILayoutGuide() // area encompassing Photo Library and Switch Camera buttons.
     private var controlButtonsLayoutGuideConstraints: [NSLayoutConstraint]?
     func constrainControlButtonsLayoutGuideHorizontallyTo(leadingAnchor: NSLayoutXAxisAnchor?,
