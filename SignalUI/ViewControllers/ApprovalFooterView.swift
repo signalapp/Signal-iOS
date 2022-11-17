@@ -242,7 +242,7 @@ fileprivate extension ApprovalMode {
     var proceedButtonImageName: String? {
         switch self {
         case .next: return "arrow-right-24"
-        case .send: return "send-solid-24"
+        case .send: return "arrow-up-24"
         case .select: return "check-24"
         case .loading: return nil
         }

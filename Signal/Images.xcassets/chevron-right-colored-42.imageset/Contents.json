@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "send-24.pdf",
+      "filename" : "chevron-right-colored-42.pdf",
       "idiom" : "universal"
     }
   ],
@@ -10,6 +10,6 @@
     "version" : 1
   },
   "properties" : {
-    "template-rendering-intent" : "template"
+    "template-rendering-intent" : "original"
   }
 }
