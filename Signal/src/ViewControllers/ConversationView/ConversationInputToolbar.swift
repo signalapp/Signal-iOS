@@ -265,6 +265,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         let view = StickerHorizontalListView(cellSize: suggestedStickerSize, cellInset: 0, spacing: suggestedStickerSpacing)
         view.backgroundColor = Theme.conversationButtonBackgroundColor
         view.contentInset = stickerListContentInset
+        view.alpha = 0
         view.autoSetDimension(.height, toSize: suggestedStickerSize + stickerListContentInset.bottom + stickerListContentInset.top)
         return view
     }()
