@@ -21,9 +21,7 @@ public class RemoteMegaphoneFetcher: NSObject, Dependencies {
         }
 
         AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-            self.databaseStorage.read { transaction in
-                self.syncRemoteMegaphonesIfNecessary(transaction: transaction)
-            }
+            self.syncRemoteMegaphonesIfNecessary()
         }
     }
 
@@ -31,18 +29,17 @@ public class RemoteMegaphoneFetcher: NSObject, Dependencies {
     /// locally. Removes any locally-persisted remote megaphones that are no
     /// longer available remotely.
     @discardableResult
-    public func syncRemoteMegaphonesIfNecessary(transaction: SDSAnyReadTransaction) -> Promise<Void> {
-        guard self.shouldSync(transaction: transaction) else {
+    public func syncRemoteMegaphonesIfNecessary() -> Promise<Void> {
+        let shouldSync = databaseStorage.read { self.shouldSync(transaction: $0) }
+        guard shouldSync else {
             Logger.info("Skipping remote megaphone fetch - not necessary!")
             return Promise.value(())
         }
 
-        guard !isSyncInFlight.get() else {
+        guard isSyncInFlight.tryToSetFlag() else {
             Logger.info("Skipping remote megaphone fetch - sync is already in-flight!")
             return Promise.value(())
         }
-
-        isSyncInFlight.set(true)
 
         Logger.info("Beginning remote megaphone fetch.")
 
