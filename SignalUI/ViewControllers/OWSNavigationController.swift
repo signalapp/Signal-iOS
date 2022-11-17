@@ -89,6 +89,16 @@ open class OWSNavigationController: OWSNavigationControllerBase {
         )
     }
 
+    // On iOS 12, init(navigationBarClass:toolbarClass:) calls
+    // init(nibName:bundle:). In the latest iOS SDK, these are both marked as
+    // designated initializers, so that shouldn't be allowed. In Objective-C,
+    // this resolves to the superclass implementation and behaves properly, but
+    // in Swift, it results in a crash. A no-op implementation avoids the crash
+    // and results in the same behavior as in Objective-C.
+    public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    }
+
     public override convenience init(rootViewController: UIViewController) {
         self.init()
         self.pushViewController(rootViewController, animated: false)
