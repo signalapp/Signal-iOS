@@ -130,6 +130,14 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
 
     @objc
     public func typeUnsafe_buildUrlSession(for signalServiceType: Any) -> Any {
+        // If there's an open transaction when this is called, and if censorship
+        // circumvention is enabled, `buildCensorshipConfiguration()` will crash.
+        // Add a database read here so that we crash in both `if` branches.
+        assert({
+            databaseStorage.read { _ in }
+            return true
+        }(), "Must not have open transaction.")
+
         let signalServiceInfo = (signalServiceType as! SignalServiceType).signalServiceInfo()
         let isCensorshipCircumventionActive = self.isCensorshipCircumventionActive
         let urlSession: OWSURLSessionProtocol
