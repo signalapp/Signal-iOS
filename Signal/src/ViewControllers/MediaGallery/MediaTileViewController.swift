@@ -106,9 +106,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         defer { super.viewWillAppear(animated) }
 
         if mediaGallery.galleryDates.isEmpty {
-            databaseStorage.read { transaction in
-                _ = self.mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize, transaction: transaction)
-            }
+            _ = self.mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize)
             if mediaGallery.galleryDates.isEmpty {
                 // There must be no media.
                 return
@@ -704,9 +702,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     func didAddSectionInMediaGallery(_ mediaGallery: MediaGallery) {
         let oldSectionCount = self.numberOfSections(in: collectionView)
-        databaseStorage.read { transaction in
-            _ = mediaGallery.loadLaterSections(batchSize: kLoadBatchSize, transaction: transaction)
-        }
+        _ = mediaGallery.loadLaterSections(batchSize: kLoadBatchSize)
         let newSectionCount = self.numberOfSections(in: collectionView)
         collectionView.insertSections(IndexSet(oldSectionCount..<newSectionCount))
     }
@@ -758,23 +754,19 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
         UIView.performWithoutAnimation {
             collectionView.performBatchUpdates({
-                databaseStorage.read { transaction in
-                    let newSections: Range<Int>
-                    switch direction {
-                    case .before:
-                        newSections = 0..<mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize,
-                                                                           transaction: transaction)
-                    case .after:
-                        let newSectionCount = mediaGallery.loadLaterSections(batchSize: kLoadBatchSize,
-                                                                             transaction: transaction)
-                        let newEnd = mediaGallery.galleryDates.count
-                        newSections = (newEnd - newSectionCount)..<newEnd
-                    case .around:
-                        preconditionFailure() // unused
-                    }
-                    Logger.debug("found new sections: \(newSections)")
-                    collectionView.insertSections(IndexSet(newSections).shifted(by: 1))
+                let newSections: Range<Int>
+                switch direction {
+                case .before:
+                    newSections = 0..<mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize)
+                case .after:
+                    let newSectionCount = mediaGallery.loadLaterSections(batchSize: kLoadBatchSize)
+                    let newEnd = mediaGallery.galleryDates.count
+                    newSections = (newEnd - newSectionCount)..<newEnd
+                case .around:
+                    preconditionFailure() // unused
                 }
+                Logger.debug("found new sections: \(newSections)")
+                collectionView.insertSections(IndexSet(newSections).shifted(by: 1))
             }, completion: { finished in
                 Logger.debug("performBatchUpdates finished: \(finished)")
                 self.isFetchingMoreData = false

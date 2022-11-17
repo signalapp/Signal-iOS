@@ -249,26 +249,8 @@ class MediaGallery: Dependencies {
             return
         }
 
-        var sectionIndexesNeedingUpdate = IndexSet()
-        var sectionsToDelete = IndexSet()
+        let (sectionIndexesNeedingUpdate, sectionsToDelete) = sections.reloadSections(for: sectionsNeedingUpdate)
 
-        databaseStorage.read { transaction in
-            for sectionDate in sectionsNeedingUpdate {
-                // Scan backwards; newer items are more likely to be modified.
-                // (We could use a binary search here as well.)
-                guard let sectionIndex = sections.sectionDates.lastIndex(of: sectionDate) else {
-                    continue
-                }
-
-                // Refresh the section.
-                let newCount = sections.reloadSection(for: sectionDate, transaction: transaction)
-
-                sectionIndexesNeedingUpdate.insert(sectionIndex)
-                if newCount == 0 {
-                    sectionsToDelete.insert(sectionIndex)
-                }
-            }
-        }
         delegates.forEach {
             $0.mediaGallery(self, didReloadItemsInSections: sectionIndexesNeedingUpdate)
         }
@@ -295,49 +277,17 @@ class MediaGallery: Dependencies {
         }
         Logger.debug("")
 
-        var sectionsNeedingUpdate = IndexSet()
-        var didAddSectionAtEnd = false
-        var didReset = false
-
-        databaseStorage.read { transaction in
-            for attachmentInfo in relevantAttachments {
-                let sectionDate = GalleryDate(date: Date(millisecondsSince1970: attachmentInfo.timestamp))
-                // Do a backwards search assuming new messages usually arrive at the end.
-                // Still, this is kept sorted, so we ought to be able to do a binary search instead.
-                if let lastSectionDate = sections.sectionDates.last, sectionDate > lastSectionDate {
-                    // Only let clients know about the new section if they thought they were at the end;
-                    // otherwise they'll fetch more if they need to.
-                    if sections.hasFetchedMostRecent {
-                        sections.resetHasFetchedMostRecent()
-                        didAddSectionAtEnd = true
-                    }
-                } else if let sectionIndex = sections.sectionDates.lastIndex(of: sectionDate) {
-                    sectionsNeedingUpdate.insert(sectionIndex)
-                } else {
-                    // We've loaded the first attachment in a new section that's not at the end. That can't be done
-                    // transparently in MediaGallery's model, so let all our delegates know to refresh *everything*.
-                    // This should be rare, but can happen if someone has automatic attachment downloading off and then
-                    // goes back and downloads an attachment that crosses the month boundary.
-                    sections.reset(transaction: transaction)
-                    didReset = true
-                    return
-                }
-            }
-
-            for sectionIndex in sectionsNeedingUpdate {
-                // Throw out everything in that section.
-                let sectionDate = sections.sectionDates[sectionIndex]
-                sections.reloadSection(for: sectionDate, transaction: transaction)
-            }
+        let dates = relevantAttachments.lazy.map {
+            GalleryDate(date: Date(millisecondsSince1970: $0.timestamp))
         }
-
-        if didReset {
+        let newAttachmentResult = sections.handleNewAttachments(dates)
+        if newAttachmentResult.didReset {
             delegates.forEach { $0.didReloadAllSectionsInMediaGallery(self) }
         } else {
-            if !sectionsNeedingUpdate.isEmpty {
-                delegates.forEach { $0.mediaGallery(self, didReloadItemsInSections: sectionsNeedingUpdate) }
+            if !newAttachmentResult.update.isEmpty {
+                delegates.forEach { $0.mediaGallery(self, didReloadItemsInSections: newAttachmentResult.update) }
             }
-            if didAddSectionAtEnd {
+            if newAttachmentResult.didAddAtEnd {
                 delegates.forEach { $0.didAddSectionInMediaGallery(self) }
             }
         }
@@ -467,7 +417,7 @@ class MediaGallery: Dependencies {
 
             if sections.isEmpty {
                 // Set up the current section only.
-                sections.loadInitialSection(for: focusedItem.galleryDate, transaction: transaction)
+                sections.loadInitialSection(for: focusedItem.galleryDate)
             }
 
             return sections.getOrReplaceItem(focusedItem, offsetInSection: offsetInSection)
@@ -498,8 +448,8 @@ class MediaGallery: Dependencies {
     /// Operates in bulk in an attempt to cut down on database traffic, meaning it may measure multiple sections at once.
     ///
     /// Returns the number of new sections loaded, which can be used to update section indexes.
-    internal func loadEarlierSections(batchSize: Int, transaction: SDSAnyReadTransaction) -> Int {
-        return sections.loadEarlierSections(batchSize: batchSize, transaction: transaction)
+    internal func loadEarlierSections(batchSize: Int) -> Int {
+        return sections.loadEarlierSections(batchSize: batchSize)
     }
 
     /// Loads at least one section after the latest section, though not any of the items in it.
@@ -507,8 +457,8 @@ class MediaGallery: Dependencies {
     /// Operates in bulk in an attempt to cut down on database traffic, meaning it may measure multiple sections at once.
     ///
     /// Returns the number of new sections loaded.
-    internal func loadLaterSections(batchSize: Int, transaction: SDSAnyReadTransaction) -> Int {
-        return sections.loadLaterSections(batchSize: batchSize, transaction: transaction)
+    internal func loadLaterSections(batchSize: Int) -> Int {
+        return sections.loadLaterSections(batchSize: batchSize)
     }
 
     // MARK: -
@@ -664,9 +614,7 @@ extension MediaGallery: DatabaseChangeDelegate {
 
     func databaseChangesDidUpdateExternally() {
         // Conservatively assume anything could have happened.
-        databaseStorage.read { transaction in
-            sections.reset(transaction: transaction)
-        }
+        sections.reset()
         delegates.forEach { $0.didReloadAllSectionsInMediaGallery(self) }
     }
 

@@ -53,7 +53,6 @@ public struct JournalingOrderedDictionary<KeyType: Hashable, ValueType, ChangeTy
     }
 
     public mutating func append(key: KeyType, value: ValueType) {
-        let i = orderedDictionary.count
         journal.append(.append)
         orderedDictionary.append(key: key, value: value)
     }
@@ -76,8 +75,11 @@ public struct JournalingOrderedDictionary<KeyType: Hashable, ValueType, ChangeTy
         orderedDictionary.remove(at: index)
     }
 
-    public mutating func eraseJournal() {
-        journal = []
+    public mutating func takeJournal() -> [Change] {
+        defer {
+            journal = []
+        }
+        return journal
     }
 
     public mutating func removeAll() {

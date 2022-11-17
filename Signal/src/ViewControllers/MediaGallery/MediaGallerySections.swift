@@ -62,13 +62,13 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader>: Depende
         var item: Item?
     }
 
-    private struct State: Dependencies {
+    private struct State {
         /// All sections we know about.
         ///
         /// Each section contains an array of possibly-fetched items.
         /// The length of the array is always the correct number of items in the section.
         /// The keys are kept in sorted order.
-        var itemsBySection: OrderedDictionary<GalleryDate, [MediaGallerySlot]> = OrderedDictionary()
+        var itemsBySection: JournalingOrderedDictionary<GalleryDate, [MediaGallerySlot], ItemChange> = JournalingOrderedDictionary()
         var hasFetchedOldest = false
         var hasFetchedMostRecent = false
         var loader: Loader
@@ -200,7 +200,10 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader>: Depende
                                                        offset: 0,
                                                        ascending: true,
                                                        transaction: transaction)
-            itemsBySection.replace(key: date, value: rowids.map { MediaGallerySlot(rowid: $0) })
+            itemsBySection.replace(key: date) {
+                return (rowids.map { MediaGallerySlot(rowid: $0) },
+                        [.reloadSection])
+            }
             return rowids.count
         }
 
@@ -435,112 +438,122 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader>: Depende
             naiveRange.removeLast(countToTrim)
         }
 
-        /// Loads items in the given range.
+        internal struct LoadItemsRequest {
+            let trimmedRange: Range<Int>
+            let sectionIndex: Int
+        }
+
+        /// Constructs a `LoadItemsRequest` if one is needed. Returns `nil` if no items need to be loaded in the requested range.
         ///
-        /// A "naive" range may start at a negative offset, representing a position in a section before `sectionIndex`.
-        /// Similarly, the endpoint may be in a section that follows `sectionIndex`. However, the range must *cross*
-        /// `sectionIndex`, or it is not considered valid. `sectionIndex` must refer to a loaded section.
-        ///
-        /// Will open its own database transaction, in the hopes of not having to open one at all.
-        ///
-        /// Returns the indexes of newly loaded *sections,* which could shift the indexes of existing sections. These will
-        /// always be before and/or after the existing sections, never interleaving. If `naiveRange.startIndex` is
-        /// non-negative, there will never be any sections loaded before the existing sections. That is:
-        ///
-        /// - When this method starts, we'll have sections like this: [G, H, … J].
-        /// - When this method ends, we'll have sections like this: [C, D, … F] [G, H, … J] [K, L, … N],
-        ///   where the CDF and KLN chunks could be empty. The returned index set will contain the indexes of C…F and K…N.
-        internal mutating func ensureItemsLoaded(in naiveRange: Range<Int>,
-                                                 relativeToSection sectionIndex: Int) -> IndexSet {
+        /// - Parameters:
+        ///   - naiveRange This may start at a negative offset, representing a position in a section before `sectionIndex`. Similarly, the endpoint may be in a section that follows `sectionIndex`. However, the range must *cross* `sectionIndex`, or it is not considered valid. `sectionIndex` must refer to a loaded section.
+        ///  - sectionIndex: The section relative to which `naiveRange` is interpreted.
+        internal func loadItemsRequest(in naiveRange: Range<Int>,
+                                       relativeToSection sectionIndex: Int) -> LoadItemsRequest? {
             var trimmedRange = naiveRange
             trimLoadedItemsAtStart(from: &trimmedRange, relativeToSection: sectionIndex)
             trimLoadedItemsAtEnd(from: &trimmedRange, relativeToSection: sectionIndex)
             if trimmedRange.isEmpty {
-                return IndexSet()
+                return nil
             }
+            return LoadItemsRequest(trimmedRange: trimmedRange, sectionIndex: sectionIndex)
+        }
 
-            var numNewlyLoadedEarlierSections: Int = 0
-            var numNewlyLoadedLaterSections: Int = 0
+        /// Loads items specified in the request.
+        ///
+        /// Will open its own database transaction.
+        ///
+        /// If the start index in the request is non-negative, there will never be any sections loaded before the existing sections. That is:
+        /// - When this method starts, we'll have sections like this: [G, H, … J].
+        /// - When this method ends, we'll have sections like this: [C, D, … F] [G, H, … J] [K, L, … N],
+        ///   where the CDF and KLN chunks could be empty. The returned index set will contain the indexes of C…F and K…N.
+        ///
+        /// Returns the indexes of newly loaded *sections,* which could shift the indexes of existing sections. These will
+        /// always be before and/or after the existing sections, never interleaving.
+        internal mutating func ensureItemsLoaded(request: LoadItemsRequest,
+                                                 transaction: SDSAnyReadTransaction) -> IndexSet {
+            return Bench(title: "fetching gallery items") {
+                owsAssert(!request.trimmedRange.isEmpty)
 
-            Bench(title: "fetching gallery items") {
-                self.databaseStorage.read { transaction in
-                    // Figure out the earliest section this request will cross.
-                    // Note that this is a bigger batch size than necessary:
-                    // -trimmedRange.startIndex would be sufficient,
-                    // and resolveNaiveStartIndex(...) could give us the exact offset we need.
-                    // However, the media gallery is a scrolling collection view that most commonly starts at the
-                    // present and scrolls up into the past; if we are ensuring loaded items in earlier sections, we are
-                    // likely actively scrolling. Because of this, we potentially measure some extra sections here so
-                    // that we don't have to on the immediate next call to ensureItemsLoaded(...).
-                    let (requestStartPath, newlyLoadedCount) = resolveNaiveStartIndex(trimmedRange.startIndex,
-                                                                                      relativeToSection: sectionIndex,
-                                                                                      batchSize: trimmedRange.count,
-                                                                                      transaction: transaction)
-                    numNewlyLoadedEarlierSections = newlyLoadedCount
-                    guard let requestStartPath = requestStartPath else {
-                        owsFail("failed to resolve despite loading \(numNewlyLoadedEarlierSections) earlier sections")
+                var numNewlyLoadedEarlierSections: Int = 0
+                var numNewlyLoadedLaterSections: Int = 0
+
+                // Figure out the earliest section this request will cross.
+                // Note that this is a bigger batch size than necessary:
+                // -trimmedRange.startIndex would be sufficient,
+                // and resolveNaiveStartIndex(...) could give us the exact offset we need.
+                // However, the media gallery is a scrolling collection view that most commonly starts at the
+                // present and scrolls up into the past; if we are ensuring loaded items in earlier sections, we are
+                // likely actively scrolling. Because of this, we potentially measure some extra sections here so
+                // that we don't have to on the immediate next call to ensureItemsLoaded(...).
+                let (requestStartPath, newlyLoadedCount) = resolveNaiveStartIndex(request.trimmedRange.startIndex,
+                                                                                  relativeToSection: request.sectionIndex,
+                                                                                  batchSize: request.trimmedRange.count,
+                                                                                  transaction: transaction)
+                numNewlyLoadedEarlierSections = newlyLoadedCount
+                guard let requestStartPath = requestStartPath else {
+                    owsFail("failed to resolve despite loading \(numNewlyLoadedEarlierSections) earlier sections")
+                }
+
+                var currentSectionIndex = requestStartPath.section
+                let interval = DateInterval(start: itemsBySection.orderedKeys[currentSectionIndex].interval.start,
+                                            end: .distantFutureForMillisecondTimestamp)
+                let requestRange = requestStartPath.item ..< (requestStartPath.item + request.trimmedRange.count)
+
+                var offset = 0
+                loader.enumerateItems(in: interval,
+                                      range: requestRange,
+                                      transaction: transaction) { i, uniqueId, buildItem in
+                    owsAssertDebug(i >= offset, "does not support reverse traversal")
+
+                    var (date, slots) = itemsBySection[currentSectionIndex]
+                    var itemIndex = i - offset
+
+                    while itemIndex >= slots.count {
+                        itemIndex -= slots.count
+                        offset += slots.count
+                        currentSectionIndex += 1
+
+                        if currentSectionIndex >= itemsBySection.count {
+                            if hasFetchedMostRecent {
+                                // Ignore later attachments.
+                                owsAssertDebug(itemsBySection.count == 1, "should only be used in single-album page view")
+                                return
+                            }
+                            numNewlyLoadedLaterSections += loadLaterSections(batchSize: request.trimmedRange.count,
+                                                                             transaction: transaction)
+                            if currentSectionIndex >= itemsBySection.count {
+                                owsFailDebug("attachment #\(i) \(uniqueId) is beyond the last section")
+                                return
+                            }
+                        }
+
+                        (date, slots) = itemsBySection[currentSectionIndex]
                     }
 
-                    var currentSectionIndex = requestStartPath.section
-                    let interval = DateInterval(start: itemsBySection.orderedKeys[currentSectionIndex].interval.start,
-                                                end: .distantFutureForMillisecondTimestamp)
-                    let requestRange = requestStartPath.item ..< (requestStartPath.item + trimmedRange.count)
+                    var slot = slots[itemIndex]
+                    if let loadedItem = slot.item {
+                        owsAssert(loadedItem.uniqueId == uniqueId)
+                        return
+                    }
 
-                    var offset = 0
-                    loader.enumerateItems(in: interval,
-                                          range: requestRange,
-                                          transaction: transaction) { i, uniqueId, buildItem in
-                        owsAssertDebug(i >= offset, "does not support reverse traversal")
-
-                        var (date, slots) = itemsBySection[currentSectionIndex]
-                        var itemIndex = i - offset
-
-                        while itemIndex >= slots.count {
-                            itemIndex -= slots.count
-                            offset += slots.count
-                            currentSectionIndex += 1
-
-                            if currentSectionIndex >= itemsBySection.count {
-                                if hasFetchedMostRecent {
-                                    // Ignore later attachments.
-                                    owsAssertDebug(itemsBySection.count == 1, "should only be used in single-album page view")
-                                    return
-                                }
-                                numNewlyLoadedLaterSections += loadLaterSections(batchSize: trimmedRange.count,
-                                                                                 transaction: transaction)
-                                if currentSectionIndex >= itemsBySection.count {
-                                    owsFailDebug("attachment #\(i) \(uniqueId) is beyond the last section")
-                                    return
-                                }
-                            }
-
-                            (date, slots) = itemsBySection[currentSectionIndex]
-                        }
-
-                        var slot = slots[itemIndex]
-                        if let loadedItem = slot.item {
-                            owsAssert(loadedItem.uniqueId == uniqueId)
-                            return
-                        }
-
+                    itemsBySection.replace(key: date) {
                         let item = buildItem()
                         owsAssertDebug(item.galleryDate == date,
                                        "item from \(item.galleryDate) put into section for \(date)")
 
-                        // Performance hack: clear out the current 'items' array in 'sections' to avoid copy-on-write.
-                        itemsBySection.replace(key: date, value: [])
                         slot.item = item
                         slots[itemIndex] = slot
-                        itemsBySection.replace(key: date, value: slots)
+                        return (slots, [.updateItem(index: itemIndex)])
                     }
                 }
-            }
 
-            let firstNewLaterSectionIndex = itemsBySection.count - numNewlyLoadedLaterSections
-            var newlyLoadedSections = IndexSet()
-            newlyLoadedSections.insert(integersIn: 0..<numNewlyLoadedEarlierSections)
-            newlyLoadedSections.insert(integersIn: firstNewLaterSectionIndex..<itemsBySection.count)
-            return newlyLoadedSections
+                let firstNewLaterSectionIndex = itemsBySection.count - numNewlyLoadedLaterSections
+                var newlyLoadedSections = IndexSet()
+                newlyLoadedSections.insert(integersIn: 0..<numNewlyLoadedEarlierSections)
+                newlyLoadedSections.insert(integersIn: firstNewLaterSectionIndex..<itemsBySection.count)
+                return newlyLoadedSections
+            }
         }
 
         internal mutating func getOrReplaceItem(_ newItem: Item, offsetInSection: Int) -> Item? {
@@ -559,9 +572,10 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader>: Depende
             }
 
             // Swap out the section items to avoid copy-on-write.
-            itemsBySection.replace(key: newItem.galleryDate, value: [])
-            items[offsetInSection].item = newItem
-            itemsBySection.replace(key: newItem.galleryDate, value: items)
+            itemsBySection.replace(key: newItem.galleryDate) {
+                items[offsetInSection].item = newItem
+                return (items, [.updateItem(index: offsetInSection)])
+            }
             return newItem
         }
 
@@ -576,17 +590,17 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader>: Depende
             for path in paths.sorted().reversed() {
                 let sectionKey = itemsBySection.orderedKeys[path.section]
                 // Swap out / swap in to avoid copy-on-write.
-                var section = itemsBySection.replace(key: sectionKey, value: [])
+                var section = itemsBySection[sectionKey]!
+                itemsBySection.replace(key: sectionKey) {
+                    if section.remove(at: path.item).item == nil {
+                        owsFailDebug("removed an item that wasn't loaded, which isn't permitted")
+                    }
 
-                if section.remove(at: path.item).item == nil {
-                    owsFailDebug("removed an item that wasn't loaded, which isn't permitted")
-                }
-
-                if section.isEmpty {
-                    itemsBySection.remove(at: path.section)
-                    removedSections.insert(path.section)
-                } else {
-                    itemsBySection.replace(key: sectionKey, value: section)
+                    if section.isEmpty {
+                        removedSections.insert(path.section)
+                        return nil
+                    }
+                    return (section, [.removeItem(index: path.item)])
                 }
             }
 
@@ -594,47 +608,119 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader>: Depende
         }
     }
 
-    private struct SnapshotManager {
-        private(set) var state: State
+    enum ItemChange: CustomDebugStringConvertible, Equatable {
+        var debugDescription: String {
+            switch self {
+            case .reloadSection:
+                return "reloadSection"
+            case .updateItem(index: let index):
+                return "updateItem(index: \(index))"
+            case .removeItem(index: let index):
+                return "removeItem(index: \(index))"
+            }
+        }
+        case reloadSection
+        case updateItem(index: Int)
+        case removeItem(index: Int)
+    }
 
-        init(_ state: State) {
-            self.state = state
+    private struct SnapshotManager: Dependencies {
+        private let queue: DispatchQueue
+        private var mutableState: State
+        private var snapshot: State
+
+        /// Called on the main queue after a mutation. The snapshot will have
+        /// just been updated prior to this call. This is a good place to notify
+        /// UICollectionView of changes to its data source.
+        var didChange: (([JournalingOrderedDictionaryChange<ItemChange>]) -> Void)?
+
+        var state: State {
+            dispatchPrecondition(condition: .onQueue(.main))
+            return snapshot
+        }
+
+        init(_ queue: DispatchQueue, state: State) {
+            self.queue = queue
+            self.mutableState = state
+            self.snapshot = state
         }
 
         mutating func mutate<T>(_ block: (inout State) -> (T)) -> T {
-            return block(&state)
+            dispatchPrecondition(condition: .onQueue(.main))
+            var updatedState: State?
+            let (result, changes) = queue.sync {
+                let result = block(&mutableState)
+                updatedState = mutableState
+                return (result, mutableState.itemsBySection.takeJournal())
+            }
+            snapshot = updatedState!
+            didChange?(changes)
+            return result
+        }
+
+        mutating func mutate<T>(_ block: (inout State, SDSAnyReadTransaction) -> (T)) -> T {
+            return mutate { mutableState in
+                return Self.databaseStorage.read { transaction in
+                    return block(&mutableState, transaction)
+                }
+            }
         }
     }
+
     private var snapshotManager: SnapshotManager
     private var state: State { snapshotManager.state }
+    private let mutationQueue = DispatchQueue(label: "org.signal.media-gallery-sections-mutation")
 
     internal init(loader: Loader) {
-        snapshotManager = SnapshotManager(State(loader: loader))
+        snapshotManager = SnapshotManager(mutationQueue, state: State(loader: loader))
     }
 
     // MARK: Sections
 
-    internal mutating func loadEarlierSections(batchSize: Int, transaction: SDSAnyReadTransaction) -> Int {
-        return snapshotManager.mutate { state in
+    internal mutating func loadEarlierSections(batchSize: Int) -> Int {
+        return snapshotManager.mutate { state, transaction in
             return state.loadEarlierSections(batchSize: batchSize, transaction: transaction)
         }
     }
 
-    internal mutating func loadLaterSections(batchSize: Int, transaction: SDSAnyReadTransaction) -> Int {
-        return snapshotManager.mutate { state in
+    internal mutating func loadLaterSections(batchSize: Int) -> Int {
+        return snapshotManager.mutate { state, transaction in
             return state.loadLaterSections(batchSize: batchSize, transaction: transaction)
         }
     }
 
-    internal mutating func loadInitialSection(for date: GalleryDate, transaction: SDSAnyReadTransaction) {
-        return snapshotManager.mutate { state in
+    internal mutating func loadInitialSection(for date: GalleryDate) {
+        return snapshotManager.mutate { state, transaction in
             return state.loadInitialSection(for: date, transaction: transaction)
         }
     }
 
+    internal mutating func reloadSections(for dates: Set<GalleryDate>) -> (update: IndexSet, delete: IndexSet) {
+        return snapshotManager.mutate { state, transaction in
+            var sectionIndexesNeedingUpdate = IndexSet()
+            var sectionsToDelete = IndexSet()
+            for sectionDate in dates {
+                // Scan backwards; newer items are more likely to be modified.
+                // (We could use a binary search here as well.)
+                guard let sectionIndex = state.itemsBySection.orderedKeys.lastIndex(of: sectionDate) else {
+                    continue
+                }
+
+                // Refresh the section.
+                let newCount = state.reloadSection(for: sectionDate, transaction: transaction)
+
+                sectionIndexesNeedingUpdate.insert(sectionIndex)
+                if newCount == 0 {
+                    sectionsToDelete.insert(sectionIndex)
+                }
+            }
+            return (update: sectionIndexesNeedingUpdate, delete: sectionsToDelete)
+        }
+    }
+
     @discardableResult
-    internal mutating func reloadSection(for date: GalleryDate, transaction: SDSAnyReadTransaction) -> Int {
-        return snapshotManager.mutate { state in
+    internal mutating func reloadSection(for date: GalleryDate) -> Int {
+        return snapshotManager.mutate { state, transaction in
             return state.reloadSection(for: date, transaction: transaction)
         }
     }
@@ -651,9 +737,52 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader>: Depende
         }
     }
 
-    internal mutating func reset(transaction: SDSAnyReadTransaction) {
-        return snapshotManager.mutate { state in
+    internal mutating func reset() {
+        return snapshotManager.mutate { state, transaction in
             state.reset(transaction: transaction)
+        }
+    }
+
+    internal struct NewAttachmentHandlingResult: Equatable {
+        var update = IndexSet()
+        var didAddAtEnd = false
+        var didReset = false
+    }
+
+    internal mutating func handleNewAttachments(_ dates: some Sequence<GalleryDate>) -> NewAttachmentHandlingResult {
+        return snapshotManager.mutate { state, transaction in
+            var result = NewAttachmentHandlingResult()
+
+            for sectionDate in dates {
+                // Do a backwards search assuming new messages usually arrive at the end.
+                // Still, this is kept sorted, so we ought to be able to do a binary search instead.
+                if let lastSectionDate = state.itemsBySection.orderedKeys.last, sectionDate > lastSectionDate {
+                    // Only let clients know about the new section if they thought they were at the end;
+                    // otherwise they'll fetch more if they need to.
+                    if state.hasFetchedMostRecent {
+                        state.resetHasFetchedMostRecent()
+                        result.didAddAtEnd = true
+                    }
+                } else if let sectionIndex = state.itemsBySection.orderedKeys.lastIndex(of: sectionDate) {
+                    result.update.insert(sectionIndex)
+                } else {
+                    // We've loaded the first attachment in a new section that's not at the end. That can't be done
+                    // transparently in MediaGallery's model, so let all our delegates know to refresh *everything*.
+                    // This should be rare, but can happen if someone has automatic attachment downloading off and then
+                    // goes back and downloads an attachment that crosses the month boundary.
+                    state.reset(transaction: transaction)
+                    result.didReset = true
+                    return result
+                }
+            }
+
+            for sectionIndex in result.update {
+                // Throw out everything in that section.
+                let sectionDate = state.itemsBySection.orderedKeys[sectionIndex]
+                state.reloadSection(for: sectionDate, transaction: transaction)
+            }
+
+            return result
         }
     }
 
@@ -745,10 +874,9 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader>: Depende
     internal mutating func resolveNaiveStartIndex(
         _ naiveIndex: Int,
         relativeToSection initialSectionIndex: Int,
-        batchSize: Int,
-        transaction: SDSAnyReadTransaction?
+        batchSize: Int
     ) -> (path: IndexPath?, numberOfSectionsLoaded: Int) {
-        return snapshotManager.mutate { state in
+        return snapshotManager.mutate { state, transaction in
             return state.resolveNaiveStartIndex(naiveIndex,
                                                 relativeToSection: initialSectionIndex,
                                                 batchSize: batchSize,
@@ -772,9 +900,14 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader>: Depende
 
     internal mutating func ensureItemsLoaded(in naiveRange: Range<Int>,
                                              relativeToSection sectionIndex: Int) -> IndexSet {
-        return snapshotManager.mutate { state  in
-            state.ensureItemsLoaded(in: naiveRange,
-                                    relativeToSection: sectionIndex)
+        return snapshotManager.mutate { state in
+            guard let request = state.loadItemsRequest(in: naiveRange, relativeToSection: sectionIndex) else {
+                return IndexSet()
+            }
+            return Self.databaseStorage.read { transaction in
+                return state.ensureItemsLoaded(request: request,
+                                               transaction: transaction)
+            }
         }
     }
 
@@ -796,5 +929,33 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader>: Depende
     internal var sectionDates: [GalleryDate] { state.itemsBySection.orderedKeys }
     internal var hasFetchedMostRecent: Bool { state.hasFetchedMostRecent }
     internal var hasFetchedOldest: Bool { state.hasFetchedOldest }
-    internal var itemsBySection: OrderedDictionary<GalleryDate, [MediaGallerySlot]> { state.itemsBySection }
+    internal var itemsBySection: OrderedDictionary<GalleryDate, [MediaGallerySlot]> { state.itemsBySection.orderedDictionary }
+}
+
+fileprivate extension JournalingOrderedDictionary where ValueType: ExpressibleByArrayLiteral {
+    /// This is a convenience method that provides a performance optimization to delete or set the value of an already-existing key.
+    /// By using this method, you avoid having two different copies of the value in memory. That could cause a copy-on-write for a value that's about to disappear.
+    /// A closure rather than a value is used so the value in the underlying dictionary can be removed before forcing the new value to exist.
+    ///
+    /// Example usage:
+    ///
+    ///     if var value = dict["my key"] {  // value is of type [String]
+    ///         dict.replace("my key") {
+    ///            value.append("foo")
+    ///            return (value, [.replace])
+    ///         }
+    ///     }
+    ///
+    /// If the closure returns `nil` then the key is removed from the dictionary.
+    mutating func replace(key: KeyType, closure: () -> (ValueType, [ChangeType])?) {
+        let i = orderedKeys.firstIndex(of: key)!
+        // Performance hack: clear out the current 'items' array in 'sections' to avoid copy-on-write.
+        replaceValue(at: i, value: [], changes: [])
+        if let tuple = closure() {
+            let (newValue, changes) = tuple
+            replaceValue(at: i, value: newValue, changes: changes)
+        } else {
+            remove(at: i)
+        }
+    }
 }

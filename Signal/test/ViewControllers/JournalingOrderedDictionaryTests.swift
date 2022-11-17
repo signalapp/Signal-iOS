@@ -92,11 +92,12 @@ class JournalingOrderedDictionaryTest: SignalBaseTest {
         XCTAssertEqual(sut.journal, [.removeAll])
     }
 
-    func testEraseJournal() {
+    func testTakeJournal() {
         var sut = JournalingOrderedDictionary<Letter, String, StringChange>()
         sut.append(key: .a, value: "a")
         sut.append(key: .b, value: "b")
-        sut.eraseJournal()
+        let journal = sut.takeJournal()
+        XCTAssertEqual(journal, [.append, .append])
         XCTAssertEqual(sut.orderedKeys, [.a, .b])
         XCTAssertEqual(sut[.a], "a")
         XCTAssertEqual(sut[.b], "b")
