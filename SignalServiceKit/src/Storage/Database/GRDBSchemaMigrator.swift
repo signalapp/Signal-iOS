@@ -2622,7 +2622,21 @@ public class GRDBSchemaMigrator: NSObject {
                     guard let storyThread = thread as? TSPrivateStoryThread else {
                         continue
                     }
-                    GRDBFullTextSearchFinder.modelWasInserted(model: storyThread, transaction: transaction)
+                    let uniqueId = thread.uniqueId
+                    let collection = TSPrivateStoryThread.collection()
+                    let ftsContent = FullTextSearchFinder.normalize(text: storyThread.name)
+
+                    let sql = """
+                    INSERT OR REPLACE INTO indexable_text
+                    (collection, uniqueId, ftsIndexableContent)
+                    VALUES
+                    (?, ?, ?)
+                    """
+
+                    try transaction.database.execute(
+                        sql: sql,
+                        arguments: [collection, uniqueId, ftsContent]
+                    )
                 }
             } catch {
                 owsFail("Error: \(error)")
