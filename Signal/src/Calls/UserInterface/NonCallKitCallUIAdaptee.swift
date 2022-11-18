@@ -34,13 +34,13 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
             self.callService.individualCallService.handleOutgoingCall(call)
         } else {
             switch call.groupCallRingState {
-            case .shouldRing, .ringing:
+            case .shouldRing where call.ringRestrictions.isEmpty, .ringing:
                 // Let CallService call recipientAcceptedCall when someone joins.
                 break
             case .ringingEnded:
                 owsFailDebug("ringing ended while we were starting the call")
                 fallthrough
-            case .doNotRing:
+            case .doNotRing, .shouldRing:
                 // Immediately consider ourselves connected.
                 recipientAcceptedCall(call)
             case .incomingRing:

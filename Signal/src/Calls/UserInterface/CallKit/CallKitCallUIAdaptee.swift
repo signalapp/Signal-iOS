@@ -365,13 +365,13 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         if call.isGroupCall {
             switch call.groupCallRingState {
-            case .shouldRing, .ringing:
+            case .shouldRing where call.ringRestrictions.isEmpty, .ringing:
                 // Let CallService call recipientAcceptedCall when someone joins.
                 break
             case .ringingEnded:
                 Logger.warn("ringing ended before we even reported the call to CallKit (maybe our peek info was out of date)")
                 fallthrough
-            case .doNotRing:
+            case .doNotRing, .shouldRing:
                 // Immediately consider ourselves connected.
                 recipientAcceptedCall(call)
             case .incomingRing:
