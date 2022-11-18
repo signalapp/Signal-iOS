@@ -424,6 +424,15 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             extendedBackgroundView.backgroundColor = Theme.toolbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
 
             let blurEffectView = UIVisualEffectView(effect: Theme.barBlurEffect)
+            // Alter the visual effect view's tint to match our background color
+            // so the input bar, when over a solid color background matching `toolbarBackgroundColor`,
+            // exactly matches the background color. This is brittle, but there is no way to get
+            // this behavior from UIVisualEffectView otherwise.
+            if let tintingView = blurEffectView.subviews.first(where: {
+                String(describing: type(of: $0)) == "_UIVisualEffectSubview"
+            }) {
+                tintingView.backgroundColor = extendedBackgroundView.backgroundColor
+            }
             extendedBackgroundView.addSubview(blurEffectView)
             blurEffectView.autoPinEdgesToSuperviewEdges()
         }
@@ -2021,7 +2030,7 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
     }
 
     func textViewDidBecomeFirstResponder(_ textView: UITextView) {
-        desiredKeyboardType = .system
+        setDesiredKeyboardType(.system, animated: true)
     }
 }
 
