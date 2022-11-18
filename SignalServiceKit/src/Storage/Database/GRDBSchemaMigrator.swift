@@ -2385,7 +2385,7 @@ public class GRDBSchemaMigrator: NSObject {
                 }
                 let uniqueId = thread.uniqueId
                 let collection = TSPrivateStoryThread.collection()
-                let ftsContent = storyThread.name
+                let ftsContent = FullTextSearchFinder.normalize(text: storyThread.name)
 
                 let sql = """
                 INSERT OR REPLACE INTO indexable_text
