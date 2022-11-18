@@ -1334,7 +1334,6 @@ extension CallService: CallManagerDelegate {
                 case .requested:
                     owsFail("checked above")
                 case .expiredRing:
-                    owsFailDebug("shouldn't have rung in the first place")
                     self.callUIAdapter.remoteDidHangupCall(currentCall)
                 case .acceptedOnAnotherDevice:
                     self.callUIAdapter.didAnswerElsewhere(call: currentCall)
