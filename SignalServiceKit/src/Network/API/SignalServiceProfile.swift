@@ -24,7 +24,6 @@ public class SignalServiceProfile: NSObject {
     public let paymentAddressEncrypted: Data?
     public let unidentifiedAccessVerifier: Data?
     public let hasUnrestrictedUnidentifiedAccess: Bool
-    public let supportsGroupsV2Migration: Bool
     public let supportsAnnouncementOnlyGroups: Bool
     public let supportsSenderKey: Bool
     public let supportsChangeNumber: Bool
@@ -77,9 +76,6 @@ public class SignalServiceProfile: NSObject {
 
         self.hasUnrestrictedUnidentifiedAccess = try params.optional(key: "unrestrictedUnidentifiedAccess") ?? false
 
-        self.supportsGroupsV2Migration = Self.parseCapabilityFlag(capabilityKey: "gv1-migration",
-                                                                  params: params,
-                                                                  requireCapability: true)
         self.supportsAnnouncementOnlyGroups = Self.parseCapabilityFlag(capabilityKey: "announcementGroup",
                                                                        params: params,
                                                                        requireCapability: true)
