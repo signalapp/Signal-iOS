@@ -1181,33 +1181,6 @@
 			<string>%d views</string>
 		</dict>
 	</dict>
-	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@views@  %#@replies@</string>
-		<key>replies</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; reply</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; replies</string>
-		</dict>
-		<key>views</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; view</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
-		</dict>
-	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>

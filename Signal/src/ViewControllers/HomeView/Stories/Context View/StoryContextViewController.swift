@@ -483,33 +483,35 @@ class StoryContextViewController: OWSViewController {
                         comment: "Button for replying to a story with no existing replies.")
                 }
             case .outgoing:
+                var textSegments = [String]()
                 if StoryManager.areViewReceiptsEnabled {
-                    trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
-                    if case .groupId = context {
-                        let format = NSLocalizedString(
-                            "STORY_VIEWS_AND_REPLIES_COUNT_%d_%d",
-                            tableName: "PluralAware",
-                            comment: "Button for viewing the replies and views for a story sent to a group")
-                        repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.message.remoteViewCount(in: context), currentItem.numberOfReplies)
-                    } else {
-                        let format = NSLocalizedString(
-                            "STORY_VIEWS_COUNT_%d",
-                            tableName: "PluralAware",
-                            comment: "Button for viewing the views for a story sent to a private list")
-                        repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.message.remoteViewCount(in: context))
-                    }
-                } else if case .groupId = context, currentItem.numberOfReplies > 0 {
-                    trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
+                    let format = NSLocalizedString(
+                        "STORY_VIEWS_COUNT_%d",
+                        tableName: "PluralAware",
+                        comment: "Button for viewing the views for a story sent to a private list"
+                    )
+                    textSegments.append(
+                        String.localizedStringWithFormat(format, currentItem.message.remoteViewCount(in: context))
+                    )
+                }
+                if case .groupId = context, StoryManager.areViewReceiptsEnabled || currentItem.numberOfReplies > 0 {
                     let format = NSLocalizedString(
                         "STORY_REPLIES_COUNT_%d",
                         tableName: "PluralAware",
-                        comment: "Button for replying to a story with N existing replies.")
-                    repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.numberOfReplies)
-                } else {
+                        comment: "Button for replying to a story with N existing replies."
+                    )
+                    textSegments.append(
+                        String.localizedStringWithFormat(format, currentItem.numberOfReplies)
+                    )
+                }
+                if textSegments.isEmpty {
                     repliesAndViewsButtonText = NSLocalizedString(
                         "STORY_VIEWS_OFF",
                         comment: "Text indicating that the user has views turned off"
                     )
+                } else {
+                    trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
+                    repliesAndViewsButtonText = textSegments.joined(separator: "  ")
                 }
             }
 
