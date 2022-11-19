@@ -123,123 +123,95 @@ NS_ASSUME_NONNULL_BEGIN
             [self applyDefaultRendererConfiguration];
         }
 
-        if (self.isScreenShare) {
-            self.metalRenderer.videoContentMode = UIViewContentModeScaleAspectFit;
+        // In certain cases, rotate the video so it's always right side up in landscape.
+        // We only allow portrait orientation in the calling views on iPhone so we don't
+        // get this for free.
+        BOOL shouldOverrideRotation;
+        if (UIDevice.currentDevice.isIPad || !self.isFullScreen) {
+            // iPad allows all orientations so we can skip this.
+            // Non-full-screen views are part of a portrait-locked UI (e.g. the group call grid)
+            // and rotating the video without rotating the UI would look weird.
+            shouldOverrideRotation = NO;
+        } else if (self.isGroupCall) {
+            // For speaker view in a group call, keep screenshares right-side up.
+            shouldOverrideRotation = self.isScreenShare;
+        } else {
+            // For a 1:1 call, always keep video right-side up.
+            shouldOverrideRotation = YES;
+        }
 
-            // Rotate the video so it's always right side up in landscape. We only
-            // allow portrait orientation in the calling views on iPhone so we don't
-            // get this for free. iPad allows all orientations so we can skip this.
-            if (self.isFullScreen && !UIDevice.currentDevice.isIPad) {
-                switch (UIDevice.currentDevice.orientation) {
-                    case UIDeviceOrientationPortrait:
-                    case UIDeviceOrientationPortraitUpsideDown:
-                        // We don't have to do anything, the renderer will automatically
-                        // make sure it's right-side-up.
-                        self.metalRenderer.rotationOverride = nil;
-                        break;
-                    case UIDeviceOrientationLandscapeLeft:
-                        switch (frame.rotation) {
-                            // Portrait upside-down
-                            case RTCVideoRotation_270:
-                                self.metalRenderer.rotationOverride = @(RTCVideoRotation_0);
-                                break;
-                            // Portrait
-                            case RTCVideoRotation_90:
-                                self.metalRenderer.rotationOverride = @(RTCVideoRotation_180);
-                                break;
-                            // Landscape right
-                            case RTCVideoRotation_180:
-                                self.metalRenderer.rotationOverride = @(RTCVideoRotation_270);
-                                break;
-                            // Landscape left
-                            case RTCVideoRotation_0:
-                                self.metalRenderer.rotationOverride = @(RTCVideoRotation_90);
-                                break;
-                        }
-                        break;
-                    case UIDeviceOrientationLandscapeRight:
-                        switch (frame.rotation) {
-                            // Portrait upside-down
-                            case RTCVideoRotation_270:
-                                self.metalRenderer.rotationOverride = @(RTCVideoRotation_180);
-                                break;
-                            // Portrait
-                            case RTCVideoRotation_90:
-                                self.metalRenderer.rotationOverride = @(RTCVideoRotation_0);
-                                break;
-                            // Landscape right
-                            case RTCVideoRotation_180:
-                                self.metalRenderer.rotationOverride = @(RTCVideoRotation_90);
-                                break;
-                            // Landscape left
-                            case RTCVideoRotation_0:
-                                self.metalRenderer.rotationOverride = @(RTCVideoRotation_270);
-                                break;
-                        }
-                        break;
-                    default:
-                        // Do nothing if we're face down, up, etc.
-                        // Assume we're already setup for the correct orientation.
-                        break;
-                }
-            } else {
-                self.metalRenderer.rotationOverride = nil;
-            }
-
-        } else if (UIDevice.currentDevice.isIPad || self.isGroupCall) {
-            BOOL isLandscape = self.width > self.height;
-            BOOL remoteIsLandscape = frame.rotation == RTCVideoRotation_180 || frame.rotation == RTCVideoRotation_0;
-
-            BOOL isSquarish = (MAX(self.width, self.height) / MIN(self.width, self.height)) <= 1.2;
-
-            self.metalRenderer.rotationOverride = nil;
-
-            // If we're both in the same orientation, let the video fill the screen.
-            // Otherwise, fit the video to the screen size respecting the aspect ratio.
-            if (isLandscape == remoteIsLandscape || isSquarish) {
-                self.metalRenderer.videoContentMode = UIViewContentModeScaleAspectFill;
-            } else {
-                self.metalRenderer.videoContentMode = UIViewContentModeScaleAspectFit;
+        BOOL isLandscape;
+        if (shouldOverrideRotation) {
+            switch (UIDevice.currentDevice.orientation) {
+                case UIDeviceOrientationPortrait:
+                case UIDeviceOrientationPortraitUpsideDown:
+                    // We don't have to do anything, the renderer will automatically
+                    // make sure it's right-side-up.
+                    isLandscape = NO;
+                    self.metalRenderer.rotationOverride = nil;
+                    break;
+                case UIDeviceOrientationLandscapeLeft:
+                    isLandscape = YES;
+                    switch (frame.rotation) {
+                        // Portrait upside-down
+                        case RTCVideoRotation_270:
+                            self.metalRenderer.rotationOverride = @(RTCVideoRotation_0);
+                            break;
+                        // Portrait
+                        case RTCVideoRotation_90:
+                            self.metalRenderer.rotationOverride = @(RTCVideoRotation_180);
+                            break;
+                        // Landscape right
+                        case RTCVideoRotation_180:
+                            self.metalRenderer.rotationOverride = @(RTCVideoRotation_270);
+                            break;
+                        // Landscape left
+                        case RTCVideoRotation_0:
+                            self.metalRenderer.rotationOverride = @(RTCVideoRotation_90);
+                            break;
+                    }
+                    break;
+                case UIDeviceOrientationLandscapeRight:
+                    isLandscape = YES;
+                    switch (frame.rotation) {
+                        // Portrait upside-down
+                        case RTCVideoRotation_270:
+                            self.metalRenderer.rotationOverride = @(RTCVideoRotation_180);
+                            break;
+                        // Portrait
+                        case RTCVideoRotation_90:
+                            self.metalRenderer.rotationOverride = @(RTCVideoRotation_0);
+                            break;
+                        // Landscape right
+                        case RTCVideoRotation_180:
+                            self.metalRenderer.rotationOverride = @(RTCVideoRotation_90);
+                            break;
+                        // Landscape left
+                        case RTCVideoRotation_0:
+                            self.metalRenderer.rotationOverride = @(RTCVideoRotation_270);
+                            break;
+                    }
+                    break;
+                default:
+                    // Do nothing if we're face down, up, etc.
+                    // Assume we're already set up for the correct orientation.
+                    return;
             }
         } else {
-            // iPhones are locked to portrait mode. However, we want both
-            // portrait and portrait upside-down to be right side up in portrait.
-            // We want both landscape left and landscape right to be right side
-            // up in landscape. This means, sometimes we force the rotation to
-            // portrait, and sometimes we force the rotation to portrait upside
-            // down depending on the orientation of the incoming frames AND
-            // the device's current orientation, so that from the user's perspective
-            // everything always looks right-side-up.
-            switch (frame.rotation) {
-                // Portrait upside-down
-                case RTCVideoRotation_270:
-                    // Portrait upside down renders in portrait
-                    self.metalRenderer.rotationOverride = @(RTCVideoRotation_270);
-                    break;
-                // Portrait
-                case RTCVideoRotation_90:
-                    // Portrait renders in portrait
-                    self.metalRenderer.rotationOverride = @(RTCVideoRotation_90);
-                    break;
-                // Landscape right
-                case RTCVideoRotation_180:
-                    // If the device is in landscape left, flip upside down
-                    if (UIDevice.currentDevice.orientation == UIDeviceOrientationLandscapeLeft) {
-                        self.metalRenderer.rotationOverride = @(RTCVideoRotation_270);
-                    } else if (UIDevice.currentDevice.orientation == UIDeviceOrientationLandscapeRight) {
-                        self.metalRenderer.rotationOverride = @(RTCVideoRotation_90);
-                    }
-                    break;
-                // Landscape left
-                case RTCVideoRotation_0:
-                    // If the device is in landscape right, flip upside down
-                    if (UIDevice.currentDevice.orientation == UIDeviceOrientationLandscapeRight) {
-                        self.metalRenderer.rotationOverride = @(RTCVideoRotation_270);
-                    } else if (UIDevice.currentDevice.orientation == UIDeviceOrientationLandscapeLeft) {
-                        self.metalRenderer.rotationOverride = @(RTCVideoRotation_90);
-                    }
-                    break;
-            }
+            self.metalRenderer.rotationOverride = nil;
+            isLandscape = self.width > self.height;
+        }
+
+        BOOL remoteIsLandscape = frame.rotation == RTCVideoRotation_180 || frame.rotation == RTCVideoRotation_0;
+
+        BOOL isSquarish = (MAX(self.width, self.height) / MIN(self.width, self.height)) <= 1.2;
+
+        // If we're both in the same orientation, let the video fill the screen.
+        // Otherwise, fit the video to the screen size respecting the aspect ratio.
+        if ((isLandscape == remoteIsLandscape || isSquarish) && !self.isScreenShare) {
+            self.metalRenderer.videoContentMode = UIViewContentModeScaleAspectFill;
+        } else {
+            self.metalRenderer.videoContentMode = UIViewContentModeScaleAspectFit;
         }
     });
 #endif
