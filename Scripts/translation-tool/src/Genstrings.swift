@@ -43,14 +43,12 @@ struct Genstrings {
         let expectedKeys = try loadExpectedKeys(at: generatedStringsURL)
         // Remove any values that genstrings didn't discover
         let filteredValues = existingValues.filter { expectedKeys.contains($0.key) }
-        // If there are any changes, write the new version back to disk
-        if filteredValues.count != existingValues.count {
-            for removedKey in Set(existingValues.keys).subtracting(filteredValues.keys).sorted() {
-                print("\(resourceFile.filename): Removed \(removedKey)")
-            }
-            let dataValue = try PropertyListSerialization.data(fromPropertyList: filteredValues, format: .xml, options: 0)
-            try dataValue.write(to: stringsDictURL, options: [.atomic])
+        // Write the new version back to disk.
+        for removedKey in Set(existingValues.keys).subtracting(filteredValues.keys).sorted() {
+            print("\(resourceFile.filename): Removed \(removedKey)")
         }
+        let dataValue = try PropertyListSerialization.data(fromPropertyList: filteredValues, format: .xml, options: 0)
+        try dataValue.write(to: stringsDictURL, options: [.atomic])
     }
 
     private static func loadExistingValues(at url: URL) throws -> [String: Any] {
