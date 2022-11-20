@@ -46,7 +46,7 @@ PODS:
     - CocoaLumberjack
     - Logging (~> 1.4)
     - SwiftProtobuf
-  - OpenSSL-Universal (1.1.1100)
+  - OpenSSL-Universal (1.1.1900)
   - PureLayout (3.1.4)
   - Reachability (3.2)
   - SAMKeychain (1.5.3)
@@ -192,7 +192,7 @@ CHECKOUT OPTIONS:
     :commit: dae1e36cb6aeb8fab2c35ce857bd45cd0ce07023
     :git: https://github.com/signalapp/MobileCoin-Swift.git
   OpenSSL-Universal:
-    :commit: c277886d6fc025f828dafba03eacfef2ecc7936a
+    :commit: 085ce28317e4db497ebdcccae61a6a11d940433c
     :git: https://github.com/signalapp/GRKOpenSSLFramework
   SignalArgon2:
     :commit: 6a37e32167500ff7830e337b726a1653061d86b2
@@ -223,7 +223,7 @@ SPEC CHECKSUMS:
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   MobileCoin: effd134ddf721aab2e84d6ed0148486eab2cb9c8
   MobileCoinMinimal: 627ed590d8a0d5d57c39ec25727bde3d976d2f7a
-  OpenSSL-Universal: d8fb58afffcf2dafe4ad99e17efe236bcd216c2e
+  OpenSSL-Universal: 84efb8a29841f2764ac5403e0c4119a28b713346
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
