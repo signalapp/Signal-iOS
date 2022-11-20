@@ -81,6 +81,7 @@ final class DonateViewControllerTest: XCTestCase {
             monthlySubscriptionLevels: Self.monthlySubscriptionLevels,
             currentMonthlySubscription: nil,
             subscriberID: nil,
+            lastReceiptRedemptionFailure: .none,
             previousMonthlySubscriptionCurrencyCode: nil,
             locale: Locale(identifier: "en-US")
         )
@@ -93,6 +94,7 @@ final class DonateViewControllerTest: XCTestCase {
             monthlySubscriptionLevels: Self.monthlySubscriptionLevels,
             currentMonthlySubscription: Self.subscription(at: 2),
             subscriberID: Data([1, 2, 3]),
+            lastReceiptRedemptionFailure: .none,
             previousMonthlySubscriptionCurrencyCode: "USD",
             locale: Locale(identifier: "en-US")
         )
@@ -113,6 +115,7 @@ final class DonateViewControllerTest: XCTestCase {
             monthlySubscriptionLevels: monthlySubscriptionLevels,
             currentMonthlySubscription: currentMonthlySubscription,
             subscriberID: subscriberID,
+            lastReceiptRedemptionFailure: .none,
             previousMonthlySubscriptionCurrencyCode: previousMonthlySubscriptionCurrencyCode,
             locale: locale
         )

@@ -130,6 +130,7 @@ extension DonateViewController {
             public let selectedSubscriptionLevel: SubscriptionLevel?
             public let currentSubscription: Subscription?
             public let subscriberID: Data?
+            public let lastReceiptRedemptionFailure: SubscriptionRedemptionFailureReason
 
             /// Get the currency codes supported by all subscription levels.
             ///
@@ -153,6 +154,17 @@ extension DonateViewController {
 
             fileprivate var selectedProfileBadge: ProfileBadge? {
                 selectedSubscriptionLevel?.badge
+            }
+
+            public var currentSubscriptionLevel: SubscriptionLevel? {
+                if let currentSubscription {
+                    return DonationViewsUtil.subscriptionLevelForSubscription(
+                        subscriptionLevels: subscriptionLevels,
+                        subscription: currentSubscription
+                    )
+                } else {
+                    return nil
+                }
             }
 
             public var paymentRequest: MonthlyPaymentRequest? {
@@ -181,7 +193,8 @@ extension DonateViewController {
                     selectedCurrencyCode: newValue,
                     selectedSubscriptionLevel: selectedSubscriptionLevel,
                     currentSubscription: currentSubscription,
-                    subscriberID: subscriberID
+                    subscriberID: subscriberID,
+                    lastReceiptRedemptionFailure: lastReceiptRedemptionFailure
                 )
             }
 
@@ -192,7 +205,8 @@ extension DonateViewController {
                     selectedCurrencyCode: selectedCurrencyCode,
                     selectedSubscriptionLevel: newValue,
                     currentSubscription: currentSubscription,
-                    subscriberID: subscriberID
+                    subscriberID: subscriberID,
+                    lastReceiptRedemptionFailure: lastReceiptRedemptionFailure
                 )
             }
         }
@@ -319,6 +333,7 @@ extension DonateViewController {
             monthlySubscriptionLevels: [SubscriptionLevel],
             currentMonthlySubscription: Subscription?,
             subscriberID: Data?,
+            lastReceiptRedemptionFailure: SubscriptionRedemptionFailureReason,
             previousMonthlySubscriptionCurrencyCode: Currency.Code?,
             locale: Locale
         ) -> State {
@@ -371,7 +386,8 @@ extension DonateViewController {
                 selectedCurrencyCode: monthlyDefaultCurrency,
                 selectedSubscriptionLevel: selectedMonthlySubscriptionLevel,
                 currentSubscription: currentMonthlySubscription,
-                subscriberID: subscriberID
+                subscriberID: subscriberID,
+                lastReceiptRedemptionFailure: lastReceiptRedemptionFailure
             )
 
             return State(

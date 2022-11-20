@@ -376,7 +376,7 @@ public class SubscriptionManager: NSObject {
         subscription: SubscriptionLevel,
         payment: PKPayment,
         currencyCode: Currency.Code
-    ) -> Promise<Void> {
+    ) -> Promise<Data> {
         Logger.info("[Donations] Setting up new subscription")
 
         var generatedSubscriberID = Data()
@@ -449,81 +449,30 @@ public class SubscriptionManager: NSObject {
                 subscription: subscription,
                 currencyCode: currencyCode
             )
-
-        // Report success and dismiss sheet
-        }
+        }.map { generatedSubscriberID }
     }
 
     public class func updateSubscriptionLevel(
         for subscriberID: Data,
         to subscription: SubscriptionLevel,
-        payment: PKPayment,
         currencyCode: Currency.Code
     ) -> Promise<Void> {
         Logger.info("[Donations] Updating subscription level")
 
-        let failureReason: SubscriptionRedemptionFailureReason = databaseStorage.read { transaction in
-            return self.lastReceiptRedemptionFailed(transaction: transaction)
+        if terminateTransactionIfPossible {
+            return Promise(error: OWSGenericError("Transaction chain cancelled"))
         }
 
-        if failureReason != .none {
-            Logger.info("[Donations] Upgrading subscription with a prior known error state, cancelling and re-setting up")
-            return firstly {
-                self.cancelSubscription(for: subscriberID)
-            }.then(on: .sharedUserInitiated) {
-                self.setupNewSubscription(subscription: subscription, payment: payment, currencyCode: currencyCode)
-            }
-        }
-
-        var generatedClientSecret = ""
-        var generatedPaymentID = ""
-        return firstly {
-            createPaymentMethod(for: subscriberID)
-        }.then(on: .sharedUserInitiated) { clientSecret -> Promise<String> in
-            guard !self.terminateTransactionIfPossible else {
-                throw OWSGenericError("Transaction chain cancelled")
-            }
-
-            generatedClientSecret = clientSecret
-            return Stripe.createPaymentMethod(with: payment)
-
-            // Bind payment method to SetupIntent, confirm SetupIntent
-        }.then(on: .sharedUserInitiated) { paymentID -> Promise<HTTPResponse> in
-            guard !self.terminateTransactionIfPossible else {
-                throw OWSGenericError("Transaction chain cancelled")
-            }
-
-            generatedPaymentID = paymentID
-            return Stripe.confirmSetupIntent(
-                for: generatedPaymentID,
-                clientSecret: generatedClientSecret
-            )
-
-            // Update payment on server
-        }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
-            guard !self.terminateTransactionIfPossible else {
-                throw OWSGenericError("Transaction chain cancelled")
-            }
-
-            return setDefaultPaymentMethod(for: subscriberID, paymentID: generatedPaymentID)
-
-            // Select subscription level
-        }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
-            guard !self.terminateTransactionIfPossible else {
-                throw OWSGenericError("Transaction chain cancelled")
-            }
-
-            return setSubscription(
-                for: subscriberID,
-                subscription: subscription,
-                currencyCode: currencyCode
-            )
-            // Report success and dismiss sheet
-        }
-
+        return setSubscription(
+            for: subscriberID,
+            subscription: subscription,
+            currencyCode: currencyCode
+        )
     }
 
     public class func cancelSubscription(for subscriberID: Data) -> Promise<Void> {
+        Logger.info("[Donations] Cancelling subscription")
+
         let request = OWSRequestFactory.deleteSubscriptionIDRequest(subscriberID.asBase64Url)
         return firstly {
             networkManager.makePromise(request: request)

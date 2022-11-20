@@ -281,12 +281,49 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     }
 
     private func didConfirmMonthlyDonationUpdate() {
-        guard let monthlyPaymentRequest = state.monthly?.paymentRequest else {
+        guard
+            let monthly = state.monthly,
+            let monthlyPaymentRequest = monthly.paymentRequest,
+            let subscriberID = monthly.subscriberID,
+            let selectedSubscriptionLevel = monthly.selectedSubscriptionLevel
+        else {
             owsFail("[Donations] Cannot update monthly donation. This should be prevented in the UI")
         }
 
-        // TODO(donations) When we add other payment methods, we don't necessarily want to start Apple Pay in this case.
-        startApplePay(with: monthlyPaymentRequest.amount, donationMode: .monthly)
+        switch monthly.lastReceiptRedemptionFailure {
+        case .none:
+            DonationViewsUtil.wrapPromiseInProgressView(
+                from: self,
+                promise: firstly(on: .sharedUserInitiated) {
+                    SubscriptionManager.updateSubscriptionLevel(
+                        for: subscriberID,
+                        to: selectedSubscriptionLevel,
+                        currencyCode: monthly.selectedCurrencyCode
+                    )
+                }.then(on: .sharedUserInitiated) {
+                    self.redeemMonthlyReceipts(
+                        subscriberID: subscriberID,
+                        newSubscriptionLevel: selectedSubscriptionLevel,
+                        priorSubscriptionLevel: monthly.currentSubscriptionLevel
+                    )
+                    return DonationViewsUtil.waitForSubscriptionJob()
+                }
+            ).done(on: .main) {
+                self.didCompleteDonation(
+                    badge: selectedSubscriptionLevel.badge,
+                    thanksSheetType: .subscription
+                )
+            }.catch(on: .main) { [weak self] error in
+                self?.didFailDonation(error: error, mode: .monthly)
+            }
+        default:
+            Logger.warn("[Donations] Updating a subscription with a prior known error state. Treating this like a new subscription")
+            presentChoosePaymentMethodSheet(
+                amount: monthlyPaymentRequest.amount,
+                badge: monthlyPaymentRequest.profileBadge,
+                donationMode: .monthly
+            )
+        }
     }
 
     private func didTapToUpdateMonthlyDonation() {
@@ -387,6 +424,38 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
     }
 
+    internal func didCompleteDonation(
+        badge: ProfileBadge,
+        thanksSheetType: BadgeThanksSheet.BadgeType
+    ) {
+        onFinished(.completedDonation(
+            donateSheet: self,
+            badgeThanksSheet: BadgeThanksSheet(badge: badge, type: thanksSheetType)
+        ))
+    }
+
+    internal func didFailDonation(error: Error, mode: DonationMode) {
+        guard let error = error as? DonationJobError else {
+            owsFailDebug("[Donations] Unexpected error \(error)")
+            return
+        }
+
+        switch error {
+        case .timeout:
+            DonationViewsUtil.presentStillProcessingSheet(from: self)
+        case .assertion:
+            DonationViewsUtil.presentBadgeCantBeAddedSheet(
+                from: self,
+                currentSubscription: {
+                    switch mode {
+                    case .oneTime: return nil
+                    case .monthly: return state.monthly?.currentSubscription
+                    }
+                }()
+            )
+        }
+    }
+
     // MARK: - Loading data
 
     private func loadAndUpdateState() {
@@ -436,6 +505,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 monthlySubscriptionLevels: monthly.subscriptionLevels,
                 currentMonthlySubscription: monthly.currentSubscription,
                 subscriberID: monthly.subscriberID,
+                lastReceiptRedemptionFailure: monthly.lastReceiptRedemptionFailure,
                 previousMonthlySubscriptionCurrencyCode: monthly.previousSubscriptionCurrencyCode,
                 locale: Locale.current
             ))
@@ -475,12 +545,18 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         let currentSubscription: Subscription?
         let subscriberID: Data?
         let previousSubscriptionCurrencyCode: Currency.Code?
+        let lastReceiptRedemptionFailure: SubscriptionRedemptionFailureReason
     }
 
     private static func loadMonthlyState() -> Promise<MonthlyData> {
-        let (subscriberID, previousCurrencyCode) = databaseStorage.read {(
+        let (
+            subscriberID,
+            previousCurrencyCode,
+            lastReceiptRedemptionFailure
+        ) = databaseStorage.read {(
             SubscriptionManager.getSubscriberID(transaction: $0),
-            SubscriptionManager.getSubscriberCurrencyCode(transaction: $0)
+            SubscriptionManager.getSubscriberCurrencyCode(transaction: $0),
+            SubscriptionManager.lastReceiptRedemptionFailed(transaction: $0)
         )}
 
         let currentSubscriptionPromise = DonationViewsUtil.loadCurrentSubscription(
@@ -495,7 +571,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                     subscriptionLevels: subscriptionLevels,
                     currentSubscription: currentSubscription,
                     subscriberID: subscriberID,
-                    previousSubscriptionCurrencyCode: previousCurrencyCode
+                    previousSubscriptionCurrencyCode: previousCurrencyCode,
+                    lastReceiptRedemptionFailure: lastReceiptRedemptionFailure
                 )
             }
         }

@@ -1152,6 +1152,9 @@
 		F908179628EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908179528EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift */; };
 		F908AA7D28CE629700472E68 /* test-apng.png in Resources */ = {isa = PBXBuildFile; fileRef = F908AA7C28CE629700472E68 /* test-apng.png */; };
 		F908AA8028CE7F8D00472E68 /* TSGroupThreadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */; };
+		F90B731B2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F90B731A2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift */; };
+		F90B731D2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = F90B731C2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift */; };
+		F90B731F2926B48E0027318D /* DonateViewController+MonthlyReceiptRedemption.swift in Sources */ = {isa = PBXBuildFile; fileRef = F90B731E2926B48E0027318D /* DonateViewController+MonthlyReceiptRedemption.swift */; };
 		F90B7BC02912B8E000F50A59 /* DonationUtilitiesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66B42912B8C8004FFFAA /* DonationUtilitiesTest.swift */; };
 		F90B7BC12912B90100F50A59 /* DonateViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66B22912B8B7004FFFAA /* DonateViewControllerTest.swift */; };
 		F92074762888648A00B7F087 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92074752888648A00B7F087 /* AppDelegate.swift */; };
@@ -3514,6 +3517,9 @@
 		F908AA7928CB89CC00472E68 /* PngChunker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PngChunker.swift; sourceTree = "<group>"; };
 		F908AA7C28CE629700472E68 /* test-apng.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-apng.png"; sourceTree = "<group>"; };
 		F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSGroupThreadTest.swift; sourceTree = "<group>"; };
+		F90B731A2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+PaymentInProgressView.swift"; sourceTree = "<group>"; };
+		F90B731C2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+WaitForSubscriptionJob.swift"; sourceTree = "<group>"; };
+		F90B731E2926B48E0027318D /* DonateViewController+MonthlyReceiptRedemption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+MonthlyReceiptRedemption.swift"; sourceTree = "<group>"; };
 		F92074752888648A00B7F087 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F924A68128F8706200E368C8 /* DonationReadMoreSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReadMoreSheetViewController.swift; sourceTree = "<group>"; };
 		F927478728CFE9B10056EAFE /* test-png.png */ = {isa = PBXFileReference; explicitFileType = compiled; path = "test-png.png"; sourceTree = "<group>"; };
@@ -6958,6 +6964,7 @@
 				F96B66A12912B88A004FFFAA /* DonateChoosePaymentMethodSheet.swift */,
 				F96B66A32912B88A004FFFAA /* DonateViewController+DonationMode.swift */,
 				F96B66A82912B88B004FFFAA /* DonateViewController+MonthlyApplePayDonation.swift */,
+				F90B731E2926B48E0027318D /* DonateViewController+MonthlyReceiptRedemption.swift */,
 				F96B66A72912B88B004FFFAA /* DonateViewController+MonthlySubscriptionLevelView.swift */,
 				F96B66A42912B88B004FFFAA /* DonateViewController+OneTimeApplePayDonation.swift */,
 				F96B66A62912B88B004FFFAA /* DonateViewController+PKPaymentAuthorizationControllerDelegate.swift */,
@@ -6965,6 +6972,8 @@
 				F96B66A02912B88A004FFFAA /* DonateViewController.swift */,
 				F9349CE52901866800F9A93A /* DonationHeroView.swift */,
 				F924A68128F8706200E368C8 /* DonationReadMoreSheetViewController.swift */,
+				F90B731A2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift */,
+				F90B731C2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift */,
 				F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */,
 				F9CA468728FF0CA600C074F6 /* OneTimeDonationCustomAmountTextField.swift */,
 			);
@@ -10282,6 +10291,7 @@
 				F96B66AA2912B88B004FFFAA /* DonateChoosePaymentMethodSheet.swift in Sources */,
 				F96B66AC2912B88B004FFFAA /* DonateViewController+DonationMode.swift in Sources */,
 				F96B66B12912B88B004FFFAA /* DonateViewController+MonthlyApplePayDonation.swift in Sources */,
+				F90B731F2926B48E0027318D /* DonateViewController+MonthlyReceiptRedemption.swift in Sources */,
 				F96B66B02912B88B004FFFAA /* DonateViewController+MonthlySubscriptionLevelView.swift in Sources */,
 				F96B66AD2912B88B004FFFAA /* DonateViewController+OneTimeApplePayDonation.swift in Sources */,
 				F96B66AF2912B88B004FFFAA /* DonateViewController+PKPaymentAuthorizationControllerDelegate.swift in Sources */,
@@ -10293,6 +10303,8 @@
 				F9066F0727ECE41B008C9530 /* DonationReceiptsViewController.swift in Sources */,
 				F900F2DD27F25AB400431E09 /* DonationReceiptViewController.swift in Sources */,
 				F9A8ACC7280A175E00AFC6A7 /* DonationSettingsViewController.swift in Sources */,
+				F90B731B2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift in Sources */,
+				F90B731D2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift in Sources */,
 				F9DD70B92811AF82000C5960 /* DonationViewsUtil.swift in Sources */,
 				3428577D26BD8777005A2A96 /* Emoji+Available.swift in Sources */,
 				3428577726BD8777005A2A96 /* Emoji+Category.swift in Sources */,

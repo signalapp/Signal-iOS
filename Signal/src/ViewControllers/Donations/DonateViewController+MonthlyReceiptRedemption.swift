@@ -1,0 +1,23 @@
+//
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+//
+
+import Foundation
+import SignalMessaging
+
+extension DonateViewController {
+    func redeemMonthlyReceipts(
+        subscriberID: Data,
+        newSubscriptionLevel: SubscriptionLevel,
+        priorSubscriptionLevel: SubscriptionLevel?
+    ) {
+        SubscriptionManager.terminateTransactionIfPossible = false
+
+        SubscriptionManager.requestAndRedeemReceiptsIfNecessary(
+            for: subscriberID,
+            subscriptionLevel: newSubscriptionLevel.level,
+            priorSubscriptionLevel: priorSubscriptionLevel?.level
+        )
+    }
+}
