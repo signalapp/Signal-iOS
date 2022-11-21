@@ -48,6 +48,11 @@
     return self.isSentOnBehalfOfStoryMessage;
 }
 
+- (SealedSenderContentHint)contentHint
+{
+    return SealedSenderContentHintImplicit;
+}
+
 - (nullable SSKProtoContentBuilder *)contentBuilderWithThread:(TSThread *)thread
                                                   transaction:(SDSAnyReadTransaction *)transaction
 {
