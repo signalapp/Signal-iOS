@@ -32,7 +32,7 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
     ]
     private var selectedContacts: Set<String> = []
     private var searchText: String = ""
-    
+
     // MARK: - Components
     
     private static let textFieldHeight: CGFloat = 50

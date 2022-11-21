@@ -28,7 +28,8 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
         result.clipsToBounds = true
         result.themeBackgroundColor = .backgroundSecondary
         result.isHidden = !call.isVideoEnabled
-        result.layer.cornerRadius = 10
+        result.layer.cornerRadius = UIDevice.current.isIPad ? 20 : 10
+        result.layer.masksToBounds = true
         result.set(.width, to: LocalVideoView.width)
         result.set(.height, to: LocalVideoView.height)
         result.makeViewDraggable()
@@ -463,6 +464,8 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
     }
     
     @objc func didChangeDeviceOrientation(notification: Notification) {
+        if UIDevice.current.isIPad { return }
+
         func rotateAllButtons(rotationAngle: CGFloat) {
             let transform = CGAffineTransform(rotationAngle: rotationAngle)
             

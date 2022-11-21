@@ -26,7 +26,7 @@ final class FakeChatView: UIView {
         return result
     }()
     
-    private static let bubbleWidth = CGFloat(224)
+    private static let bubbleWidth = UIDevice.current.isIPad ? CGFloat(468) : CGFloat(224)
     private static let bubbleCornerRadius = CGFloat(10)
     private static let startDelay: TimeInterval = 1
     private static let animationDuration: TimeInterval = 0.4
@@ -50,12 +50,12 @@ final class FakeChatView: UIView {
         stackView.axis = .vertical
         stackView.spacing = spacing
         stackView.alignment = .fill
-        stackView.set(.width, to: UIScreen.main.bounds.width)
         let vInset = Values.smallSpacing
         stackView.layoutMargins = UIEdgeInsets(top: vInset, leading: Values.veryLargeSpacing, bottom: vInset, trailing: Values.veryLargeSpacing)
         stackView.isLayoutMarginsRelativeArrangement = true
         scrollView.addSubview(stackView)
         stackView.pin(to: scrollView)
+        stackView.set(.width, to: .width, of: scrollView)
         addSubview(scrollView)
         scrollView.pin(to: self)
         let height = chatBubbles.reduce(0) { $0 + $1.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height } + CGFloat(chatBubbles.count - 1) * spacing + 2 * vInset
@@ -65,7 +65,7 @@ final class FakeChatView: UIView {
     private func getChatBubble(withText text: String, wasSentByCurrentUser: Bool) -> UIView {
         let result = UIView()
         let bubbleView = UIView()
-        bubbleView.set(.width, to: FakeChatView.bubbleWidth)
+        bubbleView.set(.width, lessThanOrEqualTo: FakeChatView.bubbleWidth)
         bubbleView.themeShadowColor = .black
         bubbleView.layer.cornerRadius = FakeChatView.bubbleCornerRadius
         bubbleView.layer.shadowRadius = (ThemeManager.currentTheme.interfaceStyle == .light ? 4 : 8)

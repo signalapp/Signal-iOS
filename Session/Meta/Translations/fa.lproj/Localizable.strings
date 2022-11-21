@@ -450,6 +450,7 @@
 "SEND_FAILED_NOTIFICATION_BODY" = "پیام شما ارسال نشد.";
 "INVALID_SESSION_ID_MESSAGE" = "لطفاً شناسه Session را مجدد بررسی کنید.";
 "INVALID_RECOVERY_PHRASE_MESSAGE" = "لطفاً شناسه بازیابی را مجدد بررسی کنید.";
+"QUOTED_MESSAGE_NOT_FOUND" = "Original message not found.";
 "MEDIA_TAB_TITLE" = "مدیا";
 "DOCUMENT_TAB_TITLE" = "مدارک";
 "DOCUMENT_TILES_EMPTY_DOCUMENT" = "شما در این مکالمه هیچ مدرکی ندارید.";
@@ -476,6 +477,7 @@
 "EMOJI_REACTS_NOTIFICATION" = "%@  به پیامی با %@ واکنش نشان می‌دهد. ";
 "EMOJI_REACTS_MORE_REACTORS_ONE" = "و ۱ نفر دیگر به این پیام واکنش %@ نشان داده است.";
 "EMOJI_REACTS_MORE_REACTORS_MUTIPLE" = "و %@ نفر دیگر به این پیام واکنش %@ نشان داده‌اند.";
+"EMOJI_REACTS_SHOW_LESS" = "Show less";
 "EMOJI_REACTS_RATE_LIMIT_TOAST" = "Slow down! You've sent too many emoji reacts. Try again soon.";
 /* New conversation screen*/
 "vc_new_conversation_title" = "مکالمه جدید";

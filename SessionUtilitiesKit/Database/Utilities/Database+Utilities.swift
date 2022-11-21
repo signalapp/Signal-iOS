@@ -32,6 +32,8 @@ public extension Database {
     }
     
     func interrupt() {
+        guard sqliteConnection != nil else { return }
+        
         sqlite3_interrupt(sqliteConnection)
     }
 }

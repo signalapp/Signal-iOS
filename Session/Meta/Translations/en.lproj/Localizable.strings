@@ -450,6 +450,7 @@
 "SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
 "INVALID_SESSION_ID_MESSAGE" = "Please check the Session ID and try again.";
 "INVALID_RECOVERY_PHRASE_MESSAGE" = "Please check the Recovery Phrase and try again.";
+"QUOTED_MESSAGE_NOT_FOUND" = "Original message not found.";
 "MEDIA_TAB_TITLE" = "Media";
 "DOCUMENT_TAB_TITLE" = "Documents";
 "DOCUMENT_TILES_EMPTY_DOCUMENT" = "You don't have any document in this conversation.";
@@ -476,6 +477,7 @@
 "EMOJI_REACTS_NOTIFICATION" = "%@ reacts to a message with %@.";
 "EMOJI_REACTS_MORE_REACTORS_ONE" = "And 1 other has reacted %@ to this message.";
 "EMOJI_REACTS_MORE_REACTORS_MUTIPLE" = "And %@ others have reacted %@ to this message.";
+"EMOJI_REACTS_SHOW_LESS" = "Show less";
 "EMOJI_REACTS_RATE_LIMIT_TOAST" = "Slow down! You've sent too many emoji reacts. Try again soon.";
 /* New conversation screen*/
 "vc_new_conversation_title" = "New Conversation";

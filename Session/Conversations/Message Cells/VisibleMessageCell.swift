@@ -168,7 +168,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         var result = groupThreadHSpacing + profilePictureSize + groupThreadHSpacing
         
         if UIDevice.current.isIPad {
-            result += CGFloat(UIScreen.main.bounds.width / 2 - 88)
+            result += 168
         }
         
         return result
@@ -503,7 +503,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                         let quoteView: QuoteView = QuoteView(
                             for: .regular,
                             authorId: quote.authorId,
-                            quotedText: quote.body,
+                            quotedText: quote.body ?? "QUOTED_MESSAGE_NOT_FOUND".localized(),
                             threadVariant: cellViewModel.threadVariant,
                             currentUserPublicKey: cellViewModel.currentUserPublicKey,
                             currentUserBlindedPublicKey: cellViewModel.currentUserBlindedPublicKey,
@@ -1025,11 +1025,12 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
 
     static func getMaxWidth(for cellViewModel: MessageViewModel, includingOppositeGutter: Bool = true) -> CGFloat {
         let screen: CGRect = UIScreen.main.bounds
+        let width: CGFloat = UIDevice.current.isIPad ? screen.width * 0.75 : screen.width
         let oppositeEdgePadding: CGFloat = (includingOppositeGutter ? gutterSize : contactThreadHSpacing)
         
         switch cellViewModel.variant {
             case .standardOutgoing:
-                return (screen.width - contactThreadHSpacing - oppositeEdgePadding)
+                return (width - contactThreadHSpacing - oppositeEdgePadding)
                 
             case .standardIncoming, .standardIncomingDeleted:
                 let isGroupThread = (
@@ -1038,7 +1039,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                 )
                 let leftGutterSize = (isGroupThread ? leftGutterSize : contactThreadHSpacing)
                 
-                return (screen.width - leftGutterSize - oppositeEdgePadding)
+                return (width - leftGutterSize - oppositeEdgePadding)
                 
             default: preconditionFailure()
         }
