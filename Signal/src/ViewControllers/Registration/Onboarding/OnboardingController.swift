@@ -8,7 +8,7 @@ import SignalServiceKit
 
 @objc
 public class OnboardingNavigationController: OWSNavigationController {
-    let onboardingController: OnboardingController
+    private(set) var onboardingController: OnboardingController!
 
     @objc
     public init(onboardingController: OnboardingController) {
@@ -17,6 +17,10 @@ public class OnboardingNavigationController: OWSNavigationController {
         if let nextMilestone = onboardingController.nextMilestone {
             setViewControllers([onboardingController.nextViewController(milestone: nextMilestone)], animated: false)
         }
+    }
+
+    public required init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
 
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {

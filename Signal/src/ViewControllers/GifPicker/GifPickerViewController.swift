@@ -12,13 +12,17 @@ class GifPickerNavigationViewController: OWSNavigationController {
 
     weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
     weak var approvalDataSource: AttachmentApprovalViewControllerDataSource?
-    private let initialMessageBody: MessageBody?
+    private var initialMessageBody: MessageBody?
 
     lazy var gifPickerViewController: GifPickerViewController = {
         let gifPickerViewController = GifPickerViewController()
         gifPickerViewController.delegate = self
         return gifPickerViewController
     }()
+
+    required init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    }
 
     required init(initialMessageBody: MessageBody?) {
         self.initialMessageBody = initialMessageBody

@@ -95,7 +95,16 @@ open class OWSNavigationController: OWSNavigationControllerBase {
     // this resolves to the superclass implementation and behaves properly, but
     // in Swift, it results in a crash. A no-op implementation avoids the crash
     // and results in the same behavior as in Objective-C.
-    public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    //
+    // Subclass are required to implement this initializer if they implement
+    // any other initializer. However, the initializer should *always* be an
+    // empty shim that calls `super`. The compiler will force you to initialize
+    // all ivars before calling `super` -- don’t do that. Instead, make ivars
+    // `var` or optional so they don’t need to be modified in this initializer.
+    public required override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        if #available(iOS 13, *) {
+            owsFailDebug("This initializer should never be explicitly executed.")
+        }
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
 
