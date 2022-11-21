@@ -158,7 +158,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         let inputTextView = ConversationInputTextView()
         inputTextView.textViewToolbarDelegate = self
         inputTextView.font = .ows_dynamicTypeBody
-        inputTextView.backgroundColor = Theme.conversationInputBackgroundColor
         inputTextView.setContentHuggingLow()
         inputTextView.setCompressionResistanceLow()
         inputTextView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "inputTextView")
@@ -219,7 +218,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     private lazy var quotedReplyWrapper: UIView = {
         let view = UIView.container()
-        view.backgroundColor = Theme.conversationInputBackgroundColor
         view.setContentHuggingHorizontalLow()
         view.setCompressionResistanceHorizontalLow()
         view.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "quotedReplyWrapper")
@@ -228,8 +226,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     private lazy var linkPreviewWrapper: UIView = {
         let view = UIView.container()
-        view.isHidden = true
-        view.backgroundColor = Theme.conversationInputBackgroundColor
+        view.clipsToBounds = true
         view.setContentHuggingHorizontalLow()
         view.setCompressionResistanceHorizontalLow()
         view.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "linkPreviewWrapper")
@@ -239,7 +236,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     private lazy var voiceMemoContentView: UIView = {
         let view = UIView.container()
         view.isHidden = true
-        view.backgroundColor = Theme.conversationInputBackgroundColor
         view.setContentHuggingHorizontalLow()
         view.setCompressionResistanceHorizontalLow()
         view.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "voiceMemoContentView")
@@ -261,18 +257,22 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     private lazy var suggestedStickerView: StickerHorizontalListView = {
         let suggestedStickerSize: CGFloat = 48
         let suggestedStickerSpacing: CGFloat = 12
-        let stickerListContentInset = UIEdgeInsets(hMargin: 24, vMargin: suggestedStickerSpacing)
+        let stickerListContentInset = UIEdgeInsets(
+            hMargin: OWSTableViewController2.defaultHOuterMargin,
+            vMargin: suggestedStickerSpacing
+        )
         let view = StickerHorizontalListView(cellSize: suggestedStickerSize, cellInset: 0, spacing: suggestedStickerSpacing)
         view.backgroundColor = Theme.conversationButtonBackgroundColor
         view.contentInset = stickerListContentInset
-        view.alpha = 0
         view.autoSetDimension(.height, toSize: suggestedStickerSize + stickerListContentInset.bottom + stickerListContentInset.top)
         return view
     }()
 
-    private lazy var messageContentView = UIView.container()
+    private let suggestedStickerWrapper = UIView.container()
 
-    private lazy var mainPanelView: UIView = {
+    private let messageContentView = UIView.container()
+
+    private let mainPanelView: UIView = {
         let view = UIView()
         view.layoutMargins = UIEdgeInsets(hMargin: OWSTableViewController2.defaultHOuterMargin - 16, vMargin: 0)
         return view
@@ -301,7 +301,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             initialVelocity: .zero
         )
         let animator = UIViewPropertyAnimator(duration: duration, timingParameters: timingParameters)
-        animator.isUserInteractionEnabled = false
+        animator.isUserInteractionEnabled = true
         return animator
     }
 
@@ -351,6 +351,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         // Wrap vertical stack into a view with rounded corners.
         let vStackRoundingView = UIView.container()
+        vStackRoundingView.backgroundColor = Theme.isDarkThemeEnabled ? UIColor(white: 1, alpha: 0.16) : UIColor(white: 0, alpha: 0.1)
         vStackRoundingView.layer.cornerRadius = 18
         vStackRoundingView.clipsToBounds = true
         vStackRoundingView.addSubview(messageContentVStack)
@@ -391,26 +392,17 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         // Put main panel view into a wrapper view that would also contain background view.
         mainPanelWrapperView.addSubview(mainPanelView)
-        mainPanelView.autoPinEdge(toSuperviewEdge: .top)
-        mainPanelView.autoPinEdge(toSuperviewEdge: .bottom)
-        // Horizontal constraints are added in `updateContentLayout`.
+        mainPanelView.autoPinEdgesToSuperviewEdges()
 
-        // "Suggested Stickers": must be placed before `mainPanelWrapperView`
-        // as it will animated from behind main chat input bar.
-        addSubview(suggestedStickerView)
-        suggestedStickerView.autoPinEdge(toSuperviewEdge: .top)
-        // Horizontal constraints are added in `updateContentLayout`.
-
-        // Wrapper for the main panel: contains background and also defines safe area insets (see updateContentLayout).
-        addSubview(mainPanelWrapperView)
-        mainPanelWrapperView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
-
-        // Vertical constraints for `mainPanelWrapperView` and `suggestedStickerView` are updated based
-        // on whether suggested stickers should be visible or not.
-        // If visible `suggestedStickerView` and `mainPanelWrapperView` are stacked vertically.
-        // If not visible `mainPanelWrapperView` is constrained to all edges of ConversationInputToolbar
-        // and `suggestedStickerView` is hidden beneath.
+        // "Suggested Stickers" panel is created as needed and will placed in a wrapper view to allow for slide in / slide out animation.
+        suggestedStickerWrapper.clipsToBounds = true
         updateSuggestedStickersViewConstraint()
+
+        let outerVStack = UIStackView(arrangedSubviews: [ suggestedStickerWrapper, mainPanelWrapperView ] )
+        outerVStack.axis = .vertical
+        addSubview(outerVStack)
+        outerVStack.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+        outerVStack.autoPinEdge(toSuperviewSafeArea: .bottom)
 
         // When presenting or dismissing the keyboard, there may be a slight
         // gap between the keyboard and the bottom of the input bar during
@@ -441,14 +433,13 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         extendedBackgroundView.autoPinEdge(toSuperviewEdge: .top)
         extendedBackgroundView.autoPinEdge(toSuperviewEdge: .bottom, withInset: -backgroundExtension)
 
-        // See comments on updateContentLayout:.
-        suggestedStickerView.insetsLayoutMarginsFromSafeArea = false
+        // See comments on updateLayout(withSafeAreaInsets:).
         messageContentVStack.insetsLayoutMarginsFromSafeArea = false
         messageContentView.insetsLayoutMarginsFromSafeArea = false
         mainPanelWrapperView.insetsLayoutMarginsFromSafeArea = false
+        outerVStack.insetsLayoutMarginsFromSafeArea = false
         insetsLayoutMarginsFromSafeArea = false
 
-        suggestedStickerView.preservesSuperviewLayoutMargins = false
         messageContentVStack.preservesSuperviewLayoutMargins = false
         messageContentView.preservesSuperviewLayoutMargins = false
         mainPanelWrapperView.preservesSuperviewLayoutMargins = false
@@ -526,6 +517,17 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         ConversationInputToolbar.setView(stickerButton, hidden: hideStickerButton, usingAnimator: animator)
         ConversationInputToolbar.setView(keyboardButton, hidden: hideKeyboardButton, usingAnimator: animator)
 
+        // Hide text input field if Voice Message UI is presented or make it visible otherwise.
+        // Do not change "isHidden" because that'll cause inputTextView to lose focus.
+        let inputTextViewAlpha: CGFloat = isShowingVoiceMemoUI ? 0 : 1
+        if let animator {
+            animator.addAnimations {
+                self.inputTextView.alpha = inputTextViewAlpha
+            }
+        } else {
+            inputTextView.alpha = inputTextViewAlpha
+        }
+
         if rightEdgeControlsView.state != rightEdgeControlsState {
             hasLayoutChanged = true
 
@@ -583,25 +585,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         return true
     }
 
-    private func updateContentLayout() {
-        // iOS doesn't always update the safeAreaInsets correctly & in a timely
-        // way for the inputAccessoryView after a orientation change.  The best
-        // workaround appears to be to use the safeAreaInsets from
-        // ConversationViewController's view.  ConversationViewController updates
-        // this input toolbar using updateLayoutWithIsLandscape:.
-
-        if let layoutConstraints = layoutConstraints {
-            NSLayoutConstraint.deactivate(layoutConstraints)
-        }
-
-        layoutConstraints = [
-            mainPanelView.autoPinEdge(toSuperviewEdge: .left, withInset: receivedSafeAreaInsets.left),
-            mainPanelView.autoPinEdge(toSuperviewEdge: .right, withInset: receivedSafeAreaInsets.right),
-            suggestedStickerView.autoPinEdge(toSuperviewEdge: .left, withInset: receivedSafeAreaInsets.left),
-            suggestedStickerView.autoPinEdge(toSuperviewEdge: .right, withInset: receivedSafeAreaInsets.right)
-        ]
-    }
-
     func updateLayout(withSafeAreaInsets safeAreaInsets: UIEdgeInsets) -> Bool {
         let insetsChanged = receivedSafeAreaInsets != safeAreaInsets
         let needLayoutConstraints = layoutConstraints == nil
@@ -609,8 +592,13 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             return false
         }
 
+        // iOS doesn't always update the safeAreaInsets correctly & in a timely
+        // way for the inputAccessoryView after a orientation change.  The best
+        // workaround appears to be to use the safeAreaInsets from
+        // ConversationViewController's view.  ConversationViewController updates
+        // this input toolbar using updateLayoutWithIsLandscape:.
+
         receivedSafeAreaInsets = safeAreaInsets
-        updateContentLayout()
         return true
     }
 
@@ -955,8 +943,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         quotedReplyWrapper.addSubview(quotedMessagePreview)
         quotedMessagePreview.autoPinEdgesToSuperviewEdges()
 
-        // hasAsymmetricalRounding may have changed.
-        clearLinkPreviewView()
         updateInputLinkPreview()
 
         if animated, quotedReplyWrapper.isHidden {
@@ -1031,6 +1017,32 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
     private var wasLinkPreviewCancelled = false
 
+    private var isLinkPreviewHidden = true
+
+    private var linkPreviewConstraint: NSLayoutConstraint?
+
+    private func updateLinkPreviewConstraint() {
+        guard let linkPreviewView else {
+            owsFailDebug("linkPreviewView == nil")
+            return
+        }
+        if let linkPreviewConstraint {
+            removeConstraint(linkPreviewConstraint)
+        }
+        // To hide link preview I constrain both top and bottom edges of the linkPreviewWrapper
+        // to top edge of linkPreviewView, effectively making linkPreviewWrapper a zero height view.
+        // But since linkPreviewView keeps it size animating this change results in a nice slide in/out animation.
+        // To make link preview visible I constrain linkPreviewView to linkPreviewWrapper normally.
+        let linkPreviewContstraint: NSLayoutConstraint
+        if isLinkPreviewHidden {
+            linkPreviewContstraint = linkPreviewWrapper.bottomAnchor.constraint(equalTo: linkPreviewView.topAnchor)
+        } else {
+            linkPreviewContstraint = linkPreviewWrapper.bottomAnchor.constraint(equalTo: linkPreviewView.bottomAnchor)
+        }
+        addConstraint(linkPreviewContstraint)
+        self.linkPreviewConstraint = linkPreviewContstraint
+    }
+
     var linkPreviewDraft: OWSLinkPreviewDraft? {
         AssertIsOnMainThread()
 
@@ -1042,20 +1054,22 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     private func updateInputLinkPreview() {
         AssertIsOnMainThread()
 
+        let animateChanges = window != nil
+
         guard let bodyText = messageBody?.text.trimmingCharacters(in: .whitespacesAndNewlines), !bodyText.isEmpty else {
-            clearLinkPreviewStateAndView()
+            clearLinkPreviewStateAndHideView(animated: animateChanges)
             wasLinkPreviewCancelled = false
             return
         }
 
         guard !wasLinkPreviewCancelled else {
-            clearLinkPreviewStateAndView()
+            clearLinkPreviewStateAndHideView(animated: animateChanges)
             return
         }
 
         // Don't include link previews for oversize text messages.
         guard bodyText.lengthOfBytes(using: .utf8) < kOversizeTextMessageSizeThreshold else {
-            clearLinkPreviewStateAndView()
+            clearLinkPreviewStateAndHideView(animated: animateChanges)
             return
         }
 
@@ -1063,7 +1077,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             let previewUrl = linkPreviewManager.findFirstValidUrl(in: inputTextView.text, bypassSettingsCheck: false),
             !previewUrl.absoluteString.isEmpty else
         {
-            clearLinkPreviewStateAndView()
+            clearLinkPreviewStateAndHideView(animated: animateChanges)
             return
         }
 
@@ -1089,53 +1103,101 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             }
             .catch { [weak self] _ in
                 // The link preview could not be loaded.
-                self?.clearLinkPreviewView()
+                self?.clearLinkPreviewStateAndHideView(animated: animateChanges)
             }
     }
 
     private func ensureLinkPreviewView(withState state: LinkPreviewState) {
         AssertIsOnMainThread()
 
-        // TODO: We could re-use LinkPreviewView now.
-        clearLinkPreviewView()
+        let linkPreviewView: LinkPreviewView
+        if let existingLinkPreviewView = self.linkPreviewView {
+            linkPreviewView = existingLinkPreviewView
+        } else {
+            linkPreviewView = LinkPreviewView(draftDelegate: self)
+            linkPreviewWrapper.addSubview(linkPreviewView)
+            // See comment in `updateLinkPreviewConstraint` why `bottom` isn't constrained.
+            linkPreviewView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+            self.linkPreviewView = linkPreviewView
 
-        let linkPreviewView = LinkPreviewView(draftDelegate: self)
+            updateLinkPreviewConstraint()
+        }
+
         linkPreviewView.configureForNonCVC(state: state, isDraft: true, hasAsymmetricalRounding: quotedReply == nil)
-        self.linkPreviewView = linkPreviewView
+        UIView.performWithoutAnimation {
+            self.mainPanelView.layoutIfNeeded()
+        }
 
-        linkPreviewWrapper.isHidden = false
-        linkPreviewWrapper.addSubview(linkPreviewView)
-        linkPreviewView.autoPinEdgesToSuperviewMargins()
-        linkPreviewWrapper.layoutIfNeeded()
+        guard isLinkPreviewHidden else {
+            return
+        }
+
+        isLinkPreviewHidden = false
+
+        let animateChanges = window != nil
+        guard animateChanges else {
+            updateLinkPreviewConstraint()
+            layoutIfNeeded()
+            return
+        }
+
+        isAnimatingHeightChange = true
+        let animator = ConversationInputToolbar.springViewPropertyAnimator(
+            duration: ConversationInputToolbar.heightChangeAnimationDuration,
+            dampingFraction: 0.9,
+            response: 0.3
+        )
+        animator.addAnimations {
+            self.updateLinkPreviewConstraint()
+            self.layoutIfNeeded()
+        }
+        animator.addCompletion { _ in
+            self.isAnimatingHeightChange = false
+        }
+        animator.startAnimation()
     }
 
-    private func clearLinkPreviewStateAndView() {
-        AssertIsOnMainThread()
-
+    private func clearLinkPreviewStateAndHideView(animated: Bool) {
         inputLinkPreview = nil
-        linkPreviewView = nil
-        clearLinkPreviewView()
+        hideLinkPreviewView(animated: animated)
     }
 
-    private func clearLinkPreviewView() {
+    private func hideLinkPreviewView(animated: Bool) {
         AssertIsOnMainThread()
 
-        linkPreviewWrapper.removeAllSubviews()
-        linkPreviewWrapper.isHidden = true
+        guard !isLinkPreviewHidden else { return }
+
+        isLinkPreviewHidden = true
+
+        guard animated else {
+            updateLinkPreviewConstraint()
+            layoutIfNeeded()
+            return
+        }
+
+        isAnimatingHeightChange = true
+        let animator = ConversationInputToolbar.springViewPropertyAnimator(
+            duration: ConversationInputToolbar.heightChangeAnimationDuration,
+            dampingFraction: 0.9,
+            response: 0.3
+        )
+        animator.addAnimations {
+            self.updateLinkPreviewConstraint()
+            self.layoutIfNeeded()
+        }
+        animator.addCompletion { _ in
+            self.isAnimatingHeightChange = false
+        }
+        animator.startAnimation()
     }
 
     // MARK: LinkPreviewViewDraftDelegate
-
-    public func linkPreviewCanCancel() -> Bool {
-        return true
-    }
 
     public func linkPreviewDidCancel() {
         AssertIsOnMainThread()
 
         wasLinkPreviewCancelled = true
-        inputLinkPreview = nil
-        clearLinkPreviewStateAndView()
+        clearLinkPreviewStateAndHideView(animated: true)
     }
 
     // MARK: Stickers
@@ -1151,11 +1213,24 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             removeConstraint(suggestedStickersViewConstraint)
         }
 
+        // suggestedStickerView is created lazily and isn't accessed until it is needed.
+        // Set wrapper's height to zero if it is not needed yet.
+        guard suggestedStickerWrapper.subviews.count > 0 else {
+            let zeroHeightConstraint = suggestedStickerWrapper.heightAnchor.constraint(equalToConstant: 0)
+            addConstraint(zeroHeightConstraint)
+            suggestedStickersViewConstraint = zeroHeightConstraint
+            return
+        }
+
+        // To hide suggested stickers panel I constrain both top and bottom edges of the `suggestedStickerView`
+        // to the top edge of its wrapper view, effectively making that wrapper view a zero height view.
+        // `suggestedStickerView` has a fixed height so animating this change results in a nice slide in/out animation.
+        // `suggestedStickerView` is made visible by constraining all of its edges to wrapper view normally.
         let constraint: NSLayoutConstraint
         if isSuggestedStickersViewHidden {
-            constraint = suggestedStickerView.topAnchor.constraint(equalTo: mainPanelWrapperView.topAnchor)
+            constraint = suggestedStickerWrapper.bottomAnchor.constraint(equalTo: suggestedStickerView.topAnchor)
         } else {
-            constraint = suggestedStickerView.bottomAnchor.constraint(equalTo: mainPanelWrapperView.topAnchor)
+            constraint = suggestedStickerWrapper.bottomAnchor.constraint(equalTo: suggestedStickerView.bottomAnchor)
         }
         addConstraint(constraint)
         suggestedStickersViewConstraint = constraint
@@ -1181,6 +1256,14 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     private func showSuggestedStickersView(animated: Bool) {
         owsAssertDebug(!suggestedStickerInfos.isEmpty)
 
+        if suggestedStickerView.superview == nil {
+            suggestedStickerWrapper.addSubview(suggestedStickerView)
+            suggestedStickerView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+            UIView.performWithoutAnimation {
+                suggestedStickerWrapper.layoutIfNeeded()
+            }
+        }
+
         suggestedStickerView.items = suggestedStickerInfos.map { stickerInfo in
             StickerHorizontalListViewItemSticker(
                 stickerInfo: stickerInfo,
@@ -1196,7 +1279,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         isSuggestedStickersViewHidden = false
 
         UIView.performWithoutAnimation {
-            self.suggestedStickerView.alpha = 1
             self.suggestedStickerView.layoutIfNeeded()
             self.suggestedStickerView.contentOffset = CGPoint(
                 x: -self.suggestedStickerView.contentInset.left,
@@ -1231,7 +1313,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         isSuggestedStickersViewHidden = true
 
         guard animated else {
-            suggestedStickerView.alpha = 0
             updateSuggestedStickersViewConstraint()
             return
         }
@@ -1247,7 +1328,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
             self.layoutIfNeeded()
         }
         animator.addCompletion { _ in
-            self.suggestedStickerView.alpha = 0
             self.isAnimatingHeightChange = false
         }
         animator.startAnimation()
@@ -2021,13 +2101,11 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
         guard isConfigurationComplete else { return }
 
         updateHeightWithTextView(textView)
-        updateInputLinkPreview()
         ensureButtonVisibility(withAnimation: true, doLayout: true)
+        updateInputLinkPreview()
     }
 
-    func textViewDidChangeSelection(_ textView: UITextView) {
-        updateInputLinkPreview()
-    }
+    func textViewDidChangeSelection(_ textView: UITextView) { }
 
     func textViewDidBecomeFirstResponder(_ textView: UITextView) {
         setDesiredKeyboardType(.system, animated: true)

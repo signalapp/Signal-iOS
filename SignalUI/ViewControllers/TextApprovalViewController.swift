@@ -284,12 +284,9 @@ extension TextApprovalViewController: InputAccessoryViewPlaceholderDelegate {
 // MARK: -
 
 extension TextApprovalViewController: LinkPreviewViewDraftDelegate {
+
     public func linkPreviewDidCancel() {
         clearLinkPreview()
         wasLinkPreviewCancelled = true
-    }
-
-    public func linkPreviewCanCancel() -> Bool {
-        return true
     }
 }

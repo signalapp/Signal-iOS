@@ -7,7 +7,6 @@ import YYImage
 import SignalMessaging
 
 public protocol LinkPreviewViewDraftDelegate: AnyObject {
-    func linkPreviewCanCancel() -> Bool
     func linkPreviewDidCancel()
 }
 
@@ -54,8 +53,7 @@ public class LinkPreviewView: ManualStackViewWithLayer {
 
         super.init(name: "LinkPreviewView")
 
-        if let draftDelegate = draftDelegate,
-           draftDelegate.linkPreviewCanCancel() {
+        if draftDelegate != nil {
             self.isUserInteractionEnabled = true
             self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(wasTapped)))
         }
