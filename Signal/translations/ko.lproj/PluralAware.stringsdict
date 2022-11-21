@@ -13,7 +13,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Not all items could be sent to the stories you selected because the file type is not supported.</string>
+			<string>지원되지 않는 파일 형식으로 인해 모든 항목을 선택한 스토리에 보낼 수 없습니다.</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
@@ -1031,29 +1031,6 @@
 			<string>d</string>
 			<key>other</key>
 			<string>조회수 %1$d</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@views@  %2$#@replies@</string>
-		<key>replies</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>답장 &lt;bold&gt;%2$d&lt;/bold&gt;개</string>
-		</dict>
-		<key>views</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>답장 &lt;bold&gt;%2$d&lt;/bold&gt;개</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>

@@ -1,2 +1,2 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• Am reconceput bara de introducere pentru un aspect și o funcționalitate mai bună la trimiterea mesajelor
+• Soluționări de bug-uri și îmbunătățiri pentru distribuit și vizualizat povești

@@ -1,2 +1,2 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• Mendesain ulang bilah input demi tampilan dan nuansa yang lebih baik saat Anda mengirim pesan
+• Perbaikan bug dan peningkatan untuk berbagi dan melihat cerita

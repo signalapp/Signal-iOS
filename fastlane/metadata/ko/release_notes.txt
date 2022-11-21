@@ -1,2 +1,2 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• 메시지 입력 창을 새로운 디자인으로 개선했습니다.
+• 스토리 공유 및 보기와 관련된 버그를 수정했습니다.

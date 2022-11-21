@@ -1,2 +1,2 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• De invoerbalk is herontworpen voor een betere look en feel tijdens het verzenden van berichten
+• Bugfixes en verbeteringen met betrekking tot het delen en bekijken van verhalen.

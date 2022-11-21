@@ -1,2 +1,2 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• आपके द्वारा मेसेज भेजने पर बेहतर लुक और फ़ील के लिए इनपुट बार रीडिज़ाइन किया गया
+• स्टोरीज़ साझा करने और देखने के लिए बग फ़िक्स और सुधार

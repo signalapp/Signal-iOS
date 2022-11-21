@@ -1,2 +1,2 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• Redizajnovaná hlavná lišta pre lepší vzhľad a dojem pri odosielaní správ
+• Opravy chýb a vylepšenia pri zdieľaní a prezeraní príbehov

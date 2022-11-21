@@ -1,2 +1,2 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• Przeprojektowaliśmy pasek wprowadzania, aby lepiej wyglądał i działał podczas wysyłania wiadomości
+• Poprawki błędów i ulepszenia w zakresie udostępniania i przeglądania relacji

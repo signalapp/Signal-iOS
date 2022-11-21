@@ -13,9 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Not all items could be sent to the story you selected because the file type is not supported.</string>
+			<string>सभी आइटम आपकी सिलेक्ट की गई स्टोरी पर नहीं भेजे जा सकते क्योंकि फ़ाइल टाइप सपोर्टेड नहीं है।</string>
 			<key>other</key>
-			<string>Not all items could be sent to the stories you selected because the file type is not supported.</string>
+			<string>सभी आइटम आपकी सिलेक्ट की गई स्टोरीज़ पर नहीं भेजे जा सकते क्योंकि फ़ाइल टाइप सपोर्टेड नहीं है।</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
@@ -1179,33 +1179,6 @@
 			<string>%1$d व्यू</string>
 			<key>other</key>
 			<string>%1$d व्यू</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@views@  %2$#@replies@</string>
-		<key>replies</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; जवाब</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; जवाब</string>
-		</dict>
-		<key>views</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; व्यू</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; व्यू</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>

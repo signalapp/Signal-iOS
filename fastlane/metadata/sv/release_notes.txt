@@ -1,2 +1,2 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• Inmatningsfältet har designats om för bättre utseende och känsla när du skickar meddelanden
+• Buggfixar och förbättringar för att dela och visa stories

@@ -1,2 +1,2 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• Parannettu syöttöpalkin ulkoasua ja viestien lähettämisen käyttökokemusta
+• Tarinoiden jakamiseen ja katseluun liittyviä virheenkorjauksia ja parannuksia

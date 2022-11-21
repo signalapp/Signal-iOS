@@ -1,2 +1,2 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• إعادة تصميم شريط الإدخال لإضفاء مظهر وأسلوب أفضل أثناء إرسال الرسائل
+• إصلاحات الأخطاء والتحسينات لِمشاركة القِصص وعرضها

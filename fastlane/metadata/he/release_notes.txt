@@ -1,2 +1,2 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• עיצבנו מחדש את סרגל ההקלדה לקבלת מראה ותחושה טובים יותר בזמן שליחת הודעה
+• תיקוני באגים ושיפורים לשיתוף וצפייה בסטוריז

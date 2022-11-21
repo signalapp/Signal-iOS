@@ -1,2 +1,2 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• Újraterveztük a szövegbeviteli sávot a jobb megjelenés és érzet érdekében üzenetküldés közben
+• Hibajavítások és fejlesztések a Történetek megosztásához és megtekintéséhez

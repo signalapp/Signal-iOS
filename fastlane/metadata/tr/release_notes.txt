@@ -1,2 +1,2 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• Mesaj gönderirken daha iyi bir görünüm ve kullanım için giriş çubuğu yeniden tasarlandı
+• Hikayeleri paylaşmak ve görüntülemek için hata düzeltmeleri ve iyileştirmeler

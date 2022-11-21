@@ -1,2 +1,2 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• Σχεδιάσαμε εκ νέου τη γραμμή εισαγωγής μηνυμάτων για καλύτερη εμφάνιση και αίσθηση καθώς στέλνετε μηνύματα
+• Διορθώσεις προβλημάτων και βελτιώσεις για κοινοποίηση και εμφάνιση ιστοριών

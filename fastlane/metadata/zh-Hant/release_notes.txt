@@ -1,2 +1,2 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• 重新設計輸入列以改善傳送訊息時的體驗
+• 針對分享和瀏覽限時動態修復錯誤並作出改善

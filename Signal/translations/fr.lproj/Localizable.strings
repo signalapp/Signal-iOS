@@ -365,7 +365,7 @@
 "BADGE_DETAILS_DONATE_TO_SIGNAL" = "Faire un don";
 
 /* When viewing someone else's donor badge, you'll see a sheet. This is the title on that sheet. Embeds {badge owner's short name} */
-"BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "%1$@ supports Signal";
+"BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "%1$@ soutient Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly donor.";
@@ -374,10 +374,10 @@
 "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time donation.";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Badge expired";
+"BADGE_EXPIRED_BOOST_TITLE" = "Le macaron est expiré";
 
 /* Button text when a badge expires, asking users to donate */
-"BADGE_EXPIRED_DONATE_BUTTON" = "Donate";
+"BADGE_EXPIRED_DONATE_BUTTON" = "Faire un don";
 
 /* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
 "BADGE_EXPIRED_GIFT_BODY" = "Le macaron que vous avez reçu a expiré et ne peut plus être affiché sur votre profil.";
@@ -494,7 +494,7 @@
 "BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "Vous avez reçu un macaron cadeau de la part de %1$@. Affichez ce badge sur votre profil pour faire connaître votre don à Signal.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. $1%1$@ Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment details and donate again.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. %1$@ Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment details and donate again.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically canceled because you were inactive for too long. Your %1$@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, donate now.";
@@ -3254,7 +3254,7 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ est sur Signal.";
 
 /* accessibility label for the button which shows the regular keyboard instead of sticker picker */
-"INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "Keyboard";
+"INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "Clavier";
 
 /* Placeholder text displayed in empty input box in chat screen. */
 "INPUT_TOOLBAR_MESSAGE_PLACEHOLDER" = "Message";
@@ -6359,13 +6359,13 @@
 "STORIES_SHARE_STORY_ACTION" = "Partager";
 
 /* Section title shown when sending to non-story conversations but failing to send the file to stories. */
-"STORIES_SHARESHEET_PARTIAL_SEND_REMAINING_SECTION_TITLE" = "Sent To";
+"STORIES_SHARESHEET_PARTIAL_SEND_REMAINING_SECTION_TITLE" = "Envoyé à";
 
 /* Section title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
 "STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "Not Sent To";
 
 /* Title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
-"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Partially Sent";
+"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Partiellement envoyée";
 
 /* Subtitle shown when failing to send an incompatible file to stories via the sharesheet. */
 "STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_SUBTITLE" = "The file type selected is not supported.";

@@ -1,2 +1,2 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• Thiết kế mới thanh nhập nội dung giúp giao diện và cảm giác khi gửi tin nhắn tốt hơn trước
+• Sửa lỗi và nâng cấp trải nghiệm chia sẻ và xem story

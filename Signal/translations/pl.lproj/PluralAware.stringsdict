@@ -13,13 +13,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Not all items could be sent to the story you selected because the file type is not supported.</string>
+			<string>Nie wszystkie elementy mogły zostać dodane do wybranej relacji ze względu na nieobsługiwany typ pliku.</string>
 			<key>few</key>
-			<string>Not all items could be sent to the stories you selected because the file type is not supported.</string>
+			<string>Nie wszystkie elementy mogły zostać dodane do wybranych relacji ze względu na nieobsługiwany typ pliku.</string>
 			<key>many</key>
-			<string>Not all items could be sent to the stories you selected because the file type is not supported.</string>
+			<string>Nie wszystkie elementy mogły zostać dodane do wybranych relacji ze względu na nieobsługiwany typ pliku.</string>
 			<key>other</key>
-			<string>Not all items could be sent to the stories you selected because the file type is not supported.</string>
+			<string>Nie wszystkie elementy mogły zostać dodane do wybranych relacji ze względu na nieobsługiwany typ pliku.</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
@@ -1475,41 +1475,6 @@
 			<string>%1$d wyświetleń</string>
 			<key>other</key>
 			<string>%1$d wyświetleń</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@views@  %2$#@replies@</string>
-		<key>replies</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odpowiedź</string>
-			<key>few</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odpowiedzi</string>
-			<key>many</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odpowiedzi</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odpowiedzi</string>
-		</dict>
-		<key>views</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; wyświetlenie</string>
-			<key>few</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; wyświetlenia</string>
-			<key>many</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; wyświetleń</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; wyświetleń</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
