@@ -970,8 +970,10 @@ public class OWSWebSocket: NSObject {
 
         self.lastNewWebsocketDate.set(Date())
         var request = URLRequest(url: webSocketConnectURL)
-        request.addValue(OWSURLSession.userAgentHeaderValueSignalIos,
-                         forHTTPHeaderField: OWSURLSession.userAgentHeaderKey)
+        request.setValue(
+            OWSURLSession.userAgentHeaderValueSignalIos,
+            forHTTPHeaderField: OWSURLSession.userAgentHeaderKey
+        )
         StoryManager.appendStoryHeaders(to: &request)
         owsAssertDebug(webSocketFactory.canBuildWebSocket)
         guard let webSocket = webSocketFactory.buildSocket(request: request,

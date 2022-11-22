@@ -240,7 +240,7 @@ extension LightweightCallManager: HTTPDelegate {
             if let authHeader = request.headers.first(where: {
                 $0.key.caseInsensitiveCompare("Authorization") == .orderedSame
             }) {
-                redirectedRequest.addValue(authHeader.value, forHTTPHeaderField: authHeader.key)
+                redirectedRequest.setValue(authHeader.value, forHTTPHeaderField: authHeader.key)
             }
             return redirectedRequest
         }

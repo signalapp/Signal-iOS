@@ -764,15 +764,7 @@ final class MobileCoinHttpRequester: NSObject, HttpRequester {
         var request = URLRequest(url: url.absoluteURL)
         request.httpMethod = method.rawValue
         request.httpBody = body
-
-        if let headers = headers {
-            let owsHeaders = OWSHttpHeaders(httpHeaders: headers)
-            owsHeaders.addHeaderMap(headers, overwriteOnConflict: true)
-            owsAssertDebug(owsHeaders.headers.count == headers.count)
-            headers.forEach({ key, value in
-                request.setValue(value, forHTTPHeaderField: key)
-            })
-        }
+        request.allHTTPHeaderFields = headers
 
         let owsUrlSession = OWSURLSession(securityPolicy: securityPolicy, configuration: Self.defaultConfiguration)
 

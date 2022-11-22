@@ -1213,7 +1213,6 @@
 		F9426268289B1B5500460798 /* OWSOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261FB289B1B5400460798 /* OWSOperationTest.swift */; };
 		F9426269289B1B5500460798 /* MathOWSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261FC289B1B5400460798 /* MathOWSTests.swift */; };
 		F942626A289B1B5500460798 /* ViewOnceMessagesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261FD289B1B5400460798 /* ViewOnceMessagesTest.swift */; };
-		F942626B289B1B5500460798 /* NSURLSessionDataTask+OWS_HTTPTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261FE289B1B5400460798 /* NSURLSessionDataTask+OWS_HTTPTest.swift */; };
 		F942626C289B1B5500460798 /* SignalAccountFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426200289B1B5400460798 /* SignalAccountFinderTest.swift */; };
 		F942626D289B1B5500460798 /* SignedPreKeyDeletionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F9426201289B1B5400460798 /* SignedPreKeyDeletionTests.m */; };
 		F942626F289B1B5500460798 /* SSKBaseTestObjC.m in Sources */ = {isa = PBXBuildFile; fileRef = F9426203289B1B5500460798 /* SSKBaseTestObjC.m */; };
@@ -3584,7 +3583,6 @@
 		F94261FB289B1B5400460798 /* OWSOperationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSOperationTest.swift; sourceTree = "<group>"; };
 		F94261FC289B1B5400460798 /* MathOWSTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MathOWSTests.swift; sourceTree = "<group>"; };
 		F94261FD289B1B5400460798 /* ViewOnceMessagesTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewOnceMessagesTest.swift; sourceTree = "<group>"; };
-		F94261FE289B1B5400460798 /* NSURLSessionDataTask+OWS_HTTPTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSURLSessionDataTask+OWS_HTTPTest.swift"; sourceTree = "<group>"; };
 		F9426200289B1B5400460798 /* SignalAccountFinderTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAccountFinderTest.swift; sourceTree = "<group>"; };
 		F9426201289B1B5400460798 /* SignedPreKeyDeletionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignedPreKeyDeletionTests.m; sourceTree = "<group>"; };
 		F9426203289B1B5500460798 /* SSKBaseTestObjC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SSKBaseTestObjC.m; path = SignalServiceKit/tests/SSKBaseTestObjC.m; sourceTree = SOURCE_ROOT; };
@@ -7088,7 +7086,6 @@
 				F94261F2289B1B5400460798 /* LRUCacheTest.swift */,
 				F94261FC289B1B5400460798 /* MathOWSTests.swift */,
 				F94261E9289B1B5400460798 /* NSData+ImageTest.swift */,
-				F94261FE289B1B5400460798 /* NSURLSessionDataTask+OWS_HTTPTest.swift */,
 				F94261F7289B1B5400460798 /* OWSAnalyticsTests.swift */,
 				F94261E6289B1B5400460798 /* OWSErrorTest.swift */,
 				F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */,
@@ -11303,7 +11300,6 @@
 				F9426293289B1B5600460798 /* MessageSendLogTests.swift in Sources */,
 				F942624C289B1B5500460798 /* ModelReadCacheTest.swift in Sources */,
 				F9426256289B1B5500460798 /* NSData+ImageTest.swift in Sources */,
-				F942626B289B1B5500460798 /* NSURLSessionDataTask+OWS_HTTPTest.swift in Sources */,
 				F9426264289B1B5500460798 /* OWSAnalyticsTests.swift in Sources */,
 				F942623B289B1B5500460798 /* OWSDeviceProvisionerTest.swift in Sources */,
 				F969C2CF2922DD6F00E19786 /* OWSDisappearingMessageFinderTest.swift in Sources */,

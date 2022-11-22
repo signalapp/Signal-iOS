@@ -11,36 +11,33 @@ import SignalCoreKit
 //
 // HTTP headers are case-insensitive.
 // This class handles conflict resolution.
-@objc
-public class OWSHttpHeaders: NSObject {
+public final class OWSHttpHeaders: Dependencies, CustomDebugStringConvertible {
     public private(set) var headers = [String: String]()
 
-    @objc
-    public override init() {}
+    public init() {}
 
-    @objc
-    public init(httpHeaders: [String: String]?) {}
+    public convenience init(httpHeaders: [String: String]?, overwriteOnConflict: Bool) {
+        self.init()
+        addHeaderMap(httpHeaders, overwriteOnConflict: overwriteOnConflict)
+    }
 
-    @objc
-    public init(response: HTTPURLResponse) {
+    public convenience init(response: HTTPURLResponse) {
+        self.init()
         for (key, value) in response.allHeaderFields {
-           guard let key = key as? String,
-                 let value = value as? String else {
-            owsFailDebug("Invalid response header, key: \(key), value: \(value).")
-            continue
-           }
-            headers[key] = value
+            guard let key = key as? String, let value = value as? String else {
+                owsFailDebug("Invalid response header, key: \(key), value: \(value).")
+                continue
+            }
+            addHeader(key, value: value, overwriteOnConflict: true)
         }
     }
 
     // MARK: -
 
-    @objc
     public func hasValueForHeader(_ header: String) -> Bool {
         headers.keys.lazy.map { $0.lowercased() }.contains(header.lowercased())
     }
 
-    @objc
     public func value(forHeader header: String) -> String? {
         let header = header.lowercased()
         for (key, value) in headers {
@@ -51,18 +48,15 @@ public class OWSHttpHeaders: NSObject {
         return nil
     }
 
-    @objc
     public func removeValueForHeader(_ header: String) {
         headers = headers.filter { $0.key.lowercased() != header.lowercased() }
         owsAssertDebug(!hasValueForHeader(header))
     }
 
-    @objc(addHeader:value:overwriteOnConflict:)
     public func addHeader(_ header: String, value: String, overwriteOnConflict: Bool) {
         addHeaderMap([header: value], overwriteOnConflict: overwriteOnConflict)
     }
 
-    @objc
     public func addHeaderMap(_ newHttpHeaders: [String: String]?,
                              overwriteOnConflict: Bool) {
         guard let newHttpHeaders = newHttpHeaders else {
@@ -96,7 +90,6 @@ public class OWSHttpHeaders: NSObject {
         }
     }
 
-    @objc
     public func addHeaderList(_ newHttpHeaders: [String]?, overwriteOnConflict: Bool) {
         guard let newHttpHeaders = newHttpHeaders else {
             return
@@ -129,15 +122,12 @@ public class OWSHttpHeaders: NSObject {
 
     // MARK: - Default Headers
 
-    @objc
     public static var userAgentHeaderKey: String { "User-Agent" }
 
-    @objc
     public static var userAgentHeaderValueSignalIos: String {
         "Signal-iOS/\(appVersion.currentAppVersion4) iOS/\(UIDevice.current.systemVersion)"
     }
 
-    @objc
     public static var acceptLanguageHeaderKey: String { "Accept-Language" }
 
     /// See [RFC4647](https://www.rfc-editor.org/rfc/rfc4647#section-2.2).
@@ -171,12 +161,10 @@ public class OWSHttpHeaders: NSObject {
         return formattedLanguages.isEmpty ? "*" : formattedLanguages.joined(separator: ", ")
     }
 
-    @objc
     public static var acceptLanguageHeaderValue: String {
         formatAcceptLanguageHeader(Locale.preferredLanguages)
     }
 
-    @objc
     public func addDefaultHeaders() {
         addHeader(Self.userAgentHeaderKey, value: Self.userAgentHeaderValueSignalIos, overwriteOnConflict: false)
         addHeader(Self.acceptLanguageHeaderKey, value: Self.acceptLanguageHeaderValue, overwriteOnConflict: false)
@@ -184,10 +172,8 @@ public class OWSHttpHeaders: NSObject {
 
     // MARK: - Auth Headers
 
-    @objc
     public static var authHeaderKey: String { "Authorization" }
 
-    @objc
     public static func authHeaderValue(username: String, password: String) throws -> String {
         guard let data = "\(username):\(password)".data(using: .utf8) else {
             throw OWSAssertionError("Failed to encode auth data.")
@@ -195,7 +181,6 @@ public class OWSHttpHeaders: NSObject {
         return "Basic " + data.base64EncodedString()
     }
 
-    @objc
     public func addAuthHeader(username: String, password: String) throws {
         let value = try Self.authHeaderValue(username: username, password: password)
         addHeader(Self.authHeaderKey, value: value, overwriteOnConflict: true)
@@ -206,7 +191,7 @@ public class OWSHttpHeaders: NSObject {
         let httpHeaders = OWSHttpHeaders()
         httpHeaders.addHeaderMap(request.allHTTPHeaderFields, overwriteOnConflict: true)
         httpHeaders.addDefaultHeaders()
-        request.replace(httpHeaders: httpHeaders)
+        request.set(httpHeaders: httpHeaders)
         return request
     }
 
@@ -218,37 +203,25 @@ public class OWSHttpHeaders: NSObject {
         // Have a header key who's value you'd like to see logged? Add it here (lowercased)!
     ])
 
-    override public var description: String {
-        let loggedPairsString: String = headers.lazy
-            .filter { Self.whitelistedLoggedHeaderKeys.contains($0.key.lowercased()) == true }
-            .map { "\($0.key): \($0.value.description)" }
-            .joined(separator: "; ")
-
-        let leftoverKeysString: String = headers.keys.lazy
-            .filter { Self.whitelistedLoggedHeaderKeys.contains($0.lowercased()) == false }
-            .joined(separator: ", ")
-
-        return "<\(super.description)"
-            .appending(loggedPairsString.isEmpty ? "" : "\(loggedPairsString)")
-            .appending(leftoverKeysString.isEmpty ? "" : "\(leftoverKeysString)")
-            .appending(">")
+    public var debugDescription: String {
+        var headerValues = [String]()
+        for (key, value) in headers.sorted(by: { $0.key < $1.key }) {
+            if Self.whitelistedLoggedHeaderKeys.contains(key.lowercased()) {
+                headerValues.append("\(key): \(value)")
+            } else {
+                headerValues.append(key)
+            }
+        }
+        return "<\(type(of: self)): [\(headerValues.joined(separator: "; "))]>"
     }
 }
 
 // MARK: - HTTP Headers
 
 public extension URLRequest {
-    mutating func add(httpHeaders: OWSHttpHeaders) {
+    mutating func set(httpHeaders: OWSHttpHeaders) {
         for (headerField, headerValue) in httpHeaders.headers {
-            addValue(headerValue, forHTTPHeaderField: headerField)
+            setValue(headerValue, forHTTPHeaderField: headerField)
         }
-    }
-
-    mutating func replace(httpHeaders: OWSHttpHeaders) {
-        allHTTPHeaderFields = httpHeaders.headers
-    }
-
-    mutating func removeAllHeaders() {
-        allHTTPHeaderFields = [:]
     }
 }

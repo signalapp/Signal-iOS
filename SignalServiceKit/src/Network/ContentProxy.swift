@@ -33,9 +33,7 @@ public class ContentProxy: NSObject {
 
     public class func configureProxiedRequest(request: inout URLRequest) -> Bool {
         // Replace user-agent.
-        let headers = OWSHttpHeaders(httpHeaders: request.allHTTPHeaderFields)
-        headers.addHeader(OWSHttpHeaders.userAgentHeaderKey, value: userAgent, overwriteOnConflict: true)
-        request.allHTTPHeaderFields = headers.headers
+        request.setValue(userAgent, forHTTPHeaderField: OWSHttpHeaders.userAgentHeaderKey)
 
         padRequestSize(request: &request)
 
@@ -46,7 +44,7 @@ public class ContentProxy: NSObject {
         let paddingLength = Int.random(in: 1...64)
         let padding = self.padding(withLength: paddingLength)
         assert(padding.count == paddingLength)
-        request.addValue(padding, forHTTPHeaderField: "X-SignalPadding")
+        request.setValue(padding, forHTTPHeaderField: "X-SignalPadding")
     }
 
     private class func padding(withLength length: Int) -> String {

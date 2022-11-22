@@ -268,7 +268,6 @@ public class HTTPResponseImpl: NSObject {
     @objc
     public let status: Int
 
-    @objc
     public let headers: OWSHttpHeaders
 
     @objc
@@ -380,25 +379,11 @@ extension HTTPURLResponse {
 @objc
 public class OWSHTTPErrorWrapper: NSObject {
     public let error: OWSHTTPError
+
     @objc
     public var asNSError: NSError { error as NSError }
 
     public init(error: OWSHTTPError) {
         self.error = error
-    }
-
-    @objc
-    public var asConnectionFailureError: OWSHTTPErrorWrapper {
-        let newError = OWSHTTPError.forServiceResponse(requestUrl: error.requestUrl,
-                                                       responseStatus: error.responseStatusCode,
-                                                       responseHeaders: error.responseHeaders ?? OWSHttpHeaders(),
-                                                       responseError: error.responseError,
-                                                       responseData: error.responseBodyData,
-                                                       customRetryAfterDate: error.customRetryAfterDate,
-                                                       customLocalizedDescription: OWSLocalizedString("ERROR_DESCRIPTION_NO_INTERNET",
-                                                                                                     comment: "Generic error used whenever Signal can't contact the server"),
-                                                       customLocalizedRecoverySuggestion: OWSLocalizedString("NETWORK_ERROR_RECOVERY",
-                                                                                                            comment: ""))
-        return OWSHTTPErrorWrapper(error: newError)
     }
 }

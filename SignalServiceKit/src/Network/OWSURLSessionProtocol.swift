@@ -370,12 +370,10 @@ extension OWSURLSessionProtocol {
 
             var request = request
             request.httpMethod = HTTPMethod.post.methodName
-            request.addValue(Self.userAgentHeaderValueSignalIos, forHTTPHeaderField: Self.userAgentHeaderKey)
-            request.addValue(Self.acceptLanguageHeaderValue, forHTTPHeaderField: Self.acceptLanguageHeaderKey)
-            request.addValue("multipart/form-data; boundary=\(boundary)",
-                             forHTTPHeaderField: "Content-Type")
-            request.addValue(String(format: "%llu", bodyFileSize.uint64Value),
-                             forHTTPHeaderField: "Content-Length")
+            request.setValue(Self.userAgentHeaderValueSignalIos, forHTTPHeaderField: Self.userAgentHeaderKey)
+            request.setValue(Self.acceptLanguageHeaderValue, forHTTPHeaderField: Self.acceptLanguageHeaderKey)
+            request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+            request.setValue(String(format: "%llu", bodyFileSize.uint64Value), forHTTPHeaderField: "Content-Length")
 
             return firstly {
                 uploadTaskPromise(request: request,

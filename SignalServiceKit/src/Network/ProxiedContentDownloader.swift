@@ -668,7 +668,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             var request = URLRequest(url: assetRequest.assetDescription.url as URL)
             request.httpShouldUsePipelining = true
             let rangeHeaderValue = "bytes=\(segmentStart)-\(segmentStart + segmentLength - 1)"
-            request.addValue(rangeHeaderValue, forHTTPHeaderField: "Range")
+            request.setValue(rangeHeaderValue, forHTTPHeaderField: "Range")
 
             guard ContentProxy.configureProxiedRequest(request: &request) else {
                 assetRequest.state = .failed
@@ -695,7 +695,7 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
             var request = URLRequest(url: assetRequest.assetDescription.url as URL)
             request.httpShouldUsePipelining = true
             let rangeHeaderValue = "bytes=\(assetSegment.segmentStart)-\(assetSegment.segmentStart + assetSegment.segmentLength - 1)"
-            request.addValue(rangeHeaderValue, forHTTPHeaderField: "Range")
+            request.setValue(rangeHeaderValue, forHTTPHeaderField: "Range")
 
             guard ContentProxy.configureProxiedRequest(request: &request) else {
                 assetRequest.state = .failed

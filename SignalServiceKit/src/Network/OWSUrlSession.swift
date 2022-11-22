@@ -174,7 +174,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         httpHeaders.addHeaderMap(headers, overwriteOnConflict: false)
         httpHeaders.addDefaultHeaders()
         httpHeaders.addHeaderMap(extraHeaders, overwriteOnConflict: true)
-        request.add(httpHeaders: httpHeaders)
+        request.set(httpHeaders: httpHeaders)
 
         request.httpBody = body
         request.httpShouldHandleCookies = httpShouldHandleCookies.get()
