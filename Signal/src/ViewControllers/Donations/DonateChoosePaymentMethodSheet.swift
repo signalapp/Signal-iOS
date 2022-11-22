@@ -164,13 +164,22 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
                     "DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD",
                     comment: "When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with credit or debit card."
                 )
-                // TODO(donations) Add an icon on this button.
+
                 let creditOrDebitCardButton = OWSButton(title: title) { [weak self] in
                     guard let self else { return }
                     self.didChoosePaymentMethod(self, .creditOrDebitCard)
                 }
-                creditOrDebitCardButton.layer.cornerRadius = 8
+                guard let image = UIImage(named: "credit-or-debit-card") else {
+                    owsFail("Card asset not found")
+                }
+                creditOrDebitCardButton.setImage(image, for: .normal)
+                creditOrDebitCardButton.setPaddingBetweenImageAndText(
+                    to: 8,
+                    isRightToLeft: CurrentAppContext().isRTL
+                )
+                creditOrDebitCardButton.layer.cornerRadius = 12
                 creditOrDebitCardButton.backgroundColor = .ows_accentBlue
+                creditOrDebitCardButton.dimsWhenHighlighted = true
                 creditOrDebitCardButton.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
                 paymentMethodButtons.append(creditOrDebitCardButton)
             }

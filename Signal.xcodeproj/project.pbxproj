@@ -1262,6 +1262,7 @@
 		F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */; };
 		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
 		F963164B291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963164A291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift */; };
+		F963F816292D1B5B007DBBBD /* UIButton+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963F815292D1B5B007DBBBD /* UIButton+SignalUI.swift */; };
 		F969C2CF2922DD6F00E19786 /* OWSDisappearingMessageFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F969C2CE2922DD6F00E19786 /* OWSDisappearingMessageFinderTest.swift */; };
 		F96A534328A1AE7C003262D4 /* OutgoingGroupUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */; };
 		F96B66A92912B88B004FFFAA /* DonateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66A02912B88A004FFFAA /* DonateViewController.swift */; };
@@ -3632,6 +3633,7 @@
 		F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseRecoveryTest.swift; sourceTree = "<group>"; };
 		F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingThanksSheet.swift; sourceTree = "<group>"; };
 		F963164A291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSScrubbingLogFormatterTest.swift; sourceTree = "<group>"; };
+		F963F815292D1B5B007DBBBD /* UIButton+SignalUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+SignalUI.swift"; sourceTree = "<group>"; };
 		F965C5B87BFDF8F86556C04C /* Pods-SignalNSE.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.profiling.xcconfig"; sourceTree = "<group>"; };
 		F969C2CE2922DD6F00E19786 /* OWSDisappearingMessageFinderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDisappearingMessageFinderTest.swift; sourceTree = "<group>"; };
 		F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingGroupUpdateMessage.swift; sourceTree = "<group>"; };
@@ -5191,6 +5193,7 @@
 		34A954E9271B4FB000B05242 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				F963F815292D1B5B007DBBBD /* UIButton+SignalUI.swift */,
 				34A954F4271B4FB000B05242 /* UIFont+OWS.h */,
 				34A954F1271B4FB000B05242 /* UIFont+OWS.m */,
 				76E54D68290B4E7800D03BA8 /* UIFont+TextStyle.swift */,
@@ -9920,6 +9923,7 @@
 				3402AA9B271D9E180084CBAE /* TooltipView.swift in Sources */,
 				88C980D427F3AD2C009750C0 /* TSMessage+SignalUI.swift in Sources */,
 				8803C2F628B02FDB00183D2B /* TSOutgoingMessage+AttachmentMultisend.swift in Sources */,
+				F963F816292D1B5B007DBBBD /* UIButton+SignalUI.swift in Sources */,
 				34A954FC271B4FB000B05242 /* UIFont+OWS.m in Sources */,
 				76E54D69290B4E7800D03BA8 /* UIFont+TextStyle.swift in Sources */,
 				500FB6182915B86D00257951 /* UITableView+ReusableCell.swift in Sources */,
