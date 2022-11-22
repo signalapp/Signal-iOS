@@ -6,8 +6,8 @@
 import Foundation
 import SignalMessaging
 
-extension DonateViewController {
-    func redeemMonthlyReceipts(
+extension DonationViewsUtil {
+    static func redeemMonthlyReceipts(
         subscriberID: Data,
         newSubscriptionLevel: SubscriptionLevel,
         priorSubscriptionLevel: SubscriptionLevel?

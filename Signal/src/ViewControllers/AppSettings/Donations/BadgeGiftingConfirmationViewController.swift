@@ -489,7 +489,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                 level: .giftBadge(.signalGift)
             )
         }.then { paymentIntent in
-            Stripe.createPaymentMethod(with: authorizedPayment).map { paymentMethodId in
+            Stripe.createPaymentMethod(with: .applePay(payment: authorizedPayment)).map { paymentMethodId in
                 PreparedPayment(paymentIntent: paymentIntent, paymentMethodId: paymentMethodId)
             }
         }

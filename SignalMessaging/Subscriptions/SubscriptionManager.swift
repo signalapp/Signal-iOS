@@ -374,7 +374,7 @@ public class SubscriptionManager: NSObject {
 
     public class func setupNewSubscription(
         subscription: SubscriptionLevel,
-        payment: PKPayment,
+        paymentMethod: Stripe.PaymentMethod,
         currencyCode: Currency.Code
     ) -> Promise<Data> {
         Logger.info("[Donations] Setting up new subscription")
@@ -412,7 +412,7 @@ public class SubscriptionManager: NSObject {
             }
 
             generatedClientSecret = clientSecret
-            return Stripe.createPaymentMethod(with: payment)
+            return Stripe.createPaymentMethod(with: paymentMethod)
 
         // Bind payment method to SetupIntent, confirm SetupIntent
         }.then(on: .sharedUserInitiated) { paymentID -> Promise<HTTPResponse> in

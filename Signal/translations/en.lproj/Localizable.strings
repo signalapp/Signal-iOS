@@ -841,6 +841,27 @@
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Error";
 
+/* Users can donate to Signal with a credit or debit card. This is the label for the card number field on that screen. */
+"CARD_DONATION_CARD_NUMBER_LABEL" = "Card Number";
+
+/* Users can donate to Signal with a credit or debit card. This is the label for the card verification code (CVV) field on that screen. */
+"CARD_DONATION_CVV_LABEL" = "CVV";
+
+/* Users can donate to Signal with a credit or debit card. This is the text on the \"Donate\" button. */
+"CARD_DONATION_DONATE_BUTTON" = "Donate";
+
+/* Users can donate to Signal with a credit or debit card. This is the label for the expiration date field on that screen. Try to use a short string to make space in the UI. (For example, the English text uses \"Exp. Date\" instead of \"Expiration Date\"). */
+"CARD_DONATION_EXPIRATION_DATE_LABEL" = "Exp. Date";
+
+/* Users can donate to Signal with a credit or debit card. This is the label for the card expiration date field on that screen. */
+"CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER" = "MM/YY";
+
+/* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\". */
+"CARD_DONATION_HEADER" = "Donation amount: %1$@";
+
+/* Users can donate to Signal with a credit or debit card. These are instructions on that screen, asking users to enter their payment card info. */
+"CARD_DONATION_INSTRUCTIONS" = "Enter your card information below";
+
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Select Country";
 
@@ -1755,6 +1776,9 @@
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censorship Circumvention Location";
+
+/* When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with credit or debit card. */
+"DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD" = "Credit or Debit Card";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Get the %1$@ badge";

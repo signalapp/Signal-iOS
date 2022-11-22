@@ -211,6 +211,50 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
     }
 
+    private func startCreditOrDebitCard(
+        with amount: FiatMoney,
+        badge: ProfileBadge?,
+        donationMode: DonationMode
+    ) {
+        guard let navigationController else {
+            owsFail("Cannot open credit/debit card screen if we're not in a navigation controller")
+        }
+
+        guard let badge else {
+            owsFail("Missing badge")
+        }
+
+        let cardDonationMode: CreditOrDebitCardDonationViewController.DonationMode
+        switch donationMode {
+        case .oneTime:
+            cardDonationMode = .oneTime
+        case .monthly:
+            guard
+                let monthly = state.monthly,
+                let subscriptionLevel = monthly.selectedSubscriptionLevel
+            else {
+                owsFail("[Donations] Cannot update monthly donation. This should be prevented in the UI")
+            }
+            cardDonationMode = .monthly(
+                subscriptionLevel: subscriptionLevel,
+                subscriberID: monthly.subscriberID,
+                currentSubscription: monthly.currentSubscription,
+                currentSubscriptionLevel: monthly.currentSubscriptionLevel
+            )
+        }
+
+        let vc = CreditOrDebitCardDonationViewController(
+            donationAmount: amount,
+            donationMode: cardDonationMode
+        ) { [weak self] in
+            self?.didCompleteDonation(
+                badge: badge,
+                thanksSheetType: donationMode.forBadgeThanksSheet
+            )
+        }
+        navigationController.pushViewController(vc, animated: true)
+    }
+
     private func presentChoosePaymentMethodSheet(
         amount: FiatMoney,
         badge: ProfileBadge?,
@@ -222,9 +266,20 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             amount: amount,
             badge: badge,
             donationMode: donationMode.forChoosePaymentMethodSheet
-        ) { [weak self] sheet in
-            sheet.dismiss(animated: true)
-            self?.startApplePay(with: amount, donationMode: donationMode)
+        ) { [weak self] (sheet, paymentMethod) in
+            switch paymentMethod {
+            case .applePay:
+                sheet.dismiss(animated: true)
+                self?.startApplePay(with: amount, donationMode: donationMode)
+            case .creditOrDebitCard:
+                sheet.dismiss(animated: true)
+                self?.startCreditOrDebitCard(
+                    with: amount,
+                    badge: badge,
+                    donationMode: donationMode
+                )
+            // TODO(donations) Add PayPal here.
+            }
         }
         present(sheet, animated: true)
     }
@@ -301,7 +356,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                         currencyCode: monthly.selectedCurrencyCode
                     )
                 }.then(on: .sharedUserInitiated) {
-                    self.redeemMonthlyReceipts(
+                    DonationViewsUtil.redeemMonthlyReceipts(
                         subscriberID: subscriberID,
                         newSubscriptionLevel: selectedSubscriptionLevel,
                         priorSubscriptionLevel: monthly.currentSubscriptionLevel
@@ -435,25 +490,16 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     }
 
     internal func didFailDonation(error: Error, mode: DonationMode) {
-        guard let error = error as? DonationJobError else {
-            owsFailDebug("[Donations] Unexpected error \(error)")
-            return
-        }
-
-        switch error {
-        case .timeout:
-            DonationViewsUtil.presentStillProcessingSheet(from: self)
-        case .assertion:
-            DonationViewsUtil.presentBadgeCantBeAddedSheet(
-                from: self,
-                currentSubscription: {
-                    switch mode {
-                    case .oneTime: return nil
-                    case .monthly: return state.monthly?.currentSubscription
-                    }
-                }()
-            )
-        }
+        DonationViewsUtil.presentDonationErrorSheet(
+            from: self,
+            error: error,
+            currentSubscription: {
+                switch mode {
+                case .oneTime: return nil
+                case .monthly: return state.monthly?.currentSubscription
+                }
+            }()
+        )
     }
 
     // MARK: - Loading data

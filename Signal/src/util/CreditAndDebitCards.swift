@@ -184,7 +184,7 @@ enum CreditAndDebitCards {
     }
 
     private static func validity(ofExpirationMonth monthString: String) -> Validity {
-        guard monthString.count <= 2, monthString.isAsciiDigitsOnly else {
+        guard monthString.count <= 2, monthString.isAsciiDigitsOnly, monthString != "00" else {
             return .invalid
         }
         if monthString.isEmpty || monthString == "0" {

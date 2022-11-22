@@ -10,6 +10,9 @@ import SignalMessaging
 import SignalUI
 
 extension DonateViewController {
+    /// Handle Apple Pay authorization for a monthly payment.
+    ///
+    /// See also: code for other payment methods, such as credit/debit cards.
     func paymentAuthorizationControllerForMonthly(
         _ controller: PKPaymentAuthorizationController,
         didAuthorizePayment payment: PKPayment,
@@ -22,6 +25,7 @@ extension DonateViewController {
             owsFail("[Donations] Invalid state; cannot pay")
         }
 
+        // See also: code for other payment methods, such as credit/debit card.
         firstly(on: .sharedUserInitiated) { () -> Promise<Void> in
             if let subscriberID = monthly.subscriberID, monthly.currentSubscription != nil {
                 return SubscriptionManager.cancelSubscription(for: subscriberID)
@@ -31,14 +35,14 @@ extension DonateViewController {
         }.then(on: .sharedUserInitiated) {
             SubscriptionManager.setupNewSubscription(
                 subscription: selectedSubscriptionLevel,
-                payment: payment,
+                paymentMethod: .applePay(payment: payment),
                 currencyCode: monthly.selectedCurrencyCode
             )
         }.done(on: .main) { (subscriberID: Data) in
             let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
             completion(authResult)
 
-            self.redeemMonthlyReceipts(
+            DonationViewsUtil.redeemMonthlyReceipts(
                 subscriberID: subscriberID,
                 newSubscriptionLevel: selectedSubscriptionLevel,
                 priorSubscriptionLevel: monthly.currentSubscriptionLevel

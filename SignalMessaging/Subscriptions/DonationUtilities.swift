@@ -5,19 +5,52 @@
 
 import Foundation
 import PassKit
+import SignalServiceKit
 import SignalCoreKit
 
 public class DonationUtilities: Dependencies {
     public static var sendGiftBadgeJobQueue: SendGiftBadgeJobQueue { smJobQueues.sendGiftBadgeJobQueue }
 
-    /// Can the user donate to Signal in the app?
-    public static func canDonate(localNumber: String?) -> Bool {
-        guard let localNumber else { return false }
+    public static func supportedDonationPaymentMethodOptions(
+        localNumber: String?
+    ) -> Set<DonationPaymentMethod> {
+        guard let localNumber else { return [] }
+
+        var result = Set<DonationPaymentMethod>()
+
         let isApplePayAvailable = (
             PKPaymentAuthorizationController.canMakePayments() &&
             !RemoteConfig.applePayDisabledRegions.contains(e164: localNumber)
         )
-        return isApplePayAvailable
+        if isApplePayAvailable {
+            result.insert(.applePay)
+        }
+
+        let isCardAvailable = (
+            FeatureFlags.canDonateWithCard &&
+            !RemoteConfig.creditAndDebitCardDisabledRegions.contains(e164: localNumber)
+        )
+        if isCardAvailable {
+            result.insert(.creditOrDebitCard)
+        }
+
+        // TODO(donations) Add PayPal here, similar to the above.
+        /*
+        let isPaypalAvailable = (
+            FeatureFlags.canDonateWithPaypal &&
+            !RemoteConfig.paypalDisabledRegions.contains(e164: localNumber)
+        )
+        if isPaypalAvailable {
+            result.insert(.paypal)
+        }
+        */
+
+        return result
+    }
+
+    /// Can the user donate to Signal in the app?
+    public static func canDonate(localNumber: String?) -> Bool {
+        !supportedDonationPaymentMethodOptions(localNumber: localNumber).isEmpty
     }
 
     public static var supportedNetworks: [PKPaymentNetwork] {

@@ -22,6 +22,18 @@ extension DonateViewController {
             }
         }
 
+        /// Converts the donation mode (one-time or monthly) for this view to
+        /// the equivalent in the badge thanks sheet.
+        ///
+        /// We need this because this view supports one-time or monthly, but the
+        /// sheet supports one-time, monthly, and gifting.
+        var forBadgeThanksSheet: BadgeThanksSheet.BadgeType {
+            switch self {
+            case .oneTime: return .boost
+            case .monthly: return .subscription
+            }
+        }
+
         public var debugDescription: String {
             switch self {
             case .oneTime: return "one-time"

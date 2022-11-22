@@ -366,7 +366,31 @@ public final class DonationViewsUtil {
         UIApplication.shared.open(TSConstants.donateUrl, options: [:], completionHandler: nil)
     }
 
-    public static func presentStillProcessingSheet(from viewController: UIViewController) {
+    public static func presentDonationErrorSheet(
+        from viewController: UIViewController,
+        error rawError: Error,
+        currentSubscription: Subscription? = nil
+    ) {
+        let error: DonationJobError
+        if let jobError = rawError as? DonationJobError {
+            error = jobError
+        } else {
+            owsFailDebug("[Donations] Unexpected error \(rawError)")
+            error = .assertion
+        }
+
+        switch error {
+        case .timeout:
+            presentStillProcessingSheet(from: viewController)
+        case .assertion:
+            presentBadgeCantBeAddedSheet(
+                from: viewController,
+                currentSubscription: currentSubscription
+            )
+        }
+    }
+
+    private static func presentStillProcessingSheet(from viewController: UIViewController) {
         guard
             let topViewController = viewController.navigationController?.topViewController,
             topViewController == viewController

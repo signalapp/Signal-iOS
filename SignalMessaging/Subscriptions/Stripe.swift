@@ -21,12 +21,16 @@ public struct Stripe: Dependencies {
     public static func boost(
         amount: FiatMoney,
         level: OneTimeBadgeLevel,
-        for payment: PKPayment
+        for paymentMethod: PaymentMethod
     ) -> Promise<String> {
         firstly { () -> Promise<PaymentIntent> in
             createBoostPaymentIntent(for: amount, level: level)
         }.then { intent in
-            confirmPaymentIntent(for: payment, clientSecret: intent.clientSecret, paymentIntentId: intent.id).map { intent.id }
+            confirmPaymentIntent(
+                for: paymentMethod,
+                clientSecret: intent.clientSecret,
+                paymentIntentId: intent.id
+            ).map { intent.id }
         }
     }
 
@@ -65,9 +69,11 @@ public struct Stripe: Dependencies {
         }
     }
 
-    public static func createPaymentMethod(with payment: PKPayment) -> Promise<String> {
+    public static func createPaymentMethod(
+        with paymentMethod: PaymentMethod
+    ) -> Promise<String> {
         firstly(on: .sharedUserInitiated) { () -> Promise<String> in
-            API.createToken(with: payment)
+            API.createToken(with: paymentMethod)
         }.then(on: .sharedUserInitiated) { tokenId -> Promise<HTTPResponse> in
 
             let parameters: [String: Any] = ["card": ["token": tokenId], "type": "card"]
@@ -83,9 +89,13 @@ public struct Stripe: Dependencies {
         }
     }
 
-    static func confirmPaymentIntent(for payment: PKPayment, clientSecret: String, paymentIntentId: String) -> Promise<Void> {
+    static func confirmPaymentIntent(
+        for paymentMethod: PaymentMethod,
+        clientSecret: String,
+        paymentIntentId: String
+    ) -> Promise<Void> {
         firstly(on: .sharedUserInitiated) { () -> Promise<String> in
-            createPaymentMethod(with: payment)
+            createPaymentMethod(with: paymentMethod)
         }.then(on: .sharedUserInitiated) { paymentMethodId -> Promise<HTTPResponse> in
             guard !SubscriptionManager.terminateTransactionIfPossible else {
                 throw OWSGenericError("Boost transaction chain cancelled")
@@ -250,9 +260,40 @@ fileprivate extension Stripe {
             return parameters
         }
 
-        static func createToken(with payment: PKPayment) -> Promise<String> {
+        /// Get the query parameters for a request to make a Stripe card token.
+        ///
+        /// See [Stripe's docs][0].
+        ///
+        /// [0]: https://stripe.com/docs/api/tokens/create_card
+        static func parameters(
+            for creditOrDebitCard: PaymentMethod.CreditOrDebitCard
+        ) -> [String: String] {
+            func pad(_ n: UInt8) -> String { n < 10 ? "0\(n)" : "\(n)" }
+            return [
+                "card[number]": creditOrDebitCard.cardNumber,
+                "card[exp_month]": pad(creditOrDebitCard.expirationMonth),
+                "card[exp_year]": pad(creditOrDebitCard.expirationTwoDigitYear),
+                "card[cvc]": String(creditOrDebitCard.cvv)
+            ]
+        }
+
+        /// Get the query parameters for a request to make a Stripe token.
+        ///
+        /// See [Stripe's docs][0].
+        ///
+        /// [0]: https://stripe.com/docs/api/tokens/create_card
+        static func parameters(for paymentMethod: PaymentMethod) -> [String: Any] {
+            switch paymentMethod {
+            case let .applePay(payment):
+                return parameters(for: payment)
+            case let .creditOrDebitCard(creditOrDebitCard):
+                return parameters(for: creditOrDebitCard)
+            }
+        }
+
+        static func createToken(with paymentMethod: PaymentMethod) -> Promise<String> {
             firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
-                return try postForm(endpoint: "tokens", parameters: parameters(for: payment))
+                return try postForm(endpoint: "tokens", parameters: parameters(for: paymentMethod))
             }.map(on: .sharedUserInitiated) { response in
                 guard let json = response.responseBodyJson else {
                     throw OWSAssertionError("Missing responseBodyJson")

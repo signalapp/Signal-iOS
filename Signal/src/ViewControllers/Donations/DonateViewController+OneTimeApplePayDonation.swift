@@ -11,6 +11,9 @@ import SignalUI
 import SignalServiceKit
 
 extension DonateViewController {
+    /// Handle Apple Pay authorization for a one-time payment.
+    ///
+    /// See also: code for other payment methods, such as credit/debit cards.
     func paymentAuthorizationControllerForOneTime(
         _ controller: PKPaymentAuthorizationController,
         didAuthorizePayment payment: PKPayment,
@@ -35,7 +38,7 @@ extension DonateViewController {
             Stripe.boost(
                 amount: amount,
                 level: .boostBadge,
-                for: payment
+                for: .applePay(payment: payment)
             )
         }.done(on: .main) { (intentId: String) -> Void in
             wrappedCompletion(.init(status: .success, errors: nil))
