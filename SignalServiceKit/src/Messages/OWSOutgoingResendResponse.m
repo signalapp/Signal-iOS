@@ -11,6 +11,7 @@
 @property (nonatomic, readonly, nullable) NSData *originalMessagePlaintext;
 @property (nonatomic, readonly, nullable) NSString *originalThreadId;
 @property (nonatomic, readonly, nullable) NSData *originalGroupId;
+@property (nonatomic, readonly) SealedSenderContentHint derivedContentHint;
 
 @property (nonatomic) BOOL didAppendSKDM;
 @end
@@ -58,6 +59,14 @@
     if (self) {
         _originalMessagePlaintext = payloadRecord.plaintextContent;
         _originalThreadId = payloadRecord.uniqueThreadId;
+
+        // Use the original payload's content hint, if we have one.
+        // Otherwise fallback to showing errors immediately.
+        if (payloadRecord) {
+            _derivedContentHint = payloadRecord.contentHint;
+        } else {
+            _derivedContentHint = SealedSenderContentHintImplicit;
+        }
 
         if ([originalThread isKindOfClass:[TSGroupThread class]]) {
             _originalGroupId = ((TSGroupThread *)originalThread).groupId;
@@ -154,7 +163,7 @@
 
 - (SealedSenderContentHint)contentHint
 {
-    return SealedSenderContentHintDefault;
+    return self.derivedContentHint;
 }
 
 - (nullable NSData *)envelopeGroupIdWithTransaction:(__unused SDSAnyReadTransaction *)transaction

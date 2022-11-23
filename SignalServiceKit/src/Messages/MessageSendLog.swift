@@ -22,6 +22,7 @@ public class MessageSendLog: NSObject {
         var payloadId: Int64?
         @objc
         let plaintextContent: Data
+        @objc
         let contentHint: SealedSenderContentHint
         @objc
         let sentTimestamp: UInt64
