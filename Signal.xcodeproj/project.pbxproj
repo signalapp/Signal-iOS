@@ -1264,6 +1264,8 @@
 		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
 		F963164B291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963164A291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift */; };
 		F963F816292D1B5B007DBBBD /* UIButton+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963F815292D1B5B007DBBBD /* UIButton+SignalUI.swift */; };
+		F963F818292D7E53007DBBBD /* FormattedNumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963F817292D7E53007DBBBD /* FormattedNumberField.swift */; };
+		F963F81A292DA8E2007DBBBD /* FormattedNumberFieldTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963F819292DA8E2007DBBBD /* FormattedNumberFieldTest.swift */; };
 		F969C2CF2922DD6F00E19786 /* OWSDisappearingMessageFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F969C2CE2922DD6F00E19786 /* OWSDisappearingMessageFinderTest.swift */; };
 		F96A534328A1AE7C003262D4 /* OutgoingGroupUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */; };
 		F96B66A92912B88B004FFFAA /* DonateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66A02912B88A004FFFAA /* DonateViewController.swift */; };
@@ -3636,6 +3638,8 @@
 		F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingThanksSheet.swift; sourceTree = "<group>"; };
 		F963164A291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSScrubbingLogFormatterTest.swift; sourceTree = "<group>"; };
 		F963F815292D1B5B007DBBBD /* UIButton+SignalUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+SignalUI.swift"; sourceTree = "<group>"; };
+		F963F817292D7E53007DBBBD /* FormattedNumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattedNumberField.swift; sourceTree = "<group>"; };
+		F963F819292DA8E2007DBBBD /* FormattedNumberFieldTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattedNumberFieldTest.swift; sourceTree = "<group>"; };
 		F965C5B87BFDF8F86556C04C /* Pods-SignalNSE.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.profiling.xcconfig"; sourceTree = "<group>"; };
 		F969C2CE2922DD6F00E19786 /* OWSDisappearingMessageFinderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDisappearingMessageFinderTest.swift; sourceTree = "<group>"; };
 		F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingGroupUpdateMessage.swift; sourceTree = "<group>"; };
@@ -5160,6 +5164,7 @@
 		34A954B7271A471300B05242 /* SignalUITests */ = {
 			isa = PBXGroup;
 			children = (
+				F963F819292DA8E2007DBBBD /* FormattedNumberFieldTest.swift */,
 				34BB78B8272C51E800DA0D04 /* MobileCoinHelperTests.swift */,
 				509913BD2913274100F34F8E /* PhoneNumberFinderTests.swift */,
 			);
@@ -5217,6 +5222,7 @@
 				34A955B1271B53F600B05242 /* BlockListUIUtils.h */,
 				34A955B0271B53F600B05242 /* BlockListUIUtils.m */,
 				34A95506271B510400B05242 /* ConversationStyle.swift */,
+				F963F817292D7E53007DBBBD /* FormattedNumberField.swift */,
 				34A955AD271B532F00B05242 /* FullTextSearcher.swift */,
 				34A955AF271B53F500B05242 /* GroupManager+GroupInvites.swift */,
 				34A95507271B510400B05242 /* GroupViewUtils.swift */,
@@ -9793,6 +9799,7 @@
 				3402AA56271D9DCD0084CBAE /* FindByPhoneNumberViewController.swift in Sources */,
 				88B98704288089C200F8C74D /* FingerprintViewController.m in Sources */,
 				88B98703288089C200F8C74D /* FingerprintViewScanController.m in Sources */,
+				F963F818292D7E53007DBBBD /* FormattedNumberField.swift in Sources */,
 				34A955AE271B533000B05242 /* FullTextSearcher.swift in Sources */,
 				3402AA91271D9E180084CBAE /* GalleryRailView.swift in Sources */,
 				3402AAA9271D9E180084CBAE /* GradientView.swift in Sources */,
@@ -9953,6 +9960,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F963F81A292DA8E2007DBBBD /* FormattedNumberFieldTest.swift in Sources */,
 				34BB78B9272C51E800DA0D04 /* MobileCoinHelperTests.swift in Sources */,
 				509913BE2913274100F34F8E /* PhoneNumberFinderTests.swift in Sources */,
 			);

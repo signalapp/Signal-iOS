@@ -7,6 +7,82 @@ import XCTest
 @testable import Signal
 
 final class CreditOrDebitCardDonationViewControllerTest: XCTestCase {
+    // MARK: - Formatting tests
+
+    func testFormatCardNumber() {
+        // We test this by "round-tripping".
+        let testCases: [String] = [
+            "",
+            // American Express
+            "37",
+            "3782 ",
+            "3782 822463 ",
+            "3782 822463 10005",
+            "3782 822463 100051234",
+            // UnionPay
+            "6200 ",
+            "6200 0",
+            "6200 0000 00",
+            "6200 0000 0000 000",
+            "6200 0000 0000 0000",
+            "6200 0000 0000 0000000",
+            // Other types
+            "42",
+            "4242 4242 ",
+            "4242 4242 4242 4242",
+            "4242 4242 4242 4242424"
+        ]
+
+        for testCase in testCases {
+            let reformatted = CreditOrDebitCardDonationViewController.formatCardNumber(
+                unformatted: testCase.asciiDigitsOnly
+            )
+            XCTAssertEqual(reformatted, testCase)
+        }
+    }
+
+    func testFormatExpirationDate() {
+        // We test this by "round-tripping".
+        let testCases: [String] = [
+            "",
+            "0",
+            "1",
+            "2/",
+            "9/",
+            "01/",
+            "02/",
+            "10/",
+            "11/",
+            "12/",
+            "1/3",
+            "1/9",
+            "2/3",
+            "2/00",
+            "2/34",
+            "01/00",
+            "01/23",
+            "02/00",
+            "02/34",
+            "10/98",
+            "12/34",
+            // These cases aren't that important because they're invalid.
+            // If these tests fail, that's probably fine.
+            // We mostly want to ensure they don't crash.
+            "1/345",
+            "0/0",
+            "0/000"
+        ]
+
+        for testCase in testCases {
+            let reformatted = CreditOrDebitCardDonationViewController.formatExpirationDate(
+                unformatted: testCase.asciiDigitsOnly
+            )
+            XCTAssertEqual(reformatted, testCase)
+        }
+    }
+
+    // MARK: - Form state tests
+
     // Field validity is largely tested elsewhere
     // (for example, the specifics of CVV validation).
 

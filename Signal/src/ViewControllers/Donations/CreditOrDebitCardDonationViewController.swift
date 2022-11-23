@@ -45,11 +45,6 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
 
     // MARK: - Events
 
-    @objc
-    private func didTextFieldChange() {
-        render()
-    }
-
     private func didSubmit() {
         switch formState {
         case .invalid, .potentiallyValid:
@@ -172,9 +167,7 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
         result.spellCheckingType = .no
         result.keyboardType = .numberPad
         result.textContentType = .creditCardNumber
-
         result.delegate = self
-        result.addTarget(self, action: #selector(didTextFieldChange), for: .allEditingEvents)
 
         return result
     }
@@ -189,6 +182,26 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
     }
 
     // MARK: Card number
+
+    static func formatCardNumber(unformatted: String) -> String {
+        var gaps: Set<Int>
+        switch CreditAndDebitCards.cardType(ofNumber: unformatted) {
+        case .americanExpress: gaps = [4, 10]
+        case .unionPay, .other: gaps = [4, 8, 12]
+        }
+
+        var result = [Character]()
+        for (i, character) in unformatted.enumerated() {
+            if gaps.contains(i) {
+                result.append(" ")
+            }
+            result.append(character)
+        }
+        if gaps.contains(unformatted.count) {
+            result.append(" ")
+        }
+        return String(result)
+    }
 
     private lazy var cardNumberTextField: UITextField = {
         let result = textField()
@@ -224,6 +237,32 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
     }()
 
     // MARK: Expiration date
+
+    static func formatExpirationDate(unformatted: String) -> String {
+        switch unformatted.count {
+        case 0:
+            return unformatted
+        case 1:
+            let firstDigit = unformatted.first!
+            switch firstDigit {
+            case "0", "1": return unformatted
+            default: return unformatted + "/"
+            }
+        case 2:
+            if (UInt8(unformatted) ?? 0).isValidAsMonth {
+                return unformatted + "/"
+            } else {
+                return "\(unformatted.prefix(1))/\(unformatted.suffix(1))"
+            }
+        default:
+            let firstTwo = unformatted.prefix(2)
+            let firstTwoAsMonth = UInt8(String(firstTwo)) ?? 0
+            let monthCount = firstTwoAsMonth.isValidAsMonth ? 2 : 1
+            let month = unformatted.prefix(monthCount)
+            let year = unformatted.suffix(unformatted.count - monthCount)
+            return "\(month)/\(year)"
+        }
+    }
 
     private lazy var expirationDateTextField: UITextField = {
         let result = textField()
@@ -338,11 +377,41 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
 // MARK: - UITextViewDelegate
 
 extension CreditOrDebitCardDonationViewController: UITextFieldDelegate {
-    func textView(
-        _ textView: UITextView,
-        shouldChangeTextIn range: NSRange,
-        replacementText text: String
+    func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString: String
     ) -> Bool {
-        text.isAsciiDigitsOnly
+        let maxDigits: Int
+        let format: (String) -> String
+        switch textField {
+        case cardNumberTextField:
+            maxDigits = 19
+            format = Self.formatCardNumber
+        case expirationDateTextField:
+            maxDigits = 4
+            format = Self.formatExpirationDate
+        case cvvTextField:
+            maxDigits = 4
+            format = { $0 }
+        default:
+            owsFail("Unexpected text field")
+        }
+
+        let result = FormattedNumberField.textField(
+            textField,
+            shouldChangeCharactersIn: range,
+            replacementString: replacementString,
+            maxDigits: maxDigits,
+            format: format
+        )
+
+        render()
+
+        return result
     }
+}
+
+fileprivate extension UInt8 {
+    var isValidAsMonth: Bool { self >= 1 && self <= 12 }
 }
