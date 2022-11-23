@@ -2,26 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Not all items could be sent to the story you selected because the file type is not supported.</string>
-			<key>few</key>
-			<string>Not all items could be sent to the stories you selected because the file type is not supported.</string>
-			<key>many</key>
-			<string>Not all items could be sent to the stories you selected because the file type is not supported.</string>
-			<key>other</key>
-			<string>Not all items could be sent to the stories you selected because the file type is not supported.</string>
-		</dict>
-	</dict>
 	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1377,6 +1357,26 @@
 			<string>Preostalo vam je %1$d pokušaja. Ako vam ponestane pokušaja, vaš će račun biti zaključan. Nakon 7 dana neaktivnosti možete se ponovno registrirati bez PIN-a. Vaš račun i sav njegov sadržaj bit će izbrisani.</string>
 		</dict>
 	</dict>
+	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Nije moguće poslati sve stavke u odabranu priču jer vrsta datoteke nije podržana.</string>
+			<key>few</key>
+			<string>Nije moguće poslati sve stavke u odabrane priče jer vrsta datoteke nije podržana.</string>
+			<key>many</key>
+			<string>Nije moguće poslati sve stavke u odabrane priče jer vrsta datoteke nije podržana.</string>
+			<key>other</key>
+			<string>Nije moguće poslati sve stavke u odabrane priče jer vrsta datoteke nije podržana.</string>
+		</dict>
+	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1475,41 +1475,6 @@
 			<string>%1$d pregleda</string>
 			<key>other</key>
 			<string>%1$d pregleda</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@views@  %2$#@replies@</string>
-		<key>replies</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odgovor</string>
-			<key>few</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odgovora</string>
-			<key>many</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odgovora</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odgovora</string>
-		</dict>
-		<key>views</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; prikaz</string>
-			<key>few</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; prikaza</string>
-			<key>many</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; prikaza</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; prikaza</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>

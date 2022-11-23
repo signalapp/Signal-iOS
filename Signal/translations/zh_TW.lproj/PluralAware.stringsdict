@@ -2,20 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>Not all items could be sent to the stories you selected because the file type is not supported.</string>
-		</dict>
-	</dict>
 	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -963,6 +949,20 @@
 			<string>你還有 %1$d 次嘗試。 如果嘗試次數用完，你的帳號將被鎖定。 在 7 天不能使用，你可以在沒有 PIN 碼的情況下重新註冊。 你的帳號將被抹除並刪除所有內容。</string>
 		</dict>
 	</dict>
+	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>由於系統無法支援該檔案類型，因此未能將全部項目發送到你所選的限時動態。</string>
+		</dict>
+	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1031,29 +1031,6 @@
 			<string>d</string>
 			<key>other</key>
 			<string>%1$d 次瀏覽</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@views@  %2$#@replies@</string>
-		<key>replies</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; 瀏覽次數</string>
-		</dict>
-		<key>views</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; 回覆</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>

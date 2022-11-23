@@ -2,20 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>Not all items could be sent to the stories you selected because the file type is not supported.</string>
-		</dict>
-	</dict>
 	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -963,6 +949,20 @@
 			<string>%1$d번 더 시도할 수 있습니다. 남은 시도 횟수를 모두 사용하면 계정이 잠깁니다. 7일 동안 활동이 없으면 PIN 없이 다시 등록할 수 있으며, 이 경우 계정이 초기화되고 모든 내용이 삭제됩니다.</string>
 		</dict>
 	</dict>
+	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>other</key>
+			<string>지원되지 않는 파일 형식으로 인해 모든 항목을 선택한 스토리에 보낼 수 없습니다.</string>
+		</dict>
+	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1031,29 +1031,6 @@
 			<string>d</string>
 			<key>other</key>
 			<string>조회수 %1$d</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@views@  %2$#@replies@</string>
-		<key>replies</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>답장 &lt;bold&gt;%2$d&lt;/bold&gt;개</string>
-		</dict>
-		<key>views</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>other</key>
-			<string>답장 &lt;bold&gt;%2$d&lt;/bold&gt;개</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>

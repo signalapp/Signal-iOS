@@ -2,22 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Not all items could be sent to the story you selected because the file type is not supported.</string>
-			<key>other</key>
-			<string>Not all items could be sent to the stories you selected because the file type is not supported.</string>
-		</dict>
-	</dict>
 	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1101,6 +1085,22 @@
 			<string>Você tem %1$d tentativas restantes. Se não conseguir se lembrar do seu PIN, sua conta será bloqueada. Depois de 7 dias de inatividade, você pode se registrar novamente sem usar seu PIN. Sua conta será excluída e seu conteúdo apagado.</string>
 		</dict>
 	</dict>
+	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Não foi possível enviar todos os itens para o story que você selecionou porque o tipo de arquivo não é compatível.</string>
+			<key>other</key>
+			<string>Não foi possível enviar todos os itens para os stories que você selecionou porque o tipo de arquivo não é compatível.</string>
+		</dict>
+	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1179,33 +1179,6 @@
 			<string>%1$d visualização</string>
 			<key>other</key>
 			<string>%1$d visualizações</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@views@  %2$#@replies@</string>
-		<key>replies</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; resposta</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; respostas</string>
-		</dict>
-		<key>views</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; visualização</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; visualizações</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>

@@ -365,19 +365,19 @@
 "BADGE_DETAILS_DONATE_TO_SIGNAL" = "ביצוע תרומה עכשיו";
 
 /* When viewing someone else's donor badge, you'll see a sheet. This is the title on that sheet. Embeds {badge owner's short name} */
-"BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "%1$@ supports Signal";
+"BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "Signal מקבלת תמיכה מ%1$@";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can continue using Signal but to support technology that is built for you, please consider becoming a monthly donor.";
+"BADGE_EXPIRED_BOOST_BODY" = "תג הבוסט שלכם פג תוקף והוא לא גלוי יותר בפרופיל שלכם.\n\nאפשר להמשיך להשתמש ב–Signal אבל כדי לתמוך בטכנולוגיה שנבנתה עבורכם, נשמח אם תשקלו להפוך לתורמים על בסיס חודשי.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Your Boost badge has expired, and is no longer visible on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time donation.";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "תג הבוסט שלכם פג תוקף והוא לא גלוי יותר בפרופיל שלכם.\n\nאפשר להפעיל מחדש את תג הבוסט שלך למשך 30 ימים נוספים עם תרומה חד פעמית.";
 
 /* Title for boost on the badge expiration sheet. */
-"BADGE_EXPIRED_BOOST_TITLE" = "Badge expired";
+"BADGE_EXPIRED_BOOST_TITLE" = "תג פג";
 
 /* Button text when a badge expires, asking users to donate */
-"BADGE_EXPIRED_DONATE_BUTTON" = "Donate";
+"BADGE_EXPIRED_DONATE_BUTTON" = "ביצוע תרומה";
 
 /* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
 "BADGE_EXPIRED_GIFT_BODY" = "תג המתנה שלך פג תוקף והוא לא זמין יותר לתצוגה בפרופיל שלך.";
@@ -389,7 +389,7 @@
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "למד עוד.";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly donation canceled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "תרומה חודשית בוטלה";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
 "BADGE_GIFT_THANKS_BODY" = "נתת תג מתנה ל%1$@. כשהוא או היא יממשו אותו, תינתן להם בחירה להציג או להסתיר את התג שלהם.";
@@ -494,10 +494,10 @@
 "BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "קיבלת תג מתנה מ%1$@. אפשר להציג את התג הזה בפרופיל שלך כדי לעזור לבנות מודעות לגבי תרומה ל-Signal.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. $1%1$@ Your badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment details and donate again.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "התרומה החודשית החוזרת שלך בוטלה. %1$@ התג שלך לא גלוי יותר בפרופיל שלך.\n\nכדי להמשיך לתמוך ב–Signal ולהפעיל מחדש את התג שלך, אפשר לעדכן את פרטי התשלום ולתרום שוב.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically canceled because you were inactive for too long. Your %1$@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, donate now.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "התרומה החודשית החוזרת שלך בוטלה אוטומטית כי לא היית פעיל במשך זמן רב מדי. תג ה%1$@ שלך לא גלוי יותר בפרופיל שלך.\n\nאפשר להמשיך להשתמש ב–Signal אבל כדי לתמוך באפליקציה ולהפעיל מחדש את התג שלך, כדאי לתרום עכשיו.";
 
 /* When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet. */
 "BADGE_THANKS_BODY" = "הרווחת תג תרומה מ–Signal! אפשר להציג אותו בפרופיל שלך כדי להשוויץ בתמיכה שלך.";
@@ -840,6 +840,27 @@
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "שגיאה";
+
+/* Users can donate to Signal with a credit or debit card. This is the label for the card number field on that screen. */
+"CARD_DONATION_CARD_NUMBER_LABEL" = "Card Number";
+
+/* Users can donate to Signal with a credit or debit card. This is the label for the card verification code (CVV) field on that screen. */
+"CARD_DONATION_CVV_LABEL" = "CVV";
+
+/* Users can donate to Signal with a credit or debit card. This is the text on the \"Donate\" button. */
+"CARD_DONATION_DONATE_BUTTON" = "Donate";
+
+/* Users can donate to Signal with a credit or debit card. This is the label for the expiration date field on that screen. Try to use a short string to make space in the UI. (For example, the English text uses \"Exp. Date\" instead of \"Expiration Date\"). */
+"CARD_DONATION_EXPIRATION_DATE_LABEL" = "Exp. Date";
+
+/* Users can donate to Signal with a credit or debit card. This is the label for the card expiration date field on that screen. */
+"CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER" = "MM/YY";
+
+/* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\". */
+"CARD_DONATION_HEADER" = "Donation amount: %1$@";
+
+/* Users can donate to Signal with a credit or debit card. These are instructions on that screen, asking users to enter their payment card info. */
+"CARD_DONATION_INSTRUCTIONS" = "Enter your card information below";
 
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "בחר מדינה";
@@ -1756,6 +1777,9 @@
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "מיקום עקיפת צנזורה";
 
+/* When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with credit or debit card. */
+"DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD" = "Credit or Debit Card";
+
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "קבלת תג %1$@";
 
@@ -2043,9 +2067,6 @@
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "נכשל בשליחת הודעה למשתמש מאחר שחסמת אותו";
-
-/* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal לא היה יכול להתחבר לאינטרנט. אנא נסה שוב.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "שליחת ההודעה נכשלה עקב העדר מקבלים תקפים.";
@@ -2369,10 +2390,10 @@
 "GROUP_CALL_RECONNECTING" = "מתחבר מחדש";
 
 /* notification body when you join a group call and an already-joined participant has an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "A call participant has a safety number change. Tap to view.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY" = "מספר הבטיחות של משתתף או משתתפת בשיחה השתנה. אפשר ללחוץ לתצוגה.";
 
 /* notification body when a group call participant joins with an untrusted safety number */
-"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "A call participant who joined has a safety number change. Tap to view.";
+"GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY" = "מספר הבטיחות של משתתף או משתתפת שהצטרפו השתנה. אפשר ללחוץ לתצוגה.";
 
 /* Toast view text informing user about swiping to screen share */
 "GROUP_CALL_SCREEN_SHARE_TOAST" = "החלק למעלה כדי להציג שיתוף מסך";
@@ -3254,10 +3275,10 @@
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@ נמצא ב־Signal!";
 
 /* accessibility label for the button which shows the regular keyboard instead of sticker picker */
-"INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "Keyboard";
+"INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL" = "מקלדת";
 
 /* Placeholder text displayed in empty input box in chat screen. */
-"INPUT_TOOLBAR_MESSAGE_PLACEHOLDER" = "Message";
+"INPUT_TOOLBAR_MESSAGE_PLACEHOLDER" = "שליחת הודעה";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "מדבקות";
@@ -3840,9 +3861,6 @@
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "דלג";
-
-/* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "אנא בדוק אם אתה מקוון ונסה שוב.";
 
 /* String representing only the cellular interface */
 "NETWORK_INTERFACE_SET_CELLULAR" = "סלולרי בלבד";
@@ -6359,19 +6377,19 @@
 "STORIES_SHARE_STORY_ACTION" = "שתף";
 
 /* Section title shown when sending to non-story conversations but failing to send the file to stories. */
-"STORIES_SHARESHEET_PARTIAL_SEND_REMAINING_SECTION_TITLE" = "Sent To";
+"STORIES_SHARESHEET_PARTIAL_SEND_REMAINING_SECTION_TITLE" = "נשלחה אל";
 
 /* Section title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
-"STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "Not Sent To";
+"STORIES_SHARESHEET_PARTIAL_SEND_STORIES_SECTION_TITLE" = "לא נשלח אל";
 
 /* Title shown when failing to send an incompatible file to stories, but still sending to non-story conversations. */
-"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "Partially Sent";
+"STORIES_SHARESHEET_PARTIAL_SEND_TITLE" = "נשלח חלקית";
 
 /* Subtitle shown when failing to send an incompatible file to stories via the sharesheet. */
-"STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_SUBTITLE" = "The file type selected is not supported.";
+"STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_SUBTITLE" = "סוג הקובץ שנבחר לא נתמך.";
 
 /* Title shown when failing to send an incompatible file to stories via the sharesheet. */
-"STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_TITLE" = "Unable To Send";
+"STORIES_SHARESHEET_UNABLE_TO_SEND_SEND_TITLE" = "לא ניתן לשלוח";
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "סטוריז";
