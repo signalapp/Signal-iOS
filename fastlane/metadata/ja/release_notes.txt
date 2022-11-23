@@ -1,2 +1,1 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• アプリをスムーズに実行し続けるためのバグ修正関連。Signalをお使いいただきありがとうございます！

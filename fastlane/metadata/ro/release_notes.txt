@@ -1,2 +1,1 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• Alte soluționări de bug-uri care să ajute aplicația să funcționeze rapid. Mulțumim pentru că folosești Signal!

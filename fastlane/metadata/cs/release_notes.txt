@@ -1,2 +1,1 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• Opravili jsme různé chyby, aby aplikace fungovala bez problémů. Děkujeme, že používáte Signal!

@@ -1,2 +1,1 @@
-• Redesigned the input bar for a better look and feel as you send messages
-• Bug fixes and improvements for sharing and viewing stories
+• מבחר תיקוני באגים שיוודאו שהאפליקציה שלך תמשיך לרוץ חלק. תודה על השימוש ב–Signal
