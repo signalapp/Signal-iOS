@@ -90,6 +90,14 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
     // MARK: - Rendering
 
     private func render() {
+        // Only change the placeholder when enough digits are entered.
+        // Helps avoid a jittery UI as you type/delete.
+        let rawNumber = cardNumberTextField.text ?? ""
+        if rawNumber.count >= 2 {
+            let cardType = CreditAndDebitCards.cardType(ofNumber: rawNumber)
+            cvvTextField.placeholder = String("1234".prefix(cardType.cvvCount))
+        }
+
         switch formState {
         case .invalid, .potentiallyValid:
             submitButton.isEnabled = false

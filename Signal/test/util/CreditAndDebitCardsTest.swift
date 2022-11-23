@@ -42,6 +42,12 @@ final class CreditAndDebitCardsTest: XCTestCase {
         }
     }
 
+    func testCardTypeCvvCount() {
+        XCTAssertEqual(CardType.americanExpress.cvvCount, 4)
+        XCTAssertEqual(CardType.unionPay.cvvCount, 3)
+        XCTAssertEqual(CardType.other.cvvCount, 3)
+    }
+
     func testValidityOfNumber() {
         func n(_ number: String, focused: Bool = false) -> Validity {
             CreditAndDebitCards.validity(ofNumber: number, isNumberFieldFocused: focused)
