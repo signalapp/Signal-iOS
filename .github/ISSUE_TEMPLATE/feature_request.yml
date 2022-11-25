@@ -3,7 +3,7 @@ description: Suggest an idea for Session
 title: '[Feature] <title>'
 labels: [feature-request]
 body:
-  - type: checkboxes
+- type: checkboxes
   attributes:
     label: Is there an existing request for feature?
     description: Please search to see if an issue already exists for the feature you are requesting.
