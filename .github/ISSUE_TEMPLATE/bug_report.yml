@@ -1,0 +1,65 @@
+name: 🐞 Bug Report
+description: Create a report to help us improve
+title: "[BUG] <title>"
+labels: [bug]
+body:
+- type: checkboxes
+  attributes:
+    label: Code of conduct
+    description: I have read and agree to adhere to the [Code of Conduct](https://github.com/oxen-io/session-ios/blob/master/CODE_OF_CONDUCT.md).
+    options:
+    - label: I have read and agree to adhere to the [Code of Conduct](https://github.com/oxen-io/session-ios/blob/master/CODE_OF_CONDUCT.md)
+      required: true
+- type: checkboxes
+  attributes:
+    label: Is there an existing issue for this?
+    description: Please search to see if an issue already exists for the bug you encountered.
+    options:
+    - label: I have searched the existing issues
+      required: true
+- type: textarea
+  attributes:
+    label: Current Behavior
+    description: A concise description of what you're experiencing.
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Expected Behavior
+    description: A concise description of what you expected to happen.
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Steps To Reproduce
+    description: Steps to reproduce the behavior.
+    placeholder: |
+      1. In this environment...
+      2. With this config...
+      3. Run '...'
+      4. See error...
+  validations:
+    required: false
+- type: input
+  attributes:
+    label: iOS Version
+    description: What version of iOS are you running?
+    placeholder: ex. iOS 16.0
+  validations:
+    required: false
+- type: input
+  attributes:
+    label: Session Version
+    description: What version of Session are you running? (This can be found at the bottom of the app settings)
+    placeholder: ex. 2.0.0 (375)
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Anything else?
+    description: |
+      Add any other context about the problem here.
+
+      Tip: You can attach screenshots or log files to help explain your problem by clicking this area to highlight it and then dragging files in.
+  validations:
+    required: false
