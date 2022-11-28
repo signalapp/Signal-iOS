@@ -479,6 +479,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     public func read<T>(block: (GRDBReadTransaction) throws -> T) throws -> T {
 
         #if TESTABLE_BUILD
+        // swiftlint:disable inert_defer
         owsAssertDebug(Self.canOpenTransaction)
         // Check for nested tractions.
         if Self.detectNestedTransactions {
@@ -490,6 +491,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
                 Self.canOpenTransaction = true
             }
         }
+        // swiftlint:enable inert_defer
         #endif
 
         return try pool.read { database in
@@ -521,6 +523,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     public func read(block: (GRDBReadTransaction) -> Void) throws {
 
         #if TESTABLE_BUILD
+        // swiftlint:disable inert_defer
         owsAssertDebug(Self.canOpenTransaction)
         if Self.detectNestedTransactions {
             // Check for nested tractions.
@@ -531,6 +534,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
                 Self.canOpenTransaction = true
             }
         }
+        // swiftlint:enable inert_defer
         #endif
 
         try pool.read { database in
@@ -544,6 +548,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     public func write(block: (GRDBWriteTransaction) -> Void) throws {
 
         #if TESTABLE_BUILD
+        // swiftlint:disable inert_defer
         owsAssertDebug(Self.canOpenTransaction)
         // Check for nested tractions.
         if Self.detectNestedTransactions {
@@ -555,6 +560,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
                 Self.canOpenTransaction = true
             }
         }
+        // swiftlint:enable inert_defer
         #endif
 
         var syncCompletions: [GRDBWriteTransaction.CompletionBlock] = []
