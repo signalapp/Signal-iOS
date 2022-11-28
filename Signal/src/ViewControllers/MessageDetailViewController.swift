@@ -14,10 +14,6 @@ protocol MessageDetailViewDelegate: AnyObject {
 
 class MessageDetailViewController: OWSTableViewController2 {
 
-    private enum DetailViewError: Error {
-        case messageWasDeleted
-    }
-
     weak var detailDelegate: MessageDetailViewDelegate?
 
     // MARK: Properties
@@ -202,43 +198,34 @@ class MessageDetailViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    private func buildRenderItem(interactionId: String) -> CVRenderItem? {
-        databaseStorage.read { transaction in
-            guard let interaction = TSInteraction.anyFetch(
-                uniqueId: interactionId,
-                transaction: transaction
-            ) else {
-                owsFailDebug("Missing interaction.")
-                return nil
-            }
-            guard let thread = TSThread.anyFetch(
-                uniqueId: interaction.uniqueThreadId,
-                transaction: transaction
-            ) else {
-                owsFailDebug("Missing thread.")
-                return nil
-            }
-            let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
-
-            let chatColor = ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
-
-            let conversationStyle = ConversationStyle(
-                type: .messageDetails,
-                thread: thread,
-                viewWidth: view.width - (cellOuterInsets.totalWidth + (Self.cellHInnerMargin * 2)),
-                hasWallpaper: false,
-                isWallpaperPhoto: false,
-                chatColor: chatColor
-            )
-
-            return CVLoader.buildStandaloneRenderItem(
-                interaction: interaction,
-                thread: thread,
-                threadAssociatedData: threadAssociatedData,
-                conversationStyle: conversationStyle,
-                transaction: transaction
-            )
+    private func buildRenderItem(message interaction: TSMessage, transaction: SDSAnyReadTransaction) -> CVRenderItem? {
+        guard let thread = TSThread.anyFetch(
+            uniqueId: interaction.uniqueThreadId,
+            transaction: transaction
+        ) else {
+            owsFailDebug("Missing thread.")
+            return nil
         }
+        let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
+
+        let chatColor = ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
+
+        let conversationStyle = ConversationStyle(
+            type: .messageDetails,
+            thread: thread,
+            viewWidth: view.width - (cellOuterInsets.totalWidth + (Self.cellHInnerMargin * 2)),
+            hasWallpaper: false,
+            isWallpaperPhoto: false,
+            chatColor: chatColor
+        )
+
+        return CVLoader.buildStandaloneRenderItem(
+            interaction: interaction,
+            thread: thread,
+            threadAssociatedData: threadAssociatedData,
+            conversationStyle: conversationStyle,
+            transaction: transaction
+        )
     }
 
     private func buildMessageSection() -> OWSTableSection {
@@ -830,36 +817,32 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
             return
         }
 
-        do {
-            try databaseStorage.readThrows { transaction in
-                let uniqueId = self.message.uniqueId
-                guard let newMessage = TSInteraction.anyFetch(uniqueId: uniqueId,
-                                                              transaction: transaction) as? TSMessage else {
-                    Logger.error("Message was deleted")
-                    throw DetailViewError.messageWasDeleted
-                }
-                self.message = newMessage
-                self.attachments = newMessage.mediaAttachments(with: transaction.unwrapGrdbRead)
+        let messageStillExists = databaseStorage.read { transaction in
+            let uniqueId = message.uniqueId
+            guard let newMessage = TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
+                return false
             }
-
-            guard let renderItem = buildRenderItem(interactionId: message.uniqueId) else {
-                owsFailDebug("Could not build renderItem.")
-                throw DetailViewError.messageWasDeleted
+            self.message = newMessage
+            self.attachments = newMessage.mediaAttachments(with: transaction.unwrapGrdbRead)
+            guard let renderItem = buildRenderItem(message: newMessage, transaction: transaction) else {
+                return false
             }
             self.renderItem = renderItem
+            return true
+        }
 
-            if isIncoming {
-                updateTableContents()
-            } else {
-                refreshMessageRecipientsAsync()
-            }
-        } catch DetailViewError.messageWasDeleted {
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
+        guard messageStillExists else {
+            Logger.error("Message was deleted")
+            DispatchQueue.main.async {
                 self.detailDelegate?.detailViewMessageWasDeleted(self)
             }
-        } catch {
-            owsFailDebug("unexpected error: \(error)")
+            return
+        }
+
+        if isIncoming {
+            updateTableContents()
+        } else {
+            refreshMessageRecipientsAsync()
         }
     }
 

@@ -404,19 +404,6 @@ public class SDSDatabaseStorage: SDSTransactable {
         crossProcess.notifyChangedAsync()
     }
 
-    public func readThrows(file: String = #file,
-                           function: String = #function,
-                           line: Int = #line,
-                           block: (SDSAnyReadTransaction) throws -> Void) throws {
-        try InstrumentsMonitor.measure(category: "db", parent: "read", name: Self.owsFormatLogMessage(file: file, function: function, line: line)) {
-            try grdbStorage.readThrows { transaction in
-                try autoreleasepool {
-                    try block(transaction.asAnyRead)
-                }
-            }
-        }
-    }
-
     public static func owsFormatLogMessage(file: String = #file,
                                            function: String = #function,
                                            line: Int = #line) -> String {

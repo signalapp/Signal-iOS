@@ -106,25 +106,16 @@ public class LongTextViewController: OWSViewController {
         AssertIsOnMainThread()
 
         let uniqueId = itemViewModel.interaction.uniqueId
-
-        do {
-            try databaseStorage.readThrows { transaction in
-                guard TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil else {
-                    Logger.error("Message was deleted")
-                    throw LongTextViewError.messageWasDeleted
-                }
-            }
-        } catch LongTextViewError.messageWasDeleted {
-            DispatchQueue.main.async {
-                self.delegate?.longTextViewMessageWasDeleted(self)
-            }
-        } catch {
-            owsFailDebug("unexpected error: \(error)")
+        let messageWasDeleted = databaseStorage.read {
+            TSInteraction.anyFetch(uniqueId: uniqueId, transaction: $0) == nil
         }
-    }
-
-    enum LongTextViewError: Error {
-        case messageWasDeleted
+        guard messageWasDeleted else {
+            return
+        }
+        Logger.error("Message was deleted")
+        DispatchQueue.main.async {
+            self.delegate?.longTextViewMessageWasDeleted(self)
+        }
     }
 
     // MARK: - Create Views

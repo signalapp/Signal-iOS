@@ -475,30 +475,6 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     public static var canOpenTransaction: Bool
     #endif
 
-    // TODO writeThrows flavors
-    public func readThrows(block: (GRDBReadTransaction) throws -> Void) throws {
-
-        #if TESTABLE_BUILD
-        owsAssertDebug(Self.canOpenTransaction)
-        // Check for nested tractions.
-        if Self.detectNestedTransactions {
-            // Check for nested tractions.
-            Self.canOpenTransaction = false
-        }
-        defer {
-            if Self.detectNestedTransactions {
-                Self.canOpenTransaction = true
-            }
-        }
-        #endif
-
-        return try pool.read { database in
-            try autoreleasepool {
-                try block(GRDBReadTransaction(database: database))
-            }
-        }
-    }
-
     @discardableResult
     public func read<T>(block: (GRDBReadTransaction) throws -> T) throws -> T {
 
