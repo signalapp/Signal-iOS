@@ -287,7 +287,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         //    | ViewPort   ->      | ViewPort
         //    |                    |
         //    -                    -
-        ///
+        //
         // * The date header just above the last date header in or below the viewport.
         //
         // DH                   DH

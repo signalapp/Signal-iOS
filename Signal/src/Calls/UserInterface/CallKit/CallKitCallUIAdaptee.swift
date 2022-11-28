@@ -161,7 +161,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         let reason: CXCallEndedReason
         switch error {
-        case .timeout(description: _):
+        case .timeout:
             reason = .unanswered
         default:
             reason = .failed

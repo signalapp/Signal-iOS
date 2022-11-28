@@ -8,9 +8,9 @@ import os.signpost
 
 /**
  This class defines the monitoring interface of the framework.
- */
 
-// "struct" must be accessible from objc, so we have to use a derived NSObject class
+ "struct" must be accessible from objc, so we have to use a derived NSObject class
+ */
 @objc
 public class InstrumentsMonitor: NSObject {
 
@@ -119,10 +119,12 @@ public class InstrumentsMonitor: NSObject {
     @inlinable
     public static func measure<T>(category: String, parent: String? = nil, name: String, block: () throws -> T) rethrows -> T {
 #if TESTABLE_BUILD
+        // swiftlint:disable inert_defer
         let monitorId = startSpan(category: category, parent: parent, name: name)
         defer {
             stopSpan(category: category, hash: monitorId)
         }
+        // swiftlint:enable inert_defer
 #endif
         return try block()
     }

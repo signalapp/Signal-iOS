@@ -334,7 +334,7 @@ struct ConversationHeaderBuilder: Dependencies {
 
         var buttonWidth = max(maxIconButtonWidth, minButtonWidth)
         let needsTwoRows = buttonWidth * CGFloat(buttons.count) > maxAvailableButtonWidth
-        if needsTwoRows { buttonWidth = buttonWidth * 2 }
+        if needsTwoRows { buttonWidth *= 2 }
         buttons.forEach { $0.autoSetDimension(.width, toSize: buttonWidth) }
 
         func addButtonRow(_ buttons: [UIView]) {

@@ -404,7 +404,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
 
         var buttonWidth = max(maxIconButtonWidth, minButtonWidth)
         let needsTwoRows = buttonWidth * CGFloat(headerButtons.count) > maxAvailableButtonWidth
-        if needsTwoRows { buttonWidth = buttonWidth * 2 }
+        if needsTwoRows { buttonWidth *= 2 }
         headerButtons.forEach { $0.autoSetDimension(.width, toSize: buttonWidth) }
 
         func addButtonRow(_ buttons: [UIView]) {

@@ -15,20 +15,16 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     public let threadUniqueId: String
 
     @objc
-    @DecodableDefault.False
-    public private(set) var isArchived: Bool
+    @DecodableDefault.False public private(set) var isArchived: Bool
 
     @objc
-    @DecodableDefault.False
-    public private(set) var isMarkedUnread: Bool
+    @DecodableDefault.False public private(set) var isMarkedUnread: Bool
 
     @objc
-    @DecodableDefault.Zero
-    public private(set) var mutedUntilTimestamp: UInt64
+    @DecodableDefault.Zero public private(set) var mutedUntilTimestamp: UInt64
 
     @objc
-    @DecodableDefault.OneFloat
-    public private(set) var audioPlaybackRate: Float
+    @DecodableDefault.OneFloat public private(set) var audioPlaybackRate: Float
 
     @objc
     public var isMuted: Bool { mutedUntilTimestamp > Date.ows_millisecondTimestamp() }

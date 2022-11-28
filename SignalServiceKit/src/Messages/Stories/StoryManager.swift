@@ -332,8 +332,7 @@ extension StoryManager {
     private static let areViewReceiptsEnabledKey = "areViewReceiptsEnabledKey"
 
     @objc
-    @Atomic
-    public private(set) static var areViewReceiptsEnabled: Bool = false
+    @Atomic public private(set) static var areViewReceiptsEnabled: Bool = false
 
     public static func areViewReceiptsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
         keyValueStore.getBool(areViewReceiptsEnabledKey, transaction: transaction) ?? receiptManager.areReadReceiptsEnabled(transaction: transaction)

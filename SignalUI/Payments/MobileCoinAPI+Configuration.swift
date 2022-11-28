@@ -282,7 +282,7 @@ extension MobileCoinAPI {
                         allowedHardeningAdvisories: info.hardeningAdvisories)
                 }
             let fogViewAttestations = fogView
-                .map { info  -> AttestationInfo in
+                .map { info -> AttestationInfo in
                     .fogView(
                         measurement: .enclave(data: info.measurement),
                         allowedHardeningAdvisories: info.hardeningAdvisories)

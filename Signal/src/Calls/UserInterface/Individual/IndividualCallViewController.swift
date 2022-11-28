@@ -772,7 +772,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         case .localFailure:
             if let error = call.error {
                 switch error {
-                case .timeout(description: _):
+                case .timeout:
                     if self.call.individualCall.direction == .outgoing {
                         return NSLocalizedString("CALL_SCREEN_STATUS_NO_ANSWER", comment: "Call setup status label after outgoing call times out")
                     }

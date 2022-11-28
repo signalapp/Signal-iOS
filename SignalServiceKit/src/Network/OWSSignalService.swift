@@ -39,8 +39,7 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
     }
 
     @objc
-    @Atomic
-    public private(set) var hasCensoredPhoneNumber: Bool = false
+    @Atomic public private(set) var hasCensoredPhoneNumber: Bool = false
 
     @objc
     private let isCensorshipCircumventionManuallyActivatedLock = UnfairLock()

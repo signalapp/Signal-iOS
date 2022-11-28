@@ -132,7 +132,6 @@ public extension UIView {
         return view
     }
 
-    @objc
     class TransparentView: UIView {
         override open class var layerClass: AnyClass {
             CATransformLayer.self

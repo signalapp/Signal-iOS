@@ -1338,7 +1338,7 @@ private class CustomColorPreviewView: UIView {
             var offAxisVector = CGPoint(x: axisVector.y, y: -axisVector.x)
             let axisThickness: CGFloat = 8
             // Then scale it to half the thickness of the axis.
-            offAxisVector = offAxisVector * (axisThickness * 0.5 / offAxisVector.length)
+            offAxisVector *= axisThickness * 0.5 / offAxisVector.length
 
             // By adding the "offset vector" to the two knob locations,
             // we derive the corners of the axis.

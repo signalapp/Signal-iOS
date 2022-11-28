@@ -65,7 +65,9 @@ public class ChainedPromiseTest: SSKBaseTestSwift {
         }
 
         failIfExecuteSecondPromise.set(false)
+        // swiftlint:disable discouraged_direct_init
         firstFuture.resolve(with: Promise<Void>.init(error: NSError()))
+        // swiftlint:enable discouraged_direct_init
         secondFuture.resolve(())
 
         expectFailure(firstResultPromise, description: "first result failure", timeout: 0.1)
