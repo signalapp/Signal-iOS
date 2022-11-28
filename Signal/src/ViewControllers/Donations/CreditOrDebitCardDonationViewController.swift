@@ -165,8 +165,8 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
         result.textColor = Theme.primaryTextColor
         result.autocorrectionType = .no
         result.spellCheckingType = .no
-        result.keyboardType = .numberPad
-        result.textContentType = .creditCardNumber
+        result.keyboardType = .asciiCapableNumberPad
+
         result.delegate = self
 
         return result
@@ -205,8 +205,8 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
 
     private lazy var cardNumberTextField: UITextField = {
         let result = textField()
-        result.returnKeyType = .next
         result.placeholder = "0000 0000 0000 0000"
+        result.textContentType = .creditCardNumber
         result.accessibilityIdentifier = "card_number_textfield"
         return result
     }()
@@ -266,7 +266,6 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
 
     private lazy var expirationDateTextField: UITextField = {
         let result = textField()
-        result.returnKeyType = .next
         result.placeholder = NSLocalizedString(
             "CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER",
             comment: "Users can donate to Signal with a credit or debit card. This is the label for the card expiration date field on that screen."
@@ -304,7 +303,6 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
 
     private lazy var cvvTextField: UITextField = {
         let result = textField()
-        result.returnKeyType = .done
         result.placeholder = "123"
         result.accessibilityIdentifier = "cvv_textfield"
         return result
