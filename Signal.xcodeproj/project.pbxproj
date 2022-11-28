@@ -2034,6 +2034,7 @@
 		F9C5CE79289453B400548EEE /* TSGroupModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CBAB289453B200548EEE /* TSGroupModel.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE7A289453B400548EEE /* NewGroupSeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CBAC289453B200548EEE /* NewGroupSeed.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C612B4284E466B00B2199A /* CGPointExtensionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */; };
+		F9C8CFCC2935700B0094469C /* CreditOrDebitCardReadMoreSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C8CFCB2935700B0094469C /* CreditOrDebitCardReadMoreSheetViewController.swift */; };
 		F9CA468828FF0CA600C074F6 /* OneTimeDonationCustomAmountTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CA468728FF0CA600C074F6 /* OneTimeDonationCustomAmountTextField.swift */; };
 		F9CAC77F29199B9200EEC1DE /* StringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CAC77E29199B9200EEC1DE /* StringTest.swift */; };
 		F9CAC7832919B35E00EEC1DE /* PhoneNumberRegions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CAC7822919B35E00EEC1DE /* PhoneNumberRegions.swift */; };
@@ -4408,6 +4409,7 @@
 		F9C5CBAB289453B200548EEE /* TSGroupModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSGroupModel.swift; sourceTree = "<group>"; };
 		F9C5CBAC289453B200548EEE /* NewGroupSeed.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupSeed.swift; sourceTree = "<group>"; };
 		F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPointExtensionsTest.swift; sourceTree = "<group>"; };
+		F9C8CFCB2935700B0094469C /* CreditOrDebitCardReadMoreSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditOrDebitCardReadMoreSheetViewController.swift; sourceTree = "<group>"; };
 		F9C985D2289459860029F9AD /* SignalServiceKit-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SignalServiceKit-Prefix.pch"; sourceTree = "<group>"; };
 		F9CA468728FF0CA600C074F6 /* OneTimeDonationCustomAmountTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneTimeDonationCustomAmountTextField.swift; sourceTree = "<group>"; };
 		F9CAC77E29199B9200EEC1DE /* StringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTest.swift; sourceTree = "<group>"; };
@@ -6998,6 +7000,7 @@
 				F98ED2CF2922F24C008483DC /* CreditOrDebitCardDonationViewController+MonthlyDonation.swift */,
 				F93461B2291EB8C700366682 /* CreditOrDebitCardDonationViewController+OneTimeDonation.swift */,
 				F94360F02910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift */,
+				F9C8CFCB2935700B0094469C /* CreditOrDebitCardReadMoreSheetViewController.swift */,
 				F96B66A12912B88A004FFFAA /* DonateChoosePaymentMethodSheet.swift */,
 				F96B66A32912B88A004FFFAA /* DonateViewController+DonationMode.swift */,
 				F96B66A82912B88B004FFFAA /* DonateViewController+MonthlyApplePayDonation.swift */,
@@ -10231,6 +10234,7 @@
 				F98ED2D02922F24C008483DC /* CreditOrDebitCardDonationViewController+MonthlyDonation.swift in Sources */,
 				F93461B3291EB8C700366682 /* CreditOrDebitCardDonationViewController+OneTimeDonation.swift in Sources */,
 				F94360F12910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift in Sources */,
+				F9C8CFCC2935700B0094469C /* CreditOrDebitCardReadMoreSheetViewController.swift in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
 				3414896925C9B6490098E3ED /* CurrencyPickerViewController.swift in Sources */,
 				34FCCA04264AEDFE00A63EDE /* CustomColorViewController.swift in Sources */,

@@ -43,6 +43,12 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
         ])
     }
 
+    public override func themeDidChange() {
+        super.themeDidChange()
+
+        render()
+    }
+
     // MARK: - Events
 
     private func didSubmit() {
@@ -85,6 +91,29 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
     // MARK: - Rendering
 
     private func render() {
+        // We'd like a link that doesn't go anywhere, because we'd like to
+        // handle the tapping ourselves. We use a "fake" URL because BonMot
+        // needs one.
+        let linkPart = StringStyle.Part.link(SupportConstants.subscriptionFAQURL)
+
+        subheaderTextView.attributedText = .composed(of: [
+            NSLocalizedString(
+                "CARD_DONATION_SUBHEADER_TEXT",
+                comment: "On the credit/debit card donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their credit/debit card information (2) tell them that Signal does not collect or store their personal information."
+            ),
+            " ",
+            NSLocalizedString(
+                "CARD_DONATION_SUBHEADER_LEARN_MORE",
+                comment: "On the credit/debit card donation screen, a small amount of information text is shown. Users can click this link to learn more information."
+            ).styled(with: linkPart)
+        ]).styled(with: .color(Theme.primaryTextColor), .font(.ows_dynamicTypeBody))
+        subheaderTextView.linkTextAttributes = [
+            .foregroundColor: Theme.accentBlueColor,
+            .underlineColor: UIColor.clear,
+            .underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+        subheaderTextView.textAlignment = .center
+
         // Only change the placeholder when enough digits are entered.
         // Helps avoid a jittery UI as you type/delete.
         let rawNumber = cardNumberTextField.text ?? ""
@@ -103,6 +132,12 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
 
     // MARK: - Donation amount section
 
+    private lazy var subheaderTextView: LinkingTextView = {
+        let result = LinkingTextView()
+        result.delegate = self
+        return result
+    }()
+
     private lazy var donationAmountSection: OWSTableSection = {
         let result = OWSTableSection(
             items: [.init(
@@ -112,15 +147,7 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
 
                     guard let self else { return cell }
 
-                    func label() -> UILabel {
-                        let result = UILabel()
-                        result.textAlignment = .center
-                        result.numberOfLines = 0
-                        result.lineBreakMode = .byWordWrapping
-                        return result
-                    }
-
-                    let headerLabel = label()
+                    let headerLabel = UILabel()
                     headerLabel.text = {
                         let amountString = DonationUtilities.format(money: self.donationAmount)
                         let format = NSLocalizedString(
@@ -130,18 +157,13 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
                         return String(format: format, amountString)
                     }()
                     headerLabel.font = .ows_dynamicTypeTitle3.ows_semibold
-
-                    let instructionsLabel = label()
-                    instructionsLabel.text = NSLocalizedString(
-                        "CARD_DONATION_INSTRUCTIONS",
-                        comment: "Users can donate to Signal with a credit or debit card. These are instructions on that screen, asking users to enter their payment card info."
-                    )
-                    instructionsLabel.font = .ows_dynamicTypeBody
-                    instructionsLabel.textColor = Theme.secondaryTextAndIconColor
+                    headerLabel.textAlignment = .center
+                    headerLabel.numberOfLines = 0
+                    headerLabel.lineBreakMode = .byWordWrapping
 
                     let stackView = UIStackView(arrangedSubviews: [
                         headerLabel,
-                        instructionsLabel
+                        self.subheaderTextView
                     ])
                     cell.contentView.addSubview(stackView)
                     stackView.axis = .vertical
@@ -373,6 +395,22 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
 }
 
 // MARK: - UITextViewDelegate
+
+extension CreditOrDebitCardDonationViewController: UITextViewDelegate {
+    func textView(
+        _ textView: UITextView,
+        shouldInteractWith URL: URL,
+        in characterRange: NSRange,
+        interaction: UITextItemInteraction
+    ) -> Bool {
+        if textView == subheaderTextView {
+            present(CreditOrDebitCardReadMoreSheetViewController(), animated: true)
+        }
+        return false
+    }
+}
+
+// MARK: - UITextFieldDelegate
 
 extension CreditOrDebitCardDonationViewController: UITextFieldDelegate {
     func textField(

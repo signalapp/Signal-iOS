@@ -859,8 +859,17 @@
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\". */
 "CARD_DONATION_HEADER" = "Donation amount: %1$@";
 
-/* Users can donate to Signal with a credit or debit card. These are instructions on that screen, asking users to enter their payment card info. */
-"CARD_DONATION_INSTRUCTIONS" = "Enter your card information below";
+/* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
+"CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal does not collect or store any of your personal information when you make a donation.\n\nWe use Stripe as our payment processor to receive your donations. We don’t access, store, or save any of the information you provide to them.\n\nSignal does not and cannot connect your donation to your Signal account.\n\nThank you for your support!";
+
+/* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the title of that sheet. */
+"CARD_DONATION_READ_MORE_SHEET_TITLE" = "Your information is private";
+
+/* On the credit/debit card donation screen, a small amount of information text is shown. Users can click this link to learn more information. */
+"CARD_DONATION_SUBHEADER_LEARN_MORE" = "Learn more.";
+
+/* On the credit/debit card donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their credit/debit card information (2) tell them that Signal does not collect or store their personal information. */
+"CARD_DONATION_SUBHEADER_TEXT" = "Enter your card details. Signal does not collect or store your personal information.";
 
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Select Country";
