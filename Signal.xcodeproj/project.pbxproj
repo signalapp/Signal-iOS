@@ -132,7 +132,6 @@
 		3402AA7E271D9E180084CBAE /* TappableStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95509271B510400B05242 /* TappableStackView.swift */; };
 		3402AA7F271D9E180084CBAE /* LinkingTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95529271B510400B05242 /* LinkingTextView.swift */; };
 		3402AA80271D9E180084CBAE /* TappableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95532271B510400B05242 /* TappableView.swift */; };
-		3402AA81271D9E180084CBAE /* OWSTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A95550271B510400B05242 /* OWSTextField.m */; };
 		3402AA82271D9E180084CBAE /* DisappearingTimerConfigurationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9551F271B510400B05242 /* DisappearingTimerConfigurationView.swift */; };
 		3402AA83271D9E180084CBAE /* OWSFlatButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95511271B510400B05242 /* OWSFlatButton.swift */; };
 		3402AA85271D9E180084CBAE /* OWSSearchBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95520271B510400B05242 /* OWSSearchBar.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -179,7 +178,6 @@
 		3402AAB3271D9E180084CBAE /* CVTextLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95522271B510400B05242 /* CVTextLabel.swift */; };
 		3402AAB4271D9E180084CBAE /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95519271B510400B05242 /* VideoPlayerView.swift */; };
 		3402AAB6271D9E180084CBAE /* ImageEditorCropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95556271B510400B05242 /* ImageEditorCropViewController.swift */; };
-		3402AAB7271D9E180084CBAE /* OWSTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A9552E271B510400B05242 /* OWSTextField.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AABF271DA2720084CBAE /* VoiceMessageModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3402AABE271DA2720084CBAE /* VoiceMessageModels.swift */; };
 		3402AAC2271DA6100084CBAE /* OWSAudioPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 3402AAC0271DA60F0084CBAE /* OWSAudioPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AAC3271DA6100084CBAE /* OWSAudioPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 3402AAC1271DA6100084CBAE /* OWSAudioPlayer.m */; };
@@ -2035,6 +2033,7 @@
 		F9C5CE7A289453B400548EEE /* NewGroupSeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CBAC289453B200548EEE /* NewGroupSeed.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C612B4284E466B00B2199A /* CGPointExtensionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */; };
 		F9C8CFCC2935700B0094469C /* CreditOrDebitCardReadMoreSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C8CFCB2935700B0094469C /* CreditOrDebitCardReadMoreSheetViewController.swift */; };
+		F9C8CFD0293580D00094469C /* OWSTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C8CFCF293580D00094469C /* OWSTextField.swift */; };
 		F9CA468828FF0CA600C074F6 /* OneTimeDonationCustomAmountTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CA468728FF0CA600C074F6 /* OneTimeDonationCustomAmountTextField.swift */; };
 		F9CAC77F29199B9200EEC1DE /* StringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CAC77E29199B9200EEC1DE /* StringTest.swift */; };
 		F9CAC7832919B35E00EEC1DE /* PhoneNumberRegions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CAC7822919B35E00EEC1DE /* PhoneNumberRegions.swift */; };
@@ -2639,7 +2638,6 @@
 		34A9552B271B510400B05242 /* Mention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mention.swift; sourceTree = "<group>"; };
 		34A9552C271B510400B05242 /* MentionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionPicker.swift; sourceTree = "<group>"; };
 		34A9552D271B510400B05242 /* MentionTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MentionTextView.swift; sourceTree = "<group>"; };
-		34A9552E271B510400B05242 /* OWSTextField.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSTextField.h; sourceTree = "<group>"; };
 		34A9552F271B510400B05242 /* LoopingVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopingVideoView.swift; sourceTree = "<group>"; };
 		34A95530271B510400B05242 /* OWSButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSButton.swift; sourceTree = "<group>"; };
 		34A95531271B510400B05242 /* ResizingScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizingScrollView.swift; sourceTree = "<group>"; };
@@ -2664,7 +2662,6 @@
 		34A9554D271B510400B05242 /* TooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TooltipView.swift; sourceTree = "<group>"; };
 		34A9554E271B510400B05242 /* OWSStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSStackView.swift; sourceTree = "<group>"; };
 		34A9554F271B510400B05242 /* InputAccessoryViewPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputAccessoryViewPlaceholder.swift; sourceTree = "<group>"; };
-		34A95550271B510400B05242 /* OWSTextField.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSTextField.m; sourceTree = "<group>"; };
 		34A95552271B510400B05242 /* ImageEditorPanGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorPanGestureRecognizer.swift; sourceTree = "<group>"; };
 		34A95553271B510400B05242 /* ImageEditorTextItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorTextItem.swift; sourceTree = "<group>"; };
 		34A95556271B510400B05242 /* ImageEditorCropViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorCropViewController.swift; sourceTree = "<group>"; };
@@ -4410,6 +4407,7 @@
 		F9C5CBAC289453B200548EEE /* NewGroupSeed.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupSeed.swift; sourceTree = "<group>"; };
 		F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPointExtensionsTest.swift; sourceTree = "<group>"; };
 		F9C8CFCB2935700B0094469C /* CreditOrDebitCardReadMoreSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditOrDebitCardReadMoreSheetViewController.swift; sourceTree = "<group>"; };
+		F9C8CFCF293580D00094469C /* OWSTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSTextField.swift; sourceTree = "<group>"; };
 		F9C985D2289459860029F9AD /* SignalServiceKit-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SignalServiceKit-Prefix.pch"; sourceTree = "<group>"; };
 		F9CA468728FF0CA600C074F6 /* OneTimeDonationCustomAmountTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneTimeDonationCustomAmountTextField.swift; sourceTree = "<group>"; };
 		F9CAC77E29199B9200EEC1DE /* StringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTest.swift; sourceTree = "<group>"; };
@@ -5289,8 +5287,7 @@
 				34A95520271B510400B05242 /* OWSSearchBar.h */,
 				34A95540271B510400B05242 /* OWSSearchBar.m */,
 				34A9554E271B510400B05242 /* OWSStackView.swift */,
-				34A9552E271B510400B05242 /* OWSTextField.h */,
-				34A95550271B510400B05242 /* OWSTextField.m */,
+				F9C8CFCF293580D00094469C /* OWSTextField.swift */,
 				34A95533271B510400B05242 /* OWSTextView.h */,
 				34A9550D271B510400B05242 /* OWSTextView.m */,
 				32FAB9292727A57100FB76A6 /* PrimaryImageView.swift */,
@@ -8433,7 +8430,6 @@
 				3402AA66271D9DEC0084CBAE /* OWSQuotedReplyModel.h in Headers */,
 				3402AA85271D9E180084CBAE /* OWSSearchBar.h in Headers */,
 				3402AA4C271D9DCD0084CBAE /* OWSTableViewController.h in Headers */,
-				3402AAB7271D9E180084CBAE /* OWSTextField.h in Headers */,
 				3402AA8B271D9E180084CBAE /* OWSTextView.h in Headers */,
 				3402AA50271D9DCD0084CBAE /* OWSViewControllerObjc.h in Headers */,
 				88B986F828807E9000F8C74D /* RecipientPickerViewController.h in Headers */,
@@ -9882,7 +9878,7 @@
 				3402AA46271D9DCD0084CBAE /* OWSTableViewController.m in Sources */,
 				3402AA39271D9DCD0084CBAE /* OWSTableViewController.swift in Sources */,
 				3402AA5A271D9DCD0084CBAE /* OWSTableViewController2.swift in Sources */,
-				3402AA81271D9E180084CBAE /* OWSTextField.m in Sources */,
+				F9C8CFD0293580D00094469C /* OWSTextField.swift in Sources */,
 				3402AAA2271D9E180084CBAE /* OWSTextView.m in Sources */,
 				34A954E8271B4F6A00B05242 /* OWSVideoPlayer.swift in Sources */,
 				66F44B4B2909EEDA004CF66C /* OWSViewController.swift in Sources */,
