@@ -101,8 +101,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:devices:recipientPh
                                                  unregisteredAtTimestamp:(UInt64)unregisteredAtTimestamp
                                                              transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)removePhoneNumberForDatabaseMigration;
-
 @end
 
 NS_ASSUME_NONNULL_END

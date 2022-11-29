@@ -691,14 +691,6 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     return TSFTSIndexModeAlways;
 }
 
-- (void)removePhoneNumberForDatabaseMigration
-{
-    OWSAssertDebug(self.recipientUUID != nil);
-    OWSAssertDebug(self.recipientPhoneNumber != nil);
-
-    _recipientPhoneNumber = nil;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END
