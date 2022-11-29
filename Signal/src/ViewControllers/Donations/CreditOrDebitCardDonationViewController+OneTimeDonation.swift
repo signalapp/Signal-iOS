@@ -12,6 +12,8 @@ extension CreditOrDebitCardDonationViewController {
     /// 
     /// See also: code for other payment methods, such as Apple Pay.
     func oneTimeDonation(with creditOrDebitCard: Stripe.PaymentMethod.CreditOrDebitCard) {
+        Logger.info("[Donations] Starting one-time card donation")
+
         let amount = self.donationAmount
 
         DonationViewsUtil.wrapPromiseInProgressView(
@@ -25,18 +27,23 @@ extension CreditOrDebitCardDonationViewController {
             }.then(on: .main) { [weak self] confirmedIntent in
                 guard let self else { throw DonationJobError.assertion }
                 if let redirectUrl = confirmedIntent.redirectToUrl {
+                    Logger.info("[Donations] One-time card donation needed 3DS. Presenting...")
                     return self.show3DS(for: redirectUrl)
                 } else {
+                    Logger.info("[Donations] One-time card donation did not need 3DS. Continuing")
                     return Promise.value(confirmedIntent.intentId)
                 }
             }.then(on: .sharedUserInitiated) { intentId in
+                Logger.info("[Donations] Creating and redeeming one-time boost receipt for card donation")
                 SubscriptionManager.terminateTransactionIfPossible = false
                 SubscriptionManager.createAndRedeemBoostReceipt(for: intentId, amount: amount)
                 return DonationViewsUtil.waitForSubscriptionJob()
             }
         ).done(on: .main) { [weak self] in
+            Logger.info("[Donations] One-time card donation finished")
             self?.onFinished()
         }.catch(on: .main) { [weak self] error in
+            Logger.warn("[Donations] One-time card donation failed")
             self?.didFailDonation(error: error)
         }
     }

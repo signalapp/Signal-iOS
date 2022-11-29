@@ -14,6 +14,8 @@ extension CreditOrDebitCardDonationViewController {
             "[Donations] Unexpectedly already had a 3DS authentication session going"
         )
 
+        Logger.info("[Donations] Presenting 3DS authentication sheet")
+
         let (promise, future) = Promise<String>.pending()
 
         let session = ASWebAuthenticationSession(
