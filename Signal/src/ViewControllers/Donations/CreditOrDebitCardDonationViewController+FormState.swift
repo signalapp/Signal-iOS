@@ -25,15 +25,15 @@ extension CreditOrDebitCardDonationViewController {
     }
 
     static func formState(
-        cardNumber rawNumber: String?,
+        cardNumber rawNumber: String,
         isCardNumberFieldFocused: Bool,
-        expirationDate rawExpirationDate: String?,
-        cvv rawCvv: String?
+        expirationDate rawExpirationDate: String,
+        cvv rawCvv: String
     ) -> FormState {
         var invalidFields = Set<FormField>()
         var hasPotentiallyValidFields = false
 
-        let numberForValidation = (rawNumber ?? "").removeCharacters(characterSet: .whitespaces)
+        let numberForValidation = rawNumber.removeCharacters(characterSet: .whitespaces)
         let numberValidity = CreditAndDebitCards.validity(
             ofNumber: numberForValidation,
             isNumberFieldFocused: isCardNumberFieldFocused
@@ -47,7 +47,7 @@ extension CreditOrDebitCardDonationViewController {
         let expirationMonth: String
         let expirationTwoDigitYear: String
         let expirationValidity: CreditAndDebitCards.Validity
-        let expirationDate = (rawExpirationDate ?? "").removeCharacters(characterSet: .whitespaces)
+        let expirationDate = rawExpirationDate.removeCharacters(characterSet: .whitespaces)
         let expirationComponents = expirationDate.components(separatedBy: "/")
         let calendar = Calendar(identifier: .iso8601)
         let currentMonth = calendar.component(.month, from: Date())
@@ -88,7 +88,7 @@ extension CreditOrDebitCardDonationViewController {
         case .fullyValid: break
         }
 
-        let cvv = (rawCvv ?? "").trimmingCharacters(in: .whitespaces)
+        let cvv = rawCvv.trimmingCharacters(in: .whitespaces)
         let cvvValidity = CreditAndDebitCards.validity(
             ofCvv: cvv,
             cardType: CreditAndDebitCards.cardType(ofNumber: numberForValidation)

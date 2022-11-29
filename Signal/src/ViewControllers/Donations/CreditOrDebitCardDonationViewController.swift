@@ -42,9 +42,7 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
 
         contents = OWSTableContents(sections: [
             donationAmountSection,
-            cardNumberSection,
-            expirationDateSection,
-            cvvSection,
+            formSection,
             submitButtonSection
         ])
     }
@@ -122,18 +120,53 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
 
         // Only change the placeholder when enough digits are entered.
         // Helps avoid a jittery UI as you type/delete.
-        let rawNumber = cardNumberTextField.text ?? ""
+        let rawNumber = cardNumberView.text
+        let cardType = CreditAndDebitCards.cardType(ofNumber: rawNumber)
         if rawNumber.count >= 2 {
-            let cardType = CreditAndDebitCards.cardType(ofNumber: rawNumber)
-            cvvTextField.placeholder = String("1234".prefix(cardType.cvvCount))
+            cvvView.placeholder = String("1234".prefix(cardType.cvvCount))
         }
 
+        let invalidFields: Set<FormField>
         switch formState {
-        case .invalid, .potentiallyValid:
+        case let .invalid(fields):
+            invalidFields = fields
+            submitButton.isEnabled = false
+        case .potentiallyValid:
+            invalidFields = []
             submitButton.isEnabled = false
         case .fullyValid:
+            invalidFields = []
             submitButton.isEnabled = true
         }
+
+        cardNumberView.render(errorMessage: {
+            guard invalidFields.contains(.cardNumber) else { return nil }
+            return NSLocalizedString(
+                "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR",
+                comment: "Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI."
+            )
+        }())
+        expirationView.render(errorMessage: {
+            guard invalidFields.contains(.expirationDate) else { return nil }
+            return NSLocalizedString(
+                "CARD_DONATION_EXPIRATION_DATE_GENERIC_ERROR",
+                comment: "Users can donate to Signal with a credit or debit card. If their expiration date is invalid, this generic error message will be shown. Try to use a short string to make space in the UI."
+            )
+        }())
+        cvvView.render(errorMessage: {
+            guard invalidFields.contains(.cvv) else { return nil }
+            if cvvView.text.count > cardType.cvvCount {
+                return NSLocalizedString(
+                    "CARD_DONATION_CVV_TOO_LONG_ERROR",
+                    comment: "Users can donate to Signal with a credit or debit card. If their card verification code (CVV) is too long, this error will be shown. Try to use a short string to make space in the UI."
+                )
+            } else {
+                return NSLocalizedString(
+                    "CARD_DONATION_CVV_GENERIC_ERROR",
+                    comment: "Users can donate to Signal with a credit or debit card. If their card verification code (CVV) is invalid for reasons we cannot determine, this generic error message will be shown. Try to use a short string to make space in the UI."
+                )
+            }
+        }())
     }
 
     // MARK: - Donation amount section
@@ -186,28 +219,47 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
 
     // MARK: - Card form
 
-    private func textField() -> UITextField {
-        let result = OWSTextField()
-
-        result.font = .ows_dynamicTypeBodyClamped
-        result.textColor = Theme.primaryTextColor
-        result.autocorrectionType = .no
-        result.spellCheckingType = .no
-        result.keyboardType = .asciiCapableNumberPad
-
-        result.delegate = self
-
-        return result
-    }
-
     private var formState: FormState {
         Self.formState(
-            cardNumber: cardNumberTextField.text,
-            isCardNumberFieldFocused: cardNumberTextField.isFirstResponder,
-            expirationDate: expirationDateTextField.text,
-            cvv: cvvTextField.text
+            cardNumber: cardNumberView.text,
+            isCardNumberFieldFocused: cardNumberView.isFirstResponder,
+            expirationDate: expirationView.text,
+            cvv: cvvView.text
         )
     }
+
+    private lazy var formSection: OWSTableSection = {
+        let result = OWSTableSection()
+        result.hasBackground = false
+
+        result.add(items: [.init(customCellBlock: { [weak self] in
+            let cell = OWSTableItem.newCell()
+            cell.selectionStyle = .none
+
+            guard let self else { return cell }
+
+            let expirationAndCvvStackView = UIStackView(arrangedSubviews: [
+                self.expirationView,
+                self.cvvView
+            ])
+            expirationAndCvvStackView.spacing = 16
+
+            let outerStackView = UIStackView(arrangedSubviews: [
+                self.cardNumberView,
+                expirationAndCvvStackView
+            ])
+            self.cardNumberView.autoPinWidthToSuperviewMargins()
+            expirationAndCvvStackView.autoPinWidthToSuperviewMargins()
+            outerStackView.axis = .vertical
+            outerStackView.spacing = 16
+            cell.contentView.addSubview(outerStackView)
+            outerStackView.autoPinEdgesToSuperviewMargins()
+
+            return cell
+        })])
+
+        return result
+    }()
 
     // MARK: Card number
 
@@ -231,37 +283,19 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
         return String(result)
     }
 
-    private lazy var cardNumberTextField: UITextField = {
-        let result = textField()
-        result.placeholder = "0000 0000 0000 0000"
-        result.textContentType = .creditCardNumber
-        result.accessibilityIdentifier = "card_number_textfield"
-        return result
-    }()
-
-    private lazy var cardNumberSection: OWSTableSection = {
-        OWSTableSection(
+    private lazy var cardNumberView: FormFieldView = {
+        let result = FormFieldView(
             title: NSLocalizedString(
                 "CARD_DONATION_CARD_NUMBER_LABEL",
                 comment: "Users can donate to Signal with a credit or debit card. This is the label for the card number field on that screen."
             ),
-            items: [.init(
-                customCellBlock: { [weak self] in
-                    let cell = OWSTableItem.newCell()
-                    cell.selectionStyle = .none
-
-                    guard let self else { return cell }
-
-                    cell.contentView.addSubview(self.cardNumberTextField)
-                    self.cardNumberTextField.autoPinEdgesToSuperviewMargins()
-
-                    return cell
-                },
-                actionBlock: { [weak self] in
-                    self?.cardNumberTextField.becomeFirstResponder()
-                }
-            )]
+            placeholder: Self.formatCardNumber(unformatted: "0000000000000000"),
+            maxDigits: 19,
+            format: Self.formatCardNumber,
+            textContentType: .creditCardNumber
         )
+        result.delegate = self
+        return result
     }()
 
     // MARK: Expiration date
@@ -292,73 +326,37 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
         }
     }
 
-    private lazy var expirationDateTextField: UITextField = {
-        let result = textField()
-        result.placeholder = NSLocalizedString(
-            "CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER",
-            comment: "Users can donate to Signal with a credit or debit card. This is the label for the card expiration date field on that screen."
-        )
-        result.accessibilityIdentifier = "expiration_date_textfield"
-        return result
-    }()
-
-    private lazy var expirationDateSection: OWSTableSection = {
-        OWSTableSection(
+    private lazy var expirationView: FormFieldView = {
+        let result = FormFieldView(
             title: NSLocalizedString(
                 "CARD_DONATION_EXPIRATION_DATE_LABEL",
                 comment: "Users can donate to Signal with a credit or debit card. This is the label for the expiration date field on that screen. Try to use a short string to make space in the UI. (For example, the English text uses \"Exp. Date\" instead of \"Expiration Date\")."
             ),
-            items: [.init(
-                customCellBlock: { [weak self] in
-                    let cell = OWSTableItem.newCell()
-                    cell.selectionStyle = .none
-
-                    guard let self else { return cell }
-
-                    cell.contentView.addSubview(self.expirationDateTextField)
-                    self.expirationDateTextField.autoPinEdgesToSuperviewMargins()
-
-                    return cell
-                },
-                actionBlock: { [weak self] in
-                    self?.expirationDateTextField.becomeFirstResponder()
-                }
-            )]
+            placeholder: NSLocalizedString(
+                "CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER",
+                comment: "Users can donate to Signal with a credit or debit card. This is the label for the card expiration date field on that screen."
+            ),
+            maxDigits: 4,
+            format: Self.formatExpirationDate
         )
+        result.delegate = self
+        return result
     }()
 
     // MARK: CVV
 
-    private lazy var cvvTextField: UITextField = {
-        let result = textField()
-        result.placeholder = "123"
-        result.accessibilityIdentifier = "cvv_textfield"
-        return result
-    }()
-
-    private lazy var cvvSection: OWSTableSection = {
-        OWSTableSection(
+    private lazy var cvvView: FormFieldView = {
+        let result = FormFieldView(
             title: NSLocalizedString(
                 "CARD_DONATION_CVV_LABEL",
                 comment: "Users can donate to Signal with a credit or debit card. This is the label for the card verification code (CVV) field on that screen."
             ),
-            items: [.init(
-                customCellBlock: { [weak self] in
-                    let cell = OWSTableItem.newCell()
-                    cell.selectionStyle = .none
-
-                    guard let self else { return cell }
-
-                    cell.contentView.addSubview(self.cvvTextField)
-                    self.cvvTextField.autoPinEdgesToSuperviewMargins()
-
-                    return cell
-                },
-                actionBlock: { [weak self] in
-                    self?.cvvTextField.becomeFirstResponder()
-                }
-            )]
+            placeholder: "123",
+            maxDigits: 4,
+            format: { $0 }
         )
+        result.delegate = self
+        return result
     }()
 
     // MARK: - Submit button
@@ -414,43 +412,13 @@ extension CreditOrDebitCardDonationViewController: UITextViewDelegate {
     }
 }
 
-// MARK: - UITextFieldDelegate
+// MARK: - CreditOrDebitCardDonationFormViewDelegate
 
-extension CreditOrDebitCardDonationViewController: UITextFieldDelegate {
-    func textField(
-        _ textField: UITextField,
-        shouldChangeCharactersIn range: NSRange,
-        replacementString: String
-    ) -> Bool {
-        let maxDigits: Int
-        let format: (String) -> String
-        switch textField {
-        case cardNumberTextField:
-            maxDigits = 19
-            format = Self.formatCardNumber
-        case expirationDateTextField:
-            maxDigits = 4
-            format = Self.formatExpirationDate
-        case cvvTextField:
-            maxDigits = 4
-            format = { $0 }
-        default:
-            owsFail("Unexpected text field")
-        }
-
-        let result = FormattedNumberField.textField(
-            textField,
-            shouldChangeCharactersIn: range,
-            replacementString: replacementString,
-            maxDigits: maxDigits,
-            format: format
-        )
-
-        render()
-
-        return result
-    }
+extension CreditOrDebitCardDonationViewController: CreditOrDebitCardDonationFormViewDelegate {
+    func didSomethingChange() { render() }
 }
+
+// MARK: - Utilities
 
 fileprivate extension UInt8 {
     var isValidAsMonth: Bool { self >= 1 && self <= 12 }
