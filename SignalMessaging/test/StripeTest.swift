@@ -47,33 +47,6 @@ final class StripeTest: XCTestCase {
         XCTAssertEqual(actual, expected)
     }
 
-    func testIsAmountTooLarge() {
-        let tooLarge: [FiatMoney] = [
-            FiatMoney(currencyCode: "USD", value: 1_000_000),
-            FiatMoney(currencyCode: "JPY", value: 100_000_000),
-            FiatMoney(currencyCode: "IDR", value: 1_000_000_000_000),
-            FiatMoney(currencyCode: unknownCurrency, value: 1_000_000),
-            // Rounding
-            FiatMoney(currencyCode: "USD", value: 999_999.995)
-        ]
-        for amount in tooLarge {
-            XCTAssertTrue(Stripe.isAmountTooLarge(amount), "\(amount)")
-        }
-
-        let allGood: [FiatMoney] = [
-            FiatMoney(currencyCode: "USD", value: 0),
-            FiatMoney(currencyCode: "USD", value: 999_999.99),
-            FiatMoney(currencyCode: "JPY", value: 99_999_999),
-            FiatMoney(currencyCode: "IDR", value: 9_999_999_999.99),
-            FiatMoney(currencyCode: unknownCurrency, value: 999_999.99),
-            // Rounding
-            FiatMoney(currencyCode: "USD", value: 999_999.994)
-        ]
-        for amount in allGood {
-            XCTAssertFalse(Stripe.isAmountTooLarge(amount), "\(amount)")
-        }
-    }
-
     func testIsAmountTooSmall() {
         let tooSmall: [FiatMoney] = [
             FiatMoney(currencyCode: "USD", value: 0),

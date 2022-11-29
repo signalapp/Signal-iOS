@@ -43,10 +43,6 @@ public struct Stripe: Dependencies {
                 throw OWSAssertionError("Amount too small")
             }
 
-            guard !isAmountTooLarge(amount) else {
-                throw OWSAssertionError("Amount too large")
-            }
-
             // The description is never translated as it's populated into an
             // english only receipt by Stripe.
             let request = OWSRequestFactory.boostCreatePaymentIntent(
@@ -151,23 +147,6 @@ public struct Stripe: Dependencies {
                 redirectToUrl: parseNextActionRedirectUrl(from: response.responseBodyJson)
             )
         }
-    }
-
-    /// Is an amount of money too large?
-    ///
-    /// According to [Stripe's docs][0], amounts can be "up to twelve digits for
-    /// IDR (for example, a value of 999999999999 for a charge of
-    /// 9,999,999,999.99 IDR), and up to eight digits for all other currencies
-    /// (for example, a value of 99999999 for a charge of 999,999.99 USD).
-    ///
-    /// - Parameter amount: The amount of money.
-    /// - Returns: Whether the amount is too large.
-    ///
-    /// [0]: https://stripe.com/docs/currencies?presentment-currency=US#minimum-and-maximum-charge-amounts
-    public static func isAmountTooLarge(_ amount: FiatMoney) -> Bool {
-        let integerAmount = integralAmount(amount)
-        let maximum: UInt = amount.currencyCode == "IDR" ? 999999999999 : 99999999
-        return integerAmount > maximum
     }
 
     /// Is an amount of money too small?

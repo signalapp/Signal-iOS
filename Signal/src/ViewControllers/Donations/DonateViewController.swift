@@ -310,11 +310,6 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT",
                 comment: "If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown."
             ))
-        case .amountIsTooLarge:
-            showError(NSLocalizedString(
-                "DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT",
-                comment: "If the user tries to donate to Signal but they've entered an amount that's too large, this error message is shown."
-            ))
         case let .canContinue(amount):
             presentChoosePaymentMethodSheet(
                 amount: amount,

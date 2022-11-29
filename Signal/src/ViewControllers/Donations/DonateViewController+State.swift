@@ -29,7 +29,6 @@ extension DonateViewController {
             enum OneTimePaymentRequest: Equatable {
                 case noAmountSelected
                 case amountIsTooSmall
-                case amountIsTooLarge
                 case canContinue(amount: FiatMoney)
             }
 
@@ -69,9 +68,6 @@ extension DonateViewController {
                 }
                 if Stripe.isAmountTooSmall(amount) {
                     return .amountIsTooSmall
-                }
-                if Stripe.isAmountTooLarge(amount) {
-                    return .amountIsTooLarge
                 }
                 return .canContinue(amount: amount)
             }
