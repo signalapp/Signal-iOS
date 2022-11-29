@@ -385,10 +385,6 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
                 return cell
             }
         )])
-
-        // TODO(donations) Remove or replace this text
-        result.footerTitle = "NOTE: This screen is incomplete and is only enabled for internal users."
-
         result.hasBackground = false
         return result
     }()
