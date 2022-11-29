@@ -1321,6 +1321,10 @@
 		F9B0DC5E28948656004E07B7 /* GTSR1.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4C28948656004E07B7 /* GTSR1.crt */; };
 		F9B0DC5F28948656004E07B7 /* GTSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4D28948656004E07B7 /* GTSR4.crt */; };
 		F9B0DC6028948656004E07B7 /* textsecure.cer in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4E28948656004E07B7 /* textsecure.cer */; };
+		F9B3A9292935452B0071EB95 /* CreditOrDebitCardDonationViewController+3DSecure.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A9282935452B0071EB95 /* CreditOrDebitCardDonationViewController+3DSecure.swift */; };
+		F9B3A92B2935472F0071EB95 /* Stripe+3DSecure.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */; };
+		F9B3A92D293553930071EB95 /* ASWebAuthenticationSession+Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A92C293553930071EB95 /* ASWebAuthenticationSession+Util.swift */; };
+		F9B3A92F293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A92E293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift */; };
 		F9B652BC28D514E6006914CA /* RecipientPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B652BB28D514E6006914CA /* RecipientPickerViewController.swift */; };
 		F9B652C128D8CB75006914CA /* DatabaseRecoveryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B652C028D8CB75006914CA /* DatabaseRecoveryViewController.swift */; };
 		F9B652C328D8E3DF006914CA /* DatabaseRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B652C228D8E3DF006914CA /* DatabaseRecovery.swift */; };
@@ -3695,6 +3699,10 @@
 		F9B0DC4C28948656004E07B7 /* GTSR1.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR1.crt; sourceTree = "<group>"; };
 		F9B0DC4D28948656004E07B7 /* GTSR4.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR4.crt; sourceTree = "<group>"; };
 		F9B0DC4E28948656004E07B7 /* textsecure.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = textsecure.cer; sourceTree = "<group>"; };
+		F9B3A9282935452B0071EB95 /* CreditOrDebitCardDonationViewController+3DSecure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreditOrDebitCardDonationViewController+3DSecure.swift"; sourceTree = "<group>"; };
+		F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+3DSecure.swift"; sourceTree = "<group>"; };
+		F9B3A92C293553930071EB95 /* ASWebAuthenticationSession+Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ASWebAuthenticationSession+Util.swift"; sourceTree = "<group>"; };
+		F9B3A92E293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASWebAuthenticationSessionUtilTest.swift; sourceTree = "<group>"; };
 		F9B652BB28D514E6006914CA /* RecipientPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerViewController.swift; sourceTree = "<group>"; };
 		F9B652C028D8CB75006914CA /* DatabaseRecoveryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseRecoveryViewController.swift; sourceTree = "<group>"; };
 		F9B652C228D8E3DF006914CA /* DatabaseRecovery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseRecovery.swift; sourceTree = "<group>"; };
@@ -6013,6 +6021,7 @@
 				88C4E38124671F9D009C9B97 /* Device Transfer */,
 				3428576F26BD8777005A2A96 /* Emoji */,
 				4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */,
+				F9B3A92C293553930071EB95 /* ASWebAuthenticationSession+Util.swift */,
 				500FE5032890510800FA090C /* BadgeGiftingStrings.swift */,
 				34F1071F26D005340053EF4D /* BatchUpdate.swift */,
 				4C751BE423FA0284002A8AF1 /* ContactSupportAlert.swift */,
@@ -6743,6 +6752,7 @@
 			isa = PBXGroup;
 			children = (
 				3499997D22EF1E2100654932 /* FTS */,
+				F9B3A92E293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift */,
 				34F1072126D045290053EF4D /* BatchUpdateTest.swift */,
 				3421981B21061D2E00C57195 /* ByteParserTest.swift */,
 				F93461BA291ED2B000366682 /* CreditAndDebitCardsTest.swift */,
@@ -6954,6 +6964,7 @@
 				500FE48E2886148800FA090C /* CachedBadge.swift */,
 				F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */,
 				F00385FD273F6388000B5ABD /* DonationUtilities.swift */,
+				F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */,
 				F98ED2D529255E92008483DC /* Stripe+PaymentMethod.swift */,
 				F00385FE273F6388000B5ABD /* Stripe.swift */,
 				886A58C8276A760600A1099B /* SubscriptionManager.swift */,
@@ -6992,6 +7003,7 @@
 				500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */,
 				F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */,
 				8880179327430DDB00346E9A /* BadgeThanksSheet.swift */,
+				F9B3A9282935452B0071EB95 /* CreditOrDebitCardDonationViewController+3DSecure.swift */,
 				F98ED2CD2922F114008483DC /* CreditOrDebitCardDonationViewController+DonationMode.swift */,
 				F93461AF291EB5E300366682 /* CreditOrDebitCardDonationViewController+FormState.swift */,
 				F98ED2CF2922F24C008483DC /* CreditOrDebitCardDonationViewController+MonthlyDonation.swift */,
@@ -10048,6 +10060,7 @@
 				340B06C723C8DA2600929588 /* StorageService+GroupsV2.swift in Sources */,
 				88E34F2722F269E900966CC2 /* StorageServiceManager.swift in Sources */,
 				88E34F2922F26CC100966CC2 /* StorageServiceProto+Sync.swift in Sources */,
+				F9B3A92B2935472F0071EB95 /* Stripe+3DSecure.swift in Sources */,
 				F98ED2D629255E92008483DC /* Stripe+PaymentMethod.swift in Sources */,
 				F0038601273F6388000B5ABD /* Stripe.swift in Sources */,
 				886A58CA276A760600A1099B /* SubscriptionManager.swift in Sources */,
@@ -10109,6 +10122,7 @@
 				F9BC0A2527FB8E730085B23D /* AppSettingsViewsUtil.swift in Sources */,
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
 				1489ED0227A3D70200C7043A /* ArchivedConversationsCell.swift in Sources */,
+				F9B3A92D293553930071EB95 /* ASWebAuthenticationSession+Util.swift in Sources */,
 				88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */,
 				8809CE8722F8FE6D00D38867 /* AttachmentKeyboard.swift in Sources */,
 				668CAB3E289983520085A2C3 /* AudioMessagePlaybackRateView.swift in Sources */,
@@ -10225,6 +10239,7 @@
 				34A4D88D267A363A00A794E7 /* ConversationViewController.swift in Sources */,
 				3498AC9F25190E8C00B1F315 /* ConversationViewLayout.swift in Sources */,
 				F93461B9291ED28A00366682 /* CreditAndDebitCards.swift in Sources */,
+				F9B3A9292935452B0071EB95 /* CreditOrDebitCardDonationViewController+3DSecure.swift in Sources */,
 				F98ED2CE2922F114008483DC /* CreditOrDebitCardDonationViewController+DonationMode.swift in Sources */,
 				F93461B0291EB5E300366682 /* CreditOrDebitCardDonationViewController+FormState.swift in Sources */,
 				F98ED2D02922F24C008483DC /* CreditOrDebitCardDonationViewController+MonthlyDonation.swift in Sources */,
@@ -10642,6 +10657,7 @@
 			files = (
 				458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */,
 				F9B93CE028E246D900B3F8A0 /* AppDelegateTest.swift in Sources */,
+				F9B3A92F293554090071EB95 /* ASWebAuthenticationSessionUtilTest.swift in Sources */,
 				F97A2EEA282578C000610669 /* BadgeExpirationSheetStateTest.swift in Sources */,
 				F9A335CA282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift in Sources */,
 				34F1072226D045290053EF4D /* BatchUpdateTest.swift in Sources */,

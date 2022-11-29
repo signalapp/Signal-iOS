@@ -374,8 +374,38 @@ public class SubscriptionManager: NSObject {
 
     public class func setupNewSubscription(
         subscription: SubscriptionLevel,
-        paymentMethod: Stripe.PaymentMethod,
+        applePayPayment: PKPayment,
         currencyCode: Currency.Code
+    ) -> Promise<Data> {
+        setupNewSubscription(
+            subscription: subscription,
+            paymentMethod: .applePay(payment: applePayPayment),
+            currencyCode: currencyCode,
+            show3DS: { _ in
+                owsFail("[Donations] 3D Secure should not be shown for Apple Pay")
+            }
+        )
+    }
+
+    public class func setupNewSubscription(
+        subscription: SubscriptionLevel,
+        creditOrDebitCard: Stripe.PaymentMethod.CreditOrDebitCard,
+        currencyCode: Currency.Code,
+        show3DS: @escaping (URL) -> Promise<Void>
+    ) -> Promise<Data> {
+        setupNewSubscription(
+            subscription: subscription,
+            paymentMethod: .creditOrDebitCard(creditOrDebitCard: creditOrDebitCard),
+            currencyCode: currencyCode,
+            show3DS: show3DS
+        )
+    }
+
+    private class func setupNewSubscription(
+        subscription: SubscriptionLevel,
+        paymentMethod: Stripe.PaymentMethod,
+        currencyCode: Currency.Code,
+        show3DS: @escaping (URL) -> Promise<Void>
     ) -> Promise<Data> {
         Logger.info("[Donations] Setting up new subscription")
 
@@ -415,7 +445,7 @@ public class SubscriptionManager: NSObject {
             return Stripe.createPaymentMethod(with: paymentMethod)
 
         // Bind payment method to SetupIntent, confirm SetupIntent
-        }.then(on: .sharedUserInitiated) { paymentID -> Promise<HTTPResponse> in
+        }.then(on: .sharedUserInitiated) { paymentID -> Promise<Stripe.ConfirmedIntent> in
             guard !self.terminateTransactionIfPossible else {
                 throw OWSGenericError("Transaction chain cancelled")
             }
@@ -426,8 +456,16 @@ public class SubscriptionManager: NSObject {
                 clientSecret: generatedClientSecret
             )
 
-        // Update payment on server
-        }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
+            // Show 3DS UI if necessary
+        }.then(on: .main) { confirmedIntent -> Promise<Void> in
+            if let redirectToUrl = confirmedIntent.redirectToUrl {
+                return show3DS(redirectToUrl)
+            } else {
+                return Promise.value(())
+            }
+
+            // Update payment on server
+        }.then(on: .sharedUserInitiated) { () -> Promise<Void> in
             guard !self.terminateTransactionIfPossible else {
                 throw OWSGenericError("Transaction chain cancelled")
             }

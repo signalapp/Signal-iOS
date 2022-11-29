@@ -4,9 +4,48 @@
 //
 
 import XCTest
+@testable import SignalMessaging
 
 final class StripeTest: XCTestCase {
     private let unknownCurrency = "ZZZ"
+
+    func testParseNextActionRedirectUrl() {
+        let notFoundTestCases: [Any?] = [
+            nil,
+            "https://example.com",
+            ["next_action": "https://example.com"],
+            [
+                "next_action": [
+                    "type": "incorrect type",
+                    "redirect_to_url": ["url": "https://example.com"]
+                ]
+            ],
+            [
+                "next_action": [
+                    "type": "redirect_to_url",
+                    "redirect_to_url": "https://top-level-bad.example.com"
+                ]
+            ],
+            [
+                "next_action": [
+                    "type": "redirect_to_url",
+                    "redirect_to_url": ["url": "invalid URL"]
+                ]
+            ]
+        ]
+        for input in notFoundTestCases {
+            XCTAssertNil(Stripe.parseNextActionRedirectUrl(from: input))
+        }
+
+        let actual = Stripe.parseNextActionRedirectUrl(from: [
+            "next_action": [
+                "type": "redirect_to_url",
+                "redirect_to_url": ["url": "https://example.com"]
+            ]
+        ])
+        let expected = URL(string: "https://example.com")!
+        XCTAssertEqual(actual, expected)
+    }
 
     func testIsAmountTooLarge() {
         let tooLarge: [FiatMoney] = [

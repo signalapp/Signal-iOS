@@ -27,8 +27,12 @@ extension CreditOrDebitCardDonationViewController {
             }.then(on: .sharedUserInitiated) {
                 SubscriptionManager.setupNewSubscription(
                     subscription: newSubscriptionLevel,
-                    paymentMethod: .creditOrDebitCard(creditOrDebitCard: creditOrDebitCard),
-                    currencyCode: self.donationAmount.currencyCode
+                    creditOrDebitCard: creditOrDebitCard,
+                    currencyCode: self.donationAmount.currencyCode,
+                    show3DS: { [weak self] redirectUrl -> Promise<Void> in
+                        guard let self else { return .init(error: DonationJobError.assertion) }
+                        return self.show3DS(for: redirectUrl).asVoid()
+                    }
                 )
             }.then(on: .sharedUserInitiated) { (subscriberID: Data) in
                 DonationViewsUtil.redeemMonthlyReceipts(

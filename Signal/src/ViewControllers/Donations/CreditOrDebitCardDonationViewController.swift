@@ -5,11 +5,13 @@
 
 import Foundation
 import SignalMessaging
+import AuthenticationServices
 
 class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
     let donationAmount: FiatMoney
     let donationMode: DonationMode
     let onFinished: () -> Void
+    var threeDSecureAuthenticationSession: ASWebAuthenticationSession?
 
     init(
         donationAmount: FiatMoney,
@@ -23,6 +25,10 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
         self.onFinished = onFinished
 
         super.init()
+    }
+
+    deinit {
+        threeDSecureAuthenticationSession?.cancel()
     }
 
     // MARK: - View callbacks

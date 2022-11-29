@@ -35,7 +35,7 @@ extension DonateViewController {
         }.then(on: .sharedUserInitiated) {
             SubscriptionManager.setupNewSubscription(
                 subscription: selectedSubscriptionLevel,
-                paymentMethod: .applePay(payment: payment),
+                applePayPayment: payment,
                 currencyCode: monthly.selectedCurrencyCode
             )
         }.done(on: .main) { (subscriberID: Data) in

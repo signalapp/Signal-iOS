@@ -34,17 +34,25 @@ extension DonateViewController {
             owsFail("Amount, currency code, or boost badge are missing")
         }
 
-        firstly(on: .global()) { () -> Promise<String> in
+        firstly(on: .global()) {
             Stripe.boost(
                 amount: amount,
                 level: .boostBadge,
                 for: .applePay(payment: payment)
             )
-        }.done(on: .main) { (intentId: String) -> Void in
+        }.done(on: .main) { confirmedIntent -> Void in
+            owsAssert(
+                confirmedIntent.redirectToUrl == nil,
+                "[Donations] There shouldn't be a 3DS redirect for Apple Pay"
+            )
+
             wrappedCompletion(.init(status: .success, errors: nil))
 
             SubscriptionManager.terminateTransactionIfPossible = false
-            SubscriptionManager.createAndRedeemBoostReceipt(for: intentId, amount: amount)
+            SubscriptionManager.createAndRedeemBoostReceipt(
+                for: confirmedIntent.intentId,
+                amount: amount
+            )
 
             DonationViewsUtil.wrapPromiseInProgressView(
                 from: self,

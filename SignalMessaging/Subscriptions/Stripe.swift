@@ -22,7 +22,7 @@ public struct Stripe: Dependencies {
         amount: FiatMoney,
         level: OneTimeBadgeLevel,
         for paymentMethod: PaymentMethod
-    ) -> Promise<String> {
+    ) -> Promise<ConfirmedIntent> {
         firstly { () -> Promise<PaymentIntent> in
             createBoostPaymentIntent(for: amount, level: level)
         }.then { intent in
@@ -30,7 +30,7 @@ public struct Stripe: Dependencies {
                 for: paymentMethod,
                 clientSecret: intent.clientSecret,
                 paymentIntentId: intent.id
-            ).map { intent.id }
+            )
         }
     }
 
@@ -89,14 +89,19 @@ public struct Stripe: Dependencies {
         }
     }
 
+    public struct ConfirmedIntent {
+        public let intentId: String
+        public let redirectToUrl: URL?
+    }
+
     static func confirmPaymentIntent(
         for paymentMethod: PaymentMethod,
         clientSecret: String,
         paymentIntentId: String
-    ) -> Promise<Void> {
+    ) -> Promise<ConfirmedIntent> {
         firstly(on: .sharedUserInitiated) { () -> Promise<String> in
             createPaymentMethod(with: paymentMethod)
-        }.then(on: .sharedUserInitiated) { paymentMethodId -> Promise<HTTPResponse> in
+        }.then(on: .sharedUserInitiated) { paymentMethodId -> Promise<ConfirmedIntent> in
             guard !SubscriptionManager.terminateTransactionIfPossible else {
                 throw OWSGenericError("Boost transaction chain cancelled")
             }
@@ -104,31 +109,47 @@ public struct Stripe: Dependencies {
             return try confirmPaymentIntent(paymentIntentClientSecret: clientSecret,
                                             paymentIntentId: paymentIntentId,
                                             paymentMethodId: paymentMethodId)
-        }.asVoid()
+        }
     }
 
-    public static func confirmPaymentIntent(paymentIntentClientSecret: String,
-                                            paymentIntentId: String,
-                                            paymentMethodId: String,
-                                            idempotencyKey: String? = nil) throws -> Promise<HTTPResponse> {
-        try API.postForm(endpoint: "payment_intents/\(paymentIntentId)/confirm",
-                         parameters: [
-                            "payment_method": paymentMethodId,
-                            "client_secret": paymentIntentClientSecret
-                         ],
-                         idempotencyKey: idempotencyKey)
+    public static func confirmPaymentIntent(
+        paymentIntentClientSecret: String,
+        paymentIntentId: String,
+        paymentMethodId: String,
+        idempotencyKey: String? = nil
+    ) throws -> Promise<ConfirmedIntent> {
+        firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
+            try API.postForm(endpoint: "payment_intents/\(paymentIntentId)/confirm",
+                             parameters: [
+                                "payment_method": paymentMethodId,
+                                "client_secret": paymentIntentClientSecret,
+                                "return_url": RETURN_URL_FOR_3DS
+                             ],
+                             idempotencyKey: idempotencyKey)
+        }.map(on: .sharedUserInitiated) { response -> ConfirmedIntent in
+            .init(
+                intentId: paymentIntentId,
+                redirectToUrl: parseNextActionRedirectUrl(from: response.responseBodyJson)
+            )
+        }
     }
 
     public static func confirmSetupIntent(
         for paymentIntentID: String,
         clientSecret: String
-    ) -> Promise<HTTPResponse> {
+    ) -> Promise<ConfirmedIntent> {
         firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
             let setupIntentId = try API.id(for: clientSecret)
             return try API.postForm(endpoint: "setup_intents/\(setupIntentId)/confirm", parameters: [
                 "payment_method": paymentIntentID,
-                "client_secret": clientSecret
+                "client_secret": clientSecret,
+                "return_url": RETURN_URL_FOR_3DS
             ])
+        }.map(on: .sharedUserInitiated) { response -> ConfirmedIntent in
+            .init(
+                intentId: paymentIntentID,
+                redirectToUrl: parseNextActionRedirectUrl(from: response.responseBodyJson)
+            )
         }
     }
 

@@ -22,6 +22,13 @@ extension CreditOrDebitCardDonationViewController {
                     level: .boostBadge,
                     for: .creditOrDebitCard(creditOrDebitCard: creditOrDebitCard)
                 )
+            }.then(on: .main) { [weak self] confirmedIntent in
+                guard let self else { throw DonationJobError.assertion }
+                if let redirectUrl = confirmedIntent.redirectToUrl {
+                    return self.show3DS(for: redirectUrl)
+                } else {
+                    return Promise.value(confirmedIntent.intentId)
+                }
             }.then(on: .sharedUserInitiated) { intentId in
                 SubscriptionManager.terminateTransactionIfPossible = false
                 SubscriptionManager.createAndRedeemBoostReceipt(for: intentId, amount: amount)
