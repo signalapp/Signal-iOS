@@ -1321,7 +1321,7 @@ extension CallService: CallManagerDelegate {
         sender: UUID,
         update: RingUpdate
     ) {
-        guard RemoteConfig.groupRings else {
+        guard RemoteConfig.inboundGroupRings else {
             return
         }
 

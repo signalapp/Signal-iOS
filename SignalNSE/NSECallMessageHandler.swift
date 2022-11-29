@@ -66,7 +66,7 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
 
             if opaqueMessage.urgency == .handleImmediately,
                let opaqueData = opaqueMessage.data,
-               RemoteConfig.groupRings,
+               RemoteConfig.inboundGroupRings,
                isValidOpaqueRing(opaqueCallMessage: opaqueData,
                                  messageAgeSec: messageAgeForRingRtc,
                                  validateGroupRing: validateGroupRing) {

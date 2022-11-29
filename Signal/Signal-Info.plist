@@ -5,7 +5,7 @@
 	<key>BuildDetails</key>
 	<dict>
 		<key>WebRTCCommit</key>
-		<string>d20b610393af19f96f42137f2c044e5bdcc50768 Production build of v2.21.5</string>
+		<string>84e3476fa50e2301c729ace5452ab4b02eb50664 Production build of v2.22.0</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>

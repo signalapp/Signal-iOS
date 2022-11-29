@@ -228,7 +228,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
             behavior: .call
         )
         thread = groupThread
-        if !RemoteConfig.groupRings {
+        if !RemoteConfig.outboundGroupRings {
             ringRestrictions = .notApplicable
         } else {
             ringRestrictions = []

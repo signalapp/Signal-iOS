@@ -225,8 +225,13 @@ public class RemoteConfig: BaseFlags {
 
     public static var canSendGiftBadges: Bool { FeatureFlags.canSendGiftBadges }
 
-    public static var groupRings: Bool {
-        DebugFlags.internalSettings || isEnabled(.groupRings)
+    public static var inboundGroupRings: Bool {
+        DebugFlags.internalSettings || !isEnabled(.inboundGroupRingsKillSwitch)
+    }
+
+    public static var outboundGroupRings: Bool {
+        // When we're ready to enable outbound rings in production, remove the check for 'isPrerelease'.
+        DebugFlags.internalSettings || (FeatureFlags.isPrerelease && isEnabled(.groupRings2))
     }
 
     public static var maxGroupCallRingSize: UInt {
@@ -448,7 +453,8 @@ private struct Flags {
         case changePhoneNumberUI
         case keepMutedChatsArchivedOption
         case canReceiveGiftBadges
-        case groupRings
+        case groupRings2
+        case inboundGroupRingsKillSwitch
         case storiesKillSwitch
     }
 
