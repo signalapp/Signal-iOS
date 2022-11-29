@@ -374,14 +374,16 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
     }()
 
     private lazy var submitButtonSection: OWSTableSection = {
+        let submitButton = self.submitButton
+
         let result = OWSTableSection(items: [.init(
-            customCellBlock: { [weak self] in
+            customCellBlock: {
                 let cell = OWSTableItem.newCell()
                 cell.selectionStyle = .none
-                guard let self else { return cell }
 
-                cell.contentView.addSubview(self.submitButton)
-                self.submitButton.autoPinWidthToSuperviewMargins()
+                cell.contentView.addSubview(submitButton)
+                submitButton.autoPinWidthToSuperviewMargins()
+                submitButton.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
                 return cell
             }
         )])
