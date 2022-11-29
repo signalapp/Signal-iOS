@@ -27,7 +27,7 @@ public class DonationUtilities: Dependencies {
         }
 
         let isCardAvailable = (
-            FeatureFlags.canDonateWithCard &&
+            RemoteConfig.canDonateWithCreditOrDebitCard &&
             !RemoteConfig.creditAndDebitCardDisabledRegions.contains(e164: localNumber)
         )
         if isCardAvailable {

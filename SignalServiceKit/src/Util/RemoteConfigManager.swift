@@ -142,6 +142,10 @@ public class RemoteConfig: BaseFlags {
         return remoteConfig.creditAndDebitCardDisabledRegions
     }
 
+    public static var canDonateWithCreditOrDebitCard: Bool {
+        !isEnabled(.cardDonationKillSwitch)
+    }
+
     public static var paypalDisabledRegions: PhoneNumberRegions {
         guard let remoteConfig = Self.remoteConfigManager.cachedConfig else { return [] }
         return remoteConfig.paypalDisabledRegions
@@ -459,6 +463,7 @@ private struct Flags {
         case groupRings2
         case inboundGroupRingsKillSwitch
         case storiesKillSwitch
+        case cardDonationKillSwitch
     }
 
     // Values defined in this array remain set once they are
