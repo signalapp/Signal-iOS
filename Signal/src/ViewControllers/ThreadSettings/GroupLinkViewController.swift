@@ -149,13 +149,22 @@ public class GroupLinkViewController: OWSTableViewController2 {
 
     // MARK: - Events
 
+    private var canEditGroupLink: Bool {
+        groupModelV2.groupMembership.isLocalUserFullMemberAndAdministrator
+    }
+
+    private func presentAdminOnlyWarningToast() {
+        let message = NSLocalizedString(
+            "GROUP_ADMIN_ONLY_WARNING",
+            comment: "Message indicating that a feature can only be used by group admins."
+        )
+        presentToast(text: message)
+    }
+
     @objc
     func didToggleGroupLinkEnabled(_ sender: UISwitch) {
-        let canEditGroupLinkSettings = groupModelV2.groupMembership.isLocalUserFullMemberAndAdministrator
-        guard canEditGroupLinkSettings else {
-            let message = NSLocalizedString("GROUP_ADMIN_ONLY_WARNING",
-                                            comment: "Message indicating that a feature can only be used by group admins.")
-            presentToast(text: message)
+        guard canEditGroupLink else {
+            presentAdminOnlyWarningToast()
             updateTableContents()
             return
         }
@@ -171,14 +180,8 @@ public class GroupLinkViewController: OWSTableViewController2 {
 
     @objc
     func didToggleApproveNewMembers(_ sender: UISwitch) {
-        guard groupModelV2.isGroupInviteLinkEnabled else {
-            return
-        }
-        let canEditGroupLinkSettings = groupModelV2.groupMembership.isLocalUserFullMemberAndAdministrator
-        guard canEditGroupLinkSettings else {
-            let message = NSLocalizedString("GROUP_ADMIN_ONLY_WARNING",
-                                            comment: "Message indicating that a feature can only be used by group admins.")
-            presentToast(text: message)
+        guard canEditGroupLink else {
+            presentAdminOnlyWarningToast()
             updateTableContents()
             return
         }
@@ -194,7 +197,11 @@ public class GroupLinkViewController: OWSTableViewController2 {
     }
 
     func resetLinkPressed() {
-        showResetLinkConfirmAlert()
+        if canEditGroupLink {
+            showResetLinkConfirmAlert()
+        } else {
+            presentAdminOnlyWarningToast()
+        }
     }
 
     // We need to retain a link to this delegate during the send flow.
@@ -214,9 +221,14 @@ public class GroupLinkViewController: OWSTableViewController2 {
         let actionSheet = ActionSheetController(title: alertTitle)
         let resetTitle = NSLocalizedString("GROUP_LINK_VIEW_RESET_LINK",
                                            comment: "Label for the 'reset link' button in the 'group link' view.")
-        actionSheet.addAction(ActionSheetAction(title: resetTitle,
-                                                style: .destructive) { _ in
-                                                    self.resetLink()
+        actionSheet.addAction(.init(title: resetTitle, style: .destructive) { [weak self] _ in
+            guard let self else { return }
+            // It's possible that you could lose the permission by the time you make a decision.
+            if self.canEditGroupLink {
+                self.resetLink()
+            } else {
+                self.presentAdminOnlyWarningToast()
+            }
         })
         actionSheet.addAction(OWSActionSheets.cancelAction)
         presentActionSheet(actionSheet)
