@@ -221,11 +221,6 @@ private class TSConstantsProduction: TSConstantsProtocol {
     // checking earlier enclaves.
     public let keyBackupPreviousEnclaves: [KeyBackupEnclave] = [
         // Add the current `keyBackupEnclave` value here when replacing it.
-        KeyBackupEnclave(
-            name: "0cedba03535b41b67729ce9924185f831d7767928a1d1689acb689bc079c375f",
-            mrenclave: MrEnclave("ee19f1965b1eefa3dc4204eb70c04f397755f771b8c1909d080c04dad2a6a9ba"),
-            serviceId: "187d2739d22be65e74b65f0055e74d31310e4267e5fac2b1246cc8beba81af39"
-        )
     ]
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group"
@@ -283,11 +278,6 @@ private class TSConstantsStaging: TSConstantsProtocol {
     // checking earlier enclaves.
     public let keyBackupPreviousEnclaves: [KeyBackupEnclave] = [
         // Add the current `keyBackupEnclave` value here when replacing it.
-        KeyBackupEnclave(
-            name: "dd6f66d397d9e8cf6ec6db238e59a7be078dd50e9715427b9c89b409ffe53f99",
-            mrenclave: MrEnclave("ee19f1965b1eefa3dc4204eb70c04f397755f771b8c1909d080c04dad2a6a9ba"),
-            serviceId: "4200003414528c151e2dccafbc87aa6d3d66a5eb8f8c05979a6e97cb33cd493a"
-        )
     ]
 
     public let applicationGroup = "group." + Bundle.main.bundleIdPrefix + ".signal.group.staging"
