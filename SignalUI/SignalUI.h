@@ -26,7 +26,6 @@ FOUNDATION_EXPORT const unsigned char SignalUIVersionString[];
 #import <SignalUI/OWSQuotedReplyModel.h>
 #import <SignalUI/OWSSearchBar.h>
 #import <SignalUI/OWSTableViewController.h>
-#import <SignalUI/OWSTextView.h>
 #import <SignalUI/RecipientPickerViewController.h>
 #import <SignalUI/ScreenLockViewController.h>
 #import <SignalUI/Theme.h>
