@@ -1048,7 +1048,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Aangepast verhaal · %1$d kijkers</string>
+			<string>Aangepast verhaal · %1$d kijker</string>
 			<key>other</key>
 			<string>Aangepast verhaal · %1$d kijkers</string>
 		</dict>
