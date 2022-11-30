@@ -20,6 +20,7 @@ public enum AttachmentUploadJob: JobExecutor {
     ) {
         guard
             let threadId: String = job.threadId,
+            let interactionId: Int64 = job.interactionId,
             let detailsData: Data = job.details,
             let details: Details = try? JSONDecoder().decode(Details.self, from: detailsData),
             let (attachment, openGroup): (Attachment, OpenGroup?) = Storage.shared.read({ db in
@@ -36,11 +37,9 @@ public enum AttachmentUploadJob: JobExecutor {
         
         // If the original interaction no longer exists then don't bother uploading the attachment (ie. the
         // message was deleted before it even got sent)
-        if let interactionId: Int64 = job.interactionId {
-            guard Storage.shared.read({ db in try Interaction.exists(db, id: interactionId) }) == true else {
-                failure(job, StorageError.objectNotFound, true)
-                return
-            }
+        guard Storage.shared.read({ db in try Interaction.exists(db, id: interactionId) }) == true else {
+            failure(job, StorageError.objectNotFound, true)
+            return
         }
         
         // If the attachment is still pending download the hold off on running this job
@@ -55,6 +54,8 @@ public enum AttachmentUploadJob: JobExecutor {
         attachment.upload(
             queue: queue,
             using: { db, data in
+                SNLog("[AttachmentUpload] Started for message \(interactionId) (\(attachment.byteCount) bytes)")
+                
                 if let openGroup: OpenGroup = openGroup {
                     return OpenGroupAPI
                         .uploadFile(
