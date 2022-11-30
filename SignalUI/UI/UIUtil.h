@@ -16,6 +16,6 @@ typedef void (^completionBlock)(void);
 
 @interface UIUtil : NSObject
 
-+ (void)setupSignalAppearence;
++ (void)setupSignalAppearance;
 
 @end

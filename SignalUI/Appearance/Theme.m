@@ -258,7 +258,7 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 - (void)themeDidChange
 {
-    [UIUtil setupSignalAppearence];
+    [UIUtil setupSignalAppearance];
 
     [UIView performWithoutAnimation:^{
         [[NSNotificationCenter defaultCenter] postNotificationName:ThemeDidChangeNotification object:nil userInfo:nil];

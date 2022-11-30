@@ -252,7 +252,7 @@ static void uncaughtExceptionHandler(NSException *exception)
         }];
     }
 
-    [UIUtil setupSignalAppearence];
+    [UIUtil setupSignalAppearance];
 
     UIWindow *mainWindow = self.window;
     if (mainWindow == nil) {

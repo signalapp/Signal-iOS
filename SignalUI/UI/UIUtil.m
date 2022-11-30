@@ -10,7 +10,7 @@
 
 @implementation UIUtil
 
-+ (void)setupSignalAppearence
++ (void)setupSignalAppearance
 {
     UINavigationBar.appearance.barTintColor = Theme.navbarBackgroundColor;
     UINavigationBar.appearance.tintColor = Theme.primaryIconColor;
