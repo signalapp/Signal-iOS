@@ -40,11 +40,7 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
 
         render()
 
-        contents = OWSTableContents(sections: [
-            donationAmountSection,
-            formSection,
-            submitButtonSection
-        ])
+        contents = OWSTableContents(sections: [donationAmountSection, formSection])
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -173,6 +169,8 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
                 )
             }
         }())
+
+        bottomFooterStackView.layer.backgroundColor = self.tableBackgroundColor.cgColor
     }
 
     // MARK: - Donation amount section
@@ -365,7 +363,7 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
         return result
     }()
 
-    // MARK: - Submit button
+    // MARK: - Submit button, footer
 
     private lazy var submitButton: OWSButton = {
         let title = NSLocalizedString(
@@ -380,26 +378,27 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
         result.layer.cornerRadius = 8
         result.backgroundColor = .ows_accentBlue
         result.titleLabel?.font = .ows_dynamicTypeBody.ows_semibold
+        result.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
         return result
     }()
 
-    private lazy var submitButtonSection: OWSTableSection = {
-        let submitButton = self.submitButton
+    private lazy var bottomFooterStackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [submitButton])
 
-        let result = OWSTableSection(items: [.init(
-            customCellBlock: {
-                let cell = OWSTableItem.newCell()
-                cell.selectionStyle = .none
+        result.axis = .vertical
+        result.alignment = .fill
+        result.spacing = 16
+        result.isLayoutMarginsRelativeArrangement = true
+        result.preservesSuperviewLayoutMargins = true
+        result.layoutMargins = .init(hMargin: 16, vMargin: 10)
 
-                cell.contentView.addSubview(submitButton)
-                submitButton.autoPinWidthToSuperviewMargins()
-                submitButton.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
-                return cell
-            }
-        )])
-        result.hasBackground = false
         return result
     }()
+
+    open override var bottomFooter: UIView? {
+        get { bottomFooterStackView }
+        set {}
+    }
 }
 
 // MARK: - UITextViewDelegate
