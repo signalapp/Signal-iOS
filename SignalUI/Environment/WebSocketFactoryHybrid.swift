@@ -59,7 +59,7 @@ class SSKWebSocketStarScream: SSKWebSocket {
 
         socket.disableSSLCertValidation = true
         socket.socketSecurityLevel = StreamSocketSecurityLevel.tlSv1_2
-        let security = SSLSecurity(certs: [TextSecureCertificate(), SignalMessengerCertificate()], usePublicKeys: false)
+        let security = SSLSecurity(certs: [SignalMessengerCertificate()], usePublicKeys: false)
         security.validateEntireChain = false
         socket.security = security
 
@@ -148,11 +148,6 @@ extension SSKWebSocketStarScream: WebSocketDelegate {
 }
 
 // MARK: -
-
-private func TextSecureCertificate() -> SSLCert {
-    let data = SSKTextSecureServiceCertificateData()
-    return SSLCert(data: data)
-}
 
 private func SignalMessengerCertificate() -> SSLCert {
     let data = SSKSignalMessengerCertificateData()

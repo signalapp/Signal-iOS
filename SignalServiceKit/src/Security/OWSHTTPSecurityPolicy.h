@@ -8,7 +8,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSData *SSKTextSecureServiceCertificateData(void);
 extern NSData *SSKSignalMessengerCertificateData(void);
 
 /// A simplified version of AFNetworking's AFSecurityPolicy.

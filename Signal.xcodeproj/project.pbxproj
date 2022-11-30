@@ -1319,7 +1319,6 @@
 		F9B0DC5D28948656004E07B7 /* GTSR2.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4B28948656004E07B7 /* GTSR2.crt */; };
 		F9B0DC5E28948656004E07B7 /* GTSR1.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4C28948656004E07B7 /* GTSR1.crt */; };
 		F9B0DC5F28948656004E07B7 /* GTSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4D28948656004E07B7 /* GTSR4.crt */; };
-		F9B0DC6028948656004E07B7 /* textsecure.cer in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4E28948656004E07B7 /* textsecure.cer */; };
 		F9B3A9292935452B0071EB95 /* CreditOrDebitCardDonationViewController+3DSecure.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A9282935452B0071EB95 /* CreditOrDebitCardDonationViewController+3DSecure.swift */; };
 		F9B3A92B2935472F0071EB95 /* Stripe+3DSecure.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */; };
 		F9B3A92D293553930071EB95 /* ASWebAuthenticationSession+Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A92C293553930071EB95 /* ASWebAuthenticationSession+Util.swift */; };
@@ -3698,7 +3697,6 @@
 		F9B0DC4B28948656004E07B7 /* GTSR2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR2.crt; sourceTree = "<group>"; };
 		F9B0DC4C28948656004E07B7 /* GTSR1.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR1.crt; sourceTree = "<group>"; };
 		F9B0DC4D28948656004E07B7 /* GTSR4.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR4.crt; sourceTree = "<group>"; };
-		F9B0DC4E28948656004E07B7 /* textsecure.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = textsecure.cer; sourceTree = "<group>"; };
 		F9B3A9282935452B0071EB95 /* CreditOrDebitCardDonationViewController+3DSecure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreditOrDebitCardDonationViewController+3DSecure.swift"; sourceTree = "<group>"; };
 		F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+3DSecure.swift"; sourceTree = "<group>"; };
 		F9B3A92C293553930071EB95 /* ASWebAuthenticationSession+Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ASWebAuthenticationSession+Util.swift"; sourceTree = "<group>"; };
@@ -7280,7 +7278,6 @@
 				F9B0DC4028948656004E07B7 /* SFSRootCAG2.crt */,
 				F9B0DC3E28948656004E07B7 /* signal-mainnet.der */,
 				F9B0DC4728948656004E07B7 /* signal-messenger.cer */,
-				F9B0DC4E28948656004E07B7 /* textsecure.cer */,
 			);
 			path = Certificates;
 			sourceTree = "<group>";
@@ -9277,7 +9274,6 @@
 				F9B0DC5228948656004E07B7 /* SFSRootCAG2.crt in Resources */,
 				F9B0DC5028948656004E07B7 /* signal-mainnet.der in Resources */,
 				F9B0DC5928948656004E07B7 /* signal-messenger.cer in Resources */,
-				F9B0DC6028948656004E07B7 /* textsecure.cer in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

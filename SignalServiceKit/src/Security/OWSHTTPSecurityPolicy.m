@@ -19,10 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         httpSecurityPolicy = [[self alloc]
-            initWithPinnedCertificates:[NSSet setWithObjects:
-                                        [self certificateDataForService:@"textsecure"],
-                                        [self certificateDataForService:@"signal-messenger"],
-                                        nil]];
+            initWithPinnedCertificates:[NSSet setWithArray:@[ [self certificateDataForService:@"signal-messenger"] ]]];
     });
     return httpSecurityPolicy;
 }
@@ -107,10 +104,6 @@ static BOOL AFServerTrustIsValid(SecTrustRef serverTrust) {
 
 _out:
     return isValid;
-}
-
-NSData *SSKTextSecureServiceCertificateData() {
-    return [OWSHTTPSecurityPolicy dataFromCertificateFileForService:@"textsecure"];
 }
 
 NSData *SSKSignalMessengerCertificateData() {
