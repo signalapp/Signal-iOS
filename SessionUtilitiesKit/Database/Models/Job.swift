@@ -294,8 +294,8 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
     
     // MARK: - Custom Database Interaction
     
-    public mutating func didInsert(with rowID: Int64, for column: String?) {
-        self.id = rowID
+    public mutating func didInsert(_ inserted: InsertionSuccess) {
+        self.id = inserted.rowID
     }
 }
 
@@ -304,8 +304,8 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
 extension Job {
     internal static func filterPendingJobs(
         variants: [Variant],
-        excludeFutureJobs: Bool = true,
-        includeJobsWithDependencies: Bool = false
+        excludeFutureJobs: Bool,
+        includeJobsWithDependencies: Bool
     ) -> QueryInterfaceRequest<Job> {
         var query: QueryInterfaceRequest<Job> = Job
             .filter(

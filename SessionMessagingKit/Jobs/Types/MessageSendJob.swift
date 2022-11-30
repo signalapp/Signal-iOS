@@ -96,7 +96,7 @@ public enum MessageSendJob: JobExecutor {
                             )
                         )
                     }
-                    .compactMap { stateInfo in
+                    .compactMap { stateInfo -> (jobId: Int64, job: Job)? in
                         JobRunner
                             .insert(
                                 db,
@@ -111,10 +111,9 @@ public enum MessageSendJob: JobExecutor {
                                     )
                                 ),
                                 before: job
-                            )?
-                            .id
+                            )
                     }
-                    .forEach { otherJobId in
+                    .forEach { otherJobId, _ in
                         // Create the dependency between the jobs
                         try JobDependencies(
                             jobId: jobId,
