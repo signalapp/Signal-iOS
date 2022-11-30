@@ -47,6 +47,16 @@ public protocol SSKWebSocket: AnyObject {
 
 // MARK: -
 
+public enum WebSocketError: Error {
+    // From RFC 6455: https://www.rfc-editor.org/rfc/rfc6455#section-7.4.1
+    public static let normalClosure: Int = 1000
+
+    case httpError(statusCode: Int, retryAfter: Date?)
+    case closeError(statusCode: Int, closeReason: Data?)
+}
+
+// MARK: -
+
 public extension SSKWebSocket {
     func sendResponse(for request: WebSocketProtoWebSocketRequestMessage,
                       status: UInt32,
@@ -72,7 +82,7 @@ public extension SSKWebSocket {
 public protocol SSKWebSocketDelegate: AnyObject {
     func websocketDidConnect(socket: SSKWebSocket)
 
-    func websocketDidDisconnectOrFail(socket: SSKWebSocket, error: Error?)
+    func websocketDidDisconnectOrFail(socket: SSKWebSocket, error: Error)
 
     func websocket(_ socket: SSKWebSocket, didReceiveData data: Data)
 }
@@ -86,8 +96,6 @@ public protocol WebSocketFactory: AnyObject {
 
     func buildSocket(request: URLRequest,
                      callbackQueue: DispatchQueue) -> SSKWebSocket?
-
-    func statusCode(forError error: Error) -> Int
 }
 
 // MARK: -
@@ -101,10 +109,6 @@ public class WebSocketFactoryMock: NSObject, WebSocketFactory {
                             callbackQueue: DispatchQueue) -> SSKWebSocket? {
         owsFailDebug("Cannot build websocket.")
         return nil
-    }
-
-    public func statusCode(forError error: Error) -> Int {
-        error.httpStatusCode ?? 0
     }
 }
 
@@ -130,17 +134,6 @@ public class WebSocketFactoryNative: NSObject, WebSocketFactory {
               }
         return SSKWebSocketNative(request: request, callbackQueue: callbackQueue)
     }
-
-    public func statusCode(forError error: Error) -> Int {
-        switch error {
-        case SSKWebSocketNativeError.failedToConnect(let statusCode?):
-            return statusCode
-        case SSKWebSocketNativeError.remoteClosed(let statusCode, _):
-            return statusCode
-        default:
-            return error.httpStatusCode ?? 0
-        }
-    }
 }
 
 // MARK: -
@@ -150,12 +143,12 @@ public class SSKWebSocketNative: SSKWebSocket {
 
     private static let idCounter = AtomicUInt()
     public let id = SSKWebSocketNative.idCounter.increment()
-    private var webSocketTask = AtomicOptional<URLSessionWebSocketTask>(nil)
-    private let requestUrl: URL
-    private let session: OWSURLSession
-    private let callbackQueue: DispatchQueue
 
-    public init(request: URLRequest, callbackQueue: DispatchQueue? = nil) {
+    private let requestUrl: URL
+    private let callbackQueue: DispatchQueue
+    private let session: OWSURLSession
+
+    public init(request: URLRequest, callbackQueue: DispatchQueue) {
         let configuration = OWSURLSession.defaultConfigurationWithoutCaching
 
         // For some reason, `URLSessionWebSocketTask` will only respect the proxy
@@ -169,147 +162,215 @@ public class SSKWebSocketNative: SSKWebSocket {
             canUseSignalProxy: true
         )
         self.requestUrl = request.url!
-        self.callbackQueue = callbackQueue ?? .main
+        self.callbackQueue = callbackQueue
     }
 
     // MARK: - SSKWebSocket
 
     public weak var delegate: SSKWebSocketDelegate?
 
-    private let hasEverConnected = AtomicBool(false)
-    private let isConnected = AtomicBool(false)
-    private let isDisconnecting = AtomicBool(false)
-    private let hasUnansweredPing = AtomicBool(false)
+    private var lock = UnfairLock()
+
+    private var webSocketTask: URLSessionWebSocketTask?
+    private var hasEverConnected = false
+    private var isConnected = false
+    private var shouldReportError = true
+    private var hasUnansweredPing = false
 
     // This method is thread-safe.
     public var state: SSKWebSocketState {
-        if isConnected.get() {
-            return .open
+        lock.withLock {
+            if isConnected {
+                return .open
+            }
+            if hasEverConnected {
+                return .disconnected
+            }
+            return .connecting
         }
-
-        if hasEverConnected.get() {
-            return .disconnected
-        }
-
-        return .connecting
     }
 
     public func connect() {
-        guard webSocketTask.get() == nil else { return }
-
-        let task = session.webSocketTask(requestUrl: requestUrl, didOpenBlock: { [weak self] _ in
-            guard let self = self else { return }
-            self.isConnected.set(true)
-            self.hasEverConnected.set(true)
-
-            self.listenForNextMessage()
-
-            self.callbackQueue.async {
-                self.delegate?.websocketDidConnect(socket: self)
+        var taskToResume: URLSessionWebSocketTask?
+        lock.withLock {
+            owsAssertDebug(webSocketTask == nil && !hasEverConnected, "Must connect only once.")
+            guard webSocketTask == nil else {
+                return
             }
-        }, didCloseBlock: { [weak self] error in
-            guard let self = self else { return }
-            self.isConnected.set(false)
-            self.webSocketTask.set(nil)
-            self.reportError(error)
-        })
-        webSocketTask.set(task)
-        task.resume()
+            webSocketTask = session.webSocketTask(
+                requestUrl: requestUrl,
+                didOpenBlock: { [weak self] _ in self?.didOpen() },
+                didCloseBlock: { [weak self] error in self?.didClose(error: error) }
+            )
+            taskToResume = webSocketTask
+        }
+        taskToResume?.resume()
     }
 
-    func listenForNextMessage() {
-        DispatchQueue.global().async { [weak self] in
-            self?.webSocketTask.get()?.receive { result in
-                switch result {
-                case .success(let message):
-                    switch message {
-                    case .data(let data):
-                        guard let self = self else { return }
-                        self.callbackQueue.async {
-                            self.delegate?.websocket(self, didReceiveData: data)
-                        }
+    private func didOpen() {
+        lock.withLock {
+            isConnected = true
+            hasEverConnected = true
 
-                    case .string:
-                        owsFailDebug("We only expect binary frames.")
-                    @unknown default:
-                        owsFailDebug("We only expect binary frames.")
-                    }
-                case .failure(let error):
-                    Logger.warn("Error receiving websocket message \(error)")
-                    self?.reportError(error)
-                    // Don't try to listen again.
-                    return
-                }
-
-                self?.listenForNextMessage()
+            callbackQueue.async {
+                self.delegate?.websocketDidConnect(socket: self)
             }
+        }
+        listenForNextMessage()
+    }
+
+    private func didClose(error: Error) {
+        lock.withLock {
+            isConnected = false
+            webSocketTask = nil
+            reportErrorWithLock(error, context: "close")
+        }
+    }
+
+    private func listenForNextMessage() {
+        DispatchQueue.global().async {
+            self.lock.withLock { self.webSocketTask }?.receive { [weak self] result in
+                self?.receivedMessage(result)
+            }
+        }
+    }
+
+    private func receivedMessage(_ result: Result<URLSessionWebSocketTask.Message, Error>) {
+        switch result {
+        case .success(let message):
+            switch message {
+            case .data(let data):
+                callbackQueue.async {
+                    self.delegate?.websocket(self, didReceiveData: data)
+                }
+            case .string:
+                owsFailDebug("We only expect binary frames.")
+            @unknown default:
+                owsFailDebug("We only expect binary frames.")
+            }
+            listenForNextMessage()
+
+        case .failure(let error):
+            // For some sockets, we read messages until the server closes the
+            // connection (and we inspect the close code to determine whether or not
+            // it's a graceful teardown). As a result, we expect to receive the final
+            // message and close frame in quick succession.
+            //
+            // We receive messages by repeatedly calling `receive` until we get an
+            // error. Unfortunately, this process might see that the stream has been
+            // closed before we've had a chance to process the real close frame.
+            //
+            // The Good Case:
+            //   - receivedMessage(<final message>)
+            //   - didClose(<close reason>)
+            //   - receivedMessage(<socket closed error>)
+            //
+            // The Bad Case:
+            //   - receivedMessage(<final message>)
+            //   - receivedMessage(<socket closed error>)
+            //   - didClose(<close reason>)
+            //
+            // (Note that the underlying web socket processes the incoming frames in
+            // order, so it's not possible to receive didClose before the final
+            // message. The didClose frame waits until the callback for the final
+            // message has finished executing.)
+            //
+            // In theory, we should be able to drop this `receive` error on the floor
+            // -- we always expect to learn that the socket has been closed via one of
+            // the other URLSession callbacks. However, to guard against the
+            // possibility that those might not happen, report the error after a short
+            // delay. The delay should be long enough that it never jumps in front of
+            // the close callback -- it's a last resort.
+            DispatchQueue.global().asyncAfter(deadline: .now() + 10) { [weak self] in
+                self?.reportReceivedMessageError(error)
+            }
+
+            // Don't try to listen again.
+        }
+    }
+
+    private func reportReceivedMessageError(_ error: Error) {
+        lock.withLock {
+            owsAssertDebug(!shouldReportError, "We shouldn't learn that the socket has closed from a receive error.")
+            reportErrorWithLock(error, context: "read")
         }
     }
 
     public func disconnect() {
-        isDisconnecting.set(true)
-        webSocketTask.swap(nil)?.cancel()
+        var taskToCancel: URLSessionWebSocketTask?
+        lock.withLock {
+            // The user requested a cancellation, so don't report an error
+            shouldReportError = false
+            taskToCancel = webSocketTask
+            webSocketTask = nil
+        }
+        taskToCancel?.cancel()
     }
 
     public func write(data: Data) {
-        owsAssertDebug(hasEverConnected.get())
-        guard let webSocketTask = webSocketTask.get() else {
-            reportError(OWSGenericError("Missing webSocketTask."))
-            return
+        var taskToSendTo: URLSessionWebSocketTask?
+        lock.withLock {
+            owsAssertDebug(hasEverConnected, "Must connect before sending to web socket.")
+            guard let webSocketTask else {
+                reportErrorWithLock(OWSGenericError("Missing webSocketTask."), context: "write")
+                return
+            }
+            taskToSendTo = webSocketTask
         }
-        webSocketTask.send(.data(data)) { [weak self] error in
-            guard let self = self, let error = error else { return }
-            Logger.warn("Error sending websocket data \(error), [\(self.id)]")
-            self.reportError(error)
+        taskToSendTo?.send(.data(data)) { [weak self] error in
+            self?.reportError(error, context: "write")
         }
     }
 
     public func writePing() {
-        owsAssertDebug(hasEverConnected.get())
-        guard let webSocketTask = webSocketTask.get() else {
-            reportError(OWSGenericError("Missing webSocketTask."))
-            return
-        }
-        guard hasUnansweredPing.tryToSetFlag() else {
-            reportError(OWSGenericError("Websocket ping did not get a response [\(self.id)]"))
-            return
-        }
-        webSocketTask.sendPing { [weak self] error in
-            guard let self = self else { return }
-            self.hasUnansweredPing.set(false)
-            guard let error = error else { return }
-            Logger.warn("Error sending websocket ping \(error), [\(self.id)]")
-            self.reportError(error)
-        }
-    }
-
-    private func reportError(_ error: Error) {
-        guard !isDisconnecting.get() else {
-            // This is expected.
-            Logger.verbose("Error after disconnecting: \(error), [\(self.id)]")
-            return
-        }
-        callbackQueue.async { [weak self] in
-            if let self = self,
-               let delegate = self.delegate {
-                delegate.websocketDidDisconnectOrFail(socket: self, error: error)
+        var taskToPing: URLSessionWebSocketTask?
+        lock.withLock {
+            owsAssertDebug(hasEverConnected, "Must connect before sending a ping.")
+            guard let webSocketTask else {
+                reportErrorWithLock(OWSGenericError("Missing webSocketTask."), context: "ping")
+                return
             }
+            guard !hasUnansweredPing else {
+                reportErrorWithLock(OWSGenericError("Ping didn't get a response."), context: "ping")
+                return
+            }
+            hasUnansweredPing = true
+            taskToPing = webSocketTask
+        }
+        taskToPing?.sendPing(pongReceiveHandler: { [weak self] error in
+            self?.receivedPong(error)
+        })
+    }
+
+    private func receivedPong(_ error: Error?) {
+        lock.withLock {
+            hasUnansweredPing = false
+            reportErrorWithLock(error, context: "pong")
         }
     }
-}
 
-public enum SSKWebSocketNativeError: Error {
-    case failedToConnect(Int?)
-    case remoteClosed(Int, Data?)
+    private func reportError(_ error: Error?, context: String) {
+        lock.withLock {
+            reportErrorWithLock(error, context: context)
+        }
+    }
 
-    var description: String {
-        switch self {
-        case .failedToConnect(let code?):
-            return "WebSocket failed to connect with HTTP status \(code)"
-        case .failedToConnect(nil):
-            return "WebSocket failed to connect (did not get a response)"
-        case .remoteClosed(let code, _):
-            return "WebSocket remotely closed with code \(code)"
+    private func reportErrorWithLock(_ error: Error?, context: String) {
+        lock.assertOwner()
+
+        guard let error else {
+            return
+        }
+
+        guard shouldReportError else {
+            Logger.verbose("[\(id), context: \(context)] Ignoring error: \(error)")
+            return
+        }
+        shouldReportError = false
+
+        callbackQueue.async {
+            Logger.warn("[\(self.id), context: \(context)] Socket error: \(error)")
+            self.delegate?.websocketDidDisconnectOrFail(socket: self, error: error)
         }
     }
 }

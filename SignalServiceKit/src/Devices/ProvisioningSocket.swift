@@ -63,12 +63,8 @@ extension ProvisioningSocket: SSKWebSocketDelegate {
         Logger.debug("")
     }
 
-    public func websocketDidDisconnectOrFail(socket: SSKWebSocket, error: Error?) {
-        if let error = error {
-            delegate?.provisioningSocket(self, didError: error)
-        } else {
-            Logger.debug("disconnected without error.")
-        }
+    public func websocketDidDisconnectOrFail(socket: SSKWebSocket, error: Error) {
+        delegate?.provisioningSocket(self, didError: error)
     }
 
     public func websocket(_ socket: SSKWebSocket, didReceiveData data: Data) {

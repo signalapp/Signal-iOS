@@ -1366,7 +1366,7 @@ extension OWSWebSocket: SSKWebSocketDelegate {
         notifyStatusChange()
     }
 
-    public func websocketDidDisconnectOrFail(socket eventSocket: SSKWebSocket, error: Error?) {
+    public func websocketDidDisconnectOrFail(socket eventSocket: SSKWebSocket, error: Error) {
         assertOnQueue(Self.serialQueue)
 
         guard let currentWebSocket = self.currentWebSocket,
@@ -1375,16 +1375,12 @@ extension OWSWebSocket: SSKWebSocketDelegate {
             return
         }
 
-        Logger.warn("Websocket did fail \(logPrefix): \(String(describing: error))")
+        Logger.warn("Websocket did fail \(logPrefix): \(error)")
 
         self.currentWebSocket = nil
 
-        if let error = error {
-            let webSocketErrorStatusCode = webSocketFactory.statusCode(forError: error)
-            if webSocketErrorStatusCode == 403,
-               webSocketType == .identified {
-                tsAccountManager.setIsDeregistered(true)
-            }
+        if webSocketType == .identified, case WebSocketError.httpError(statusCode: 403, _) = error {
+            tsAccountManager.setIsDeregistered(true)
         }
 
         if shouldSocketBeOpen {

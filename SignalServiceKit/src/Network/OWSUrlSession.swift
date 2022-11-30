@@ -910,7 +910,7 @@ extension OWSURLSession: URLSessionDownloadDelegate {
 extension OWSURLSession: URLSessionWebSocketDelegate {
 
     @available(iOS 13, *)
-    public func webSocketTask(requestUrl: URL, didOpenBlock: @escaping (String?) -> Void, didCloseBlock: @escaping (SSKWebSocketNativeError) -> Void) -> URLSessionWebSocketTask {
+    public func webSocketTask(requestUrl: URL, didOpenBlock: @escaping (String?) -> Void, didCloseBlock: @escaping (Error) -> Void) -> URLSessionWebSocketTask {
         // We can't pass a URLRequest here since it prevents the proxy from
         // operating correctly. See `SSKWebSocketNative.init(...)` for more details
         // and an example of passing URLRequest options via this web socket.
@@ -927,7 +927,7 @@ extension OWSURLSession: URLSessionWebSocketDelegate {
     @available(iOS 13, *)
     public func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
         guard let webSocketState = removeCompletedTaskState(webSocketTask) as? WebSocketTaskState else { return }
-        webSocketState.closeBlock(.remoteClosed(closeCode.rawValue, reason))
+        webSocketState.closeBlock(WebSocketError.closeError(statusCode: closeCode.rawValue, closeReason: reason))
     }
 }
 
@@ -985,7 +985,7 @@ private class UploadOrDataTaskState: TaskState {
 @available(iOS 13, *)
 private class WebSocketTaskState: TaskState {
     typealias OpenBlock = (String?) -> Void
-    typealias CloseBlock = (SSKWebSocketNativeError) -> Void
+    typealias CloseBlock = (Error) -> Void
 
     var progressBlock: ProgressBlock? { nil }
     let openBlock: OpenBlock
@@ -997,13 +997,15 @@ private class WebSocketTaskState: TaskState {
     }
 
     func reject(error: Error, task: URLSessionTask) {
-        guard let httpResponse = task.response as? HTTPURLResponse else {
-            // We shouldn't have non-HTTP responses, but we might not have a response at all.
-            owsAssertDebug(task.response == nil)
-            self.closeBlock(.failedToConnect(nil))
+        // If there's an HTTP status code, prefer that.
+        if let httpResponse = task.response as? HTTPURLResponse {
+            let retryAfter = OWSHttpHeaders(response: httpResponse).retryAfterDate
+            closeBlock(WebSocketError.httpError(statusCode: httpResponse.statusCode, retryAfter: retryAfter))
             return
         }
-        self.closeBlock(.failedToConnect(httpResponse.statusCode))
+        // We shouldn't have non-HTTP responses, but we might not have a response at all.
+        owsAssertDebug(task.response == nil)
+        closeBlock(error)
     }
 }
 
