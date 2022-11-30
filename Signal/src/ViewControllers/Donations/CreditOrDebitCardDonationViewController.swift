@@ -47,6 +47,12 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
         ])
     }
 
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        cardNumberView.becomeFirstResponder()
+    }
+
     public override func themeDidChange() {
         super.themeDidChange()
 

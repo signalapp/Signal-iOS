@@ -64,6 +64,9 @@ extension CreditOrDebitCardDonationViewController {
 
         override var isFirstResponder: Bool { textField.isFirstResponder }
 
+        @discardableResult
+        override func becomeFirstResponder() -> Bool { textField.becomeFirstResponder() }
+
         init(
             title: String,
             placeholder: String,
