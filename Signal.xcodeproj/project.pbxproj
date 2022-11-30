@@ -2042,6 +2042,7 @@
 		F9CAC77F29199B9200EEC1DE /* StringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CAC77E29199B9200EEC1DE /* StringTest.swift */; };
 		F9CAC7832919B35E00EEC1DE /* PhoneNumberRegions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CAC7822919B35E00EEC1DE /* PhoneNumberRegions.swift */; };
 		F9CAC7852919B5A400EEC1DE /* PhoneNumberRegionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CAC7842919B5A400EEC1DE /* PhoneNumberRegionsTest.swift */; };
+		F9CC66C12937B71E002172D0 /* OWSOrphanDataCleaner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */; };
 		F9D289B6291EDC8D00187394 /* DonationJobError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D289B5291EDC8D00187394 /* DonationJobError.swift */; };
 		F9D83012282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9D83011282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift */; };
 		F9DD70B92811AF82000C5960 /* DonationViewsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */; };
@@ -4421,6 +4422,7 @@
 		F9CAC77E29199B9200EEC1DE /* StringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTest.swift; sourceTree = "<group>"; };
 		F9CAC7822919B35E00EEC1DE /* PhoneNumberRegions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberRegions.swift; sourceTree = "<group>"; };
 		F9CAC7842919B5A400EEC1DE /* PhoneNumberRegionsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberRegionsTest.swift; sourceTree = "<group>"; };
+		F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOrphanDataCleaner.swift; sourceTree = "<group>"; };
 		F9D289B5291EDC8D00187394 /* DonationJobError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationJobError.swift; sourceTree = "<group>"; };
 		F9D83011282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingChooseBadgeViewController.swift; sourceTree = "<group>"; };
 		F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationViewsUtil.swift; sourceTree = "<group>"; };
@@ -4841,6 +4843,7 @@
 				34BB78B4272C510800DA0D04 /* MobileCoinHelperMinimal.swift */,
 				3464450C22B7F93600A957B1 /* OWSOrphanDataCleaner.h */,
 				3464450B22B7F93600A957B1 /* OWSOrphanDataCleaner.m */,
+				F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */,
 				346129371FD1B47200532771 /* OWSPreferences.h */,
 				346129381FD1B47200532771 /* OWSPreferences.m */,
 				34641E172088D7E900E2EDE5 /* OWSScreenLock.swift */,
@@ -10038,6 +10041,7 @@
 				3498A0A624DC81E100CA492C /* OWSContactsManager.swift in Sources */,
 				4C046AA7236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift in Sources */,
 				3464450D22B7F93600A957B1 /* OWSOrphanDataCleaner.m in Sources */,
+				F9CC66C12937B71E002172D0 /* OWSOrphanDataCleaner.swift in Sources */,
 				3461293A1FD1B47300532771 /* OWSPreferences.m in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
 				3470249E2385B6360078D72C /* OWSProfileManager.swift in Sources */,

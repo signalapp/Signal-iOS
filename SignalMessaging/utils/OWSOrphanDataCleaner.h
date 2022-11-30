@@ -5,6 +5,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString *const OWSOrphanDataCleaner_LastCleaningVersionKey;
+extern NSString *const OWSOrphanDataCleaner_LastCleaningDateKey;
+
 @class SDSKeyValueStore;
 
 // Notes:
@@ -20,8 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)auditAndCleanup:(BOOL)shouldCleanup;
 // This is exposed for the tests.
 + (void)auditAndCleanup:(BOOL)shouldCleanup completion:(nullable dispatch_block_t)completion;
-
-+ (void)auditOnLaunchIfNecessary;
 
 @end
 

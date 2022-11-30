@@ -655,62 +655,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     return result;
 }
 
-+ (BOOL)shouldAuditOnLaunch
-{
-    OWSAssertIsOnMainThread();
-
-    if (!CurrentAppContext().isMainApp || CurrentAppContext().isRunningTests || !TSAccountManager.shared.isRegistered) {
-        return NO;
-    }
-
-    __block NSString *_Nullable lastCleaningVersion;
-    __block NSDate *_Nullable lastCleaningDate;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        lastCleaningVersion =
-            [self.keyValueStore getString:OWSOrphanDataCleaner_LastCleaningVersionKey transaction:transaction];
-        lastCleaningDate =
-            [self.keyValueStore getDate:OWSOrphanDataCleaner_LastCleaningDateKey transaction:transaction];
-    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
-
-    // Clean up once per app version.
-    NSString *currentAppReleaseVersion = self.appVersion.currentAppReleaseVersion;
-    if (!lastCleaningVersion || ![lastCleaningVersion isEqualToString:currentAppReleaseVersion]) {
-        OWSLogVerbose(@"Performing orphan data cleanup; new version: %@.", currentAppReleaseVersion);
-        return YES;
-    }
-
-    // Clean up once per N days.
-    if (lastCleaningDate) {
-#ifdef DEBUG
-        BOOL shouldAudit = [DateUtil dateIsOlderThanToday:lastCleaningDate];
-#else
-        BOOL shouldAudit = [DateUtil dateIsOlderThanOneWeek:lastCleaningDate];
-#endif
-
-        if (shouldAudit) {
-            OWSLogVerbose(@"Performing orphan data cleanup; time has passed.");
-        }
-        return shouldAudit;
-    }
-
-    // Has never audited before.
-    return NO;
-}
-
-+ (void)auditOnLaunchIfNecessary
-{
-    OWSAssertIsOnMainThread();
-
-    if (![self shouldAuditOnLaunch]) {
-        return;
-    }
-
-    // If we want to be cautious, we can disable orphan deletion using
-    // flag - the cleanup will just be a dry run with logging.
-    BOOL shouldRemoveOrphans = YES;
-    [self auditAndCleanup:shouldRemoveOrphans completion:nil];
-}
-
 + (void)auditAndCleanup:(BOOL)shouldRemoveOrphans
 {
     [self auditAndCleanup:shouldRemoveOrphans
@@ -742,11 +686,15 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         return;
     }
     if (SSKDebugFlags.suppressBackgroundActivity) {
-        // Don't clean up.
+        OWSLogInfo(@"Background activity is suppressed. Not cleaning orphaned data");
         return;
     }
 
-    OWSLogInfo(@"");
+    if (shouldRemoveOrphans) {
+        OWSLogInfo(@"Starting orphan data cleanup");
+    } else {
+        OWSLogInfo(@"Starting orphan data audit");
+    }
 
     // Orphan cleanup has two risks:
     //
