@@ -982,39 +982,6 @@ static void uncaughtExceptionHandler(NSException *exception)
     return nil;
 }
 
-#pragma mark - Orientation
-
-- (UIInterfaceOrientationMask)application:(UIApplication *)application
-    supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window
-{
-    if (CurrentAppContext().isRunningTests) {
-        return UIInterfaceOrientationMaskPortrait;
-    }
-
-    if (self.didAppLaunchFail) {
-        return UIInterfaceOrientationMaskPortrait;
-    }
-
-    if (self.hasCall) {
-        OWSLogInfo(@"has call");
-        // The call-banner window is only suitable for portrait display on iPhone
-        if (!UIDevice.currentDevice.isIPad) {
-            return UIInterfaceOrientationMaskPortrait;
-        }
-    }
-
-    UIViewController *_Nullable rootViewController = self.window.rootViewController;
-    if (!rootViewController) {
-        return UIDevice.currentDevice.defaultSupportedOrientations;
-    }
-    return rootViewController.supportedInterfaceOrientations;
-}
-
-- (BOOL)hasCall
-{
-    return CurrentAppContext().hasActiveCall;
-}
-
 #pragma mark Push Notifications Delegate Methods
 
 - (void)application:(UIApplication *)application

@@ -1294,6 +1294,7 @@
 		F98ED2D02922F24C008483DC /* CreditOrDebitCardDonationViewController+MonthlyDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2CF2922F24C008483DC /* CreditOrDebitCardDonationViewController+MonthlyDonation.swift */; };
 		F98ED2D629255E92008483DC /* Stripe+PaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2D529255E92008483DC /* Stripe+PaymentMethod.swift */; };
 		F98ED2D829255F4D008483DC /* DonationPaymentMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */; };
+		F990FAD2293800EE006FB21B /* AppDelegate+Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F990FAD1293800EE006FB21B /* AppDelegate+Orientation.swift */; };
 		F992ACC428F8C9D900906038 /* StripeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F992ACC328F8C9D900906038 /* StripeTest.swift */; };
 		F99D2C8B2926F0DD00748CCB /* CreditOrDebitCardDonationViewControllerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F99D2C8A2926F0DD00748CCB /* CreditOrDebitCardDonationViewControllerTest.swift */; };
 		F9A042C6289C7468007D08B6 /* TSInfoMessage+UpdateMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A042C5289C7468007D08B6 /* TSInfoMessage+UpdateMessages.swift */; };
@@ -3672,6 +3673,7 @@
 		F98ED2CF2922F24C008483DC /* CreditOrDebitCardDonationViewController+MonthlyDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreditOrDebitCardDonationViewController+MonthlyDonation.swift"; sourceTree = "<group>"; };
 		F98ED2D529255E92008483DC /* Stripe+PaymentMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+PaymentMethod.swift"; sourceTree = "<group>"; };
 		F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationPaymentMethod.swift; sourceTree = "<group>"; };
+		F990FAD1293800EE006FB21B /* AppDelegate+Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Orientation.swift"; sourceTree = "<group>"; };
 		F992ACC328F8C9D900906038 /* StripeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StripeTest.swift; sourceTree = "<group>"; };
 		F99D2C8A2926F0DD00748CCB /* CreditOrDebitCardDonationViewControllerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditOrDebitCardDonationViewControllerTest.swift; sourceTree = "<group>"; };
 		F9A042C5289C7468007D08B6 /* TSInfoMessage+UpdateMessages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+UpdateMessages.swift"; sourceTree = "<group>"; };
@@ -5995,6 +5997,7 @@
 				45CD81A41DBFF8CF004C9430 /* Storyboards */,
 				450DF2061E0DD28D003D14BE /* UserInterface */,
 				76EB04C818170B33006006FC /* util */,
+				F990FAD1293800EE006FB21B /* AppDelegate+Orientation.swift */,
 				76EB03C218170B33006006FC /* AppDelegate.h */,
 				76EB03C318170B33006006FC /* AppDelegate.m */,
 				F92074752888648A00B7F087 /* AppDelegate.swift */,
@@ -10112,6 +10115,7 @@
 				88C7597324B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift in Sources */,
 				887B381325F0681400685845 /* AdvancedPrivacySettingsViewController.swift in Sources */,
 				32E958AA25C12B3800BF12AD /* AnimatedProgressView.swift in Sources */,
+				F990FAD2293800EE006FB21B /* AppDelegate+Orientation.swift in Sources */,
 				76EB054018170B33006006FC /* AppDelegate.m in Sources */,
 				F92074762888648A00B7F087 /* AppDelegate.swift in Sources */,
 				8827004E23208A1900F01C46 /* AppearanceSettingsTableViewController.swift in Sources */,
