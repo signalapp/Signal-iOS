@@ -304,8 +304,8 @@ public struct Job: Codable, Equatable, Identifiable, FetchableRecord, MutablePer
 extension Job {
     internal static func filterPendingJobs(
         variants: [Variant],
-        excludeFutureJobs: Bool = true,
-        includeJobsWithDependencies: Bool = false
+        excludeFutureJobs: Bool,
+        includeJobsWithDependencies: Bool
     ) -> QueryInterfaceRequest<Job> {
         var query: QueryInterfaceRequest<Job> = Job
             .filter(

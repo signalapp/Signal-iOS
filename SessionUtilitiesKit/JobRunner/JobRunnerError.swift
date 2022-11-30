@@ -6,6 +6,7 @@ public enum JobRunnerError: Error {
     case generic
     
     case executorMissing
+    case jobIdMissing
     case requiredThreadIdMissing
     case requiredInteractionIdMissing
     
