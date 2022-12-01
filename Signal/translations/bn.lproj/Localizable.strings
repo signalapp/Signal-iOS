@@ -841,14 +841,26 @@
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "ত্রুটি";
 
+/* Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
+"CARD_DONATION_CARD_NUMBER_GENERIC_ERROR" = "Invalid card number";
+
 /* Users can donate to Signal with a credit or debit card. This is the label for the card number field on that screen. */
 "CARD_DONATION_CARD_NUMBER_LABEL" = "Card Number";
+
+/* Users can donate to Signal with a credit or debit card. If their card verification code (CVV) is invalid for reasons we cannot determine, this generic error message will be shown. Try to use a short string to make space in the UI. */
+"CARD_DONATION_CVV_GENERIC_ERROR" = "Invalid CVV";
 
 /* Users can donate to Signal with a credit or debit card. This is the label for the card verification code (CVV) field on that screen. */
 "CARD_DONATION_CVV_LABEL" = "CVV";
 
+/* Users can donate to Signal with a credit or debit card. If their card verification code (CVV) is too long, this error will be shown. Try to use a short string to make space in the UI. */
+"CARD_DONATION_CVV_TOO_LONG_ERROR" = "Code too long";
+
 /* Users can donate to Signal with a credit or debit card. This is the text on the \"Donate\" button. */
 "CARD_DONATION_DONATE_BUTTON" = "Donate";
+
+/* Users can donate to Signal with a credit or debit card. If their expiration date is invalid, this generic error message will be shown. Try to use a short string to make space in the UI. */
+"CARD_DONATION_EXPIRATION_DATE_GENERIC_ERROR" = "Invalid exp. date";
 
 /* Users can donate to Signal with a credit or debit card. This is the label for the expiration date field on that screen. Try to use a short string to make space in the UI. (For example, the English text uses \"Exp. Date\" instead of \"Expiration Date\"). */
 "CARD_DONATION_EXPIRATION_DATE_LABEL" = "Exp. Date";
@@ -859,8 +871,17 @@
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\". */
 "CARD_DONATION_HEADER" = "Donation amount: %1$@";
 
-/* Users can donate to Signal with a credit or debit card. These are instructions on that screen, asking users to enter their payment card info. */
-"CARD_DONATION_INSTRUCTIONS" = "Enter your card information below";
+/* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
+"CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal does not collect or store any of your personal information when you make a donation.\n\nWe use Stripe as our payment processor to receive your donations. We don’t access, store, or save any of the information you provide to them.\n\nSignal does not and cannot connect your donation to your Signal account.\n\nThank you for your support!";
+
+/* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the title of that sheet. */
+"CARD_DONATION_READ_MORE_SHEET_TITLE" = "Your information is private";
+
+/* On the credit/debit card donation screen, a small amount of information text is shown. Users can click this link to learn more information. */
+"CARD_DONATION_SUBHEADER_LEARN_MORE" = "Learn more.";
+
+/* On the credit/debit card donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their credit/debit card information (2) tell them that Signal does not collect or store their personal information. */
+"CARD_DONATION_SUBHEADER_TEXT" = "Enter your card details. Signal does not collect or store your personal information.";
 
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "দেশ নির্বাচন করুন";
@@ -1797,9 +1818,6 @@
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. */
 "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "ডোনেট করার জন্য বেশি পরিমাণ অর্থ বেছে নিন।";
-
-/* If the user tries to donate to Signal but they've entered an amount that's too large, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_SMALLER_AMOUNT" = "অনুদানের জন্য অল্প পরিমাণ অর্থ বেছে নিন।";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "মাসিক";

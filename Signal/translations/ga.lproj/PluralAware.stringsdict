@@ -1504,15 +1504,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Not all items could be sent to the story you selected because the file type is not supported.</string>
+			<string>Níorbh fhéidir gach mír a sheoladh chuig an scéal a roghnaigh tú toisc nach bhfuil tacú ann don chineál comhaid.</string>
 			<key>two</key>
-			<string>Not all items could be sent to the stories you selected because the file type is not supported.</string>
+			<string>Níorbh fhéidir gach mír a sheoladh chuig na scéalta a roghnaigh tú toisc nach bhfuil tacú ann don chineál comhaid.</string>
 			<key>few</key>
-			<string>Not all items could be sent to the stories you selected because the file type is not supported.</string>
+			<string>Níorbh fhéidir gach mír a sheoladh chuig na scéalta a roghnaigh tú toisc nach bhfuil tacú ann don chineál comhaid.</string>
 			<key>many</key>
-			<string>Not all items could be sent to the stories you selected because the file type is not supported.</string>
+			<string>Níorbh fhéidir gach mír a sheoladh chuig na scéalta a roghnaigh tú toisc nach bhfuil tacú ann don chineál comhaid.</string>
 			<key>other</key>
-			<string>Not all items could be sent to the stories you selected because the file type is not supported.</string>
+			<string>Níorbh fhéidir gach mír a sheoladh chuig na scéalta a roghnaigh tú toisc nach bhfuil tacú ann don chineál comhaid.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
