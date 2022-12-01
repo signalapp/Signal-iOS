@@ -778,10 +778,10 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
             }
         }
 
-        let layer = EditorTextLayer(itemId: item.itemId)
-        layer.string = textStorage.attributedString()
-        layer.isWrapped = true
-        layer.alignmentMode = .center
+        let textLayer = EditorTextLayer(itemId: item.itemId)
+        textLayer.string = textStorage.attributedString()
+        textLayer.isWrapped = true
+        textLayer.alignmentMode = .center
         // I don't think we need to enable allowsFontSubpixelQuantization
         // or set truncationMode.
 
@@ -790,7 +790,7 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
         // * The screen scaling (so that text looks sharp on Retina devices.
         // * The item's scaling (so that text doesn't become blurry as you make it larger).
         // * Model transform (so that text doesn't become blurry as you zoom the content).
-        layer.contentsScale = UIScreen.main.scale * item.scaling * transform.scaling
+        textLayer.contentsScale = UIScreen.main.scale * item.scaling * transform.scaling
 
         let maxWidth = imageFrame.size.width * item.unitWidth
         let textSize = textStorage.boundingRect(with: CGSize(width: maxWidth, height: .greatestFiniteMagnitude),
@@ -802,22 +802,25 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
         // is the bounds of the image specified in "canvas" coordinates,
         // so to transform we can simply convert from image frame units.
         let centerInCanvas = item.unitCenter.fromUnitCoordinates(viewBounds: imageFrame)
-        layer.frame = CGRect(origin: CGPoint(x: centerInCanvas.x - textSize.width * 0.5,
-                                             y: centerInCanvas.y - textSize.height * 0.5),
-                             size: textSize)
+        textLayer.frame = CGRect(origin: CGPoint(x: centerInCanvas.x - textSize.width * 0.5,
+                                                 y: centerInCanvas.y - textSize.height * 0.5),
+                                 size: textSize)
 
         // Enlarge the layer slightly when setting the background color to add some horizontal padding around the text.
-        // Unfortunately there's no easy way to add vertical padding because default CATextLayer's behavior
-        // is to start drawing text from the top.
+        let layer: EditorTextLayer
         if let textBackgroundColor = item.textBackgroundColor {
-            layer.frame = layer.frame.insetBy(dx: -4, dy: 0)
+            layer = EditorTextLayer(itemId: item.itemId)
+            layer.frame = textLayer.frame.inset(by: UIEdgeInsets(hMargin: -6, vMargin: -2))
             layer.backgroundColor = textBackgroundColor.cgColor
             layer.cornerRadius = 8
+            layer.addSublayer(textLayer)
+            textLayer.position = layer.bounds.center
+        } else {
+            layer = textLayer
         }
 
-        let transform = CGAffineTransform.identity.scaledBy(x: item.scaling, y: item.scaling).rotated(by: item.rotationRadians)
+        let transform = CGAffineTransform.scale(item.scaling).rotated(by: item.rotationRadians)
         layer.setAffineTransform(transform)
-
         layer.zPosition = zPositionForItem(item: item, model: model, zPositionBase: textLayerZ)
 
         return layer
