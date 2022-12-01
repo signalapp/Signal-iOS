@@ -245,13 +245,13 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                 NSLocalizedString(
                     "GIFT_NOT_REDEEMED_BODY_FORMAT",
                     comment: "Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}."
-                ).replacingOccurrences(of: "%@", with: "John Doe"),
+                ).replacingOccurrences(of: "%@", with: "John Doe").replacingOccurrences(of: "%1$@", with: "John Doe"),
                 false
             )
         ]
-        for (state, expectedBody, expectedHasLearnMore) in otherTestCases {
+        for (state, expectedFormat, expectedHasLearnMore) in otherTestCases {
             let body = state.body
-            XCTAssertEqual(body.text, expectedBody)
+            XCTAssertEqual(body.text, String(format: expectedFormat, state.badge.localizedName))
             XCTAssertEqual(body.hasLearnMoreLink, expectedHasLearnMore)
         }
     }
