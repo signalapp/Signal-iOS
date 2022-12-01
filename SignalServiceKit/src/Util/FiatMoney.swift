@@ -8,7 +8,7 @@ import Foundation
 /// A type that represents an amount of money in a given fiat currency, such as 5 euros.
 ///
 /// It's often useful to pair a currency with an amount. This simple type helps with that.
-public struct FiatMoney: Equatable, Hashable, Sendable {
+public struct FiatMoney: Equatable, Hashable, Sendable, CustomDebugStringConvertible {
     /// The currency for this amount of money.
     ///
     /// For example, for €1.23, this the currency is `EUR`.
@@ -27,4 +27,6 @@ public struct FiatMoney: Equatable, Hashable, Sendable {
         self.currencyCode = currencyCode
         self.value = value
     }
+
+    public var debugDescription: String { "FiatMoney(\(value) \(currencyCode))" }
 }
