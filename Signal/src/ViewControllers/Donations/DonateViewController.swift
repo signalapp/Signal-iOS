@@ -818,6 +818,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 self.state = self.state.selectCurrencyCode(currencyCode)
             }
 
+            self.oneTimeCustomAmountTextField.resignFirstResponder()
+
             self.navigationController?.pushViewController(vc, animated: true)
         }
 
