@@ -85,8 +85,6 @@ extension DonateViewController {
                 Paypal.createBoost(amount: amount, level: level)
             }.map(on: .main) { approvalUrl in
                 modal.dismiss { future.resolve(approvalUrl) }
-            }.timeout(seconds: 30) {
-                DonationJobError.timeout
             }.catch(on: .main) { error in
                 modal.dismiss { future.reject(error) }
             }
@@ -113,8 +111,6 @@ extension DonateViewController {
                 amount: amount
             )
             return DonationViewsUtil.waitForSubscriptionJob()
-        }.timeout(seconds: 30) {
-            DonationJobError.timeout
         }
     }
 }
