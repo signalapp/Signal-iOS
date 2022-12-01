@@ -38,7 +38,7 @@ extension CreditOrDebitCardDonationViewController {
             // I couldn't figure out how to do this with a vanilla `UIView`.
             let result = UIStackView(arrangedSubviews: [textField])
             result.layer.cornerRadius = 10
-            result.backgroundColor = Theme.backgroundColor
+            result.backgroundColor = Theme.tableCell2PresentedBackgroundColor
             result.layoutMargins = .init(hMargin: 16, vMargin: 14)
             result.isLayoutMarginsRelativeArrangement = true
 
@@ -101,7 +101,7 @@ extension CreditOrDebitCardDonationViewController {
         func render(errorMessage: String?) {
             textField.textColor = Theme.primaryTextColor
 
-            textFieldWrapper.backgroundColor = Theme.backgroundColor
+            textFieldWrapper.backgroundColor = Theme.tableCell2PresentedBackgroundColor
 
             if let errorMessage {
                 errorLabel.text = errorMessage
