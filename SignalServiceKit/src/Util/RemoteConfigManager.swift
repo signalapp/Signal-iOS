@@ -142,8 +142,41 @@ public class RemoteConfig: BaseFlags {
         return remoteConfig.creditAndDebitCardDisabledRegions
     }
 
-    public static var canDonateWithCreditOrDebitCard: Bool {
-        !isEnabled(.cardDonationKillSwitch)
+    public static var canDonateOneTimeWithApplePay: Bool {
+        !isEnabled(.applePayOneTimeDonationKillSwitch)
+    }
+
+    public static var canDonateGiftWithApplePay: Bool {
+        !isEnabled(.applePayGiftDonationKillSwitch)
+    }
+
+    public static var canDonateMonthlyWithApplePay: Bool {
+        !isEnabled(.applePayMonthlyDonationKillSwitch)
+    }
+
+    public static var canDonateOneTimeWithCreditOrDebitCard: Bool {
+        !isEnabled(.cardOneTimeDonationKillSwitch)
+    }
+
+    public static var canDonateGiftWithCreditOrDebitCard: Bool {
+        !isEnabled(.cardGiftDonationKillSwitch)
+    }
+
+    public static var canDonateMonthlyWithCreditOrDebitCard: Bool {
+        !isEnabled(.cardMonthlyDonationKillSwitch)
+    }
+
+    public static var canDonateOneTimeWithPaypal: Bool {
+        !isEnabled(.paypalOneTimeDonationKillSwitch)
+    }
+
+    public static var canDonateGiftWithPayPal: Bool {
+        !isEnabled(.paypalGiftDonationKillSwitch)
+    }
+
+    public static var canDonateMonthlyWithPaypal: Bool {
+        // TODO: [PayPal] Once monthly donations are supported, remove this override.
+        !isEnabled(.paypalMonthlyDonationKillSwitch) && false
     }
 
     public static var paypalDisabledRegions: PhoneNumberRegions {
@@ -463,7 +496,15 @@ private struct Flags {
         case groupRings2
         case inboundGroupRingsKillSwitch
         case storiesKillSwitch
-        case cardDonationKillSwitch
+        case applePayOneTimeDonationKillSwitch
+        case applePayGiftDonationKillSwitch
+        case applePayMonthlyDonationKillSwitch
+        case cardOneTimeDonationKillSwitch
+        case cardGiftDonationKillSwitch
+        case cardMonthlyDonationKillSwitch
+        case paypalOneTimeDonationKillSwitch
+        case paypalGiftDonationKillSwitch
+        case paypalMonthlyDonationKillSwitch
     }
 
     // Values defined in this array remain set once they are

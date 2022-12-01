@@ -18,8 +18,6 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
         donationMode: DonationMode,
         onFinished: @escaping () -> Void
     ) {
-        owsAssert(RemoteConfig.canDonateWithCreditOrDebitCard)
-
         self.donationAmount = donationAmount
         self.donationMode = donationMode
         self.onFinished = onFinished

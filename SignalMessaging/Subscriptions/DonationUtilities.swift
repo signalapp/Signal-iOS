@@ -45,7 +45,14 @@ public class DonationUtilities: Dependencies {
                 PKPaymentAuthorizationController.canMakePayments(),
                 !RemoteConfig.applePayDisabledRegions.contains(e164: localNumber)
             {
-                return true
+                switch donationMode {
+                case .oneTime:
+                    return RemoteConfig.canDonateOneTimeWithApplePay
+                case .gift:
+                    return RemoteConfig.canDonateGiftWithApplePay
+                case .monthly:
+                    return RemoteConfig.canDonateMonthlyWithApplePay
+                }
             }
 
             return false
@@ -53,15 +60,15 @@ public class DonationUtilities: Dependencies {
 
         let isPaypalAvailable = {
             if
-                FeatureFlags.canDonateWithPaypal,
                 !RemoteConfig.paypalDisabledRegions.contains(e164: localNumber)
             {
                 switch donationMode {
-                case .oneTime, .gift:
-                    return true
+                case .oneTime:
+                    return RemoteConfig.canDonateOneTimeWithPaypal
+                case .gift:
+                    return RemoteConfig.canDonateGiftWithPayPal
                 case .monthly:
-                    // TODO: [PayPal] Support monthly donations
-                    break
+                    return RemoteConfig.canDonateMonthlyWithPaypal
                 }
             }
 
@@ -70,10 +77,16 @@ public class DonationUtilities: Dependencies {
 
         let isCardAvailable = {
             if
-                RemoteConfig.canDonateWithCreditOrDebitCard,
                 !RemoteConfig.creditAndDebitCardDisabledRegions.contains(e164: localNumber)
             {
-                return true
+                switch donationMode {
+                case .oneTime:
+                    return RemoteConfig.canDonateOneTimeWithCreditOrDebitCard
+                case .gift:
+                    return RemoteConfig.canDonateGiftWithCreditOrDebitCard
+                case .monthly:
+                    return RemoteConfig.canDonateMonthlyWithCreditOrDebitCard
+                }
             }
 
             return false
