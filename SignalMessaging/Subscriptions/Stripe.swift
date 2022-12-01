@@ -39,10 +39,6 @@ public struct Stripe: Dependencies {
         level: OneTimeBadgeLevel
     ) -> Promise<PaymentIntent> {
         firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
-            guard !DonationUtilities.isAmountTooSmall(amount) else {
-                throw OWSAssertionError("Amount too small")
-            }
-
             // The description is never translated as it's populated into an
             // english only receipt by Stripe.
             let request = OWSRequestFactory.boostCreatePaymentIntent(

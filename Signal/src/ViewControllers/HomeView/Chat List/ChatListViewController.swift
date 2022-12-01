@@ -139,8 +139,10 @@ public extension ChatListViewController {
             }
         } else if SubscriptionBadgeIds.contains(expiredBadgeID) {
             // Fetch current subscriptions, required to populate badge assets
-            firstly {
-                SubscriptionManager.getSubscriptions()
+            firstly { () -> Promise<SubscriptionManager.DonationConfiguration> in
+                SubscriptionManager.fetchDonationConfiguration()
+            }.map(on: .global()) { donationConfiguration -> [SubscriptionLevel] in
+                donationConfiguration.subscription.levels
             }.done(on: .global()) { (subscriptions: [SubscriptionLevel]) in
                 let subscriptionLevel = subscriptions.first { $0.badge.id == expiredBadgeID }
                 guard let subscriptionLevel = subscriptionLevel else {

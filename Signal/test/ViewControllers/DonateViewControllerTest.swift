@@ -7,50 +7,132 @@ import XCTest
 @testable import Signal
 @testable import SignalMessaging
 
-final class DonateViewControllerTest: XCTestCase {
+final class DonateViewControllerTest: SignalBaseTest {
     typealias State = DonateViewController.State
 
-    private static var oneTimePresets: [Currency.Code: DonationUtilities.Preset] = [
-        "USD": .init(currencyCode: "USD", amounts: [10.as("USD"), 20.as("USD")]),
-        "AUD": .init(currencyCode: "AUD", amounts: [30.as("AUD"), 40.as("AUD")])
-    ]
+    // MARK: - One time fixtures
 
-    private static var oneTimeBadge: ProfileBadge {
-        try! ProfileBadge(jsonDictionary: [
+    private struct OneTimeFixtures {
+        static let badge: ProfileBadge = try! ProfileBadge(jsonDictionary: [
             "id": "BOOST",
             "category": "donor",
             "name": "A Boost",
             "description": "A boost badge!",
             "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"]
         ])
+
+        static let minimums: [Currency.Code: FiatMoney] = [
+            "USD": 10.as("USD"),
+            "AUD": 30.as("AUD")
+        ]
+
+        static let presets: [Currency.Code: DonationUtilities.Preset] = [
+            "USD": .init(currencyCode: "USD", amounts: [10.as("USD"), 20.as("USD")]),
+            "AUD": .init(currencyCode: "AUD", amounts: [30.as("AUD"), 40.as("AUD")])
+        ]
+
+        static func configWithDefaults(
+            level: UInt = 12,
+            badge: ProfileBadge = badge,
+            minimums: [Currency.Code: FiatMoney] = minimums,
+            presets: [Currency.Code: DonationUtilities.Preset] = presets
+        ) -> State.OneTimeConfiguration {
+            .init(
+                level: level,
+                badge: badge,
+                minimumAmounts: minimums,
+                presetAmounts: presets
+            )
+        }
     }
 
-    private static var monthlySubscriptionLevels: [SubscriptionLevel] {
-        [
-            try! .init(level: 1, jsonDictionary: [
-                "name": "First Level",
-                "badge": [
-                    "id": "test-badge-1",
-                    "category": "donor",
-                    "name": "Test Badge 1",
-                    "description": "First test badge",
-                    "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"]
-                ],
-                "currencies": ["USD": Double(1), "GBP": Double(2), "EUR": Double(3)]
-            ]),
-            try! .init(level: 2, jsonDictionary: [
-                "name": "Second Level",
-                "badge": [
-                    "id": "test-badge-2",
-                    "category": "donor",
-                    "name": "Test Badge 2",
-                    "description": "Second test badge",
-                    "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"]
-                ],
-                "currencies": ["USD": Double(4), "EUR": Double(5)]
-            ])
+    // MARK: - Monthly fixtures
+
+    private struct MonthlyFixtures {
+        static let badgeOne: ProfileBadge = try! .init(jsonDictionary: [
+            "id": "test-badge-1",
+            "category": "donor",
+            "name": "Test Badge 1",
+            "description": "First test badge",
+            "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"]
+        ])
+
+        static let badgeTwo: ProfileBadge = try! .init(jsonDictionary: [
+            "id": "test-badge-2",
+            "category": "donor",
+            "name": "Test Badge 2",
+            "description": "Second test badge",
+            "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"]
+        ])
+
+        static let amountsOne: [Currency.Code: FiatMoney] = [
+            "USD": 1.as("USD"),
+            "GBP": 2.as("GBP"),
+            "EUR": 3.as("EUR")
         ]
+
+        static let amountsTwo: [Currency.Code: FiatMoney] = [
+            "USD": 4.as("USD"),
+            "EUR": 5.as("EUR")
+        ]
+
+        static func levelOneWithDefaults(
+            level: UInt = 1,
+            name: String = "First Level",
+            badge: ProfileBadge = badgeOne,
+            amounts: [Currency.Code: FiatMoney] = amountsOne
+        ) -> SubscriptionLevel {
+            .init(
+                level: level,
+                name: name,
+                badge: badge,
+                amounts: amounts
+            )
+        }
+
+        static func levelTwoWithDefaults(
+            level: UInt = 2,
+            name: String = "Second Level",
+            badge: ProfileBadge = badgeTwo,
+            amounts: [Currency.Code: FiatMoney] = amountsTwo
+        ) -> SubscriptionLevel {
+            .init(
+                level: level,
+                name: name,
+                badge: badge,
+                amounts: amounts
+            )
+        }
+
+        static let subscriptionLevels: [SubscriptionLevel] = [
+            levelOneWithDefaults(),
+            levelTwoWithDefaults()
+        ]
+
+        static func configWithDefaults(
+            subscriptionLevels: [SubscriptionLevel] = subscriptionLevels
+        ) -> State.MonthlyConfiguration {
+            .init(levels: subscriptionLevels)
+        }
     }
+
+    // MARK: - Payment methods fixtures
+
+    private struct PaymentMethodsFixtures {
+        static let supportedPaymentMethodsByCurrency: [Currency.Code: Set<DonationPaymentMethod>] = [
+            "USD": [.applePay, .creditOrDebitCard, .paypal],
+            "AUD": [.applePay, .creditOrDebitCard, .paypal],
+            "EUR": [.applePay, .creditOrDebitCard]
+        ]
+
+        static func configWithDefaults(
+            paymentMethods: [Currency.Code: Set<DonationPaymentMethod>] = supportedPaymentMethodsByCurrency
+        ) -> State.PaymentMethodsConfiguration {
+            .init(supportedPaymentMethodsByCurrency: paymentMethods)
+        }
+    }
+
+    // MARK: - Subscription fixtures
 
     private static func subscription(at level: UInt) -> Subscription {
         try! .init(
@@ -68,6 +150,14 @@ final class DonateViewControllerTest: XCTestCase {
         )
     }
 
+    // MARK: -
+
+    private static let defaultOneTimeConfig = OneTimeFixtures.configWithDefaults()
+    private static let defaultMonthlyConfig = MonthlyFixtures.configWithDefaults()
+    private static let defaultPaymentMethodsConfig = PaymentMethodsFixtures.configWithDefaults()
+
+    private static var localNumber: String = "+17735550100"
+
     private var initializing: State { .init(donateMode: .oneTime) }
 
     private var loading: State { initializing.loading() }
@@ -76,48 +166,51 @@ final class DonateViewControllerTest: XCTestCase {
 
     private var loadedWithoutSubscription: State {
         loading.loaded(
-            oneTimePresets: Self.oneTimePresets,
-            oneTimeBadge: Self.oneTimeBadge,
-            monthlySubscriptionLevels: Self.monthlySubscriptionLevels,
+            oneTimeConfig: Self.defaultOneTimeConfig,
+            monthlyConfig: Self.defaultMonthlyConfig,
+            paymentMethodsConfig: Self.defaultPaymentMethodsConfig,
             currentMonthlySubscription: nil,
             subscriberID: nil,
             lastReceiptRedemptionFailure: .none,
             previousMonthlySubscriptionCurrencyCode: nil,
-            locale: Locale(identifier: "en-US")
+            locale: Locale(identifier: "en-US"),
+            localNumber: Self.localNumber
         )
     }
 
     private var loadedWithSubscription: State {
         loading.loaded(
-            oneTimePresets: Self.oneTimePresets,
-            oneTimeBadge: Self.oneTimeBadge,
-            monthlySubscriptionLevels: Self.monthlySubscriptionLevels,
+            oneTimeConfig: Self.defaultOneTimeConfig,
+            monthlyConfig: Self.defaultMonthlyConfig,
+            paymentMethodsConfig: Self.defaultPaymentMethodsConfig,
             currentMonthlySubscription: Self.subscription(at: 2),
             subscriberID: Data([1, 2, 3]),
             lastReceiptRedemptionFailure: .none,
             previousMonthlySubscriptionCurrencyCode: "USD",
-            locale: Locale(identifier: "en-US")
+            locale: Locale(identifier: "en-US"),
+            localNumber: Self.localNumber
         )
     }
 
     func loadWithDefaults(
-        oneTimePresets: [Currency.Code: DonationUtilities.Preset] = oneTimePresets,
-        oneTimeBadge: ProfileBadge? = oneTimeBadge,
-        monthlySubscriptionLevels: [SubscriptionLevel] = monthlySubscriptionLevels,
+        oneTimeConfig: State.OneTimeConfiguration = defaultOneTimeConfig,
+        monthlyConfig: State.MonthlyConfiguration = defaultMonthlyConfig,
+        paymentMethodsConfig: State.PaymentMethodsConfiguration = defaultPaymentMethodsConfig,
         currentMonthlySubscription: Subscription? = subscription(at: 2),
         subscriberID: Data? = Data([1, 2, 3]),
         previousMonthlySubscriptionCurrencyCode: Currency.Code? = nil,
         locale: Locale = Locale(identifier: "en-US")
     ) -> State {
         loading.loaded(
-            oneTimePresets: oneTimePresets,
-            oneTimeBadge: oneTimeBadge,
-            monthlySubscriptionLevels: monthlySubscriptionLevels,
+            oneTimeConfig: oneTimeConfig,
+            monthlyConfig: monthlyConfig,
+            paymentMethodsConfig: paymentMethodsConfig,
             currentMonthlySubscription: currentMonthlySubscription,
             subscriberID: subscriberID,
             lastReceiptRedemptionFailure: .none,
             previousMonthlySubscriptionCurrencyCode: previousMonthlySubscriptionCurrencyCode,
-            locale: locale
+            locale: locale,
+            localNumber: Self.localNumber
         )
     }
 
@@ -162,10 +255,10 @@ final class DonateViewControllerTest: XCTestCase {
         XCTAssertNil(initializing.selectedCurrencyCode)
 
         let onOneTime = loadedWithoutSubscription.selectDonateMode(.oneTime)
-        XCTAssertEqual(onOneTime.selectedProfileBadge, Self.oneTimeBadge)
+        XCTAssertEqual(onOneTime.selectedProfileBadge, Self.defaultOneTimeConfig.badge)
 
         let onMonthly = loadedWithoutSubscription.selectDonateMode(.monthly)
-        let levels = Self.monthlySubscriptionLevels
+        let levels = Self.defaultMonthlyConfig.levels
         let selectedSecond = onMonthly.selectSubscriptionLevel(levels.last!)
         XCTAssertEqual(onMonthly.selectedProfileBadge, levels.first!.badge)
         XCTAssertEqual(selectedSecond.selectedProfileBadge, levels.last!.badge)
@@ -195,10 +288,10 @@ final class DonateViewControllerTest: XCTestCase {
     func testLoadedBoringSettingOfProperties() {
         let oneTime = loadedWithSubscription.oneTime
         let monthly = loadedWithSubscription.monthly
-        XCTAssertEqual(oneTime?.selectedPreset, Self.oneTimePresets["USD"])
+        XCTAssertEqual(oneTime?.selectedPreset, Self.defaultOneTimeConfig.presetAmounts["USD"])
         XCTAssertEqual(oneTime?.selectedAmount, .nothingSelected(currencyCode: "USD"))
-        XCTAssertEqual(oneTime?.profileBadge, Self.oneTimeBadge)
-        XCTAssertEqual(monthly?.subscriptionLevels, Self.monthlySubscriptionLevels)
+        XCTAssertEqual(oneTime?.profileBadge, Self.defaultOneTimeConfig.badge)
+        XCTAssertEqual(monthly?.subscriptionLevels, Self.defaultMonthlyConfig.levels)
         XCTAssertEqual(monthly?.currentSubscription, Self.subscription(at: 2))
         XCTAssertEqual(monthly?.subscriberID, Data([1, 2, 3]))
     }
@@ -237,14 +330,14 @@ final class DonateViewControllerTest: XCTestCase {
     func testLoadedSubscriptionLevelWithNoSubscription() {
         XCTAssertEqual(
             loadedWithoutSubscription.monthly?.selectedSubscriptionLevel,
-            Self.monthlySubscriptionLevels.first!
+            Self.defaultMonthlyConfig.levels.first!
         )
     }
 
     func testLoadedSubscriptionLevelWithStillSupportedSubscription() {
         XCTAssertEqual(
             loadedWithSubscription.monthly?.selectedSubscriptionLevel,
-            Self.monthlySubscriptionLevels[1]
+            Self.defaultMonthlyConfig.levels[1]
         )
     }
 
@@ -252,7 +345,7 @@ final class DonateViewControllerTest: XCTestCase {
         let state = loadWithDefaults(currentMonthlySubscription: Self.subscription(at: 99))
         XCTAssertEqual(
             state.monthly?.selectedSubscriptionLevel,
-            Self.monthlySubscriptionLevels.first!
+            Self.defaultMonthlyConfig.levels.first!
         )
     }
 
@@ -268,6 +361,81 @@ final class DonateViewControllerTest: XCTestCase {
         let triedToSelectAud = loadedWithoutSubscription.selectCurrencyCode("AUD")
         XCTAssertEqual(triedToSelectAud.selectDonateMode(.oneTime).selectedCurrencyCode, "AUD")
         XCTAssertEqual(triedToSelectAud.selectDonateMode(.monthly).selectedCurrencyCode, "USD")
+    }
+
+    func testSupportedPaymentMethods() {
+        let oneTimeConfig = OneTimeFixtures.configWithDefaults(
+            minimums: [
+                "USD": 10.as("USD"),
+                "EUR": 200.as("EUR")
+            ],
+            presets: [
+                "USD": .init(currencyCode: "USD", amounts: [10.as("USD"), 20.as("USD")]),
+                "EUR": .init(currencyCode: "EUR", amounts: [200.as("EUR"), 400.as("EUR")])
+            ]
+        )
+
+        let monthlyConfig = MonthlyFixtures.configWithDefaults(
+            subscriptionLevels: [
+                MonthlyFixtures.levelOneWithDefaults(
+                    amounts: [
+                        "USD": 15.as("USD"),
+                        "EUR": 250.as("EUR")
+                    ]
+                )
+            ]
+        )
+
+        let paymentMethodsConfig = PaymentMethodsFixtures.configWithDefaults(
+            paymentMethods: [
+                "USD": [.paypal, .applePay],
+                "EUR": []
+            ]
+        )
+
+        var state = loadWithDefaults(
+            oneTimeConfig: oneTimeConfig,
+            monthlyConfig: monthlyConfig,
+            paymentMethodsConfig: paymentMethodsConfig
+        )
+
+        // If a currency has no payment methods, it should not be supported.
+
+        state = state.selectDonateMode(.oneTime)
+        XCTAssertEqual(
+            state.supportedCurrencyCodes,
+            ["USD"],
+            "Only USD should be supported for one-time, as only it has any payment methods!"
+        )
+
+        state = state.selectDonateMode(.monthly)
+        XCTAssertEqual(
+            state.supportedCurrencyCodes,
+            ["USD"],
+            "Only USD should be supported for monthly, as only it has any payment methods!"
+        )
+
+        // If the selected currency has supported payment methods, payment
+        // requests should return them - unless they are disabled globally
+        // for that type of payment.
+
+        state = state.selectCurrencyCode("USD")
+        state = state.selectOneTimeAmount(.choseCustomAmount(amount: 123.as("USD")))
+        state = state.selectSubscriptionLevel(monthlyConfig.levels.first!)
+
+        let oneTimePaymentRequest = state.oneTime!.paymentRequest
+        switch oneTimePaymentRequest {
+        case let .canContinue(amount, supportedPaymentMethods):
+            XCTAssertEqual(amount, 123.as("USD"))
+            XCTAssertEqual(supportedPaymentMethods, [.paypal, .applePay])
+        default:
+            XCTFail("Unexpectedly invalid one-time payment request! \(oneTimePaymentRequest)")
+        }
+
+        let monthlyPaymentRequest = state.monthly!.paymentRequest!
+        XCTAssertEqual(monthlyPaymentRequest.amount, 15.as("USD"))
+        // TODO: [PayPal] Currently, PayPal is not supported for monthly.
+        XCTAssertEqual(monthlyPaymentRequest.supportedPaymentMethods, [.applePay])
     }
 }
 

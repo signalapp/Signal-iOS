@@ -277,14 +277,16 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     private func presentChoosePaymentMethodSheet(
         amount: FiatMoney,
         badge: ProfileBadge?,
-        donateMode: DonateMode
+        donateMode: DonateMode,
+        supportedPaymentMethods: Set<DonationPaymentMethod>
     ) {
         oneTimeCustomAmountTextField.resignFirstResponder()
 
         let sheet = DonateChoosePaymentMethodSheet(
             amount: amount,
             badge: badge,
-            donationMode: donateMode.asDonationMode
+            donationMode: donateMode.asDonationMode,
+            supportedPaymentMethods: supportedPaymentMethods
         ) { [weak self] (sheet, paymentMethod) in
             sheet.dismiss(animated: true) { [weak self] in
                 guard let self else { return }
@@ -337,11 +339,12 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT",
                 comment: "If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown."
             ))
-        case let .canContinue(amount):
+        case let .canContinue(amount, supportedPaymentMethods):
             presentChoosePaymentMethodSheet(
                 amount: amount,
                 badge: oneTime.profileBadge,
-                donateMode: .oneTime
+                donateMode: .oneTime,
+                supportedPaymentMethods: supportedPaymentMethods
             )
         }
     }
@@ -350,10 +353,12 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         guard let monthlyPaymentRequest = state.monthly?.paymentRequest else {
             owsFail("[Donations] Cannot start monthly donation. This should be prevented in the UI")
         }
+
         presentChoosePaymentMethodSheet(
             amount: monthlyPaymentRequest.amount,
             badge: monthlyPaymentRequest.profileBadge,
-            donateMode: .monthly
+            donateMode: .monthly,
+            supportedPaymentMethods: monthlyPaymentRequest.supportedPaymentMethods
         )
     }
 
@@ -398,7 +403,8 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             presentChoosePaymentMethodSheet(
                 amount: monthlyPaymentRequest.amount,
                 badge: monthlyPaymentRequest.profileBadge,
-                donateMode: .monthly
+                donateMode: .monthly,
+                supportedPaymentMethods: monthlyPaymentRequest.supportedPaymentMethods
             )
         }
     }
@@ -534,115 +540,74 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         state = state.loading()
 
-        loadState(currentState: state).done { [weak self] newState in
+        loadStateWithSneakyTransaction(currentState: state).done { [weak self] newState in
             self?.state = newState
         }
     }
 
     /// Try to load the data we need and put it into a new state.
     ///
-    /// This requires both one-time and monthly data to load successfully.
-    ///
-    /// We could build this such that the state can be partially loaded. For
-    /// example, users could interact with the one-time state while the monthly
-    /// state continues to load, or if it fails. That'd make this screen
-    /// resilient to partial failures, and faster to start using.
-    ///
-    /// However, this (1) significantly complicated the code when I tried it
-    /// (2) will soon become less important, because the server plans to add a
-    /// single endpoint that'll do most of this.
-    private func loadState(currentState: State) -> Guarantee<State> {
-        let oneTimeStatePromise = Self.loadOneTimeState()
-        let monthlyStatePromise = Self.loadMonthlyState()
+    /// Requests one-time and monthly badges and preset amounts from the
+    /// service, prepares badge assets, and loads local state as appropriate.
+    private func loadStateWithSneakyTransaction(currentState: State) -> Guarantee<State> {
+        typealias DonationConfiguration = SubscriptionManager.DonationConfiguration
 
-        return oneTimeStatePromise.then(on: .sharedUserInitiated) { oneTime in
-            monthlyStatePromise.map { monthly in (oneTime, monthly) }
-        }.then(on: .sharedUserInitiated) { [weak self] (oneTime: OneTimeData, monthly: MonthlyData) -> Promise<(oneTime: OneTimeData, monthly: MonthlyData)> in
-            guard let self = self else { return Promise.value((oneTime, monthly)) }
-            let oneTimeBadges = [oneTime.badge].compacted()
-            let monthlyBadges = monthly.subscriptionLevels.map { $0.badge }
-            let badges = oneTimeBadges + monthlyBadges
-            let badgePromises = badges.map {
-                self.profileManager.badgeStore.populateAssetsOnBadge($0)
+        let (
+            subscriberID,
+            previousSubscriberCurrencyCode,
+            lastReceiptRedemptionFailure
+        ) = databaseStorage.read {
+            (
+                SubscriptionManager.getSubscriberID(transaction: $0),
+                SubscriptionManager.getSubscriberCurrencyCode(transaction: $0),
+                SubscriptionManager.lastReceiptRedemptionFailed(transaction: $0)
+            )
+        }
+
+        // Start fetching the donation configuration.
+        let fetchDonationConfigPromise: Promise<DonationConfiguration> = firstly {
+            SubscriptionManager.fetchDonationConfiguration()
+        }.then(on: .sharedUserInitiated) { donationConfiguration -> Promise<DonationConfiguration> in
+            let boostBadge = donationConfiguration.boost.badge
+            let subscriptionBadges = donationConfiguration.subscription.levels.map { $0.badge }
+
+            let badgePromises = ([boostBadge] + subscriptionBadges).map {
+                Self.profileManager.badgeStore.populateAssetsOnBadge($0)
             }
-            return Promise.when(fulfilled: badgePromises).map { (oneTime, monthly) }
-        }.then(on: .sharedUserInitiated) { (oneTime: OneTimeData, monthly: MonthlyData) in
-            Guarantee.value(currentState.loaded(
-                oneTimePresets: oneTime.presets,
-                oneTimeBadge: oneTime.badge,
-                monthlySubscriptionLevels: monthly.subscriptionLevels,
-                currentMonthlySubscription: monthly.currentSubscription,
-                subscriberID: monthly.subscriberID,
-                lastReceiptRedemptionFailure: monthly.lastReceiptRedemptionFailure,
-                previousMonthlySubscriptionCurrencyCode: monthly.previousSubscriptionCurrencyCode,
-                locale: Locale.current
-            ))
+
+            return Promise.when(fulfilled: badgePromises).map(on: .sharedUserInitiated) { donationConfiguration }
+        }
+
+        // Start loading the current subscription.
+        let loadCurrentSubscriptionPromise: Promise<Subscription?> = DonationViewsUtil.loadCurrentSubscription(
+            subscriberID: subscriberID
+        )
+
+        return firstly { () -> Promise<(DonationConfiguration, Subscription?)> in
+            // Compose the configuration and subscription.
+            fetchDonationConfigPromise.then(on: .sharedUserInitiated) { donationConfiguration in
+                loadCurrentSubscriptionPromise.map(on: .sharedUserInitiated) { subscription in
+                    (donationConfiguration, subscription)
+                }
+            }
+        }.then(on: .sharedUserInitiated) { (configuration, currentSubscription) -> Guarantee<State> in
+            let loadedState = currentState.loaded(
+                oneTimeConfig: configuration.boost,
+                monthlyConfig: configuration.subscription,
+                paymentMethodsConfig: configuration.paymentMethods,
+                currentMonthlySubscription: currentSubscription,
+                subscriberID: subscriberID,
+                lastReceiptRedemptionFailure: lastReceiptRedemptionFailure,
+                previousMonthlySubscriptionCurrencyCode: previousSubscriberCurrencyCode,
+                locale: Locale.current,
+                localNumber: Self.tsAccountManager.localNumber
+            )
+
+            return .value(loadedState)
         }.recover(on: .sharedUserInitiated) { error -> Guarantee<State> in
             Logger.warn("[Donations] \(error)")
             owsFailDebugUnlessNetworkFailure(error)
             return Guarantee.value(currentState.loadFailed())
-        }
-    }
-
-    private struct OneTimeData {
-        let presets: [Currency.Code: DonationUtilities.Preset]
-        let badge: ProfileBadge?
-    }
-
-    private static func loadOneTimeState() -> Promise<OneTimeData> {
-        let profileBadgePromise: Promise<ProfileBadge?> = firstly {
-            SubscriptionManager.getBoostBadge()
-        }.map {
-            Optional.some($0)
-        }.recover { error in
-            Logger.warn("[Donations] Failed to fetch boost badge \(error). Proceeding without it, as it is only cosmetic here")
-            return Guarantee<ProfileBadge?>.value(nil)
-        }
-
-        return firstly(on: .sharedUserInitiated) {
-            SubscriptionManager.getSuggestedBoostAmounts()
-        }.then(on: .sharedUserInitiated) { presets in
-            profileBadgePromise.map { badge in
-                .init(presets: presets, badge: badge)
-            }
-        }
-    }
-
-    private struct MonthlyData {
-        let subscriptionLevels: [SubscriptionLevel]
-        let currentSubscription: Subscription?
-        let subscriberID: Data?
-        let previousSubscriptionCurrencyCode: Currency.Code?
-        let lastReceiptRedemptionFailure: SubscriptionRedemptionFailureReason
-    }
-
-    private static func loadMonthlyState() -> Promise<MonthlyData> {
-        let (
-            subscriberID,
-            previousCurrencyCode,
-            lastReceiptRedemptionFailure
-        ) = databaseStorage.read {(
-            SubscriptionManager.getSubscriberID(transaction: $0),
-            SubscriptionManager.getSubscriberCurrencyCode(transaction: $0),
-            SubscriptionManager.lastReceiptRedemptionFailed(transaction: $0)
-        )}
-
-        let currentSubscriptionPromise = DonationViewsUtil.loadCurrentSubscription(
-            subscriberID: subscriberID
-        )
-
-        return firstly(on: .sharedUserInitiated) {
-            DonationViewsUtil.loadSubscriptionLevels(badgeStore: self.profileManager.badgeStore)
-        }.then(on: .sharedUserInitiated) { subscriptionLevels in
-            currentSubscriptionPromise.map { currentSubscription in
-                .init(
-                    subscriptionLevels: subscriptionLevels,
-                    currentSubscription: currentSubscription,
-                    subscriberID: subscriberID,
-                    previousSubscriptionCurrencyCode: previousCurrencyCode,
-                    lastReceiptRedemptionFailure: lastReceiptRedemptionFailure
-                )
-            }
         }
     }
 

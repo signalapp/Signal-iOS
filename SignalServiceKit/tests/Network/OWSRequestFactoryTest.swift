@@ -88,12 +88,4 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
         XCTAssertEqual(request.parameters["level"] as? UInt64, 456)
         XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
     }
-
-    func testGiftBadgePricesRequest() throws {
-        let request = OWSRequestFactory.giftBadgePricesRequest()
-
-        XCTAssertEqual(request.url?.path, "v1/subscription/boost/amounts/gift")
-        XCTAssertEqual(request.httpMethod, "GET")
-        XCTAssertTrue(request.parameters.isEmpty)
-    }
 }

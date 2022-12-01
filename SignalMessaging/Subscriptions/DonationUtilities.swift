@@ -11,11 +11,32 @@ import SignalCoreKit
 public class DonationUtilities: Dependencies {
     public static var sendGiftBadgeJobQueue: SendGiftBadgeJobQueue { smJobQueues.sendGiftBadgeJobQueue }
 
+    /// Returns a set of donation payment methods available to the local user,
+    /// for donating in a specific currency.
+    public static func supportedDonationPaymentMethods(
+        forDonationMode donationMode: DonationMode,
+        usingCurrency currencyCode: Currency.Code,
+        withConfiguration configuration: SubscriptionManager.DonationConfiguration.PaymentMethodsConfiguration,
+        localNumber: String?
+    ) -> Set<DonationPaymentMethod> {
+        let generallySupportedMethods = supportedDonationPaymentMethods(
+            forDonationMode: donationMode,
+            localNumber: localNumber
+        )
+
+        let currencySupportedMethods = configuration.supportedPaymentMethods(
+            forCurrencyCode: currencyCode
+        )
+
+        return generallySupportedMethods.intersection(currencySupportedMethods)
+    }
+
     /// Returns a set of the donation payment methods available to the local
-    /// user, for the given donation mode.
-    public static func supportedDonationPaymentMethodOptions(
-        localNumber: String?,
-        forDonationMode donationMode: DonationMode
+    /// user for the given donation mode, without considering what currency
+    /// they will be donating in.
+    public static func supportedDonationPaymentMethods(
+        forDonationMode donationMode: DonationMode,
+        localNumber: String?
     ) -> Set<DonationPaymentMethod> {
         guard let localNumber else { return [] }
 
@@ -80,9 +101,9 @@ public class DonationUtilities: Dependencies {
         inMode donationMode: DonationMode,
         localNumber: String?
     ) -> Bool {
-        !supportedDonationPaymentMethodOptions(
-            localNumber: localNumber,
-            forDonationMode: donationMode
+        !supportedDonationPaymentMethods(
+            forDonationMode: donationMode,
+            localNumber: localNumber
         ).isEmpty
     }
 
@@ -132,6 +153,11 @@ public class DonationUtilities: Dependencies {
     public struct Preset: Equatable {
         public let currencyCode: Currency.Code
         public let amounts: [FiatMoney]
+
+        public init(currencyCode: Currency.Code, amounts: [FiatMoney]) {
+            self.currencyCode = currencyCode
+            self.amounts = amounts
+        }
     }
 
     private static let currencyFormatter: NumberFormatter = {
@@ -277,52 +303,28 @@ public extension DonationUtilities {
         "XPF"
     ]
 
-    /// Minimum charge allowed for each currency.
-    static let minimumIntegralChargePerCurrencyCode: [Currency.Code: UInt] = [
-        "USD": 50,
-        "AED": 200,
-        "AUD": 50,
-        "BGN": 100,
-        "BRL": 50,
-        "CAD": 50,
-        "CHF": 50,
-        "CZK": 1500,
-        "DKK": 250,
-        "EUR": 50,
-        "GBP": 30,
-        "HKD": 400,
-        "HUF": 17500,
-        "INR": 50,
-        "JPY": 50,
-        "MXN": 10,
-        "MYR": 2,
-        "NOK": 300,
-        "NZD": 50,
-        "PLN": 200,
-        "RON": 200,
-        "SEK": 300,
-        "SGD": 50
-    ]
+    /// Is an amount of money too small, given a set of minimums?
+    ///
+    /// This should be a conservative check, so if we're not sure we will
+    /// not reject the amount.
+    static func isBoostAmountTooSmall(
+        _ amount: FiatMoney,
+        givenMinimumAmounts minimumAmounts: [Currency.Code: FiatMoney]
+    ) -> Bool {
+        let integerAmount = integralAmount(for: amount)
 
-    /// Is an amount of money too small?
-    ///
-    /// This is a client-side validation, so if we're not sure, we should
-    /// accept the amount.
-    ///
-    /// These minimums are pulled from [Stripe's document minimums][0]. Note
-    /// that Stripe's values are for *settlement* currency (which is always USD
-    /// for Signal), but we use them as helpful minimums anyway.
-    ///
-    /// Eventually, this check should rely on configuration fetched from a
-    /// Signal service endpoint.
-    ///
-    /// - Parameter amount: The amount of money.
-    /// - Returns: Whether the amount is too small.
-    ///
-    /// [0]: https://stripe.com/docs/currencies?presentment-currency=US#minimum-and-maximum-charge-amounts
-    static func isAmountTooSmall(_ amount: FiatMoney) -> Bool {
-        let minimum = minimumIntegralChargePerCurrencyCode[amount.currencyCode, default: 50]
-        return integralAmount(for: amount) < minimum
+        guard integerAmount > 0 else {
+            return true
+        }
+
+        guard let minimum = minimumAmounts[amount.currencyCode] else {
+            // Since this is just a sanity check, don't prevent donation here.
+            // It is likely to fail on its own while processing the payment.
+            Logger.warn("Unexpectedly missing minimum boost amount for currency \(amount.currencyCode)!")
+            return false
+        }
+
+        return integerAmount < integralAmount(for: minimum)
     }
 
     /// Convert the given money amount to an integer that can be passed to

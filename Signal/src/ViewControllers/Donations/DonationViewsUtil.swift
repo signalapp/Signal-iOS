@@ -226,8 +226,10 @@ public final class DonationViewsUtil {
     }
 
     public static func loadSubscriptionLevels(badgeStore: BadgeStore) -> Promise<[SubscriptionLevel]> {
-        firstly {
-            SubscriptionManager.getSubscriptions()
+        firstly { () -> Promise<SubscriptionManager.DonationConfiguration> in
+            SubscriptionManager.fetchDonationConfiguration()
+        }.map { donationConfiguration -> [SubscriptionLevel] in
+            donationConfiguration.subscription.levels
         }.then { (fetchedSubscriptions: [SubscriptionLevel]) -> Promise<[SubscriptionLevel]> in
             let badgeUpdatePromises = fetchedSubscriptions.map { badgeStore.populateAssetsOnBadge($0.badge) }
             return Promise.when(fulfilled: badgeUpdatePromises).map { fetchedSubscriptions }

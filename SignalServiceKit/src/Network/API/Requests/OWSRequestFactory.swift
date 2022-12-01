@@ -81,12 +81,6 @@ public extension OWSRequestFactory {
         return request
     }
 
-    static func giftBadgePricesRequest() -> TSRequest {
-        TSRequest(url: URL(string: textSecureGiftBadgePricesAPI)!,
-                  method: HTTPMethod.get.methodName,
-                  parameters: [:])
-    }
-
     static let batchIdentityCheckElementsLimit = 1000
     static func batchIdentityCheckRequest(elements: [[String: String]]) -> TSRequest {
         precondition(elements.count <= batchIdentityCheckElementsLimit)

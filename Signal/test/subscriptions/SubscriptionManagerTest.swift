@@ -119,66 +119,232 @@ class BadgeIdsTest: XCTestCase {
     }
 }
 
-class SubscriptionManagerTest: XCTestCase {
-    func testParseSuggestedBoostAmountsResponse() throws {
-        let parse = { try SubscriptionManager.parseSuggestedBoostAmountsResponse(body: $0) }
+class SubscriptionManagerDonationConfigurationTest: XCTestCase {
+    private typealias JSON = [String: Any]
+    private typealias DonationConfiguration = SubscriptionManager.DonationConfiguration
 
-        XCTAssertThrowsError(try parse(nil))
-        XCTAssertThrowsError(try parse([]))
-        XCTAssertThrowsError(try parse("USD"))
+    private enum CurrencyFixtures {
+        static let minimumAmount: Int = 5
 
-        XCTAssertEqual(try parse([:]), [:])
-        XCTAssertEqual(
-            try parse([
-                "USD": [Double]([1, 2.3]),
-                "JPY": [Double]([4, 5]),
-                "xyz": [Double]([6, 7]),
-                "": [Double]([8]),
-                "BAD": Double(9),
-                "SAD": "10",
-                "RAD": [],
-                "MAD": [Double]([1, 0, 2])
-            ]),
-            [
-                "USD": .init(
-                    currencyCode: "USD",
-                    amounts: [1, 2.3].map { FiatMoney(currencyCode: "USD", value: $0) }
-                ),
-                "JPY": .init(
-                    currencyCode: "JPY",
-                    amounts: [4, 5].map { FiatMoney(currencyCode: "JPY", value: $0) }
-                ),
-                "XYZ": .init(
-                    currencyCode: "XYZ",
-                    amounts: [6, 7].map { FiatMoney(currencyCode: "XYZ", value: $0) }
-                )
+        static let giftPresetAmount: Int = 10
+        static let boostPresetAmounts: [Int] = [1, 2, 3]
+        static let levelOneAmount: Int = 5
+        static let levelTwoAmount: Int = 5
+
+        static let supportedPaymentMethods: [String] = ["CARD", "PAYPAL"]
+
+        static func withDefaults(
+            minimumAmount: Int = minimumAmount,
+            giftLevel: UInt? = LevelFixtures.giftLevel,
+            giftPresetAmount: Int = giftPresetAmount,
+            boostLevel: UInt? = LevelFixtures.boostLevel,
+            boostPresetAmounts: [Int] = boostPresetAmounts,
+            levelOne: UInt? = LevelFixtures.levelOne,
+            levelOneAmount: Int = levelOneAmount,
+            levelTwo: UInt? = LevelFixtures.levelTwo,
+            levelTwoAmount: Int = levelTwoAmount,
+            supportedPaymentMethods: [String] = supportedPaymentMethods
+        ) -> JSON {
+            var result: JSON = [
+                "minimum": minimumAmount,
+                "supportedPaymentMethods": supportedPaymentMethods
             ]
+
+            result["oneTime"] = { () -> [String: [Int]] in
+                var oneTimeLevels = [String: [Int]]()
+
+                if let giftLevel {
+                    oneTimeLevels["\(giftLevel)"] = [giftPresetAmount]
+                }
+
+                if let boostLevel {
+                    oneTimeLevels["\(boostLevel)"] = boostPresetAmounts
+                }
+
+                return oneTimeLevels
+            }()
+
+            result["subscription"] = { () -> [String: Int] in
+                var subscriptionLevels = [String: Int]()
+
+                if let levelOne {
+                    subscriptionLevels["\(levelOne)"] = levelOneAmount
+                }
+
+                if let levelTwo {
+                    subscriptionLevels["\(levelTwo)"] = levelTwoAmount
+                }
+
+                return subscriptionLevels
+            }()
+
+            return result
+        }
+    }
+
+    private enum LevelFixtures {
+        private static let badgeJson: JSON = [
+            "id": "test-badge-1",
+            "category": "donor",
+            "name": "Test Badge 1",
+            "description": "First test badge",
+            "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"]
+        ]
+
+        static let badge: ProfileBadge = try! .init(jsonDictionary: badgeJson)
+
+        static let giftLevel: UInt = 100
+        static let boostLevel: UInt = 1
+        static let levelOne: UInt = 500
+        static let levelTwo: UInt = 1000
+
+        static func withDefaults(
+            levels: [UInt] = [
+                giftLevel,
+                boostLevel,
+                levelOne,
+                levelTwo
+            ]
+        ) -> JSON {
+            levels.reduce(into: [:]) { partialResult, level in
+                partialResult["\(level)"] = [
+                    "name": badge.localizedName,
+                    "badge": badgeJson
+                ]
+            }
+        }
+    }
+
+    private enum DonationConfigurationFixtures {
+        static func withDefaults(
+            currenciesJson: JSON = CurrencyFixtures.withDefaults(),
+            levelsJson: JSON = LevelFixtures.withDefaults()
+        ) -> JSON {
+            [
+                "currencies": [
+                    "usd": currenciesJson
+                ],
+                "levels": levelsJson
+            ]
+        }
+    }
+
+    private func keyedToUSD<T>(t: T) -> [Currency.Code: T] {
+        ["USD": t]
+    }
+
+    func testParseValidDonationConfig() throws {
+        let config = try DonationConfiguration.from(
+            configurationServiceResponse: DonationConfigurationFixtures.withDefaults()
+        )
+
+        XCTAssertEqual(config.boost.level, LevelFixtures.boostLevel)
+        XCTAssertEqual(config.boost.badge, LevelFixtures.badge)
+        XCTAssertEqual(config.boost.minimumAmounts.usd, CurrencyFixtures.minimumAmount.asUsd)
+        XCTAssertEqual(config.boost.presetAmounts.usd.amounts, CurrencyFixtures.boostPresetAmounts.map { $0.asUsd })
+
+        XCTAssertEqual(config.gift.level, LevelFixtures.giftLevel)
+        XCTAssertEqual(config.gift.badge, LevelFixtures.badge)
+        XCTAssertEqual(config.gift.presetAmount.usd, CurrencyFixtures.giftPresetAmount.asUsd)
+
+        let firstSubscriptionLevel = config.subscription.levels.first!
+        XCTAssertEqual(firstSubscriptionLevel.level, LevelFixtures.levelOne)
+        XCTAssertEqual(firstSubscriptionLevel.badge, LevelFixtures.badge)
+        XCTAssertEqual(firstSubscriptionLevel.name, LevelFixtures.badge.localizedName)
+        XCTAssertEqual(firstSubscriptionLevel.amounts.usd, CurrencyFixtures.levelOneAmount.asUsd)
+
+        let secondSubscriptionLevel = config.subscription.levels.last!
+        XCTAssertEqual(secondSubscriptionLevel.level, LevelFixtures.levelTwo)
+        XCTAssertEqual(secondSubscriptionLevel.badge, LevelFixtures.badge)
+        XCTAssertEqual(secondSubscriptionLevel.name, LevelFixtures.badge.localizedName)
+        XCTAssertEqual(secondSubscriptionLevel.amounts.usd, CurrencyFixtures.levelTwoAmount.asUsd)
+
+        XCTAssertEqual(config.paymentMethods.supportedPaymentMethods(forCurrencyCode: "USD"), [.paypal, .applePay, .creditOrDebitCard])
+    }
+
+    func testParseConfigMissingThings() {
+        let missingBoost = DonationConfigurationFixtures.withDefaults(
+            levelsJson: LevelFixtures.withDefaults(
+                levels: [LevelFixtures.giftLevel, LevelFixtures.levelOne, LevelFixtures.levelTwo]
+            )
+        )
+
+        let missingGift = DonationConfigurationFixtures.withDefaults(
+            levelsJson: LevelFixtures.withDefaults(
+                levels: [LevelFixtures.boostLevel, LevelFixtures.levelOne, LevelFixtures.levelTwo]
+            )
+        )
+
+        let missingBoostLevel = DonationConfigurationFixtures.withDefaults(
+            currenciesJson: CurrencyFixtures.withDefaults(
+                boostLevel: nil
+            )
+        )
+
+        let missingGiftLevel = DonationConfigurationFixtures.withDefaults(
+            currenciesJson: CurrencyFixtures.withDefaults(
+                giftLevel: nil
+            )
+        )
+
+        let missingSubscriptionLevel = DonationConfigurationFixtures.withDefaults(
+            currenciesJson: CurrencyFixtures.withDefaults(
+                levelOne: nil
+            )
+        )
+
+        expect(
+            try DonationConfiguration.from(configurationServiceResponse: missingBoost),
+            throwsParseError: .missingBoostBadge
+        )
+        expect(
+            try DonationConfiguration.from(configurationServiceResponse: missingGift),
+            throwsParseError: .missingGiftBadge
+        )
+        expect(
+            try DonationConfiguration.from(configurationServiceResponse: missingBoostLevel),
+            throwsParseError: .missingBoostPresetAmounts
+        )
+        expect(
+            try DonationConfiguration.from(configurationServiceResponse: missingGiftLevel),
+            throwsParseError: .missingGiftPresetAmount
+        )
+        expect(
+            try DonationConfiguration.from(configurationServiceResponse: missingSubscriptionLevel),
+            throwsParseError: .missingAmountForLevel(LevelFixtures.levelOne)
         )
     }
 
-    func testParseGiftBadgePricesResponse() throws {
-        let parse = { try SubscriptionManager.parseGiftBadgePricesResponse(body: $0) }
+    // MARK: Utilities
 
-        XCTAssertThrowsError(try parse(nil))
-        XCTAssertThrowsError(try parse([]))
-        XCTAssertThrowsError(try parse("USD"))
+    private func expect(
+        _ expression: @autoclosure () throws -> DonationConfiguration,
+        throwsParseError expectedParseError: DonationConfiguration.ParseError
+    ) {
+        do {
+            let config = try expression()
+            XCTFail("Unexpectedly parsed successfully: \(config)")
+        } catch let error {
+            if
+                let parseError = error as? DonationConfiguration.ParseError,
+                expectedParseError == parseError
+            {
+                return
+            }
 
-        XCTAssertEqual(try parse([:]), [:])
-        XCTAssertEqual(
-            try parse([
-                "USD": Double(1.2),
-                "JPY": Double(3),
-                "xyz": Double(4),
-                "": Double(8),
-                "BAD": "9",
-                "MAD": 0,
-                "SAD": -1
-            ]),
-            [
-                "USD": FiatMoney(currencyCode: "USD", value: 1.2),
-                "JPY": FiatMoney(currencyCode: "JPY", value: 3),
-                "XYZ": FiatMoney(currencyCode: "XYZ", value: 4)
-            ]
-        )
+            XCTFail("Threw unexpected error: \(error)")
+        }
+    }
+}
+
+private extension Dictionary where Key == Currency.Code {
+    var usd: Value {
+        self["USD"]!
+    }
+}
+
+private extension Int {
+    var asUsd: FiatMoney {
+        .init(currencyCode: "USD", value: Decimal(self))
     }
 }

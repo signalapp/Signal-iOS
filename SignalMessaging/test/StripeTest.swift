@@ -47,35 +47,60 @@ final class StripeTest: XCTestCase {
         XCTAssertEqual(actual, expected)
     }
 
-    func testIsAmountTooSmall() {
+    func testIsBoostAmountTooSmall() {
+        let minimums: [Currency.Code: FiatMoney] = [
+            "USD": 5.as("USD"),
+            "JPY": 50.as("JPY")
+        ]
+
         let tooSmall: [FiatMoney] = [
+            FiatMoney(currencyCode: "USD", value: -0.1),
+            FiatMoney(currencyCode: "JPY", value: -0.1),
+            FiatMoney(currencyCode: unknownCurrency, value: -0.1),
             FiatMoney(currencyCode: "USD", value: 0),
             FiatMoney(currencyCode: "JPY", value: 0),
             FiatMoney(currencyCode: unknownCurrency, value: 0),
-            FiatMoney(currencyCode: "USD", value: 0.49),
+            FiatMoney(currencyCode: "USD", value: 4.9),
             FiatMoney(currencyCode: "JPY", value: 49),
             // Rounding
-            FiatMoney(currencyCode: "USD", value: 0.494),
-            FiatMoney(currencyCode: "JPY", value: 49.4),
-            FiatMoney(currencyCode: unknownCurrency, value: 0.494)
+            FiatMoney(currencyCode: "USD", value: 4.94),
+            FiatMoney(currencyCode: "JPY", value: 49.4)
         ]
         for amount in tooSmall {
-            XCTAssertTrue(DonationUtilities.isAmountTooSmall(amount), "\(amount)")
+            XCTAssertTrue(
+                DonationUtilities.isBoostAmountTooSmall(
+                    amount,
+                    givenMinimumAmounts: minimums
+                ),
+                "\(amount)"
+            )
         }
 
         let allGood: [FiatMoney] = [
-            FiatMoney(currencyCode: "USD", value: 0.5),
-            FiatMoney(currencyCode: "USD", value: 1),
+            FiatMoney(currencyCode: "USD", value: 5),
+            FiatMoney(currencyCode: "USD", value: 10),
             FiatMoney(currencyCode: "USD", value: 1_000_000_000_000),
             FiatMoney(currencyCode: "JPY", value: 50),
+            // Unknown currencies accept any positive value
             FiatMoney(currencyCode: unknownCurrency, value: 0.5),
             // Rounding
-            FiatMoney(currencyCode: "USD", value: 0.495),
-            FiatMoney(currencyCode: "JPY", value: 49.5),
-            FiatMoney(currencyCode: unknownCurrency, value: 0.495)
+            FiatMoney(currencyCode: "USD", value: 4.995),
+            FiatMoney(currencyCode: "JPY", value: 49.5)
         ]
         for amount in allGood {
-            XCTAssertFalse(DonationUtilities.isAmountTooSmall(amount), "\(amount)")
+            XCTAssertFalse(
+                DonationUtilities.isBoostAmountTooSmall(
+                    amount,
+                    givenMinimumAmounts: minimums
+                ),
+                "\(amount)"
+            )
         }
+    }
+}
+
+fileprivate extension Int {
+    func `as`(_ currencyCode: Currency.Code) -> FiatMoney {
+        FiatMoney(currencyCode: currencyCode, value: Decimal(self))
     }
 }
