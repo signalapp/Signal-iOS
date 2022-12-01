@@ -8,6 +8,7 @@ import SignalMessaging
 
 extension DonationViewsUtil {
     static func redeemMonthlyReceipts(
+        usingPaymentProcessor paymentProcessor: PaymentProcessor,
         subscriberID: Data,
         newSubscriptionLevel: SubscriptionLevel,
         priorSubscriptionLevel: SubscriptionLevel?
@@ -16,6 +17,7 @@ extension DonationViewsUtil {
 
         SubscriptionManager.requestAndRedeemReceiptsIfNecessary(
             for: subscriberID,
+            usingPaymentProcessor: paymentProcessor,
             subscriptionLevel: newSubscriptionLevel.level,
             priorSubscriptionLevel: priorSubscriptionLevel?.level
         )

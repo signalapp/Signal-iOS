@@ -8,6 +8,16 @@ import PassKit
 import LibSignalClient
 import SignalServiceKit
 
+public enum PaymentProcessor: String {
+    /// Represents the payment processor Stripe, which we use for Apple Pay and
+    /// credit/debit card payments.
+    case stripe = "STRIPE"
+
+    /// Represents the payment processor Braintree, which we use for PayPal
+    /// payments.
+    case braintree = "BRAINTREE"
+}
+
 public enum OneTimeBadgeLevel: Hashable {
     case boostBadge
     case giftBadge(OWSGiftBadge.Level)
@@ -559,6 +569,7 @@ public class SubscriptionManager: NSObject {
 
     public class func requestAndRedeemReceiptsIfNecessary(
         for subscriberID: Data,
+        usingPaymentProcessor paymentProcessor: PaymentProcessor,
         subscriptionLevel: UInt,
         priorSubscriptionLevel: UInt?
     ) {
@@ -577,14 +588,16 @@ public class SubscriptionManager: NSObject {
         }
 
         databaseStorage.asyncWrite { transaction in
-
-            self.subscriptionJobQueue.addSubscriptionJob(receiptCredentialRequestContext: request.context.serialize().asData,
-                                                         receiptCredentailRequest: request.request.serialize().asData,
-                                                         subscriberID: subscriberID,
-                                                         targetSubscriptionLevel: subscriptionLevel,
-                                                         priorSubscriptionLevel: priorSubscriptionLevel,
-                                                         boostPaymentIntentID: String(),
-                                                         transaction: transaction)
+            self.subscriptionJobQueue.addSubscriptionJob(
+                paymentProcessor: paymentProcessor,
+                receiptCredentialRequestContext: request.context.serialize().asData,
+                receiptCredentailRequest: request.request.serialize().asData,
+                subscriberID: subscriberID,
+                targetSubscriptionLevel: subscriptionLevel,
+                priorSubscriptionLevel: priorSubscriptionLevel,
+                boostPaymentIntentID: String(),
+                transaction: transaction
+            )
         }
     }
 
@@ -823,6 +836,7 @@ public class SubscriptionManager: NSObject {
                 Logger.info("[Donations] Triggering receipt redemption job during heartbeat, last expiration \(lastSubscriptionExpiration), new expiration \(newDate)")
                 self.requestAndRedeemReceiptsIfNecessary(
                     for: subscriberID,
+                    usingPaymentProcessor: .stripe, // TODO: [PayPal] Implement subscriptions
                     subscriptionLevel: subscription.level,
                     priorSubscriptionLevel: nil
                 )
@@ -1094,6 +1108,7 @@ public class OWSRetryableSubscriptionError: NSObject, CustomNSError, IsRetryable
 extension SubscriptionManager {
     public class func createAndRedeemBoostReceipt(
         for intentId: String,
+        withPaymentProcessor paymentProcessor: PaymentProcessor,
         amount: FiatMoney
     ) {
         let request = generateReceiptRequest()
@@ -1106,23 +1121,34 @@ extension SubscriptionManager {
         }
 
         databaseStorage.asyncWrite { transaction in
-            self.subscriptionJobQueue.addBoostJob(amount: amount,
-                                                  receiptCredentialRequestContext: request.context.serialize().asData,
-                                                  receiptCredentailRequest: request.request.serialize().asData,
-                                                  boostPaymentIntentID: intentId,
-                                                  transaction: transaction)
+            self.subscriptionJobQueue.addBoostJob(
+                amount: amount,
+                paymentProcessor: paymentProcessor,
+                receiptCredentialRequestContext: request.context.serialize().asData,
+                receiptCredentailRequest: request.request.serialize().asData,
+                boostPaymentIntentID: intentId,
+                transaction: transaction
+            )
         }
     }
 
-    public static func requestBoostReceiptCredentialPresentation(for intentId: String,
-                                                                 context: ReceiptCredentialRequestContext,
-                                                                 request: ReceiptCredentialRequest,
-                                                                 expectedBadgeLevel: OneTimeBadgeLevel) throws -> Promise<ReceiptCredentialPresentation> {
+    public static func requestBoostReceiptCredentialPresentation(
+        for intentId: String,
+        context: ReceiptCredentialRequestContext,
+        request: ReceiptCredentialRequest,
+        expectedBadgeLevel: OneTimeBadgeLevel,
+        paymentProcessor: PaymentProcessor
+    ) throws -> Promise<ReceiptCredentialPresentation> {
 
         let clientOperations = try clientZKReceiptOperations()
         let receiptCredentialRequest = request.serialize().asData.base64EncodedString()
 
-        let request = OWSRequestFactory.boostReceiptCredentials(withPaymentIntentId: intentId, andRequest: receiptCredentialRequest)
+        let request = OWSRequestFactory.boostReceiptCredentials(
+            withPaymentIntentId: intentId,
+            andRequest: receiptCredentialRequest,
+            forPaymentProcessor: paymentProcessor.rawValue
+        )
+
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in

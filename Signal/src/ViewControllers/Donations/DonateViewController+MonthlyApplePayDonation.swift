@@ -43,6 +43,7 @@ extension DonateViewController {
             completion(authResult)
 
             DonationViewsUtil.redeemMonthlyReceipts(
+                usingPaymentProcessor: .stripe,
                 subscriberID: subscriberID,
                 newSubscriptionLevel: selectedSubscriptionLevel,
                 priorSubscriptionLevel: monthly.currentSubscriptionLevel

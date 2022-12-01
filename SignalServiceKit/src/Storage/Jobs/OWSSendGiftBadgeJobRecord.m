@@ -11,19 +11,21 @@
 
 @implementation OWSSendGiftBadgeJobRecord
 
-- (instancetype)initWithReceiptCredentialRequestContext:(NSData *)receiptCredentialRequestContext
-                               receiptCredentialRequest:(NSData *)receiptCredentialRequest
-                                                 amount:(NSDecimalNumber *)amount
-                                           currencyCode:(NSString *)currencyCode
-                              paymentIntentClientSecret:(NSString *)paymentIntentClientSecret
-                                        paymentIntentId:(NSString *)paymentIntentId
-                                        paymentMethodId:(NSString *)paymentMethodId
-                                               threadId:(NSString *)threadId
-                                            messageText:(NSString *)messageText
-                                                  label:(NSString *)label
+- (instancetype)initWithPaymentProcessor:(NSString *)paymentProcessor
+         receiptCredentialRequestContext:(NSData *)receiptCredentialRequestContext
+                receiptCredentialRequest:(NSData *)receiptCredentialRequest
+                                  amount:(NSDecimalNumber *)amount
+                            currencyCode:(NSString *)currencyCode
+               paymentIntentClientSecret:(NSString *)paymentIntentClientSecret
+                         paymentIntentId:(NSString *)paymentIntentId
+                         paymentMethodId:(NSString *)paymentMethodId
+                                threadId:(NSString *)threadId
+                             messageText:(NSString *)messageText
+                                   label:(NSString *)label
 {
     self = [super initWithLabel:label];
     if (self) {
+        _paymentProcessor = paymentProcessor;
         _receiptCredentailRequestContext = receiptCredentialRequestContext;
         _receiptCredentailRequest = receiptCredentialRequest;
         _amount = amount;
@@ -62,6 +64,7 @@
                      messageText:(NSString *)messageText
        paymentIntentClientSecret:(NSString *)paymentIntentClientSecret
                  paymentMethodId:(NSString *)paymentMethodId
+                paymentProcessor:(NSString *)paymentProcessor
         receiptCredentailRequest:(NSData *)receiptCredentailRequest
  receiptCredentailRequestContext:(NSData *)receiptCredentailRequestContext
                         threadId:(NSString *)threadId
@@ -84,6 +87,7 @@
     _messageText = messageText;
     _paymentIntentClientSecret = paymentIntentClientSecret;
     _paymentMethodId = paymentMethodId;
+    _paymentProcessor = paymentProcessor;
     _receiptCredentailRequest = receiptCredentailRequest;
     _receiptCredentailRequestContext = receiptCredentailRequestContext;
     _threadId = threadId;

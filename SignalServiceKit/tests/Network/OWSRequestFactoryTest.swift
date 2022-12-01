@@ -73,8 +73,8 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
         XCTAssertEqual(request.httpBody, ciphertext)
     }
 
-    func testBoostCreatePaymentIntentWithAmount() {
-        let request = OWSRequestFactory.boostCreatePaymentIntent(
+    func testBoostStripeCreatePaymentIntentWithAmount() {
+        let request = OWSRequestFactory.boostStripeCreatePaymentIntent(
             integerMoneyValue: 123,
             inCurrencyCode: "CHF",
             level: 456
@@ -86,6 +86,29 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
         XCTAssertEqual(request.parameters["currency"] as? String, "chf")
         XCTAssertEqual(request.parameters["amount"] as? UInt, 123)
         XCTAssertEqual(request.parameters["level"] as? UInt64, 456)
+        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
+    }
+
+    func testBoostPaypalCreatePaymentIntentWithAmount() {
+        let request = OWSRequestFactory.boostPaypalCreatePayment(
+            integerMoneyValue: 123,
+            inCurrencyCode: "CHF",
+            level: 456,
+            returnUrl: URL(string: "https://example.com/approved")!,
+            cancelUrl: URL(string: "https://example.com/canceled")!
+        )
+
+        XCTAssertEqual(request.url?.path, "v1/subscription/boost/paypal/create")
+        XCTAssertEqual(request.httpMethod, "POST")
+        XCTAssertEqual(Set(request.parameters.keys), Set([
+            "currency", "amount", "level",
+            "returnUrl", "cancelUrl"
+        ]))
+        XCTAssertEqual(request.parameters["currency"] as? String, "chf")
+        XCTAssertEqual(request.parameters["amount"] as? UInt, 123)
+        XCTAssertEqual(request.parameters["level"] as? UInt64, 456)
+        XCTAssertEqual(request.parameters["returnUrl"] as? String, "https://example.com/approved")
+        XCTAssertEqual(request.parameters["cancelUrl"] as? String, "https://example.com/canceled")
         XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
     }
 }

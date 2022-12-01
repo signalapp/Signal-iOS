@@ -157,6 +157,7 @@ extension SubscriptionManager.DonationConfiguration {
 
             let subscriptionLevels: [SubscriptionLevel] = try levels.subscription
                 .map(makeSubscriptionLevel)
+                .sorted()
 
             return .init(levels: subscriptionLevels)
         }()

@@ -553,10 +553,15 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
         }.then { [weak self] preparedPayment -> Promise<Void> in
             guard let self = self else { throw SendGiftBadgeError.userCanceledBeforeChargeCompleted }
 
+            // We know our payment processor here is Stripe, since we are in an
+            // Apple Pay flow.
+            let paymentProcessor: PaymentProcessor = .stripe
+
             // Durably enqueue a job to (1) do the charge (2) redeem the receipt credential (3) enqueue
             // a gift badge message (and optionally a text message) to the recipient. We also want to
             // update the UI partway through the job's execution, and when it completes.
             let jobRecord = SendGiftBadgeJobQueue.createJob(
+                paymentProcessor: paymentProcessor,
                 receiptRequest: SubscriptionManager.generateReceiptRequest(),
                 amount: self.price,
                 paymentIntent: preparedPayment.paymentIntent,

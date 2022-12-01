@@ -249,9 +249,9 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                 false
             )
         ]
-        for (state, expectedFormat, expectedHasLearnMore) in otherTestCases {
+        for (state, expectedBody, expectedHasLearnMore) in otherTestCases {
             let body = state.body
-            XCTAssertEqual(body.text, String(format: expectedFormat, state.badge.localizedName))
+            XCTAssertEqual(body.text, expectedBody)
             XCTAssertEqual(body.hasLearnMoreLink, expectedHasLearnMore)
         }
     }

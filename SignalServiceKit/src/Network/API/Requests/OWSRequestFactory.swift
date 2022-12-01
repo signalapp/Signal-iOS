@@ -22,7 +22,9 @@ public extension OWSRequestFactory {
     static let textSecureProfileAvatarFormAPI  = "v1/profile/form/avatar"
     static let textSecure2FAAPI  = "v1/accounts/pin"
     static let textSecureRegistrationLockV2API  = "v1/accounts/registration_lock"
-    static let textSecureBoostCreatePaymentIntent = "v1/subscription/boost/create"
+    static let textSecureBoostStripeCreatePaymentIntent = "v1/subscription/boost/create"
+    static let textSecureBoostPaypalCreatePayment = "v1/subscription/boost/paypal/create"
+    static let textSecureBoostPaypalConfirmPayment = "v1/subscription/boost/paypal/confirm"
     static let textSecureGiftBadgePricesAPI = "v1/subscription/boost/amounts/gift"
 
     static let textSecureHTTPTimeOut: TimeInterval = 10
@@ -67,16 +69,67 @@ public extension OWSRequestFactory {
                          parameters: [:])
     }
 
-    static func boostCreatePaymentIntent(
+    /// A request to create a Stripe payment intent for a boost.
+    static func boostStripeCreatePaymentIntent(
         integerMoneyValue: UInt,
         inCurrencyCode currencyCode: Currency.Code,
         level: UInt64
     ) -> TSRequest {
-        let request = TSRequest(url: URL(string: textSecureBoostCreatePaymentIntent)!,
+        let request = TSRequest(url: URL(string: textSecureBoostStripeCreatePaymentIntent)!,
                                 method: HTTPMethod.post.methodName,
                                 parameters: ["currency": currencyCode.lowercased(),
                                              "amount": integerMoneyValue,
                                              "level": level])
+        request.shouldHaveAuthorizationHeaders = false
+        return request
+    }
+
+    /// A request to create a PayPal payment for a boost.
+    static func boostPaypalCreatePayment(
+        integerMoneyValue: UInt,
+        inCurrencyCode currencyCode: Currency.Code,
+        level: UInt64,
+        returnUrl: URL,
+        cancelUrl: URL
+    ) -> TSRequest {
+        let request = TSRequest(
+            url: URL(string: textSecureBoostPaypalCreatePayment)!,
+            method: HTTPMethod.post.methodName,
+            parameters: [
+                "currency": currencyCode.lowercased(),
+                "amount": integerMoneyValue,
+                "level": level,
+                "returnUrl": returnUrl.absoluteString,
+                "cancelUrl": cancelUrl.absoluteString
+            ]
+        )
+
+        request.shouldHaveAuthorizationHeaders = false
+        return request
+    }
+
+    /// A request to confirm a PayPal payment for a boost.
+    static func boostPaypalConfirmPayment(
+        integerMoneyValue: UInt,
+        inCurrencyCode currencyCode: Currency.Code,
+        level: UInt64,
+        payerId: String,
+        paymentId: String,
+        paymentToken: String
+    ) -> TSRequest {
+        let request = TSRequest(
+            url: URL(string: textSecureBoostPaypalConfirmPayment)!,
+            method: HTTPMethod.post.methodName,
+            parameters: [
+                "currency": currencyCode.lowercased(),
+                "amount": integerMoneyValue,
+                "level": level,
+                "payerId": payerId,
+                "paymentId": paymentId,
+                "paymentToken": paymentToken
+            ]
+        )
+
         request.shouldHaveAuthorizationHeaders = false
         return request
     }

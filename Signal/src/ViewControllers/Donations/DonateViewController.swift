@@ -267,7 +267,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     ) {
         switch donateMode {
         case .oneTime:
-            owsFailDebug("One-time not yet supported!")
+            startPaypalBoost(with: amount, badge: badge)
         case .monthly:
             // TODO: [PayPal] support for monthly payments
             owsFail("Monthly not yet supported - should be impossible from the UI!")
@@ -384,6 +384,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                     )
                 }.then(on: .sharedUserInitiated) {
                     DonationViewsUtil.redeemMonthlyReceipts(
+                        usingPaymentProcessor: .stripe, // TODO: [PayPal] Implement subscriptions
                         subscriberID: subscriberID,
                         newSubscriptionLevel: selectedSubscriptionLevel,
                         priorSubscriptionLevel: monthly.currentSubscriptionLevel
@@ -515,6 +516,12 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             donateSheet: self,
             badgeThanksSheet: BadgeThanksSheet(badge: badge, type: thanksSheetType)
         ))
+    }
+
+    internal func didCancelDonation() {
+        // A cancel should not be considered "finishing" donation, since the
+        // user may want to try again.
+        Logger.info("User canceled donation!")
     }
 
     internal func didFailDonation(error: Error, mode: DonateMode) {

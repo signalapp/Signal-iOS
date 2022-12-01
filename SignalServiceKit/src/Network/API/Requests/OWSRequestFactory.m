@@ -1029,12 +1029,14 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
 
 + (TSRequest *)boostReceiptCredentialsWithPaymentIntentId:(NSString *)paymentIntentId
                                                andRequest:(NSString *)base64ReceiptCredentialRequest
+                                      forPaymentProcessor:(NSString *)processor
 {
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/subscription/boost/receipt_credentials"]
                                             method:@"POST"
                                         parameters:@{
                                             @"paymentIntentId" : paymentIntentId,
-                                            @"receiptCredentialRequest" : base64ReceiptCredentialRequest
+                                            @"receiptCredentialRequest" : base64ReceiptCredentialRequest,
+                                            @"processor" : processor
                                         }];
     request.shouldHaveAuthorizationHeaders = NO;
     return request;

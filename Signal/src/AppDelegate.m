@@ -413,6 +413,8 @@ static void uncaughtExceptionHandler(NSException *exception)
         return [self tryToShowGroupInviteLinkUI:url];
     } else if ([SignalProxy isValidProxyLink:url]) {
         return [self tryToShowProxyLinkUI:url];
+    } else if ([PaypalCallbackUrlBridge handlePossibleCallbackUrl:url]) {
+        OWSLogInfo(@"Handled PayPal callback url!");
     } else if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![self.tsAccountManager isRegistered]) {
             if (!AppReadiness.isAppReady) {

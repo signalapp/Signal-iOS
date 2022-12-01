@@ -51,6 +51,7 @@ extension DonateViewController {
             SubscriptionManager.terminateTransactionIfPossible = false
             SubscriptionManager.createAndRedeemBoostReceipt(
                 for: confirmedIntent.intentId,
+                withPaymentProcessor: .stripe,
                 amount: amount
             )
 

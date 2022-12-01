@@ -42,6 +42,7 @@ extension CreditOrDebitCardDonationViewController {
             }.then(on: .sharedUserInitiated) { (subscriberID: Data) in
                 Logger.info("[Donations] Redeeming monthly receipts for card donation")
                 DonationViewsUtil.redeemMonthlyReceipts(
+                    usingPaymentProcessor: .stripe,
                     subscriberID: subscriberID,
                     newSubscriptionLevel: newSubscriptionLevel,
                     priorSubscriptionLevel: priorSubscriptionLevel

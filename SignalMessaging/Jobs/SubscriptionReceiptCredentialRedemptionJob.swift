@@ -14,6 +14,7 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
 
     public func addBoostJob(
         amount: FiatMoney,
+        paymentProcessor: PaymentProcessor,
         receiptCredentialRequestContext: Data,
         receiptCredentailRequest: Data,
         boostPaymentIntentID: String,
@@ -21,6 +22,7 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
     ) {
         Logger.info("[Donations] Adding a boost job")
         let jobRecord = OWSReceiptCredentialRedemptionJobRecord(
+            paymentProcessor: paymentProcessor.rawValue,
             receiptCredentialRequestContext: receiptCredentialRequestContext,
             receiptCredentailRequest: receiptCredentailRequest,
             subscriberID: Data(),
@@ -36,6 +38,7 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
     }
 
     public func addSubscriptionJob(
+        paymentProcessor: PaymentProcessor,
         receiptCredentialRequestContext: Data,
         receiptCredentailRequest: Data,
         subscriberID: Data,
@@ -46,6 +49,7 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
     ) {
         Logger.info("[Donations] Adding a subscription job")
         let jobRecord = OWSReceiptCredentialRedemptionJobRecord(
+            paymentProcessor: paymentProcessor.rawValue,
             receiptCredentialRequestContext: receiptCredentialRequestContext,
             receiptCredentailRequest: receiptCredentailRequest,
             subscriberID: subscriberID,
@@ -120,6 +124,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
         return self
     }
 
+    let paymentProcessor: PaymentProcessor
     let isBoost: Bool
     let subscriberID: Data
     var receiptCredentialRequestContext: ReceiptCredentialRequestContext
@@ -136,6 +141,14 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
     @objc
     public required init(_ jobRecord: OWSReceiptCredentialRedemptionJobRecord) throws {
         self.jobRecord = jobRecord
+        self.paymentProcessor = {
+            guard let paymentProcessor = PaymentProcessor(rawValue: jobRecord.paymentProcessor) else {
+                owsFailDebug("Failed to deserialize payment processor from record with value: \(jobRecord.paymentProcessor)")
+                return .stripe
+            }
+
+            return paymentProcessor
+        }()
         self.isBoost = jobRecord.isBoost
         self.amount = {
             if
@@ -197,7 +210,8 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
                         for: self.boostPaymentIntentID,
                         context: self.receiptCredentialRequestContext,
                         request: self.receiptCredentialRequest,
-                        expectedBadgeLevel: .boostBadge
+                        expectedBadgeLevel: .boostBadge,
+                        paymentProcessor: self.paymentProcessor
                     )
                 } else {
                     Logger.info("[Donations] Durable job requesting receipt for subscription")

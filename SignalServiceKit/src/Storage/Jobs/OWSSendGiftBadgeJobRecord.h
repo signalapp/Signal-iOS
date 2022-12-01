@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSSendGiftBadgeJobRecord : SSKJobRecord
 
+@property (nonatomic, readonly) NSString *paymentProcessor;
 // These are deliberately misspelled ("credentail" instead of "credential") to match
 // misspelled database columns. In the long term, we should fix this.
 @property (nonatomic, readonly) NSData *receiptCredentailRequestContext;
@@ -25,16 +26,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithReceiptCredentialRequestContext:(NSData *)receiptCredentailRequestContext
-                               receiptCredentialRequest:(NSData *)receiptCredentialRequest
-                                                 amount:(NSDecimalNumber *)amount
-                                           currencyCode:(NSString *)currencyCode
-                              paymentIntentClientSecret:(NSString *)paymentIntentClientSecret
-                                        paymentIntentId:(NSString *)paymentIntentId
-                                        paymentMethodId:(NSString *)paymentMethodId
-                                               threadId:(NSString *)threadId
-                                            messageText:(NSString *)messageText
-                                                  label:(NSString *)label NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPaymentProcessor:(NSString *)paymentProcessor
+         receiptCredentialRequestContext:(NSData *)receiptCredentailRequestContext
+                receiptCredentialRequest:(NSData *)receiptCredentialRequest
+                                  amount:(NSDecimalNumber *)amount
+                            currencyCode:(NSString *)currencyCode
+               paymentIntentClientSecret:(NSString *)paymentIntentClientSecret
+                         paymentIntentId:(NSString *)paymentIntentId
+                         paymentMethodId:(NSString *)paymentMethodId
+                                threadId:(NSString *)threadId
+                             messageText:(NSString *)messageText
+                                   label:(NSString *)label NS_DESIGNATED_INITIALIZER;
 
 - (nullable)initWithLabel:(NSString *)label NS_UNAVAILABLE;
 
@@ -66,10 +68,11 @@ NS_ASSUME_NONNULL_BEGIN
                      messageText:(NSString *)messageText
        paymentIntentClientSecret:(NSString *)paymentIntentClientSecret
                  paymentMethodId:(NSString *)paymentMethodId
+                paymentProcessor:(NSString *)paymentProcessor
         receiptCredentailRequest:(NSData *)receiptCredentailRequest
  receiptCredentailRequestContext:(NSData *)receiptCredentailRequestContext
                         threadId:(NSString *)threadId
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:exclusiveProcessIdentifier:failureCount:label:sortId:status:amount:boostPaymentIntentID:currencyCode:messageText:paymentIntentClientSecret:paymentMethodId:receiptCredentailRequest:receiptCredentailRequestContext:threadId:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:exclusiveProcessIdentifier:failureCount:label:sortId:status:amount:boostPaymentIntentID:currencyCode:messageText:paymentIntentClientSecret:paymentMethodId:paymentProcessor:receiptCredentailRequest:receiptCredentailRequestContext:threadId:));
 
 // clang-format on
 

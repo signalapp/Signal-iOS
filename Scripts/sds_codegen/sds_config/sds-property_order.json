@@ -146,6 +146,7 @@
     "JobRecordRecord.messageText": 27,
     "JobRecordRecord.paymentIntentClientSecret": 28,
     "JobRecordRecord.paymentMethodId": 29,
+    "JobRecordRecord.paymentProcessor": 33,
     "JobRecordRecord.priorSubscriptionLevel": 18,
     "JobRecordRecord.receiptCredentailRequest": 16,
     "JobRecordRecord.receiptCredentailRequestContext": 17,

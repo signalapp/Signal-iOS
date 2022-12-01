@@ -1118,7 +1118,10 @@
 		D925938028B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925937D28B42B3D00D5D437 /* OWSLocalUserLeaveGroupJobRecord+SDS.swift */; };
 		D925938128B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.h in Headers */ = {isa = PBXBuildFile; fileRef = D925937E28B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D925938228B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = D925937F28B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.m */; };
+		D938CD6029283402006FB16A /* Paypal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938CD5F29283402006FB16A /* Paypal.swift */; };
 		D943F3EF2892F89B008C0C8B /* NSELogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D943F3EE2892F89B008C0C8B /* NSELogger.swift */; };
+		D9517ABE292C596B00DDD37E /* Paypal+WebAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */; };
+		D9517AC0292C5A3900DDD37E /* Paypal+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9517ABF292C5A3900DDD37E /* Paypal+API.swift */; };
 		D95DA7ED28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */; };
 		D9668B2F291AF63500665298 /* SSKJobQueues.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9668B2E291AF63500665298 /* SSKJobQueues.swift */; };
 		D9668B33291B03C200665298 /* SessionResetJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D231761DC7E8F10034FA89 /* SessionResetJob.swift */; };
@@ -1129,6 +1132,7 @@
 		D98DD85F28EE53B00089333E /* RemoteMegaphoneFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */; };
 		D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */; };
 		D997FA7628F8E3A2003C7B8B /* RemoteMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */; };
+		D99D960F292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */; };
 		D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */; };
 		D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */; };
 		D9C7CEB428EB8495001E87B6 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */; };
@@ -3492,7 +3496,10 @@
 		D925937D28B42B3D00D5D437 /* OWSLocalUserLeaveGroupJobRecord+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSLocalUserLeaveGroupJobRecord+SDS.swift"; sourceTree = "<group>"; };
 		D925937E28B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLocalUserLeaveGroupJobRecord.h; sourceTree = "<group>"; };
 		D925937F28B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLocalUserLeaveGroupJobRecord.m; sourceTree = "<group>"; };
+		D938CD5F29283402006FB16A /* Paypal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paypal.swift; sourceTree = "<group>"; };
 		D943F3EE2892F89B008C0C8B /* NSELogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSELogger.swift; sourceTree = "<group>"; };
+		D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+WebAuthentication.swift"; sourceTree = "<group>"; };
+		D9517ABF292C5A3900DDD37E /* Paypal+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+API.swift"; sourceTree = "<group>"; };
 		D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+SystemMessageItems.swift"; sourceTree = "<group>"; };
 		D9668B2E291AF63500665298 /* SSKJobQueues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKJobQueues.swift; sourceTree = "<group>"; };
 		D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMessagingJobQueues.swift; sourceTree = "<group>"; };
@@ -3502,6 +3509,7 @@
 		D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneFetcher.swift; sourceTree = "<group>"; };
 		D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneModel.swift; sourceTree = "<group>"; };
 		D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMegaphone.swift; sourceTree = "<group>"; };
+		D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+OneTimePaypalDonation.swift"; sourceTree = "<group>"; };
 		D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinderPerformanceTests.swift; sourceTree = "<group>"; };
 		D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift"; sourceTree = "<group>"; };
 		D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgrade.swift; sourceTree = "<group>"; };
@@ -6971,6 +6979,9 @@
 				D91F7A2C2935A32F00012C64 /* DonationMode.swift */,
 				F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */,
 				F00385FD273F6388000B5ABD /* DonationUtilities.swift */,
+				D9517ABF292C5A3900DDD37E /* Paypal+API.swift */,
+				D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */,
+				D938CD5F29283402006FB16A /* Paypal.swift */,
 				F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */,
 				F98ED2D529255E92008483DC /* Stripe+PaymentMethod.swift */,
 				F00385FE273F6388000B5ABD /* Stripe.swift */,
@@ -7024,6 +7035,7 @@
 				F96B66A82912B88B004FFFAA /* DonateViewController+MonthlyApplePayDonation.swift */,
 				F96B66A72912B88B004FFFAA /* DonateViewController+MonthlySubscriptionLevelView.swift */,
 				F96B66A42912B88B004FFFAA /* DonateViewController+OneTimeApplePayDonation.swift */,
+				D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */,
 				F96B66A62912B88B004FFFAA /* DonateViewController+PKPaymentAuthorizationControllerDelegate.swift */,
 				F96B66A22912B88A004FFFAA /* DonateViewController+State.swift */,
 				F96B66A02912B88A004FFFAA /* DonateViewController.swift */,
@@ -10057,6 +10069,9 @@
 				885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */,
 				3474C57526111605006723D2 /* PaymentsCurrenciesImpl.swift in Sources */,
 				3465F4DB27287859001663AF /* PaymentsHelperImpl.swift in Sources */,
+				D9517AC0292C5A3900DDD37E /* Paypal+API.swift in Sources */,
+				D9517ABE292C596B00DDD37E /* Paypal+WebAuthentication.swift in Sources */,
+				D938CD6029283402006FB16A /* Paypal.swift in Sources */,
 				4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */,
 				3406D31E25DBF70400885B14 /* RefreshEvent.swift in Sources */,
 				451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */,
@@ -10365,6 +10380,7 @@
 				F96B66B12912B88B004FFFAA /* DonateViewController+MonthlyApplePayDonation.swift in Sources */,
 				F96B66B02912B88B004FFFAA /* DonateViewController+MonthlySubscriptionLevelView.swift in Sources */,
 				F96B66AD2912B88B004FFFAA /* DonateViewController+OneTimeApplePayDonation.swift in Sources */,
+				D99D960F292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift in Sources */,
 				F96B66AF2912B88B004FFFAA /* DonateViewController+PKPaymentAuthorizationControllerDelegate.swift in Sources */,
 				F96B66AB2912B88B004FFFAA /* DonateViewController+State.swift in Sources */,
 				F96B66A92912B88B004FFFAA /* DonateViewController.swift in Sources */,

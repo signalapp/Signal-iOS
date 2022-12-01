@@ -63,6 +63,7 @@ public struct JobRecordRecord: SDSRecord {
     public let replacementAdminUuid: String?
     public let waitForMessageProcessing: Bool?
     public let isCompleteContactSync: Bool?
+    public let paymentProcessor: String?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -100,6 +101,7 @@ public struct JobRecordRecord: SDSRecord {
         case replacementAdminUuid
         case waitForMessageProcessing
         case isCompleteContactSync
+        case paymentProcessor
     }
 
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -158,6 +160,7 @@ public extension JobRecordRecord {
         replacementAdminUuid = row[32]
         waitForMessageProcessing = row[33]
         isCompleteContactSync = row[34]
+        paymentProcessor = row[35]
     }
 }
 
@@ -285,6 +288,7 @@ extension SSKJobRecord {
             let boostPaymentIntentID: String = try SDSDeserialization.required(record.boostPaymentIntentID, name: "boostPaymentIntentID")
             let currencyCode: String? = record.currencyCode
             let isBoost: Bool = try SDSDeserialization.required(record.isBoost, name: "isBoost")
+            let paymentProcessor: String = try SDSDeserialization.required(record.paymentProcessor, name: "paymentProcessor")
             let priorSubscriptionLevel: UInt = try SDSDeserialization.required(record.priorSubscriptionLevel, name: "priorSubscriptionLevel")
             let receiptCredentailRequest: Data = try SDSDeserialization.required(record.receiptCredentailRequest, name: "receiptCredentailRequest")
             let receiptCredentailRequestContext: Data = try SDSDeserialization.required(record.receiptCredentailRequestContext, name: "receiptCredentailRequestContext")
@@ -303,6 +307,7 @@ extension SSKJobRecord {
                                                            boostPaymentIntentID: boostPaymentIntentID,
                                                            currencyCode: currencyCode,
                                                            isBoost: isBoost,
+                                                           paymentProcessor: paymentProcessor,
                                                            priorSubscriptionLevel: priorSubscriptionLevel,
                                                            receiptCredentailRequest: receiptCredentailRequest,
                                                            receiptCredentailRequestContext: receiptCredentailRequestContext,
@@ -325,6 +330,7 @@ extension SSKJobRecord {
             let messageText: String = try SDSDeserialization.required(record.messageText, name: "messageText")
             let paymentIntentClientSecret: String = try SDSDeserialization.required(record.paymentIntentClientSecret, name: "paymentIntentClientSecret")
             let paymentMethodId: String = try SDSDeserialization.required(record.paymentMethodId, name: "paymentMethodId")
+            let paymentProcessor: String = try SDSDeserialization.required(record.paymentProcessor, name: "paymentProcessor")
             let receiptCredentailRequest: Data = try SDSDeserialization.required(record.receiptCredentailRequest, name: "receiptCredentailRequest")
             let receiptCredentailRequestContext: Data = try SDSDeserialization.required(record.receiptCredentailRequestContext, name: "receiptCredentailRequestContext")
             let threadId: String = try SDSDeserialization.required(record.threadId, name: "threadId")
@@ -342,6 +348,7 @@ extension SSKJobRecord {
                                              messageText: messageText,
                                              paymentIntentClientSecret: paymentIntentClientSecret,
                                              paymentMethodId: paymentMethodId,
+                                             paymentProcessor: paymentProcessor,
                                              receiptCredentailRequest: receiptCredentailRequest,
                                              receiptCredentailRequestContext: receiptCredentailRequestContext,
                                              threadId: threadId)
@@ -614,6 +621,7 @@ extension SSKJobRecord: DeepCopyable {
             let messageText: String = modelToCopy.messageText
             let paymentIntentClientSecret: String = modelToCopy.paymentIntentClientSecret
             let paymentMethodId: String = modelToCopy.paymentMethodId
+            let paymentProcessor: String = modelToCopy.paymentProcessor
             let receiptCredentailRequest: Data = modelToCopy.receiptCredentailRequest
             let receiptCredentailRequestContext: Data = modelToCopy.receiptCredentailRequestContext
             let threadId: String = modelToCopy.threadId
@@ -631,6 +639,7 @@ extension SSKJobRecord: DeepCopyable {
                                              messageText: messageText,
                                              paymentIntentClientSecret: paymentIntentClientSecret,
                                              paymentMethodId: paymentMethodId,
+                                             paymentProcessor: paymentProcessor,
                                              receiptCredentailRequest: receiptCredentailRequest,
                                              receiptCredentailRequestContext: receiptCredentailRequestContext,
                                              threadId: threadId)
@@ -660,6 +669,7 @@ extension SSKJobRecord: DeepCopyable {
             let boostPaymentIntentID: String = modelToCopy.boostPaymentIntentID
             let currencyCode: String? = modelToCopy.currencyCode
             let isBoost: Bool = modelToCopy.isBoost
+            let paymentProcessor: String = modelToCopy.paymentProcessor
             let priorSubscriptionLevel: UInt = modelToCopy.priorSubscriptionLevel
             let receiptCredentailRequest: Data = modelToCopy.receiptCredentailRequest
             let receiptCredentailRequestContext: Data = modelToCopy.receiptCredentailRequestContext
@@ -678,6 +688,7 @@ extension SSKJobRecord: DeepCopyable {
                                                            boostPaymentIntentID: boostPaymentIntentID,
                                                            currencyCode: currencyCode,
                                                            isBoost: isBoost,
+                                                           paymentProcessor: paymentProcessor,
                                                            priorSubscriptionLevel: priorSubscriptionLevel,
                                                            receiptCredentailRequest: receiptCredentailRequest,
                                                            receiptCredentailRequestContext: receiptCredentailRequestContext,
@@ -852,6 +863,7 @@ extension SSKJobRecordSerializer {
     static var replacementAdminUuidColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "replacementAdminUuid", columnType: .unicodeString, isOptional: true) }
     static var waitForMessageProcessingColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "waitForMessageProcessing", columnType: .int, isOptional: true) }
     static var isCompleteContactSyncColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isCompleteContactSync", columnType: .int, isOptional: true) }
+    static var paymentProcessorColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "paymentProcessor", columnType: .unicodeString, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -893,7 +905,8 @@ extension SSKJobRecordSerializer {
         paymentMethodIdColumn,
         replacementAdminUuidColumn,
         waitForMessageProcessingColumn,
-        isCompleteContactSyncColumn
+        isCompleteContactSyncColumn,
+        paymentProcessorColumn
         ])
     }
 }
@@ -1316,8 +1329,9 @@ class SSKJobRecordSerializer: SDSSerializer {
         let replacementAdminUuid: String? = nil
         let waitForMessageProcessing: Bool? = nil
         let isCompleteContactSync: Bool? = nil
+        let paymentProcessor: String? = nil
 
-        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority, receiptCredentailRequest: receiptCredentailRequest, receiptCredentailRequestContext: receiptCredentailRequestContext, priorSubscriptionLevel: priorSubscriptionLevel, subscriberID: subscriberID, targetSubscriptionLevel: targetSubscriptionLevel, boostPaymentIntentID: boostPaymentIntentID, isBoost: isBoost, receiptCredentialPresentation: receiptCredentialPresentation, amount: amount, currencyCode: currencyCode, unsavedMessagesToSend: unsavedMessagesToSend, messageText: messageText, paymentIntentClientSecret: paymentIntentClientSecret, paymentMethodId: paymentMethodId, replacementAdminUuid: replacementAdminUuid, waitForMessageProcessing: waitForMessageProcessing, isCompleteContactSync: isCompleteContactSync)
+        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority, receiptCredentailRequest: receiptCredentailRequest, receiptCredentailRequestContext: receiptCredentailRequestContext, priorSubscriptionLevel: priorSubscriptionLevel, subscriberID: subscriberID, targetSubscriptionLevel: targetSubscriptionLevel, boostPaymentIntentID: boostPaymentIntentID, isBoost: isBoost, receiptCredentialPresentation: receiptCredentialPresentation, amount: amount, currencyCode: currencyCode, unsavedMessagesToSend: unsavedMessagesToSend, messageText: messageText, paymentIntentClientSecret: paymentIntentClientSecret, paymentMethodId: paymentMethodId, replacementAdminUuid: replacementAdminUuid, waitForMessageProcessing: waitForMessageProcessing, isCompleteContactSync: isCompleteContactSync, paymentProcessor: paymentProcessor)
     }
 }
 

@@ -208,6 +208,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addIsCompleteToContactSyncJob
         case addSnoozeCountToExperienceUpgrade
         case addCancelledGroupRingsTable
+        case addPaymentProcessorColumnToJobRecords
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2025,6 +2026,27 @@ public class GRDBSchemaMigrator: NSObject {
                 table.column("id", .integer).primaryKey().notNull()
                 table.column("timestamp", .integer).notNull()
             }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addPaymentProcessorColumnToJobRecords) { transaction in
+            // Add a column to job records for "payment processor", which is
+            // used by gift badge and receipt credential redemption jobs.
+            //
+            // Any old jobs should specify Stripe as their processor.
+
+            try transaction.database.alter(table: "model_SSKJobRecord") { (table: TableAlteration) in
+                table.add(column: "paymentProcessor", .text)
+            }
+
+            let populateSql = """
+                UPDATE model_SSKJobRecord
+                SET \(jobRecordColumn: .paymentProcessor) = 'STRIPE'
+                WHERE \(jobRecordColumn: .recordType) = \(SDSRecordType.sendGiftBadgeJobRecord.rawValue)
+                OR \(jobRecordColumn: .recordType) = \(SDSRecordType.receiptCredentialRedemptionJobRecord.rawValue)
+            """
+            try transaction.database.execute(sql: populateSql)
+
             return .success(())
         }
 

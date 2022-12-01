@@ -63,13 +63,17 @@ public class SendGiftBadgeJobQueue: NSObject, JobQueue {
         return try SendGiftBadgeOperation(jobRecord)
     }
 
-    public static func createJob(receiptRequest: (context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest),
-                                 amount: FiatMoney,
-                                 paymentIntent: Stripe.PaymentIntent,
-                                 paymentMethodId: String,
-                                 thread: TSContactThread,
-                                 messageText: String) -> OWSSendGiftBadgeJobRecord {
+    public static func createJob(
+        paymentProcessor: PaymentProcessor,
+        receiptRequest: (context: ReceiptCredentialRequestContext, request: ReceiptCredentialRequest),
+        amount: FiatMoney,
+        paymentIntent: Stripe.PaymentIntent,
+        paymentMethodId: String,
+        thread: TSContactThread,
+        messageText: String
+    ) -> OWSSendGiftBadgeJobRecord {
         OWSSendGiftBadgeJobRecord(
+            paymentProcessor: paymentProcessor.rawValue,
             receiptCredentialRequestContext: receiptRequest.context.serialize().asData,
             receiptCredentialRequest: receiptRequest.request.serialize().asData,
             amount: amount.value as NSDecimalNumber,
@@ -133,6 +137,7 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
 
     public var operation: OWSOperation { self }
 
+    private let paymentProcessor: PaymentProcessor
     private let receiptCredentialRequestContext: ReceiptCredentialRequestContext
     private let receiptCredentialRequest: ReceiptCredentialRequest
     private let amount: FiatMoney
@@ -145,6 +150,14 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
     @objc
     public required init(_ jobRecord: OWSSendGiftBadgeJobRecord) throws {
         self.jobRecord = jobRecord
+        paymentProcessor = {
+            guard let paymentProcessor = PaymentProcessor(rawValue: jobRecord.paymentProcessor) else {
+                owsFailDebug("Failed to deserialize payment processor from record with value: \(jobRecord.paymentProcessor)")
+                return .stripe
+            }
+
+            return paymentProcessor
+        }()
         receiptCredentialRequestContext = try ReceiptCredentialRequestContext(contents: [UInt8](jobRecord.receiptCredentailRequestContext))
         receiptCredentialRequest = try ReceiptCredentialRequest(contents: [UInt8](jobRecord.receiptCredentailRequest))
         amount = FiatMoney(
@@ -189,10 +202,11 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
 
     private func getReceiptCredentialPresentation() throws -> Promise<ReceiptCredentialPresentation> {
         try SubscriptionManager.requestBoostReceiptCredentialPresentation(
-            for: self.paymentIntentId,
-            context: self.receiptCredentialRequestContext,
-            request: self.receiptCredentialRequest,
-            expectedBadgeLevel: .giftBadge(.signalGift)
+            for: paymentIntentId,
+            context: receiptCredentialRequestContext,
+            request: receiptCredentialRequest,
+            expectedBadgeLevel: .giftBadge(.signalGift),
+            paymentProcessor: paymentProcessor
         )
     }
 

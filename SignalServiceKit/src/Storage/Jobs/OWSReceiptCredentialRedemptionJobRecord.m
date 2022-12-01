@@ -14,19 +14,21 @@
 
 @implementation OWSReceiptCredentialRedemptionJobRecord
 
-- (instancetype)initWithReceiptCredentialRequestContext:(NSData *)receiptCredentailRequestContext
-                               receiptCredentailRequest:(NSData *)receiptCredentialRequest
-                                           subscriberID:(NSData *)subscriberID
-                                targetSubscriptionLevel:(NSUInteger)targetSubscriptionLevel
-                                 priorSubscriptionLevel:(NSUInteger)priorSubscriptionLevel
-                                                isBoost:(BOOL)isBoost
-                                                 amount:(nullable NSDecimalNumber *)amount
-                                           currencyCode:(nullable NSString *)currencyCode
-                                   boostPaymentIntentID:(NSString *)boostPaymentIntentID
-                                                  label:(NSString *)label
+- (instancetype)initWithPaymentProcessor:(NSString *)paymentProcessor
+         receiptCredentialRequestContext:(NSData *)receiptCredentailRequestContext
+                receiptCredentailRequest:(NSData *)receiptCredentialRequest
+                            subscriberID:(NSData *)subscriberID
+                 targetSubscriptionLevel:(NSUInteger)targetSubscriptionLevel
+                  priorSubscriptionLevel:(NSUInteger)priorSubscriptionLevel
+                                 isBoost:(BOOL)isBoost
+                                  amount:(nullable NSDecimalNumber *)amount
+                            currencyCode:(nullable NSString *)currencyCode
+                    boostPaymentIntentID:(NSString *)boostPaymentIntentID
+                                   label:(NSString *)label
 {
     self = [super initWithLabel:label];
     if (self) {
+        _paymentProcessor = paymentProcessor;
         _receiptCredentailRequestContext = receiptCredentailRequestContext;
         _receiptCredentailRequest = receiptCredentialRequest;
         _subscriberID = subscriberID;
@@ -63,6 +65,7 @@
             boostPaymentIntentID:(NSString *)boostPaymentIntentID
                     currencyCode:(nullable NSString *)currencyCode
                          isBoost:(BOOL)isBoost
+                paymentProcessor:(NSString *)paymentProcessor
           priorSubscriptionLevel:(NSUInteger)priorSubscriptionLevel
         receiptCredentailRequest:(NSData *)receiptCredentailRequest
  receiptCredentailRequestContext:(NSData *)receiptCredentailRequestContext
@@ -86,6 +89,7 @@
     _boostPaymentIntentID = boostPaymentIntentID;
     _currencyCode = currencyCode;
     _isBoost = isBoost;
+    _paymentProcessor = paymentProcessor;
     _priorSubscriptionLevel = priorSubscriptionLevel;
     _receiptCredentailRequest = receiptCredentailRequest;
     _receiptCredentailRequestContext = receiptCredentailRequestContext;

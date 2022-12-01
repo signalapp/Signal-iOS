@@ -41,7 +41,7 @@ public struct Stripe: Dependencies {
         firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
             // The description is never translated as it's populated into an
             // english only receipt by Stripe.
-            let request = OWSRequestFactory.boostCreatePaymentIntent(
+            let request = OWSRequestFactory.boostStripeCreatePaymentIntent(
                 integerMoneyValue: DonationUtilities.integralAmount(for: amount),
                 inCurrencyCode: amount.currencyCode,
                 level: level.rawValue
