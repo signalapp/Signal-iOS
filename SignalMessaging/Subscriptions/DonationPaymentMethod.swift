@@ -12,5 +12,5 @@ import Foundation
 public enum DonationPaymentMethod {
     case applePay
     case creditOrDebitCard
-    // TODO(donations) Add PayPal here.
+    case paypal
 }

@@ -34,8 +34,6 @@ public class DonationUtilities: Dependencies {
             result.insert(.creditOrDebitCard)
         }
 
-        // TODO(donations) Add PayPal here, similar to the above.
-        /*
         let isPaypalAvailable = (
             FeatureFlags.canDonateWithPaypal &&
             !RemoteConfig.paypalDisabledRegions.contains(e164: localNumber)
@@ -43,7 +41,6 @@ public class DonationUtilities: Dependencies {
         if isPaypalAvailable {
             result.insert(.paypal)
         }
-        */
 
         return result
     }

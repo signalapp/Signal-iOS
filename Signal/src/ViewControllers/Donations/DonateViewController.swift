@@ -255,6 +255,19 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         navigationController.pushViewController(vc, animated: true)
     }
 
+    private func startPaypal(
+        with amount: FiatMoney,
+        badge: ProfileBadge?,
+        donationMode: DonationMode
+    ) {
+        switch donationMode {
+        case .oneTime:
+            owsFailDebug("One-time not yet supported!")
+        case .monthly:
+            owsFailDebug("Monthly not yet supported!")
+        }
+    }
+
     private func presentChoosePaymentMethodSheet(
         amount: FiatMoney,
         badge: ProfileBadge?,
@@ -267,20 +280,28 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             badge: badge,
             donationMode: donationMode.forChoosePaymentMethodSheet
         ) { [weak self] (sheet, paymentMethod) in
-            switch paymentMethod {
-            case .applePay:
-                sheet.dismiss(animated: true)
-                self?.startApplePay(with: amount, donationMode: donationMode)
-            case .creditOrDebitCard:
-                sheet.dismiss(animated: true)
-                self?.startCreditOrDebitCard(
-                    with: amount,
-                    badge: badge,
-                    donationMode: donationMode
-                )
-            // TODO(donations) Add PayPal here.
+            sheet.dismiss(animated: true) { [weak self] in
+                guard let self else { return }
+
+                switch paymentMethod {
+                case .applePay:
+                    self.startApplePay(with: amount, donationMode: donationMode)
+                case .creditOrDebitCard:
+                    self.startCreditOrDebitCard(
+                        with: amount,
+                        badge: badge,
+                        donationMode: donationMode
+                    )
+                case .paypal:
+                    self.startPaypal(
+                        with: amount,
+                        badge: badge,
+                        donationMode: donationMode
+                    )
+                }
             }
         }
+
         present(sheet, animated: true)
     }
 

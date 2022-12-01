@@ -159,6 +159,13 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
                 })
             }
 
+            if supportedPaymentMethodOptions.contains(.paypal) {
+                paymentMethodButtons.append(PaypalButton { [weak self] in
+                    guard let self else { return }
+                    self.didChoosePaymentMethod(self, .paypal)
+                })
+            }
+
             if supportedPaymentMethodOptions.contains(.creditOrDebitCard) {
                 let title = NSLocalizedString(
                     "DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD",
