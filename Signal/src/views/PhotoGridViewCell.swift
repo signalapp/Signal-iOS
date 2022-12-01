@@ -207,7 +207,7 @@ public class PhotoGridViewCell: UICollectionViewCell {
     }
 
     private func setMedia(itemType: PhotoGridItemType) {
-        guard case .video(let duration) = itemType else {
+        guard case .video(let duration) = itemType, duration > 0 else {
             durationLabel?.isHidden = true
             durationLabelBackground?.isHidden = true
             return
