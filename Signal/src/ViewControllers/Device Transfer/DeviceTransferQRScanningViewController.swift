@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import MultipeerConnectivity
+import SignalUI
 
 class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
 
@@ -62,10 +62,7 @@ class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
         return view
     }()
     lazy var maskingView: UIView = {
-        let maskingView = OWSBezierPathView()
-        maskingView.autoPinToSquareAspectRatio()
-        maskingView.autoSetDimension(.height, toSize: 256)
-        maskingView.configureShapeLayerBlock = { layer, bounds in
+        let maskingView = BezierPathView { layer, bounds in
             let path = UIBezierPath(rect: bounds)
 
             let circlePath = UIBezierPath(roundedRect: bounds, cornerRadius: bounds.size.height * 0.5)
@@ -76,6 +73,8 @@ class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
             layer.fillRule = .evenOdd
             layer.fillColor = Theme.actionSheetBackgroundColor.cgColor
         }
+        maskingView.autoPinToSquareAspectRatio()
+        maskingView.autoSetDimension(.height, toSize: 256)
         return maskingView
     }()
 

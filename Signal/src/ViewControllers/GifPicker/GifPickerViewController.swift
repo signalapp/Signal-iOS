@@ -248,7 +248,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         }
     }
 
-    let selectedMaskingView = OWSBezierPathView()
+    let selectedMaskingView = BezierPathView()
 
     private func createViews() {
 
@@ -452,7 +452,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         // Fade out all cells except the selected one.
         let cellRect = collectionView.convert(cell.frame, to: selectedMaskingView)
-        selectedMaskingView.configureShapeLayerBlock = { layer, bounds in
+        selectedMaskingView.shapeLayerConfigurationBlock = { layer, bounds in
             let path = UIBezierPath(rect: bounds)
             path.append(UIBezierPath(rect: cellRect))
 

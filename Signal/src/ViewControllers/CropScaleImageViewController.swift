@@ -165,16 +165,11 @@ class CropScaleImageViewController: OWSViewController {
         imageLayer.contents = srcImage.cgImage
         imageView.layer.addSublayer(imageLayer)
 
-        let maskingView = OWSBezierPathView()
-        contentView.addSubview(maskingView)
+        let maskingView = BezierPathView { [weak self] layer, bounds in
+            guard let self else { return }
 
-        maskingView.configureShapeLayerBlock = { [weak self] layer, bounds in
-            guard let strongSelf = self else {
-                return
-            }
             let path = UIBezierPath(rect: bounds)
-
-            let circleRect = strongSelf.cropFrame(forBounds: bounds)
+            let circleRect = self.cropFrame(forBounds: bounds)
             let radius = circleRect.size.width * 0.5
             let circlePath = UIBezierPath(roundedRect: circleRect, cornerRadius: radius)
 
@@ -186,6 +181,7 @@ class CropScaleImageViewController: OWSViewController {
             layer.fillColor = UIColor.black.cgColor
             layer.opacity = 0.7
         }
+        contentView.addSubview(maskingView)
         maskingView.autoPinEdgesToSuperviewEdges()
 
         let titleLabel = UILabel()

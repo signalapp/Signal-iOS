@@ -220,8 +220,7 @@ public class QRCodeScanViewController: OWSViewController {
         previewView.autoPinEdgesToSuperviewEdges()
 
         if appearance.shouldMaskView {
-            let maskingView = OWSBezierPathView()
-            maskingView.configureShapeLayerBlock = { (layer, bounds) in
+            let maskingView = BezierPathView { layer, bounds in
                 // Add a circular mask
                 let path = UIBezierPath(rect: bounds)
                 let margin = ScaleFromIPhone5To7Plus(8, 16)

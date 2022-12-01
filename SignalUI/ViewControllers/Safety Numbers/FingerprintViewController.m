@@ -5,7 +5,6 @@
 
 #import "FingerprintViewController.h"
 #import "FingerprintViewScanController.h"
-#import "OWSBezierPathView.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
@@ -293,8 +292,7 @@ typedef void (^CustomLayoutBlock)(void);
     fingerprintView.userInteractionEnabled = YES;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, fingerprintView);
 
-    OWSBezierPathView *fingerprintCircle = [OWSBezierPathView new];
-    [fingerprintCircle setConfigureShapeLayerBlock:^(CAShapeLayer *layer, CGRect bounds) {
+    OWSBezierPathView *fingerprintCircle = [[OWSBezierPathView alloc] initWithConfigurationBlock: ^(CAShapeLayer *layer, CGRect bounds) {
         layer.fillColor = Theme.washColor.CGColor;
         CGFloat size = MIN(bounds.size.width, bounds.size.height);
         CGRect circle = CGRectMake((bounds.size.width - size) * 0.5f, (bounds.size.height - size) * 0.5f, size, size);

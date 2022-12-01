@@ -801,6 +801,7 @@
 		66FBC4E128DA820900BD9E8B /* MyStorySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */; };
 		66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */; };
 		7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981892936EC8D008F8300 /* OWSTextView.swift */; };
+		760981882936DE90008F8300 /* BezierPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981872936DE90008F8300 /* BezierPathView.swift */; };
 		760D93AB27A0E28600F351AC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 760D93AA27A0E28600F351AC /* CoreServices.framework */; };
 		7628DDBE2807505D009AA53D /* ImageEditorCropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBC28075056009AA53D /* ImageEditorCropView.swift */; };
 		7628DDBF2807505D009AA53D /* RotationControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBD2807505D009AA53D /* RotationControl.swift */; };
@@ -1020,8 +1021,6 @@
 		88B98704288089C200F8C74D /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8A2204DAC8D007AEB0F /* FingerprintViewController.m */; };
 		88B98705288089C700F8C74D /* FingerprintViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 340FC89D204DAC8D007AEB0F /* FingerprintViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		88B98706288089CD00F8C74D /* FingerprintViewScanController.h in Headers */ = {isa = PBXBuildFile; fileRef = 340FC8A5204DAC8D007AEB0F /* FingerprintViewScanController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		88B9870728808A1200F8C74D /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
-		88B9870828808A2100F8C74D /* OWSBezierPathView.h in Headers */ = {isa = PBXBuildFile; fileRef = 34F308A01ECB469700BB7697 /* OWSBezierPathView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		88B9870928808A8A00F8C74D /* ScanQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345779402682464700732869 /* ScanQRCodeViewController.swift */; };
 		88B9870A28808BF600F8C74D /* CompareSafetyNumbersActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */; };
 		88BCCC8123837B7D00CE5FE6 /* InteractionReactionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */; };
@@ -2850,8 +2849,6 @@
 		34F0566923DA209300265283 /* GroupsV2IncomingChanges.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2IncomingChanges.swift; sourceTree = "<group>"; };
 		34F1071F26D005340053EF4D /* BatchUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BatchUpdate.swift; sourceTree = "<group>"; };
 		34F1072126D045290053EF4D /* BatchUpdateTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BatchUpdateTest.swift; sourceTree = "<group>"; };
-		34F308A01ECB469700BB7697 /* OWSBezierPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBezierPathView.h; sourceTree = "<group>"; };
-		34F308A11ECB469700BB7697 /* OWSBezierPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBezierPathView.m; sourceTree = "<group>"; };
 		34F316F22732C694008D7352 /* WebSocketFactoryHybrid.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketFactoryHybrid.swift; sourceTree = "<group>"; };
 		34FB6A4E25D1C6AC00E599B1 /* PaymentsDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsDetailViewController.swift; sourceTree = "<group>"; };
 		34FB6A5225D2D10400E599B1 /* PaymentsViewUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsViewUtils.swift; sourceTree = "<group>"; };
@@ -3100,6 +3097,7 @@
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		760981892936EC8D008F8300 /* OWSTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTextView.swift; sourceTree = "<group>"; };
+		760981872936DE90008F8300 /* BezierPathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezierPathView.swift; sourceTree = "<group>"; };
 		760D93AA27A0E28600F351AC /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		7628DDBC28075056009AA53D /* ImageEditorCropView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorCropView.swift; sourceTree = "<group>"; };
 		7628DDBD2807505D009AA53D /* RotationControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RotationControl.swift; sourceTree = "<group>"; };
@@ -5263,6 +5261,7 @@
 				34A9554A271B510400B05242 /* Tooltips */,
 				34A9551A271B510400B05242 /* VideoEditor */,
 				34A95545271B510400B05242 /* AvatarImageView.swift */,
+				760981872936DE90008F8300 /* BezierPathView.swift */,
 				83B9573827C9A1FA00A678FD /* CaptchaView.swift */,
 				34A9553F271B510400B05242 /* CircleView.swift */,
 				76A2EB1128B57AEE00A29C24 /* ColorPickerBar.swift */,
@@ -5287,8 +5286,6 @@
 				76A2EB0F28B578B800A29C24 /* MediaTextView.swift */,
 				34A9550A271B510400B05242 /* NonContactTableViewCell.swift */,
 				34A9553D271B510400B05242 /* OWSActionSheets.swift */,
-				34F308A01ECB469700BB7697 /* OWSBezierPathView.h */,
-				34F308A11ECB469700BB7697 /* OWSBezierPathView.m */,
 				34A95535271B510400B05242 /* OWSBubbleShapeView.swift */,
 				34A95534271B510400B05242 /* OWSBubbleView.h */,
 				34A95530271B510400B05242 /* OWSButton.swift */,
@@ -8439,7 +8436,6 @@
 				88B98706288089CD00F8C74D /* FingerprintViewScanController.h in Headers */,
 				3402A9FE271D9D7B0084CBAE /* OWSAnyTouchGestureRecognizer.h in Headers */,
 				3402AAC2271DA6100084CBAE /* OWSAudioPlayer.h in Headers */,
-				88B9870828808A2100F8C74D /* OWSBezierPathView.h in Headers */,
 				3402AAA1271D9E180084CBAE /* OWSBubbleView.h in Headers */,
 				3402AA5D271D9DCD0084CBAE /* OWSNavigationControllerBase.h in Headers */,
 				3402AA66271D9DEC0084CBAE /* OWSQuotedReplyModel.h in Headers */,
@@ -9774,6 +9770,7 @@
 				3402AA55271D9DCD0084CBAE /* AttachmentTextView.swift in Sources */,
 				3402AAA7271D9E180084CBAE /* AvatarImageView.swift in Sources */,
 				88B98700288088B800F8C74D /* BaseMemberViewController.swift in Sources */,
+				760981882936DE90008F8300 /* BezierPathView.swift in Sources */,
 				34A955B3271B53F600B05242 /* BlockListUIUtils.m in Sources */,
 				83B9573927C9A1FA00A678FD /* CaptchaView.swift in Sources */,
 				34A954DE271B4F3E00B05242 /* ChatColors.swift in Sources */,
@@ -9875,7 +9872,6 @@
 				3402A9FF271D9D7B0084CBAE /* OWSAnyTouchGestureRecognizer.m in Sources */,
 				3402AAC3271DA6100084CBAE /* OWSAudioPlayer.m in Sources */,
 				342FFE59271DAA25000AC89F /* OWSAudioSession.swift in Sources */,
-				88B9870728808A1200F8C74D /* OWSBezierPathView.m in Sources */,
 				3402AA74271D9E180084CBAE /* OWSBubbleShapeView.swift in Sources */,
 				3402AA99271D9E180084CBAE /* OWSButton.swift in Sources */,
 				3402AA83271D9E180084CBAE /* OWSFlatButton.swift in Sources */,
