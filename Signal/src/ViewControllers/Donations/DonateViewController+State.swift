@@ -66,7 +66,7 @@ extension DonateViewController {
                 guard let amount = amount else {
                     return .noAmountSelected
                 }
-                if Stripe.isAmountTooSmall(amount) {
+                if DonationUtilities.isAmountTooSmall(amount) {
                     return .amountIsTooSmall
                 }
                 return .canContinue(amount: amount)

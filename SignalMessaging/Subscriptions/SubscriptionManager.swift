@@ -165,7 +165,7 @@ public struct Subscription: Equatable {
             value: try {
                 let integerValue: Int64 = try params.required(key: "amount")
                 let decimalValue = Decimal(integerValue)
-                if Stripe.zeroDecimalCurrencyCodes.contains(currencyCode) {
+                if DonationUtilities.zeroDecimalCurrencyCodes.contains(currencyCode) {
                     return decimalValue
                 } else {
                     return decimalValue / 100

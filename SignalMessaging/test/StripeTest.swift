@@ -60,7 +60,7 @@ final class StripeTest: XCTestCase {
             FiatMoney(currencyCode: unknownCurrency, value: 0.494)
         ]
         for amount in tooSmall {
-            XCTAssertTrue(Stripe.isAmountTooSmall(amount), "\(amount)")
+            XCTAssertTrue(DonationUtilities.isAmountTooSmall(amount), "\(amount)")
         }
 
         let allGood: [FiatMoney] = [
@@ -75,7 +75,7 @@ final class StripeTest: XCTestCase {
             FiatMoney(currencyCode: unknownCurrency, value: 0.495)
         ]
         for amount in allGood {
-            XCTAssertFalse(Stripe.isAmountTooSmall(amount), "\(amount)")
+            XCTAssertFalse(DonationUtilities.isAmountTooSmall(amount), "\(amount)")
         }
     }
 }

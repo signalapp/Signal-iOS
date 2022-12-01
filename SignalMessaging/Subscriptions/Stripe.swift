@@ -39,14 +39,14 @@ public struct Stripe: Dependencies {
         level: OneTimeBadgeLevel
     ) -> Promise<PaymentIntent> {
         firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
-            guard !isAmountTooSmall(amount) else {
+            guard !DonationUtilities.isAmountTooSmall(amount) else {
                 throw OWSAssertionError("Amount too small")
             }
 
             // The description is never translated as it's populated into an
             // english only receipt by Stripe.
             let request = OWSRequestFactory.boostCreatePaymentIntent(
-                integerMoneyValue: integralAmount(amount),
+                integerMoneyValue: DonationUtilities.integralAmount(for: amount),
                 inCurrencyCode: amount.currencyCode,
                 level: level.rawValue
             )
@@ -147,41 +147,6 @@ public struct Stripe: Dependencies {
                 redirectToUrl: parseNextActionRedirectUrl(from: response.responseBodyJson)
             )
         }
-    }
-
-    /// Is an amount of money too small?
-    ///
-    /// This is a client-side validation, so if we're not sure, we should
-    /// accept the amount.
-    ///
-    /// These minimums are pulled from [Stripe's document minimums][0]. Note
-    /// that Stripe's values are for *settlement* currency (which is always USD
-    /// for Signal), but we use them as helpful minimums anyway.
-    ///
-    /// - Parameter amount: The amount of money.
-    /// - Returns: Whether the amount is too small.
-    ///
-    /// [0]: https://stripe.com/docs/currencies?presentment-currency=US#minimum-and-maximum-charge-amounts
-    public static func isAmountTooSmall(_ amount: FiatMoney) -> Bool {
-        let integerAmount = integralAmount(amount)
-        let minimum = minimumIntegralChargePerCurrencyCode[amount.currencyCode, default: 50]
-        return integerAmount < minimum
-    }
-
-    private static func integralAmount(_ amount: FiatMoney) -> UInt {
-        let scaled: Decimal
-        if zeroDecimalCurrencyCodes.contains(amount.currencyCode.uppercased()) {
-            scaled = amount.value
-        } else {
-            scaled = amount.value * 100
-        }
-
-        let rounded = scaled.rounded()
-
-        guard rounded >= 0 else { return 0 }
-        guard rounded <= Decimal(UInt.max) else { return UInt.max }
-
-        return (rounded as NSDecimalNumber).uintValue
     }
 }
 
@@ -354,49 +319,4 @@ public extension Stripe {
     static let preferredCurrencyInfos: [Currency.Info] = {
         Currency.infos(for: preferredCurrencyCodes, ignoreMissingNames: true, shouldSort: false)
     }()
-
-    static let zeroDecimalCurrencyCodes: Set<Currency.Code> = [
-        "BIF",
-        "CLP",
-        "DJF",
-        "GNF",
-        "JPY",
-        "KMF",
-        "KRW",
-        "MGA",
-        "PYG",
-        "RWF",
-        "UGX",
-        "VND",
-        "VUV",
-        "XAF",
-        "XOF",
-        "XPF"
-    ]
-
-    static let minimumIntegralChargePerCurrencyCode: [Currency.Code: UInt] = [
-        "USD": 50,
-        "AED": 200,
-        "AUD": 50,
-        "BGN": 100,
-        "BRL": 50,
-        "CAD": 50,
-        "CHF": 50,
-        "CZK": 1500,
-        "DKK": 250,
-        "EUR": 50,
-        "GBP": 30,
-        "HKD": 400,
-        "HUF": 17500,
-        "INR": 50,
-        "JPY": 50,
-        "MXN": 10,
-        "MYR": 2,
-        "NOK": 300,
-        "NZD": 50,
-        "PLN": 200,
-        "RON": 200,
-        "SEK": 300,
-        "SGD": 50
-    ]
 }

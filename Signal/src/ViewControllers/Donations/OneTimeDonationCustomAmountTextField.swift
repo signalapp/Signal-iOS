@@ -169,7 +169,7 @@ extension OneTimeDonationCustomAmountTextField: UITextFieldDelegate {
     func valueString(for string: String?) -> String? {
         guard let string = string else { return nil }
 
-        let isZeroDecimalCurrency = Stripe.zeroDecimalCurrencyCodes.contains(currencyCode)
+        let isZeroDecimalCurrency = DonationUtilities.zeroDecimalCurrencyCodes.contains(currencyCode)
         guard !isZeroDecimalCurrency else { return string.digitsOnly }
 
         let decimalSeparator = Locale.current.decimalSeparator ?? "."

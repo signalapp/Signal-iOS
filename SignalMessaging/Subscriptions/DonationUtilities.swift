@@ -101,7 +101,7 @@ public class DonationUtilities: Dependencies {
         let value = money.value
         let currencyCode = money.currencyCode
 
-        let isZeroDecimalCurrency = Stripe.zeroDecimalCurrencyCodes.contains(currencyCode)
+        let isZeroDecimalCurrency = zeroDecimalCurrencyCodes.contains(currencyCode)
 
         let decimalPlaces: Int
         if isZeroDecimalCurrency {
@@ -203,5 +203,101 @@ public class DonationUtilities: Dependencies {
         request.currencyCode = currencyCode
         request.supportedNetworks = DonationUtilities.supportedNetworks
         return request
+    }
+}
+
+// MARK: - Money amounts
+
+/// The values in this extension are drawn largely from Stripe's documentation,
+/// which means they may not be exactly correct for PayPal transactions.
+/// However: 1) they are probably "good enough"; and 2) they should be replaced
+/// with Signal-server values fetched from a configuration endpoint like
+/// `/v1/subscription/configuration` eventually, anyway.
+public extension DonationUtilities {
+    /// A list of currencies known not to use decimal values
+    static let zeroDecimalCurrencyCodes: Set<Currency.Code> = [
+        "BIF",
+        "CLP",
+        "DJF",
+        "GNF",
+        "JPY",
+        "KMF",
+        "KRW",
+        "MGA",
+        "PYG",
+        "RWF",
+        "UGX",
+        "VND",
+        "VUV",
+        "XAF",
+        "XOF",
+        "XPF"
+    ]
+
+    /// Minimum charge allowed for each currency.
+    static let minimumIntegralChargePerCurrencyCode: [Currency.Code: UInt] = [
+        "USD": 50,
+        "AED": 200,
+        "AUD": 50,
+        "BGN": 100,
+        "BRL": 50,
+        "CAD": 50,
+        "CHF": 50,
+        "CZK": 1500,
+        "DKK": 250,
+        "EUR": 50,
+        "GBP": 30,
+        "HKD": 400,
+        "HUF": 17500,
+        "INR": 50,
+        "JPY": 50,
+        "MXN": 10,
+        "MYR": 2,
+        "NOK": 300,
+        "NZD": 50,
+        "PLN": 200,
+        "RON": 200,
+        "SEK": 300,
+        "SGD": 50
+    ]
+
+    /// Is an amount of money too small?
+    ///
+    /// This is a client-side validation, so if we're not sure, we should
+    /// accept the amount.
+    ///
+    /// These minimums are pulled from [Stripe's document minimums][0]. Note
+    /// that Stripe's values are for *settlement* currency (which is always USD
+    /// for Signal), but we use them as helpful minimums anyway.
+    ///
+    /// Eventually, this check should rely on configuration fetched from a
+    /// Signal service endpoint.
+    ///
+    /// - Parameter amount: The amount of money.
+    /// - Returns: Whether the amount is too small.
+    ///
+    /// [0]: https://stripe.com/docs/currencies?presentment-currency=US#minimum-and-maximum-charge-amounts
+    static func isAmountTooSmall(_ amount: FiatMoney) -> Bool {
+        let minimum = minimumIntegralChargePerCurrencyCode[amount.currencyCode, default: 50]
+        return integralAmount(for: amount) < minimum
+    }
+
+    /// Convert the given money amount to an integer that can be passed to
+    /// service APIs. Applies rounding and scaling as appropriate for the
+    /// currency.
+    static func integralAmount(for amount: FiatMoney) -> UInt {
+        let scaled: Decimal
+        if Self.zeroDecimalCurrencyCodes.contains(amount.currencyCode.uppercased()) {
+            scaled = amount.value
+        } else {
+            scaled = amount.value * 100
+        }
+
+        let rounded = scaled.rounded()
+
+        guard rounded >= 0 else { return 0 }
+        guard rounded <= Decimal(UInt.max) else { return UInt.max }
+
+        return (rounded as NSDecimalNumber).uintValue
     }
 }
