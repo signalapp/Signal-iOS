@@ -140,7 +140,7 @@ extension ConversationViewController: BadgeExpirationSheetDelegate {
             break
         case .openDonationView:
             let appSettings = AppSettingsViewController.inModalNavigationController()
-            let donateViewController = DonateViewController(startingDonationMode: .oneTime) { [weak self] finishResult in
+            let donateViewController = DonateViewController(preferredDonateMode: .oneTime) { [weak self] finishResult in
                 switch finishResult {
                 case let .completedDonation(donateSheet, thanksSheet):
                     donateSheet.dismiss(animated: true) { [weak self] in

@@ -68,7 +68,7 @@ final class DonateViewControllerTest: XCTestCase {
         )
     }
 
-    private var initializing: State { .init(donationMode: .oneTime) }
+    private var initializing: State { .init(donateMode: .oneTime) }
 
     private var loading: State { initializing.loading() }
 
@@ -151,35 +151,35 @@ final class DonateViewControllerTest: XCTestCase {
     func testSupportedCurrencyCodes() {
         XCTAssertTrue(initializing.supportedCurrencyCodes.isEmpty)
 
-        let onOneTime = loadedWithoutSubscription.selectDonationMode(.oneTime)
+        let onOneTime = loadedWithoutSubscription.selectDonateMode(.oneTime)
         XCTAssertEqual(onOneTime.supportedCurrencyCodes, Set<Currency.Code>(["USD", "AUD"]))
 
-        let onMonthly = loadedWithoutSubscription.selectDonationMode(.monthly)
+        let onMonthly = loadedWithoutSubscription.selectDonateMode(.monthly)
         XCTAssertEqual(onMonthly.supportedCurrencyCodes, Set<Currency.Code>(["USD", "EUR"]))
     }
 
     func testSelectedProfileBadge() {
         XCTAssertNil(initializing.selectedCurrencyCode)
 
-        let onOneTime = loadedWithoutSubscription.selectDonationMode(.oneTime)
+        let onOneTime = loadedWithoutSubscription.selectDonateMode(.oneTime)
         XCTAssertEqual(onOneTime.selectedProfileBadge, Self.oneTimeBadge)
 
-        let onMonthly = loadedWithoutSubscription.selectDonationMode(.monthly)
+        let onMonthly = loadedWithoutSubscription.selectDonateMode(.monthly)
         let levels = Self.monthlySubscriptionLevels
         let selectedSecond = onMonthly.selectSubscriptionLevel(levels.last!)
         XCTAssertEqual(onMonthly.selectedProfileBadge, levels.first!.badge)
         XCTAssertEqual(selectedSecond.selectedProfileBadge, levels.last!.badge)
     }
 
-    func testLoadedDonationMode() {
-        XCTAssertNil(initializing.loadedDonationMode)
-        XCTAssertNil(loadFailed.loadedDonationMode)
+    func testLoadedDonateMode() {
+        XCTAssertNil(initializing.loadedDonateMode)
+        XCTAssertNil(loadFailed.loadedDonateMode)
 
-        let onOneTime = loadedWithoutSubscription.selectDonationMode(.oneTime)
-        XCTAssertEqual(onOneTime.loadedDonationMode, .oneTime)
+        let onOneTime = loadedWithoutSubscription.selectDonateMode(.oneTime)
+        XCTAssertEqual(onOneTime.loadedDonateMode, .oneTime)
 
-        let onMonthly = loadedWithoutSubscription.selectDonationMode(.monthly)
-        XCTAssertEqual(onMonthly.loadedDonationMode, .monthly)
+        let onMonthly = loadedWithoutSubscription.selectDonateMode(.monthly)
+        XCTAssertEqual(onMonthly.loadedDonateMode, .monthly)
     }
 
     // MARK: - Top-level state changes
@@ -258,16 +258,16 @@ final class DonateViewControllerTest: XCTestCase {
 
     func testSelectCurrencyCode() {
         let selectedUsd = loadedWithoutSubscription.selectCurrencyCode("USD")
-        XCTAssertEqual(selectedUsd.selectDonationMode(.oneTime).selectedCurrencyCode, "USD")
-        XCTAssertEqual(selectedUsd.selectDonationMode(.monthly).selectedCurrencyCode, "USD")
+        XCTAssertEqual(selectedUsd.selectDonateMode(.oneTime).selectedCurrencyCode, "USD")
+        XCTAssertEqual(selectedUsd.selectDonateMode(.monthly).selectedCurrencyCode, "USD")
 
         let triedToSelectEur = loadedWithoutSubscription.selectCurrencyCode("EUR")
-        XCTAssertEqual(triedToSelectEur.selectDonationMode(.oneTime).selectedCurrencyCode, "USD")
-        XCTAssertEqual(triedToSelectEur.selectDonationMode(.monthly).selectedCurrencyCode, "EUR")
+        XCTAssertEqual(triedToSelectEur.selectDonateMode(.oneTime).selectedCurrencyCode, "USD")
+        XCTAssertEqual(triedToSelectEur.selectDonateMode(.monthly).selectedCurrencyCode, "EUR")
 
         let triedToSelectAud = loadedWithoutSubscription.selectCurrencyCode("AUD")
-        XCTAssertEqual(triedToSelectAud.selectDonationMode(.oneTime).selectedCurrencyCode, "AUD")
-        XCTAssertEqual(triedToSelectAud.selectDonationMode(.monthly).selectedCurrencyCode, "USD")
+        XCTAssertEqual(triedToSelectAud.selectDonateMode(.oneTime).selectedCurrencyCode, "AUD")
+        XCTAssertEqual(triedToSelectAud.selectDonateMode(.monthly).selectedCurrencyCode, "USD")
     }
 }
 

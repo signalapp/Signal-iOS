@@ -1113,6 +1113,7 @@
 		D24B5BD5169F568C00681372 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D24B5BD4169F568C00681372 /* AudioToolbox.framework */; };
 		D2AEACDC16C426DA00C364C0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AEACDB16C426DA00C364C0 /* CFNetwork.framework */; };
 		D9170EEA290C57BF00CD813A /* CVViewState+Banners.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9170EE9290C57BF00CD813A /* CVViewState+Banners.swift */; };
+		D91F7A2D2935A32F00012C64 /* DonationMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91F7A2C2935A32F00012C64 /* DonationMode.swift */; };
 		D925937A28B0497900D5D437 /* LocalUserLeaveGroupJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */; };
 		D925938028B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925937D28B42B3D00D5D437 /* OWSLocalUserLeaveGroupJobRecord+SDS.swift */; };
 		D925938128B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.h in Headers */ = {isa = PBXBuildFile; fileRef = D925937E28B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -3485,6 +3486,7 @@
 		D2F64CFA3B9F3C7EA87B1C37 /* Pods-SignalUI.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUI.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUI/Pods-SignalUI.profiling.xcconfig"; sourceTree = "<group>"; };
 		D4164D79E1C97918C458A743 /* Pods-SignalShareExtension.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.testable release.xcconfig"; sourceTree = "<group>"; };
 		D9170EE9290C57BF00CD813A /* CVViewState+Banners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CVViewState+Banners.swift"; sourceTree = "<group>"; };
+		D91F7A2C2935A32F00012C64 /* DonationMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationMode.swift; sourceTree = "<group>"; };
 		D925937928B0497900D5D437 /* LocalUserLeaveGroupJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalUserLeaveGroupJob.swift; sourceTree = "<group>"; };
 		D925937D28B42B3D00D5D437 /* OWSLocalUserLeaveGroupJobRecord+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSLocalUserLeaveGroupJobRecord+SDS.swift"; sourceTree = "<group>"; };
 		D925937E28B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLocalUserLeaveGroupJobRecord.h; sourceTree = "<group>"; };
@@ -6964,6 +6966,7 @@
 			isa = PBXGroup;
 			children = (
 				500FE48E2886148800FA090C /* CachedBadge.swift */,
+				D91F7A2C2935A32F00012C64 /* DonationMode.swift */,
 				F98ED2D729255F4D008483DC /* DonationPaymentMethod.swift */,
 				F00385FD273F6388000B5ABD /* DonationUtilities.swift */,
 				F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */,
@@ -10012,6 +10015,7 @@
 				34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */,
 				3498AC87251387E500B1F315 /* Dependencies+SignalMessaging.swift in Sources */,
 				450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */,
+				D91F7A2D2935A32F00012C64 /* DonationMode.swift in Sources */,
 				F98ED2D829255F4D008483DC /* DonationPaymentMethod.swift in Sources */,
 				F0038600273F6388000B5ABD /* DonationUtilities.swift in Sources */,
 				3461295B1FD1D74C00532771 /* Environment.m in Sources */,

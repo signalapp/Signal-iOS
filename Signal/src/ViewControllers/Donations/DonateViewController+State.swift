@@ -241,16 +241,16 @@ extension DonateViewController {
 
         // MARK: - Initialization
 
-        public let donationMode: DonationMode
+        public let donateMode: DonateMode
         public let loadState: LoadState
 
-        public init(donationMode: DonationMode) {
-            self.donationMode = donationMode
+        public init(donateMode: DonateMode) {
+            self.donateMode = donateMode
             self.loadState = .initializing
         }
 
-        private init(donationMode: DonationMode, loadState: LoadState) {
-            self.donationMode = donationMode
+        private init(donateMode: DonateMode, loadState: LoadState) {
+            self.donateMode = donateMode
             self.loadState = loadState
         }
 
@@ -271,7 +271,7 @@ extension DonateViewController {
         }
 
         public var selectedCurrencyCode: Currency.Code? {
-            switch donationMode {
+            switch donateMode {
             case .oneTime: return oneTime?.selectedCurrencyCode
             case .monthly: return monthly?.selectedCurrencyCode
             }
@@ -285,7 +285,7 @@ extension DonateViewController {
             case .initializing, .loading, .loadFailed:
                 return []
             case let .loaded(oneTime, monthly):
-                switch donationMode {
+                switch donateMode {
                 case .oneTime: return oneTime.supportedCurrencyCodes
                 case .monthly: return monthly.supportedCurrencyCodes
                 }
@@ -293,34 +293,34 @@ extension DonateViewController {
         }
 
         public var selectedProfileBadge: ProfileBadge? {
-            switch donationMode {
+            switch donateMode {
             case .oneTime: return oneTime?.profileBadge
             case .monthly: return monthly?.selectedProfileBadge
             }
         }
 
         /// Get the donation mode, but return `nil` if it's not loaded.
-        public var loadedDonationMode: DonationMode? {
+        public var loadedDonateMode: DonateMode? {
             switch loadState {
             case .initializing, .loading, .loadFailed:
                 return nil
             case .loaded:
-                return donationMode
+                return donateMode
             }
         }
 
         public var debugDescription: String {
-            "\(donationMode.debugDescription), \(loadState.debugDescription)"
+            "\(donateMode.debugDescription), \(loadState.debugDescription)"
         }
 
         // MARK: - Setters
 
         public func loading() -> State {
-            State(donationMode: donationMode, loadState: .loading)
+            State(donateMode: donateMode, loadState: .loading)
         }
 
         public func loadFailed() -> State {
-            State(donationMode: donationMode, loadState: .loadFailed)
+            State(donateMode: donateMode, loadState: .loadFailed)
         }
 
         public func loaded(
@@ -342,7 +342,7 @@ extension DonateViewController {
             guard let oneTimeDefaultCurrency = oneTimeDefaultCurrency else {
                 // This indicates a bug, either in the iOS app or the server.
                 owsFailDebug("[Donations] Successfully loaded one-time donations, but a preferred currency could not be found")
-                return State(donationMode: donationMode, loadState: .loadFailed)
+                return State(donateMode: donateMode, loadState: .loadFailed)
             }
             let oneTime = OneTimeState(
                 presets: oneTimePresets,
@@ -366,7 +366,7 @@ extension DonateViewController {
             guard let monthlyDefaultCurrency = monthlyDefaultCurrency else {
                 // This indicates a bug, either in the iOS app or the server.
                 owsFailDebug("[Donations] Successfully loaded monthly donations, but a preferred currency could not be found")
-                return State(donationMode: donationMode, loadState: .loadFailed)
+                return State(donateMode: donateMode, loadState: .loadFailed)
             }
             let selectedMonthlySubscriptionLevel: SubscriptionLevel?
             if let current = currentMonthlySubscription {
@@ -387,14 +387,14 @@ extension DonateViewController {
             )
 
             return State(
-                donationMode: donationMode,
+                donateMode: donateMode,
                 loadState: .loaded(oneTime: oneTime, monthly: monthly)
             )
         }
 
         /// Change the donation mode.
-        public func selectDonationMode(_ newValue: DonationMode) -> State {
-            State(donationMode: newValue, loadState: loadState)
+        public func selectDonateMode(_ newValue: DonateMode) -> State {
+            State(donateMode: newValue, loadState: loadState)
         }
 
         /// Attempt to change the selected currency.
@@ -409,7 +409,7 @@ extension DonateViewController {
         public func selectCurrencyCode(_ newValue: Currency.Code) -> State {
             let (oneTime, monthly) = loadedStateOrDie
             return State(
-                donationMode: donationMode,
+                donateMode: donateMode,
                 loadState: .loaded(
                     oneTime: oneTime.selectCurrencyCode(newValue),
                     monthly: monthly.selectCurrencyCode(newValue)
@@ -429,7 +429,7 @@ extension DonateViewController {
         public func selectOneTimeAmount(_ newSelectedAmount: OneTimeState.SelectedAmount) -> State {
             let (oneTime, monthly) = loadedStateOrDie
             return State(
-                donationMode: donationMode,
+                donateMode: donateMode,
                 loadState: .loaded(
                     oneTime: oneTime.selectOneTimeAmount(newSelectedAmount),
                     monthly: monthly
@@ -448,7 +448,7 @@ extension DonateViewController {
         public func selectSubscriptionLevel(_ newSubscriptionLevel: SubscriptionLevel) -> State {
             let (oneTime, monthly) = loadedStateOrDie
             return State(
-                donationMode: donationMode,
+                donateMode: donateMode,
                 loadState: .loaded(
                     oneTime: oneTime,
                     monthly: monthly.selectSubscriptionLevel(newSubscriptionLevel)

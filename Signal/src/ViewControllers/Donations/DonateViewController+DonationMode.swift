@@ -4,9 +4,12 @@
 //
 
 import Foundation
+import SignalMessaging
 
 extension DonateViewController {
-    enum DonationMode: Int {
+    /// Represents the modes by which a user can donate in this view. Not to be
+    /// confused with ``SignalMessaging.DonationMode``.
+    enum DonateMode: Int {
         case oneTime
         case monthly
 
@@ -15,7 +18,7 @@ extension DonateViewController {
         ///
         /// We need this because this view supports one-time or monthly, but the
         /// sheet supports one-time, monthly, and gifting.
-        var forChoosePaymentMethodSheet: DonateChoosePaymentMethodSheet.DonationMode {
+        var asDonationMode: SignalMessaging.DonationMode {
             switch self {
             case .oneTime: return .oneTime
             case .monthly: return .monthly

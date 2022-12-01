@@ -91,13 +91,15 @@ class RemoteMegaphone: MegaphoneView {
                 self.dismiss(animated: false)
             }
 
-            guard DonationUtilities.canDonate(localNumber: Self.tsAccountManager.localNumber) else {
+            guard DonationUtilities.canDonateInAnyWay(
+                localNumber: Self.tsAccountManager.localNumber
+            ) else {
                 done()
                 DonationViewsUtil.openDonateWebsite()
                 return
             }
 
-            let donateVc = DonateViewController(startingDonationMode: .oneTime) { finishResult in
+            let donateVc = DonateViewController(preferredDonateMode: .oneTime) { finishResult in
                 let frontVc = { CurrentAppContext().frontmostViewController() }
                 switch finishResult {
                 case let .completedDonation(donateSheet, thanksSheet):

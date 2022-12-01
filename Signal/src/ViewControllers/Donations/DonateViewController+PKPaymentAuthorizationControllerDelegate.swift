@@ -18,7 +18,7 @@ extension DonateViewController: PKPaymentAuthorizationControllerDelegate {
         didAuthorizePayment payment: PKPayment,
         handler: @escaping (PKPaymentAuthorizationResult) -> Void
     ) {
-        switch state.donationMode {
+        switch state.donateMode {
         case .oneTime:
             paymentAuthorizationControllerForOneTime(
                 controller,

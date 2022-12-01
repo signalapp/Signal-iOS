@@ -195,7 +195,9 @@ class BadgeExpirationSheet: OWSTableSheetViewController {
         self.state = BadgeExpirationSheetState(
             badge: badge,
             mode: mode,
-            canDonate: DonationUtilities.canDonate(localNumber: Self.tsAccountManager.localNumber)
+            canDonate: DonationUtilities.canDonateInAnyWay(
+                localNumber: Self.tsAccountManager.localNumber
+            )
         )
         owsAssertDebug(state.badge.assets != nil)
 

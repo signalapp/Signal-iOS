@@ -11,43 +11,86 @@ import SignalCoreKit
 public class DonationUtilities: Dependencies {
     public static var sendGiftBadgeJobQueue: SendGiftBadgeJobQueue { smJobQueues.sendGiftBadgeJobQueue }
 
+    /// Returns a set of the donation payment methods available to the local
+    /// user, for the given donation mode.
     public static func supportedDonationPaymentMethodOptions(
-        localNumber: String?
+        localNumber: String?,
+        forDonationMode donationMode: DonationMode
     ) -> Set<DonationPaymentMethod> {
         guard let localNumber else { return [] }
 
+        let isApplePayAvailable: Bool = {
+            if
+                PKPaymentAuthorizationController.canMakePayments(),
+                !RemoteConfig.applePayDisabledRegions.contains(e164: localNumber)
+            {
+                return true
+            }
+
+            return false
+        }()
+
+        let isPaypalAvailable = {
+            if
+                FeatureFlags.canDonateWithPaypal,
+                !RemoteConfig.paypalDisabledRegions.contains(e164: localNumber)
+            {
+                switch donationMode {
+                case .oneTime, .gift:
+                    return true
+                case .monthly:
+                    // TODO: [PayPal] Support monthly donations
+                    break
+                }
+            }
+
+            return false
+        }()
+
+        let isCardAvailable = {
+            if
+                RemoteConfig.canDonateWithCreditOrDebitCard,
+                !RemoteConfig.creditAndDebitCardDisabledRegions.contains(e164: localNumber)
+            {
+                return true
+            }
+
+            return false
+        }()
+
         var result = Set<DonationPaymentMethod>()
 
-        let isApplePayAvailable = (
-            PKPaymentAuthorizationController.canMakePayments() &&
-            !RemoteConfig.applePayDisabledRegions.contains(e164: localNumber)
-        )
         if isApplePayAvailable {
             result.insert(.applePay)
         }
 
-        let isCardAvailable = (
-            RemoteConfig.canDonateWithCreditOrDebitCard &&
-            !RemoteConfig.creditAndDebitCardDisabledRegions.contains(e164: localNumber)
-        )
-        if isCardAvailable {
-            result.insert(.creditOrDebitCard)
-        }
-
-        let isPaypalAvailable = (
-            FeatureFlags.canDonateWithPaypal &&
-            !RemoteConfig.paypalDisabledRegions.contains(e164: localNumber)
-        )
         if isPaypalAvailable {
             result.insert(.paypal)
+        }
+
+        if isCardAvailable {
+            result.insert(.creditOrDebitCard)
         }
 
         return result
     }
 
-    /// Can the user donate to Signal in the app?
-    public static func canDonate(localNumber: String?) -> Bool {
-        !supportedDonationPaymentMethodOptions(localNumber: localNumber).isEmpty
+    /// Can the user donate in the given donation mode?
+    public static func canDonate(
+        inMode donationMode: DonationMode,
+        localNumber: String?
+    ) -> Bool {
+        !supportedDonationPaymentMethodOptions(
+            localNumber: localNumber,
+            forDonationMode: donationMode
+        ).isEmpty
+    }
+
+    /// Can the user donate in any donation mode?
+    public static func canDonateInAnyWay(localNumber: String?) -> Bool {
+        DonationMode.allCases.contains { mode in
+            canDonate(inMode: mode, localNumber: localNumber)
+        }
     }
 
     public static var supportedNetworks: [PKPaymentNetwork] {

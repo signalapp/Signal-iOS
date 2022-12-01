@@ -163,10 +163,12 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
     @objc
     private func didTapDonate() {
         dismiss(animated: true) {
-            if DonationUtilities.canDonate(localNumber: Self.tsAccountManager.localNumber) {
+            if DonationUtilities.canDonateInAnyWay(
+                localNumber: Self.tsAccountManager.localNumber
+            ) {
                 let frontVc = { CurrentAppContext().frontmostViewController() }
 
-                let donateVc = DonateViewController(startingDonationMode: .oneTime) { finishResult in
+                let donateVc = DonateViewController(preferredDonateMode: .oneTime) { finishResult in
                     switch finishResult {
                     case let .completedDonation(donateSheet, thanksSheet):
                         donateSheet.dismiss(animated: true) {

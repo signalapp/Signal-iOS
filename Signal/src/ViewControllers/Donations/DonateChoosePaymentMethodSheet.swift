@@ -9,12 +9,6 @@ import SignalServiceKit
 import SignalMessaging
 
 class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
-    enum DonationMode {
-        case oneTime
-        case monthly
-        case gift
-    }
-
     private let amount: FiatMoney
     private let badge: ProfileBadge?
     private let donationMode: DonationMode
@@ -70,7 +64,8 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
 
     private lazy var supportedPaymentMethodOptions: Set<DonationPaymentMethod> = {
         DonationUtilities.supportedDonationPaymentMethodOptions(
-            localNumber: Self.tsAccountManager.localNumber
+            localNumber: Self.tsAccountManager.localNumber,
+            forDonationMode: donationMode
         )
     }()
 

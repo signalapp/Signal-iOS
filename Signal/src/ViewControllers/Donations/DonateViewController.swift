@@ -11,8 +11,13 @@ import SignalServiceKit
 import SignalMessaging
 
 class DonateViewController: OWSViewController, OWSNavigationChildController {
-    private static var canMakeNewDonations: Bool {
-        DonationUtilities.canDonate(localNumber: tsAccountManager.localNumber)
+    private static func canMakeNewDonations(
+        forDonateMode donateMode: DonateMode
+    ) -> Bool {
+        DonationUtilities.canDonate(
+            inMode: donateMode.asDonationMode,
+            localNumber: tsAccountManager.localNumber
+        )
     }
 
     private var backgroundColor: UIColor {
@@ -51,13 +56,13 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     private var scrollToOneTimeContinueButtonWhenKeyboardAppears = false
 
     public init(
-        startingDonationMode: DonationMode,
+        preferredDonateMode: DonateMode,
         onFinished: @escaping (FinishResult) -> Void
     ) {
-        if Self.canMakeNewDonations {
-            self.state = .init(donationMode: startingDonationMode)
+        if Self.canMakeNewDonations(forDonateMode: preferredDonateMode) {
+            self.state = .init(donateMode: preferredDonateMode)
         } else {
-            self.state = .init(donationMode: .monthly)
+            self.state = .init(donateMode: .monthly)
         }
         self.onFinished = onFinished
 
@@ -115,12 +120,12 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     }
 
     @objc
-    private func didDonationModeChange() {
-        let rawValue = donationModePickerView.selectedSegmentIndex
-        guard let newValue = DonationMode(rawValue: rawValue) else {
-            owsFail("[Donations] Unexpected donation mode")
+    private func didDonateModeChange() {
+        let rawValue = donateModePickerView.selectedSegmentIndex
+        guard let newValue = DonateMode(rawValue: rawValue) else {
+            owsFail("[Donations] Unexpected donate mode")
         }
-        state = state.selectDonationMode(newValue)
+        state = state.selectDonateMode(newValue)
     }
 
     private func addAnimationView(anchor: UIView, name: String) {
@@ -187,14 +192,14 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
     private func startApplePay(
         with amount: FiatMoney,
-        donationMode: DonationMode
+        donateMode: DonateMode
     ) {
         SubscriptionManager.terminateTransactionIfPossible = false
 
         let paymentRequest = DonationUtilities.newPaymentRequest(
             for: amount,
             isRecurring: {
-                switch donationMode {
+                switch donateMode {
                 case .oneTime: return false
                 case .monthly: return true
                 }
@@ -214,7 +219,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     private func startCreditOrDebitCard(
         with amount: FiatMoney,
         badge: ProfileBadge?,
-        donationMode: DonationMode
+        donateMode: DonateMode
     ) {
         guard let navigationController else {
             owsFail("Cannot open credit/debit card screen if we're not in a navigation controller")
@@ -225,7 +230,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         }
 
         let cardDonationMode: CreditOrDebitCardDonationViewController.DonationMode
-        switch donationMode {
+        switch donateMode {
         case .oneTime:
             cardDonationMode = .oneTime
         case .monthly:
@@ -249,7 +254,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         ) { [weak self] in
             self?.didCompleteDonation(
                 badge: badge,
-                thanksSheetType: donationMode.forBadgeThanksSheet
+                thanksSheetType: donateMode.forBadgeThanksSheet
             )
         }
         navigationController.pushViewController(vc, animated: true)
@@ -258,45 +263,46 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     private func startPaypal(
         with amount: FiatMoney,
         badge: ProfileBadge?,
-        donationMode: DonationMode
+        donateMode: DonateMode
     ) {
-        switch donationMode {
+        switch donateMode {
         case .oneTime:
             owsFailDebug("One-time not yet supported!")
         case .monthly:
-            owsFailDebug("Monthly not yet supported!")
+            // TODO: [PayPal] support for monthly payments
+            owsFail("Monthly not yet supported - should be impossible from the UI!")
         }
     }
 
     private func presentChoosePaymentMethodSheet(
         amount: FiatMoney,
         badge: ProfileBadge?,
-        donationMode: DonationMode
+        donateMode: DonateMode
     ) {
         oneTimeCustomAmountTextField.resignFirstResponder()
 
         let sheet = DonateChoosePaymentMethodSheet(
             amount: amount,
             badge: badge,
-            donationMode: donationMode.forChoosePaymentMethodSheet
+            donationMode: donateMode.asDonationMode
         ) { [weak self] (sheet, paymentMethod) in
             sheet.dismiss(animated: true) { [weak self] in
                 guard let self else { return }
 
                 switch paymentMethod {
                 case .applePay:
-                    self.startApplePay(with: amount, donationMode: donationMode)
+                    self.startApplePay(with: amount, donateMode: donateMode)
                 case .creditOrDebitCard:
                     self.startCreditOrDebitCard(
                         with: amount,
                         badge: badge,
-                        donationMode: donationMode
+                        donateMode: donateMode
                     )
                 case .paypal:
                     self.startPaypal(
                         with: amount,
                         badge: badge,
-                        donationMode: donationMode
+                        donateMode: donateMode
                     )
                 }
             }
@@ -335,7 +341,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             presentChoosePaymentMethodSheet(
                 amount: amount,
                 badge: oneTime.profileBadge,
-                donationMode: .oneTime
+                donateMode: .oneTime
             )
         }
     }
@@ -347,7 +353,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         presentChoosePaymentMethodSheet(
             amount: monthlyPaymentRequest.amount,
             badge: monthlyPaymentRequest.profileBadge,
-            donationMode: .monthly
+            donateMode: .monthly
         )
     }
 
@@ -392,7 +398,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             presentChoosePaymentMethodSheet(
                 amount: monthlyPaymentRequest.amount,
                 badge: monthlyPaymentRequest.profileBadge,
-                donationMode: .monthly
+                donateMode: .monthly
             )
         }
     }
@@ -505,7 +511,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         ))
     }
 
-    internal func didFailDonation(error: Error, mode: DonationMode) {
+    internal func didFailDonation(error: Error, mode: DonateMode) {
         DonationViewsUtil.presentDonationErrorSheet(
             from: self,
             error: error,
@@ -708,7 +714,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         case let .loaded(oneTime, monthly):
             renderLoadedBody(
                 oldState: oldState,
-                donationMode: state.donationMode,
+                donateMode: state.donateMode,
                 oneTime: oneTime,
                 monthly: monthly
             )
@@ -735,11 +741,11 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
     private func renderLoadedBody(
         oldState: State?,
-        donationMode: DonationMode,
+        donateMode: DonateMode,
         oneTime: State.OneTimeState,
         monthly: State.MonthlyState
     ) {
-        switch donationMode {
+        switch donateMode {
         case .oneTime:
             renderCurrencyPickerView(
                 oldState: oldState,
@@ -754,7 +760,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             renderMonthly(oldState: oldState, monthly: monthly)
         }
 
-        renderDonationModePickerView()
+        renderDonateModePickerView()
 
         let wasLoaded: Bool = {
             switch oldState?.loadState {
@@ -762,14 +768,14 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             default: return false
             }
         }()
-        if !wasLoaded || oldState?.donationMode != state.donationMode {
+        if !wasLoaded || oldState?.donateMode != state.donateMode {
             var subviews: [UIView] = [currencyPickerContainerView]
 
-            if Self.canMakeNewDonations {
-                subviews.append(donationModePickerView)
+            if Self.canMakeNewDonations(forDonateMode: state.donateMode) {
+                subviews.append(donateModePickerView)
             }
 
-            switch donationMode {
+            switch donateMode {
             case .oneTime:
                 subviews.append(oneTimeView)
             case .monthly:
@@ -818,7 +824,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         selectedCurrencyCode: Currency.Code
     ) {
         if
-            oldState?.donationMode == state.donationMode,
+            oldState?.donateMode == state.donateMode,
             oldState?.selectedCurrencyCode == selectedCurrencyCode {
             return
         }
@@ -850,14 +856,14 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
     // MARK: - Donation mode picker
 
-    private lazy var donationModePickerView: UISegmentedControl = {
+    private lazy var donateModePickerView: UISegmentedControl = {
         let picker = UISegmentedControl()
         picker.insertSegment(
             withTitle: NSLocalizedString(
                 "DONATE_SCREEN_ONE_TIME_CHOICE",
                 comment: "On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations."
             ),
-            at: DonationMode.oneTime.rawValue,
+            at: DonateMode.oneTime.rawValue,
             animated: false
         )
         picker.insertSegment(
@@ -865,15 +871,15 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 "DONATE_SCREEN_MONTHLY_CHOICE",
                 comment: "On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations."
             ),
-            at: DonationMode.monthly.rawValue,
+            at: DonateMode.monthly.rawValue,
             animated: false
         )
-        picker.addTarget(self, action: #selector(didDonationModeChange), for: .valueChanged)
+        picker.addTarget(self, action: #selector(didDonateModeChange), for: .valueChanged)
         return picker
     }()
 
-    private func renderDonationModePickerView() {
-        donationModePickerView.selectedSegmentIndex = state.donationMode.rawValue
+    private func renderDonateModePickerView() {
+        donateModePickerView.selectedSegmentIndex = state.donateMode.rawValue
     }
 
     // MARK: - One-time
@@ -943,7 +949,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         renderOneTimeCustomAmountTextField(oneTime: oneTime)
         renderOneTimeContinueButton(oneTime: oneTime)
 
-        switch oldState?.loadedDonationMode {
+        switch oldState?.loadedDonateMode {
         case .oneTime:
             break
         default:
@@ -1012,7 +1018,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     }
 
     private func renderOneTimePresetsView(oldState: State?, oneTime: State.OneTimeState) {
-        if oldState?.loadedDonationMode != .oneTime || oldState?.oneTime?.selectedCurrencyCode != oneTime.selectedCurrencyCode {
+        if oldState?.loadedDonateMode != .oneTime || oldState?.oneTime?.selectedCurrencyCode != oneTime.selectedCurrencyCode {
             guard let preset = oneTime.selectedPreset else {
                 owsFail("[Donations] It should be impossible to select a currency code without a preset")
             }
@@ -1084,7 +1090,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         renderMonthlySubscriptionLevelsView(oldState: state, monthly: monthly)
         renderMonthlyButtonsView(monthly: monthly)
 
-        switch oldState?.loadedDonationMode {
+        switch oldState?.loadedDonateMode {
         case .monthly:
             break
         default:
@@ -1138,7 +1144,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         var buttons = [OWSButton]()
 
         if let currentSubscription = monthly.currentSubscription {
-            if Self.canMakeNewDonations {
+            if Self.canMakeNewDonations(forDonateMode: .monthly) {
                 let updateTitle = NSLocalizedString(
                     "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON",
                     comment: "On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button."

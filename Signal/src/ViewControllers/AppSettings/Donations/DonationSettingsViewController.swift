@@ -69,11 +69,14 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     private lazy var statusLabel = LinkingTextView()
 
-    private static var canDonate: Bool {
-        DonationUtilities.canDonate(localNumber: tsAccountManager.localNumber)
+    private static var canDonateInAnyWay: Bool {
+        DonationUtilities.canDonateInAnyWay(localNumber: tsAccountManager.localNumber)
     }
 
-    private static var canSendGiftBadges: Bool { RemoteConfig.canSendGiftBadges && canDonate }
+    private static var canSendGiftBadges: Bool {
+        RemoteConfig.canSendGiftBadges &&
+        DonationUtilities.canDonate(inMode: .gift, localNumber: tsAccountManager.localNumber)
+    }
 
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -272,8 +275,8 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 comment: "On the donation settings screen, tapping this button will take the user to a screen where they can donate."
             )
             let button = OWSButton(title: buttonTitle) { [weak self] in
-                if Self.canDonate {
-                    self?.showDonateViewController(startingDonationMode: .oneTime)
+                if Self.canDonateInAnyWay {
+                    self?.showDonateViewController(preferredDonateMode: .oneTime)
                 } else {
                     DonationViewsUtil.openDonateWebsite()
                 }
@@ -346,7 +349,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 name: NSLocalizedString("DONATION_VIEW_MANAGE_SUBSCRIPTION", comment: "Title for the 'Manage Subscription' button on the donation screen"),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "manageSubscription"),
                 actionBlock: { [weak self] in
-                    self?.showDonateViewController(startingDonationMode: .monthly)
+                    self?.showDonateViewController(preferredDonateMode: .monthly)
                 }
             ))
         }
@@ -461,8 +464,8 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     // MARK: - Showing subscription view controller
 
-    private func showDonateViewController(startingDonationMode: DonateViewController.DonationMode) {
-        let donateVc = DonateViewController(startingDonationMode: startingDonationMode) { [weak self] finishResult in
+    private func showDonateViewController(preferredDonateMode: DonateViewController.DonateMode) {
+        let donateVc = DonateViewController(preferredDonateMode: preferredDonateMode) { [weak self] finishResult in
             guard let self = self else { return }
             switch finishResult {
             case let .completedDonation(_, thanksSheet):
@@ -533,7 +536,7 @@ extension DonationSettingsViewController: BadgeExpirationSheetDelegate {
         case .dismiss:
             break
         case .openDonationView:
-            self.showDonateViewController(startingDonationMode: .oneTime)
+            self.showDonateViewController(preferredDonateMode: .oneTime)
         }
     }
 }
