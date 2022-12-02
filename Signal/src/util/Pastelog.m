@@ -177,23 +177,6 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
     [[self shared] exportLogs];
 }
 
-- (void)exportLogs
-{
-    OWSAssertIsOnMainThread();
-
-    CollectedLogsResult *collectedLogsResult = [self collectLogs];
-    if (!collectedLogsResult.succeeded) {
-        NSString *errorString = collectedLogsResult.errorString;
-        [Pastelog showFailureAlertWithMessage:errorString ?: @"(unknown error)" logArchiveOrDirectoryPath:nil];
-        return;
-    }
-    NSString *logsDirPath = collectedLogsResult.logsDirPath;
-
-    [AttachmentSharing showShareUIForURL:[NSURL fileURLWithPath:logsDirPath]
-                                  sender:nil
-                              completion:^{ (void)[OWSFileSystem deleteFile:logsDirPath]; }];
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

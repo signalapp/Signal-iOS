@@ -166,8 +166,7 @@ extension Pastelog {
         }
     }
 
-    @objc
-    func collectLogs() -> CollectedLogsResult {
+    private func collectLogs() -> CollectedLogsResult {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd hh.mm.ss"
         let dateString = dateFormatter.string(from: Date())
@@ -200,6 +199,23 @@ extension Pastelog {
         }
 
         return CollectedLogsResult(logsDirPath: zipDirPath)
+    }
+
+    @objc
+    func exportLogs() {
+        AssertIsOnMainThread()
+
+        let collectedLogsResult = collectLogs()
+        guard collectedLogsResult.succeeded else {
+            let message = collectedLogsResult.errorString ?? "(unknown error)"
+            Self.showFailureAlert(with: message, logArchiveOrDirectoryPath: nil)
+            return
+        }
+        let logsDirPath = collectedLogsResult.logsDirPath!
+
+        AttachmentSharing.showShareUI(for: URL(fileURLWithPath: logsDirPath), sender: nil) {
+            OWSFileSystem.deleteFile(logsDirPath)
+        }
     }
 
     @objc(uploadLogsWithSuccess:failure:)
