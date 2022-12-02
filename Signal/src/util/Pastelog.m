@@ -30,31 +30,6 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
 
 @implementation Pastelog
 
-+ (instancetype)shared
-{
-    static Pastelog *sharedMyManager = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedMyManager = [[self alloc] initDefault];
-    });
-    return sharedMyManager;
-}
-
-- (instancetype)initDefault
-{
-    self = [super init];
-
-    if (!self) {
-        return self;
-    }
-
-    OWSSingletonAssert();
-
-    return self;
-}
-
-#pragma mark -
-
 + (void)submitLogs
 {
     [self submitLogsWithSupportTag:nil completion:nil];
@@ -75,7 +50,7 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
         supportFilter = [supportFilter stringByAppendingFormat:@" - %@", tag];
     }
 
-    [[self shared] uploadLogsWithUIWithSuccess:^(NSURL *url) {
+    [self uploadLogsWithUIWithSuccess:^(NSURL *url) {
         ActionSheetController *alert = [[ActionSheetController alloc]
             initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_TITLE", @"Title of the debug log alert.")
                   message:NSLocalizedString(@"DEBUG_LOG_ALERT_MESSAGE", @"Message of the debug log alert.")];
@@ -126,7 +101,8 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
     }];
 }
 
-- (void)uploadLogsWithUIWithSuccess:(UploadDebugLogsSuccess)successParam {
++ (void)uploadLogsWithUIWithSuccess:(UploadDebugLogsSuccess)successParam
+{
     OWSAssertIsOnMainThread();
 
     [ModalActivityIndicatorViewController
@@ -165,16 +141,6 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
                               }];
                           }];
                   }];
-}
-
-+ (void)uploadLogsWithSuccess:(UploadDebugLogsSuccess)successParam failure:(UploadDebugLogsFailure)failureParam
-{
-    [[self shared] uploadLogsWithSuccess:successParam failure:failureParam];
-}
-
-+ (void)exportLogs
-{
-    [[self shared] exportLogs];
 }
 
 @end

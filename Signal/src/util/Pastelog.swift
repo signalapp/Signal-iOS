@@ -129,7 +129,7 @@ extension Pastelog {
         }
     }
 
-    private func collectLogs() -> Result<String, NoLogsError> {
+    private static func collectLogs() -> Result<String, NoLogsError> {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd hh.mm.ss"
         let dateString = dateFormatter.string(from: Date())
@@ -160,8 +160,7 @@ extension Pastelog {
         return .success(zipDirPath)
     }
 
-    @objc
-    func exportLogs() {
+    public static func exportLogs() {
         AssertIsOnMainThread()
         switch collectLogs() {
         case let .success(logsDirPath):
@@ -175,7 +174,7 @@ extension Pastelog {
     }
 
     @objc(uploadLogsWithSuccess:failure:)
-    func uploadLogs(
+    static func uploadLogs(
         success: @escaping UploadDebugLogsSuccess,
         failure: @escaping UploadDebugLogsFailure
     ) {
