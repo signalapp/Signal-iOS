@@ -108,7 +108,6 @@ public class DebugLogUploader: NSObject {
             let request = URLRequest(url: url)
 
             var textParts = uploadParameters.fieldMap
-            let mimeType = OWSMimeTypeApplicationZip
             textParts.append(key: "Content-Type", value: mimeType)
 
             return urlSession.multiPartUploadTaskPromise(request: request,
