@@ -269,8 +269,7 @@ public class RemoteConfig: BaseFlags {
     }
 
     public static var outboundGroupRings: Bool {
-        // When we're ready to enable outbound rings in production, remove the check for 'isPrerelease'.
-        DebugFlags.internalSettings || (FeatureFlags.isPrerelease && isEnabled(.groupRings2))
+        DebugFlags.internalSettings || isEnabled(.groupRings2)
     }
 
     public static var maxGroupCallRingSize: UInt {
