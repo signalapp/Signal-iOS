@@ -61,6 +61,7 @@ public class DonationUtilities: Dependencies {
         let isPaypalAvailable = {
             if
                 #available(iOS 14, *),
+                DebugFlags.canDonateWithPaypal,
                 !RemoteConfig.paypalDisabledRegions.contains(e164: localNumber)
             {
                 switch donationMode {

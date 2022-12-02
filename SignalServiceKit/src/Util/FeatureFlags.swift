@@ -374,6 +374,8 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let forceSubscriptionMegaphone = build.includes(.qa)
 
+    public static let canDonateWithPaypal = build.includes(.qa)
+
     @objc
     public static let extraDebugLogs = build.includes(.openPreview)
 
