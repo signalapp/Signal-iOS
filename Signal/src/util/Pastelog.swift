@@ -140,33 +140,16 @@ public class DebugLogUploader: NSObject {
 }
 
 extension Pastelog {
-    /// The result of the `collectLogs` method. Here because Objective-C can't represent `Result`s.
-    /// If we migrate its callers to Swift, we should be able to remove this class.
-    @objc
-    public class CollectedLogsResult: NSObject {
-        @objc
-        public let errorString: String?
-
-        @objc
-        public let logsDirPath: String?
-
-        @objc
-        public var succeeded: Bool { errorString == nil }
-
-        init(errorString: String) {
-            self.errorString = errorString
-            self.logsDirPath = nil
-            super.init()
-        }
-
-        init(logsDirPath: String) {
-            self.errorString = nil
-            self.logsDirPath = logsDirPath
-            super.init()
+    private struct NoLogsError: Error {
+        var errorString: String {
+            NSLocalizedString(
+                "DEBUG_LOG_ALERT_NO_LOGS",
+                comment: "Error indicating that no debug logs could be found."
+            )
         }
     }
 
-    private func collectLogs() -> CollectedLogsResult {
+    private func collectLogs() -> Result<String, NoLogsError> {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy.MM.dd hh.mm.ss"
         let dateString = dateFormatter.string(from: Date())
@@ -178,11 +161,7 @@ extension Pastelog {
 
         let logFilePaths = DebugLogger.shared().allLogFilePaths()
         if logFilePaths.isEmpty {
-            let errorString = NSLocalizedString(
-                "DEBUG_LOG_ALERT_NO_LOGS",
-                comment: "Error indicating that no debug logs could be found."
-            )
-            return CollectedLogsResult(errorString: errorString)
+            return .failure(NoLogsError())
         }
 
         for logFilePath in logFilePaths {
@@ -198,23 +177,20 @@ extension Pastelog {
             OWSFileSystem.protectFileOrFolder(atPath: copyFilePath)
         }
 
-        return CollectedLogsResult(logsDirPath: zipDirPath)
+        return .success(zipDirPath)
     }
 
     @objc
     func exportLogs() {
         AssertIsOnMainThread()
-
-        let collectedLogsResult = collectLogs()
-        guard collectedLogsResult.succeeded else {
-            let message = collectedLogsResult.errorString ?? "(unknown error)"
-            Self.showFailureAlert(with: message, logArchiveOrDirectoryPath: nil)
+        switch collectLogs() {
+        case let .success(logsDirPath):
+            AttachmentSharing.showShareUI(for: URL(fileURLWithPath: logsDirPath), sender: nil) {
+                OWSFileSystem.deleteFile(logsDirPath)
+            }
+        case let .failure(error):
+            Self.showFailureAlert(with: error.errorString, logArchiveOrDirectoryPath: nil)
             return
-        }
-        let logsDirPath = collectedLogsResult.logsDirPath!
-
-        AttachmentSharing.showShareUI(for: URL(fileURLWithPath: logsDirPath), sender: nil) {
-            OWSFileSystem.deleteFile(logsDirPath)
         }
     }
 
@@ -232,12 +208,14 @@ extension Pastelog {
         }
 
         // Phase 1. Make a local copy of all of the log files.
-        let collectedLogsResult = collectLogs()
-        guard collectedLogsResult.succeeded else {
-            wrappedFailure(collectedLogsResult.errorString!, nil)
+        let zipDirPath: String
+        switch collectLogs() {
+        case let .success(logsDirPath):
+            zipDirPath = logsDirPath
+        case let .failure(error):
+            Self.showFailureAlert(with: error.errorString, logArchiveOrDirectoryPath: nil)
             return
         }
-        let zipDirPath = collectedLogsResult.logsDirPath!
 
         // Phase 2. Zip up the log files.
         let zipFilePath = zipDirPath.appendingFileExtension("zip")
