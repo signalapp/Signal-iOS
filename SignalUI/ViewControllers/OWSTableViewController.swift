@@ -9,6 +9,10 @@ import UIKit
 
 @objc
 public extension OWSTableItem {
+    enum AccessoryImageTint: Int {
+        case untinted
+        case tinted
+    }
 
     static var primaryLabelFont: UIFont {
         return UIFont.ows_dynamicTypeBodyClamped
@@ -134,6 +138,7 @@ public extension OWSTableItem {
                            textColor: UIColor? = nil,
                            accessoryText: String? = nil,
                            accessoryImage: UIImage? = nil,
+                           accessoryImageTint: AccessoryImageTint = .tinted,
                            accessibilityIdentifier: String,
                            actionBlock: (() -> Void)?) -> OWSTableItem {
         item(icon: icon,
@@ -142,6 +147,7 @@ public extension OWSTableItem {
              textColor: textColor,
              accessoryText: accessoryText,
              accessoryImage: accessoryImage,
+             accessoryImageTint: accessoryImageTint,
              accessibilityIdentifier: accessibilityIdentifier,
              actionBlock: actionBlock)
     }
@@ -156,6 +162,7 @@ public extension OWSTableItem {
                      accessoryText: String? = nil,
                      accessoryType: UITableViewCell.AccessoryType = .none,
                      accessoryImage: UIImage? = nil,
+                     accessoryImageTint: AccessoryImageTint = .tinted,
                      accessoryView: UIView? = nil,
                      accessibilityIdentifier: String,
                      actionBlock: (() -> Void)? = nil) -> OWSTableItem {
@@ -171,6 +178,7 @@ public extension OWSTableItem {
             accessoryText: accessoryText,
             accessoryType: accessoryType,
             accessoryImage: accessoryImage,
+            accessoryImageTint: accessoryImageTint,
             accessoryView: accessoryView,
             accessibilityIdentifier: accessibilityIdentifier
             )
@@ -203,6 +211,7 @@ public extension OWSTableItem {
                                             accessoryText: String? = nil,
                                             accessoryType: UITableViewCell.AccessoryType = .disclosureIndicator,
                                             accessoryImage: UIImage? = nil,
+                                            accessoryImageTint: AccessoryImageTint = .tinted,
                                             accessoryView: UIView? = nil,
                                             accessibilityIdentifier: String? = nil) -> UITableViewCell {
         buildIconNameCell(icon: icon,
@@ -214,6 +223,7 @@ public extension OWSTableItem {
                           accessoryText: accessoryText,
                           accessoryType: accessoryType,
                           accessoryImage: accessoryImage,
+                          accessoryImageTint: accessoryImageTint,
                           accessoryView: accessoryView,
                           accessibilityIdentifier: accessibilityIdentifier)
     }
@@ -229,6 +239,7 @@ public extension OWSTableItem {
                                   accessoryTextColor: UIColor? = nil,
                                   accessoryType: UITableViewCell.AccessoryType = .none,
                                   accessoryImage: UIImage? = nil,
+                                  accessoryImageTint: AccessoryImageTint = .tinted,
                                   accessoryView: UIView? = nil,
                                   customColor: UIColor? = nil,
                                   accessibilityIdentifier: String? = nil) -> UITableViewCell {
@@ -247,6 +258,7 @@ public extension OWSTableItem {
                                       accessoryTextColor: accessoryTextColor,
                                       accessoryType: accessoryType,
                                       accessoryImage: accessoryImage,
+                                      accessoryImageTint: accessoryImageTint,
                                       accessoryView: accessoryView,
                                       customColor: customColor,
                                       accessibilityIdentifier: accessibilityIdentifier)
@@ -287,6 +299,7 @@ public extension OWSTableItem {
                                                accessoryTextColor: UIColor? = nil,
                                                accessoryType: UITableViewCell.AccessoryType = .none,
                                                accessoryImage: UIImage? = nil,
+                                               accessoryImageTint: AccessoryImageTint = .tinted,
                                                accessoryView: UIView? = nil,
                                                customColor: UIColor? = nil,
                                                accessibilityIdentifier: String? = nil) -> UITableViewCell {
@@ -392,11 +405,18 @@ public extension OWSTableItem {
 
         if let accessoryImage = accessoryImage {
             let accessoryImageView = UIImageView()
-            accessoryImageView.setTemplateImage(
-                accessoryImage,
-                // Match the OS accessory view colors
-                tintColor: Theme.isDarkThemeEnabled ? .ows_whiteAlpha25 : .ows_blackAlpha25
-            )
+
+            switch accessoryImageTint {
+            case .tinted:
+                accessoryImageView.setTemplateImage(
+                    accessoryImage,
+                    // Match the OS accessory view colors
+                    tintColor: Theme.isDarkThemeEnabled ? .ows_whiteAlpha25 : .ows_blackAlpha25
+                )
+            case .untinted:
+                accessoryImageView.image = accessoryImage
+            }
+
             accessoryImageView.sizeToFit()
             cell.accessoryView = accessoryImageView
         } else {
