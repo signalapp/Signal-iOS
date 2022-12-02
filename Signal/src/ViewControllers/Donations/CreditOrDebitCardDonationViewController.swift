@@ -58,7 +58,7 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
     private func didSubmit() {
         switch formState {
         case .invalid, .potentiallyValid:
-            owsFail("It should be impossible to submit the form without a fully-valid card. Is the submit button properly disabled?")
+            owsFail("[Donations] It should be impossible to submit the form without a fully-valid card. Is the submit button properly disabled?")
         case let .fullyValid(creditOrDebitCard):
             switch donationMode {
             case .oneTime:

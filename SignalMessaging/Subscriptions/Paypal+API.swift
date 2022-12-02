@@ -25,17 +25,17 @@ public extension Paypal {
             return networkManager.makePromise(request: createBoostRequest)
         }.map(on: .sharedUserInitiated) { response throws -> URL in
             guard let json = response.responseBodyJson else {
-                throw OWSAssertionError("Missing or invalid JSON")
+                throw OWSAssertionError("[Donations] Missing or invalid JSON")
             }
 
             guard let parser = ParamParser(responseObject: json) else {
-                throw OWSAssertionError("Failed to decode JSON response")
+                throw OWSAssertionError("[Donations] Failed to decode JSON response")
             }
 
             let approvalUrlString: String = try parser.required(key: "approvalUrl")
 
             guard let approvalUrl = URL(string: approvalUrlString) else {
-                throw OWSAssertionError("Approval URL was not a valid URL!")
+                throw OWSAssertionError("[Donations] Approval URL was not a valid URL!")
             }
 
             return approvalUrl
@@ -66,11 +66,11 @@ public extension Paypal {
             return networkManager.makePromise(request: confirmBoostRequest)
         }.map(on: .sharedUserInitiated) { response throws -> String in
             guard let json = response.responseBodyJson else {
-                throw OWSAssertionError("Missing or invalid JSON")
+                throw OWSAssertionError("[Donations] Missing or invalid JSON")
             }
 
             guard let parser = ParamParser(responseObject: json) else {
-                throw OWSAssertionError("Failed to decode JSON response")
+                throw OWSAssertionError("[Donations] Failed to decode JSON response")
             }
 
             return try parser.required(key: "paymentId")

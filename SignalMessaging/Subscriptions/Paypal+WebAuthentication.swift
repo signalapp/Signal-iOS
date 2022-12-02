@@ -38,17 +38,17 @@ extension Paypal {
         fileprivate init?(queryItems: [URLQueryItem]) {
             let queryItemMap: [QueryKey: String] = queryItems.reduce(into: [:]) { partialResult, queryItem in
                 guard let queryKey = QueryKey(rawValue: queryItem.name) else {
-                    Logger.warn("Unexpected query item: \(queryItem.name)")
+                    Logger.warn("[Donations] Unexpected query item: \(queryItem.name)")
                     return
                 }
 
                 guard partialResult[queryKey] == nil else {
-                    owsFailDebug("Unexpectedly had duplicate known query items: \(queryKey)")
+                    owsFailDebug("[Donations] Unexpectedly had duplicate known query items: \(queryKey)")
                     return
                 }
 
                 guard let value = queryItem.value else {
-                    owsFailDebug("Unexpectedly missing value for known query item: \(queryKey)")
+                    owsFailDebug("[Donations] Unexpectedly missing value for known query item: \(queryKey)")
                     return
                 }
 
@@ -134,7 +134,7 @@ public extension Paypal {
         }
 
         guard _liveAuthSession.tryToSetIfNil(newSession) else {
-            owsFail("Unexpectedly tried to create a new PayPal auth session while an existing one is live!")
+            owsFail("[Donations] Unexpectedly tried to create a new PayPal auth session while an existing one is live!")
         }
 
         return (newSession, promise)
@@ -149,7 +149,7 @@ private extension Paypal {
     /// comments above for more details.
     static func completeAuthSession(withApprovalParams approvalParams: WebAuthApprovalParams?) {
         guard let liveSession = _liveAuthSession.get() else {
-            owsFailDebug("Attempting to complete auth session, but no live auth session found!")
+            owsFailDebug("[Donations] Attempting to complete auth session, but no live auth session found!")
             return
         }
 
@@ -192,8 +192,14 @@ private extension Paypal {
             error: Error?,
             completion: CompletionHandler
         ) {
-            owsAssertDebug(finalUrl == nil, "Unexpectedly found non-nil final URL when auth session completed all by itself!")
-            owsAssertDebug(error != nil, "Unexpectedly found nil error when auth session completed all by itself!")
+            owsAssertDebug(
+                finalUrl == nil,
+                "[Donations] Unexpectedly found non-nil final URL when auth session completed all by itself!"
+            )
+            owsAssertDebug(
+                error != nil,
+                "[Donations] Unexpectedly found nil error when auth session completed all by itself!"
+            )
 
             completion(nil)
         }
@@ -216,7 +222,7 @@ public class PaypalCallbackUrlBridge: NSObject {
     @objc
     static func handlePossibleCallbackUrl(_ url: URL) -> Bool {
         guard let callbackUrlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
-            owsFailDebug("Malformed callback URL!")
+            owsFailDebug("[Donations] Malformed callback URL!")
             return false
         }
 
@@ -237,15 +243,15 @@ public class PaypalCallbackUrlBridge: NSObject {
                     let queryItems = callbackUrlComponents.queryItems,
                     let approvalParams = Paypal.WebAuthApprovalParams(queryItems: queryItems)
                 {
-                    Logger.info("Received PayPal approval params, moving forward.")
+                    Logger.info("[Donations] Received PayPal approval params, moving forward.")
                     return approvalParams
                 } else {
-                    owsFailDebug("Unexpectedly failed to extract approval params from approved callback URL, canceling.")
+                    owsFailDebug("[Donations] Unexpectedly failed to extract approval params from approved callback URL, canceling.")
                 }
             case .paypalCallbackCanceledPath:
-                Logger.info("Received PayPal cancel.")
+                Logger.info("[Donations] Received PayPal cancel.")
             default:
-                owsFailDebug("Encountered URL that looked like a PayPal callback URL but had an unrecognized path, canceling.")
+                owsFailDebug("[Donations] Encountered URL that looked like a PayPal callback URL but had an unrecognized path, canceling.")
             }
 
             return nil

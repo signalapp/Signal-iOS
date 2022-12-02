@@ -14,12 +14,14 @@ extension DonateViewController {
         with amount: FiatMoney,
         badge: ProfileBadge?
     ) {
+        Logger.info("[Donations] Starting one-time PayPal donation")
+
         guard let badge else {
-            owsFail("Missing badge!")
+            owsFail("[Donations] Missing badge!")
         }
 
         firstly(on: .main) { [weak self] () -> Promise<URL> in
-            guard let self else { throw OWSAssertionError("Missing self!") }
+            guard let self else { throw OWSAssertionError("[Donations] Missing self!") }
 
             // First, create a PayPal payment.
 
@@ -28,11 +30,9 @@ extension DonateViewController {
                 level: .boostBadge
             )
         }.then(on: .main) { [weak self] approvalUrl -> Promise<Paypal.WebAuthApprovalParams> in
-            guard let self else { throw OWSAssertionError("Missing self!") }
+            guard let self else { throw OWSAssertionError("[Donations] Missing self!") }
 
-            // Once the payment is created, present PayPal's web UI to the user
-            // for authentication.
-
+            Logger.info("[Donations] Presenting PayPal web UI for user approval of one-time donation")
             if #available(iOS 13, *) {
                 return Paypal.present(approvalUrl: approvalUrl, withPresentationContext: self)
             } else {
@@ -64,9 +64,7 @@ extension DonateViewController {
         }.then(on: .main) { [weak self] approvalParams -> Promise<Void> in
             guard let self else { return .value(()) }
 
-            // After successful authentication, confirm the payment and create
-            // a boost.
-
+            Logger.info("[Donations] Creating and redeeming one-time boost receipt for PayPal donation")
             return DonationViewsUtil.wrapPromiseInProgressView(
                 from: self,
                 promise: self.confirmPaypalPaymentAndRedeemBoost(
@@ -74,10 +72,13 @@ extension DonateViewController {
                     approvalParams: approvalParams
                 )
             ).map(on: .main) { [weak self] in
+                Logger.info("[Donations] One-time PayPal donation finished")
                 guard let self else { return }
                 self.didCompleteDonation(badge: badge, thanksSheetType: .boost)
             }
         }.catch(on: .main) { [weak self] error in
+            Logger.info("[Donations] One-time PayPal donation failed")
+
             guard let self else { return }
 
             if let webAuthError = error as? Paypal.AuthError {
