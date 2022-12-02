@@ -79,12 +79,11 @@ private extension PaypalConfirmationViewController {
         headerSection.hasBackground = false
         headerSection.shouldDisableCellSelection = true
 
-        // TODO: [PayPal] We should change this string. We're only using an old value because we have translations for it.
-        // let text = NSLocalizedStringX(
-        //    "DONATION_CONFIRMATION_PAYMENT_METHOD",
-        //    comment: "Users can donate to Signal. They may be asked to confirm their donation after entering payment information. This text will show the payment method, such as PayPal, next to it."
-        // )
-        let text = NSLocalizedString("ATTACHMENT_KEYBOARD_PAYMENT", comment: "A button to select a payment from the Attachment Keyboard")
+         let text = NSLocalizedString(
+            "DONATION_CONFIRMATION_PAYMENT_METHOD",
+            value: "Payment Method",
+            comment: "Users can donate to Signal. They may be asked to confirm their donation after entering payment information. This text will show the payment method, such as PayPal, next to it."
+         )
         let paymentMethodSection = OWSTableSection(items: [OWSTableItem.actionItem(
             name: text,
             accessoryImage: Theme.isDarkThemeEnabled
@@ -108,15 +107,11 @@ private extension PaypalConfirmationViewController {
 
     func updateBottom() {
         let confirmButton: UIButton = {
-            // TODO: [PayPal] We should change this string. We're only using an old value because we have translations for it.
-            // let title = NSLocalizedStringX(
-            //     "DONATION_CONFIRMATION_BUTTON_CONFIRM",
-            //     comment: "Users can donate to Signal. They may be asked to confirm their donation after entering payment information. If the user clicks this button, their payment will be confirmed."
-            // )
-            let title = NSLocalizedString(
-                "DONATION_SCREEN_DONATE_BUTTON",
-                comment: "On the donation settings screen, tapping this button will take the user to a screen where they can donate."
-            )
+             let title = NSLocalizedString(
+                 "DONATION_CONFIRMATION_BUTTON_CONFIRM",
+                 value: "Complete Donation",
+                 comment: "Users can donate to Signal. They may be asked to confirm their donation after entering payment information. If the user clicks this button, their payment will be confirmed."
+             )
             let button = OWSButton(title: title) { [weak self] in
                 guard let self else { return }
                 self.complete(withResult: .approved)
