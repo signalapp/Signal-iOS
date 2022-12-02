@@ -11,10 +11,6 @@ typedef void (^UploadDebugLogsFailure)(NSString *localizedErrorMessage, NSString
 
 @interface Pastelog : NSObject
 
-// This property is only here for Swift compatibility, and should not be
-// considered part of the public interface.
-@property (nonatomic, nullable) NSObject *currentUploader;
-
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
