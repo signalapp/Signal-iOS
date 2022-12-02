@@ -4,6 +4,8 @@
 //
 
 import Foundation
+import SSZipArchive
+import zlib
 import SignalCoreKit
 import SignalMessaging
 
@@ -198,6 +200,74 @@ extension Pastelog {
         }
 
         return CollectedLogsResult(logsDirPath: zipDirPath)
+    }
+
+    @objc(uploadLogsWithSuccess:failure:)
+    func uploadLogs(
+        success: @escaping UploadDebugLogsSuccess,
+        failure: @escaping UploadDebugLogsFailure
+    ) {
+        // Ensure that we call the completions on the main thread.
+        let wrappedSuccess: UploadDebugLogsSuccess = { url in
+            DispatchMainThreadSafe { success(url) }
+        }
+        let wrappedFailure: UploadDebugLogsFailure = { localizedErrorMessage, logArchiveOrDirectoryPath in
+            DispatchMainThreadSafe { failure(localizedErrorMessage, logArchiveOrDirectoryPath) }
+        }
+
+        // Phase 1. Make a local copy of all of the log files.
+        let collectedLogsResult = collectLogs()
+        guard collectedLogsResult.succeeded else {
+            wrappedFailure(collectedLogsResult.errorString!, nil)
+            return
+        }
+        let zipDirPath = collectedLogsResult.logsDirPath!
+
+        // Phase 2. Zip up the log files.
+        let zipFilePath = zipDirPath.appendingFileExtension("zip")
+        let zipSuccess = SSZipArchive.createZipFile(
+            atPath: zipFilePath,
+            withContentsOfDirectory: zipDirPath,
+            keepParentDirectory: true,
+            compressionLevel: Z_DEFAULT_COMPRESSION,
+            password: nil,
+            aes: false,
+            progressHandler: nil
+        )
+        guard zipSuccess else {
+            let errorMessage = NSLocalizedString(
+                "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS",
+                comment: "Error indicating that the debug logs could not be packaged."
+            )
+            wrappedFailure(errorMessage, zipDirPath)
+            return
+        }
+
+        OWSFileSystem.protectFileOrFolder(atPath: zipFilePath)
+        OWSFileSystem.deleteFile(zipDirPath)
+
+        // Phase 3. Upload the log files.
+        let uploader = DebugLogUploader()
+        currentUploader = uploader
+        uploader.uploadFile(
+            fileUrl: URL(fileURLWithPath: zipFilePath),
+            mimeType: OWSMimeTypeApplicationZip,
+            success: { [weak self] uploader, url in
+                // Ignore events from obsolete uploaders.
+                guard uploader == self?.currentUploader else { return }
+                OWSFileSystem.deleteFile(zipFilePath)
+                wrappedSuccess(url)
+            },
+            failure: { [weak self] uploader, error in
+                // Ignore events from obsolete uploaders.
+                guard uploader == self?.currentUploader else { return }
+                let errorMessage = NSLocalizedString(
+                    "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG",
+                    comment: "Error indicating that a debug log could not be uploaded."
+                )
+                wrappedFailure(errorMessage, zipFilePath)
+            }
+        )
     }
 
     @objc(showFailureAlertWithMessage:logArchiveOrDirectoryPath:)
