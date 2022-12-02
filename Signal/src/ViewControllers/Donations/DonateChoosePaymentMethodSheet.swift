@@ -57,6 +57,7 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
             return cell
         })])
         section.hasBackground = false
+        section.shouldDisableCellSelection = true
         let contents = OWSTableContents(sections: [section])
 
         self.tableViewController.setContents(contents, shouldReload: shouldReload)
