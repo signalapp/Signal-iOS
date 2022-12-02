@@ -74,7 +74,7 @@ extension Paypal {
     }
 
     /// Represents an error returned from web authentication.
-    public enum WebAuthError: Error {
+    public enum AuthError: Error {
         case userCanceled
     }
 
@@ -129,7 +129,7 @@ public extension Paypal {
             if let approvalParams {
                 future.resolve(approvalParams)
             } else {
-                future.reject(WebAuthError.userCanceled)
+                future.reject(AuthError.userCanceled)
             }
         }
 
