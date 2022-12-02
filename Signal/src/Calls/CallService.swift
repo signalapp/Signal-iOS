@@ -196,11 +196,14 @@ public final class CallService: LightweightCallManager {
                                                    object: nil)
         }
 
-        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            SDSDatabaseStorage.shared.appendDatabaseChangeDelegate(self)
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
             if let localUuid = self.tsAccountManager.localUuid {
                 self.callManager.setSelfUuid(localUuid)
             }
+        }
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            SDSDatabaseStorage.shared.appendDatabaseChangeDelegate(self)
         }
     }
 
