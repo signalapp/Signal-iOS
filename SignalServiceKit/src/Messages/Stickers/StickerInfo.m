@@ -78,44 +78,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-+ (nullable StickerPackInfo *)parseStickerPackShareUrl:(NSURL *)url
-{
-    if (![self isStickerPackShareUrl:url]) {
-        OWSFailDebug(@"Invalid URL.");
-        return nil;
-    }
-
-    NSString *_Nullable packIdHex;
-    NSString *_Nullable packKeyHex;
-    NSURLComponents *components = [NSURLComponents componentsWithString:url.absoluteString];
-    NSString *_Nullable fragment = components.fragment;
-    for (NSString *fragmentSegment in [fragment componentsSeparatedByString:@"&"]) {
-        NSArray<NSString *> *fragmentSlices = [fragmentSegment componentsSeparatedByString:@"="];
-        if (fragmentSlices.count != 2) {
-            OWSLogWarn(@"Skipping invalid fragment.");
-            OWSLogDebug(@"Skipping invalid fragment: %@", fragment);
-            continue;
-        }
-        NSString *fragmentName = fragmentSlices[0];
-        NSString *fragmentValue = fragmentSlices[1];
-        if ([fragmentName isEqualToString:@"pack_id"]) {
-            if (packIdHex != nil) {
-                OWSLogWarn(@"Duplicate pack_id. Using the newest one.");
-            }
-            packIdHex = fragmentValue;
-        } else if ([fragmentName isEqualToString:@"pack_key"]) {
-            if (packKeyHex == nil) {
-                OWSLogWarn(@"Duplicate pack_key. Using the newest one.");
-            }
-            packKeyHex = fragmentValue;
-        } else {
-            OWSLogWarn(@"Unknown query item: %@", fragmentName);
-        }
-    }
-
-    return [StickerPackInfo parsePackIdHex:packIdHex packKeyHex:packKeyHex];
-}
-
 - (NSString *)asKey
 {
     return self.packId.hexadecimalString;

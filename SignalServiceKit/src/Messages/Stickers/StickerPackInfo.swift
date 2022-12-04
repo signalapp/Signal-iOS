@@ -50,4 +50,50 @@ extension StickerPackInfo {
         url.port == nil &&
         url.path == "/addstickers"
     }
+
+    @objc(parseStickerPackShareUrl:)
+    public class func parseStickerPackShare(_ url: URL) -> StickerPackInfo? {
+        guard
+            isStickerPackShare(url),
+            let components = URLComponents(string: url.absoluteString)
+        else {
+            owsFail("Invalid URL.")
+        }
+
+        guard
+            let fragment = components.fragment,
+            let queryItems = parseAsQueryItems(string: fragment)
+        else {
+            Logger.warn("No fragment to parse as query items")
+            return nil
+        }
+
+        var packIdHex: String?
+        var packKeyHex: String?
+        for queryItem in queryItems {
+            switch queryItem.name {
+            case "pack_id":
+                if packIdHex != nil {
+                    Logger.warn("Duplicate pack_id. Using the newest one")
+                }
+                packIdHex = queryItem.value
+            case "pack_key":
+                if packKeyHex != nil {
+                    Logger.warn("Duplicate pack_key. Using the newest one")
+                }
+                packKeyHex = queryItem.value
+            default:
+                Logger.warn("Unknown query item: \(queryItem.name)")
+            }
+        }
+
+        return parse(packIdHex: packIdHex, packKeyHex: packKeyHex)
+    }
+
+    private class func parseAsQueryItems(string: String) -> [URLQueryItem]? {
+        guard let fakeUrl = URL(string: "http://example.com?\(string)") else {
+            return nil
+        }
+        return URLComponents(string: fakeUrl.absoluteString)?.queryItems
+    }
 }
