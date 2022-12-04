@@ -81,13 +81,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable StickerPackInfo *)parsePackIdHex:(nullable NSString *)packIdHex packKeyHex:(nullable NSString *)packKeyHex
 {
     if (packIdHex == nil || packIdHex.length < 1) {
+        OWSLogWarn(@"Invalid packIdHex.");
         OWSLogDebug(@"Invalid packIdHex: %@", packIdHex);
-        OWSFailDebug(@"Invalid packIdHex.");
         return nil;
     }
     if (packKeyHex == nil || packKeyHex.length < 1) {
+        OWSLogWarn(@"Invalid packKeyHex.");
         OWSLogDebug(@"Invalid packKeyHex: %@", packKeyHex);
-        OWSFailDebug(@"Invalid packKeyHex.");
         return nil;
     }
     NSData *_Nullable packId = [NSData dataFromHexString:packIdHex];
@@ -98,13 +98,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable StickerPackInfo *)parsePackId:(nullable NSData *)packId packKey:(nullable NSData *)packKey
 {
     if (packId == nil || packId.length < 1) {
+        OWSLogWarn(@"Invalid packId.");
         OWSLogDebug(@"Invalid packId: %@", packId);
-        OWSFailDebug(@"Invalid packId.");
         return nil;
     }
     if (packKey == nil || packKey.length != StickerManager.packKeyLength) {
+        OWSLogWarn(@"Invalid packKey.");
         OWSLogDebug(@"Invalid packKey: %@", packKey);
-        OWSFailDebug(@"Invalid packKey.");
         return nil;
     }
     return [[StickerPackInfo alloc] initWithPackId:packId packKey:packKey];
@@ -137,16 +137,21 @@ NS_ASSUME_NONNULL_BEGIN
     for (NSString *fragmentSegment in [fragment componentsSeparatedByString:@"&"]) {
         NSArray<NSString *> *fragmentSlices = [fragmentSegment componentsSeparatedByString:@"="];
         if (fragmentSlices.count != 2) {
-            OWSFailDebug(@"Invalid fragment: %@", fragment);
+            OWSLogWarn(@"Skipping invalid fragment.");
+            OWSLogDebug(@"Skipping invalid fragment: %@", fragment);
             continue;
         }
         NSString *fragmentName = fragmentSlices[0];
         NSString *fragmentValue = fragmentSlices[1];
         if ([fragmentName isEqualToString:@"pack_id"]) {
-            OWSAssertDebug(packIdHex == nil);
+            if (packIdHex != nil) {
+                OWSLogWarn(@"Duplicate pack_id. Using the newest one.");
+            }
             packIdHex = fragmentValue;
         } else if ([fragmentName isEqualToString:@"pack_key"]) {
-            OWSAssertDebug(packKeyHex == nil);
+            if (packKeyHex == nil) {
+                OWSLogWarn(@"Duplicate pack_key. Using the newest one.");
+            }
             packKeyHex = fragmentValue;
         } else {
             OWSLogWarn(@"Unknown query item: %@", fragmentName);
