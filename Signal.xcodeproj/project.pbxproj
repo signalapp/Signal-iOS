@@ -1260,6 +1260,7 @@
 		F94262A1289B1B5600460798 /* SignalServiceAddressTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426239289B1B5500460798 /* SignalServiceAddressTest.swift */; };
 		F94262A2289B1B5600460798 /* SSKBaseTestSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942623A289B1B5500460798 /* SSKBaseTestSwift.swift */; };
 		F94360F12910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94360F02910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift */; };
+		F9479EF8293D212C003B3503 /* StickerPackInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9479EF7293D212C003B3503 /* StickerPackInfo.swift */; };
 		F94BFA9528EBB0D800A5F34E /* FakeMessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */; };
 		F94C912028FDEA2E0065DF75 /* Decimal+Rounded.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94C911F28FDEA2E0065DF75 /* Decimal+Rounded.swift */; };
 		F94C912228FDEAF50065DF75 /* Decimal+IsInteger.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94C912128FDEAF50065DF75 /* Decimal+IsInteger.swift */; };
@@ -3649,6 +3650,7 @@
 		F9426239289B1B5500460798 /* SignalServiceAddressTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceAddressTest.swift; sourceTree = "<group>"; };
 		F942623A289B1B5500460798 /* SSKBaseTestSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SSKBaseTestSwift.swift; path = SignalServiceKit/tests/SSKBaseTestSwift.swift; sourceTree = SOURCE_ROOT; };
 		F94360F02910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditOrDebitCardDonationViewController.swift; sourceTree = "<group>"; };
+		F9479EF7293D212C003B3503 /* StickerPackInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPackInfo.swift; sourceTree = "<group>"; };
 		F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeMessageSender.swift; sourceTree = "<group>"; };
 		F94C911F28FDEA2E0065DF75 /* Decimal+Rounded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+Rounded.swift"; sourceTree = "<group>"; };
 		F94C912128FDEAF50065DF75 /* Decimal+IsInteger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+IsInteger.swift"; sourceTree = "<group>"; };
@@ -7611,6 +7613,7 @@
 				F9C5C91C289453B100548EEE /* StickerPack+SDS.swift */,
 				F9C5C91D289453B100548EEE /* StickerPack.h */,
 				F9C5C925289453B100548EEE /* StickerPack.m */,
+				F9479EF7293D212C003B3503 /* StickerPackInfo.swift */,
 			);
 			path = Stickers;
 			sourceTree = "<group>";
@@ -11224,6 +11227,7 @@
 				F9C5CC0D289453B300548EEE /* StickerMetadata.swift in Sources */,
 				F9C5CC0E289453B300548EEE /* StickerPack+SDS.swift in Sources */,
 				F9C5CC17289453B300548EEE /* StickerPack.m in Sources */,
+				F9479EF8293D212C003B3503 /* StickerPackInfo.swift in Sources */,
 				F9C5CD30289453B300548EEE /* StorageCoordinator.m in Sources */,
 				F9C5CCA3289453B300548EEE /* StorageService.pb.swift in Sources */,
 				F9C5CDE4289453B400548EEE /* StorageService.swift in Sources */,
