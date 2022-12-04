@@ -118,17 +118,6 @@ static void uncaughtExceptionHandler(NSException *exception)
 
 #pragma mark -
 
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-    OWSLogInfo(@"applicationDidEnterBackground.");
-
-    OWSLogFlush();
-
-    if (self.shouldKillAppWhenBackgrounded) {
-        exit(0);
-    }
-}
-
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
     OWSLogInfo(@"applicationWillEnterForeground.");

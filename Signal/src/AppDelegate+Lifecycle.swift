@@ -53,6 +53,16 @@ extension AppDelegate {
         Logger.flush()
     }
 
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        Logger.info("applicationDidEnterBackground.")
+
+        Logger.flush()
+
+        if shouldKillAppWhenBackgrounded {
+            exit(0)
+        }
+    }
+
     private static var hasActivated = false
 
     private func handleActivation() {
