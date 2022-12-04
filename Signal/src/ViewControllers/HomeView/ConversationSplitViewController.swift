@@ -66,6 +66,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         viewControllers = [homeVC, detailPlaceholderVC]
 
         chatListNavController.delegate = self
+        detailNavController.delegate = self
         delegate = self
         preferredDisplayMode = .allVisible
 
@@ -572,6 +573,7 @@ extension ConversationSplitViewController: UISplitViewControllerDelegate {
         // some strange behavior around the title view + input accessory view.
         // TODO iPad: Maybe investigate this further.
         detailNavController = OWSNavigationController()
+        detailNavController.delegate = self
         detailNavController.viewControllers = Array(allViewControllers[conversationVCIndex..<allViewControllers.count])
 
         return detailNavController

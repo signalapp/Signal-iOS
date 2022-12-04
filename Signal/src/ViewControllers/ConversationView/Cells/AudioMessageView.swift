@@ -426,7 +426,7 @@ class AudioMessageView: ManualStackView {
         }
 
         let locationInSlider = convert(point, to: waveformProgress)
-        return locationInSlider.x >= 0 && locationInSlider.x <= waveformProgress.width
+        return waveformProgress.bounds.contains(locationInSlider)
     }
 
     func progressForLocation(_ point: CGPoint) -> CGFloat {

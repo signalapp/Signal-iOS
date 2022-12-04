@@ -2079,11 +2079,13 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
                                                            renderItem: renderItem,
                                                            messageSwipeActionState: messageSwipeActionState) {
             return panHandler
+        } else if componentView.contentViewSwipeToReplyWrapper.containsGestureLocation(sender) {
+            return CVPanHandler(delegate: componentDelegate,
+                                panType: .messageSwipeAction,
+                                renderItem: renderItem)
+        } else {
+            return nil
         }
-
-        return CVPanHandler(delegate: componentDelegate,
-                            panType: .messageSwipeAction,
-                            renderItem: renderItem)
     }
 
     public override func startPanGesture(sender: UIPanGestureRecognizer,

@@ -42,13 +42,6 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
 
         // Allow panning with trackpad
         if #available(iOS 13.4, *) { collectionViewPanGestureRecognizer.allowedScrollTypesMask = .continuous }
-
-        // There are cases where we don't have a navigation controller, such as if we got here through 3d touch.
-        // Make sure we only register the gesture interaction if it actually exists. This helps the swipe back
-        // gesture work reliably without conflict with audio scrubbing or swipe-to-repy.
-        if let interactivePopGestureRecognizer = navigationController?.interactivePopGestureRecognizer {
-            collectionViewPanGestureRecognizer.require(toFail: interactivePopGestureRecognizer)
-        }
     }
 
     // TODO: Revisit
@@ -72,11 +65,18 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
             return gestureRecognizer == collectionViewTapGestureRecognizer
         }
 
-        if gestureRecognizer == collectionViewPanGestureRecognizer {
+        if gestureRecognizer === collectionViewPanGestureRecognizer {
             // Only allow the pan gesture to recognize horizontal panning,
             // to avoid conflicts with the conversation view scroll view.
             let translation = collectionViewPanGestureRecognizer.translation(in: view)
-            return abs(translation.x) > abs(translation.y)
+            guard abs(translation.x) > abs(translation.y) else { return false }
+
+            // If there's nothing available to handle the pan, don't bother recognizing.
+            // This allows other recognizers like the navigationController popGesture to begin.
+            guard findPanHandler(sender: collectionViewPanGestureRecognizer) != nil else { return false }
+
+            return true
+
         } else {
             return true
         }
@@ -101,6 +101,17 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
         }
 
         return true
+    }
+
+    public func gestureRecognizer(
+        _ victimCandidate: UIGestureRecognizer,
+        shouldBeRequiredToFailBy preferredCandidate: UIGestureRecognizer
+    ) -> Bool {
+        // If the collection view picks up a valid pan (e.g. swipe-to-reply) then we should
+        // fail the navigation controller pop swipe. Swipe-to-reply takes precedence
+        let shouldFailVictim = (preferredCandidate === collectionViewPanGestureRecognizer) &&
+                               (victimCandidate === navigationController?.interactivePopGestureRecognizer)
+        return shouldFailVictim
     }
 
     // MARK: -
