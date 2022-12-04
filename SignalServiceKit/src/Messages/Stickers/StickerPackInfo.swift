@@ -40,4 +40,14 @@ extension StickerPackInfo {
         let packKeyHex = packKey.hexadecimalString
         return "https://signal.art/addstickers/#pack_id=\(packIdHex)&pack_key=\(packKeyHex)"
     }
+
+    @objc(isStickerPackShareUrl:)
+    public class func isStickerPackShare(_ url: URL) -> Bool {
+        url.scheme == "https" &&
+        url.user == nil &&
+        url.password == nil &&
+        url.host == "signal.art" &&
+        url.port == nil &&
+        url.path == "/addstickers"
+    }
 }

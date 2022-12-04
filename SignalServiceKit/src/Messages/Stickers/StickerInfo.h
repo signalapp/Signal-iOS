@@ -37,8 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey;
 
-+ (BOOL)isStickerPackShareUrl:(NSURL *)url;
-
 + (nullable StickerPackInfo *)parseStickerPackShareUrl:(NSURL *)url;
 
 - (NSString *)asKey;

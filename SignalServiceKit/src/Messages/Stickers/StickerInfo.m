@@ -78,12 +78,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-+ (BOOL)isStickerPackShareUrl:(NSURL *)url
-{
-    return ([url.scheme isEqualToString:@"https"] && (url.user == NULL) && (url.password == NULL) &&
-        [url.host isEqualToString:@"signal.art"] && (url.port == NULL) && [url.path isEqualToString:@"/addstickers"]);
-}
-
 + (nullable StickerPackInfo *)parseStickerPackShareUrl:(NSURL *)url
 {
     if (![self isStickerPackShareUrl:url]) {
