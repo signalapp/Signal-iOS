@@ -13,18 +13,21 @@ class StickerPackInfoTest: XCTestCase {
         let tooShortPackKey = "0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
         let tooLongPackKey = validPackKeyHex + "21"
 
-        XCTAssertNil(StickerPackInfo.parsePackIdHex(nil, packKeyHex: nil))
-        XCTAssertNil(StickerPackInfo.parsePackIdHex(nil, packKeyHex: validPackKeyHex))
-        XCTAssertNil(StickerPackInfo.parsePackIdHex(validPackIdHex, packKeyHex: nil))
+        XCTAssertNil(StickerPackInfo.parse(packIdHex: nil, packKeyHex: nil))
+        XCTAssertNil(StickerPackInfo.parse(packIdHex: nil, packKeyHex: validPackKeyHex))
+        XCTAssertNil(StickerPackInfo.parse(packIdHex: validPackIdHex, packKeyHex: nil))
 
-        XCTAssertNil(StickerPackInfo.parsePackIdHex("", packKeyHex: ""))
-        XCTAssertNil(StickerPackInfo.parsePackIdHex("", packKeyHex: validPackKeyHex))
-        XCTAssertNil(StickerPackInfo.parsePackIdHex(validPackIdHex, packKeyHex: ""))
+        XCTAssertNil(StickerPackInfo.parse(packIdHex: "", packKeyHex: ""))
+        XCTAssertNil(StickerPackInfo.parse(packIdHex: "", packKeyHex: validPackKeyHex))
+        XCTAssertNil(StickerPackInfo.parse(packIdHex: validPackIdHex, packKeyHex: ""))
 
-        XCTAssertNil(StickerPackInfo.parsePackIdHex(validPackIdHex, packKeyHex: tooShortPackKey))
-        XCTAssertNil(StickerPackInfo.parsePackIdHex(validPackIdHex, packKeyHex: tooLongPackKey))
+        XCTAssertNil(StickerPackInfo.parse(packIdHex: validPackIdHex, packKeyHex: tooShortPackKey))
+        XCTAssertNil(StickerPackInfo.parse(packIdHex: validPackIdHex, packKeyHex: tooLongPackKey))
 
-        let packInfo = StickerPackInfo.parsePackIdHex(validPackIdHex, packKeyHex: validPackKeyHex)!
+        let packInfo = StickerPackInfo.parse(
+            packIdHex: validPackIdHex,
+            packKeyHex: validPackKeyHex
+        )!
         XCTAssertEqual(packInfo.packId, .init([1, 2, 3, 4]))
         XCTAssertEqual(packInfo.packKey, .init((1...32)))
     }

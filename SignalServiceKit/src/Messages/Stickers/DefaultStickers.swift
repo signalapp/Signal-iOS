@@ -10,7 +10,7 @@ class DefaultStickerPack {
     public let shouldAutoInstall: Bool
 
     private init?(packIdHex: String, packKeyHex: String, shouldAutoInstall: Bool) {
-        guard let info = StickerPackInfo.parsePackIdHex(packIdHex, packKeyHex: packKeyHex) else {
+        guard let info = StickerPackInfo.parse(packIdHex: packIdHex, packKeyHex: packKeyHex) else {
             owsFailDebug("Invalid info")
             return nil
         }

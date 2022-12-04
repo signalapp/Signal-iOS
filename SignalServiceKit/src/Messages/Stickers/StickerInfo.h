@@ -37,8 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey;
 
-+ (nullable StickerPackInfo *)parsePackIdHex:(nullable NSString *)packIdHex packKeyHex:(nullable NSString *)packKeyHex;
-
 + (nullable StickerPackInfo *)parsePackId:(nullable NSData *)packId
                                   packKey:(nullable NSData *)packKey NS_SWIFT_NAME(parse(packId:packKey:));
 
