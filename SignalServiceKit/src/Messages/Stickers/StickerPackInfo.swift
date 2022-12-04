@@ -21,6 +21,20 @@ extension StickerPackInfo {
         return parse(packId: Data.data(fromHex: packIdHex), packKey: Data.data(fromHex: packKeyHex))
     }
 
+    public class func parse(packId: Data?, packKey: Data?) -> StickerPackInfo? {
+        guard let packId, !packId.isEmpty else {
+            Logger.warn("Invalid packId")
+            Logger.debug("Invalid packId: \(String(describing: packId))")
+            return nil
+        }
+        guard let packKey, packKey.count == StickerManager.packKeyLength else {
+            Logger.warn("Invalid packKey")
+            Logger.debug("Invalid packKey: \(String(describing: packKey))")
+            return nil
+        }
+        return StickerPackInfo(packId: packId, packKey: packKey)
+    }
+
     public func shareUrl() -> String {
         let packIdHex = packId.hexadecimalString
         let packKeyHex = packKey.hexadecimalString

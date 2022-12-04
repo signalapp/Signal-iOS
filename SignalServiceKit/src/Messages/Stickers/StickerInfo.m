@@ -78,21 +78,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-+ (nullable StickerPackInfo *)parsePackId:(nullable NSData *)packId packKey:(nullable NSData *)packKey
-{
-    if (packId == nil || packId.length < 1) {
-        OWSLogWarn(@"Invalid packId.");
-        OWSLogDebug(@"Invalid packId: %@", packId);
-        return nil;
-    }
-    if (packKey == nil || packKey.length != StickerManager.packKeyLength) {
-        OWSLogWarn(@"Invalid packKey.");
-        OWSLogDebug(@"Invalid packKey: %@", packKey);
-        return nil;
-    }
-    return [[StickerPackInfo alloc] initWithPackId:packId packKey:packKey];
-}
-
 + (BOOL)isStickerPackShareUrl:(NSURL *)url
 {
     return ([url.scheme isEqualToString:@"https"] && (url.user == NULL) && (url.password == NULL) &&
