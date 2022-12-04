@@ -63,6 +63,10 @@ extension AppDelegate {
         }
     }
 
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        Logger.info("applicationWillEnterForeground.")
+    }
+
     private static var hasActivated = false
 
     private func handleActivation() {

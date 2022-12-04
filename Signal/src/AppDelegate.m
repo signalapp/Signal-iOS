@@ -118,11 +118,6 @@ static void uncaughtExceptionHandler(NSException *exception)
 
 #pragma mark -
 
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
-    OWSLogInfo(@"applicationWillEnterForeground.");
-}
-
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
 {
     OWSLogInfo(@"applicationDidReceiveMemoryWarning.");
