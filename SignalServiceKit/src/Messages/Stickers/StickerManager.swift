@@ -1002,7 +1002,7 @@ public class StickerManager: NSObject {
     @objc
     public class func markStickerPackAsMissing(stickerPackInfo: StickerPackInfo) {
         DispatchQueue.main.async {
-            self.missingStickerPacks.insert(stickerPackInfo.asKey())
+            self.missingStickerPacks.insert(stickerPackInfo.asKey)
         }
     }
 
@@ -1010,7 +1010,7 @@ public class StickerManager: NSObject {
     public class func isStickerPackMissing(stickerPackInfo: StickerPackInfo) -> Bool {
         AssertIsOnMainThread()
 
-        return missingStickerPacks.contains(stickerPackInfo.asKey())
+        return missingStickerPacks.contains(stickerPackInfo.asKey)
     }
 
     // MARK: - Recents
@@ -1135,7 +1135,7 @@ public class StickerManager: NSObject {
             databaseStorage.write { (transaction) in
                 var stickerPackMap = [String: StickerPack]()
                 for stickerPack in StickerPack.anyFetchAll(transaction: transaction) {
-                    stickerPackMap[stickerPack.info.asKey()] = stickerPack
+                    stickerPackMap[stickerPack.info.asKey] = stickerPack
                 }
 
                 // Cull any orphan packs.
@@ -1146,13 +1146,13 @@ public class StickerManager: NSObject {
                     if !isDefaultStickerPack && !isInstalled {
                         owsFailDebug("Removing orphan pack")
                         stickerPack.anyRemove(transaction: transaction)
-                        stickerPackMap.removeValue(forKey: stickerPack.info.asKey())
+                        stickerPackMap.removeValue(forKey: stickerPack.info.asKey)
                     }
                 }
 
                 var stickersToUninstall = [InstalledSticker]()
                 InstalledSticker.anyEnumerate(transaction: transaction) { (sticker, _) in
-                    guard let pack = stickerPackMap[sticker.info.packInfo.asKey()] else {
+                    guard let pack = stickerPackMap[sticker.info.packInfo.asKey] else {
                         stickersToUninstall.append(sticker)
                         return
                     }

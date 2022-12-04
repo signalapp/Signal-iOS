@@ -5,7 +5,26 @@
 
 import Foundation
 
-extension StickerPackInfo {
+@objc(StickerPackInfo)
+public class StickerPackInfo: MTLModel {
+    // Exposed to Objective-C and made optional for MTLModel serialization.
+    @objc
+    public var packId: Data!
+    @objc
+    public var packKey: Data!
+
+    @objc
+    public init(packId: Data, packKey: Data) {
+        owsAssert(!packId.isEmpty && packKey.count == StickerManager.packKeyLength)
+        self.packId = packId
+        self.packKey = packKey
+
+        super.init()
+    }
+
+    @objc
+    public var asKey: String { packId.hexadecimalString }
+
     @objc(parsePackIdHex:packKeyHex:)
     public class func parse(packIdHex: String?, packKeyHex: String?) -> StickerPackInfo? {
         guard let packIdHex, !packIdHex.isEmpty else {
@@ -95,5 +114,24 @@ extension StickerPackInfo {
             return nil
         }
         return URLComponents(string: fakeUrl.absoluteString)?.queryItems
+    }
+
+    public override var description: String { packId.hexadecimalString }
+
+    // MARK: - MTLModel
+
+    @objc
+    public override init() {
+        super.init()
+    }
+
+    @objc
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+
+    @objc
+    public required init(dictionary dictionaryValue: [String: Any]!) throws {
+        try super.init(dictionary: dictionaryValue)
     }
 }

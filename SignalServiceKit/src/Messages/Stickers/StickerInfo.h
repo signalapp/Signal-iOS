@@ -28,19 +28,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-#pragma mark -
-
-@interface StickerPackInfo : MTLModel
-
-@property (nonatomic, readonly) NSData *packId;
-@property (nonatomic, readonly) NSData *packKey;
-
-- (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey;
-
-- (NSString *)asKey;
-
-- (BOOL)isValid;
-
-@end
-
 NS_ASSUME_NONNULL_END

@@ -398,7 +398,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
     private func downloadStickerPack() {
         AssertIsOnMainThread()
 
-        let key = stickerPackInfo.asKey()
+        let key = stickerPackInfo.asKey
         guard !downloadKeySet.contains(key) else {
             // Download already in flight.
             return

@@ -58,41 +58,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-#pragma mark -
-
-@implementation StickerPackInfo
-
-- (instancetype)initWithPackId:(NSData *)packId packKey:(NSData *)packKey
-{
-    self = [super init];
-
-    if (!self) {
-        return self;
-    }
-
-    _packId = packId;
-    _packKey = packKey;
-
-    OWSAssertDebug(self.isValid);
-
-    return self;
-}
-
-- (NSString *)asKey
-{
-    return self.packId.hexadecimalString;
-}
-
-- (BOOL)isValid
-{
-    return (self.packId.length > 0 && self.packKey.length == StickerManager.packKeyLength);
-}
-
-- (NSString *)description
-{
-    return [NSString stringWithFormat:@"%@", self.packId.hexadecimalString];
-}
-
-@end
-
 NS_ASSUME_NONNULL_END
