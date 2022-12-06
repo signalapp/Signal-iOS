@@ -1295,7 +1295,8 @@ class MediaPickerThumbnailButton: UIButton {
 
     private func updateWith(image: UIImage) {
         setImage(image, animated: self.window != nil)
-        if let imageView = imageView {
+        if let imageView {
+            imageView.contentMode = .scaleAspectFill
             imageView.layer.cornerRadius = 10
             imageView.layer.borderWidth = 1.5
             imageView.layer.borderColor = UIColor.ows_whiteAlpha80.cgColor
@@ -1491,6 +1492,15 @@ class CameraBottomBar: UIView {
         controlButtonsLayoutGuide.identifier = "ControlButtonsLayoutGuide"
         addLayoutGuide(controlButtonsLayoutGuide)
         addConstraint(controlButtonsLayoutGuide.topAnchor.constraint(greaterThanOrEqualTo: topAnchor))
+        addConstraint({
+            // This constraint imitates setting huggingPriority on the controlButtonsLayoutGuide
+            // to prevent it from expanding too much on iPads.
+            let heightConstraint = controlButtonsLayoutGuide.heightAnchor.constraint(
+                equalToConstant: photoLibraryButton.intrinsicContentSize.height
+            )
+            heightConstraint.priority = .defaultHigh - 100
+            return heightConstraint
+        }())
         constrainControlButtonsLayoutGuideHorizontallyTo(leadingAnchor: nil, trailingAnchor: nil)
 
         captureControl.translatesAutoresizingMaskIntoConstraints = false
@@ -1508,7 +1518,7 @@ class CameraBottomBar: UIView {
         switchCameraButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(switchCameraButton)
         addConstraints([ switchCameraButton.layoutMarginsGuide.trailingAnchor.constraint(equalTo: controlButtonsLayoutGuide.trailingAnchor),
-                         switchCameraButton.topAnchor.constraint(equalTo: controlButtonsLayoutGuide.topAnchor),
+                         switchCameraButton.topAnchor.constraint(greaterThanOrEqualTo: controlButtonsLayoutGuide.topAnchor),
                          switchCameraButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor) ])
 
         if isContentTypeSelectionControlAvailable {
@@ -1519,7 +1529,6 @@ class CameraBottomBar: UIView {
 
             proceedButton.isHidden = true
             proceedButton.isEnabled = false
-            proceedButton.contentEdgeInsets = UIEdgeInsets(margin: proceedButton.layoutMargins.leading + 9) // image is 24x24 and we want 42x42 button.
             proceedButton.accessibilityValue = NSLocalizedString("CAMERA_VO_ARROW_RIGHT_PROCEED",
                                                                  comment: "VoiceOver label for -> button in text story composer.")
             proceedButton.translatesAutoresizingMaskIntoConstraints = false
