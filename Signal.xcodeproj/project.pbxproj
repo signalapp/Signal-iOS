@@ -802,6 +802,7 @@
 		66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */; };
 		760981882936DE90008F8300 /* BezierPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981872936DE90008F8300 /* BezierPathView.swift */; };
 		7609818A2936EC8D008F8300 /* OWSTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981892936EC8D008F8300 /* OWSTextView.swift */; };
+		7609819429382EFF008F8300 /* UIGeometry+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7609819329382EFF008F8300 /* UIGeometry+Signal.swift */; };
 		760D93AB27A0E28600F351AC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 760D93AA27A0E28600F351AC /* CoreServices.framework */; };
 		7628DDBE2807505D009AA53D /* ImageEditorCropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBC28075056009AA53D /* ImageEditorCropView.swift */; };
 		7628DDBF2807505D009AA53D /* RotationControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBD2807505D009AA53D /* RotationControl.swift */; };
@@ -3109,6 +3110,7 @@
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		760981872936DE90008F8300 /* BezierPathView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BezierPathView.swift; sourceTree = "<group>"; };
 		760981892936EC8D008F8300 /* OWSTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSTextView.swift; sourceTree = "<group>"; };
+		7609819329382EFF008F8300 /* UIGeometry+Signal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIGeometry+Signal.swift"; sourceTree = "<group>"; };
 		760D93AA27A0E28600F351AC /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		7628DDBC28075056009AA53D /* ImageEditorCropView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorCropView.swift; sourceTree = "<group>"; };
 		7628DDBD2807505D009AA53D /* RotationControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RotationControl.swift; sourceTree = "<group>"; };
@@ -5237,6 +5239,7 @@
 				34A954F1271B4FB000B05242 /* UIFont+OWS.m */,
 				76E54D68290B4E7800D03BA8 /* UIFont+TextStyle.swift */,
 				76F4B580293ACCD200A7CF2F /* UIKit+SignalUI.swift */,
+				7609819329382EFF008F8300 /* UIGeometry+Signal.swift */,
 				500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */,
 				3402A9E6271D97090084CBAE /* UIView+SignalUI.h */,
 				3402A9E7271D97090084CBAE /* UIView+SignalUI.m */,
@@ -9979,6 +9982,7 @@
 				34A954FC271B4FB000B05242 /* UIFont+OWS.m in Sources */,
 				76E54D69290B4E7800D03BA8 /* UIFont+TextStyle.swift in Sources */,
 				76F4B581293ACCD200A7CF2F /* UIKit+SignalUI.swift in Sources */,
+				7609819429382EFF008F8300 /* UIGeometry+Signal.swift in Sources */,
 				500FB6182915B86D00257951 /* UITableView+ReusableCell.swift in Sources */,
 				3402A9F5271D9A060084CBAE /* UIUtil.m in Sources */,
 				3402A9EA271D97090084CBAE /* UIView+SignalUI.m in Sources */,

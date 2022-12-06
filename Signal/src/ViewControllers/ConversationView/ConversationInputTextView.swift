@@ -91,8 +91,9 @@ class ConversationInputTextView: MentionTextView {
         }
 
         // Check the system font size and increase text inset accordingly
-        // to keep the text vertically centered
-        updateVerticalInsetsForDynamicBodyType(defaultInsets: 7)
+        // to keep the text vertically centered.
+        // Default inset is chosen very intentionally to make one line text view height match mockups (36 pt).
+        updateVerticalInsetsForDynamicBodyType(defaultInsets: 6 - CGHairlineWidth())
         textContainerInset.left = leftInset
         textContainerInset.right = rightInset
     }
