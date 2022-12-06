@@ -1038,17 +1038,4 @@ static void uncaughtExceptionHandler(NSException *exception)
     [self enableBackgroundRefreshIfNecessary];
 }
 
-#pragma mark - status bar touches
-
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    [super touchesBegan:touches withEvent:event];
-    CGPoint location = [[[event allTouches] anyObject] locationInView:[self window]];
-    CGRect statusBarFrame = [UIApplication sharedApplication].statusBarFrame;
-    if (CGRectContainsPoint(statusBarFrame, location)) {
-        OWSLogDebug(@"touched status bar");
-        [[NSNotificationCenter defaultCenter] postNotificationName:TappedStatusBarNotification object:nil];
-    }
-}
-
 @end

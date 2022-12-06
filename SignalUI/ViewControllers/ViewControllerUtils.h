@@ -7,8 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const TappedStatusBarNotification;
-
 @interface ViewControllerUtils : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
