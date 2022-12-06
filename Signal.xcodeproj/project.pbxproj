@@ -1267,6 +1267,7 @@
 		F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */; };
 		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
 		F962B38A293F9F1F00765BD8 /* CRC32.swift in Sources */ = {isa = PBXBuildFile; fileRef = F962B389293F9F1F00765BD8 /* CRC32.swift */; };
+		F962B38C293F9F9F00765BD8 /* CRC32Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = F962B38B293F9F9F00765BD8 /* CRC32Test.swift */; };
 		F963164B291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963164A291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift */; };
 		F963F816292D1B5B007DBBBD /* UIButton+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963F815292D1B5B007DBBBD /* UIButton+SignalUI.swift */; };
 		F963F818292D7E53007DBBBD /* FormattedNumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963F817292D7E53007DBBBD /* FormattedNumberField.swift */; };
@@ -3655,6 +3656,7 @@
 		F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseRecoveryTest.swift; sourceTree = "<group>"; };
 		F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingThanksSheet.swift; sourceTree = "<group>"; };
 		F962B389293F9F1F00765BD8 /* CRC32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRC32.swift; sourceTree = "<group>"; };
+		F962B38B293F9F9F00765BD8 /* CRC32Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRC32Test.swift; sourceTree = "<group>"; };
 		F963164A291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSScrubbingLogFormatterTest.swift; sourceTree = "<group>"; };
 		F963F815292D1B5B007DBBBD /* UIButton+SignalUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+SignalUI.swift"; sourceTree = "<group>"; };
 		F963F817292D7E53007DBBBD /* FormattedNumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattedNumberField.swift; sourceTree = "<group>"; };
@@ -7124,6 +7126,7 @@
 			children = (
 				F94261F4289B1B5400460798 /* AppVersionTests.swift */,
 				661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */,
+				F962B38B293F9F9F00765BD8 /* CRC32Test.swift */,
 				509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */,
 				F93999F528C81F2100E34899 /* DataMessagePaddingTests.swift */,
 				F94261F8289B1B5400460798 /* Date+SSKTest.swift */,
@@ -11345,6 +11348,7 @@
 				50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */,
 				5075004628B09CE6001922C9 /* ContactDiscoveryOperationTest.swift in Sources */,
 				F9426286289B1B5600460798 /* ContactSortingTest.m in Sources */,
+				F962B38C293F9F9F00765BD8 /* CRC32Test.swift in Sources */,
 				509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */,
 				F97217FB28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift in Sources */,
 				F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */,
