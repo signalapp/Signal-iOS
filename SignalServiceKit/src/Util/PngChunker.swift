@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import zlib
 
 /// Helps you iterate over PNG chunks from raw data.
 ///
@@ -175,30 +174,6 @@ public class PngChunker {
         /// - Returns: The full chunk in bytes.
         public func allBytes() -> Data {
             lengthBytes + type + data + crcBytes
-        }
-    }
-
-    // MARK: - CRC32
-
-    private struct CRC32 {
-        private var rawValue: uLong
-
-        public var value: UInt32 { UInt32(rawValue) }
-
-        public init() {
-            self.init(rawValue: 0)
-        }
-
-        private init(rawValue: uLong) {
-            self.rawValue = rawValue
-        }
-
-        public func update(with data: Data) -> CRC32 {
-            let newRawValue = data.withUnsafeBytes { bytes -> uLong in
-                let pointerForC = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self)
-                return crc32(self.rawValue, pointerForC, UInt32(bytes.count))
-            }
-            return CRC32(rawValue: newRawValue)
         }
     }
 }
