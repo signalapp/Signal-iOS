@@ -6,6 +6,18 @@
 import Foundation
 import zlib
 
+/// CRC32 implements the 32-bit cyclic redundancy check algorithm.
+///
+/// Example usage:
+///
+/// ```
+/// var crc = CRC32()
+///
+/// crc.update(with: Data([1, 2, 3])
+/// crc.update(with: Data([4, 5, 6])
+///
+/// let checksum: UInt32 = crc.value
+/// ```
 public struct CRC32 {
     private var rawValue: uLong
 
