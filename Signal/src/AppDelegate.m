@@ -416,13 +416,7 @@ static void uncaughtExceptionHandler(NSException *exception)
     } else if ([PaypalCallbackUrlBridge handlePossibleCallbackUrl:url]) {
         OWSLogInfo(@"Handled PayPal callback url!");
     } else if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
-        if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![self.tsAccountManager isRegistered]) {
-            if (!AppReadiness.isAppReady) {
-                OWSFailDebug(@"Ignoring URL; app is not ready.");
-                return NO;
-            }
-            return [SignalApp.shared receivedVerificationCode:[url.path substringFromIndex:1]];
-        } else if ([url.host hasPrefix:kURLHostAddStickersPrefix] && [self.tsAccountManager isRegistered]) {
+        if ([url.host hasPrefix:kURLHostAddStickersPrefix] && [self.tsAccountManager isRegistered]) {
             StickerPackInfo *_Nullable stickerPackInfo = [self parseAddStickersUrl:url];
             if (stickerPackInfo == nil) {
                 OWSFailDebug(@"Invalid URL: %@", url);

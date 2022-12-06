@@ -55,7 +55,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showOnboardingView:(OnboardingController *)onboardingController;
 - (void)showConversationSplitView;
 - (void)ensureRootViewController:(NSTimeInterval)launchStartedAt;
-- (BOOL)receivedVerificationCode:(NSString *)verificationCode;
 - (void)applicationWillTerminate;
 
 - (nullable UIView *)snapshotSplitViewControllerAfterScreenUpdates:(BOOL)afterScreenUpdates;

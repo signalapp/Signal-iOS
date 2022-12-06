@@ -335,19 +335,6 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
     [UIViewController attemptRotationToDeviceOrientation];
 }
 
-- (BOOL)receivedVerificationCode:(NSString *)verificationCode
-{
-    UIViewController *frontmostVC = CurrentAppContext().frontmostViewController;
-    if (![frontmostVC isKindOfClass:[OnboardingVerificationViewController class]]) {
-        OWSLogWarn(@"Not the verification view controller we expected. Got %@ instead", frontmostVC.class);
-        return NO;
-    }
-
-    OnboardingVerificationViewController *verificationVC = (OnboardingVerificationViewController *)frontmostVC;
-    [verificationVC setVerificationCodeAndTryToVerify:verificationCode];
-    return YES;
-}
-
 - (void)showNewConversationView
 {
     OWSAssertIsOnMainThread();

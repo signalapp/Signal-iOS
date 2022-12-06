@@ -58,19 +58,6 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
     public func hideBackLink() {
         backLink?.isHidden = true
     }
-
-    @objc
-    public func setVerificationCodeAndTryToVerify(_ verificationCode: String) {
-        AssertIsOnMainThread()
-
-        let filteredCode = verificationCode.digitsOnly
-        if filteredCode.isEmpty {
-            owsFailDebug("Invalid code: \(verificationCode)")
-            return
-        }
-
-        verificationCodeView.set(verificationCode: filteredCode)
-    }
 }
 
 // MARK: -
