@@ -37,8 +37,12 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     private var collectionViewFlowLayout: UICollectionViewFlowLayout
     private var titleView: TitleView!
 
-    private var bottomBar: UIView!
-    private var doneButton: MediaDoneButton!
+    private lazy var doneButton: MediaDoneButton = {
+        let button = MediaDoneButton()
+        button.userInterfaceStyleOverride = .light
+        button.addTarget(self, action: #selector(didTapDoneButton), for: .touchUpInside)
+        return button
+    }()
 
     init() {
         collectionViewFlowLayout = type(of: self).buildLayout()
@@ -92,18 +96,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         navigationItem.titleView = titleView
         self.titleView = titleView
 
-        bottomBar = UIView()
-        view.addSubview(bottomBar)
-        bottomBar.preservesSuperviewLayoutMargins = true
-        bottomBar.autoPinBottomToSuperviewMargin(withInset: UIDevice.current.hasIPhoneXNotch ? 0 : 8)
-        bottomBar.autoPinHorizontalEdges(toEdgesOf: view)
-
-        doneButton = MediaDoneButton()
-        doneButton.userInterfaceStyleOverride = .light
-        doneButton.addTarget(self, action: #selector(didTapDoneButton), for: .touchUpInside)
-        bottomBar.addSubview(doneButton)
-        doneButton.autoPinTopToSuperviewMargin()
-        doneButton.autoPinBottomToSuperviewMargin()
+        view.addSubview(doneButton)
+        doneButton.autoPinBottomToSuperviewMargin(withInset: UIDevice.current.hasIPhoneXNotch ? 8 : 16)
         doneButton.autoPinTrailingToSuperviewMargin()
 
         let selectionPanGesture = DirectionalPanGestureRecognizer(direction: [.horizontal], target: self, action: #selector(didPanSelection))
