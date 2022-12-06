@@ -1592,7 +1592,12 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
 
     @objc
     private func placeholderTapped() {
-        textView.becomeFirstResponder()
+        if textView.isFirstResponder {
+            textView.acceptAutocorrectSuggestion()
+            textView.resignFirstResponder()
+        } else {
+            textView.becomeFirstResponder()
+        }
     }
 
     @objc
