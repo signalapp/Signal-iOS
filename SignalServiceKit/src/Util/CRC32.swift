@@ -19,7 +19,7 @@ import zlib
 /// let checksum: UInt32 = crc.value
 /// ```
 public struct CRC32 {
-    private var rawValue: uLong
+    private var rawValue: CUnsignedLong
 
     public var value: UInt32 { UInt32(rawValue) }
 
@@ -27,12 +27,12 @@ public struct CRC32 {
         self.init(rawValue: 0)
     }
 
-    private init(rawValue: uLong) {
+    private init(rawValue: CUnsignedLong) {
         self.rawValue = rawValue
     }
 
     public func update(with data: Data) -> CRC32 {
-        let newRawValue = data.withUnsafeBytes { bytes -> uLong in
+        let newRawValue = data.withUnsafeBytes { bytes -> CUnsignedLong in
             let pointerForC = bytes.baseAddress?.assumingMemoryBound(to: UInt8.self)
             return crc32(self.rawValue, pointerForC, UInt32(bytes.count))
         }
