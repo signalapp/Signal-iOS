@@ -50,20 +50,6 @@ open class OWSTableViewController2: OWSViewController {
     open var bottomFooter: UIView?
 
     @objc
-    public var useThemeBackgroundColors = false {
-        didSet {
-            applyTheme()
-        }
-    }
-
-    @objc
-    public var useNewStyle = true {
-        didSet {
-            applyTheme()
-        }
-    }
-
-    @objc
     public var forceDarkMode = false {
         didSet {
             applyTheme()
@@ -184,13 +170,9 @@ open class OWSTableViewController2: OWSViewController {
 
         updateNavbarStyling()
 
-        if useNewStyle {
-            tableView.separatorColor = .clear
-            tableView.separatorInset = .zero
-            tableView.separatorStyle = .none
-        } else {
-            tableView.separatorColor = Theme.cellSeparatorColor
-        }
+        tableView.separatorColor = .clear
+        tableView.separatorInset = .zero
+        tableView.separatorStyle = .none
     }
 
     public var shouldHideBottomFooter = false {
@@ -400,53 +382,49 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     }
 
     private func configureCellBackground(_ cell: UITableViewCell, indexPath: IndexPath) {
-        if useNewStyle {
-            guard let section = contents.sections[safe: indexPath.section] else {
-                owsFailDebug("Missing section: \(indexPath.section)")
-                return
-            }
-
-            cell.backgroundView?.removeFromSuperview()
-            cell.backgroundView = nil
-            cell.selectedBackgroundView?.removeFromSuperview()
-            cell.backgroundColor = .clear
-            cell.contentView.backgroundColor = .clear
-
-            guard section.hasBackground else {
-                let selectedBackgroundView = UIView()
-                selectedBackgroundView.backgroundColor = forceDarkMode
-                    ? Theme.darkThemeTableCell2SelectedBackgroundColor
-                    : Theme.tableCell2SelectedBackgroundColor
-                cell.selectedBackgroundView = selectedBackgroundView
-                return
-            }
-
-            cell.backgroundView = buildCellBackgroundView(indexPath: indexPath, section: section)
-            cell.selectedBackgroundView = buildCellSelectedBackgroundView(indexPath: indexPath, section: section)
-
-            // We use cellHOuterMargin _outside_ the background and cellHInnerMargin
-            // _inside_.
-            //
-            // By applying it to the cell, ensure the correct behavior for accessories.
-            cell.layoutMargins = cellOuterInsetsWithMargin(hMargin: Self.cellHInnerMargin, vMargin: 0)
-            var contentMargins = UIEdgeInsets(
-                hMargin: 0,
-                vMargin: Self.cellVInnerMargin
-            )
-            // Our table code is going to be vastly simpler if we DRY up the
-            // spacing between the cell content and the accessory here.
-            let hasAccessory = (cell.accessoryView != nil || cell.accessoryType != .none)
-            if hasAccessory {
-                if CurrentAppContext().isRTL {
-                    contentMargins.left += 8
-                } else {
-                    contentMargins.right += 8
-                }
-            }
-            cell.contentView.layoutMargins = contentMargins
-        } else if useThemeBackgroundColors {
-            cell.backgroundColor = cellBackgroundColor
+        guard let section = contents.sections[safe: indexPath.section] else {
+            owsFailDebug("Missing section: \(indexPath.section)")
+            return
         }
+
+        cell.backgroundView?.removeFromSuperview()
+        cell.backgroundView = nil
+        cell.selectedBackgroundView?.removeFromSuperview()
+        cell.backgroundColor = .clear
+        cell.contentView.backgroundColor = .clear
+
+        guard section.hasBackground else {
+            let selectedBackgroundView = UIView()
+            selectedBackgroundView.backgroundColor = forceDarkMode
+            ? Theme.darkThemeTableCell2SelectedBackgroundColor
+            : Theme.tableCell2SelectedBackgroundColor
+            cell.selectedBackgroundView = selectedBackgroundView
+            return
+        }
+
+        cell.backgroundView = buildCellBackgroundView(indexPath: indexPath, section: section)
+        cell.selectedBackgroundView = buildCellSelectedBackgroundView(indexPath: indexPath, section: section)
+
+        // We use cellHOuterMargin _outside_ the background and cellHInnerMargin
+        // _inside_.
+        //
+        // By applying it to the cell, ensure the correct behavior for accessories.
+        cell.layoutMargins = cellOuterInsetsWithMargin(hMargin: Self.cellHInnerMargin, vMargin: 0)
+        var contentMargins = UIEdgeInsets(
+            hMargin: 0,
+            vMargin: Self.cellVInnerMargin
+        )
+        // Our table code is going to be vastly simpler if we DRY up the
+        // spacing between the cell content and the accessory here.
+        let hasAccessory = (cell.accessoryView != nil || cell.accessoryType != .none)
+        if hasAccessory {
+            if CurrentAppContext().isRTL {
+                contentMargins.left += 8
+            } else {
+                contentMargins.right += 8
+            }
+        }
+        cell.contentView.layoutMargins = contentMargins
     }
 
     private func buildCellBackgroundView(indexPath: IndexPath,
@@ -1002,57 +980,41 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         AssertIsOnMainThread()
 
         return Self.tableBackgroundColor(
-            useNewStyle: useNewStyle,
             isUsingPresentedStyle: isUsingPresentedStyle,
-            useThemeBackgroundColors: useThemeBackgroundColors,
             forceDarkMode: forceDarkMode
         )
     }
 
     @objc
     public static func tableBackgroundColor(
-        useNewStyle: Bool = true,
         isUsingPresentedStyle: Bool,
-        useThemeBackgroundColors: Bool = false,
         forceDarkMode: Bool = false
     ) -> UIColor {
         AssertIsOnMainThread()
 
-        if useNewStyle {
-            if isUsingPresentedStyle {
-                return forceDarkMode ? Theme.darkThemeTableView2PresentedBackgroundColor : Theme.tableView2PresentedBackgroundColor
-            } else {
-                return forceDarkMode ? Theme.darkThemeTableView2BackgroundColor : Theme.tableView2BackgroundColor
-            }
+        if isUsingPresentedStyle {
+            return forceDarkMode ? Theme.darkThemeTableView2PresentedBackgroundColor : Theme.tableView2PresentedBackgroundColor
         } else {
-            return (useThemeBackgroundColors ? Theme.tableViewBackgroundColor : Theme.backgroundColor)
+            return forceDarkMode ? Theme.darkThemeTableView2BackgroundColor : Theme.tableView2BackgroundColor
         }
     }
 
     @objc
     public var cellBackgroundColor: UIColor {
         Self.cellBackgroundColor(
-            useNewStyle: useNewStyle,
             isUsingPresentedStyle: isUsingPresentedStyle,
-            useThemeBackgroundColors: useThemeBackgroundColors,
             forceDarkMode: forceDarkMode
         )
     }
 
     public static func cellBackgroundColor(
-        useNewStyle: Bool = true,
         isUsingPresentedStyle: Bool,
-        useThemeBackgroundColors: Bool = false,
         forceDarkMode: Bool = false
     ) -> UIColor {
-        if useNewStyle {
-            if isUsingPresentedStyle {
-                return forceDarkMode ? Theme.darkThemeTableCell2PresentedBackgroundColor : Theme.tableCell2PresentedBackgroundColor
-            } else {
-                return forceDarkMode ? Theme.darkThemeTableCell2BackgroundColor : Theme.tableCell2BackgroundColor
-            }
+        if isUsingPresentedStyle {
+            return forceDarkMode ? Theme.darkThemeTableCell2PresentedBackgroundColor : Theme.tableCell2PresentedBackgroundColor
         } else {
-            return (useThemeBackgroundColors ? Theme.tableCellBackgroundColor : Theme.backgroundColor)
+            return forceDarkMode ? Theme.darkThemeTableCell2BackgroundColor : Theme.tableCell2BackgroundColor
         }
     }
 

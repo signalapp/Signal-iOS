@@ -197,7 +197,6 @@
 		340B06C723C8DA2600929588 /* StorageService+GroupsV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340B06C623C8DA2600929588 /* StorageService+GroupsV2.swift */; };
 		340B870E23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */; };
 		340D900024FEE6A9007B5504 /* GroupInviteLinksUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */; };
-		340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */; };
 		340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */; };
 		340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC887204DAC8C007AEB0F /* BlockListViewController.m */; };
 		3412F9BB2350D0840022EDAA /* ThreadPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3412F9BA2350D0840022EDAA /* ThreadPerformanceTest.swift */; };
@@ -756,6 +755,7 @@
 		500FE4E0288A11B000FA090C /* ConversationViewController+GiftBadges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */; };
 		500FE4E2288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */; };
 		500FE5042890510800FA090C /* BadgeGiftingStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE5032890510800FA090C /* BadgeGiftingStrings.swift */; };
+		5011D1CB293FC7E000064098 /* DomainFrontingCountryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */; };
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
 		503614CF282AF657008128B4 /* GiftBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503614CE282AF657008128B4 /* GiftBadgeView.swift */; };
 		5042EAA3287F96FB00C9B19F /* VisibleBadgeResolverTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5042EAA2287F96FB00C9B19F /* VisibleBadgeResolverTest.swift */; };
@@ -2321,10 +2321,8 @@
 		340B870D23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupV2UpdatesImpl.swift; sourceTree = "<group>"; };
 		340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupInviteLinksUI.swift; sourceTree = "<group>"; };
 		340E9ABF235F876800FA362C /* ForwardMessageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ForwardMessageViewController.swift; sourceTree = "<group>"; };
-		340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DomainFrontingCountryViewController.m; sourceTree = "<group>"; };
 		340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLinkDeviceViewController.m; sourceTree = "<group>"; };
 		340FC887204DAC8C007AEB0F /* BlockListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlockListViewController.m; sourceTree = "<group>"; };
-		340FC889204DAC8C007AEB0F /* DomainFrontingCountryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DomainFrontingCountryViewController.h; sourceTree = "<group>"; };
 		340FC890204DAC8C007AEB0F /* BlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListViewController.h; sourceTree = "<group>"; };
 		340FC891204DAC8C007AEB0F /* OWSLinkDeviceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLinkDeviceViewController.h; sourceTree = "<group>"; };
 		340FC89D204DAC8D007AEB0F /* FingerprintViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FingerprintViewController.h; sourceTree = "<group>"; };
@@ -3055,6 +3053,7 @@
 		500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+GiftBadges.swift"; sourceTree = "<group>"; };
 		500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingAlreadyRedeemedSheet.swift; sourceTree = "<group>"; };
 		500FE5032890510800FA090C /* BadgeGiftingStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingStrings.swift; sourceTree = "<group>"; };
+		5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainFrontingCountryViewController.swift; sourceTree = "<group>"; };
 		50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManagerTest.swift; sourceTree = "<group>"; };
 		503614CE282AF657008128B4 /* GiftBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftBadgeView.swift; sourceTree = "<group>"; };
 		503614D0282C5703008128B4 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ro; path = translations/ro.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
@@ -6371,8 +6370,7 @@
 				887B381225F0681400685845 /* AdvancedPrivacySettingsViewController.swift */,
 				340FC890204DAC8C007AEB0F /* BlockListViewController.h */,
 				340FC887204DAC8C007AEB0F /* BlockListViewController.m */,
-				340FC889204DAC8C007AEB0F /* DomainFrontingCountryViewController.h */,
-				340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */,
+				5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */,
 				88D1BCBA24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift */,
 				88D1BCB824F73C04009A1738 /* PhoneNumberSharingSettingsTableViewController.swift */,
 				887B381025F05F3100685845 /* PrivacySettingsViewController.swift */,
@@ -10383,7 +10381,7 @@
 				88EF42E525F825650017C057 /* DisappearingMessagesTimerSettingsViewController.swift in Sources */,
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
 				34A95501271B503E00B05242 /* DisplayableText.swift in Sources */,
-				340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */,
+				5011D1CB293FC7E000064098 /* DomainFrontingCountryViewController.swift in Sources */,
 				F96B66AA2912B88B004FFFAA /* DonateChoosePaymentMethodSheet.swift in Sources */,
 				F9783F29293A899C009CDC23 /* DonateInfoSheetHeaderView.swift in Sources */,
 				F96B66AC2912B88B004FFFAA /* DonateViewController+DonationMode.swift in Sources */,

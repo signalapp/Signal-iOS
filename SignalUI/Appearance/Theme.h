@@ -74,9 +74,6 @@ extern NSString *const ThemeDidChangeNotification;
 //   It is brighter in dark mode, improving legibility.
 @property (class, readonly, nonatomic) UIColor *accentBlueColor;
 
-@property (class, readonly, nonatomic) UIColor *tableCellBackgroundColor;
-@property (class, readonly, nonatomic) UIColor *tableViewBackgroundColor;
-
 @property (class, readonly, nonatomic) UIColor *tableCell2BackgroundColor;
 @property (class, readonly, nonatomic) UIColor *tableCell2PresentedBackgroundColor;
 @property (class, readonly, nonatomic) UIColor *tableCell2SelectedBackgroundColor;

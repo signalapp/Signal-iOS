@@ -714,9 +714,6 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     UITableViewCell *_Nullable customCell = [item getOrBuildCustomCell:self.tableView];
     if (customCell != nil) {
-        if (self.useThemeBackgroundColors) {
-            customCell.backgroundColor = Theme.tableCellBackgroundColor;
-        }
         return customCell;
     }
 
@@ -725,10 +722,6 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     [OWSTableItem configureCell:cell];
 
     cell.textLabel.text = item.title;
-
-    if (self.useThemeBackgroundColors) {
-        customCell.backgroundColor = Theme.tableCellBackgroundColor;
-    }
 
     return cell;
 }
@@ -942,20 +935,13 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     [self.tableView reloadData];
 }
 
-- (void)setUseThemeBackgroundColors:(BOOL)useThemeBackgroundColors
-{
-    _useThemeBackgroundColors = useThemeBackgroundColors;
-
-    [self applyTheme];
-}
-
 - (void)applyTheme
 {
     OWSAssertIsOnMainThread();
 
     [super applyTheme];
 
-    UIColor *backgroundColor = (self.useThemeBackgroundColors ? Theme.tableViewBackgroundColor : Theme.backgroundColor);
+    UIColor *backgroundColor = Theme.backgroundColor;
     self.view.backgroundColor = backgroundColor;
     self.tableView.backgroundColor = backgroundColor;
     self.tableView.separatorColor = Theme.cellSeparatorColor;
