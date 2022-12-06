@@ -14,6 +14,7 @@ protocol AttachmentTextToolbarDelegate: AnyObject {
     func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar)
+    func attachmentTextToolBarDidChangeHeight(_ attachmentTextToolbar: AttachmentTextToolbar)
 }
 
 // MARK: -
@@ -111,8 +112,26 @@ class AttachmentTextToolbar: UIView {
     // an intrinsicContentSize. Specifying CGSize.zero causes the height to be determined by autolayout.
     override var intrinsicContentSize: CGSize { .zero }
 
-    // MARK: - Subviews
+    public override var bounds: CGRect {
+        didSet {
+            guard oldValue.size.height != bounds.size.height else { return }
 
+            // Compensate for autolayout frame/bounds changes when animating height change.
+            // This logic ensures the input toolbar stays pinned to the keyboard visually.
+            if isAnimatingHeightChange && textView.isFirstResponder {
+                var frame = frame
+                frame.origin.y = 0
+                // In this conditional, bounds change is captured in an animation block, which we don't want here.
+                UIView.performWithoutAnimation {
+                    self.frame = frame
+                }
+            }
+        }
+    }
+
+    // MARK: - Layout
+
+    private var isAnimatingHeightChange = false
     private let kMinTextViewHeight: CGFloat = 36
     private var maxTextViewHeight: CGFloat {
         // About ~4 lines in portrait and ~3 lines in landscape.
@@ -129,27 +148,63 @@ class AttachmentTextToolbar: UIView {
     private func updateContent(animated: Bool) {
         AssertIsOnMainThread()
         updateAppearance(animated: animated)
-        updateHeight()
+        updateHeight(animated: animated)
     }
 
     private func updateAppearance(animated: Bool) {
-        let hasText: Bool = {
-            guard let text = self.textView.text else {
-                return false
-            }
-            return !text.isEmpty
-        }()
+        let hasText = !textView.text.isEmptyOrNil
+        let isEditing = isEditingText
 
-        addMessageButton.setIsHidden(hasText || isEditingText || isViewOnceEnabled, animated: animated)
+        addMessageButton.setIsHidden(hasText || isEditing || isViewOnceEnabled, animated: animated)
         viewOnceMediaLabel.setIsHidden(!isViewOnceEnabled, animated: animated)
-        textViewContainer.setIsHidden((!hasText && !isEditingText) || isViewOnceEnabled, animated: animated)
+        textViewContainer.setIsHidden((!hasText && !isEditing) || isViewOnceEnabled, animated: animated)
         placeholderTextView.setIsHidden(hasText, animated: animated)
-        doneButton.setIsHidden(!isEditingText, animated: animated)
+        doneButton.setIsHidden(!isEditing, animated: animated)
 
         if let blueCircleView = doneButton.subviews.first(where: { $0 is CircleView }) {
             doneButton.sendSubviewToBack(blueCircleView)
         }
     }
+
+    private func updateHeight(animated: Bool) {
+        // Minimum text area size defines text field size when input field isn't active.
+        let placeholderTextViewHeight = clampedHeight(for: placeholderTextView)
+        textViewMinimumHeightConstraint.constant = placeholderTextViewHeight
+
+        // Always keep height of the text field in expanded state current.
+        textViewHeightConstraint.isActive = isEditingText
+
+        let textViewHeight = clampedHeight(for: textView)
+        guard textViewHeightConstraint.constant != textViewHeight else { return }
+
+        if animated {
+            isAnimatingHeightChange = true
+            let animator = UIViewPropertyAnimator(
+                duration: 0.25,
+                springDamping: 1,
+                springResponse: 0.25
+            )
+            animator.addAnimations {
+                self.textViewHeightConstraint.constant = textViewHeight
+                self.delegate?.attachmentTextToolBarDidChangeHeight(self)
+            }
+            animator.addCompletion { _ in
+                self.isAnimatingHeightChange = false
+            }
+            animator.startAnimation()
+
+        } else {
+            textViewHeightConstraint.constant = textViewHeight
+        }
+    }
+
+    private func clampedHeight(for textView: UITextView) -> CGFloat {
+        let fixedWidth = textView.width
+        let contentSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        return CGFloatClamp(contentSize.height, kMinTextViewHeight, maxTextViewHeight)
+    }
+
+    // MARK: - Subviews
 
     lazy private(set) var textView: MentionTextView = {
         let textView = buildTextView()
@@ -249,8 +304,6 @@ class AttachmentTextToolbar: UIView {
         textView.tintColor = Theme.darkThemePrimaryColor
         textView.font = .ows_dynamicTypeBodyClamped
         textView.textColor = Theme.darkThemePrimaryColor
-        textView.textContainerInset.left = 7
-        textView.textContainerInset.right = 7
         return textView
     }
 }
@@ -304,7 +357,7 @@ extension AttachmentTextToolbar: MentionTextViewDelegate {
 extension AttachmentTextToolbar: UITextViewDelegate {
 
     public func textViewDidChange(_ textView: UITextView) {
-        updateContent(animated: false)
+        updateContent(animated: true)
         delegate?.attachmentTextToolbarDidChange(self)
     }
 
@@ -343,29 +396,5 @@ extension AttachmentTextToolbar: UITextViewDelegate {
         textView.textContainer.maximumNumberOfLines = 1
         delegate?.attachmentTextToolbarDidEndEditing(self)
         updateContent(animated: true)
-    }
-}
-
-extension AttachmentTextToolbar {
-
-    private func updateHeight() {
-        // Minimum text area size defines text field size when input field isn't active.
-        let placeholderTextViewHeight = clampedHeight(for: placeholderTextView)
-        textViewMinimumHeightConstraint.constant = placeholderTextViewHeight
-
-        // Always keep height of the text field in expanded state current.
-        let textViewHeight = clampedHeight(for: textView)
-        if textViewHeightConstraint.constant != textViewHeight {
-            Logger.debug("TextView height changed: \(textViewHeightConstraint.constant) -> \(textViewHeight)")
-            textViewHeightConstraint.constant = textViewHeight
-            invalidateIntrinsicContentSize()
-        }
-        textViewHeightConstraint.isActive = isEditingText
-    }
-
-    private func clampedHeight(for textView: UITextView) -> CGFloat {
-        let fixedWidth = textView.width
-        let contentSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-        return CGFloatClamp(contentSize.height, kMinTextViewHeight, maxTextViewHeight)
     }
 }

@@ -8,6 +8,15 @@ import UIKit
 
 class AttachmentTextView: MentionTextView {
 
+    required init() {
+        super.init()
+        updateTextContainerInset()
+    }
+
+    required public init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     private var textIsChanging = false
 
     override func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
@@ -38,5 +47,11 @@ class AttachmentTextView: MentionTextView {
             shouldAnimate = animated && !textIsChanging
         }
         super.setContentOffset(contentOffset, animated: shouldAnimate)
+    }
+
+    private func updateTextContainerInset() {
+        textContainerInset.left = 7
+        textContainerInset.right = 7
+        updateVerticalInsetsForDynamicBodyType(defaultInsets: 6 - CGHairlineWidth())
     }
 }

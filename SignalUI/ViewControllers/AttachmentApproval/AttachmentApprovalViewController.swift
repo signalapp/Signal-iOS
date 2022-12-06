@@ -964,6 +964,8 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar) {
         approvalDelegate?.attachmentApproval(self, didChangeMessageBody: attachmentTextToolbar.messageBody)
     }
+
+    func attachmentTextToolBarDidChangeHeight(_ attachmentTextToolbar: AttachmentTextToolbar) { }
 }
 
 // MARK: - Media Quality Selection Sheet

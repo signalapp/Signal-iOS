@@ -287,24 +287,6 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
     class var heightChangeAnimationDuration: TimeInterval { 0.25 }
     private(set) var isAnimatingHeightChange = false
 
-    private class func springViewPropertyAnimator(
-        duration: TimeInterval,
-        dampingFraction: CGFloat,
-        response: CGFloat
-    ) -> UIViewPropertyAnimator {
-        let stiffness = pow(2 * .pi / response, 2)
-        let damping = 4 * .pi * dampingFraction / response
-        let timingParameters = UISpringTimingParameters(
-            mass: 1,
-            stiffness: stiffness,
-            damping: damping,
-            initialVelocity: .zero
-        )
-        let animator = UIViewPropertyAnimator(duration: duration, timingParameters: timingParameters)
-        animator.isUserInteractionEnabled = true
-        return animator
-    }
-
     private var layoutConstraints: [NSLayoutConstraint]?
 
     private func createContentsWithMessageDraft(
@@ -490,11 +472,7 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
 
         let animator: UIViewPropertyAnimator?
         if isAnimated {
-            animator = ConversationInputToolbar.springViewPropertyAnimator(
-                duration: 0.25,
-                dampingFraction: 0.645,
-                response: 0.25
-            )
+            animator = UIViewPropertyAnimator(duration: 0.25, springDamping: 0.645, springResponse: 0.25)
         } else {
             animator = nil
         }
@@ -1142,10 +1120,10 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         }
 
         isAnimatingHeightChange = true
-        let animator = ConversationInputToolbar.springViewPropertyAnimator(
+        let animator = UIViewPropertyAnimator(
             duration: ConversationInputToolbar.heightChangeAnimationDuration,
-            dampingFraction: 0.9,
-            response: 0.3
+            springDamping: 0.9,
+            springResponse: 0.3
         )
         animator.addAnimations {
             self.updateLinkPreviewConstraint()
@@ -1176,10 +1154,10 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         }
 
         isAnimatingHeightChange = true
-        let animator = ConversationInputToolbar.springViewPropertyAnimator(
+        let animator = UIViewPropertyAnimator(
             duration: ConversationInputToolbar.heightChangeAnimationDuration,
-            dampingFraction: 0.9,
-            response: 0.3
+            springDamping: 0.9,
+            springResponse: 0.3
         )
         animator.addAnimations {
             self.updateLinkPreviewConstraint()
@@ -1292,10 +1270,10 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         }
 
         isAnimatingHeightChange = true
-        let animator = ConversationInputToolbar.springViewPropertyAnimator(
+        let animator = UIViewPropertyAnimator(
             duration: ConversationInputToolbar.heightChangeAnimationDuration,
-            dampingFraction: 0.9,
-            response: 0.3
+            springDamping: 0.9,
+            springResponse: 0.3
         )
         animator.addAnimations {
             self.updateSuggestedStickersViewConstraint()
@@ -1318,10 +1296,10 @@ public class ConversationInputToolbar: UIView, LinkPreviewViewDraftDelegate, Quo
         }
 
         isAnimatingHeightChange = true
-        let animator = ConversationInputToolbar.springViewPropertyAnimator(
+        let animator = UIViewPropertyAnimator(
             duration: ConversationInputToolbar.heightChangeAnimationDuration,
-            dampingFraction: 0.9,
-            response: 0.3
+            springDamping: 0.9,
+            springResponse: 0.3
         )
         animator.addAnimations {
             self.updateSuggestedStickersViewConstraint()
@@ -2076,10 +2054,10 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
         if let superview, inputToolbarDelegate != nil {
             isAnimatingHeightChange = true
 
-            let animator = ConversationInputToolbar.springViewPropertyAnimator(
+            let animator = UIViewPropertyAnimator(
                 duration: ConversationInputToolbar.heightChangeAnimationDuration,
-                dampingFraction: 1,
-                response: 0.25
+                springDamping: 1,
+                springResponse: 0.25
             )
             animator.addAnimations {
                 self.invalidateIntrinsicContentSize()

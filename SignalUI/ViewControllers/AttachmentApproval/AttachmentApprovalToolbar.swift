@@ -268,6 +268,11 @@ extension AttachmentApprovalToolbar: AttachmentTextToolbarDelegate {
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar) {
         attachmentTextToolbarDelegate?.attachmentTextToolbarDidChange(attachmentTextToolbar)
     }
+
+    func attachmentTextToolBarDidChangeHeight(_ attachmentTextToolbar: AttachmentTextToolbar) {
+        setNeedsLayout()
+        layoutIfNeeded()
+    }
 }
 
 // MARK: - View Once Tooltip
