@@ -118,6 +118,12 @@ static void uncaughtExceptionHandler(NSException *exception)
 
 #pragma mark -
 
+- (UIInterfaceOrientationMask)application:(UIApplication *)application
+    supportedInterfaceOrientationsForWindow:(UIWindow *)window
+{
+    return [self applicationSwift:application supportedInterfaceOrientationsFor:window];
+}
+
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
 {
     OWSLogInfo(@"applicationDidReceiveMemoryWarning.");

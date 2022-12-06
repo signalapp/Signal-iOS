@@ -6,7 +6,8 @@
 import Foundation
 
 extension AppDelegate {
-    func application(
+    @objc
+    func applicationSwift(
         _ application: UIApplication,
         supportedInterfaceOrientationsFor window: UIWindow?
     ) -> UIInterfaceOrientationMask {
