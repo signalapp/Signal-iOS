@@ -397,8 +397,6 @@ static void uncaughtExceptionHandler(NSException *exception)
         return [self tryToShowGroupInviteLinkUI:url];
     } else if ([SignalProxy isValidProxyLink:url]) {
         return [self tryToShowProxyLinkUI:url];
-    } else if ([PaypalCallbackUrlBridge handlePossibleCallbackUrl:url]) {
-        OWSLogInfo(@"Handled PayPal callback url!");
     } else if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostAddStickersPrefix] && [self.tsAccountManager isRegistered]) {
             StickerPackInfo *_Nullable stickerPackInfo = [self parseAddStickersUrl:url];

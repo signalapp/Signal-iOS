@@ -18,8 +18,8 @@ public extension Paypal {
                 integerMoneyValue: DonationUtilities.integralAmount(for: amount),
                 inCurrencyCode: amount.currencyCode,
                 level: level.rawValue,
-                returnUrl: Paypal.approvedCallbackUrl,
-                cancelUrl: Paypal.canceledCallbackUrl
+                returnUrl: Paypal.returnUrl,
+                cancelUrl: Paypal.cancelUrl
             )
 
             return networkManager.makePromise(request: createBoostRequest)

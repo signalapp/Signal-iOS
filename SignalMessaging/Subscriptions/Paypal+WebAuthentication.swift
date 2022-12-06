@@ -6,23 +6,173 @@
 import AuthenticationServices
 import Foundation
 
+// MARK: - Present a new auth session
+
 /// PayPal donations are authorized by a user via PayPal's web interface,
 /// presented in an ``ASWebAuthenticationSession``.
-///
+public extension Paypal {
+    /// Creates and presents a new auth session. Only one auth session should
+    /// be able to exist at once.
+    ///
+    /// On iOS 13+, a `presentationContext` is required.
+    @available(iOS 13, *)
+    static func present(
+        approvalUrl: URL,
+        withPresentationContext presentationContext: ASWebAuthenticationPresentationContextProviding
+    ) -> Promise<WebAuthApprovalParams> {
+        let (session, promise) = makeNewAuthSession(approvalUrl: approvalUrl)
+        session.presentationContextProvider = presentationContext
+        owsAssert(
+            session.start(),
+            "[Donations] Failed to start PayPal authentication session. Was it set up correctly?"
+        )
+
+        return promise
+    }
+
+    /// Creates and presents a new auth session. Only one auth session should
+    /// be able to exist at once.
+    ///
+    /// Only for use on iOS 12.
+    @available(iOS, introduced: 12, obsoleted: 13)
+    static func present(
+        approvalUrl: URL
+    ) -> Promise<WebAuthApprovalParams> {
+        let (session, promise) = makeNewAuthSession(approvalUrl: approvalUrl)
+        owsAssert(
+            session.start(),
+            "[Donations] Failed to start PayPal authentication session. Was it set up correctly?"
+        )
+
+        return promise
+    }
+
+    private static func makeNewAuthSession(approvalUrl: URL) -> (AuthSession, Promise<WebAuthApprovalParams>) {
+        let (promise, future) = Promise<WebAuthApprovalParams>.pending()
+
+        let newSession = AuthSession(approvalUrl: approvalUrl) { approvalResult in
+            switch approvalResult {
+            case let .approved(params):
+                future.resolve(params)
+            case .canceled:
+                future.reject(AuthError.userCanceled)
+            case let .error(error):
+                future.reject(error)
+            }
+        }
+
+        return (newSession, promise)
+    }
+}
+
+// MARK: - Callback URLs
+
 /// We present an auth session beginning at a PayPal URL we fetch from our
 /// service. However, the callback URLs that PayPal will complete our session
-/// with do not use a custom URL scheme, and therefore we cannot rely on the
-/// auth session completing itself. Instead, when the PayPal flow is complete
-/// the user will be directed to a domain that deep-links back into the app, at
-/// which point we can manually cancel the (complete) auth session.
+/// with do not use a custom URL scheme (and instead use `https`), due to
+/// restrictions from PayPal. Consequently, the callback URLs we give to PayPal
+/// should redirect to custom-scheme URLs, which will complete the session.
 extension Paypal {
-    static let approvedCallbackUrl: URL = URL(string: "https://signaldonations.org/approved")!
-    static let canceledCallbackUrl: URL = URL(string: "https://signaldonations.org/canceled")!
+    /// The scheme used in PayPal callback URLs. Required by PayPal to be
+    /// `https`.
+    private static let redirectUrlScheme: String = "https"
 
+    /// The host used in PayPal callback URLs.
+    private static let redirectUrlHost: String = "signaldonations.org"
+
+    /// A path component used in PayPal callback URLs that will tell the server
+    /// to redirect us to the `sgnl://` custom scheme with all path and query
+    /// components after `/redirect`.
+    ///
+    /// For example, the URL `https://signaldonations.org/redirect/whatever?foo=bar`
+    /// will be redirected by the server to `sgnl://whatever?foo=bar`.
+    private static let paymentRedirectPathComponent: String = "/redirect/\(authSessionHost)"
+
+    /// A path component used in PayPal callback URLs to indicate that the user
+    /// approved payment.
+    private static let paymentApprovalPathComponent: String = "/approved"
+
+    /// A path component used in PayPal callback URLs to indicate that the user
+    /// canceled payment.
+    private static let paymentCanceledPathComponent: String = "/canceled"
+
+    /// The URL PayPal will redirect the user to after a successful web
+    /// authentication and payment approval. Passed while setting up web
+    /// authentication.
+    ///
+    /// This URL is expected to redirect to a custom scheme URL. See
+    /// ``paymentRedirectPathComponent`` for more.
+    static let returnUrl: URL = {
+        var components = URLComponents()
+        components.scheme = redirectUrlScheme
+        components.host = redirectUrlHost
+        components.path = paymentRedirectPathComponent + paymentApprovalPathComponent
+
+        return components.url!
+    }()
+
+    /// The URL PayPal will redirect the user to after a canceled web
+    /// authentication. Passed while setting up web authentication.
+    ///
+    /// This URL is expected to redirect to a custom scheme URL. See
+    /// ``paymentRedirectPathComponent`` for more.
+    static let cancelUrl: URL = {
+        var components = URLComponents()
+        components.scheme = redirectUrlScheme
+        components.host = redirectUrlHost
+        components.path = paymentRedirectPathComponent + paymentCanceledPathComponent
+
+        return components.url!
+    }()
+
+    /// The scheme for the URL we expect to be redirected to by our `https`
+    /// PayPal callback URLs.
+    ///
+    /// See ``paymentRedirectPathComponent`` for more.
+    ///
+    /// Per ``ASWebAuthenticationSession``'s documentation [here][0], even if
+    /// other apps register this scheme the auth session will ensure that they
+    /// are not invoked (so we are the only ones to capture the callback).
+    ///
+    /// [0]: https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession
+    private static let authSessionScheme: String = "sgnl"
+
+    /// The host for the URL we expect to be redirected to by our `https`
+    /// PayPal callback URLs. See ``paymentRedirectPathComponent``.
+    private static let authSessionHost: String = "paypal-payment"
+
+    /// The URL we expect to be redirected to by ``approvalUrl``.
+    ///
+    /// See ``paymentRedirectPathComponent`` for more.
+    private static let authSessionApprovalCallbackUrl: URL = {
+        var components = URLComponents()
+        components.scheme = authSessionScheme
+        components.host = authSessionHost
+        components.path = paymentApprovalPathComponent
+
+        return components.url!
+    }()
+
+    /// The URL we expect to be redirected to by ``cancelUrl``.
+    ///
+    /// See ``paymentRedirectPathComponent`` for more.
+    private static let authSessionCancelCallbackUrl: URL = {
+        var components = URLComponents()
+        components.scheme = authSessionScheme
+        components.host = authSessionHost
+        components.path = paymentCanceledPathComponent
+
+        return components.url!
+    }()
+}
+
+// MARK: - Auth results
+
+public extension Paypal {
     /// Represents parameters returned to us after an approved PayPal
     /// authentication, which are used to confirm a payment. These fields are
     /// opaque to us.
-    public struct WebAuthApprovalParams {
+    struct WebAuthApprovalParams {
         let payerId: String
         let paymentId: String
         let paymentToken: String
@@ -74,86 +224,8 @@ extension Paypal {
     }
 
     /// Represents an error returned from web authentication.
-    public enum AuthError: Error {
+    enum AuthError: Error {
         case userCanceled
-    }
-
-    private static let _liveAuthSession: AtomicOptional<AuthSession> = AtomicOptional(nil)
-}
-
-// MARK: - Present a new auth session
-
-public extension Paypal {
-    /// Creates and presents a new auth session. Only one auth session should
-    /// be able to exist at once.
-    ///
-    /// On iOS 13+, a `presentationContext` is required.
-    @available(iOS 13, *)
-    static func present(
-        approvalUrl: URL,
-        withPresentationContext presentationContext: ASWebAuthenticationPresentationContextProviding
-    ) -> Promise<WebAuthApprovalParams> {
-        let (session, promise) = makeNewAuthSession(approvalUrl: approvalUrl)
-        session.presentationContextProvider = presentationContext
-        owsAssert(
-            session.start(),
-            "[Donations] Failed to start PayPal authentication session. Was it set up correctly?"
-        )
-
-        return promise
-    }
-
-    /// Creates and presents a new auth session. Only one auth session should
-    /// be able to exist at once.
-    ///
-    /// Only for use on iOS 12.
-    @available(iOS, introduced: 12, obsoleted: 13)
-    static func present(
-        approvalUrl: URL
-    ) -> Promise<WebAuthApprovalParams> {
-        let (session, promise) = makeNewAuthSession(approvalUrl: approvalUrl)
-        owsAssert(
-            session.start(),
-            "[Donations] Failed to start PayPal authentication session. Was it set up correctly?"
-        )
-
-        return promise
-    }
-
-    private static func makeNewAuthSession(approvalUrl: URL) -> (AuthSession, Promise<WebAuthApprovalParams>) {
-        let (promise, future) = Promise<WebAuthApprovalParams>.pending()
-
-        let newSession = AuthSession(approvalUrl: approvalUrl) { approvalParams in
-            _liveAuthSession.set(nil)
-
-            if let approvalParams {
-                future.resolve(approvalParams)
-            } else {
-                future.reject(AuthError.userCanceled)
-            }
-        }
-
-        guard _liveAuthSession.tryToSetIfNil(newSession) else {
-            owsFail("[Donations] Unexpectedly tried to create a new PayPal auth session while an existing one is live!")
-        }
-
-        return (newSession, promise)
-    }
-}
-
-// MARK: - Complete the current auth session
-
-private extension Paypal {
-    /// Completes the currently-running auth session. Should be called when we
-    /// are deep-linked into the app at the completion of the auth flow. See
-    /// comments above for more details.
-    static func completeAuthSession(withApprovalParams approvalParams: WebAuthApprovalParams?) {
-        guard let liveSession = _liveAuthSession.get() else {
-            owsFailDebug("[Donations] Attempting to complete auth session, but no live auth session found!")
-            return
-        }
-
-        liveSession.complete(withApprovalParams: approvalParams)
     }
 }
 
@@ -161,103 +233,100 @@ private extension Paypal {
 
 private extension Paypal {
     private class AuthSession: ASWebAuthenticationSession {
-        typealias CompletionHandler = (WebAuthApprovalParams?) -> Void
+        enum AuthResult {
+            case approved(WebAuthApprovalParams)
+            case canceled
+            case error(Error)
+        }
 
-        private let completion: CompletionHandler
+        typealias CompletionHandler = (AuthResult) -> Void
 
         /// Create a new auth session starting at the given URL, with the given
         /// completion handler. A `nil` value passed to the completion handler
         /// indicates that the user canceled the auth flow.
         init(approvalUrl: URL, completion: @escaping CompletionHandler) {
-            self.completion = completion
-
             super.init(
                 url: approvalUrl,
-                callbackURLScheme: nil
+                callbackURLScheme: Paypal.authSessionScheme
             ) { finalUrl, error in
-                Self.completedAllByMyself(finalUrl: finalUrl, error: error, completion: completion)
+                Self.onCompleted(finalUrl: finalUrl, error: error, completion: completion)
             }
-        }
-
-        func complete(withApprovalParams approvalParams: WebAuthApprovalParams?) {
-            cancel()
-            completion(approvalParams)
         }
 
         /// Our auth session should only complete on its own if the user cancels
         /// it interactively, since it can only auto-complete if we are using a
         /// custom URL scheme, which our callback URLs do not.
-        private static func completedAllByMyself(
+        private static func onCompleted(
             finalUrl: URL?,
             error: Error?,
             completion: CompletionHandler
         ) {
-            owsAssertDebug(
-                finalUrl == nil,
-                "[Donations] Unexpectedly found non-nil final URL when auth session completed all by itself!"
-            )
-            owsAssertDebug(
-                error != nil,
-                "[Donations] Unexpectedly found nil error when auth session completed all by itself!"
-            )
-
-            completion(nil)
-        }
-    }
-}
-
-// MARK: - Receiving callback URLs
-
-private extension String {
-    static var paypalCallbackScheme: String { Paypal.approvedCallbackUrl.scheme! }
-    static var paypalCallbackHost: String { Paypal.approvedCallbackUrl.host! }
-    static var paypalCallbackApprovedPath: String { Paypal.approvedCallbackUrl.path }
-    static var paypalCallbackCanceledPath: String { Paypal.canceledCallbackUrl.path }
-}
-
-@objc
-public class PaypalCallbackUrlBridge: NSObject {
-    /// If the given URL is a PayPal callback URL, handles it and returns
-    /// ``true``. Otherwise, returns ``false``.
-    @objc
-    static func handlePossibleCallbackUrl(_ url: URL) -> Bool {
-        guard let callbackUrlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
-            owsFailDebug("[Donations] Malformed callback URL!")
-            return false
+            if let finalUrl {
+                owsAssertDebug(error == nil)
+                complete(withFinalUrl: finalUrl, completion: completion)
+            } else if let error {
+                complete(withError: error, completion: completion)
+            } else {
+                owsFail("Unexpectedly had neither a final URL nor error!")
+            }
         }
 
-        guard
-            callbackUrlComponents.scheme == .paypalCallbackScheme,
-            callbackUrlComponents.user == nil,
-            callbackUrlComponents.password == nil,
-            callbackUrlComponents.host == .paypalCallbackHost,
-            callbackUrlComponents.port == nil
-        else {
-            return false
-        }
-
-        let approvalParams: Paypal.WebAuthApprovalParams? = {
-            switch callbackUrlComponents.path {
-            case .paypalCallbackApprovedPath:
-                if
-                    let queryItems = callbackUrlComponents.queryItems,
-                    let approvalParams = Paypal.WebAuthApprovalParams(queryItems: queryItems)
-                {
-                    Logger.info("[Donations] Received PayPal approval params, moving forward.")
-                    return approvalParams
-                } else {
-                    owsFailDebug("[Donations] Unexpectedly failed to extract approval params from approved callback URL, canceling.")
-                }
-            case .paypalCallbackCanceledPath:
-                Logger.info("[Donations] Received PayPal cancel.")
-            default:
-                owsFailDebug("[Donations] Encountered URL that looked like a PayPal callback URL but had an unrecognized path, canceling.")
+        private static func complete(withFinalUrl finalUrl: URL, completion: CompletionHandler) {
+            guard let callbackUrlComponents = URLComponents(url: finalUrl, resolvingAgainstBaseURL: true) else {
+                completion(.error(OWSAssertionError("[Donations] Malformed callback URL!")))
+                return
             }
 
-            return nil
-        }()
+            guard
+                callbackUrlComponents.scheme == Paypal.authSessionScheme,
+                callbackUrlComponents.user == nil,
+                callbackUrlComponents.password == nil,
+                callbackUrlComponents.host == Paypal.authSessionHost,
+                callbackUrlComponents.port == nil
+            else {
+                completion(.error(OWSAssertionError("[Donations] Callback URL did not match expected!")))
+                return
+            }
 
-        Paypal.completeAuthSession(withApprovalParams: approvalParams)
-        return true
+            let authResult: AuthResult = {
+                switch callbackUrlComponents.path {
+                case Paypal.paymentApprovalPathComponent:
+                    if
+                        let queryItems = callbackUrlComponents.queryItems,
+                        let approvalParams = Paypal.WebAuthApprovalParams(queryItems: queryItems)
+                    {
+                        Logger.info("[Donations] Received PayPal approval params, moving forward.")
+                        return .approved(approvalParams)
+                    } else {
+                        return .error(OWSAssertionError("[Donations] Unexpectedly failed to extract approval params from approved callback URL!"))
+                    }
+                case Paypal.paymentCanceledPathComponent:
+                    Logger.info("[Donations] Received PayPal cancel.")
+                    return .canceled
+                default:
+                    return .error(OWSAssertionError("[Donations] Encountered URL that looked like a PayPal callback URL but had an unrecognized path!"))
+                }
+            }()
+
+            completion(authResult)
+        }
+
+        private static func complete(withError error: Error, completion: CompletionHandler) {
+            guard let authSessionError = error as? ASWebAuthenticationSessionError else {
+                completion(.error(OWSAssertionError("Unexpected error from auth session: \(error)!")))
+                return
+            }
+
+            switch authSessionError.code {
+            case .canceledLogin:
+                completion(.canceled)
+            case
+                    .presentationContextNotProvided,
+                    .presentationContextInvalid:
+                owsFail("Unexpected issue with presentation context. Was the auth session set up correctly?")
+            @unknown default:
+                completion(.error(OWSAssertionError("Unexpected auth sesion error code: \(authSessionError.code)")))
+            }
+        }
     }
 }
