@@ -509,7 +509,6 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     capabilities[@"gv2-3"] = @(YES);
     capabilities[@"transfer"] = @(YES);
     capabilities[@"announcementGroup"] = @(YES);
-    capabilities[@"gv1-migration"] = @(YES);
     capabilities[@"senderKey"] = @(YES);
 
     if (RemoteConfig.stories || isSecondaryDevice) {
