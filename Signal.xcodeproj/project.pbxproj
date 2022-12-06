@@ -1212,7 +1212,6 @@
 		F9426260289B1B5500460798 /* kbs_storage_service_encryption_vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = F94261F3289B1B5400460798 /* kbs_storage_service_encryption_vectors.json */; };
 		F9426261289B1B5500460798 /* AppVersionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F4289B1B5400460798 /* AppVersionTests.swift */; };
 		F9426263289B1B5500460798 /* DeviceNamesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F6289B1B5400460798 /* DeviceNamesTest.swift */; };
-		F9426264289B1B5500460798 /* OWSAnalyticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F7289B1B5400460798 /* OWSAnalyticsTests.swift */; };
 		F9426265289B1B5500460798 /* Date+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F8289B1B5400460798 /* Date+SSKTest.swift */; };
 		F9426266289B1B5500460798 /* kbs_pin_sanitation_vectors.json in Resources */ = {isa = PBXBuildFile; fileRef = F94261F9289B1B5400460798 /* kbs_pin_sanitation_vectors.json */; };
 		F9426267289B1B5500460798 /* DispatchQueue+OWSTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261FA289B1B5400460798 /* DispatchQueue+OWSTest.swift */; };
@@ -3601,7 +3600,6 @@
 		F94261F3289B1B5400460798 /* kbs_storage_service_encryption_vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = kbs_storage_service_encryption_vectors.json; sourceTree = "<group>"; };
 		F94261F4289B1B5400460798 /* AppVersionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppVersionTests.swift; sourceTree = "<group>"; };
 		F94261F6289B1B5400460798 /* DeviceNamesTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceNamesTest.swift; sourceTree = "<group>"; };
-		F94261F7289B1B5400460798 /* OWSAnalyticsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAnalyticsTests.swift; sourceTree = "<group>"; };
 		F94261F8289B1B5400460798 /* Date+SSKTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+SSKTest.swift"; sourceTree = "<group>"; };
 		F94261F9289B1B5400460798 /* kbs_pin_sanitation_vectors.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = kbs_pin_sanitation_vectors.json; sourceTree = "<group>"; };
 		F94261FA289B1B5400460798 /* DispatchQueue+OWSTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DispatchQueue+OWSTest.swift"; sourceTree = "<group>"; };
@@ -7142,7 +7140,6 @@
 				F94261F2289B1B5400460798 /* LRUCacheTest.swift */,
 				F94261FC289B1B5400460798 /* MathOWSTests.swift */,
 				F94261E9289B1B5400460798 /* NSData+ImageTest.swift */,
-				F94261F7289B1B5400460798 /* OWSAnalyticsTests.swift */,
 				F94261E6289B1B5400460798 /* OWSErrorTest.swift */,
 				F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */,
 				F94261EE289B1B5400460798 /* OWSFormatTest.swift */,
@@ -11376,7 +11373,6 @@
 				F9426293289B1B5600460798 /* MessageSendLogTests.swift in Sources */,
 				F942624C289B1B5500460798 /* ModelReadCacheTest.swift in Sources */,
 				F9426256289B1B5500460798 /* NSData+ImageTest.swift in Sources */,
-				F9426264289B1B5500460798 /* OWSAnalyticsTests.swift in Sources */,
 				F942623B289B1B5500460798 /* OWSDeviceProvisionerTest.swift in Sources */,
 				F969C2CF2922DD6F00E19786 /* OWSDisappearingMessageFinderTest.swift in Sources */,
 				F942627B289B1B5600460798 /* OWSDisappearingMessagesConfigurationTest.m in Sources */,

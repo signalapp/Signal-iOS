@@ -33,19 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (long)orderOfMagnitudeOf:(long)value
-{
-    return [OWSAnalytics orderOfMagnitudeOf:value];
-}
-
-+ (long)orderOfMagnitudeOf:(long)value
-{
-    if (value <= 0) {
-        return 0;
-    }
-    return (long)round(pow(10, floor(log10(value))));
-}
-
 + (void)logEvent:(NSString *)eventName
         severity:(OWSAnalyticsSeverity)severity
       parameters:(nullable NSDictionary *)parameters
