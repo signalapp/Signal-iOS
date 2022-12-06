@@ -118,6 +118,26 @@ static void uncaughtExceptionHandler(NSException *exception)
 
 #pragma mark -
 
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+    [self applicationWillEnterForegroundSwift:application];
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+    [self applicationDidBecomeActiveSwift:application];
+}
+
+- (void)applicationWillResignActive:(UIApplication *)application
+{
+    [self applicationWillResignActiveSwift:application];
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+    [self applicationDidEnterBackgroundSwift:application];
+}
+
 - (UIInterfaceOrientationMask)application:(UIApplication *)application
     supportedInterfaceOrientationsForWindow:(UIWindow *)window
 {

@@ -8,7 +8,8 @@ import WebRTC
 import SignalServiceKit
 
 extension AppDelegate {
-    func applicationDidBecomeActive(_ application: UIApplication) {
+    @objc
+    func applicationDidBecomeActiveSwift(_ application: UIApplication) {
         AssertIsOnMainThread()
 
         if didAppLaunchFail {
@@ -38,7 +39,8 @@ extension AppDelegate {
         Logger.info("applicationDidBecomeActive completed.")
     }
 
-    func applicationWillResignActive(_ application: UIApplication) {
+    @objc
+    func applicationWillResignActiveSwift(_ application: UIApplication) {
         AssertIsOnMainThread()
 
         if didAppLaunchFail {
@@ -53,7 +55,8 @@ extension AppDelegate {
         Logger.flush()
     }
 
-    func applicationDidEnterBackground(_ application: UIApplication) {
+    @objc
+    func applicationDidEnterBackgroundSwift(_ application: UIApplication) {
         Logger.info("applicationDidEnterBackground.")
 
         Logger.flush()
@@ -63,7 +66,8 @@ extension AppDelegate {
         }
     }
 
-    func applicationWillEnterForeground(_ application: UIApplication) {
+    @objc
+    func applicationWillEnterForegroundSwift(_ application: UIApplication) {
         Logger.info("applicationWillEnterForeground.")
     }
 
