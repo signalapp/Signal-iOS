@@ -24,94 +24,12 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-// country code -> country name
-+ (NSString *)countryNameFromCountryCode:(NSString *)countryCode
-{
-    OWSAssertDebug(countryCode != nil);
-
-    if (countryCode.length < 1) {
-        return OWSLocalizedString(@"UNKNOWN_VALUE", "Indicates an unknown or unrecognizable value.");
-    }
-    NSDictionary *countryCodeComponent = @{NSLocaleCountryCode : countryCode};
-    NSString *identifier               = [NSLocale localeIdentifierFromComponents:countryCodeComponent];
-    NSString *countryName = [NSLocale.currentLocale displayNameForKey:NSLocaleIdentifier value:identifier];
-    if (countryName.length < 1) {
-        countryName = [NSLocale.systemLocale displayNameForKey:NSLocaleIdentifier value:identifier];
-    }
-    if (countryName.length < 1) {
-        countryName = OWSLocalizedString(@"UNKNOWN_VALUE", "Indicates an unknown or unrecognizable value.");
-    }
-    return countryName;
-}
-
 - (NSString *)probableCountryCodeForCallingCode:(NSString *)callingCode
 {
     OWSAssertDebug(callingCode.length > 0);
 
     NSArray<NSString *> *countryCodes = [self countryCodesFromCallingCode:callingCode];
     return (countryCodes.count > 0 ? countryCodes[0] : nil);
-}
-
-+ (BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString {
-    NSCharacterSet *whitespaceSet = NSCharacterSet.whitespaceCharacterSet;
-    NSArray *queryStrings         = [queryString componentsSeparatedByCharactersInSet:whitespaceSet];
-    NSArray *nameStrings          = [nameString componentsSeparatedByCharactersInSet:whitespaceSet];
-
-    return [queryStrings allSatisfy:^BOOL(NSString *query) {
-        if (query.length == 0)
-            return YES;
-        return [nameStrings anySatisfy:^BOOL(NSString *nameWord) {
-            NSStringCompareOptions searchOpts = NSCaseInsensitiveSearch | NSAnchoredSearch;
-            return [nameWord rangeOfString:query options:searchOpts].location != NSNotFound;
-        }];
-    }];
-}
-
-// search term -> country codes
-+ (NSArray<NSString *> *)countryCodesForSearchTerm:(nullable NSString *)searchTerm
-{
-    searchTerm = [searchTerm stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-
-    NSArray *countryCodes = NSLocale.ISOCountryCodes;
-
-    countryCodes = [countryCodes filter:^(NSString *countryCode) {
-        NSString *countryName = [self countryNameFromCountryCode:countryCode];
-        NSString *callingCode = [self callingCodeFromCountryCode:countryCode];
-
-        if (countryName.length < 1 || callingCode.length < 1 || [callingCode isEqualToString:@"+0"]) {
-            // Filter out countries without a valid calling code.
-            return NO;
-        }
-
-        if (searchTerm.length < 1) {
-            return YES;
-        }
-
-        if ([self name:countryName matchesQuery:searchTerm]) {
-            return YES;
-        }
-
-        if ([self name:countryCode matchesQuery:searchTerm]) {
-            return YES;
-        }
-
-        // We rely on the already internationalized string; as that is what
-        // the user would see entered (i.e. with COUNTRY_CODE_PREFIX).
-
-        if ([callingCode containsString:searchTerm]) {
-            return YES;
-        }
-
-        return NO;
-    }];
-
-    return [self sortedCountryCodesByName:countryCodes];
-}
-
-+ (NSArray *)sortedCountryCodesByName:(NSArray *)countryCodesByISOCode {
-    return [countryCodesByISOCode sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-      return [[self countryNameFromCountryCode:obj1] caseInsensitiveCompare:[self countryNameFromCountryCode:obj2]];
-    }];
 }
 
 // black  magic

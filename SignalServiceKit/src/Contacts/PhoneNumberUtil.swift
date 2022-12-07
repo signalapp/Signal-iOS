@@ -192,6 +192,78 @@ extension PhoneNumberUtil {
         }
     }
 
+    private class func does(_ string: String, matchQuery query: String) -> Bool {
+        let searchOptions: String.CompareOptions = [.caseInsensitive, .anchored]
+
+        let stringTokens = string.components(separatedBy: .whitespaces)
+        let queryTokens = query.components(separatedBy: .whitespaces)
+
+        return queryTokens.allSatisfy { queryToken in
+            if queryToken.isEmpty {
+                return true
+            }
+            return stringTokens.contains { stringToken in
+                stringToken.range(of: queryToken, options: searchOptions) != nil
+            }
+        }
+    }
+
+    /// Get country codes from a search term.
+    @objc(countryCodesForSearchTerm:)
+    public class func countryCodes(forSearchTerm searchTerm: String?) -> [String] {
+        let cleanedSearch = (searchTerm ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let codes = NSLocale.isoCountryCodes.filter { countryCode in
+            guard
+                let callingCode = callingCode(fromCountryCode: countryCode),
+                !callingCode.isEmpty,
+                callingCode != "+0"
+            else {
+                return false
+            }
+            let countryName = countryName(fromCountryCode: countryCode)
+            return (
+                cleanedSearch.isEmpty ||
+                does(countryName, matchQuery: cleanedSearch) ||
+                does(countryCode, matchQuery: cleanedSearch) ||
+                callingCode.contains(cleanedSearch)
+            )
+        }
+
+        return codes.sorted { lhs, rhs in
+            let lhsCountry = countryName(fromCountryCode: lhs)
+            let rhsCountry = countryName(fromCountryCode: rhs)
+            return lhsCountry.localizedCaseInsensitiveCompare(rhsCountry) == .orderedAscending
+        }
+    }
+
+    /// Convert country code to country name.
+    @objc(countryNameFromCountryCode:)
+    public class func countryName(fromCountryCode countryCode: String) -> String {
+        lazy var unknownValue =  NSLocalizedString(
+            "UNKNOWN_VALUE",
+            comment: "Indicates an unknown or unrecognizable value."
+        )
+
+        if countryCode.isEmpty {
+            return unknownValue
+        }
+
+        let identifier = NSLocale.localeIdentifier(fromComponents: [
+            NSLocale.Key.countryCode.rawValue: countryCode
+        ])
+
+        let localesToTry = [Locale.current, NSLocale.system]
+        for locale in localesToTry {
+            let nsLocale = locale as NSLocale
+            if let result = nsLocale.displayName(forKey: .identifier, value: identifier)?.nilIfEmpty {
+                return result
+            }
+        }
+
+        return unknownValue
+    }
+
     public func format(_ phoneNumber: NBPhoneNumber, numberFormat: NBEPhoneNumberFormat) throws -> String {
         try unfairLock.withLock {
             try phoneNumberUtilWrapper.format(phoneNumber: phoneNumber, numberFormat: numberFormat)

@@ -15,28 +15,6 @@
 
 @implementation PhoneNumberUtilTest
 
-- (void)testQueryMatching
-{
-    XCTAssertTrue([PhoneNumberUtil name:@"dave" matchesQuery:@"dave"]);
-    XCTAssertTrue([PhoneNumberUtil name:@"big dave" matchesQuery:@"big dave"]);
-    XCTAssertTrue([PhoneNumberUtil name:@"big dave" matchesQuery:@"big dave dave"]);
-    XCTAssertTrue([PhoneNumberUtil name:@"big big dave" matchesQuery:@"big dave"]);
-    XCTAssertTrue([PhoneNumberUtil name:@"big dave" matchesQuery:@"dave big"]);
-    XCTAssertTrue([PhoneNumberUtil name:@"big dave" matchesQuery:@"dave"]);
-    XCTAssertTrue([PhoneNumberUtil name:@"big dave" matchesQuery:@"big"]);
-    XCTAssertTrue([PhoneNumberUtil name:@"big dave" matchesQuery:@"big "]);
-    XCTAssertTrue([PhoneNumberUtil name:@"big dave" matchesQuery:@"      big       "]);
-    XCTAssertTrue([PhoneNumberUtil name:@"big dave" matchesQuery:@"dav"]);
-    XCTAssertTrue([PhoneNumberUtil name:@"big dave" matchesQuery:@"bi dav"]);
-    XCTAssertTrue([PhoneNumberUtil name:@"big dave"
-                           matchesQuery:@"big big big big big big big big big big dave dave dave dave dave"]);
-
-    XCTAssertFalse([PhoneNumberUtil name:@"big dave" matchesQuery:@"ave"]);
-    XCTAssertFalse([PhoneNumberUtil name:@"big dave" matchesQuery:@"dare"]);
-    XCTAssertFalse([PhoneNumberUtil name:@"big dave" matchesQuery:@"mike"]);
-    XCTAssertFalse([PhoneNumberUtil name:@"dave" matchesQuery:@"big"]);
-}
-
 - (void)testTranslateCursorPosition
 {
     XCTAssertEqual(0, [PhoneNumberUtil translateCursorPosition:0 from:@"" to:@"" stickingRightward:true]);

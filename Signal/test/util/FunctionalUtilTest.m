@@ -14,35 +14,6 @@
 
 @implementation FunctionalUtilTest
 
-- (void)testFirstMatch
-{
-    NSArray<NSString *> *testArray = @[ @"Hello", @"my", @"name", @"is", @"Michelle" ];
-    NSString *result1 = [testArray firstSatisfying:^BOOL(NSString *item) { return YES; }];
-    NSString *result2 = [testArray firstSatisfying:^BOOL(NSString *item) { return item.length > 5; }];
-    NSString *result3 = [testArray firstSatisfying:^BOOL(NSString *item) { return item.length <= 2; }];
-    NSString *result4 = [testArray firstSatisfying:^BOOL(NSString *item) { return [item isEqualToString:@"Hello"]; }];
-    NSString *result5 = [testArray firstSatisfying:^BOOL(NSString *item) { return [item isEqualToString:@"Goodbye"]; }];
-    NSString *result6 = [@[] firstSatisfying:^BOOL(id item) { return YES; }];
-
-    XCTAssert(result1 == testArray[0]);
-    XCTAssert(result2 == testArray[4]);
-    XCTAssert(result3 == testArray[1]);
-    XCTAssert(result4 == testArray[0]);
-    XCTAssert(result5 == nil);
-    XCTAssert(result6 == nil);
-}
-
-- (void)testAnySatisfy
-{
-    XCTAssert(![@[] anySatisfy:^(id x) { return NO; }]);
-    XCTAssert(![@[] anySatisfy:^(id x) { return YES; }]);
-    XCTAssert(![@[ @1 ] anySatisfy:^(id x) { return NO; }]);
-    XCTAssert([@[ @1 ] anySatisfy:^(id x) { return YES; }]);
-
-    XCTAssert([(@[ @2, @3, @5 ]) anySatisfy:^BOOL(NSNumber *x) { return x.intValue == 3; }]);
-    XCTAssert(![(@[ @2, @4, @5 ]) anySatisfy:^BOOL(NSNumber *x) { return x.intValue == 3; }]);
-}
-
 - (void)testMap
 {
     XCTAssert([[@[] map:^(id x) { return x; }] isEqualToArray:@[]]);

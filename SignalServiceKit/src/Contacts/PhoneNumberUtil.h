@@ -14,11 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 // This property should only be accessed by Swift.
 @property (nonatomic, readonly) PhoneNumberUtilWrapper *phoneNumberUtilWrapper;
 
-+ (BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString;
-
-+ (NSString *)countryNameFromCountryCode:(NSString *)countryCode;
-+ (NSArray<NSString *> *)countryCodesForSearchTerm:(nullable NSString *)searchTerm;
-
 // Returns the most likely country code for a calling code based on population.
 - (NSString *)probableCountryCodeForCallingCode:(NSString *)callingCode;
 

@@ -36,33 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation NSArray (FunctionalUtil)
 
-- (nullable id)firstSatisfying:(BOOL (^)(id))predicate
-{
-    tskit_require(predicate != nil);
-    for (id e in self) {
-        if (predicate(e)) {
-            return e;
-        }
-    }
-    return nil;
-}
-
-- (BOOL)anySatisfy:(BOOL (^)(id item))predicate
-{
-    return [self firstSatisfying:predicate] != nil;
-}
-
-- (BOOL)allSatisfy:(BOOL (^)(id item))predicate
-{
-    tskit_require(predicate != nil);
-    for (id e in self) {
-        if (!predicate(e)) {
-            return false;
-        }
-    }
-    return true;
-}
-
 - (NSArray *)map:(id (^)(id item))projection {
     tskit_require(projection != nil);
 
