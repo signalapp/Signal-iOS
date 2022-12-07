@@ -58,9 +58,30 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
                         owsFailDebug("shouldn't have gotten here with no sender")
                         return false
                     }
-                    return GroupsV2MessageProcessor.discardMode(forMessageFrom: sender,
-                                                                groupId: groupId,
-                                                                transaction: transaction) == .doNotDiscard
+
+                    if sender.isLocalAddress {
+                        // Always trust our other devices (important for cancellations).
+                        return true
+                    }
+
+                    guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                        owsFailDebug("discarding group ring \(ringId) from \(sender) for unknown group")
+                        return false
+                    }
+
+                    guard GroupsV2MessageProcessor.discardMode(forMessageFrom: sender,
+                                                               groupId: groupId,
+                                                               transaction: transaction) == .doNotDiscard else {
+                        NSELogger.uncorrelated.warn("discarding group ring \(ringId) from \(sender)")
+                        return false
+                    }
+
+                    guard thread.groupMembership.fullMembers.count <= RemoteConfig.maxGroupCallRingSize else {
+                        NSELogger.uncorrelated.warn("discarding group ring \(ringId) from \(sender) for too-large group")
+                        return false
+                    }
+
+                    return true
                 }
             }
 
