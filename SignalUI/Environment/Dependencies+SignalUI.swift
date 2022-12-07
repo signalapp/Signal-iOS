@@ -9,11 +9,11 @@ import Foundation
 
 @objc
 public extension NSObject {
-    final var audioSession: OWSAudioSession {
+    final var audioSession: AudioSession {
         SUIEnvironment.shared.audioSessionRef
     }
 
-    static var audioSession: OWSAudioSession {
+    static var audioSession: AudioSession {
         SUIEnvironment.shared.audioSessionRef
     }
 
@@ -49,11 +49,11 @@ public extension NSObject {
 // MARK: - Obj-C Dependencies
 
 public extension Dependencies {
-    var audioSession: OWSAudioSession {
+    var audioSession: AudioSession {
         SUIEnvironment.shared.audioSessionRef
     }
 
-    static var audioSession: OWSAudioSession {
+    static var audioSession: AudioSession {
         SUIEnvironment.shared.audioSessionRef
     }
 

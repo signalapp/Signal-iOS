@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import SignalMessaging
+import SignalUI
 
-@objc
 class NotificationSettingsSoundViewController: OWSTableViewController2 {
     private let thread: TSThread?
     private let completion: (() -> Void)?
@@ -125,7 +124,7 @@ class NotificationSettingsSoundViewController: OWSTableViewController2 {
         self.contents = contents
     }
 
-    private var player: OWSAudioPlayer?
+    private var player: AudioPlayer?
     private func soundWasSelected(_ sound: OWSSound) {
         player?.stop()
         player = OWSSounds.audioPlayer(forSound: sound, audioBehavior: .playback)

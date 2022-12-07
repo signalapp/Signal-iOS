@@ -5,6 +5,7 @@
 
 import Foundation
 import SignalMessaging
+import SignalUI
 
 protocol CVAudioPlayerListener {
     func audioPlayerStateDidChange(attachmentId: String)
@@ -148,7 +149,7 @@ public class CVAudioPlayer: NSObject {
     }
 
     public var audioPlaybackState: AudioPlaybackState = .stopped
-    private var soundPlayer: OWSAudioPlayer?
+    private var soundPlayer: AudioPlayer?
     private var soundComplete: (() -> Void)?
     private func playStandardSound(_ sound: OWSStandardSound, completion: (() -> Void)? = nil) {
         AssertIsOnMainThread()
@@ -241,7 +242,7 @@ public class CVAudioPlayer: NSObject {
     }
 }
 
-extension CVAudioPlayer: OWSAudioPlayerDelegate {
+extension CVAudioPlayer: AudioPlayerDelegate {
     public func setAudioProgress(_ progress: TimeInterval, duration: TimeInterval, playbackRate: Float) {}
 
     public func audioPlayerDidFinish() {
@@ -298,15 +299,15 @@ private protocol CVAudioPlaybackDelegate: AnyObject {
 
 // Used for playback of a given audio attachment.
 //
-// TODO: Should we combine this with OWSAudioPlayer?
-private class CVAudioPlayback: NSObject, OWSAudioPlayerDelegate {
+// TODO: Should we combine this with AudioPlayer?
+private class CVAudioPlayback: NSObject, AudioPlayerDelegate {
 
     fileprivate weak var delegate: CVAudioPlaybackDelegate?
 
     fileprivate let uniqueThreadId: String?
     fileprivate let attachmentId: String
 
-    private let audioPlayer: OWSAudioPlayer
+    private let audioPlayer: AudioPlayer
 
     private let _playbackState = AtomicValue<AudioPlaybackState>(AudioPlaybackState.stopped)
     public var audioPlaybackState: AudioPlaybackState {
@@ -385,7 +386,7 @@ private class CVAudioPlayback: NSObject, OWSAudioPlayerDelegate {
             return nil
         }
 
-        audioPlayer = OWSAudioPlayer(mediaUrl: mediaURL, audioBehavior: .audioMessagePlayback)
+        audioPlayer = AudioPlayer(mediaUrl: mediaURL, audioBehavior: .audioMessagePlayback)
         uniqueThreadId = attachment.owningMessage?.uniqueThreadId
 
         super.init()

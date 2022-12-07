@@ -131,7 +131,7 @@ class VoiceMessageDraftView: UIStackView {
     }
 }
 
-extension VoiceMessageDraftView: OWSAudioPlayerDelegate {
+extension VoiceMessageDraftView: AudioPlayerDelegate {
 
     func setAudioProgress(_ progress: TimeInterval, duration: TimeInterval, playbackRate: Float) {
         guard !isScrubbing else { return }

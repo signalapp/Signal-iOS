@@ -16,7 +16,7 @@ import WebRTC
  * By using the `useManualAudio` and `isAudioEnabled` attributes of the RTCAudioSession we can delay recording until
  * it makes sense.
  */
-extension OWSAudioSession {
+extension AudioSession {
     /**
      * The private class that manages AVAudioSession for WebRTC
      */

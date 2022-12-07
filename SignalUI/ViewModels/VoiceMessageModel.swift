@@ -3,18 +3,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import AVFoundation
 import CoreServices
 import SignalMessaging
 
-@objc
 public class VoiceMessageModel: NSObject {
     public let threadUniqueId: String
 
     private static var draftVoiceMessageDirectory: URL { VoiceMessageModels.draftVoiceMessageDirectory }
 
-    @objc
     public init(thread: TSThread) {
         self.threadUniqueId = thread.uniqueId
     }
@@ -24,7 +21,6 @@ public class VoiceMessageModel: NSObject {
     private static let audioExtension = "m4a"
     private static let audioUTI: String = kUTTypeMPEG4Audio as String
 
-    @objc
     public func prepareForSending() throws -> SignalAttachment {
         guard !isRecording else {
             throw OWSAssertionError("Can't send while actively recording")
@@ -51,12 +47,10 @@ public class VoiceMessageModel: NSObject {
 
     // MARK: -
 
-    @objc
     public func saveDraft(transaction: SDSAnyWriteTransaction) {
         VoiceMessageModels.saveDraft(threadUniqueId: threadUniqueId, transaction: transaction)
     }
 
-    @objc
     public func clearDraft(transaction: SDSAnyWriteTransaction) {
         VoiceMessageModels.clearDraft(for: threadUniqueId, transaction: transaction)
     }
@@ -72,7 +66,7 @@ public class VoiceMessageModel: NSObject {
     public lazy var audioWaveform: AudioWaveform? =
         AudioWaveformManager.audioWaveform(forAudioPath: audioFile.path, waveformPath: waveformFile.path)
 
-    public lazy var audioPlayer: OWSAudioPlayer =
+    public lazy var audioPlayer: AudioPlayer =
         .init(mediaUrl: audioFile, audioBehavior: .audioMessagePlayback)
 
     private var audioFile: URL { URL(fileURLWithPath: "voice-memo.\(Self.audioExtension)", relativeTo: directory) }
@@ -88,7 +82,6 @@ public class VoiceMessageModel: NSObject {
 
     // MARK: -
 
-    @objc
     public var isRecording: Bool { audioRecorder?.isRecording ?? false }
 
     public lazy var duration: TimeInterval? = {

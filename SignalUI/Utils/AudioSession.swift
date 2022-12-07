@@ -6,11 +6,10 @@
 import Foundation
 import AVFoundation
 
-@objc(OWSAudioActivity)
 public class AudioActivity: NSObject {
     let audioDescription: String
 
-    let behavior: OWSAudioBehavior
+    let behavior: AudioBehavior
 
     public var requiresRecordingPermissions: Bool {
         switch behavior {
@@ -18,12 +17,9 @@ public class AudioActivity: NSObject {
             return true
         case .playback, .playbackMixWithOthers, .audioMessagePlayback, .unknown:
             return false
-        @unknown default:
-            return false
         }
     }
 
-    @objc
     public var supportsBackgroundPlayback: Bool {
         // Currently, only audio messages and calls support background playback
         switch behavior {
@@ -31,12 +27,9 @@ public class AudioActivity: NSObject {
             return true
         case .playback, .playbackMixWithOthers, .playAndRecord, .unknown:
             return false
-        @unknown default:
-            return false
         }
     }
 
-    @objc
     public var backgroundPlaybackName: String? {
         switch behavior {
         case .audioMessagePlayback:
@@ -44,14 +37,14 @@ public class AudioActivity: NSObject {
                                      comment: "A string indicating that an audio message is playing.")
         case .call:
             return nil
+
         default:
             owsFailDebug("unexpectedly fetched background name for type that doesn't support background playback")
             return nil
         }
     }
 
-    @objc
-    public init(audioDescription: String, behavior: OWSAudioBehavior) {
+    public init(audioDescription: String, behavior: AudioBehavior) {
         self.audioDescription = audioDescription
         self.behavior = behavior
     }
@@ -67,14 +60,12 @@ public class AudioActivity: NSObject {
     }
 }
 
-@objc
-public class OWSAudioSession: NSObject {
+public class AudioSession: NSObject {
 
     private let avAudioSession = AVAudioSession.sharedInstance()
 
     private let device = UIDevice.current
 
-    @objc
     public required override init() {
         super.init()
 
@@ -98,23 +89,20 @@ public class OWSAudioSession: NSObject {
     // MARK: -
 
     public private(set) var currentActivities: [Weak<AudioActivity>] = []
-    var aggregateBehaviors: Set<OWSAudioBehavior> {
+    var aggregateBehaviors: Set<AudioBehavior> {
         return Set(self.currentActivities.compactMap { $0.value?.behavior })
     }
 
-    @objc
     public var wantsBackgroundPlayback: Bool {
         return currentActivities.lazy.compactMap { $0.value?.supportsBackgroundPlayback }.contains(true)
     }
 
-    @objc
     public var outputVolume: Float {
         return avAudioSession.outputVolume
     }
 
     private let unfairLock = UnfairLock()
 
-    @objc
     public func startAudioActivity(_ audioActivity: AudioActivity) -> Bool {
         Logger.debug("with \(audioActivity)")
 
@@ -140,7 +128,6 @@ public class OWSAudioSession: NSObject {
         }
     }
 
-    @objc
     public func endAudioActivity(_ audioActivity: AudioActivity) {
         Logger.debug("with audioActivity: \(audioActivity)")
 
@@ -155,7 +142,6 @@ public class OWSAudioSession: NSObject {
         }
     }
 
-    @objc
     public func ensureAudioState() {
         unfairLock.lock()
         defer { unfairLock.unlock() }
@@ -292,7 +278,7 @@ public class OWSAudioSession: NSObject {
     }
 }
 
-extension OWSAudioBehavior: CustomStringConvertible {
+extension AudioBehavior: CustomStringConvertible {
     public var description: String {
         switch self {
         case .unknown:
@@ -307,9 +293,6 @@ extension OWSAudioBehavior: CustomStringConvertible {
             return "OWSAudioBehavior.playAndRecord"
         case .call:
             return "OWSAudioBehavior.call"
-        @unknown default:
-            owsFailDebug("")
-            return "OWSAudioBehavior.unknown default"
         }
     }
 }

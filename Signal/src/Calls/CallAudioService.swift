@@ -3,12 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import AVFoundation
-import SignalServiceKit
-import SignalMessaging
 import AVKit
+import SignalMessaging
 import SignalRingRTC
+import SignalServiceKit
+import SignalUI
 
 protocol CallAudioServiceDelegate: AnyObject {
     func callAudioServiceDidChangeAudioSession(_ callAudioService: CallAudioService)
@@ -339,7 +339,7 @@ class CallAudioService: NSObject, CallObserver {
 
         // Sometimes (usually but not always) upon ending a call, the currentPlayer does not get
         // played to completion. This is necessary in order for the players
-        // audioActivity to remove itself from OWSAudioSession. Otherwise future AudioActivities,
+        // audioActivity to remove itself from AudioSession. Otherwise future AudioActivities,
         // like recording a voice note, will be prevented from having their needs met.
         //
         // Furthermore, no interruption delegate is called nor AVAudioSessionInterruptionNotification
@@ -353,14 +353,14 @@ class CallAudioService: NSObject, CallObserver {
 
     // MARK: Playing Sounds
 
-    var currentPlayer: OWSAudioPlayer?
+    var currentPlayer: AudioPlayer?
 
     private func stopPlayingAnySounds() {
         currentPlayer?.stop()
         stopRinging()
     }
 
-    private func prepareToPlay(sound: OWSStandardSound) -> OWSAudioPlayer? {
+    private func prepareToPlay(sound: OWSStandardSound) -> AudioPlayer? {
         guard let newPlayer = OWSSounds.audioPlayer(forSound: sound.rawValue, audioBehavior: .call) else {
             owsFailDebug("unable to build player for sound: \(OWSSounds.displayName(forSound: sound.rawValue))")
             return nil
@@ -574,11 +574,11 @@ extension CallAudioService: CallServiceObserver {
 
 private class CallRingerSwitchObserver: RingerSwitchObserver {
 
-    private let player: OWSAudioPlayer
+    private let player: AudioPlayer
     private let call: SignalCall
     private weak var callService: CallAudioService?
 
-    init(callService: CallAudioService, player: OWSAudioPlayer, call: SignalCall) {
+    init(callService: CallAudioService, player: AudioPlayer, call: SignalCall) {
         self.callService = callService
         self.player = player
         self.call = call

@@ -55,7 +55,6 @@ typedef NS_ENUM(NSUInteger, OWSStandardSound) {
     OWSStandardSound_CustomThreshold = 1 << 16, // 16 == OWSCustomSoundShift
 };
 
-@class OWSAudioPlayer;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 @class TSThread;

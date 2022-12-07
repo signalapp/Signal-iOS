@@ -28,7 +28,7 @@ public class SUIEnvironment: NSObject {
     }
 
     @objc
-    public var audioSessionRef: OWSAudioSession = OWSAudioSession()
+    public var audioSessionRef: AudioSession = AudioSession()
 
     @objc
     public var contactsViewHelperRef: ContactsViewHelper = ContactsViewHelper()

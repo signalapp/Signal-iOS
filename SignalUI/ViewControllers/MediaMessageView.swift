@@ -7,11 +7,11 @@ import SignalMessaging
 import UIKit
 import YYImage
 
-class MediaMessageView: AttachmentPrepContentView, OWSAudioPlayerDelegate {
+class MediaMessageView: AttachmentPrepContentView, AudioPlayerDelegate {
 
     private let attachment: SignalAttachment
 
-    private var audioPlayer: OWSAudioPlayer?
+    private var audioPlayer: AudioPlayer?
     private lazy var audioPlayButton = UIButton()
 
     // MARK: Initializers
@@ -87,7 +87,7 @@ class MediaMessageView: AttachmentPrepContentView, OWSAudioPlayerDelegate {
             return
         }
 
-        let audioPlayer = OWSAudioPlayer(mediaUrl: dataUrl, audioBehavior: .playback)
+        let audioPlayer = AudioPlayer(mediaUrl: dataUrl, audioBehavior: .playback)
         audioPlayer.delegate = self
         self.audioPlayer = audioPlayer
 
@@ -335,6 +335,8 @@ class MediaMessageView: AttachmentPrepContentView, OWSAudioPlayerDelegate {
     }
 
     func setAudioProgress(_ progress: TimeInterval, duration: TimeInterval, playbackRate: Float) { }
+
+    func audioPlayerDidFinish() { }
 
     private func ensureButtonState() {
         if audioPlaybackState == .playing {

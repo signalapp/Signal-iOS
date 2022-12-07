@@ -20,12 +20,11 @@ extension OWSSounds {
         }
     }
 
-    @objc
-    public static func audioPlayer(forSound sound: OWSSound, audioBehavior: OWSAudioBehavior) -> OWSAudioPlayer? {
+    public static func audioPlayer(forSound sound: OWSSound, audioBehavior: AudioBehavior) -> AudioPlayer? {
         guard let soundUrl = OWSSounds.soundURL(forSound: sound, quiet: false) else {
             return nil
         }
-        let player = OWSAudioPlayer(mediaUrl: soundUrl, audioBehavior: audioBehavior)
+        let player = AudioPlayer(mediaUrl: soundUrl, audioBehavior: audioBehavior)
         if shouldAudioPlayerLoop(forSound: sound) {
             player.isLooping = true
         }
