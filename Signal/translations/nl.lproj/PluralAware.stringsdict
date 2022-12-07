@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Gesprek verwijderen?</string>
+			<string>%1$d gesprek wissen?</string>
 			<key>other</key>
-			<string>%1$d gesprekken verwijderen?</string>
+			<string>%1$d gesprekken wissen?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -264,9 +264,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Bericht verwijderen?</string>
+			<string>%1$d bericht wissen?</string>
 			<key>other</key>
-			<string>%1$d berichten verwijderen?</string>
+			<string>%1$d berichten wissen?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -744,9 +744,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d bericht verwijderen</string>
+			<string>%1$d bericht wissen</string>
 			<key>other</key>
-			<string>%1$d berichten verwijderen</string>
+			<string>%1$d berichten wissen</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>

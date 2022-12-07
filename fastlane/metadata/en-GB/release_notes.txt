@@ -1,1 +1,1 @@
-• Assorted bug fixes to keep your app running smoothly. Thanks for using Signal!
+• When you start a group call for small groups (up to 16 people), you can choose to send a ringing notification. Group members will hear a ring if their Signal app is up to date.
