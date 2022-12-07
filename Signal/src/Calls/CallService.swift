@@ -1387,6 +1387,11 @@ extension CallService: CallManagerDelegate {
                 return .cancel
             }
 
+            guard thread.groupMembership.fullMembers.count <= RemoteConfig.maxGroupCallRingSize else {
+                Logger.warn("discarding group ring \(ringId) from \(sender) for too-large group")
+                return .cancel
+            }
+
             do {
                 if try CancelledGroupRing.exists(transaction.unwrapGrdbRead.database, key: ringId) {
                     return .cancel
