@@ -11,6 +11,10 @@ import Foundation
 /// PayPal donations are authorized by a user via PayPal's web interface,
 /// presented in an ``ASWebAuthenticationSession``.
 public extension Paypal {
+    /// On iOS 13+, we are required to hold a strong reference to any
+    /// in-progress ``ASWebAuthenticationSession``s.
+    private static let _runningAuthSession: AtomicOptional<ASWebAuthenticationSession> = AtomicOptional(nil)
+
     /// Creates and presents a new auth session. Only one auth session should
     /// be able to exist at once.
     ///
@@ -51,6 +55,8 @@ public extension Paypal {
         let (promise, future) = Promise<WebAuthApprovalParams>.pending()
 
         let newSession = AuthSession(approvalUrl: approvalUrl) { approvalResult in
+            _runningAuthSession.set(nil)
+
             switch approvalResult {
             case let .approved(params):
                 future.resolve(params)
@@ -59,6 +65,10 @@ public extension Paypal {
             case let .error(error):
                 future.reject(error)
             }
+        }
+
+        guard _runningAuthSession.tryToSetIfNil(newSession) else {
+            owsFail("Unexpectedly found existing auth session while creating a new one! This should be impossible.")
         }
 
         return (newSession, promise)
