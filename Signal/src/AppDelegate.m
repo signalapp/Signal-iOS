@@ -6,7 +6,6 @@
 #import "AppDelegate.h"
 #import "ChatListViewController.h"
 #import "MainAppContext.h"
-#import "OWSDeviceProvisioningURLParser.h"
 #import "OWSScreenLockUI.h"
 #import "Pastelog.h"
 #import "Signal-Swift.h"
@@ -433,13 +432,13 @@ static void uncaughtExceptionHandler(NSException *exception)
             return [self tryToShowStickerPackView:stickerPackInfo];
         } else if ([url.host hasPrefix:kURLHostLinkDevicePrefix] && [self.tsAccountManager isRegistered]
             && self.tsAccountManager.isPrimaryDevice) {
-            OWSDeviceProvisioningURLParser *parser =
-                [[OWSDeviceProvisioningURLParser alloc] initWithProvisioningURL:url.absoluteString];
-            if (!parser.isValid) {
+            DeviceProvisioningURL *deviceProvisioningUrl =
+                [[DeviceProvisioningURL alloc] initWithUrlString:url.absoluteString];
+            if (deviceProvisioningUrl == nil) {
                 OWSFailDebug(@"Invalid URL: %@", url);
                 return NO;
             }
-            return [self tryToShowLinkDeviceViewWithParser:parser];
+            return [self tryToShowLinkDeviceViewWithUrl:deviceProvisioningUrl];
         } else {
             OWSLogVerbose(@"Invalid URL: %@", url);
             OWSFailDebug(@"Unknown URL host: %@", url.host);
@@ -517,7 +516,7 @@ static void uncaughtExceptionHandler(NSException *exception)
     return YES;
 }
 
-- (BOOL)tryToShowLinkDeviceViewWithParser:(OWSDeviceProvisioningURLParser *)parser
+- (BOOL)tryToShowLinkDeviceViewWithUrl:(DeviceProvisioningURL *)deviceProvisioningUrl
 {
     OWSAssertDebug(!self.didAppLaunchFail);
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
@@ -555,7 +554,7 @@ static void uncaughtExceptionHandler(NSException *exception)
             [rootViewController presentFormSheetViewController:navController animated:NO completion:^ {}];
         }
 
-        [linkDeviceVC provisionWithConfirmationWithParser:parser];
+        [linkDeviceVC confirmProvisioningWithUrl:deviceProvisioningUrl];
     });
     return YES;
 }

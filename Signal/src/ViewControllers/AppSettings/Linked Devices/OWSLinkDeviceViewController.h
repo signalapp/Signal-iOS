@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSDeviceProvisioningURLParser;
+@class DeviceProvisioningURL;
 
 @protocol OWSLinkDeviceViewControllerDelegate
 
@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<OWSLinkDeviceViewControllerDelegate> delegate;
 
-- (void)provisionWithConfirmationWithParser:(OWSDeviceProvisioningURLParser *)parser;
+- (void)confirmProvisioningWithUrl:(DeviceProvisioningURL *)deviceProvisioningURL;
 
 @end
 

@@ -4,7 +4,6 @@
 //
 
 #import "OWSLinkDeviceViewController.h"
-#import "OWSDeviceProvisioningURLParser.h"
 #import "Signal-Swift.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalMessaging/OWSProfileManager.h>
@@ -123,8 +122,8 @@ NS_ASSUME_NONNULL_BEGIN
         return QRCodeScanOutcomeContinueScanning;
     }
 
-    OWSDeviceProvisioningURLParser *parser = [[OWSDeviceProvisioningURLParser alloc] initWithProvisioningURL:qrCodeString];
-    if (!parser.isValid) {
+    DeviceProvisioningURL *url = [[DeviceProvisioningURL alloc] initWithUrlString:qrCodeString];
+    if (url == nil) {
         OWSLogError(@"Unable to parse provisioning params from QRCode: %@", qrCodeString);
 
         NSString *title = NSLocalizedString(@"LINK_DEVICE_INVALID_CODE_TITLE", @"report an invalid linking code");
@@ -152,13 +151,13 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self presentActionSheet:actionSheet];
     } else {
-        [self provisionWithConfirmationWithParser:parser];
+        [self confirmProvisioningWithUrl:url];
     }
     
     return QRCodeScanOutcomeStopScanning;
 }
 
-- (void)provisionWithConfirmationWithParser:(OWSDeviceProvisioningURLParser *)parser
+- (void)confirmProvisioningWithUrl:(DeviceProvisioningURL *)deviceProvisioningURL
 {
     NSString *title = NSLocalizedString(
         @"LINK_DEVICE_PERMISSION_ALERT_TITLE", @"confirm the users intent to link a new device");
@@ -182,14 +181,14 @@ NS_ASSUME_NONNULL_BEGIN
         initWithTitle:NSLocalizedString(@"CONFIRM_LINK_NEW_DEVICE_ACTION", @"Button text")
                 style:ActionSheetActionStyleDefault
               handler:^(ActionSheetAction *action) {
-                  [self provisionWithParser:parser];
+                  [self provisionWithUrl:deviceProvisioningURL];
               }];
     [actionSheet addAction:proceedAction];
 
     [self presentActionSheet:actionSheet];
 }
 
-- (void)provisionWithParser:(OWSDeviceProvisioningURLParser *)parser
+- (void)provisionWithUrl:(DeviceProvisioningURL *)deviceProvisioningUrl
 {
     // Optimistically set this flag.
     [OWSDeviceManager.shared setMayHaveLinkedDevices];
@@ -204,8 +203,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSDeviceProvisioner *provisioner = [[OWSDeviceProvisioner alloc] initWithMyAciIdentityKeyPair:aciIdentityKeyPair
                                                                               myPniIdentityKeyPair:pniIdentityKeyPair
-                                                                                    theirPublicKey:parser.publicKey
-                                                                            theirEphemeralDeviceId:parser.ephemeralDeviceId
+                                                                                    theirPublicKey:deviceProvisioningUrl.publicKey
+                                                                            theirEphemeralDeviceId:deviceProvisioningUrl.ephemeralDeviceId
                                                                                     accountAddress:accountAddress
                                                                                                pni:pni
                                                                                         profileKey:myProfileKeyData
@@ -236,7 +235,7 @@ NS_ASSUME_NONNULL_BEGIN
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self presentActionSheet:[self retryActionSheetControllerWithError:error
                                                                         retryBlock:^{
-                                                                            [self provisionWithParser:parser];
+                                                                            [self provisionWithUrl:deviceProvisioningUrl];
                                                                         }]];
             });
         }];

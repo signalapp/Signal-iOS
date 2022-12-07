@@ -16,7 +16,6 @@
 #import "DebugUITableViewController.h"
 #import "FingerprintViewController.h"
 #import "MediaDetailViewController.h"
-#import "OWSDeviceProvisioningURLParser.h"
 #import "OWSLinkDeviceViewController.h"
 #import "OWSQuotedMessageView.h"
 #import "OWSWindowManager.h"
