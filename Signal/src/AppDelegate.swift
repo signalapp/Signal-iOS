@@ -511,7 +511,7 @@ extension AppDelegate {
         AssertIsOnMainThread()
 
         guard !didAppLaunchFail else {
-            owsFailDebug("app launch failed")
+            Logger.error("App launch failed")
             return
         }
 

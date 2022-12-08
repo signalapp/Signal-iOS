@@ -13,7 +13,7 @@ extension AppDelegate {
         AssertIsOnMainThread()
 
         if didAppLaunchFail {
-            owsFailDebug("app launch failed")
+            Logger.error("App launch failed")
             return
         }
 
@@ -44,7 +44,7 @@ extension AppDelegate {
         AssertIsOnMainThread()
 
         if didAppLaunchFail {
-            owsFailDebug("app launch failed")
+            Logger.error("App launch failed")
             return
         }
 
