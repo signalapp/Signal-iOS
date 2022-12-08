@@ -109,28 +109,43 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
 
     // MARK: - Link Previews
 
-    private var wasLinkPreviewCancelled = false
+    private var wasLinkPreviewCancelled = false {
+        didSet {
+            updateLinkPreviewIfNecessary()
+        }
+    }
+
     private lazy var linkPreviewView: LinkPreviewView = {
         let linkPreviewView = LinkPreviewView(draftDelegate: self)
         linkPreviewView.isHidden = true
         return linkPreviewView
     }()
 
+    private var currentLinkPreviewState: LinkPreviewDraft?
+
     private var currentPreviewUrl: URL? {
         didSet {
             guard currentPreviewUrl != oldValue else { return }
-            guard let previewUrl = currentPreviewUrl else { return }
 
-            let linkPreviewView = self.linkPreviewView
-            linkPreviewView.configureForNonCVC(state: LinkPreviewLoading(linkType: .preview),
-                                               isDraft: true)
+            // Always clear this when the URL changes. If we're setting a new URL,
+            // we'll reassign it after fetching the new preview. If we cleared the URL,
+            // we'll leave it nil.
+            currentLinkPreviewState = nil
+
+            guard let previewUrl = currentPreviewUrl else {
+                linkPreviewView.isHidden = true
+                return
+            }
+
+            linkPreviewView.configureForNonCVC(state: LinkPreviewLoading(linkType: .preview), isDraft: true)
             linkPreviewView.isHidden = false
 
             linkPreviewManager.fetchLinkPreview(for: previewUrl).done(on: .main) { [weak self] draft in
                 guard let self = self else { return }
                 guard self.currentPreviewUrl == previewUrl else { return }
-                linkPreviewView.configureForNonCVC(state: LinkPreviewDraft(linkPreviewDraft: draft),
-                                                   isDraft: true)
+                let linkPreviewState = LinkPreviewDraft(linkPreviewDraft: draft)
+                self.linkPreviewView.configureForNonCVC(state: linkPreviewState, isDraft: true)
+                self.currentLinkPreviewState = linkPreviewState
             }.catch { [weak self] _ in
                 self?.clearLinkPreview()
             }
@@ -138,9 +153,10 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
     }
 
     private func updateLinkPreviewIfNecessary() {
+        guard !wasLinkPreviewCancelled else { return clearLinkPreview() }
+
         let trimmedText = textView.text.ows_stripped()
         guard !trimmedText.isEmpty else { return clearLinkPreview() }
-        guard !wasLinkPreviewCancelled else { return clearLinkPreview() }
 
         let isOversizedText = trimmedText.lengthOfBytes(using: .utf8) >= kOversizeTextMessageSizeThreshold
         guard !isOversizedText else { return clearLinkPreview() }
@@ -152,8 +168,6 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
 
     private func clearLinkPreview() {
         currentPreviewUrl = nil
-        linkPreviewView.isHidden = true
-        linkPreviewView.reset()
     }
 
     // MARK: - Create Views
@@ -222,12 +236,7 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
 
 extension TextApprovalViewController: ApprovalFooterDelegate {
     public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
-        let linkPreviewDraft: OWSLinkPreviewDraft?
-        if !wasLinkPreviewCancelled, let draftState = linkPreviewView.state as? LinkPreviewDraft {
-            linkPreviewDraft = draftState.linkPreviewDraft
-        } else {
-            linkPreviewDraft = nil
-        }
+        let linkPreviewDraft = currentLinkPreviewState?.linkPreviewDraft
         delegate?.textApproval(self, didApproveMessage: self.textView.messageBody, linkPreviewDraft: linkPreviewDraft)
     }
 
@@ -286,7 +295,6 @@ extension TextApprovalViewController: InputAccessoryViewPlaceholderDelegate {
 extension TextApprovalViewController: LinkPreviewViewDraftDelegate {
 
     public func linkPreviewDidCancel() {
-        clearLinkPreview()
         wasLinkPreviewCancelled = true
     }
 }

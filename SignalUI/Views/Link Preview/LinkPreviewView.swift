@@ -32,7 +32,7 @@ public class LinkPreviewView: ManualStackViewWithLayer {
         fatalError("init(name:arrangedSubviews:) has not been implemented")
     }
 
-    public var state: LinkPreviewState?
+    private var state: LinkPreviewState?
     private var configurationSize: CGSize?
     private var shouldReconfigureForBounds = false
 
