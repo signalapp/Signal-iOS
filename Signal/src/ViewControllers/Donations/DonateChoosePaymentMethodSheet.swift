@@ -123,7 +123,7 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
         footerStack.removeAllSubviews()
         footerStack.addArrangedSubview(paymentButtonContainerView)
         footerStack.alignment = .fill
-        footerStack.layoutMargins = UIEdgeInsets(top: 28, left: 40, bottom: 8, right: 40)
+        footerStack.layoutMargins = UIEdgeInsets(top: 28, left: 20, bottom: 8, right: 20)
         footerStack.isLayoutMarginsRelativeArrangement = true
 
         paymentButtonContainerView.autoPinWidthToSuperviewMargins()

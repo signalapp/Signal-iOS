@@ -161,7 +161,7 @@ private extension PaypalConfirmationViewController {
         footerStack.removeAllSubviews()
         footerStack.addArrangedSubview(buttonsStackView)
         footerStack.alignment = .fill
-        footerStack.layoutMargins = UIEdgeInsets(top: 12, leading: 40, bottom: 12, trailing: 40)
+        footerStack.layoutMargins = UIEdgeInsets(top: 12, leading: 20, bottom: 12, trailing: 20)
         footerStack.isLayoutMarginsRelativeArrangement = true
 
         buttonsStackView.autoPinWidthToSuperviewMargins()
