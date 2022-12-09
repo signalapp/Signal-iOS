@@ -27,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize mainWindow = _mainWindow;
 @synthesize appLaunchTime = _appLaunchTime;
 @synthesize appForegroundTime = _appForegroundTime;
-@synthesize buildTime = _buildTime;
 
 - (instancetype)init
 {
@@ -143,14 +142,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isRunningTests
 {
     return YES;
-}
-
-- (NSDate *)buildTime
-{
-    if (!_buildTime) {
-        _buildTime = [NSDate new];
-    }
-    return _buildTime;
 }
 
 - (CGRect)frame

@@ -55,8 +55,6 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (nonatomic, readonly) BOOL isRunningTests;
 
-@property (nonatomic, readonly) NSDate *buildTime;
-
 @property (atomic, nullable) UIWindow *mainWindow;
 
 @property (nonatomic, readonly) CGRect frame;

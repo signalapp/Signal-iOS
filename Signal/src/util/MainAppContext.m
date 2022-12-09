@@ -28,7 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize mainWindow = _mainWindow;
 @synthesize appLaunchTime = _appLaunchTime;
 @synthesize appForegroundTime = _appForegroundTime;
-@synthesize buildTime = _buildTime;
 @synthesize reportedApplicationState = _reportedApplicationState;
 
 - (instancetype)init
@@ -257,26 +256,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isRunningTests
 {
     return getenv("runningTests_dontStartApp");
-}
-
-- (NSDate *)buildTime
-{
-    if (!_buildTime) {
-        NSInteger buildTimestamp =
-        [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildDetails"][@"Timestamp"] integerValue];
-
-        if (buildTimestamp == 0) {
-            // Production builds should _always_ expire, ensure that here.
-            OWSAssert(OWSIsTestableBuild());
-
-            OWSLogDebug(@"No build timestamp, assuming app never expires.");
-            _buildTime = [NSDate distantFuture];
-        } else {
-            _buildTime = [NSDate dateWithTimeIntervalSince1970:buildTimestamp];
-        }
-    }
-
-    return _buildTime;
 }
 
 - (CGRect)frame

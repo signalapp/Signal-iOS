@@ -134,7 +134,7 @@ public class AppExpiry: NSObject {
 
         if let newExpirationDate = newExpirationDate {
             // Ignore any expiration date that is later than when the app expires by default.
-            guard newExpirationDate < defaultExpirationDate else { return }
+            guard newExpirationDate < Self.defaultExpirationDate else { return }
 
             updateExpirationState(ExpirationState(mode: .atDate, expirationDate: newExpirationDate))
         } else {
@@ -145,14 +145,11 @@ public class AppExpiry: NSObject {
     @objc
     public static let AppExpiryDidChange = Notification.Name("AppExpiryDidChange")
 
-    // By default, we expire 90 days after the app was compiled.
-    private let defaultExpirationDate = CurrentAppContext().buildTime.addingTimeInterval(90 * kDayInterval)
-
     public var expirationDate: Date {
         let state = expirationState.get()
         switch state.mode {
         case .default:
-            return defaultExpirationDate
+            return Self.defaultExpirationDate
         case .atDate:
             guard let expirationDate = state.expirationDate else {
                 owsFailDebug("Missing expiration date, expiring immediately")
@@ -186,4 +183,27 @@ public class AppExpiry: NSObject {
     public var isExpired: Bool {
         return expirationDate < Date()
     }
+
+    // MARK: - Build Time
+
+    private static let defaultExpirationDate: Date = {
+        guard let buildTime = loadBuildTime() else {
+            owsAssert(OWSIsTestableBuild(), "Production builds should always expire.")
+            Logger.debug("No build timestamp, assuming app never expires.")
+            return .distantFuture
+        }
+        // By default, we expire 90 days after the app was compiled.
+        return buildTime.addingTimeInterval(90 * kDayInterval)
+    }()
+
+    private static func loadBuildTime() -> Date? {
+        guard
+            let buildDetails = Bundle.main.app.object(forInfoDictionaryKey: "BuildDetails") as? [String: Any],
+            let buildTimestamp = buildDetails["Timestamp"] as? TimeInterval
+        else {
+            return nil
+        }
+        return Date(timeIntervalSince1970: buildTimestamp)
+    }
+
 }
