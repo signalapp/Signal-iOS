@@ -1816,8 +1816,8 @@
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Select an amount to donate.";
 
-/* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "Select a larger amount to donate.";
+/* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. Embeds {{currency string}}, such as \"$5\". */
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "The minimum amount you can donate is %1$@.";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "Monthly";

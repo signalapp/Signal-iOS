@@ -317,28 +317,9 @@ public extension DonationUtilities {
         "XPF"
     ]
 
-    /// Is an amount of money too small, given a set of minimums?
-    ///
-    /// This should be a conservative check, so if we're not sure we will
-    /// not reject the amount.
-    static func isBoostAmountTooSmall(
-        _ amount: FiatMoney,
-        givenMinimumAmounts minimumAmounts: [Currency.Code: FiatMoney]
-    ) -> Bool {
-        let integerAmount = integralAmount(for: amount)
-
-        guard integerAmount > 0 else {
-            return true
-        }
-
-        guard let minimum = minimumAmounts[amount.currencyCode] else {
-            // Since this is just a sanity check, don't prevent donation here.
-            // It is likely to fail on its own while processing the payment.
-            Logger.warn("[Donations] Unexpectedly missing minimum boost amount for currency \(amount.currencyCode)!")
-            return false
-        }
-
-        return integerAmount < integralAmount(for: minimum)
+    /// Is an amount of money too small, given a minimum?
+    static func isBoostAmountTooSmall(_ amount: FiatMoney, minimumAmount: FiatMoney) -> Bool {
+        (amount.value <= 0) || (integralAmount(for: amount) < integralAmount(for: minimumAmount))
     }
 
     /// Convert the given money amount to an integer that can be passed to

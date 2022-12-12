@@ -48,51 +48,43 @@ final class StripeTest: XCTestCase {
     }
 
     func testIsBoostAmountTooSmall() {
-        let minimums: [Currency.Code: FiatMoney] = [
-            "USD": 5.as("USD"),
-            "JPY": 50.as("JPY")
-        ]
+        let minUsd = 5.as("USD")
+        let minJpy = 50.as("JPY")
+        let minUnknown = 0.as(unknownCurrency)
 
-        let tooSmall: [FiatMoney] = [
-            FiatMoney(currencyCode: "USD", value: -0.1),
-            FiatMoney(currencyCode: "JPY", value: -0.1),
-            FiatMoney(currencyCode: unknownCurrency, value: -0.1),
-            FiatMoney(currencyCode: "USD", value: 0),
-            FiatMoney(currencyCode: "JPY", value: 0),
-            FiatMoney(currencyCode: unknownCurrency, value: 0),
-            FiatMoney(currencyCode: "USD", value: 4.9),
-            FiatMoney(currencyCode: "JPY", value: 49),
+        let tooSmall: [(FiatMoney, FiatMoney)] = [
+            ((-0.1).as("USD"), minUsd),
+            ((-0.1).as("JPY"), minJpy),
+            ((-0.1).as(unknownCurrency), minUnknown),
+            (0.as("USD"), minUsd),
+            (0.as("JPY"), minJpy),
+            (0.as(unknownCurrency), minUnknown),
+            (4.9.as("USD"), minUsd),
+            (49.as("JPY"), minJpy),
             // Rounding
-            FiatMoney(currencyCode: "USD", value: 4.94),
-            FiatMoney(currencyCode: "JPY", value: 49.4)
+            (4.94.as("USD"), minUsd),
+            (49.4.as("JPY"), minJpy)
         ]
-        for amount in tooSmall {
+        for (amount, minimumAmount) in tooSmall {
             XCTAssertTrue(
-                DonationUtilities.isBoostAmountTooSmall(
-                    amount,
-                    givenMinimumAmounts: minimums
-                ),
+                DonationUtilities.isBoostAmountTooSmall(amount, minimumAmount: minimumAmount),
                 "\(amount)"
             )
         }
 
-        let allGood: [FiatMoney] = [
-            FiatMoney(currencyCode: "USD", value: 5),
-            FiatMoney(currencyCode: "USD", value: 10),
-            FiatMoney(currencyCode: "USD", value: 1_000_000_000_000),
-            FiatMoney(currencyCode: "JPY", value: 50),
-            // Unknown currencies accept any positive value
-            FiatMoney(currencyCode: unknownCurrency, value: 0.5),
+        let allGood: [(FiatMoney, FiatMoney)] = [
+            (5.as("USD"), minUsd),
+            (10.as("USD"), minUsd),
+            (1_000_000_000_000.as("USD"), minUsd),
+            (50.as("JPY"), minJpy),
+            (0.5.as(unknownCurrency), minUnknown),
             // Rounding
-            FiatMoney(currencyCode: "USD", value: 4.995),
-            FiatMoney(currencyCode: "JPY", value: 49.5)
+            (4.995.as("USD"), minUsd),
+            (49.5.as("JPY"), minJpy)
         ]
-        for amount in allGood {
+        for (amount, minimumAmount) in allGood {
             XCTAssertFalse(
-                DonationUtilities.isBoostAmountTooSmall(
-                    amount,
-                    givenMinimumAmounts: minimums
-                ),
+                DonationUtilities.isBoostAmountTooSmall(amount, minimumAmount: minimumAmount),
                 "\(amount)"
             )
         }
@@ -100,6 +92,12 @@ final class StripeTest: XCTestCase {
 }
 
 fileprivate extension Int {
+    func `as`(_ currencyCode: Currency.Code) -> FiatMoney {
+        FiatMoney(currencyCode: currencyCode, value: Decimal(self))
+    }
+}
+
+fileprivate extension Double {
     func `as`(_ currencyCode: Currency.Code) -> FiatMoney {
         FiatMoney(currencyCode: currencyCode, value: Decimal(self))
     }

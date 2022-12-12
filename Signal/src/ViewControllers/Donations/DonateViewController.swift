@@ -334,11 +334,13 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED",
                 comment: "If the user tries to donate to Signal but no amount is selected, this error message is shown."
             ))
-        case .amountIsTooSmall:
-            showError(NSLocalizedString(
-                "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT",
-                comment: "If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown."
-            ))
+        case let .amountIsTooSmall(minimumAmount):
+            let format = NSLocalizedString(
+                "DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT",
+                comment: "If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. Embeds {{currency string}}, such as \"$5\"."
+            )
+            let currencyString = DonationUtilities.format(money: minimumAmount)
+            showError(String(format: format, currencyString))
         case let .canContinue(amount, supportedPaymentMethods):
             presentChoosePaymentMethodSheet(
                 amount: amount,

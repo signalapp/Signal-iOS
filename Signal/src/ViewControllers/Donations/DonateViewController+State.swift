@@ -35,7 +35,7 @@ extension DonateViewController {
 
             enum OneTimePaymentRequest: Equatable {
                 case noAmountSelected
-                case amountIsTooSmall
+                case amountIsTooSmall(minimumAmount: FiatMoney)
                 case canContinue(amount: FiatMoney, supportedPaymentMethods: Set<DonationPaymentMethod>)
             }
 
@@ -83,9 +83,21 @@ extension DonateViewController {
                 guard let amount = amount else {
                     return .noAmountSelected
                 }
-                if DonationUtilities.isBoostAmountTooSmall(amount, givenMinimumAmounts: minimumAmounts) {
-                    return .amountIsTooSmall
+
+                let minimumAmount: FiatMoney
+                if let minimum = minimumAmounts[amount.currencyCode] {
+                    minimumAmount = minimum
+                } else {
+                    // Since this is just a sanity check, don't prevent donation here.
+                    // It is likely to fail on its own while processing the payment.
+                    Logger.warn("[Donations] Unexpectedly missing minimum boost amount for currency \(amount.currencyCode)!")
+                    minimumAmount = .init(currencyCode: amount.currencyCode, value: 0)
                 }
+
+                if DonationUtilities.isBoostAmountTooSmall(amount, minimumAmount: minimumAmount) {
+                    return .amountIsTooSmall(minimumAmount: minimumAmount)
+                }
+
                 return .canContinue(
                     amount: amount,
                     supportedPaymentMethods: supportedPaymentMethods(forCurrencyCode: amount.currencyCode)
