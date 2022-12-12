@@ -63,10 +63,10 @@ PODS:
     - SignalRingRTC/WebRTC (= 2.22.0)
   - SignalRingRTC/WebRTC (2.22.0):
     - SignalCoreKit
-  - SQLCipher (4.5.1):
-    - SQLCipher/standard (= 4.5.1)
-  - SQLCipher/common (4.5.1)
-  - SQLCipher/standard (4.5.1):
+  - SQLCipher (4.5.2):
+    - SQLCipher/standard (= 4.5.2)
+  - SQLCipher/common (4.5.2)
+  - SQLCipher/standard (4.5.2):
     - SQLCipher/common
   - SSZipArchive (2.5.2)
   - Starscream (3.1.1)
@@ -230,7 +230,7 @@ SPEC CHECKSUMS:
   SignalArgon2: 1c24183835ca861e6af06631c18b1671cdf35571
   SignalCoreKit: 9febad2d82f80c5b2f446740c68f1fba6d4cd9b2
   SignalRingRTC: c1f7c9f5c789ec821520f02bc48077c4bb3582d3
-  SQLCipher: 712e8416685e8e575b9b0706ffee71678b2fdcf8
+  SQLCipher: f5b4857434158b571a3ed3b10b3b43cd18ef5f67
   SSZipArchive: 8c3485528a87fa6f90afdbfc33682eb61d985ae5
   Starscream: 4bb2f9942274833f7b4d296a55504dcfc7edb7b0
   SwiftProtobuf: 9f458aaa7844a2fc0b910053e66578bc4e2da9c1
