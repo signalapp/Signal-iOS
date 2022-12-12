@@ -38,29 +38,6 @@ extension DonateViewController {
             } else {
                 return Paypal.present(approvalUrl: approvalUrl)
             }
-        }.then(on: .main) { [weak self] approvalParams -> Promise<Paypal.WebAuthApprovalParams> in
-            guard let self else { throw OWSAssertionError("Lost self!") }
-
-            let (promise, future) = Promise<Paypal.WebAuthApprovalParams>.pending()
-
-            let confirmationViewController = PaypalConfirmationViewController(
-                amount: amount,
-                badge: badge,
-                donationMode: .oneTime
-            ) { confirmationResult, viewController in
-                viewController.dismiss(animated: true) {
-                    switch confirmationResult {
-                    case .approved:
-                        future.resolve(approvalParams)
-                    case .canceled:
-                        future.reject(Paypal.AuthError.userCanceled)
-                    }
-                }
-            }
-
-            self.present(confirmationViewController, animated: true)
-
-            return promise
         }.then(on: .main) { [weak self] approvalParams -> Promise<Void> in
             guard let self else { return .value(()) }
 

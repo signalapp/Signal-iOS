@@ -6,6 +6,11 @@
 import Foundation
 import SignalMessaging
 
+// NOTE: This screen is unused.
+//
+// We intended to use it in 6.6 but removed it. We completely remove this code on the main branch,
+// but leave this here "dormant" to minimize changes since we cut the release. You shouldn't be
+// seeing this file unless you're looking at old code.
 class PaypalConfirmationViewController: OWSTableSheetViewController {
     private enum Constants {
         static let buttonHeight: CGFloat = 48
