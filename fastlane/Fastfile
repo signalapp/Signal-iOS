@@ -88,7 +88,7 @@ lane :release do |options|
       changelog: "nightly-#{Time.now.strftime('%m-%d-%Y')}",
       notify_external_testers: true,
       distribute_external: true,
-      groups: %w(Internal QA)
+      groups: ['Internal']
     )
   else
     upload_to_testflight(

@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-import feature_flags_common
+from sys import stderr
+from time import sleep
+from feature_flags_internal import main
 
-if __name__ == '__main__':
-    feature_flags_common.set_feature_flags('qa')
+if __name__ == "__main__":
+    print("❗️ feature_flags_qa.py is deprecated.", file=stderr)
+    print("Waiting a moment to make sure you see this message...", file=stderr)
+
+    sleep(3)
+
+    main()

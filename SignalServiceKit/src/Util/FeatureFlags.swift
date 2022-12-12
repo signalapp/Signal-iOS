@@ -8,7 +8,7 @@ import Foundation
 private enum FeatureBuild: Int {
     case dev
     case internalPreview
-    case qa
+    case `internal`
     case openPreview
     case beta
     case production
@@ -20,7 +20,7 @@ extension FeatureBuild {
     }
 }
 
-private let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
+private let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .internal
 
 // MARK: -
 
@@ -56,16 +56,16 @@ extension StorageMode: CustomStringConvertible {
 @objc(SSKFeatureFlags)
 public class FeatureFlags: BaseFlags {
     @objc
-    public static let phoneNumberSharing = build.includes(.qa)
+    public static let phoneNumberSharing = build.includes(.internal)
 
     @objc
-    public static let phoneNumberDiscoverability = build.includes(.qa)
+    public static let phoneNumberDiscoverability = build.includes(.internal)
 
     @objc
-    public static let usernames = build.includes(.qa)
+    public static let usernames = build.includes(.internal)
 
     @objc
-    public static let linkedPhones = build.includes(.qa)
+    public static let linkedPhones = build.includes(.internal)
 
     // We keep this feature flag around as we may want to
     // ship a build that disables the dependency on KBS
@@ -137,7 +137,7 @@ extension FeatureFlags {
             featureFlagString = LocalizationNotNeeded("Development")
         case .internalPreview:
             featureFlagString = LocalizationNotNeeded("Internal Preview")
-        case .qa:
+        case .internal:
             featureFlagString = LocalizationNotNeeded("Internal")
         case .openPreview:
             featureFlagString = LocalizationNotNeeded("Open Preview")
@@ -207,12 +207,12 @@ public class DebugFlags: BaseFlags {
     public static let testPopulationErrorAlerts = build.includes(.beta)
 
     @objc
-    public static let audibleErrorLogging = build.includes(.qa)
+    public static let audibleErrorLogging = build.includes(.internal)
 
     @objc
-    public static let internalSettings = build.includes(.qa)
+    public static let internalSettings = build.includes(.internal)
 
-    public static let internalMegaphoneEligible = build.includes(.qa)
+    public static let internalMegaphoneEligible = build.includes(.internal)
 
     // This can be used to shut down various background operations.
     @objc
@@ -291,7 +291,7 @@ public class DebugFlags: BaseFlags {
     public static let groupsV2ignoreCorruptInvites = false
 
     @objc
-    public static let groupsV2memberStatusIndicators = build.includes(.qa)
+    public static let groupsV2memberStatusIndicators = build.includes(.internal)
 
     @objc
     public static let isMessageProcessingVerbose = false
@@ -314,25 +314,25 @@ public class DebugFlags: BaseFlags {
     public static let showContextMenuDebugRects = false
 
     @objc
-    public static let verboseNotificationLogging = build.includes(.qa)
+    public static let verboseNotificationLogging = build.includes(.internal)
 
     @objc
-    public static let verboseSignalRecipientLogging = build.includes(.qa)
+    public static let verboseSignalRecipientLogging = build.includes(.internal)
 
     @objc
-    public static let deviceTransferVerboseProgressLogging = build.includes(.qa)
+    public static let deviceTransferVerboseProgressLogging = build.includes(.internal)
 
     @objc
-    public static let reactWithThumbsUpFromLockscreen = build.includes(.qa)
+    public static let reactWithThumbsUpFromLockscreen = build.includes(.internal)
 
     @objc
-    public static let messageDetailsExtraInfo = build.includes(.qa)
+    public static let messageDetailsExtraInfo = build.includes(.internal)
 
     @objc
-    public static let exposeCensorshipCircumvention = build.includes(.qa)
+    public static let exposeCensorshipCircumvention = build.includes(.internal)
 
     @objc
-    public static let allowV1GroupsUpdates = build.includes(.qa)
+    public static let allowV1GroupsUpdates = build.includes(.internal)
 
     @objc
     public static let forceGroupCalling = build.includes(.beta)
@@ -369,10 +369,10 @@ public class DebugFlags: BaseFlags {
     public static let fastPerfTests = false
 
     @objc
-    public static let forceDonorBadgeDisplay = build.includes(.qa)
+    public static let forceDonorBadgeDisplay = build.includes(.internal)
 
     @objc
-    public static let forceSubscriptionMegaphone = build.includes(.qa)
+    public static let forceSubscriptionMegaphone = build.includes(.internal)
 
     @objc
     public static let extraDebugLogs = build.includes(.openPreview)
@@ -575,7 +575,7 @@ public class TestableFlag: NSObject {
 
     @objc
     public func get() -> Bool {
-        guard build.includes(.qa) else {
+        guard build.includes(.internal) else {
             return defaultValue
         }
         return flag.get()
