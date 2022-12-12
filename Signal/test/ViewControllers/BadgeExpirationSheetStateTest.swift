@@ -120,14 +120,22 @@ class BadgeExpirationSheetStateTest: XCTestCase {
         let subscriptionBadge = getSubscriptionBadge()
 
         let chargeFailureTestCases: [[String?]: String] = [
-            ["authentication_required"]: NSLocalizedString("DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED",
-                                                           comment: "Donation payment error for decline failures where authentication is required."),
-            ["approve_with_id"]: NSLocalizedString("DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED",
-                                                   comment: "Donation payment error for decline failures where the payment cannot be authorized."),
-            ["call_issuer"]: NSLocalizedString("DONATION_PAYMENT_ERROR_CALL_ISSUER",
-                                               comment: "Donation payment error for decline failures where the user may need to contact their card or bank."),
-            ["card_not_supported"]: NSLocalizedString("DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED",
-                                                      comment: "Donation payment error for decline failures where the card is not supported."),
+            ["authentication_required"]: NSLocalizedString(
+                "APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED",
+                comment: "Apple Pay donation error for decline failures where authentication is required."
+            ),
+            ["approve_with_id"]: NSLocalizedString(
+                "APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED",
+                comment: "Apple Pay donation error for decline failures where the payment cannot be authorized."
+            ),
+            ["call_issuer"]: NSLocalizedString(
+                "APPLE_PAY_DONATION_ERROR_CALL_ISSUER",
+                comment: "Apple Pay donation error for decline failures where the user may need to contact their card or bank."
+            ),
+            ["card_not_supported"]: NSLocalizedString(
+                "APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED",
+                comment: "Apple Pay donation error for decline failures where the card is not supported."
+            ),
             [
                 "card_velocity_exceeded", "currency_not_supported", "do_not_honor",
                 "do_not_try_again", "fraudulent", "generic_decline", "invalid_account",
@@ -138,26 +146,44 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                 "stolen_card", "stop_payment_order", "testmode_decline", "transaction_not_allowed",
                 "try_again_later", "withdrawal_count_limit_exceeded",
                 "GARBAGE", nil
-            ]: NSLocalizedString("DONATION_PAYMENT_ERROR_OTHER",
-                                 comment: "Donation payment error for unspecified decline failures."),
-            ["expired_card"]: NSLocalizedString("DONATION_PAYMENT_ERROR_EXPIRED_CARD",
-                                                comment: "Donation payment error for decline failures where the card has expired."),
-            ["incorrect_number"]: NSLocalizedString("DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER",
-                                                    comment: "Donation payment error for decline failures where the card number is incorrect."),
-            ["incorrect_cvc", "invalid_cvc"]: NSLocalizedString("DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE",
-                                                                comment: "Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect."),
-            ["insufficient_funds"]: NSLocalizedString("DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS",
-                                                      comment: "Donation payment error for decline failures where the card has insufficient funds."),
-            ["invalid_expiry_month"]: NSLocalizedString("DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH",
-                                                        comment: "Donation payment error for decline failures where the expiration month on the payment method is incorrect."),
-            ["invalid_expiry_year"]: NSLocalizedString("DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR",
-                                                       comment: "Donation payment error for decline failures where the expiration year on the payment method is incorrect."),
-            ["invalid_number"]: NSLocalizedString("DONATION_PAYMENT_ERROR_INVALID_NUMBER",
-                                                  comment: "Donation payment error for decline failures where the card number is incorrect."),
+            ]: NSLocalizedString(
+                "APPLE_PAY_DONATION_ERROR_OTHER",
+                comment: "Apple Pay donation error for unspecified decline failures."
+            ),
+            ["expired_card"]: NSLocalizedString(
+                "APPLE_PAY_DONATION_ERROR_EXPIRED_CARD",
+                comment: "Apple Pay donation error for decline failures where the card has expired."
+            ),
+            ["incorrect_number"]: NSLocalizedString(
+                "APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER",
+                comment: "Apple Pay donation error for decline failures where the card number is incorrect."
+            ),
+            ["incorrect_cvc", "invalid_cvc"]: NSLocalizedString(
+                "APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE",
+                comment: "Apple Pay donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect."
+            ),
+            ["insufficient_funds"]: NSLocalizedString(
+                "APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS",
+                comment: "Apple Pay donation error for decline failures where the card has insufficient funds."
+            ),
+            ["invalid_expiry_month"]: NSLocalizedString(
+                "APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH",
+                comment: "Apple Pay donation error for decline failures where the expiration month on the payment method is incorrect."
+            ),
+            ["invalid_expiry_year"]: NSLocalizedString(
+                "APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_YEAR",
+                comment: "Apple Pay donation error for decline failures where the expiration year on the payment method is incorrect."
+            ),
+            ["invalid_number"]: NSLocalizedString(
+                "APPLE_PAY_DONATION_ERROR_INVALID_NUMBER",
+                comment: "Apple Pay donation error for decline failures where the card number is incorrect."
+            ),
             [
                 "issuer_not_available", "processing_error", "reenter_transaction"
-            ]: NSLocalizedString("DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE",
-                                 comment: "Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank.")
+            ]: NSLocalizedString(
+                "APPLE_PAY_DONATION_ERROR_ISSUER_NOT_AVAILABLE",
+                comment: "Apple Pay donation error for \"issuer not available\" decline failures. The user should try again or contact their card/bank."
+            )
         ]
         for (codes, expectedSubstring) in chargeFailureTestCases {
             for code in codes {

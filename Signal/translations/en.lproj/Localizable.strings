@@ -184,6 +184,45 @@
 /* Name indicating that the system theme is enabled. */
 "APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "System";
 
+/* Apple Pay donation error for decline failures where authentication is required. */
+"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "Try another payment method or contact your bank for more information.";
+
+/* Apple Pay donation error for decline failures where the user may need to contact their card or bank. */
+"APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+
+/* Apple Pay donation error for decline failures where the card is not supported. */
+"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+
+/* Apple Pay donation error for decline failures where the card has expired. */
+"APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+
+/* Apple Pay donation error for decline failures where the card number is incorrect. */
+"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+
+/* Apple Pay donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
+"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+
+/* Apple Pay donation error for decline failures where the card has insufficient funds. */
+"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+
+/* Apple Pay donation error for decline failures where the expiration month on the payment method is incorrect. */
+"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+
+/* Apple Pay donation error for decline failures where the expiration year on the payment method is incorrect. */
+"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+
+/* Apple Pay donation error for decline failures where the card number is incorrect. */
+"APPLE_PAY_DONATION_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+
+/* Apple Pay donation error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
+"APPLE_PAY_DONATION_ERROR_ISSUER_NOT_AVAILABLE" = "Try completing the payment again or contact your bank for more information.";
+
+/* Apple Pay donation error for unspecified decline failures. */
+"APPLE_PAY_DONATION_ERROR_OTHER" = "Try another payment method or contact your bank for more information.";
+
+/* Apple Pay donation error for decline failures where the payment cannot be authorized. */
+"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
 
@@ -1839,45 +1878,6 @@
 
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Update Subscription";
-
-/* Donation payment error for decline failures where authentication is required. */
-"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Try another payment method or contact your bank for more information.";
-
-/* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
-
-/* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
-
-/* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
-
-/* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
-
-/* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
-
-/* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
-
-/* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
-
-/* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
-
-/* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
-
-/* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
-"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Try completing the payment again or contact your bank for more information.";
-
-/* Donation payment error for unspecified decline failures. */
-"DONATION_PAYMENT_ERROR_OTHER" = "Try another payment method or contact your bank for more information.";
-
-/* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Private messaging. No ads, no trackers, no surveillance.";
