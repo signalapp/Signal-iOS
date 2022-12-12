@@ -58,7 +58,7 @@ extension DonateViewController {
                     thanksSheetType: .subscription
                 )
             }.catch(on: .main) { [weak self] error in
-                self?.didFailDonation(error: error, mode: .monthly)
+                self?.didFailDonation(error: error, mode: .monthly, paymentMethod: .applePay)
             }
         }.catch(on: .main) { error in
             let authResult = PKPaymentAuthorizationResult(status: .failure, errors: [error])

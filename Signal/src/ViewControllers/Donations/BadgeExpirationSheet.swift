@@ -78,7 +78,14 @@ public class BadgeExpirationSheetState {
     public lazy var body: Body = {
         switch mode {
         case let .subscriptionExpiredBecauseOfChargeFailure(chargeFailure):
-            let failureSpecificText = Self.getChargeFailureSpecificText(chargeFailure: chargeFailure)
+            let failureSpecificText = DonationViewsUtil.localizedDonationFailure(
+                stripeCode: chargeFailure.code,
+                // TODO: [PayPal] We don't know the payment method here. Instead of figuring it
+                // out (probably by persisting the payment method), we hard-code a payment
+                // method. We will likely refactor this when it's time to add monthly PayPal
+                // donations. So for now, hard-code Apple Pay errors.
+                paymentMethod: .applePay
+            )
             let formatText = NSLocalizedString(
                 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT",
                 comment: "String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}."
@@ -116,50 +123,6 @@ public class BadgeExpirationSheetState {
             return Body(String(format: formatText, fullName))
         }
     }()
-
-    private static func getChargeFailureSpecificText(chargeFailure: Subscription.ChargeFailure) -> String {
-        switch chargeFailure.code {
-        case "authentication_required":
-            return NSLocalizedString("APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED",
-                                     comment: "Apple Pay donation error for decline failures where authentication is required.")
-        case "approve_with_id":
-            return NSLocalizedString("APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED",
-                                     comment: "Apple Pay donation error for decline failures where the payment cannot be authorized.")
-        case "call_issuer":
-            return NSLocalizedString("APPLE_PAY_DONATION_ERROR_CALL_ISSUER",
-                                     comment: "Apple Pay donation error for decline failures where the user may need to contact their card or bank.")
-        case "card_not_supported":
-            return NSLocalizedString("APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED",
-                                     comment: "Apple Pay donation error for decline failures where the card is not supported.")
-        case "expired_card":
-            return NSLocalizedString("APPLE_PAY_DONATION_ERROR_EXPIRED_CARD",
-                                     comment: "Apple Pay donation error for decline failures where the card has expired.")
-        case "incorrect_number":
-            return NSLocalizedString("APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER",
-                                     comment: "Apple Pay donation error for decline failures where the card number is incorrect.")
-        case "incorrect_cvc", "invalid_cvc":
-            return NSLocalizedString("APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE",
-                                     comment: "Apple Pay donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect.")
-        case "insufficient_funds":
-            return NSLocalizedString("APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS",
-                                     comment: "Apple Pay donation error for decline failures where the card has insufficient funds.")
-        case "invalid_expiry_month":
-            return NSLocalizedString("APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH",
-                                     comment: "Apple Pay donation error for decline failures where the expiration month on the payment method is incorrect.")
-        case "invalid_expiry_year":
-            return NSLocalizedString("APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_YEAR",
-                                     comment: "Apple Pay donation error for decline failures where the expiration year on the payment method is incorrect.")
-        case "invalid_number":
-            return NSLocalizedString("APPLE_PAY_DONATION_ERROR_INVALID_NUMBER",
-                                     comment: "Apple Pay donation error for decline failures where the card number is incorrect.")
-        case "issuer_not_available", "processing_error", "reenter_transaction":
-            return NSLocalizedString("APPLE_PAY_DONATION_ERROR_ISSUER_NOT_AVAILABLE",
-                                     comment: "Apple Pay donation error for \"issuer not available\" decline failures. The user should try again or contact their card/bank.")
-        default:
-            return NSLocalizedString("APPLE_PAY_DONATION_ERROR_OTHER",
-                                     comment: "Apple Pay donation error for unspecified decline failures.")
-        }
-    }
 
     public lazy var actionButton: ActionButton = {
         let shouldAskUsersToDonate: Bool = {

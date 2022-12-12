@@ -371,8 +371,18 @@ public final class DonationViewsUtil {
     public static func presentDonationErrorSheet(
         from viewController: UIViewController,
         error rawError: Error,
+        paymentMethod: DonationPaymentMethod,
         currentSubscription: Subscription? = nil
     ) {
+        if let stripeError = rawError as? Stripe.StripeError {
+            presentStripeDonationErrorSheet(
+                for: stripeError,
+                from: viewController,
+                using: paymentMethod
+            )
+            return
+        }
+
         let error: DonationJobError
         if let jobError = rawError as? DonationJobError {
             error = jobError
@@ -390,6 +400,24 @@ public final class DonationViewsUtil {
                 currentSubscription: currentSubscription
             )
         }
+    }
+
+    private static func presentStripeDonationErrorSheet(
+        for error: Stripe.StripeError,
+        from viewController: UIViewController,
+        using paymentMethod: DonationPaymentMethod
+    ) {
+        let actionSheet = ActionSheetController(
+            title: NSLocalizedString(
+                "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE",
+                comment: "Action sheet title for Error Processing Payment sheet"
+            ),
+            message: localizedDonationFailure(stripeCode: error.code, paymentMethod: paymentMethod)
+        )
+
+        actionSheet.addAction(.init(title: CommonStrings.okayButton, style: .cancel, handler: nil))
+
+        viewController.navigationController?.topViewController?.presentActionSheet(actionSheet)
     }
 
     private static func presentStillProcessingSheet(from viewController: UIViewController) {

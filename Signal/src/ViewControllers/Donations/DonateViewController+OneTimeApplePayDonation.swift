@@ -61,7 +61,7 @@ extension DonateViewController {
             ).done(on: .main) {
                 self.didCompleteDonation(badge: boostBadge, thanksSheetType: .boost)
             }.catch(on: .main) { [weak self] error in
-                self?.didFailDonation(error: error, mode: .oneTime)
+                self?.didFailDonation(error: error, mode: .oneTime, paymentMethod: .applePay)
             }
         }.catch(on: .main) { error in
             SubscriptionManager.terminateTransactionIfPossible = false

@@ -83,6 +83,7 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
         DonationViewsUtil.presentDonationErrorSheet(
             from: self,
             error: error,
+            paymentMethod: .creditOrDebitCard,
             currentSubscription: {
                 switch donationMode {
                 case .oneTime: return nil

@@ -78,6 +78,8 @@ public struct Stripe: Dependencies {
                 throw OWSAssertionError("Failed to decode JSON response")
             }
             return try parser.required(key: "id")
+        }.recover(on: .sharedUserInitiated) { error -> Promise<String> in
+            throw convertToStripeErrorIfPossible(error)
         }
     }
 
@@ -123,6 +125,8 @@ public struct Stripe: Dependencies {
                 intentId: paymentIntentId,
                 redirectToUrl: parseNextActionRedirectUrl(from: response.responseBodyJson)
             )
+        }.recover(on: .sharedUserInitiated) { error -> Promise<ConfirmedIntent> in
+            throw convertToStripeErrorIfPossible(error)
         }
     }
 
@@ -142,6 +146,8 @@ public struct Stripe: Dependencies {
                 intentId: paymentIntentID,
                 redirectToUrl: parseNextActionRedirectUrl(from: response.responseBodyJson)
             )
+        }.recover(on: .sharedUserInitiated) { error -> Promise<ConfirmedIntent> in
+            throw convertToStripeErrorIfPossible(error)
         }
     }
 }
@@ -289,6 +295,22 @@ fileprivate extension Stripe {
             )
         }
 
+    }
+}
+
+// MARK: - Converting to StripeError
+
+extension Stripe {
+    private static func convertToStripeErrorIfPossible(_ error: Error) -> Error {
+        guard
+            let responseJson = error.httpResponseJson as? [String: Any],
+            let errorJson = responseJson["error"] as? [String: Any],
+            let code = errorJson["code"] as? String,
+            !code.isEmpty
+        else {
+            return error
+        }
+        return StripeError(code: code)
     }
 }
 

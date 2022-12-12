@@ -65,7 +65,7 @@ extension DonateViewController {
                 }
             } else {
                 SubscriptionManager.terminateTransactionIfPossible = false
-                self.didFailDonation(error: error, mode: .oneTime)
+                self.didFailDonation(error: error, mode: .oneTime, paymentMethod: .paypal)
             }
         }
     }
