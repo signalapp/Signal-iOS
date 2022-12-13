@@ -560,7 +560,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         progressiveSearchTimer?.invalidate()
         progressiveSearchTimer = nil
         let kProgressiveSearchDelaySeconds = 1.0
-        progressiveSearchTimer = WeakTimer.scheduledTimer(timeInterval: kProgressiveSearchDelaySeconds, target: self, userInfo: nil, repeats: true) { [weak self] _ in
+        progressiveSearchTimer = WeakTimer.scheduledTimer(timeInterval: kProgressiveSearchDelaySeconds, target: self, userInfo: nil, repeats: false) { [weak self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -585,10 +585,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             return
         }
 
-        let query = (text as String).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        let query = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if (viewMode == .searching || viewMode == .results) && lastQuery == query {
-            Logger.info("ignoring duplicate search: \(query)")
             return
         }
 
@@ -598,10 +597,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     private func loadTrending() {
         assert(progressiveSearchTimer == nil)
         assert(lastQuery == nil)
-        assert({
-            guard let searchText = searchBar.text else { return true }
-            return searchText.isEmpty
-        }())
+        assert(searchBar.text.isEmptyOrNil)
 
         firstly {
             GiphyAPI.trending()
@@ -627,11 +623,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     private func search(query: String) {
-        let loggableQueryString = DebugFlags.internalLogging ? query : "(\(query.count) characters)"
-        Logger.info("searching: \(loggableQueryString)")
-
-        progressiveSearchTimer?.invalidate()
-        progressiveSearchTimer = nil
         imageInfos = []
         viewMode = .searching
         lastQuery = query
