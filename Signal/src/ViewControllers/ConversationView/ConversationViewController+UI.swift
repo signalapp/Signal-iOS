@@ -179,15 +179,20 @@ extension ConversationViewController {
         }
     }
 
-    private func threadContainsUnverifiedMember(_ thread: TSThread) -> Bool {
-        guard !thread.recipientAddressesWithSneakyTransaction.isEmpty else {
+    private func shouldShowVerifiedBadge(for thread: TSThread) -> Bool {
+        switch thread {
+        case let groupThread as TSGroupThread:
+            if groupThread.groupModel.groupMembers.isEmpty {
+                return false
+            }
+            return !Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId)
+
+        case let contactThread as TSContactThread:
+            return Self.identityManager.verificationState(for: contactThread.contactAddress) == .verified
+
+        default:
+            owsFailDebug("Showing conversation for unexpected thread type.")
             return false
-        }
-        if let groupThread = thread as? TSGroupThread {
-            return Self.identityManager.groupContainsUnverifiedMember(groupThread.uniqueId)
-        }
-        return thread.recipientAddressesWithSneakyTransaction.contains { address in
-            Self.identityManager.verificationState(for: address) != .verified
         }
     }
 
@@ -213,7 +218,7 @@ extension ConversationViewController {
 
         let isMuted = threadViewModel.isMuted
         let hasTimer = disappearingMessagesConfiguration.isEnabled
-        let isVerified = !threadContainsUnverifiedMember(thread)
+        let isVerified = shouldShowVerifiedBadge(for: thread)
 
         if isMuted {
             subtitleText.appendTemplatedImage(named: "bell-disabled-outline-24", font: subtitleFont)
