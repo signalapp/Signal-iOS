@@ -42,13 +42,13 @@ class StoryReplyInputToolbar: UIView {
         }
     }
 
-    let minTextViewHeight: CGFloat = 36
-    var maxTextViewHeight: CGFloat {
+    private let minTextViewHeight: CGFloat = 36
+    private var maxTextViewHeight: CGFloat {
         // About ~4 lines in portrait and ~3 lines in landscape.
         // Otherwise we risk obscuring too much of the content.
         return UIDevice.current.orientation.isPortrait ? 160 : 100
     }
-    var textViewHeightConstraint: NSLayoutConstraint?
+    private var textViewHeightConstraint: NSLayoutConstraint?
 
     // MARK: - Initializers
 
@@ -197,7 +197,7 @@ class StoryReplyInputToolbar: UIView {
             let previewView = StoryReplyPreviewView(quotedReplyModel: quotedReplyModel)
             let previewViewContainer = UIView()
             previewViewContainer.addSubview(previewView)
-            previewView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(margin: 8))
+            previewView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 8, leading: 8, bottom: 2, trailing: 8))
             bubbleView.addArrangedSubview(previewViewContainer)
         }
 
@@ -205,10 +205,11 @@ class StoryReplyInputToolbar: UIView {
         bubbleView.addArrangedSubview(textAndPlaceholderContainer)
 
         textAndPlaceholderContainer.addSubview(placeholderTextView)
-        placeholderTextView.autoPinEdgesToSuperviewEdges()
-
         textAndPlaceholderContainer.addSubview(textView)
-        textView.autoPinEdgesToSuperviewEdges()
+
+        textView.autoPinWidthToSuperview()
+        textView.autoPinHeightToSuperview(withMargin: 4)
+        placeholderTextView.autoPinEdges(toEdgesOf: textView)
 
         return textContainer
     }()
@@ -224,9 +225,8 @@ class StoryReplyInputToolbar: UIView {
         textView.font = textViewFont
         textView.textColor = Theme.darkThemePrimaryColor
 
-        // Check the system font size and increase text inset accordingly
-        // to keep the text vertically centered
-        textView.updateVerticalInsetsForDynamicBodyType(defaultInsets: 7)
+        // Make textView have height of 36 with default font size.
+        textView.updateVerticalInsetsForDynamicBodyType(defaultInsets: 6 - CGHairlineWidth())
         textView.textContainerInset.left = 7
         textView.textContainerInset.right = 7
 
@@ -268,12 +268,12 @@ class StoryReplyInputToolbar: UIView {
     // MARK: - Actions
 
     @objc
-    func didTapSend() {
+    private func didTapSend() {
         textView.acceptAutocorrectSuggestion()
         delegate?.storyReplyInputToolbarDidTapSend(self)
     }
 
-    func didTapReact() {
+    private func didTapReact() {
         delegate?.storyReplyInputToolbarDidTapReact(self)
     }
 
@@ -318,25 +318,30 @@ class StoryReplyInputToolbar: UIView {
     }
 
     private func updateHeight(textView: UITextView) {
-        guard let textViewHeightConstraint = textViewHeightConstraint else {
+        guard let textViewHeightConstraint else {
             owsFailDebug("Missing constraint.")
             return
         }
 
-        // compute new height assuming width is unchanged
-        let currentSize = textView.frame.size
-        let textViewHeight = clampedTextViewHeight(fixedWidth: currentSize.width)
+        let contentSize = textView.sizeThatFits(CGSize(width: textView.frame.width, height: .greatestFiniteMagnitude))
+        let newHeight = CGFloatClamp(contentSize.height, minTextViewHeight, maxTextViewHeight)
+        guard textViewHeightConstraint.constant != newHeight else { return }
 
-        if textViewHeightConstraint.constant != textViewHeight {
-            Logger.debug("TextView height changed: \(textViewHeightConstraint.constant) -> \(textViewHeight)")
-            textViewHeightConstraint.constant = textViewHeight
-            invalidateIntrinsicContentSize()
+        if let superview {
+            let animator = UIViewPropertyAnimator(
+                duration: ConversationInputToolbar.heightChangeAnimationDuration,
+                springDamping: 1,
+                springResponse: 0.25
+            )
+            animator.addAnimations {
+                textViewHeightConstraint.constant = newHeight
+                superview.setNeedsLayout()
+                superview.layoutIfNeeded()
+            }
+            animator.startAnimation()
+        } else {
+            textViewHeightConstraint.constant = newHeight
         }
-    }
-
-    private func clampedTextViewHeight(fixedWidth: CGFloat) -> CGFloat {
-        let contentSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-        return CGFloatClamp(contentSize.height, minTextViewHeight, maxTextViewHeight)
     }
 }
 
