@@ -33,40 +33,33 @@ public class GiphyAPI: NSObject {
     private static let kGiphyPageSize = 100
 
     public static func trending() -> Promise<[GiphyImageInfo]> {
-        let urlSession = buildURLSession()
-        let urlString = "/v1/gifs/trending?api_key=\(kGiphyApiKey)&limit=\(kGiphyPageSize)"
-
-        return firstly(on: .global()) { () -> Promise<HTTPResponse> in
-            var request = try urlSession.buildRequest(urlString, method: .get)
-            guard ContentProxy.configureProxiedRequest(request: &request) else {
-                throw OWSAssertionError("Invalid URL: \(urlString).")
-            }
-            return urlSession.dataTaskPromise(request: request)
-        }.map(on: .global()) { (response: HTTPResponse) -> [GiphyImageInfo] in
-            guard let json = response.responseBodyJson else {
-                throw OWSAssertionError("Missing or invalid JSON")
-            }
-            Logger.info("Request succeeded.")
-            guard let imageInfos = self.parseGiphyImages(responseJson: json) else {
-                throw OWSAssertionError("unable to parse trending images")
-            }
-            return imageInfos
-        }
+        return fetch(urlPath: "/v1/gifs/trending", queryItems: [])
     }
 
     public static func search(query: String) -> Promise<[GiphyImageInfo]> {
-        let kGiphyPageOffset = 0
-        guard let queryEncoded = query.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
-            owsFailDebug("Could not URL encode query: \(query).")
-            return Promise(error: OWSAssertionError("Could not URL encode query."))
-        }
-        let urlSession = buildURLSession()
-        let urlString = "/v1/gifs/search?api_key=\(kGiphyApiKey)&offset=\(kGiphyPageOffset)&limit=\(kGiphyPageSize)&q=\(queryEncoded)"
+        return fetch(urlPath: "/v1/gifs/search", queryItems: [
+            URLQueryItem(name: "q", value: query),
+            URLQueryItem(name: "offset", value: "0")
+        ])
+    }
 
+    private static func fetch(urlPath: String, queryItems: [URLQueryItem]) -> Promise<[GiphyImageInfo]> {
+        var urlComponents = URLComponents()
+        urlComponents.path = urlPath
+        let baseQueryItems: [URLQueryItem] = [
+            URLQueryItem(name: "api_key", value: kGiphyApiKey),
+            URLQueryItem(name: "limit", value: "\(kGiphyPageSize)")
+        ]
+        urlComponents.queryItems = baseQueryItems + queryItems
+        guard let urlString = urlComponents.string else {
+            return Promise(error: OWSAssertionError("Could not encode query."))
+        }
+
+        let urlSession = buildURLSession()
         return firstly(on: .global()) { () -> Promise<HTTPResponse> in
             var request = try urlSession.buildRequest(urlString, method: .get)
             guard ContentProxy.configureProxiedRequest(request: &request) else {
-                throw OWSAssertionError("Invalid URL: \(urlString).")
+                throw OWSAssertionError("Invalid URL")
             }
             return urlSession.dataTaskPromise(request: request)
         }.map(on: .global()) { (response: HTTPResponse) -> [GiphyImageInfo] in
