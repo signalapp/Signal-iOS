@@ -36,12 +36,12 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
 
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        inputToolbar.textView.becomeFirstResponder()
+        inputToolbar.becomeFirstResponder()
     }
 
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        inputToolbar.textView.resignFirstResponder()
+        inputToolbar.resignFirstResponder()
     }
 
     public override func viewDidLoad() {
