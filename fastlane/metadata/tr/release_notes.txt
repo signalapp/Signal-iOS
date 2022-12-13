@@ -1,1 +1,1 @@
-• When you start a group call for small groups (up to 16 people), you can choose to send a ringing notification. Group members will hear a ring if their Signal app is up to date.
+16 kişiye kadar olan küçük gruplar için bir grup araması başlattığında sesli bir bildirim göndermeyi seçebilirsin. Grup üyeleri, güncel bir Signal uygulamasına sahipse bir zil sesi duyar.

@@ -1,1 +1,1 @@
-• When you start a group call for small groups (up to 16 people), you can choose to send a ringing notification. Group members will hear a ring if their Signal app is up to date.
+• Όταν ξεκινάς μια ομαδική κλήση για μικρές ομάδες (έως 16 άτομα), μπορείς να επιλέξεις να στείλεις μια ειδοποίηση κλήσης. Τα μέλη της ομάδας θα ακούσουν ένα κουδούνισμα εάν η εφαρμογή Signal στη συσκευή τους είναι ενημερωμένη.

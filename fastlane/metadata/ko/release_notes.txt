@@ -1,1 +1,1 @@
-• When you start a group call for small groups (up to 16 people), you can choose to send a ringing notification. Group members will hear a ring if their Signal app is up to date.
+• 소규모 그룹(최대 16명)과 그룹 통화를 시작할 경우 전화벨 알림을 보낼 수 있습니다. 그룹 구성원의 Signal 앱이 최신 버전일 경우 벨소리가 울립니다.

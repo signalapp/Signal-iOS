@@ -1,1 +1,1 @@
-• When you start a group call for small groups (up to 16 people), you can choose to send a ringing notification. Group members will hear a ring if their Signal app is up to date.
+• Ao iniciar uma chamada em grupo com grupos pequenos (até 16 pessoas), você pode decidir se quer enviar uma notificação de ligação. Os membros do grupo ouvirão um toque se estiverem usando a versão atualizada do app do Signal.

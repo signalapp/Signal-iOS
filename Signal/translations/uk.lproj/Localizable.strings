@@ -1841,10 +1841,10 @@
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Оновити передплату";
 
 /* Users can donate to Signal. They may be asked to confirm their donation after entering payment information. If the user clicks this button, their payment will be confirmed. */
-"DONATION_CONFIRMATION_BUTTON_CONFIRM" = "Complete Donation";
+"DONATION_CONFIRMATION_BUTTON_CONFIRM" = "Підтвердити донат";
 
 /* Users can donate to Signal. They may be asked to confirm their donation after entering payment information. This text will show the payment method, such as PayPal, next to it. */
-"DONATION_CONFIRMATION_PAYMENT_METHOD" = "Payment Method";
+"DONATION_CONFIRMATION_PAYMENT_METHOD" = "Спосіб оплати";
 
 /* Donation payment error for decline failures where authentication is required. */
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Спробуйте інший спосіб платежу, або зв'яжіться зі своїм банком для додаткової інформації.";

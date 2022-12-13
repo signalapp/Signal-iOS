@@ -1841,10 +1841,10 @@
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Ανανέωση συνδρομής";
 
 /* Users can donate to Signal. They may be asked to confirm their donation after entering payment information. If the user clicks this button, their payment will be confirmed. */
-"DONATION_CONFIRMATION_BUTTON_CONFIRM" = "Complete Donation";
+"DONATION_CONFIRMATION_BUTTON_CONFIRM" = "Ολοκλήρωση δωρεάς";
 
 /* Users can donate to Signal. They may be asked to confirm their donation after entering payment information. This text will show the payment method, such as PayPal, next to it. */
-"DONATION_CONFIRMATION_PAYMENT_METHOD" = "Payment Method";
+"DONATION_CONFIRMATION_PAYMENT_METHOD" = "Τρόπος πληρωμής";
 
 /* Donation payment error for decline failures where authentication is required. */
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Δοκίμασε άλλο τρόπο πληρωμής ή επικοινώνησε με την τράπεζά σου για περισσότερες πληροφορίες.";
@@ -1889,7 +1889,7 @@
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Ιδιωτικά μηνύματα. Χωρίς διαφημίσεις, παρακολούθηση, επιτήρηση.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen. */
-"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Το Signal υποστηρίζεται από δωρεές, που σημαίνει ότι το απόρρητό σου βρίσκεται στο επίκεντρο για όλα αυτά που κάνουμε. Το Signal έχει φτιαχτεί για εσένα, όχι για τα δεδομένα σου ή το κέρδος.";
+"DONATION_READ_MORE_SCREEN_PARAGRAPH_2" = "Το Signal υποστηρίζεται από δωρεές, που σημαίνει ότι η ιδιωτικότητά σου σου βρίσκεται στο επίκεντρο για όλα αυτά που κάνουμε. Το Signal έχει φτιαχτεί για εσένα, όχι για τα δεδομένα σου ή το κέρδος.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen. */
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_3" = "Εάν μπορείς, κάνε δωρεά σήμερα για να βοηθήσεις να παραμείνει το Signal διασκεδαστικό, αξιόπιστο και διαθέσιμο για όλους.";
@@ -6461,7 +6461,7 @@
 "STORY_PRIVACY_SETTINGS" = "Απόρρητο";
 
 /* Title for the story privacy settings view */
-"STORY_PRIVACY_TITLE" = "Απόρρητο ιστορίας";
+"STORY_PRIVACY_TITLE" = "Ιδιωτικότητα ιστορίας";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
 "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Αντέδρασε με %1$@ στην ιστορία σου";

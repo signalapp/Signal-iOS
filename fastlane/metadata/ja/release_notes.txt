@@ -1,1 +1,1 @@
-• When you start a group call for small groups (up to 16 people), you can choose to send a ringing notification. Group members will hear a ring if their Signal app is up to date.
+・小人数(最大16人)でグル－プ通話を開始する時、呼び出し通知の送信を選択できます。最新バージョンのSignalアプリを使用しているグループメンバーには呼び出し音が聞こえます。

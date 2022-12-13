@@ -1,1 +1,1 @@
-• When you start a group call for small groups (up to 16 people), you can choose to send a ringing notification. Group members will hear a ring if their Signal app is up to date.
+• A l'inici d'una trucada de grup per a grups petits (fins a 16 persones), tindràs l'opció d'enviar una notificació de trucada. Els membres del grup sentiran un timbre si tenen l'app de Signal actualitzada.

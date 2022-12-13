@@ -1,1 +1,1 @@
-• When you start a group call for small groups (up to 16 people), you can choose to send a ringing notification. Group members will hear a ring if their Signal app is up to date.
+• 当您对小型群组（至多 16 人）发起群组通话时，你可以选择发送铃声通知。使用最新版 Signal 应用的群组成员可以听到通知铃声。
