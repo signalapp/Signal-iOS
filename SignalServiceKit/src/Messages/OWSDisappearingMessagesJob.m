@@ -10,7 +10,6 @@
 #import "NSTimer+OWS.h"
 #import "OWSBackgroundTask.h"
 #import "OWSDisappearingMessagesConfiguration.h"
-#import "OWSDisappearingMessagesFinder.h"
 #import "SSKEnvironment.h"
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
@@ -23,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Can we move to Signal-iOS?
 @interface OWSDisappearingMessagesJob ()
 
-@property (nonatomic, readonly) OWSDisappearingMessagesFinder *disappearingMessagesFinder;
+@property (nonatomic, readonly) DisappearingMessagesFinder *disappearingMessagesFinder;
 
 + (dispatch_queue_t)serialQueue;
 
@@ -55,7 +54,7 @@ void AssertIsOnDisappearingMessagesQueue()
         return self;
     }
 
-    _disappearingMessagesFinder = [OWSDisappearingMessagesFinder new];
+    _disappearingMessagesFinder = [DisappearingMessagesFinder new];
 
     // suspenders in case a deletion schedule is missed.
     NSTimeInterval kFallBackTimerInterval = 5 * kMinuteInterval;
@@ -102,24 +101,30 @@ void AssertIsOnDisappearingMessagesQueue()
 
     __block NSUInteger expirationCount = 0;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.disappearingMessagesFinder enumerateExpiredMessagesWithBlock:^(TSMessage *message) {
-            // We want to compute `now` *after* our finder fetches results.
-            // Otherwise, if we computed it before the finder, and a message had expired in the tiny
-            // gap between that computation and when the finder runs, we would skip deleting an
-            // expired message until the next expiration run.
-            uint64_t now = [NSDate ows_millisecondTimeStamp];
+        [self.disappearingMessagesFinder
+            enumerateExpiredMessagesWithTransaction:transaction
+                                              block:^(TSMessage *message) {
+                                                  // We want to compute `now` *after* our finder fetches results.
+                                                  // Otherwise, if we computed it before the finder, and a message had
+                                                  // expired in the tiny gap between that computation and when the
+                                                  // finder runs, we would skip deleting an expired message until the
+                                                  // next expiration run.
+                                                  uint64_t now = [NSDate ows_millisecondTimeStamp];
 
-            // sanity check
-            if (message.expiresAt > now) {
-                OWSFailDebug(@"Refusing to remove message which doesn't expire until: %llu, now: %lld", message.expiresAt, now);
-                return;
-            }
+                                                  // sanity check
+                                                  if (message.expiresAt > now) {
+                                                      OWSFailDebug(@"Refusing to remove message which doesn't expire "
+                                                                   @"until: %llu, now: %lld",
+                                                          message.expiresAt,
+                                                          now);
+                                                      return;
+                                                  }
 
-            OWSLogInfo(@"Removing message which expired at: %lld", message.expiresAt);
-            [message anyRemoveWithTransaction:transaction];
-            expirationCount++;
-        }
-                                                               transaction:transaction];
+                                                  OWSLogInfo(
+                                                      @"Removing message which expired at: %lld", message.expiresAt);
+                                                  [message anyRemoveWithTransaction:transaction];
+                                                  expirationCount++;
+                                              }];
     });
 
     OWSLogDebug(@"Removed %lu expired messages", (unsigned long)expirationCount);

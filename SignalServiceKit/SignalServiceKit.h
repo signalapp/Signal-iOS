@@ -88,7 +88,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfigurationMessage.h>
-#import <SignalServiceKit/OWSDisappearingMessagesFinder.h>
 #import <SignalServiceKit/OWSDisappearingMessagesJob.h>
 #import <SignalServiceKit/OWSDispatch.h>
 #import <SignalServiceKit/OWSDynamicOutgoingMessage.h>

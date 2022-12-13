@@ -5,15 +5,15 @@
 
 import XCTest
 import SignalCoreKit
-import SignalServiceKit
+@testable import SignalServiceKit
 
-final class OWSDisappearingMessageFinderTest: SSKBaseTestSwift {
-    private var finder: OWSDisappearingMessagesFinder = OWSDisappearingMessagesFinder()
+final class DisappearingMessageFinderTest: SSKBaseTestSwift {
+    private var finder = DisappearingMessagesFinder()
     private var now: UInt64 = 0
 
     override func setUp() {
         super.setUp()
-        finder = OWSDisappearingMessagesFinder()
+        finder = DisappearingMessagesFinder()
         now = Date.ows_millisecondTimestamp()
     }
 
@@ -129,7 +129,7 @@ final class OWSDisappearingMessageFinderTest: SSKBaseTestSwift {
 
         var actualMessageIds = Set<String>()
         read { transaction in
-            for message in finder.fetchExpiredMessages(with: transaction) {
+            for message in finder.fetchExpiredMessages(transaction: transaction) {
                 actualMessageIds.insert(message.uniqueId)
             }
         }
@@ -291,10 +291,10 @@ final class OWSDisappearingMessageFinderTest: SSKBaseTestSwift {
         }
     }
 
-    func nextExpirationTimestamp() -> NSNumber? {
-        var result: NSNumber?
+    func nextExpirationTimestamp() -> UInt64? {
+        var result: UInt64?
         read { transaction in
-            result = finder.nextExpirationTimestamp(with: transaction)
+            result = finder.nextExpirationTimestamp(transaction: transaction)
         }
         return result
     }
@@ -319,7 +319,7 @@ final class OWSDisappearingMessageFinderTest: SSKBaseTestSwift {
         )
 
         XCTAssertNotNil(nextExpirationTimestamp())
-        XCTAssertEqual(now + 1000, nextExpirationTimestamp()?.uint64Value ?? 0)
+        XCTAssertEqual(now + 1000, nextExpirationTimestamp() ?? 0)
 
         // expired message should take precedence
         incomingMessage(
@@ -328,6 +328,6 @@ final class OWSDisappearingMessageFinderTest: SSKBaseTestSwift {
             expireStartedAt: now - 11000
         )
         XCTAssertNotNil(nextExpirationTimestamp())
-        XCTAssertEqual(now - 1000, nextExpirationTimestamp()?.uint64Value ?? 0)
+        XCTAssertEqual(now - 1000, nextExpirationTimestamp() ?? 0)
     }
 }
