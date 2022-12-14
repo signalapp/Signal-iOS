@@ -49,7 +49,7 @@ extension CreditOrDebitCardDonationViewController {
 
         private lazy var errorLabel: UILabel = {
             let result = UILabel()
-            result.font = .ows_dynamicTypeBody2
+            result.font = .ows_dynamicTypeCaption1
             result.textColor = .ows_accentRed
             result.numberOfLines = 1
             return result

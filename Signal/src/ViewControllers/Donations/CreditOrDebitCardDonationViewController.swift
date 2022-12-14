@@ -23,6 +23,8 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
         self.onFinished = onFinished
 
         super.init()
+
+        self.defaultSpacingBetweenSections = 0
     }
 
     deinit {
