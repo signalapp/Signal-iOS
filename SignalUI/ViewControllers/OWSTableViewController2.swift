@@ -246,7 +246,7 @@ open class OWSTableViewController2: OWSViewController {
     }
 
     open var preferredNavigationBarStyle: OWSNavigationBarStyle {
-        return usesSolidNavbarStyle ? .solid : .default
+        return usesSolidNavbarStyle ? .solid : .blur
     }
 
     open var navbarBackgroundColorOverride: UIColor? {

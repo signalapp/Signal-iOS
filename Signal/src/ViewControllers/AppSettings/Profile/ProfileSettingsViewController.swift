@@ -46,7 +46,11 @@ class ProfileSettingsViewController: OWSTableViewController2 {
     }
 
     override var preferredNavigationBarStyle: OWSNavigationBarStyle {
-        return .clear
+        return .blur
+    }
+
+    override var navbarBackgroundColorOverride: UIColor? {
+        return tableBackgroundColor
     }
 
     private var fullName: String? {

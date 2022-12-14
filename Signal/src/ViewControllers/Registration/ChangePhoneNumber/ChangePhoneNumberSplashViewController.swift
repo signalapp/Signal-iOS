@@ -30,7 +30,11 @@ class ChangePhoneNumberSplashViewController: OWSViewController, OWSNavigationChi
     }
 
     public var preferredNavigationBarStyle: OWSNavigationBarStyle {
-        return .clear
+        return .solid
+    }
+
+    public var navbarBackgroundColorOverride: UIColor? {
+        return view.backgroundColor
     }
 
     private func createContents() {
@@ -66,6 +70,7 @@ class ChangePhoneNumberSplashViewController: OWSViewController, OWSNavigationChi
 
     private func updateContents() {
         view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
+        owsNavigationController?.updateNavbarAppearance()
 
         let heroImageName = (Theme.isDarkThemeEnabled
                              ? "change-number-dark-40"

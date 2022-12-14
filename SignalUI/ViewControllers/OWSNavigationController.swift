@@ -24,7 +24,7 @@ public protocol OWSNavigationChildController: AnyObject {
     var shouldCancelNavigationBack: Bool { get }
 
     /// The style to apply to the nav bar on view appearance in the navigation stack.
-    /// Defaults to `default`.
+    /// Defaults to `blur`.
     var preferredNavigationBarStyle: OWSNavigationBarStyle { get }
 
     /// A background color to use for the navbar in certain styles.
@@ -44,7 +44,7 @@ extension OWSNavigationChildController {
 
     public var shouldCancelNavigationBack: Bool { false }
 
-    public var preferredNavigationBarStyle: OWSNavigationBarStyle { .default }
+    public var preferredNavigationBarStyle: OWSNavigationBarStyle { .blur }
 
     public var navbarBackgroundColorOverride: UIColor? { nil }
 
@@ -134,19 +134,21 @@ open class OWSNavigationController: OWSNavigationControllerBase {
         interactivePopGestureRecognizer?.delegate = self
     }
 
+    open override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        updateNavbarAppearance(animated: animated)
+    }
+
     // MARK: - Theme and Style
 
     @objc
     private func themeDidChange() {
         updateNavbarAppearance()
-        owsNavigationBar.barTintColor = UINavigationBar.appearance().barTintColor
-        owsNavigationBar.tintColor = UINavigationBar.appearance().tintColor
-        owsNavigationBar.titleTextAttributes = UINavigationBar.appearance().titleTextAttributes
-        owsNavigationBar.applyTheme()
     }
 
     public override var preferredStatusBarStyle: UIStatusBarStyle {
-        if let forcedStyle = owsNavigationBar.currentStyle?.forcedStatusBarStyle {
+        if let forcedStyle = owsNavigationBar.forcedStatusBarStyle {
             return forcedStyle
         }
         if !CurrentAppContext().isMainApp {
@@ -184,8 +186,8 @@ open class OWSNavigationController: OWSNavigationControllerBase {
         if !shouldHideNavbar {
             // Only update visible attributes if we aren't hiding; if its hidden anyway
             // they won't matter and seeing them blink then hide is weird.
-            owsNavigationBar.setStyle(navChildController?.preferredNavigationBarStyle ?? .default, animated: animated)
             owsNavigationBar.navbarBackgroundColorOverride = navChildController?.navbarBackgroundColorOverride
+            owsNavigationBar.setStyle(navChildController?.preferredNavigationBarStyle ?? .blur, animated: animated)
         }
 
         // NOTE: UIKit sets isNavigationBarHidden immediately at the start of
@@ -233,6 +235,10 @@ open class OWSNavigationController: OWSNavigationControllerBase {
 // MARK: - UIGestureRecognizerDelegate
 
 extension OWSNavigationController: UIGestureRecognizerDelegate {
+
+    public func position(for bar: UIBarPositioning) -> UIBarPosition {
+        return .topAttached
+    }
 
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         owsAssertDebug(gestureRecognizer === self.interactivePopGestureRecognizer)
@@ -392,7 +398,7 @@ private class ObjcControllerWrapper: OWSNavigationChildController {
     var shouldCancelNavigationBack: Bool { objcController.shouldCancelNavigationBack }
 
     var preferredNavigationBarStyle: OWSNavigationBarStyle {
-        OWSNavigationBarStyle(rawValue: objcController.preferredNavigationBarStyle) ?? .default
+        OWSNavigationBarStyle(rawValue: objcController.preferredNavigationBarStyle) ?? .blur
     }
 
     var navbarBackgroundColorOverride: UIColor? { objcController.navbarBackgroundColorOverride }

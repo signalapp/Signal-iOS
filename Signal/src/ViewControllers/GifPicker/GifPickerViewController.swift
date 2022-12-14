@@ -224,12 +224,15 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         progressiveSearchTimer = nil
     }
 
-    public var preferredNavigationBarStyle: OWSNavigationBarStyle { .clear }
+    public var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
+
+    public var navbarBackgroundColorOverride: UIColor? { view.backgroundColor }
 
     public override func themeDidChange() {
         super.themeDidChange()
 
         view.backgroundColor = Theme.backgroundColor
+        owsNavigationController?.updateNavbarAppearance()
     }
 
     // MARK: Views

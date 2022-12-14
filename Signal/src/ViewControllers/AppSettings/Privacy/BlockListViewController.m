@@ -35,8 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    self.navbarBackgroundColorOverride = [UIColor clearColor];
-    self.preferredNavigationBarStyle = OWSNavigationBarStyleClear;
+    self.navbarBackgroundColorOverride = self.tableViewController.tableBackgroundColor;
+    self.preferredNavigationBarStyle = OWSNavigationBarStyleBlur;
     return self;
 }
 
@@ -61,11 +61,20 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
+- (void)applyTheme
+{
+    [super applyTheme];
+
+    self.navbarBackgroundColorOverride = self.tableViewController.tableBackgroundColor;
+    [[self owsNavigationController] updateNavbarAppearanceWithAnimated:NO];
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
 
     [self.tableViewController applyThemeToViewController:self];
+    self.navbarBackgroundColorOverride = self.tableViewController.tableBackgroundColor;
 }
 
 #pragma mark - Table view data source

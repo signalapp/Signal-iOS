@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     self.navbarBackgroundColorOverride = NULL;
-    self.preferredNavigationBarStyle = OWSNavigationBarStyleDefault;
+    self.preferredNavigationBarStyle = OWSNavigationBarStyleBlur;
     self.prefersNavigationBarHidden = NO;
     self.shouldCancelNavigationBack = NO;
 
