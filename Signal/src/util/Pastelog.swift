@@ -192,7 +192,7 @@ extension Pastelog {
         case let .success(logsDirPath):
             zipDirPath = logsDirPath
         case let .failure(error):
-            Self.showFailureAlert(with: error.errorString, logArchiveOrDirectoryPath: nil)
+            wrappedFailure(error.errorString, nil)
             return
         }
 
