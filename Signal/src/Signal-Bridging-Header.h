@@ -20,7 +20,6 @@
 #import "OWSQuotedMessageView.h"
 #import "OWSWindowManager.h"
 #import "Pastelog.h"
-#import "PinEntryView.h"
 #import "RecipientPickerViewController.h"
 #import "RegistrationUtils.h"
 #import "RemoteVideoView.h"
