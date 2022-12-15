@@ -120,22 +120,19 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     @objc
     public init(uuid: UUID?, phoneNumber: String?, trustLevel: SignalRecipientTrustLevel) {
-        if phoneNumber == nil, let uuid = uuid,
-            let cachedPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: uuid) {
-            backingPhoneNumberUnsynchronized = cachedPhoneNumber
-        } else {
-            if let phoneNumber = phoneNumber, phoneNumber.isEmpty {
+        if let phoneNumber {
+            if phoneNumber.isEmpty {
                 owsFailDebug("Unexpectedly initialized signal service address with invalid phone number")
             }
-
             backingPhoneNumberUnsynchronized = phoneNumber
+        } else if let uuid, let cachedPhoneNumber = SignalServiceAddress.cache.phoneNumber(forUuid: uuid) {
+            backingPhoneNumberUnsynchronized = cachedPhoneNumber
         }
 
-        if uuid == nil, let phoneNumber = phoneNumber,
-            let cachedUuid = SignalServiceAddress.cache.uuid(forPhoneNumber: phoneNumber) {
-            backingUuidUnsynchronized = cachedUuid
-        } else {
+        if let uuid {
             backingUuidUnsynchronized = uuid
+        } else if let phoneNumber, let cachedUuid = SignalServiceAddress.cache.uuid(forPhoneNumber: phoneNumber) {
+            backingUuidUnsynchronized = cachedUuid
         }
 
         backingHashValue = SignalServiceAddress.cache.hashAndCache(
