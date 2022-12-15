@@ -147,6 +147,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 + (TSRequest *)remoteAttestationAuthRequestForKeyBackup;
 + (TSRequest *)remoteAttestationAuthRequestForContactDiscovery;
++ (TSRequest *)remoteAttestationAuthRequestForCDSI;
 
 #pragma mark - CDS
 

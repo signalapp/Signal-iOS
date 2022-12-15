@@ -8,10 +8,10 @@ import XCTest
 
 final class ContactDiscoveryManagerTest: XCTestCase {
     private class MockContactDiscoveryTaskQueue: ContactDiscoveryTaskQueue {
-        var onPerform: ((Set<String>) -> Promise<Set<SignalRecipient>>)?
+        var onPerform: ((Set<String>, ContactDiscoveryMode) -> Promise<Set<SignalRecipient>>)?
 
-        func perform(for phoneNumbers: Set<String>) -> Promise<Set<SignalRecipient>> {
-            onPerform!(phoneNumbers)
+        func perform(for phoneNumbers: Set<String>, mode: ContactDiscoveryMode) -> Promise<Set<SignalRecipient>> {
+            onPerform!(phoneNumbers, mode)
         }
 
         static func foundResponse(for phoneNumbers: Set<String>) -> Set<SignalRecipient> {
@@ -26,7 +26,7 @@ final class ContactDiscoveryManagerTest: XCTestCase {
         // Start the first stateful request, but don't resolve it yet.
         let (initialRequestPromise, initialRequestFuture) = Promise<Set<SignalRecipient>>.pending()
         let initialRequestStarted = expectation(description: "Waiting for initial request to start.")
-        taskQueue.onPerform = { phoneNumbers in
+        taskQueue.onPerform = { phoneNumbers, mode in
             initialRequestStarted.fulfill()
             return initialRequestPromise
         }
@@ -36,7 +36,7 @@ final class ContactDiscoveryManagerTest: XCTestCase {
         // Schedule the next stateful request, which will be queued.
         var queuedRequestResult: Set<SignalRecipient>?
         let queuedRequestExpectation = expectation(description: "Waiting for queued request.")
-        taskQueue.onPerform = { phoneNumbers in
+        taskQueue.onPerform = { phoneNumbers, mode in
             return .value(MockContactDiscoveryTaskQueue.foundResponse(for: phoneNumbers))
         }
         manager.lookUp(phoneNumbers: ["+16505550101"], mode: .contactIntersection).done { signalRecipients in
@@ -56,8 +56,10 @@ final class ContactDiscoveryManagerTest: XCTestCase {
         let retryDate2 = Date(timeIntervalSinceNow: 60)
 
         // Step 1: Contact intersection fails with a rate limit error.
-        taskQueue.onPerform = { phoneNumbers in
-            return Promise(error: ContactDiscoveryError.rateLimit(expiryDate: retryDate1))
+        taskQueue.onPerform = { phoneNumbers, mode in
+            return Promise(error: ContactDiscoveryError(
+                kind: .rateLimit, debugDescription: "", retryable: true, retryAfterDate: retryDate1
+            ))
         }
         XCTAssertEqual(
             lookUpAndReturnRateLimitDate(phoneNumbers: ["+16505550100"], mode: .contactIntersection),
@@ -65,8 +67,10 @@ final class ContactDiscoveryManagerTest: XCTestCase {
         )
 
         // Step 2: One-off requests should still be possible, despite the earlier error.
-        taskQueue.onPerform = { phoneNumbers in
-            return Promise(error: ContactDiscoveryError.rateLimit(expiryDate: retryDate2))
+        taskQueue.onPerform = { phoneNumbers, mode in
+            return Promise(error: ContactDiscoveryError(
+                kind: .rateLimit, debugDescription: "", retryable: true, retryAfterDate: retryDate2
+            ))
         }
         XCTAssertEqual(
             lookUpAndReturnRateLimitDate(phoneNumbers: ["+16505550100"], mode: .oneOffUserRequest),
@@ -88,7 +92,7 @@ final class ContactDiscoveryManagerTest: XCTestCase {
         let phoneNumber4 = "+16505550104"
 
         // Populate the cache with empty phone numbers.
-        taskQueue.onPerform = { phoneNumbers in
+        taskQueue.onPerform = { phoneNumbers, mode in
             XCTAssertEqual(phoneNumbers, [phoneNumber1, phoneNumber2, phoneNumber3])
             return .value([])
         }
@@ -98,7 +102,7 @@ final class ContactDiscoveryManagerTest: XCTestCase {
         )
 
         // Send a request for some of the same numbers -- these should be de-duped.
-        taskQueue.onPerform = { phoneNumbers in
+        taskQueue.onPerform = { phoneNumbers, mode in
             XCTAssertEqual(phoneNumbers, [])
             return .value([])
         }
@@ -108,7 +112,7 @@ final class ContactDiscoveryManagerTest: XCTestCase {
         )
 
         // Send another request, but include an unknown number to force a request.
-        taskQueue.onPerform = { phoneNumbers in
+        taskQueue.onPerform = { phoneNumbers, mode in
             XCTAssertEqual(phoneNumbers, [phoneNumber1, phoneNumber4])
             return .value(MockContactDiscoveryTaskQueue.foundResponse(for: [phoneNumber4]))
         }

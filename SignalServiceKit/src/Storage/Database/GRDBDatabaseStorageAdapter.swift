@@ -176,7 +176,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             TSGroupMember.self,
             TSMention.self,
             ExperienceUpgrade.self,
-            CancelledGroupRing.self
+            CancelledGroupRing.self,
+            CdsPreviousE164.self
         ]
     }
 

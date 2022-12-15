@@ -164,7 +164,12 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
         for pendingRequest in pendingRequests {
             // If this request is being rate limited, throw an error.
             if let retryDate = retryDates[pendingRequest.mode] {
-                pendingRequest.future.reject(ContactDiscoveryError.rateLimit(expiryDate: retryDate))
+                pendingRequest.future.reject(ContactDiscoveryError(
+                    kind: .rateLimit,
+                    debugDescription: "cached rate limit",
+                    retryable: true,
+                    retryAfterDate: retryDate
+                ))
                 continue
             }
 
@@ -208,7 +213,7 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
 
         let fetchedPhoneNumbers = undiscoverableCache.phoneNumbersToFetch(for: request)
         firstly {
-            contactDiscoveryTaskQueue.perform(for: fetchedPhoneNumbers)
+            contactDiscoveryTaskQueue.perform(for: fetchedPhoneNumbers, mode: request.mode)
         }.recover(on: .global()) { error -> Promise<Set<SignalRecipient>> in
             self.handleRateLimitErrorIfNeeded(error: error, request: request)
             throw error

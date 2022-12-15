@@ -12,11 +12,8 @@ struct DiscoveredContactInfo: Hashable {
 
 /// An item that fetches contact info from the ContactDiscoveryService
 /// Intended to be used by ContactDiscoveryTaskQueue. You probably don't want to use this directly.
-protocol ContactDiscovering {
-    /// Constructs a ContactDiscovering object from a set of e164 phone numbers
-    init(e164sToLookup: Set<String>)
-
-    /// Returns a promise that performs ContactDiscovery on the provided queue
+protocol ContactDiscoveryOperation {
+    init(e164sToLookup: Set<String>, mode: ContactDiscoveryMode)
     func perform(on queue: DispatchQueue) -> Promise<Set<DiscoveredContactInfo>>
 }
 
@@ -26,7 +23,6 @@ protocol ContactDiscovering {
 @objc(OWSContactDiscoveryError)
 public class ContactDiscoveryError: NSError, UserErrorDescriptionProvider {
     static let domain: String = "ContactDiscoveryErrorDomain"
-    static let maxRetryAfterInterval = 60 * kMinuteInterval
 
     /// The reason for the error. You probably don't need to consult this directly.
     public var kind: Kind {
@@ -58,24 +54,13 @@ public class ContactDiscoveryError: NSError, UserErrorDescriptionProvider {
             kind: .assertion,
             debugDescription: description,
             retryable: false,
-            retryAfterDate: nil)
-    }
-
-    static func rateLimit(expiryDate: Date) -> ContactDiscoveryError {
-        return ContactDiscoveryError(
-            kind: .rateLimit,
-            debugDescription: "Rate Limited",
-            retryable: true,
-            retryAfterDate: expiryDate)
+            retryAfterDate: nil
+        )
     }
 
     init(kind: Kind, debugDescription: String, retryable: Bool, retryAfterDate: Date?) {
         self.retrySuggested = retryable
-        if let retryAfterDate = retryAfterDate {
-            self.retryAfterDate = min(retryAfterDate, Date(timeIntervalSinceNow: Self.maxRetryAfterInterval))
-        } else {
-            self.retryAfterDate = nil
-        }
+        self.retryAfterDate = retryAfterDate
 
         super.init(domain: Self.domain, code: kind.rawValue, userInfo: [
             NSDebugDescriptionErrorKey: debugDescription

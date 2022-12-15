@@ -674,6 +674,11 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/directory/auth"] method:@"GET" parameters:@{}];
 }
 
++ (TSRequest *)remoteAttestationAuthRequestForCDSI
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v2/directory/auth"] method:@"GET" parameters:@{}];
+}
+
 #pragma mark - CDS
 
 + (TSRequest *)cdsFeedbackRequestWithStatus:(NSString *)status

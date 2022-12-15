@@ -1402,3 +1402,11 @@ CREATE
             ,"timestamp" INTEGER NOT NULL
         )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "CdsPreviousE164" (
+            "id" INTEGER PRIMARY KEY NOT NULL
+            ,"e164" TEXT NOT NULL
+        )
+;

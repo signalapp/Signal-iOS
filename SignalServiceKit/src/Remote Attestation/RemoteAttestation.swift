@@ -97,6 +97,14 @@ public extension RemoteAttestation {
     }
 }
 
+// MARK: - CSDI
+
+extension RemoteAttestation {
+    static func authForCDSI() -> Promise<Auth> {
+        return Auth.fetch(forService: .cdsi)
+    }
+}
+
 // MARK: - EnclaveConfig
 
 public extension RemoteAttestation {
@@ -253,11 +261,13 @@ fileprivate extension RemoteAttestation {
     enum Service {
         case contactDiscovery
         case keyBackup
+        case cdsi
 
         func authRequest() -> TSRequest {
             switch self {
             case .contactDiscovery: return OWSRequestFactory.remoteAttestationAuthRequestForContactDiscovery()
             case .keyBackup: return OWSRequestFactory.remoteAttestationAuthRequestForKeyBackup()
+            case .cdsi: return OWSRequestFactory.remoteAttestationAuthRequestForCDSI()
             }
         }
     }

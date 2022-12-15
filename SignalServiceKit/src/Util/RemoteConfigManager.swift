@@ -292,6 +292,11 @@ public class RemoteConfig: BaseFlags {
         return uintValue
     }
 
+    public static var contactDiscoveryV2: Bool {
+        // Use a hardcoded value. When this is ready to ship, switch to the remote config.
+        FeatureFlags.contactDiscoveryV2
+    }
+
     // MARK: - Country code buckets
 
     /// Determine if a country-code-dependent flag is enabled for the current
@@ -504,6 +509,7 @@ private struct Flags {
         case paypalOneTimeDonationKillSwitch
         case paypalGiftDonationKillSwitch
         case paypalMonthlyDonationKillSwitch
+        case contactDiscoveryV2
     }
 
     // Values defined in this array remain set once they are

@@ -1,0 +1,63 @@
+//
+// Copyright 2022 Signal Messenger, LLC
+// SPDX-License-Identifier: AGPL-3.0-only
+//
+
+syntax = "proto3";
+
+// iOS - package name determines class prefix
+package CDSI;
+
+message ClientRequest {
+  // Each ACI/UAK pair is a 32-byte buffer, containing the 16-byte ACI followed
+  // by its 16-byte UAK.
+  bytes aci_uak_pairs = 1;
+
+  // Each E164 is an 8-byte big-endian number, as 8 bytes.
+  bytes prev_e164s = 2;
+  bytes new_e164s = 3;
+  bytes discard_e164s = 4;
+
+  reserved 5;
+
+  // If set, a token which allows rate limiting to discount the e164s in
+  // the request's prev_e164s, only counting new_e164s.  If not set, then
+  // rate limiting considers both prev_e164s' and new_e164s' size.
+  bytes token = 6;
+
+  // After receiving a new token from the server, send back a message just
+  // containing a token_ack.
+  bool token_ack = 7;
+
+  // Request that, if the server allows, both ACI and PNI be returned even
+  // if the aci_uak_pairs don't match.
+  bool return_acis_without_uaks = 8;
+}
+
+message ClientResponse {
+  // Each triple is an 8-byte e164, a 16-byte PNI, and a 16-byte ACI.
+  // If the e164 was not found, PNI and ACI are all zeros.  If the PNI
+  // was found but the ACI was not, the PNI will be non-zero and the ACI
+  // will be all zeros.  ACI will be returned if one of the returned
+  // PNIs has an ACI/UAK pair that matches.
+  //
+  // Should the request be successful (IE: a successful status returned),
+  // |e164_pni_aci_triple| will always equal |e164| of the request,
+  // so the entire marshalled size of the response will be (2+32)*|e164|,
+  // where the additional 2 bytes are the id/type/length additions of the
+  // protobuf marshaling added to each byte array.  This avoids any data
+  // leakage based on the size of the encrypted output.
+  bytes e164_pni_aci_triples = 1;
+
+  reserved 2;
+
+  // A token which allows subsequent calls' rate limiting to discount the
+  // e164s sent up in this request, only counting those in the next
+  // request's new_e164s.
+  bytes token = 3;
+
+  // On a successful response to a token_ack request, the number of permits
+  // that were deducted from the user's rate-limit in order to process the
+  // request
+  int32 debug_permits_used = 4;
+}

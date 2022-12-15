@@ -209,6 +209,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addSnoozeCountToExperienceUpgrade
         case addCancelledGroupRingsTable
         case addPaymentProcessorColumnToJobRecords
+        case addCdsPreviousE164
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2049,6 +2050,14 @@ public class GRDBSchemaMigrator: NSObject {
 
             return .success(())
         }
+
+        migrator.registerMigration(.addCdsPreviousE164) { transaction in
+            try transaction.database.create(table: "CdsPreviousE164") { table in
+                table.column("id", .integer).notNull().primaryKey()
+                table.column("e164", .text).notNull()
+            }
+            return .success(())
+        } // end: .addCdsPreviousE164
 
         // MARK: - Schema Migration Insertion Point
     }

@@ -7,11 +7,11 @@ import Foundation
 
 /// The primary interface for discovering contacts through the CDS service.
 protocol ContactDiscoveryTaskQueue {
-    func perform(for phoneNumbers: Set<String>) -> Promise<Set<SignalRecipient>>
+    func perform(for phoneNumbers: Set<String>, mode: ContactDiscoveryMode) -> Promise<Set<SignalRecipient>>
 }
 
 final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue, Dependencies {
-    func perform(for phoneNumbers: Set<String>) -> Promise<Set<SignalRecipient>> {
+    func perform(for phoneNumbers: Set<String>, mode: ContactDiscoveryMode) -> Promise<Set<SignalRecipient>> {
         let e164s = phoneNumbers.filter { $0.isValidE164() }
         guard !e164s.isEmpty else {
             return .value([])
@@ -25,7 +25,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue, Dependenci
         )
 
         return firstly {
-            Self.createContactDiscoveryOperation(for: e164s).perform(on: workQueue)
+            Self.createContactDiscoveryOperation(for: e164s, mode: mode).perform(on: workQueue)
         }.map(on: workQueue) { (discoveredContacts: Set<DiscoveredContactInfo>) -> Set<SignalRecipient> in
             let discoveredE164s = Set(discoveredContacts.map { $0.e164 })
 
@@ -43,8 +43,12 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue, Dependenci
         }
     }
 
-    private static func createContactDiscoveryOperation(for e164s: Set<String>) -> ContactDiscovering {
-        return SGXContactDiscoveryOperation(e164sToLookup: e164s)
+    private static func createContactDiscoveryOperation(for e164s: Set<String>, mode: ContactDiscoveryMode) -> ContactDiscoveryOperation {
+        if RemoteConfig.contactDiscoveryV2 {
+            return ContactDiscoveryV2CompatibilityOperation(e164sToLookup: e164s, mode: mode)
+        } else {
+            return SGXContactDiscoveryOperation(e164sToLookup: e164s, mode: mode)
+        }
     }
 
     private static func storeResults(

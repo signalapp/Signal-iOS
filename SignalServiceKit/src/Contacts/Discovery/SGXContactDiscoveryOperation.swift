@@ -12,11 +12,11 @@ struct CDSRegisteredContact: Hashable {
 
 /// Fetches contact info from the ContactDiscoveryService
 /// Intended to be used by ContactDiscoveryTaskQueue. You probably don't want to use this directly.
-class SGXContactDiscoveryOperation: ContactDiscovering {
+class SGXContactDiscoveryOperation: ContactDiscoveryOperation {
     static let batchSize = 2048
 
     private let e164sToLookup: Set<String>
-    required init(e164sToLookup: Set<String>) {
+    required init(e164sToLookup: Set<String>, mode: ContactDiscoveryMode) {
         self.e164sToLookup = e164sToLookup
         Logger.debug("with e164sToLookup.count: \(e164sToLookup.count)")
     }
@@ -172,7 +172,7 @@ class SGXContactDiscoveryOperation: ContactDiscovering {
             return error
         }
 
-        let retryAfterDate = error.httpRetryAfterDate
+        let retryAfterDate = error.httpRetryAfterDate.map { min($0, Date(timeIntervalSinceNow: 60 * kMinuteInterval)) }
 
         if let statusCode = error.httpStatusCode {
             switch statusCode {

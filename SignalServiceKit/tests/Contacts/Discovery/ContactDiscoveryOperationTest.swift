@@ -6,7 +6,7 @@
 import XCTest
 @testable import SignalServiceKit
 
-class ContactDiscoveryOperationTest: SSKBaseTestSwift {
+class ContactDiscoveryOperationTest: XCTestCase {
     func test_uuidArrayFromEmptyData() {
         let data = Data()
         let uuids = SGXContactDiscoveryOperation.uuidArray(from: data)

@@ -19,9 +19,19 @@ final class UUIDBackfillTaskTest: SSKBaseTestSwift {
                     kind: .genericServerError, debugDescription: "", retryable: true, retryAfterDate: nil
                 ))
             case 2:
-                return Promise(error: ContactDiscoveryError.rateLimit(expiryDate: Date(timeIntervalSinceNow: -60)))
+                return Promise(error: ContactDiscoveryError(
+                    kind: .rateLimit,
+                    debugDescription: "",
+                    retryable: true,
+                    retryAfterDate: Date(timeIntervalSinceNow: -60)
+                ))
             case 3:
-                return Promise(error: ContactDiscoveryError.rateLimit(expiryDate: Date(timeIntervalSinceNow: 0.001)))
+                return Promise(error: ContactDiscoveryError(
+                    kind: .rateLimit,
+                    debugDescription: "",
+                    retryable: true,
+                    retryAfterDate: Date(timeIntervalSinceNow: 0.001)
+                ))
             default:
                 return .value([])
             }
