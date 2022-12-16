@@ -63,8 +63,6 @@ class ConversationInputTextView: MentionTextView {
         contentInset = .zero
         text = nil
 
-        updateTextContainerInset()
-
         ensurePlaceholderConstraints()
         updatePlaceholderVisibility()
     }
@@ -75,30 +73,30 @@ class ConversationInputTextView: MentionTextView {
 
     // MARK: -
 
-    private func updateTextContainerInset() {
-        let stickerButtonOffset: CGFloat = 30
-        var leftInset: CGFloat = 12
-        var rightInset: CGFloat = leftInset
+    override var defaultTextContainerInset: UIEdgeInsets {
+        var textContainerInset = super.defaultTextContainerInset
+        textContainerInset.left = 12
+        textContainerInset.right = 12
 
         // If the placeholder view is visible, we need to offset
         // the input container to accommodate for the sticker button.
         if !placeholderView.isHidden {
+            let stickerButtonOffset: CGFloat = 30
             if CurrentAppContext().isRTL {
-                leftInset += stickerButtonOffset
+                textContainerInset.left += stickerButtonOffset
             } else {
-                rightInset += stickerButtonOffset
+                textContainerInset.right += stickerButtonOffset
             }
         }
 
-        // Check the system font size and increase text inset accordingly
-        // to keep the text vertically centered.
-        // Default inset is chosen very intentionally to make one line text view height match mockups (36 pt).
-        updateVerticalInsetsForDynamicBodyType(defaultInsets: 6 - CGHairlineWidth())
-        textContainerInset.left = leftInset
-        textContainerInset.right = rightInset
+        return textContainerInset
     }
 
     private func ensurePlaceholderConstraints() {
+        // Don't update constraints when MentionInputView sets textContainerInset in its initializer
+        // because placeholderView wasn't added yet.
+        guard placeholderView.superview != nil else { return }
+
         if let placeholderConstraints = placeholderConstraints {
             NSLayoutConstraint.deactivate(placeholderConstraints)
         }

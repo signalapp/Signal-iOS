@@ -224,12 +224,6 @@ class StoryReplyInputToolbar: UIView {
         let textViewFont = UIFont.ows_dynamicTypeBody
         textView.font = textViewFont
         textView.textColor = Theme.darkThemePrimaryColor
-
-        // Make textView have height of 36 with default font size.
-        textView.updateVerticalInsetsForDynamicBodyType(defaultInsets: 6 - CGHairlineWidth())
-        textView.textContainerInset.left = 7
-        textView.textContainerInset.right = 7
-
         return textView
     }
 

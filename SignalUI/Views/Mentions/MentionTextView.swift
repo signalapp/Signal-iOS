@@ -34,6 +34,7 @@ open class MentionTextView: OWSTextView {
 
     public required init() {
         super.init(frame: .zero, textContainer: nil)
+        updateTextContainerInset()
         delegate = self
     }
 
@@ -443,6 +444,35 @@ open class MentionTextView: OWSTextView {
 
         // We checked everything, so we're not typing
         state = .notTypingMention
+    }
+
+    // MARK: - Text Container Insets
+
+    open var defaultTextContainerInset: UIEdgeInsets {
+        UIEdgeInsets(hMargin: 7, vMargin: 6 - CGHairlineWidth())
+    }
+
+    public func updateTextContainerInset() {
+        var newTextContainerInset = defaultTextContainerInset
+
+        let currentFont = font ?? UIFont.ows_dynamicTypeBody
+        let systemDefaultFont = UIFont.preferredFont(
+            forTextStyle: .body,
+            compatibleWith: .init(preferredContentSizeCategory: .large)
+        )
+        guard systemDefaultFont.pointSize > currentFont.pointSize else {
+            textContainerInset = newTextContainerInset
+            return
+        }
+
+        // Increase top and bottom insets so that textView has the same one-line height
+        // for any content size category smaller than the default (Large).
+        // Simply fixing textView at a minimum height doesn't work well because
+        // smaller text will be top-aligned (and we want center).
+        let insetFontAdjustment = (systemDefaultFont.ascender - systemDefaultFont.descender) - (currentFont.ascender - currentFont.descender)
+        newTextContainerInset.top += insetFontAdjustment * 0.5
+        newTextContainerInset.bottom = newTextContainerInset.top - 1
+        textContainerInset = newTextContainerInset
     }
 }
 

@@ -656,16 +656,6 @@ public extension UITextView {
         inputDelegate?.selectionWillChange(self)
         inputDelegate?.selectionDidChange(self)
     }
-
-    func updateVerticalInsetsForDynamicBodyType(defaultInsets: CGFloat) {
-        let currentFontSize = UIFont.ows_dynamicTypeBody.pointSize
-        let systemDefaultFontSize: CGFloat = 17
-        let insetFontAdjustment = systemDefaultFontSize > currentFontSize ? systemDefaultFontSize - currentFontSize : 0
-        let topInset = defaultInsets + insetFontAdjustment
-        let bottomInset = systemDefaultFontSize > currentFontSize ? topInset - 1 : topInset
-        textContainerInset.top = topInset
-        textContainerInset.bottom = bottomInset
-    }
 }
 
 // MARK: -
