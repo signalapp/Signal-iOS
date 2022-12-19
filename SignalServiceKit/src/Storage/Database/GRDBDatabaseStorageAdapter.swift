@@ -110,6 +110,10 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             // Crash if storage can't be initialized.
             storage = try GRDBStorage(dbURL: databaseFileUrl, keyspec: GRDBDatabaseStorageAdapter.keyspec)
         } catch {
+            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFail("\(error.grdbErrorForLogging)")
         }
 
