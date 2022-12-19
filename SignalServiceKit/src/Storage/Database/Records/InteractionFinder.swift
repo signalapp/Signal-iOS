@@ -313,6 +313,14 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         return nil
     }
 
+    /// Gets the most recently inserted Interaction of type `incomingMessage`.
+    public static func lastInsertedIncomingMessage(transaction: SDSAnyReadTransaction) -> TSIncomingMessage? {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdbRead):
+            return GRDBInteractionFinder.lastInsertedIncomingMessage(transaction: grdbRead)
+        }
+    }
+
     // MARK: - instance methods
 
     @objc
@@ -1131,6 +1139,30 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
             }
         } catch {
             owsFailDebug("unexpected error \(error)")
+        }
+    }
+
+    /// Gets the most recently inserted Interaction of type `incomingMessage`.
+    static func lastInsertedIncomingMessage(transaction: GRDBReadTransaction) -> TSIncomingMessage? {
+        let sql: String = """
+            SELECT *
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .recordType) = ?
+            AND \(interactionColumn: .callType) IS NULL
+            ORDER BY \(interactionColumn: .id) DESC
+            LIMIT 1
+        """
+        let arguments: StatementArguments = [
+            SDSRecordType.incomingMessage.rawValue
+        ]
+        let result = TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
+        if let result = result as? TSIncomingMessage {
+            return result
+        } else if let result {
+            owsFailDebug("Unexpected type: \(type(of: result))")
+            return nil
+        } else {
+            return nil
         }
     }
 

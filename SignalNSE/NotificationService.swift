@@ -175,6 +175,16 @@ class NotificationService: UNNotificationServiceExtension {
             "Received notification in class: \(self), thread: \(Thread.current), pid: \(ProcessInfo.processInfo.processIdentifier), memoryUsage: \(LocalDevice.memoryUsageString), nseCount: \(nseCount)"
         )
 
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            // Mark down that the APNS token is working since we got a push.
+            // Do this as early as possible but after the app is ready and has run
+            // GRDB migrations and such. (therefore, willBecomeReady, which actually runs
+            // after the app is ready but just before any didBecomeReady blocks)
+            Self.databaseStorage.asyncWrite { transaction in
+                APNSRotationStore.didReceiveAPNSPush(transaction: transaction)
+            }
+        }
+
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             environment.askMainAppToHandleReceipt(logger: logger) { [weak self] mainAppHandledReceipt in
                 guard !mainAppHandledReceipt else {

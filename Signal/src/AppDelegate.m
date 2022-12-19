@@ -881,6 +881,13 @@ static void uncaughtExceptionHandler(NSException *exception)
         OWSLogInfo(@"didReceiveRemoteNotification w. completion.");
     }
 
+    // Mark down that the APNS token is working because we got a push.
+    AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{
+        DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+            [APNSRotationStore didReceiveAPNSPushWithTransaction:transaction];
+        });
+    });
+
     [self processRemoteNotification:userInfo
                          completion:^{
                              dispatch_after(

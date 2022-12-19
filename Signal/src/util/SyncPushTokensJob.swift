@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalMessaging
 import SignalServiceKit
 
 @objc(OWSSyncPushTokensJob)
@@ -15,6 +16,7 @@ class SyncPushTokensJob: NSObject {
         case normal
         case forceUpload
         case forceRotation
+        case rotateIfEligible
     }
 
     private let mode: Mode
@@ -28,8 +30,43 @@ class SyncPushTokensJob: NSObject {
     func run() -> Promise<Void> {
         Logger.info("Starting.")
 
-        return firstly {
-            return self.pushRegistrationManager.requestPushTokens(forceRotation: mode == .forceRotation)
+        return firstly(on: .global()) { () -> Promise<Void> in
+            switch self.mode {
+            case .normal, .forceUpload:
+                // Don't rotate.
+                return self.run(shouldRotateAPNSToken: false)
+            case .forceRotation:
+                // Always rotate
+                return self.run(shouldRotateAPNSToken: true)
+            case .rotateIfEligible:
+                return Self.databaseStorage.read(PromiseNamespace.promise) { transaction -> Bool in
+                    return APNSRotationStore.canRotateAPNSToken(transaction: transaction)
+                }.then { shouldRotate in
+                    if !shouldRotate {
+                        // If we aren't rotating, no-op.
+                        return Promise.value(())
+                    }
+                    return self.run(shouldRotateAPNSToken: true)
+                }
+            }
+        }
+    }
+
+    private func run(shouldRotateAPNSToken: Bool) -> Promise<Void> {
+        return firstly(on: .main) {
+            return self.pushRegistrationManager.requestPushTokens(
+                forceRotation: shouldRotateAPNSToken
+            ).map(on: .main) {
+                return (shouldRotateAPNSToken, $0)
+            }
+        }.then(on: .global()) { (didRotate: Bool, regResult: (String, String?)) -> Promise<(pushToken: String, voipToken: String?)> in
+            let (pushToken, voipToken) = regResult
+            return Self.databaseStorage.write(.promise) { transaction in
+                if shouldRotateAPNSToken {
+                    APNSRotationStore.didRotateAPNSToken(transaction: transaction)
+                }
+                return (pushToken, voipToken)
+            }
         }.then(on: .global()) { (pushToken: String, voipToken: String?) -> Promise<Void> in
             Logger.info("Fetched pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
 

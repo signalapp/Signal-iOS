@@ -178,6 +178,15 @@ extension AppDelegate {
             SyncPushTokensJob.run()
         }
 
+        if tsAccountManager.isRegisteredAndReady {
+            APNSRotationStore.rotateIfNeededOnAppLaunchAndReadiness(performRotation: {
+                SyncPushTokensJob.run(mode: .rotateIfEligible)
+            }).map {
+                // If the method returns a closure, run it after message processing.
+                _ = messageProcessor.fetchingAndProcessingCompletePromise().done($0)
+            }
+        }
+
         DebugLogger.shared().postLaunchLogCleanup()
         AppVersion.shared().mainAppLaunchDidComplete()
 

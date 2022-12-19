@@ -467,6 +467,11 @@ NSString *const OWSPreferencesKeyDeviceScale = @"OWSPreferencesKeyDeviceScale";
     return [self stringForKey:OWSPreferencesKeyLastRecordedPushToken];
 }
 
+- (nullable NSString *)getPushToken:(SDSAnyReadTransaction *)transaction
+{
+    return [self.keyValueStore getString:OWSPreferencesKeyLastRecordedPushToken transaction:transaction];
+}
+
 - (void)setVoipToken:(nullable NSString *)value
 {
     [self setString:value forKey:OWSPreferencesKeyLastRecordedVoipToken];

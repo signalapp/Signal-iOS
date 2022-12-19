@@ -297,6 +297,10 @@ public class RemoteConfig: BaseFlags {
         FeatureFlags.contactDiscoveryV2
     }
 
+    public static var enableAutoAPNSRotation: Bool {
+        return isEnabled(.enableAutoAPNSRotation, defaultValue: false)
+    }
+
     // MARK: - Country code buckets
 
     /// Determine if a country-code-dependent flag is enabled for the current
@@ -510,6 +514,7 @@ private struct Flags {
         case paypalGiftDonationKillSwitch
         case paypalMonthlyDonationKillSwitch
         case contactDiscoveryV2
+        case enableAutoAPNSRotation
     }
 
     // Values defined in this array remain set once they are
