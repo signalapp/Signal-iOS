@@ -108,6 +108,13 @@ public class OWSMockSyncManager: NSObject, SyncManagerProtocol {
     }
 
     @objc
+    public func syncAllContactsIfFullSyncRequested() -> AnyPromise {
+        Logger.info("")
+
+        return AnyPromise()
+    }
+
+    @objc
     public func syncGroups(transaction: SDSAnyWriteTransaction, completion: @escaping Completion) {
         Logger.info("")
 

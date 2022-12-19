@@ -18,6 +18,8 @@ public protocol SyncManagerProtocolObjc {
 
     func syncLocalContact() -> AnyPromise
     func syncAllContacts() -> AnyPromise
+    @discardableResult
+    func syncAllContactsIfFullSyncRequested() -> AnyPromise
     func syncGroups(transaction: SDSAnyWriteTransaction, completion: @escaping Completion)
 
     func processIncomingConfigurationSyncMessage(_ syncMessage: SSKProtoSyncMessageConfiguration, transaction: SDSAnyWriteTransaction)

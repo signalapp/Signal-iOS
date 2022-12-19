@@ -1029,13 +1029,6 @@ extension OWSContactsManager {
         contactsManagerCache.unsortedSignalAccounts(transaction: transaction)
     }
 
-    @objc
-    public func unsortedSignalAccountsWithSneakyTransaction() -> [SignalAccount] {
-        databaseStorage.read { transaction in
-            unsortedSignalAccounts(transaction: transaction)
-        }
-    }
-
     // Order respects the systems contact sorting preference.
     @objc
     public func sortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {

@@ -33,7 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const OWSSyncManagerConfigurationSyncDidCompleteNotification = @"OWSSyncManagerConfigurationSyncDidCompleteNotification";
 NSString *const OWSSyncManagerKeysSyncDidCompleteNotification = @"OWSSyncManagerKeysSyncDidCompleteNotification";
 
-NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManagerLastMessageKey";
+static NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManagerLastMessageKey";
+static NSString *const kSyncManagerFullSyncRequestIdKey = @"FullSyncRequestId";
 
 @interface OWSSyncManager ()
 
@@ -102,6 +103,10 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                              selector:@selector(registrationStateDidChange)
                                                  name:NSNotificationNameRegistrationStateDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(willEnterForeground:)
+                                                 name:OWSApplicationWillEnterForegroundNotification
+                                               object:nil];
 }
 
 #pragma mark - Notifications
@@ -109,38 +114,49 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 - (void)signalAccountsDidChange:(id)notification {
     OWSAssertIsOnMainThread();
 
-    [self sendSyncContactsMessageIfPossible];
+    [self sendSyncContactsMessageIfNecessary];
 }
 
 - (void)profileKeyDidChange:(id)notification {
     OWSAssertIsOnMainThread();
 
-    [self sendSyncContactsMessageIfPossible];
+    [self sendSyncContactsMessageIfNecessary];
 }
 
 - (void)registrationStateDidChange
 {
     OWSAssertIsOnMainThread();
 
-    [self sendSyncContactsMessageIfPossible];
+    [self sendSyncContactsMessageIfNecessary];
+}
+
+- (void)willEnterForeground:(id)notificaiton
+{
+    OWSAssertIsOnMainThread();
+
+    // If the user foregrounds the app, check for pending NSE requests.
+    [self syncAllContactsIfFullSyncRequested];
 }
 
 #pragma mark - Methods
 
-- (void)sendSyncContactsMessageIfPossible {
-    OWSAssertIsOnMainThread();
-
+- (BOOL)canSendContactSyncMessage
+{
     if (!AppReadiness.isAppReady) {
         // Don't bother if app hasn't finished setup.
-        return;
+        return NO;
     }
     if (!self.contactsManagerImpl.isSetup) {
         // Don't bother if the contacts manager hasn't finished setup.
-        return;
+        return NO;
     }
-    if (self.tsAccountManager.isRegisteredAndReady && self.tsAccountManager.isRegisteredPrimaryDevice) {
-        [self sendSyncContactsMessageIfNecessary];
+    if (!self.tsAccountManager.isRegisteredAndReady) {
+        return NO;
     }
+    if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
+        return NO;
+    }
+    return YES;
 }
 
 - (void)sendConfigurationSyncMessage {
@@ -272,46 +288,39 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     });
 }
 
-#pragma mark - Local Sync
+#pragma mark - Contacts Sync
+
+typedef NS_ENUM(NSUInteger, OWSContactSyncMode) {
+    OWSContactSyncModeLocalAddress,
+    OWSContactSyncModeAllSignalAccounts,
+    OWSContactSyncModeAllSignalAccountsIfChanged,
+    OWSContactSyncModeAllSignalAccountsIfFullSyncRequested,
+};
 
 - (AnyPromise *)syncLocalContact
 {
-    // OWSContactsOutputStream requires all signalAccount to have a contact.
-    Contact *contact = [[Contact alloc] initWithSystemContact:[CNContact new]];
-    SignalAccount *signalAccount =
-        [[SignalAccount alloc] initWithSignalServiceAddress:self.tsAccountManager.localAddress
-                                                    contact:contact
-                                   multipleAccountLabelText:nil];
-
-    return [self syncContactsForSignalAccounts:@[ signalAccount ]
-                               skipIfRedundant:NO
-                                      debounce:NO
-                                 isDurableSend:YES
-                                    isFullSync:NO];
+    OWSAssertDebug([self canSendContactSyncMessage]);
+    return [self syncContactsForMode:OWSContactSyncModeLocalAddress];
 }
-
-#pragma mark - Contacts Sync
 
 - (AnyPromise *)syncAllContacts
 {
-    NSArray<SignalAccount *> *allSignalAccounts = [self.contactsManagerImpl unsortedSignalAccountsWithSneakyTransaction];
-    return [self syncContactsForSignalAccounts:allSignalAccounts
-                               skipIfRedundant:NO
-                                      debounce:NO
-                                 isDurableSend:NO
-                                    isFullSync:YES];
+    OWSAssertDebug([self canSendContactSyncMessage]);
+    return [self syncContactsForMode:OWSContactSyncModeAllSignalAccounts];
 }
 
 - (void)sendSyncContactsMessageIfNecessary
 {
-    OWSAssertDebug(self.tsAccountManager.isRegisteredPrimaryDevice);
+    OWSAssertDebug(CurrentAppContext().isMainApp);
 
-    NSArray<SignalAccount *> *allSignalAccounts = [self.contactsManagerImpl unsortedSignalAccountsWithSneakyTransaction];
-    [self syncContactsForSignalAccounts:allSignalAccounts
-                        skipIfRedundant:YES
-                               debounce:YES
-                          isDurableSend:NO
-                             isFullSync:YES];
+    [self syncContactsForMode:OWSContactSyncModeAllSignalAccountsIfChanged];
+}
+
+- (AnyPromise *)syncAllContactsIfFullSyncRequested
+{
+    OWSAssertDebug(CurrentAppContext().isMainApp);
+
+    return [self syncContactsForMode:OWSContactSyncModeAllSignalAccountsIfFullSyncRequested];
 }
 
 - (dispatch_queue_t)serialQueue
@@ -331,31 +340,18 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 // skipIfRedundant: Don't bother sending sync messages with the same data as the
 //                  last successfully sent contact sync message.
 // debounce: Only have one sync message in flight at a time.
-- (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
-                              skipIfRedundant:(BOOL)skipIfRedundant
-                                     debounce:(BOOL)debounce
-                                isDurableSend:(BOOL)isDurableSend
-                                   isFullSync:(BOOL)isFullSync
+- (AnyPromise *)syncContactsForMode:(OWSContactSyncMode)mode
 {
+    const BOOL opportunistic = (mode == OWSContactSyncModeAllSignalAccountsIfChanged);
+    const BOOL debounce = (mode == OWSContactSyncModeAllSignalAccountsIfChanged);
+
     if (SSKDebugFlags.dontSendContactOrGroupSyncMessages.value) {
         OWSLogInfo(@"Skipping contact sync message.");
         return [AnyPromise promiseWithValue:@(YES)];
     }
-    if (!self.contactsManagerImpl.isSetup) {
-        return [AnyPromise promiseWithError:OWSErrorMakeAssertionError(@"Contacts manager not yet ready.")];
-    }
-    if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
-        return [AnyPromise promiseWithError:OWSErrorMakeAssertionError(@"should not sync from secondary device")];
-    }
-    if (!self.tsAccountManager.isRegisteredAndReady) {
-        return [AnyPromise promiseWithError:OWSErrorMakeAssertionError(@"Not yet registered and ready.")];
-    }
-    // TODO: Rewrite this in Swift and replace these flags with a "mode" enum.
-    if (isDurableSend) {
-        OWSAssertDebug(!skipIfRedundant);
-        OWSAssertDebug(!debounce);
-    } else if (skipIfRedundant) {
-        OWSAssertDebug(!isDurableSend);
+
+    if (![self canSendContactSyncMessage]) {
+        return [AnyPromise promiseWithError:OWSErrorMakeGenericError(@"Not ready to sync contacts.")];
     }
 
     AnyPromise *promise = AnyPromise.withFuture(^(AnyFuture *future) {
@@ -368,6 +364,21 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                     return [future resolveWithValue:@(1)];
                 }
 
+                if (CurrentAppContext().isNSE) {
+                    // If a full sync is specifically requested in the NSE, mark it so that the
+                    // main app can send that request the next time in runs.
+                    if (mode == OWSContactSyncModeAllSignalAccounts) {
+                        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                            [OWSSyncManager.keyValueStore setString:[NSUUID UUID].UUIDString
+                                                                key:kSyncManagerFullSyncRequestIdKey
+                                                        transaction:transaction];
+                        });
+                    }
+                    // If a full sync sync is requested in NSE, ignore it. Opportunistic syncs
+                    // shouldn't be requested, but this guards against cases where they are.
+                    return [future resolveWithValue:@(1)];
+                }
+
                 TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithSneakyTransaction];
                 if (thread == nil) {
                     OWSFailDebug(@"Missing thread.");
@@ -377,22 +388,50 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                     return [future rejectWithError:error];
                 }
 
+                // This might create a transaction -- call it outside of our own transaction.
+                SignalServiceAddress *const localAddress = self.tsAccountManager.localAddress;
+
+                __block NSString *fullSyncRequestId;
+                __block BOOL fullSyncRequired = YES;
                 __block OWSSyncContactsMessage *syncContactsMessage;
                 __block NSURL *_Nullable syncFileUrl;
                 __block NSData *_Nullable lastMessageHash;
-                [self.databaseStorage
-                    readWithBlock:^(SDSAnyReadTransaction *transaction) {
-                        syncContactsMessage = [[OWSSyncContactsMessage alloc] initWithThread:thread
-                                                                              signalAccounts:signalAccounts
-                                                                                  isFullSync:isFullSync
-                                                                                 transaction:transaction];
-                        syncFileUrl = [syncContactsMessage buildPlainTextAttachmentFileWithTransaction:transaction];
-                        lastMessageHash = [OWSSyncManager.keyValueStore getData:kSyncManagerLastContactSyncKey
-                                                                    transaction:transaction];
+                [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                    const BOOL isFullSync = (mode != OWSContactSyncModeLocalAddress);
+
+                    // If we're doing a full sync, check if there's a pending request from the
+                    // NSE. Any full sync in the main app can clear this flag, even if it's not
+                    // started in response to calling syncAllContactsIfFullSyncRequested.
+                    if (isFullSync) {
+                        fullSyncRequestId = [OWSSyncManager.keyValueStore getString:kSyncManagerFullSyncRequestIdKey
+                                                                        transaction:transaction];
                     }
-                             file:__FILE__
-                         function:__FUNCTION__
-                             line:__LINE__];
+                    // However, only syncAllContactsIfFullSyncRequested-initiated requests
+                    // should be skipped if there's no request.
+                    if ((mode == OWSContactSyncModeAllSignalAccountsIfFullSyncRequested)
+                        && (fullSyncRequestId == nil)) {
+                        fullSyncRequired = NO;
+                        return;
+                    }
+
+                    NSArray<SignalAccount *> *signalAccounts;
+                    if (isFullSync) {
+                        signalAccounts = [self.contactsManagerImpl unsortedSignalAccountsWithTransaction:transaction];
+                    } else {
+                        signalAccounts = @[ [self localAccountToSyncWithAddress:localAddress] ];
+                    }
+                    syncContactsMessage = [[OWSSyncContactsMessage alloc] initWithThread:thread
+                                                                          signalAccounts:signalAccounts
+                                                                              isFullSync:isFullSync
+                                                                             transaction:transaction];
+                    syncFileUrl = [syncContactsMessage buildPlainTextAttachmentFileWithTransaction:transaction];
+                    lastMessageHash = [OWSSyncManager.keyValueStore getData:kSyncManagerLastContactSyncKey
+                                                                transaction:transaction];
+                }];
+
+                if (!fullSyncRequired) {
+                    return [future resolveWithValue:@(1)];
+                }
 
                 if (!syncFileUrl) {
                     OWSFailDebug(@"Failed to serialize contacts sync message.");
@@ -412,7 +451,11 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                     return [future rejectWithError:error];
                 }
 
-                if (skipIfRedundant && [NSObject isNullableObject:messageHash equalTo:lastMessageHash]) {
+                // If the NSE requested a sync and the main app does an opportunistic sync,
+                // we should send that request since we've been given a strong signal that
+                // someone is waiting to receive this message.
+                if (opportunistic && [NSObject isNullableObject:messageHash equalTo:lastMessageHash]
+                    && (fullSyncRequestId == nil)) {
                     // Ignore redundant contacts sync message.
                     return [future resolveWithValue:@(1)];
                 }
@@ -435,7 +478,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                     return;
                 }
 
-                if (isDurableSend) {
+                if (mode == OWSContactSyncModeLocalAddress) {
                     [self.sskJobQueues.messageSenderJobQueue addMediaMessage:syncContactsMessage
                                                                   dataSource:dataSource
                                                                  contentType:OWSMimeTypeApplicationOctetStream
@@ -454,13 +497,13 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                         success:^{
                             OWSLogInfo(@"Successfully sent contacts sync message.");
 
-                            if (messageHash != nil) {
-                                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                                    [OWSSyncManager.keyValueStore setData:messageHash
-                                                                      key:kSyncManagerLastContactSyncKey
-                                                              transaction:transaction];
-                                });
-                            }
+                            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                                [OWSSyncManager.keyValueStore setData:messageHash
+                                                                  key:kSyncManagerLastContactSyncKey
+                                                          transaction:transaction];
+
+                                [self clearFullSyncRequestIdIfMatches:fullSyncRequestId transaction:transaction];
+                            });
 
                             dispatch_async(self.serialQueue, ^{
                                 if (debounce) {
@@ -487,6 +530,32 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     });
     return promise;
 }
+
+- (SignalAccount *)localAccountToSyncWithAddress:(SignalServiceAddress *)localAddress
+{
+    // OWSContactsOutputStream requires all signalAccount to have a contact.
+    Contact *contact = [[Contact alloc] initWithSystemContact:[CNContact new]];
+    return [[SignalAccount alloc] initWithSignalServiceAddress:localAddress
+                                                       contact:contact
+                                      multipleAccountLabelText:nil];
+}
+
+- (void)clearFullSyncRequestIdIfMatches:(nullable NSString *)requestId transaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (requestId == nil) {
+        return;
+    }
+    NSString *storedRequestId = [OWSSyncManager.keyValueStore getString:kSyncManagerFullSyncRequestIdKey
+                                                            transaction:transaction];
+    // If the requestId we just finished matches the one in the database, we've
+    // fulfilled the contract with the NSE. If the NSE triggers *another* sync
+    // while this is outstanding, the match will fail, and we'll kick off
+    // another sync at the next opportunity.
+    if ([storedRequestId isEqualToString:requestId]) {
+        [OWSSyncManager.keyValueStore removeValueForKey:kSyncManagerFullSyncRequestIdKey transaction:transaction];
+    }
+}
+
 
 #pragma mark - Fetch Latest
 

@@ -535,6 +535,10 @@ extension AppDelegate {
                 let remoteNotification = remoteNotification as? [AnyHashable: Any],
                 self.handleSilentPushContent(remoteNotification) == .notHandled {
                 self.messageFetcherJob.run()
+
+                // If the main app gets woken to process messages in the background, check
+                // for any pending NSE requests to fulfill.
+                self.syncManager.syncAllContactsIfFullSyncRequested()
             }
 
             completion()
