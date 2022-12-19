@@ -108,6 +108,10 @@ public class SDSDatabaseStorage: SDSTransactable {
                     isMainDatabase: true
                 )
             } catch {
+                DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                    userDefaults: CurrentAppContext().appUserDefaults(),
+                    error: error
+                )
                 owsFail("Database migration failed. Error: \(error.grdbErrorForLogging)")
             }
         }()

@@ -31,7 +31,9 @@ public class GRDBSchemaMigrator: NSObject {
 
         let grdbStorageAdapter = databaseStorage.grdbStorage
 
-        let hasCreatedInitialSchema = try! grdbStorageAdapter.read { try Self.hasCreatedInitialSchema(transaction: $0) }
+        let hasCreatedInitialSchema = try grdbStorageAdapter.read {
+            try Self.hasCreatedInitialSchema(transaction: $0)
+        }
 
         if hasCreatedInitialSchema {
             do {
