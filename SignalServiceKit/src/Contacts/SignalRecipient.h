@@ -28,7 +28,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, SignalRecipientTrustLevel) {
 @interface SignalRecipient : BaseModel
 
 @property (nonatomic, readonly) NSOrderedSet<NSNumber *> *devices;
-@property (nonatomic, readonly, nullable) NSNumber *unregisteredAtTimestamp;
+@property (nonatomic, nullable) NSNumber *unregisteredAtTimestamp;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -36,13 +36,16 @@ typedef NS_CLOSED_ENUM(NSUInteger, SignalRecipientTrustLevel) {
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 - (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
-#if TESTABLE_BUILD
-- (instancetype)initWithAddress:(SignalServiceAddress *)address;
-- (instancetype)initWithUUIDString:(NSString *)uuidString;
+// exposed for Swift interop
+- (instancetype)initWithAddress:(SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUUIDString:(NSString *)uuidString NS_DESIGNATED_INITIALIZER;
+- (void)addDevices:(NSSet<NSNumber *> *)devices;
+- (void)removeAllDevices;
 
+#if TESTABLE_BUILD
 - (instancetype)initWithPhoneNumber:(nullable NSString *)phoneNumber
                                uuid:(nullable NSUUID *)uuid
-                            devices:(NSArray<NSNumber *> *)devices;
+                            devices:(NSArray<NSNumber *> *)devices NS_DESIGNATED_INITIALIZER;
 #endif
 
 // --- CODE GENERATION MARKER
@@ -85,21 +88,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:devices:recipientPh
 - (NSComparisonResult)compare:(SignalRecipient *)other;
 
 + (BOOL)isRegisteredRecipient:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
-
-+ (SignalRecipient *)markRecipientAsRegisteredAndGet:(SignalServiceAddress *)address
-                                          trustLevel:(SignalRecipientTrustLevel)trustLevel
-                                         transaction:(SDSAnyWriteTransaction *)transaction;
-
-+ (SignalRecipient *)markRecipientAsRegisteredAndGet:(SignalServiceAddress *)address
-                                            deviceId:(UInt32)deviceId
-                                          trustLevel:(SignalRecipientTrustLevel)trustLevel
-                                         transaction:(SDSAnyWriteTransaction *)transaction;
-
-+ (void)markRecipientAsUnregistered:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
-
-+ (SignalRecipient *)markRecipientAsUnregisteredFromStorageServiceAndGet:(SignalServiceAddress *)address
-                                                 unregisteredAtTimestamp:(UInt64)unregisteredAtTimestamp
-                                                             transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

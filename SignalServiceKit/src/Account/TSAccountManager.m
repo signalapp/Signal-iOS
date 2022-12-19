@@ -634,9 +634,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     }
 
     SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithUuid:localAci phoneNumber:localNumber];
-    [SignalRecipient markRecipientAsRegisteredAndGet:address
-                                          trustLevel:SignalRecipientTrustLevelHigh
-                                         transaction:transaction];
+    [SignalRecipient markAsRegisteredAndGet:address trustLevel:SignalRecipientTrustLevelHigh transaction:transaction];
 }
 
 - (nullable NSDate *)registrationDateWithTransaction:(SDSAnyReadTransaction *)transaction
