@@ -1717,7 +1717,6 @@
 		F9C5CD1E289453B300548EEE /* SDSRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA3F289453B100548EEE /* SDSRecord.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD1F289453B300548EEE /* GRDBDatabaseStorageAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA40289453B100548EEE /* GRDBDatabaseStorageAdapter.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD20289453B300548EEE /* SDSDatabaseStorage+Objc.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA41289453B100548EEE /* SDSDatabaseStorage+Objc.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CD21289453B300548EEE /* SDSKeyValueStore+Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA42289453B100548EEE /* SDSKeyValueStore+Deprecated.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD22289453B300548EEE /* SDSTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA43289453B100548EEE /* SDSTransaction.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD23289453B300548EEE /* SDSTransactable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA44289453B100548EEE /* SDSTransactable.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD24289453B300548EEE /* SDSCrossProcess.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CA45289453B100548EEE /* SDSCrossProcess.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -4111,7 +4110,6 @@
 		F9C5CA3F289453B100548EEE /* SDSRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSRecord.swift; sourceTree = "<group>"; };
 		F9C5CA40289453B100548EEE /* GRDBDatabaseStorageAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBDatabaseStorageAdapter.swift; sourceTree = "<group>"; };
 		F9C5CA41289453B100548EEE /* SDSDatabaseStorage+Objc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SDSDatabaseStorage+Objc.h"; sourceTree = "<group>"; };
-		F9C5CA42289453B100548EEE /* SDSKeyValueStore+Deprecated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSKeyValueStore+Deprecated.swift"; sourceTree = "<group>"; };
 		F9C5CA43289453B100548EEE /* SDSTransaction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSTransaction.swift; sourceTree = "<group>"; };
 		F9C5CA44289453B100548EEE /* SDSTransactable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SDSTransactable.swift; sourceTree = "<group>"; };
 		F9C5CA45289453B100548EEE /* SDSCrossProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDSCrossProcess.h; sourceTree = "<group>"; };
@@ -7965,7 +7963,6 @@
 				F9C5CA3A289453B100548EEE /* SDSDatabaseStorage.swift */,
 				F9C5CA3B289453B100548EEE /* SDSDeserialization.swift */,
 				F9C5CA32289453B100548EEE /* SDSError.swift */,
-				F9C5CA42289453B100548EEE /* SDSKeyValueStore+Deprecated.swift */,
 				F9C5CA49289453B100548EEE /* SDSKeyValueStore+ObjC.h */,
 				F9C5CA33289453B100548EEE /* SDSKeyValueStore+ObjC.m */,
 				F9C5CA4B289453B100548EEE /* SDSKeyValueStore.swift */,
@@ -11155,7 +11152,6 @@
 				F9C5CD1A289453B300548EEE /* SDSDatabaseStorage.swift in Sources */,
 				F9C5CD1B289453B300548EEE /* SDSDeserialization.swift in Sources */,
 				F9C5CD13289453B300548EEE /* SDSError.swift in Sources */,
-				F9C5CD21289453B300548EEE /* SDSKeyValueStore+Deprecated.swift in Sources */,
 				F9C5CD14289453B300548EEE /* SDSKeyValueStore+ObjC.m in Sources */,
 				F9C5CD2A289453B300548EEE /* SDSKeyValueStore.swift in Sources */,
 				F9C5CD15289453B300548EEE /* SDSModel.swift in Sources */,
