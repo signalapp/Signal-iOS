@@ -8857,7 +8857,6 @@
 			buildConfigurationList = D221A0BC169C9E5F00537ABF /* Build configuration list for PBXNativeTarget "Signal" */;
 			buildPhases = (
 				1460156AE01E0DB0949D61FE /* [CP] Check Pods Manifest.lock */,
-				45AE48531E073428004D96C2 /* Swift Lint */,
 				D221A085169C9E5E00537ABF /* Sources */,
 				D221A086169C9E5E00537ABF /* Frameworks */,
 				34C239432180B01B00B6108F /* Run Script: update_plist_info */,
@@ -9433,20 +9432,6 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
-		};
-		45AE48531E073428004D96C2 /* Swift Lint */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Swift Lint";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\n# disabled for now. too many lint errors outside of the scope of this branch\n#(cd Signal && swiftlint)\n# never fail.\nexit 0\nelse\necho \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 		59C9DBA462715B5C999FFB02 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
