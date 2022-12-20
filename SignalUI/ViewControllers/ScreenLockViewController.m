@@ -144,19 +144,6 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     [self.delegate unlockButtonWasTapped];
 }
 
-- (void)presentViewController:(UIViewController *)viewControllerToPresent
-                     animated:(BOOL)flag
-                   completion:(void (^)(void))completion
-{
-    // The "Select Photos" dialog presents on top of the key window. If screen security is enabled,
-    // this will end up being the screen lock window which we immediately hide. To work around, we
-    // pass the view off to the proper frontmost view controller so it's visible to the user.
-    OWSAssertDebug([viewControllerToPresent isKindOfClass:[UIImagePickerController class]]);
-    [CurrentAppContext().frontmostViewController presentViewController:viewControllerToPresent
-                                                              animated:flag
-                                                            completion:completion];
-}
-
 #pragma mark - Orientation
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
