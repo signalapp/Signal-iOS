@@ -162,10 +162,7 @@ class AppSettingsViewController: OWSTableViewController2 {
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donate")
             )
         }, actionBlock: { [weak self] in
-            self?.navigationController?.pushViewController(
-                DonationSettingsViewController(),
-                animated: true
-            )
+            self?.didTapDonate()
         }))
         contents.addSection(section1)
 
@@ -432,5 +429,31 @@ class AppSettingsViewController: OWSTableViewController2 {
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
 
         return cell
+    }
+
+    private func didTapDonate() {
+        let vc: UIViewController
+        if DonationSettingsViewController.hasAnythingToShowWithSneakyTransaction() {
+            vc = DonationSettingsViewController()
+        } else if DonationUtilities.canDonateInAnyWay(localNumber: tsAccountManager.localNumber) {
+            vc = DonateViewController(preferredDonateMode: .oneTime) { finishResult in
+                let frontVc = { CurrentAppContext().frontmostViewController() }
+                switch finishResult {
+                case let .completedDonation(donateSheet, thanksSheet):
+                    donateSheet.dismiss(animated: true) {
+                        frontVc()?.present(thanksSheet, animated: true)
+                    }
+                case let .monthlySubscriptionCancelled(donateSheet, toastText):
+                    donateSheet.dismiss(animated: true) {
+                        frontVc()?.presentToast(text: toastText)
+                    }
+                }
+            }
+        } else {
+            DonationViewsUtil.openDonateWebsite()
+            return
+        }
+
+        navigationController?.pushViewController(vc, animated: true)
     }
 }

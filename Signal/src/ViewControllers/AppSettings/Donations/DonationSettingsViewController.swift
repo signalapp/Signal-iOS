@@ -143,11 +143,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             )
         }
 
-        let hasAnyBadges: Bool = {
-            let snapshot = Self.profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
-            let allBadges = snapshot.profileBadgeInfo ?? []
-            return !allBadges.isEmpty
-        }()
+        let hasAnyBadges: Bool = Self.hasAnyBadges()
 
         let subscriptionLevelsPromise = DonationViewsUtil.loadSubscriptionLevels(badgeStore: self.profileManager.badgeStore)
         let currentSubscriptionPromise = DonationViewsUtil.loadCurrentSubscription(subscriberID: subscriberID)
@@ -193,6 +189,12 @@ class DonationSettingsViewController: OWSTableViewController2 {
         }
     }
 
+    private static func hasAnyBadges() -> Bool {
+        let snapshot = profileManagerImpl.localProfileSnapshot(shouldIncludeAvatar: false)
+        let allBadges = snapshot.profileBadgeInfo ?? []
+        return !allBadges.isEmpty
+    }
+
     private func loadProfileBadgeLookup(hasAnyDonationReceipts: Bool) -> Guarantee<ProfileBadgeLookup> {
         let willEverShowBadges = hasAnyDonationReceipts
         guard willEverShowBadges else { return Guarantee.value(ProfileBadgeLookup()) }
@@ -231,6 +233,17 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
         avatarView.isUserInteractionEnabled = true
         avatarView.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(didLongPressAvatar)))
+    }
+
+    /// Will there be anything other than the "Donate" button? Can be used to skip this screen.
+    ///
+    /// Once gift badges are added (or anything else that's always shown), we can remove this.
+    static func hasAnythingToShowWithSneakyTransaction() -> Bool {
+        (
+            canSendGiftBadges ||
+            hasAnyBadges() ||
+            databaseStorage.read { DonationReceiptFinder.hasAny(transaction: $0) }
+        )
     }
 
     // MARK: - Table contents
