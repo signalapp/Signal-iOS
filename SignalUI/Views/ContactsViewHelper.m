@@ -23,9 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) NSHashTable<id<ContactsViewHelperObserver>> *observers;
 
-// This property is a cached value that is lazy-populated.
-@property (nonatomic, nullable) NSArray<Contact *> *nonSignalContacts;
-
 @property (nonatomic) NSDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap;
 @property (nonatomic) NSDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap;
 
@@ -233,21 +230,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.phoneNumberSignalAccountMap = [phoneNumberSignalAccountMap copy];
     self.uuidSignalAccountMap = [uuidSignalAccountMap copy];
     self.signalAccounts = [self.contactsManagerImpl sortSignalAccountsWithSneakyTransaction:signalAccounts];
-    self.nonSignalContacts = nil;
 
     [self fireDidUpdateContacts];
-}
-
-- (NSArray<NSString *> *)searchTermsForSearchString:(NSString *)searchText
-{
-    OWSAssertDebug(!CurrentAppContext().isNSE);
-
-    return [[[searchText ows_stripped]
-        componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]
-        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable searchTerm,
-                                        NSDictionary<NSString *, id> *_Nullable bindings) {
-            return searchTerm.length > 0;
-        }]];
 }
 
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText
@@ -262,108 +246,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.fullTextSearcher filterSignalAccounts:signalAccountsToSearch
                                         withSearchText:searchText
                                            transaction:transaction];
-}
-
-- (BOOL)doesContact:(Contact *)contact matchSearchTerm:(NSString *)searchTerm
-{
-    OWSAssertDebug(contact);
-    OWSAssertDebug(searchTerm.length > 0);
-    OWSAssertDebug(!CurrentAppContext().isNSE);
-
-    if ([contact.fullName.lowercaseString containsString:searchTerm.lowercaseString]) {
-        return YES;
-    }
-
-    NSString *asPhoneNumber = [searchTerm filterAsE164];
-    if (asPhoneNumber.length > 0) {
-        for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-            if ([phoneNumber.toE164 containsString:asPhoneNumber]) {
-                return YES;
-            }
-        }
-    }
-
-    return NO;
-}
-
-- (BOOL)doesContact:(Contact *)contact matchSearchTerms:(NSArray<NSString *> *)searchTerms
-{
-    OWSAssertDebug(contact);
-    OWSAssertDebug(searchTerms.count > 0);
-    OWSAssertDebug(!CurrentAppContext().isNSE);
-
-    for (NSString *searchTerm in searchTerms) {
-        if (![self doesContact:contact matchSearchTerm:searchTerm]) {
-            return NO;
-        }
-    }
-
-    return YES;
-}
-
-- (NSArray<Contact *> *)nonSignalContactsMatchingSearchString:(NSString *)searchText
-{
-    OWSAssertDebug(!CurrentAppContext().isNSE);
-
-    NSArray<NSString *> *searchTerms = [self searchTermsForSearchString:searchText];
-
-    if (searchTerms.count < 1) {
-        return [NSArray new];
-    }
-
-    return [self.nonSignalContacts filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(Contact *contact,
-                                                                   NSDictionary<NSString *, id> *_Nullable bindings) {
-        return [self doesContact:contact matchSearchTerms:searchTerms];
-    }]];
-}
-
-- (void)warmNonSignalContactsCacheAsync
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(!CurrentAppContext().isNSE);
-
-    if (self.nonSignalContacts != nil) {
-        return;
-    }
-
-    NSMutableSet<Contact *> *nonSignalContactSet = [NSMutableSet new];
-    __block NSArray<Contact *> *nonSignalContacts;
-
-    [self.databaseStorage asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        NSArray<Contact *> *contacts = [self.contactsManagerImpl allSortedContactsWithTransaction:transaction];
-        for (Contact *contact in contacts) {
-            NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
-            if (signalRecipients.count < 1) {
-                [nonSignalContactSet addObject:contact];
-            }
-        }
-        nonSignalContacts = [nonSignalContactSet.allObjects sortedArrayUsingComparator:^NSComparisonResult(
-                                                                                                           Contact *_Nonnull left, Contact *_Nonnull right) { return [left.fullName compare:right.fullName]; }];
-    }
-                                  completion:^{ self.nonSignalContacts = nonSignalContacts; }];
-}
-
-- (nullable NSArray<Contact *> *)nonSignalContacts
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(!CurrentAppContext().isNSE);
-
-    if (!_nonSignalContacts) {
-        NSMutableSet<Contact *> *nonSignalContacts = [NSMutableSet new];
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            NSArray<Contact *> *contacts = [self.contactsManagerImpl allSortedContactsWithTransaction:transaction];
-            for (Contact *contact in contacts) {
-                NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
-                if (signalRecipients.count < 1) {
-                    [nonSignalContacts addObject:contact];
-                }
-            }
-        }];
-        _nonSignalContacts = [nonSignalContacts.allObjects sortedArrayUsingComparator:^NSComparisonResult(
-            Contact *_Nonnull left, Contact *_Nonnull right) { return [left.fullName compare:right.fullName]; }];
-    }
-
-    return _nonSignalContacts;
 }
 
 #pragma mark - Editing

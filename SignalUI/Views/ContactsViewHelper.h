@@ -45,9 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText
                                                      transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)warmNonSignalContactsCacheAsync;
-- (NSArray<Contact *> *)nonSignalContactsMatchingSearchString:(NSString *)searchText;
-
 - (nullable CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
                                                       editImmediately:(BOOL)shouldEditImmediately;
 

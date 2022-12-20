@@ -322,8 +322,6 @@ const NSUInteger kMinimumSearchLength = 1;
 {
     [super viewDidLoad];
 
-    [self.contactsViewHelper warmNonSignalContactsCacheAsync];
-
     self.title = OWSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
 
     [self applyTheme];
