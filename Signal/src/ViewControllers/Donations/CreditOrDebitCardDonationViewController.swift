@@ -13,6 +13,9 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
     let onFinished: () -> Void
     var threeDSecureAuthenticationSession: ASWebAuthenticationSession?
 
+    public override var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
+    public override var navbarBackgroundColorOverride: UIColor? { .clear }
+
     init(
         donationAmount: FiatMoney,
         donationMode: DonationMode,

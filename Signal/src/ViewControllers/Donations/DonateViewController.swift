@@ -28,7 +28,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     static var selectedColor: CGColor { Theme.accentBlueColor.cgColor }
 
     public var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
-    public var navbarBackgroundColorOverride: UIColor? { backgroundColor }
+    public var navbarBackgroundColorOverride: UIColor? { .clear }
 
     private static func commonStack() -> UIStackView {
         let result = UIStackView()
