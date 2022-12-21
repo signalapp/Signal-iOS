@@ -36,6 +36,9 @@ protocol MediaGalleryCollectionViewUpdaterDelegate: AnyObject {
 
     func updaterReloadItems(at indexPaths: [IndexPath])
     func updaterReloadSections(_ sections: IndexSet)
+
+    // This is always called last in an update.
+    func updaterDidFinish(numberOfSectionsBefore: Int, numberOfSectionsAfter: Int)
 }
 
 /// Applies MediaGallerySection change logs to a collection view.
@@ -119,11 +122,7 @@ struct MediaGalleryCollectionViewUpdater {
 
     /// Describes everything we need to know about a section in order to tell UICollectionView what changed about it.
     private enum ModelSection: Equatable {
-        /// A pre-existing section that UICollectionView already knows about. `index` is the original index of the section.
-        case reported(index: Int, items: ModelItems)
-
-        /// A pre-existing section that UICollectionView doesn't know anything about (because it never enquired about the number of items in the section). `index` is the original index of the section.
-        case unreportedOriginal(index: Int)
+        case preexisting(index: Int, items: ModelItems)
 
         /// A newly created section inserted at the beginning.
         case novelPrepended
@@ -137,55 +136,35 @@ struct MediaGalleryCollectionViewUpdater {
         /// The index of the section, provided UICollectionView already knew about it. Otherwise, nil.
         var originalSectionIndex: Int? {
             switch self {
-            case let .reported(index: index, items: _), let .needsReload(index: index):
+            case let .preexisting(index: index, items: _), let .needsReload(index: index):
                 return index
-            default:
-                return nil
-            }
-        }
-
-        /// - Returns: What UICollectionView knows about this section's items. If UICollectionView has never enquired about the number of items in this section, or the section is scheduled to be reloaded, this returns `nil`.
-        var items: ModelItems? {
-            switch self {
-            case let .reported(index: _, items: items):
-                return items
             default:
                 return nil
             }
         }
     }
 
-    typealias Change = JournalingOrderedDictionaryChange<MediaGallerySections<MediaGallery.Loader>.ItemChange>
+    typealias Change = JournalingOrderedDictionaryChange<MediaGallery.Sections.ItemChange>
 
     weak var delegate: MediaGalleryCollectionViewUpdaterDelegate?
 
     /// A model of our data that we use to calculate changes that must be reported to UICollectionView.
     private var model: [ModelSection]
 
-    /// What UICollectionView knew prior to applying any changes.
-    private let lastReportedNumberOfSections: Int
-    private let lastReportedItemCounts: [Int: Int]
+    /// Number of items per section.
+    private let originalSectionCount: Int
 
     /// Initializes a new updater.
     ///
     /// - Parameters:
     ///   - lastReportedNumberOfSections: The last return value of `UICollectionViewDataSource.numberOfSections(in:)`, or 0 if it was never called.
     ///   - lastReportedItemCounts: Maps section index to the return value of `UICollectionViewDataSource.collectionView(_:, numberOfItemsInSection:)` for the last returned values.
-    init(lastReportedNumberOfSections: Int,
-         lastReportedItemCounts: [Int: Int]) {
-        owsAssert(lastReportedNumberOfSections >= 0)
-        owsAssert(lastReportedNumberOfSections >= lastReportedItemCounts.count)
-
-        self.lastReportedNumberOfSections = lastReportedNumberOfSections
-        self.lastReportedItemCounts = lastReportedItemCounts
+    init(itemCounts: [Int]) {
+        self.originalSectionCount = itemCounts.count
 
         // Construct the model.
-        model = (0..<lastReportedNumberOfSections).map { section in
-            if let itemCount = lastReportedItemCounts[section] {
-                return ModelSection.reported(index: section, items: ModelItems(itemCount))
-            } else {
-                return ModelSection.unreportedOriginal(index: section)
-            }
+        model = itemCounts.enumerated().map { (index, count) in
+            ModelSection.preexisting(index: index, items: ModelItems(count))
         }
     }
 
@@ -193,6 +172,7 @@ struct MediaGalleryCollectionViewUpdater {
 
     /// Call this once. It invokes methods on the delegate to tell it what changed.
     mutating func update(_ changes: [Change]) {
+        Logger.debug("")
         updateModel(changes)
         notify()
     }
@@ -217,29 +197,31 @@ struct MediaGalleryCollectionViewUpdater {
                 }
             }
         }
+
     }
 
     /// - Returns: An updated `ModelSection` to replace the one at `sectionIndex`.
     private func updatedSectionInfo(sectionIndex: Int,
-                                    itemChange: MediaGallerySections<MediaGallery.Loader>.ItemChange) -> ModelSection {
+                                    itemChange: MediaGallery.Sections.ItemChange) -> ModelSection {
         switch model[sectionIndex] {
-        case .reported(index: let index, items: var items):
+        case .preexisting(index: let index, items: var items):
             switch itemChange {
             case .removeItem(index: let i):
                 items.remove(at: i)
-                return .reported(index: index, items: items)
+                return .preexisting(index: index, items: items)
             case .reloadSection:
                 return .needsReload(index: index)
             case .updateItem(index: let i):
                 items.update(at: i)
-                return .reported(index: index, items: items)
+                return .preexisting(index: index, items: items)
             }
 
-        case .unreportedOriginal, .novelPrepended, .novelAppended, .needsReload:
-            // If a section's item count was not reported in the past or it was invalidated by a reload, we don't need to track any updates to
+        case .novelPrepended, .novelAppended, .needsReload:
+            // If a section's item count was invalidated by a reload, we don't need to track any updates to
             // it except that the section was added or deleted. UICollectionView will never be the wiser.
             return model[sectionIndex]
         }
+
     }
 
     // MARK: - Notify Delegate
@@ -254,11 +236,15 @@ struct MediaGalleryCollectionViewUpdater {
 
         // Inserts happen last. These use post-delete indexes.
         performSectionInserts()
+
+        let newCount = originalSectionCount + prependsIndexSet.count + appendsIndexSet.count - deletedSectionIndexes.count
+        delegate?.updaterDidFinish(numberOfSectionsBefore: originalSectionCount,
+                                   numberOfSectionsAfter: newCount)
     }
 
     private func performItemDeletes() {
         for section in model {
-            guard case let .reported(index: originalSectionIndex, items: items) = section else {
+            guard case let .preexisting(index: originalSectionIndex, items: items) = section else {
                 continue
             }
             let remainingOriginalItemIndexes = items.survivors
@@ -273,10 +259,14 @@ struct MediaGalleryCollectionViewUpdater {
         }
     }
 
-    private func performSectionDeletes() {
+    private var deletedSectionIndexes: IndexSet {
         let remainingOriginalSectionIndexes = IndexSet(model.compactMap { $0.originalSectionIndex })
-        let reportedOriginalSectionIndexes = IndexSet(lastReportedItemCounts.keys)
-        let deletedSectionIndexes = reportedOriginalSectionIndexes.subtracting(remainingOriginalSectionIndexes)
+        let originalSectionIndexes = IndexSet(0..<originalSectionCount)
+        return originalSectionIndexes.subtracting(remainingOriginalSectionIndexes)
+    }
+
+    private func performSectionDeletes() {
+        let deletedSectionIndexes = self.deletedSectionIndexes
         if !deletedSectionIndexes.isEmpty {
             Logger.debug("delete sections \(deletedSectionIndexes)")
             delegate?.updaterDeleteSections(deletedSectionIndexes)
@@ -315,7 +305,7 @@ struct MediaGalleryCollectionViewUpdater {
     private func performReloads() {
         for section in model {
             switch section {
-            case let .reported(index: originalSectionIndex, items: items):
+            case let .preexisting(index: originalSectionIndex, items: items):
                 owsAssertDebug(items.indexesToReload.isSubset(of: items.survivors))
                 let indexPaths = items.indexesToReload.map { IndexPath(item: $0, section: originalSectionIndex) }
                 if !indexPaths.isEmpty {
@@ -326,7 +316,7 @@ struct MediaGalleryCollectionViewUpdater {
                 }
             case .needsReload(let index):
                 delegate?.updaterReloadSections(IndexSet(integer: index))
-            case .unreportedOriginal, .novelPrepended, .novelAppended:
+            case .novelPrepended, .novelAppended:
                 continue
             }
         }

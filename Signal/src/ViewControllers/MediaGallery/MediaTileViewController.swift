@@ -14,6 +14,51 @@ fileprivate extension IndexSet {
     }
 }
 
+private extension IndexPath {
+    func shiftingSection(by delta: Int) -> IndexPath {
+        return IndexPath(item: item, section: section + delta)
+    }
+}
+
+extension MediaTileViewController: MediaGalleryCollectionViewUpdaterDelegate {
+    func updaterDeleteSections(_ sections: IndexSet) {
+        collectionView?.deleteSections(sections.shifted(by: 1))
+    }
+
+    func updaterDeleteItems(at indexPaths: [IndexPath]) {
+        collectionView?.deleteItems(at: indexPaths.map {
+            $0.shiftingSection(by: 1)
+        })
+    }
+
+    func updaterInsertSections(_ sections: IndexSet) {
+        collectionView?.insertSections(sections.shifted(by: 1))
+    }
+
+    func updaterReloadItems(at indexPaths: [IndexPath]) {
+        collectionView?.reloadItems(at: indexPaths.map {
+            $0.shiftingSection(by: 1)
+        })
+    }
+
+    func updaterReloadSections(_ sections: IndexSet) {
+        collectionView?.reloadSections(sections.shifted(by: 1))
+    }
+
+    func updaterDidFinish(numberOfSectionsBefore: Int, numberOfSectionsAfter: Int) {
+        Logger.debug("\(numberOfSectionsBefore) -> \(numberOfSectionsAfter)")
+        owsAssert(numberOfSectionsAfter == mediaGallery.galleryDates.count)
+        if numberOfSectionsBefore == 0 && numberOfSectionsAfter > 0 {
+            // Adding a "load newer" section. It goes at the end.
+            collectionView?.insertSections(IndexSet(integer: numberOfSectionsAfter + 1))
+        } else if numberOfSectionsBefore > 0 && numberOfSectionsAfter == 0 {
+            // Remove "load newer" section from the end.
+            collectionView?.deleteSections(IndexSet(integer: 1))
+        }
+    }
+
+}
+
 @objc
 public class MediaTileViewController: UICollectionViewController, MediaGalleryDelegate, UICollectionViewDelegateFlowLayout {
     private let thread: TSThread
@@ -23,6 +68,9 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         return mediaGallery
     }()
     fileprivate let mediaTileViewLayout: MediaTileViewLayout
+
+    /// This is used to avoid running two animations concurrently. It doesn't look good on iOS 16 (and probably all other versions).
+    private var activeAnimationCount = 0
 
     @objc
     public init(thread: TSThread) {
@@ -105,6 +153,11 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     override public func viewWillAppear(_ animated: Bool) {
         defer { super.viewWillAppear(animated) }
 
+        // You must layout before mutating mediaGallery. Otherwise, MediaTileViewLayout.prepare() could be
+        // called while processing an update. That will violate the exclusive access rules since it calls
+        // (indirectly) into MediaGallerySections.
+        self.view.layoutIfNeeded()
+
         if mediaGallery.galleryDates.isEmpty {
             _ = self.mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize)
             if mediaGallery.galleryDates.isEmpty {
@@ -113,7 +166,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             }
         }
 
-        self.view.layoutIfNeeded()
         let lastSectionItemCount = mediaGallery.numberOfItemsInSection(mediaGallery.galleryDates.count - 1)
         self.collectionView.scrollToItem(at: IndexPath(item: lastSectionItemCount - 1,
                                                        section: mediaGallery.galleryDates.count),
@@ -264,18 +316,20 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     override public func numberOfSections(in collectionView: UICollectionView) -> Int {
         Logger.debug("")
 
-        guard !mediaGallery.galleryDates.isEmpty else {
+        let dates = mediaGallery.galleryDates
+        guard !dates.isEmpty else {
             // empty gallery
+            Logger.debug("No gallery dates - return 1")
             return 1
         }
 
         // One for each galleryDate plus a "loading older" and "loading newer" section
-        return mediaGallery.galleryDates.count + 2
+        let count = dates.count
+        Logger.debug("\(count) gallery dates - return \(count + 2)")
+        return count + 2
     }
 
     override public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionIdx: Int) -> Int {
-        Logger.debug("\(sectionIdx)")
-
         guard !mediaGallery.galleryDates.isEmpty else {
             // empty gallery
             return 0
@@ -291,7 +345,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             return 0
         }
 
-        return mediaGallery.numberOfItemsInSection(sectionIdx - 1)
+        let count = mediaGallery.numberOfItemsInSection(sectionIdx - 1)
+        return count
     }
 
     override public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -350,36 +405,38 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     override public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         Logger.debug("indexPath: \(indexPath)")
 
-        let defaultCell = UICollectionViewCell()
+        guard let cell = self.collectionView?.dequeueReusableCell(withReuseIdentifier: PhotoGridViewCell.reuseIdentifier, for: indexPath) as? PhotoGridViewCell else {
+            owsFailDebug("unexpected cell for indexPath: \(indexPath)")
+            return UICollectionViewCell()
+        }
 
         guard !mediaGallery.galleryDates.isEmpty else {
             owsFailDebug("unexpected cell for loadNewerSectionIdx")
-            return defaultCell
+            cell.makePlaceholder()
+            return cell
         }
 
         switch indexPath.section {
         case kLoadOlderSectionIdx:
             owsFailDebug("unexpected cell for kLoadOlderSectionIdx")
-            return defaultCell
+            cell.makePlaceholder()
         case loadNewerSectionIdx:
             owsFailDebug("unexpected cell for loadNewerSectionIdx")
-            return defaultCell
+            cell.makePlaceholder()
         default:
-            guard let galleryItem = galleryItem(at: indexPath) else {
-                owsFailDebug("no message for path: \(indexPath)")
-                return defaultCell
-            }
-
-            guard let cell = self.collectionView?.dequeueReusableCell(withReuseIdentifier: PhotoGridViewCell.reuseIdentifier, for: indexPath) as? PhotoGridViewCell else {
-                owsFailDebug("unexpected cell for indexPath: \(indexPath)")
-                return defaultCell
+            // Loading must be done asynchronously because this can be called while applying a
+            // pending update. Attempting to mutate MediaGallerySections synchronously could cause a
+            // deadlock.
+            guard let galleryItem = galleryItem(at: indexPath, loadAsync: true) else {
+                Logger.debug("Using placeholder for unloaded path \(indexPath)")
+                cell.makePlaceholder()
+                break
             }
 
             let gridCellItem = GalleryGridCellItem(galleryItem: galleryItem)
             cell.configure(item: gridCellItem)
-
-            return cell
         }
+        return cell
     }
 
     override public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -391,23 +448,20 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         photoGridViewCell.allowsMultipleSelection = collectionView.allowsMultipleSelection
     }
 
-    func galleryItem(at indexPath: IndexPath) -> MediaGalleryItem? {
+    func galleryItem(at indexPath: IndexPath, loadAsync: Bool = false) -> MediaGalleryItem? {
         var underlyingPath = indexPath
         underlyingPath.section -= 1
         if let loadedGalleryItem = mediaGallery.galleryItem(at: underlyingPath) {
             return loadedGalleryItem
         }
 
-        // Only load "after" the current item in this function, to avoid shifting section indexes.
         mediaGallery.ensureGalleryItemsLoaded(.after,
                                               sectionIndex: underlyingPath.section,
                                               itemIndex: underlyingPath.item,
                                               amount: kLoadBatchSize,
-                                              shouldLoadAlbumRemainder: false) { newSectionIndexes in
-            UIView.performWithoutAnimation {
-                self.collectionView.insertSections(newSectionIndexes.shifted(by: 1))
-            }
-        }
+                                              shouldLoadAlbumRemainder: false,
+                                              async: loadAsync,
+                                              userData: MediaGalleryUpdateUserData(disableAnimations: true))
 
         return mediaGallery.galleryItem(at: underlyingPath)
     }
@@ -661,54 +715,74 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     var footerBarBottomConstraint: NSLayoutConstraint!
     let kFooterBarHeight: CGFloat = 40
 
+    // MARK: Update
+
     // MARK: MediaGalleryDelegate
+
+    func mediaGallery(_ mediaGallery: MediaGallery,
+                      applyUpdate update: MediaGallery.Update) {
+        Logger.debug("Will begin batch update. animating=\(activeAnimationCount)")
+        let shouldAnimate = activeAnimationCount == 0 && !update.userData.contains(where: { $0.disableAnimations })
+
+        let saved = UIView.areAnimationsEnabled
+        UIView.setAnimationsEnabled(shouldAnimate && UIView.areAnimationsEnabled && saved)
+
+        // Within `performBatchUpdates` and before our closure runs, `UICollectionView` may call `numberOfItemsInSection`
+        // and it will expect us to give it "old" values (before any changes are applied).
+        self.collectionView.performBatchUpdates {
+            Logger.debug("Did begin batch update")
+
+            let oldItemCounts = (0..<self.mediaGallery.galleryDates.count).map {
+                self.mediaGallery.numberOfItemsInSection($0)
+            }
+
+            // This causes "new" values to become visible.
+            let journal = update.commit()
+
+            var updater = MediaGalleryCollectionViewUpdater(
+                itemCounts: oldItemCounts)
+            updater.delegate = self
+            updater.update(journal)
+
+            Logger.debug("Finished batch update")
+        } completion: { [weak self] _ in
+            if shouldAnimate {
+                self?.activeAnimationCount -= 1
+            }
+        }
+
+        UIView.setAnimationsEnabled(saved)
+        if shouldAnimate {
+            activeAnimationCount += 1
+        }
+    }
 
     func mediaGallery(_ mediaGallery: MediaGallery, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
         Logger.debug("")
-
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
-
-        // We've got to lay out the collectionView before any changes are made to the date source
-        // otherwise we'll fail when we try to remove the deleted sections/rows
-        collectionView.layoutIfNeeded()
     }
 
     func mediaGallery(_ mediaGallery: MediaGallery, deletedSections: IndexSet, deletedItems: [IndexPath]) {
         Logger.debug("with deletedSections: \(deletedSections) deletedItems: \(deletedItems)")
-
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
-
-        guard !mediaGallery.galleryDates.isEmpty else {
-            // Show Empty
-            self.collectionView?.reloadData()
-            return
-        }
-
-        collectionView.performBatchUpdates({
-            collectionView.deleteSections(deletedSections.shifted(by: 1))
-            collectionView.deleteItems(at: deletedItems.map { IndexPath(item: $0.item, section: $0.section + 1) })
-        })
     }
 
     func mediaGallery(_ mediaGallery: MediaGallery, didReloadItemsInSections sections: IndexSet) {
-        collectionView.reloadSections(sections.shifted(by: 1))
     }
 
     func didAddSectionInMediaGallery(_ mediaGallery: MediaGallery) {
-        let oldSectionCount = self.numberOfSections(in: collectionView)
         _ = mediaGallery.loadLaterSections(batchSize: kLoadBatchSize)
-        let newSectionCount = self.numberOfSections(in: collectionView)
-        collectionView.insertSections(IndexSet(oldSectionCount..<newSectionCount))
     }
 
     func didReloadAllSectionsInMediaGallery(_ mediaGallery: MediaGallery) {
-        collectionView.reloadData()
+        // This is a hack, but it won't live forever. When this class is changed to load sections eagerly, the solution becomes much simpler (just restart an eager load). But we're not there yet.
+        // If you receive a new attachment for an earlier month, MediaGallerySections resets itself and throws out a bunch of data. It resets hasFetched{Oldest,MostRecent} to false. This causes "Loading older…" and "Loading newer…" to become visible, even if there are no older or newer months in the db. Those only get updated on scroll. If the collection view's content size is less than its visible size then scrolling is impossible and they are stuck forever. Load sections until we either have everything or there's enough room for the user to scroll.
+        while collectionView.contentSize.height < collectionView.visibleSize.height && (!mediaGallery.hasFetchedOldest || !mediaGallery.hasFetchedMostRecent) {
+            if !mediaGallery.hasFetchedOldest {
+                _ = mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize)
+            }
+            if !mediaGallery.hasFetchedMostRecent {
+                _ = mediaGallery.loadLaterSections(batchSize: kLoadBatchSize)
+            }
+        }
     }
 
     // MARK: Lazy Loading
@@ -750,28 +824,26 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             Logger.debug("already fetching more data")
             return
         }
-        isFetchingMoreData = true
 
-        UIView.performWithoutAnimation {
-            collectionView.performBatchUpdates({
-                let newSections: Range<Int>
-                switch direction {
-                case .before:
-                    newSections = 0..<mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize)
-                case .after:
-                    let newSectionCount = mediaGallery.loadLaterSections(batchSize: kLoadBatchSize)
-                    let newEnd = mediaGallery.galleryDates.count
-                    newSections = (newEnd - newSectionCount)..<newEnd
-                case .around:
-                    preconditionFailure() // unused
-                }
-                Logger.debug("found new sections: \(newSections)")
-                collectionView.insertSections(IndexSet(newSections).shifted(by: 1))
-            }, completion: { finished in
-                Logger.debug("performBatchUpdates finished: \(finished)")
-                self.isFetchingMoreData = false
-            })
+        let userData = MediaGalleryUpdateUserData(disableAnimations: true)
+
+        isFetchingMoreData = true
+        // Note that this hack is temporary and will be mooted by eager loading.
+        DispatchQueue.main.async { [weak self] in
+            self?.isFetchingMoreData = false
         }
+        let newSections: Range<Int>
+        switch direction {
+        case .before:
+            newSections = 0..<mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize, userData: userData)
+        case .after:
+            let newSectionCount = mediaGallery.loadLaterSections(batchSize: kLoadBatchSize, userData: userData)
+            let newEnd = mediaGallery.galleryDates.count
+            newSections = (newEnd - newSectionCount)..<newEnd
+        case .around:
+            preconditionFailure() // unused
+        }
+        Logger.debug("found new sections: \(newSections)")
     }
 }
 

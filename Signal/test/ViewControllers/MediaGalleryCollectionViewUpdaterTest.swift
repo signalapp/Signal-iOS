@@ -50,6 +50,10 @@ class CollectionViewLogger: MediaGalleryCollectionViewUpdaterDelegate {
     func updaterReloadSections(_ sections: IndexSet) {
         log.append(.reloadSections(sections))
     }
+
+    func updaterDidFinish(numberOfSectionsBefore: Int, numberOfSectionsAfter: Int) {
+    }
+
 }
 
 final class MediaGalleryCollectionViewUpdaterTest: SignalBaseTest {
@@ -60,19 +64,8 @@ final class MediaGalleryCollectionViewUpdaterTest: SignalBaseTest {
         logger = CollectionViewLogger()
     }
 
-    private func itemCounts(_ counts: [Int?]) -> [Int: Int] {
-        var result = [Int: Int]()
-        for (i, value) in counts.enumerated() {
-            if let value = value {
-                result[i] = value
-            }
-        }
-        return result
-    }
-
-    func makeUpdater(_ itemCounts: [Int?]) {
-        updater = MediaGalleryCollectionViewUpdater(lastReportedNumberOfSections: itemCounts.count,
-                                                    lastReportedItemCounts: self.itemCounts(itemCounts))
+    func makeUpdater(_ itemCounts: [Int]) {
+        updater = MediaGalleryCollectionViewUpdater(itemCounts: itemCounts)
         updater.delegate = logger
     }
 
@@ -160,14 +153,6 @@ final class MediaGalleryCollectionViewUpdaterTest: SignalBaseTest {
         updater.update([.modify(index: 1, changes: [.updateItem(index: 5)])])
 
         XCTAssertEqual(logger.log, [.reloadItems([IndexPath(item: 5, section: 1)])])
-    }
-
-    func testIgnoreModificationsToItemInUnreportedSection() {
-        makeUpdater([10, nil, 30])
-        updater.update([.modify(index: 1,
-                                changes: [.removeItem(index: 0),
-                                          .updateItem(index: 2)])])
-        XCTAssertEqual(logger.log, [])
     }
 
     func testReloadSection() {
