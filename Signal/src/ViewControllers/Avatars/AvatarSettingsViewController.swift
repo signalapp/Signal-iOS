@@ -6,6 +6,7 @@
 import CoreServices
 import Foundation
 import SignalMessaging
+import PhotosUI
 
 class AvatarSettingsViewController: OWSTableViewController2 {
     let context: AvatarContext
@@ -353,13 +354,22 @@ class AvatarSettingsViewController: OWSTableViewController2 {
                 ),
                 action: { [weak self] in
                     guard let self = self else { return }
-                    self.ows_askForMediaLibraryPermissions { granted in
-                        guard granted else { return }
-                        let picker = OWSImagePickerController()
+                    if #available(iOS 14, *) {
+                        var configuration = PHPickerConfiguration()
+                        configuration.selectionLimit = 1
+                        configuration.filter = .any(of: [.images, .livePhotos])
+                        let picker = PHPickerViewController(configuration: configuration)
                         picker.delegate = self
-                        picker.sourceType = .photoLibrary
-                        picker.mediaTypes = [kUTTypeImage as String]
-                        self.present(picker, animated: true)
+                        self.present(picker, animated: true, completion: nil)
+                    } else {
+                        self.ows_askForMediaLibraryPermissions { granted in
+                            guard granted else { return }
+                            let picker = OWSImagePickerController()
+                            picker.delegate = self
+                            picker.sourceType = .photoLibrary
+                            picker.mediaTypes = [kUTTypeImage as String]
+                            self.present(picker, animated: true)
+                        }
                     }
                 }
             ),
@@ -491,6 +501,82 @@ extension AvatarSettingsViewController: UIImagePickerControllerDelegate, UINavig
                 }
             }
             self?.present(vc, animated: true)
+        }
+    }
+}
+
+extension AvatarSettingsViewController: PHPickerViewControllerDelegate {
+    
+    @available(iOS 14.0, *)
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+
+        if results.isEmpty {
+            picker.dismiss(animated: true)
+            return
+        } else {
+            for result in results {
+                if result.itemProvider.canLoadObject(ofClass: PHLivePhoto.self) {
+                    result.itemProvider.loadObject(ofClass: PHLivePhoto.self) { livePhoto, error in
+                        DispatchQueue.main.async {
+                            if let livePhoto = livePhoto as? PHLivePhoto {
+                                let assetResource = PHAssetResource.assetResources(for: livePhoto)
+                                let photoBuffer = NSMutableData()
+                                let videoBuffer = NSMutableData()
+                                for asset in assetResource {
+                                    if asset.type == .photo {
+                                        let options = PHAssetResourceRequestOptions()
+                                        options.isNetworkAccessAllowed = true
+                                        PHAssetResourceManager.default().requestData(for: asset, options: options, dataReceivedHandler: { (data:Data) in
+                                            photoBuffer.append(data)
+                                        }, completionHandler: { (error:Error?) in
+                                            guard let image = UIImage(data: photoBuffer as Data) else { return }
+                                            let vc = CropScaleImageViewController(srcImage: image) { croppedImage in
+                                                let imageModel = self.databaseStorage.write { transaction in
+                                                    self.avatarHistoryManager.recordModelForImage(
+                                                        croppedImage,
+                                                        in: self.context,
+                                                        transaction: transaction
+                                                    )
+                                                }
+                                                DispatchQueue.main.async {
+                                                    self.state = .new(imageModel)
+                                                    self.updateTableContents()
+                                                }
+                                            }
+                                            picker.dismiss(animated: true)
+                                            self.present(vc, animated: true)
+                                        })
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else if result.itemProvider.hasItemConformingToTypeIdentifier("public.image") {
+                    result.itemProvider.loadFileRepresentation(forTypeIdentifier: "public.image") { imageURL, error in
+                        DispatchQueue.main.async {
+                            guard let imageURL = imageURL else { return }
+                            if let imageData = try? Data(contentsOf: imageURL) {
+                                guard let image = UIImage(data: imageData) else { return }
+                                let vc = CropScaleImageViewController(srcImage: image) { croppedImage in
+                                    let imageModel = self.databaseStorage.write { transaction in
+                                        self.avatarHistoryManager.recordModelForImage(
+                                            croppedImage,
+                                            in: self.context,
+                                            transaction: transaction
+                                        )
+                                    }
+                                    DispatchQueue.main.async {
+                                        self.state = .new(imageModel)
+                                        self.updateTableContents()
+                                    }
+                                }
+                                picker.dismiss(animated: true)
+                                self.present(vc, animated: true)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
