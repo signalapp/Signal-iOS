@@ -433,7 +433,9 @@ extension MobileCoinAPI {
                 // ~July 13, 2022
                 .of(Data.data(fromHex: "4f134dcfd9c0885956f2f9af0f05c2050d8bdee2dc63b468a640670d7adeb7f8")!, ["INTEL-SA-00334"]),
                 // ~Aug 16, 2022
-                .of(Data.data(fromHex: "01746f4dd25f8623d603534425ed45833687eca2b3ba25bdd87180b9471dac28")!, ["INTEL-SA-00334", "INTEL-SA-00615"])
+                .of(Data.data(fromHex: "01746f4dd25f8623d603534425ed45833687eca2b3ba25bdd87180b9471dac28")!, ["INTEL-SA-00334", "INTEL-SA-00615"]),
+                // ~Nov 8, 2022
+                .of(Data.data(fromHex: "5fe2b72fe5f01c269de0a3678728e7e97d823a953b053e43fbf934f439d290e6")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
             ]
             let mrEnclaveFogView: [AttestationRawInfo] = [
                 // ~June 2, 2021
@@ -441,7 +443,9 @@ extension MobileCoinAPI {
                 // ~July 13, 2022
                 .of(Data.data(fromHex: "719ca43abbe02f507bb91ea11ff8bc900aa86363a7d7e77b8130426fc53d8684")!, ["INTEL-SA-00334"]),
                 // ~Aug 16, 2022
-                .of(Data.data(fromHex: "3d6e528ee0574ae3299915ea608b71ddd17cbe855d4f5e1c46df9b0d22b04cdb")!, ["INTEL-SA-00334", "INTEL-SA-00615"])
+                .of(Data.data(fromHex: "3d6e528ee0574ae3299915ea608b71ddd17cbe855d4f5e1c46df9b0d22b04cdb")!, ["INTEL-SA-00334", "INTEL-SA-00615"]),
+                // ~Nov 8, 2022
+                .of(Data.data(fromHex: "be1d711887530929fbc06ef8b77b618db15e9cd1dd0265559ea45f60a532ee52")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
             ]
             // Report aka Ingest.
             let mrEnclaveFogReport: [AttestationRawInfo]  = [
@@ -450,7 +454,9 @@ extension MobileCoinAPI {
                 // ~July 13, 2022
                 .of(Data.data(fromHex: "8f2f3bf81f24bf493fa6d76e29e0f081815022592b1e854f95bda750aece7452")!, ["INTEL-SA-00334"]),
                 // ~Aug 16, 2022
-                .of(Data.data(fromHex: "3e9bf61f3191add7b054f0e591b62f832854606f6594fd63faef1e2aedec4021")!, ["INTEL-SA-00334", "INTEL-SA-00615"])
+                .of(Data.data(fromHex: "3e9bf61f3191add7b054f0e591b62f832854606f6594fd63faef1e2aedec4021")!, ["INTEL-SA-00334", "INTEL-SA-00615"]),
+                // ~Nov 8, 2022
+                .of(Data.data(fromHex: "d901b5c4960f49871a848fd157c7c0b03351253d65bb839698ddd5df138ad7b6")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
             ]
             let mrEnclaveFogLedger: [AttestationRawInfo]  = [
                 // ~June 2, 2021
@@ -458,7 +464,9 @@ extension MobileCoinAPI {
                 // ~July 13, 2022
                 .of(Data.data(fromHex: "685481b33f2846585f33506ab65649c98a4a6d1244989651fd0fcde904ebd82f")!, ["INTEL-SA-00334"]),
                 // ~Aug 16, 2022
-                .of(Data.data(fromHex: "92fb35d0f603ceb5eaf2988b24a41d4a4a83f8fb9cd72e67c3bc37960d864ad6")!, ["INTEL-SA-00334", "INTEL-SA-00615"])
+                .of(Data.data(fromHex: "92fb35d0f603ceb5eaf2988b24a41d4a4a83f8fb9cd72e67c3bc37960d864ad6")!, ["INTEL-SA-00334", "INTEL-SA-00615"]),
+                // ~Nov 8, 2022
+                .of(Data.data(fromHex: "d5159ba907066384fae65842b5311f853b028c5ee4594f3b38dfc02acddf6fe3")!, ["INTEL-SA-00334", "INTEL-SA-00615", "INTEL-SA-00657"])
             ]
 
             return buildAttestationConfig(consensus: mrEnclaveConsensus,
