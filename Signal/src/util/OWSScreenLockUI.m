@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL isScreenLockLocked;
 
 // The "countdown" until screen lock takes effect.
-@property (nonatomic, nullable) NSDate *screenLockCountdownDate;
+@property (nonatomic, nullable) NSNumber *screenLockCountdownTimestamp;
 
 @end
 
@@ -104,10 +104,6 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(screenLockDidChange:)
                                                  name:OWSScreenLock.ScreenLockDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(clockDidChange:)
-                                                 name:NSSystemClockDidChangeNotification
                                                object:nil];
 }
 
@@ -167,24 +163,44 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogVerbose(@"tryToActivateScreenLockUponBecomingActive NO 2");
         return;
     }
-    if (!self.screenLockCountdownDate) {
+    if (!self.screenLockCountdownTimestamp) {
         // We became inactive, but never started a countdown.
         OWSLogVerbose(@"tryToActivateScreenLockUponBecomingActive NO 3");
         return;
     }
-    NSTimeInterval countdownInterval = fabs([self.screenLockCountdownDate timeIntervalSinceNow]);
-    OWSAssertDebug(countdownInterval >= 0);
+    uint64_t countdownTimestamp = self.screenLockCountdownTimestamp.unsignedLongLongValue;
+    uint64_t currentTimestamp = [self monotonicTimestamp];
+    if ((currentTimestamp < countdownTimestamp) || (currentTimestamp == 0) || (countdownTimestamp == 0)) {
+        // If the clock is going backwards (shouldn't happen) or the
+        // initial/current time couldn't be fetched (shouldn't happen), err on the
+        // side of caution and lock the screen.
+        OWSFailDebug(@"monotonic time isn't behaving properly");
+        OWSLogVerbose(
+            @"tryToActivateScreenLockUponBecomingActive YES 4 (%llu, %llu)", countdownTimestamp, currentTimestamp);
+        self.isScreenLockLocked = YES;
+        return;
+    }
+    NSTimeInterval countdownInterval = (NSTimeInterval)(currentTimestamp - countdownTimestamp) / NSEC_PER_SEC;
     NSTimeInterval screenLockTimeout = OWSScreenLock.shared.screenLockTimeout;
     OWSAssertDebug(screenLockTimeout >= 0);
     if (countdownInterval >= screenLockTimeout) {
         self.isScreenLockLocked = YES;
 
         OWSLogVerbose(
-            @"tryToActivateScreenLockUponBecomingActive YES 4 (%0.3f >= %0.3f)", countdownInterval, screenLockTimeout);
+            @"tryToActivateScreenLockUponBecomingActive YES 5 (%0.3f >= %0.3f)", countdownInterval, screenLockTimeout);
     } else {
         OWSLogVerbose(
-            @"tryToActivateScreenLockUponBecomingActive NO 5 (%0.3f < %0.3f)", countdownInterval, screenLockTimeout);
+            @"tryToActivateScreenLockUponBecomingActive NO 6 (%0.3f < %0.3f)", countdownInterval, screenLockTimeout);
     }
+}
+
+- (uint64_t)monotonicTimestamp
+{
+    uint64_t result = clock_gettime_nsec_np(CLOCK_MONOTONIC_RAW);
+    if (result == 0) {
+        OWSLogWarn(@"couldn't get monotonic time %d", errno);
+    }
+    return result;
 }
 
 // Setter for property indicating that the app is either
@@ -202,8 +218,8 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         [self tryToActivateScreenLockBasedOnCountdown];
 
-        OWSLogInfo(@"setAppIsInactiveOrBackground clear screenLockCountdownDate.");
-        self.screenLockCountdownDate = nil;
+        OWSLogInfo(@"setAppIsInactiveOrBackground clear screenLockCountdownTimestamp.");
+        self.screenLockCountdownTimestamp = nil;
     }
 
     [self ensureUI];
@@ -228,11 +244,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)startScreenLockCountdownIfNecessary
 {
-    OWSLogVerbose(@"startScreenLockCountdownIfNecessary: %d", self.screenLockCountdownDate != nil);
+    OWSLogVerbose(@"startScreenLockCountdownIfNecessary: %d", self.screenLockCountdownTimestamp != nil);
 
-    if (!self.screenLockCountdownDate) {
+    if (!self.screenLockCountdownTimestamp) {
         OWSLogInfo(@"startScreenLockCountdown.");
-        self.screenLockCountdownDate = [NSDate new];
+        self.screenLockCountdownTimestamp = @([self monotonicTimestamp]);
     }
 
     self.didLastUnlockAttemptFail = NO;
@@ -451,29 +467,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
     self.appIsInBackground = YES;
-}
-
-// Whenever the device date/time is edited by the user,
-// trigger screen lock immediately if enabled.
-- (void)clockDidChange:(NSNotification *)notification
-{
-    OWSLogInfo(@"clock did change");
-
-    if (!AppReadiness.isAppReady) {
-        // It's not safe to access OWSScreenLock.isScreenLockEnabled
-        // until the app is ready.
-        //
-        // We don't need to try to lock the screen lock;
-        // It will be initialized by `setupWithRootWindow`.
-        OWSLogVerbose(@"clockDidChange 0");
-        return;
-    }
-    self.isScreenLockLocked = OWSScreenLock.shared.isScreenLockEnabled;
-
-    // NOTE: this notifications fires _before_ applicationDidBecomeActive,
-    // which is desirable.  Don't assume that though; call ensureUI
-    // just in case it's necessary.
-    [self ensureUI];
 }
 
 #pragma mark - ScreenLockViewDelegate
