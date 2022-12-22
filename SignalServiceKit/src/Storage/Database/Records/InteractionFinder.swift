@@ -1460,16 +1460,16 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     @objc
     public func enumerateMessagesWithAttachments(transaction: GRDBReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
 
-        let emptyArraySerializedDataString = NSKeyedArchiver.archivedData(withRootObject: [String]()).hexadecimalString
+        let emptyArraySerializedData = try! NSKeyedArchiver.archivedData(withRootObject: [String](), requiringSecureCoding: true)
 
         let sql = """
             SELECT *
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .attachmentIds) IS NOT NULL
-            AND \(interactionColumn: .attachmentIds) != x'\(emptyArraySerializedDataString)'
+            AND \(interactionColumn: .attachmentIds) != ?
         """
-        let arguments: StatementArguments = [threadUniqueId]
+        let arguments: StatementArguments = [threadUniqueId, emptyArraySerializedData]
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
         while let interaction = try cursor.next() {
             var stop: ObjCBool = false

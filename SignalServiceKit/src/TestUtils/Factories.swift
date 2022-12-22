@@ -21,7 +21,7 @@ import Foundation
 ///
 /// Create 12 thread's with 100 messages each
 ///
-///     let factory = ContractThreadFactory()
+///     let factory = ContactThreadFactory()
 ///     factory.messageCount = 100
 ///     factory.create(count: 12)
 ///
