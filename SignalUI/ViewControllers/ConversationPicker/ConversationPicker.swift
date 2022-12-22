@@ -268,7 +268,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         return firstly(on: .global()) {
             Self.databaseStorage.read { transaction in
-                self.fullTextSearcher.searchForConvsersationPickerScreen(searchText: searchText, transaction: transaction)
+                self.fullTextSearcher.searchForConversationPickerScreen(searchText: searchText, transaction: transaction)
             }
         }
     }

@@ -525,8 +525,7 @@ public class FullTextSearcher: NSObject {
         return ComposeScreenSearchResultSet(searchText: searchText, groups: groups, signalContacts: signalContacts)
     }
 
-    @objc
-    public func searchForConvsersationPickerScreen(
+    public func searchForConversationPickerScreen(
         searchText: String,
         maxResults: UInt = kDefaultMaxResults,
         transaction: SDSAnyReadTransaction
