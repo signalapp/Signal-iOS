@@ -63,7 +63,6 @@ extension DonateViewController {
         }.catch(on: .main) { error in
             let authResult = PKPaymentAuthorizationResult(status: .failure, errors: [error])
             completion(authResult)
-            SubscriptionManager.terminateTransactionIfPossible = false
             owsFailDebug("[Donations] Error setting up subscription, \(error)")
         }
     }

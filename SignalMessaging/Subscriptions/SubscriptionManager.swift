@@ -258,8 +258,6 @@ public class SubscriptionManager: NSObject {
     fileprivate static let mostRecentSubscriptionBadgeChargeFailureCodeKey = "mostRecentSubscriptionBadgeChargeFailureCode"
     fileprivate static let hasMigratedToStorageServiceKey = "hasMigratedToStorageServiceKey"
 
-    public static var terminateTransactionIfPossible = false
-
     // MARK: Current subscription status
 
     public class func currentProfileSubscriptionBadges() -> [OWSUserProfileBadgeInfo] {
@@ -376,10 +374,6 @@ public class SubscriptionManager: NSObject {
 
         // Create Stripe SetupIntent against new subscriberID
         }.then(on: .sharedUserInitiated) { subscriberID -> Promise<String> in
-            guard !self.terminateTransactionIfPossible else {
-                throw OWSGenericError("Transaction chain cancelled")
-            }
-
             generatedSubscriberID = subscriberID
 
             databaseStorage.write { transaction in
@@ -395,19 +389,11 @@ public class SubscriptionManager: NSObject {
 
         // Create new payment method
         }.then(on: .sharedUserInitiated) { clientSecret -> Promise<String> in
-            guard !self.terminateTransactionIfPossible else {
-                throw OWSGenericError("Transaction chain cancelled")
-            }
-
             generatedClientSecret = clientSecret
             return Stripe.createPaymentMethod(with: paymentMethod)
 
         // Bind payment method to SetupIntent, confirm SetupIntent
         }.then(on: .sharedUserInitiated) { paymentID -> Promise<Stripe.ConfirmedIntent> in
-            guard !self.terminateTransactionIfPossible else {
-                throw OWSGenericError("Transaction chain cancelled")
-            }
-
             generatedPaymentID = paymentID
             return Stripe.confirmSetupIntent(
                 for: generatedPaymentID,
@@ -424,18 +410,10 @@ public class SubscriptionManager: NSObject {
 
             // Update payment on server
         }.then(on: .sharedUserInitiated) { () -> Promise<Void> in
-            guard !self.terminateTransactionIfPossible else {
-                throw OWSGenericError("Transaction chain cancelled")
-            }
-
             return setDefaultPaymentMethod(for: generatedSubscriberID, paymentID: generatedPaymentID)
 
         // Select subscription level
         }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
-            guard !self.terminateTransactionIfPossible else {
-                throw OWSGenericError("Transaction chain cancelled")
-            }
-
             databaseStorage.write {
                 Self.clearMostRecentSubscriptionBadgeChargeFailure(transaction: $0)
             }
@@ -454,10 +432,6 @@ public class SubscriptionManager: NSObject {
         currencyCode: Currency.Code
     ) -> Promise<Void> {
         Logger.info("[Donations] Updating subscription level")
-
-        if terminateTransactionIfPossible {
-            return Promise(error: OWSGenericError("Transaction chain cancelled"))
-        }
 
         return setSubscription(
             for: subscriberID,

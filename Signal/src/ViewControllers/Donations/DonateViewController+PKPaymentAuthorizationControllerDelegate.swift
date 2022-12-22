@@ -9,7 +9,6 @@ import SignalMessaging
 
 extension DonateViewController: PKPaymentAuthorizationControllerDelegate {
     func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {
-        SubscriptionManager.terminateTransactionIfPossible = true
         controller.dismiss()
     }
 

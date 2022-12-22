@@ -35,7 +35,6 @@ extension CreditOrDebitCardDonationViewController {
                 }
             }.then(on: .sharedUserInitiated) { intentId in
                 Logger.info("[Donations] Creating and redeeming one-time boost receipt for card donation")
-                SubscriptionManager.terminateTransactionIfPossible = false
                 SubscriptionManager.createAndRedeemBoostReceipt(
                     for: intentId,
                     withPaymentProcessor: .stripe,

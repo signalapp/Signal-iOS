@@ -194,8 +194,6 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         with amount: FiatMoney,
         donateMode: DonateMode
     ) {
-        SubscriptionManager.terminateTransactionIfPossible = false
-
         let paymentRequest = DonationUtilities.newPaymentRequest(
             for: amount,
             isRecurring: {

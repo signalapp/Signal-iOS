@@ -48,7 +48,6 @@ extension DonateViewController {
 
             wrappedCompletion(.init(status: .success, errors: nil))
 
-            SubscriptionManager.terminateTransactionIfPossible = false
             SubscriptionManager.createAndRedeemBoostReceipt(
                 for: confirmedIntent.intentId,
                 withPaymentProcessor: .stripe,
@@ -64,7 +63,6 @@ extension DonateViewController {
                 self?.didFailDonation(error: error, mode: .oneTime, paymentMethod: .applePay)
             }
         }.catch(on: .main) { error in
-            SubscriptionManager.terminateTransactionIfPossible = false
             wrappedCompletion(.init(status: .failure, errors: [error]))
             owsFailDebugUnlessNetworkFailure(error)
         }

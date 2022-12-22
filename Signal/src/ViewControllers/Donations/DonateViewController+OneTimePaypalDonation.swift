@@ -64,7 +64,6 @@ extension DonateViewController {
                     self.didCancelDonation()
                 }
             } else {
-                SubscriptionManager.terminateTransactionIfPossible = false
                 self.didFailDonation(error: error, mode: .oneTime, paymentMethod: .paypal)
             }
         }
@@ -105,7 +104,6 @@ extension DonateViewController {
                 approvalParams: approvalParams
             )
         }.then(on: .main) { (paymentIntentId: String) -> Promise<Void> in
-            SubscriptionManager.terminateTransactionIfPossible = false
             SubscriptionManager.createAndRedeemBoostReceipt(
                 for: paymentIntentId,
                 withPaymentProcessor: .braintree,

@@ -96,13 +96,11 @@ public struct Stripe: Dependencies {
         firstly(on: .sharedUserInitiated) { () -> Promise<String> in
             createPaymentMethod(with: paymentMethod)
         }.then(on: .sharedUserInitiated) { paymentMethodId -> Promise<ConfirmedIntent> in
-            guard !SubscriptionManager.terminateTransactionIfPossible else {
-                throw OWSGenericError("Boost transaction chain cancelled")
-            }
-
-            return try confirmPaymentIntent(paymentIntentClientSecret: clientSecret,
-                                            paymentIntentId: paymentIntentId,
-                                            paymentMethodId: paymentMethodId)
+            try confirmPaymentIntent(
+                paymentIntentClientSecret: clientSecret,
+                paymentIntentId: paymentIntentId,
+                paymentMethodId: paymentMethodId
+            )
         }
     }
 
