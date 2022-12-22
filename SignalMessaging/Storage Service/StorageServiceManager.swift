@@ -1181,7 +1181,7 @@ class StorageServiceOperation: OWSOperation {
                 state.save(clearConsecutiveConflicts: true, transaction: transaction)
             }
 
-            return reportError(OWSAssertionError("exceeded max consectuive conflicts, creating a new manifest"))
+            return reportError(OWSAssertionError("exceeded max consecutive conflicts, creating a new manifest"))
         }
 
         // Calculate new or updated items by looking up the ids
