@@ -80,6 +80,9 @@ open class CustomKeyboard: UIInputView {
                 return CurrentAppContext().interfaceOrientation.isLandscape ? landscape : portrait
             }
             set {
+                // App frame height changes based on orientation (i.e. its the smaller dimension when landscape)
+                // Cap the height for custom keyboard because our layout breaks if we extend too tall.
+                let newValue = newValue.map { min($0, CurrentAppContext().frame.height * 0.75) }
                 if CurrentAppContext().interfaceOrientation.isLandscape {
                     landscape = newValue
                 } else {
