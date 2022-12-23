@@ -273,7 +273,7 @@ internal struct OWSNavigationBarAppearance: Equatable {
 
         let applyDarkThemeOverride = {
             appearance.barStyle = .black
-            appearance.backgroundStyle = .tint(Theme.darkThemeBackgroundColor.withAlphaComponent(0.6))
+            appearance.backgroundStyle = .tint(Theme.darkThemeBackgroundColor)
             appearance.tintColor = Theme.darkThemePrimaryColor
         }
 
