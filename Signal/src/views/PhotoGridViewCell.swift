@@ -256,27 +256,15 @@ public class PhotoGridViewCell: UICollectionViewCell {
         durationLabel.sizeToFit()
     }
 
-    private func setUpAccessibility(item: PhotoGridItem?) {
+    private func setUpAccessibility(item: PhotoGridItem) {
         self.isAccessibilityElement = true
 
-        if let item {
-            self.accessibilityLabel = [
-                item.type.localizedString,
-                formattedDateString(for: item.creationDate)
-            ]
-                .compactMap { $0 }
-                .joined(separator: ", ")
-        } else {
-            self.accessibilityLabel = ""
-        }
-    }
-
-    public func makePlaceholder() {
-        self.item = nil
-        self.image = nil
-        setMedia(itemType: .photo)
-        setUpAccessibility(item: nil)
-        setContentTypeBadge(image: nil)
+        self.accessibilityLabel = [
+            item.type.localizedString,
+            formattedDateString(for: item.creationDate)
+        ]
+            .compactMap { $0 }
+            .joined(separator: ", ")
     }
 
     public func configure(item: PhotoGridItem) {

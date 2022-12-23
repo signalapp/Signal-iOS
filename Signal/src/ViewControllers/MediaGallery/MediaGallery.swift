@@ -175,31 +175,6 @@ protocol MediaGalleryDelegate: AnyObject {
     /// `mediaGallery` has added one or more new sections at the end.
     func didAddSectionInMediaGallery(_ mediaGallery: MediaGallery)
     func didReloadAllSectionsInMediaGallery(_ mediaGallery: MediaGallery)
-
-    /// Clients must implement this if they care about journal processing. They should do something like this:
-    ///
-    ///     func mediaGallery(_ mediaGallery: MediaGallery, applyUpdate update: MediaGallery.Update) {
-    ///         self?.collectionView.performBatchUpdates {
-    ///             let (journal, userData) = update.commit()
-    ///             self?.handleJournal(journal, userData)
-    ///         }
-    ///     }
-    ///
-    /// Note that because UICollectionView wants you to call `performBatchUpdates` before the data
-    /// model changes and `update.commit()` causes the snapshot to change, you'll want to be sure
-    /// to order them as shown above.
-    ///
-    /// Once the update is committed, no further delegates will be asked to apply the update.
-    ///
-    /// If an attempted mutation had no effects, applyUpdate will not be called.
-    func mediaGallery(_ mediaGallery: MediaGallery, applyUpdate update: MediaGallery.Update)
-}
-
-/// A value that is associated with each mutation of MediaGallerySections.
-struct MediaGalleryUpdateUserData {
-    /// If enabled, animations will be disabled for the batch update. Other mutations that ended up in the journal will also get their animations disabled if any user
-    /// data in the update has this set to true.
-    var disableAnimations = false
 }
 
 /// A backing store for media views (page-based or tile-based)
@@ -210,9 +185,6 @@ struct MediaGalleryUpdateUserData {
 ///
 /// This model is designed around the needs of UICollectionView, but it also supports flat views of media.
 class MediaGallery: Dependencies {
-    typealias Sections = MediaGallerySections<Loader, MediaGalleryUpdateUserData>
-    typealias Update = Sections.Update
-    typealias Journal = [JournalingOrderedDictionaryChange<Sections.ItemChange>]
 
     private var deletedAttachmentIds: Set<String> = Set() {
         didSet {
@@ -226,7 +198,7 @@ class MediaGallery: Dependencies {
     }
 
     private let mediaGalleryFinder: MediaGalleryFinder
-    private var sections: Sections!
+    private var sections: MediaGallerySections<Loader>!
 
     deinit {
         Logger.debug("")
@@ -248,45 +220,6 @@ class MediaGallery: Dependencies {
     }
 
     // MARK: -
-
-    /// Provides access to a mutable instance of `sections`, ensuring that the journal is processed after the closure returns.
-    ///
-    /// This is useful because:
-    ///   - It makes the locations of changes easy to find.
-    ///   - It ensures self.performBatchUpdates is called before the snapshot of the data model changes.
-    ///   - It ensures the journal is processed for all mutations.
-    private func mutate<T>(_ closure: (inout Sections) -> T) -> T {
-        let result = closure(&self.sections)
-        applyPendingUpdate()
-        return result
-    }
-
-    /// Runs closure immediately but it can complete asynchronously.
-    ///
-    /// - Parameters:
-    ///   - closure: A closure that is run immediately which begins an async mutation on `MediaGallerySections`.
-    ///     - sections: A mutable instance of `MediaGallerySections`.
-    ///     - callback: When the async mutation completes, the caller must invoke `callback` exactly once.
-    ///   - completion: This is called after journal processing subsequent to the completion of the async operation is finished.
-    private func mutateAsync<T>(_ closure: (_ sections: inout Sections,
-                                            _ callback: @escaping (T) -> Void) -> Void,
-                                completion: @escaping (T) -> Void) {
-        closure(&self.sections) { [weak self] result in
-            guard let self else { return }
-            self.applyPendingUpdate()
-            completion(result)
-        }
-    }
-
-    private func applyPendingUpdate() {
-        let pendingUpdate = sections.takePendingUpdate()
-        for delegate in delegates {
-            guard !pendingUpdate.hasBeenCommitted else {
-                break
-            }
-            delegate.mediaGallery(self, applyUpdate: pendingUpdate)
-        }
-    }
 
     @objc
     private func didRemoveAttachments(_ notification: Notification) {
@@ -316,23 +249,20 @@ class MediaGallery: Dependencies {
             return
         }
 
-        let sectionsToDelete = mutate { sections in
-            let (sectionIndexesNeedingUpdate, sectionsToDelete) = sections.reloadSections(for: sectionsNeedingUpdate)
+        let (sectionIndexesNeedingUpdate, sectionsToDelete) = sections.reloadSections(for: sectionsNeedingUpdate)
 
-            delegates.forEach {
-                $0.mediaGallery(self, didReloadItemsInSections: sectionIndexesNeedingUpdate)
-            }
-
-            if !sectionsToDelete.isEmpty {
-                sections.removeEmptySections(atIndexes: sectionsToDelete)
-            }
-            return sectionsToDelete
+        delegates.forEach {
+            $0.mediaGallery(self, didReloadItemsInSections: sectionIndexesNeedingUpdate)
         }
 
-        if !sectionsToDelete.isEmpty {
-            delegates.forEach {
-                $0.mediaGallery(self, deletedSections: sectionsToDelete, deletedItems: [])
-            }
+        guard !sectionsToDelete.isEmpty else {
+            return
+        }
+
+        // Delete in reverse order so indexes are preserved as we go.
+        sections.removeEmptySections(atIndexes: sectionsToDelete)
+        delegates.forEach {
+            $0.mediaGallery(self, deletedSections: sectionsToDelete, deletedItems: [])
         }
     }
 
@@ -350,9 +280,7 @@ class MediaGallery: Dependencies {
         let dates = relevantAttachments.lazy.map {
             GalleryDate(date: Date(millisecondsSince1970: $0.timestamp))
         }
-        let newAttachmentResult = mutate { sections in
-            sections.handleNewAttachments(dates)
-        }
+        let newAttachmentResult = sections.handleNewAttachments(dates)
         if newAttachmentResult.didReset {
             delegates.forEach { $0.didReloadAllSectionsInMediaGallery(self) }
         } else {
@@ -416,8 +344,6 @@ class MediaGallery: Dependencies {
                                            itemIndex: Int,
                                            amount: Int,
                                            shouldLoadAlbumRemainder: Bool,
-                                           async: Bool = false,
-                                           userData: MediaGalleryUpdateUserData? = nil,
                                            completion: ((_ newSections: IndexSet) -> Void)? = nil) {
         let anchorItem: MediaGalleryItem? = sections.loadedItem(at: IndexPath(item: itemIndex, section: sectionIndex))
 
@@ -454,24 +380,8 @@ class MediaGallery: Dependencies {
             return range
         }()
 
-        if async {
-            mutateAsync { sections, callback in
-                sections.asyncEnsureItemsLoaded(in: naiveRequestRange,
-                                                relativeToSection: sectionIndex,
-                                                userData: userData) { newlyLoadedSections in
-                    callback(newlyLoadedSections)
-                }
-            } completion: { newlyLoadedSections in
-                completion?(newlyLoadedSections)
-            }
-        } else {
-            let newlyLoadedSections = mutate { sections in
-                sections.ensureItemsLoaded(in: naiveRequestRange,
-                                           relativeToSection: sectionIndex,
-                                           userData: userData)
-            }
-            completion?(newlyLoadedSections)
-        }
+        let newlyLoadedSections = sections.ensureItemsLoaded(in: naiveRequestRange, relativeToSection: sectionIndex)
+        completion?(newlyLoadedSections)
     }
 
     private func ensureGalleryItemsLoaded(_ direction: GalleryDirection,
@@ -505,14 +415,12 @@ class MediaGallery: Dependencies {
                 return nil
             }
 
-            return mutate { sections in
-                if sections.isEmpty {
-                    // Set up the current section only.
-                    sections.loadInitialSection(for: focusedItem.galleryDate)
-                }
-
-                return sections.getOrReplaceItem(focusedItem, offsetInSection: offsetInSection)
+            if sections.isEmpty {
+                // Set up the current section only.
+                sections.loadInitialSection(for: focusedItem.galleryDate)
             }
+
+            return sections.getOrReplaceItem(focusedItem, offsetInSection: offsetInSection)
         }
 
         guard let focusedItem = newItem else {
@@ -540,10 +448,8 @@ class MediaGallery: Dependencies {
     /// Operates in bulk in an attempt to cut down on database traffic, meaning it may measure multiple sections at once.
     ///
     /// Returns the number of new sections loaded, which can be used to update section indexes.
-    internal func loadEarlierSections(batchSize: Int, userData: MediaGalleryUpdateUserData? = nil) -> Int {
-        return mutate { sections in
-            sections.loadEarlierSections(batchSize: batchSize, userData: userData)
-        }
+    internal func loadEarlierSections(batchSize: Int) -> Int {
+        return sections.loadEarlierSections(batchSize: batchSize)
     }
 
     /// Loads at least one section after the latest section, though not any of the items in it.
@@ -551,10 +457,8 @@ class MediaGallery: Dependencies {
     /// Operates in bulk in an attempt to cut down on database traffic, meaning it may measure multiple sections at once.
     ///
     /// Returns the number of new sections loaded.
-    internal func loadLaterSections(batchSize: Int, userData: MediaGalleryUpdateUserData? = nil) -> Int {
-        return mutate { sections in
-            sections.loadLaterSections(batchSize: batchSize, userData: userData)
-        }
+    internal func loadLaterSections(batchSize: Int) -> Int {
+        return sections.loadLaterSections(batchSize: batchSize)
     }
 
     // MARK: -
@@ -628,9 +532,7 @@ class MediaGallery: Dependencies {
         }
         deletedIndexPaths.sort()
 
-        let deletedSections = mutate { sections in
-            sections.removeLoadedItems(atIndexPaths: deletedIndexPaths)
-        }
+        let deletedSections = sections.removeLoadedItems(atIndexPaths: deletedIndexPaths)
 
         delegates.forEach { $0.mediaGallery(self, deletedSections: deletedSections, deletedItems: deletedIndexPaths) }
     }
@@ -712,9 +614,7 @@ extension MediaGallery: DatabaseChangeDelegate {
 
     func databaseChangesDidUpdateExternally() {
         // Conservatively assume anything could have happened.
-        mutate { sections in
-            sections.reset()
-        }
+        sections.reset()
         delegates.forEach { $0.didReloadAllSectionsInMediaGallery(self) }
     }
 

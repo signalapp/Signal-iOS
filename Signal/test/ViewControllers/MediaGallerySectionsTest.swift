@@ -378,904 +378,845 @@ class MediaGallerySectionsFakeStoreTest: SignalBaseTest {
 }
 
 class MediaGallerySectionsTest: SignalBaseTest {
-    fileprivate typealias Sections = MediaGallerySections<FakeGalleryStore, Int>
-    fileprivate struct SectionsWrapper {
-        private(set) var sections: Sections
-        var userData: [Int] = []
-        mutating func mutate<T>(_ closure: (inout Sections) -> (T)) -> T {
-            let result = closure(&sections)
-            sections.accessPendingUpdate { pendingUpdate in
-                userData.append(contentsOf: pendingUpdate.userData)
-                _ = pendingUpdate.commit()
-            }
-            return result
-        }
-    }
-
     func testLoadSectionsBackward() {
-        var wrapper = SectionsWrapper(sections: Sections(loader: standardFakeStore))
-        XCTAssertEqual(wrapper.sections.itemsBySection.count, 0)
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
+        var sections = MediaGallerySections(loader: standardFakeStore)
+        XCTAssertEqual(sections.itemsBySection.count, 0)
+        XCTAssertFalse(sections.hasFetchedOldest)
+        XCTAssertFalse(sections.hasFetchedMostRecent)
 
-        wrapper.mutate { sections in
-            XCTAssertEqual(1, sections.loadEarlierSections(batchSize: 4))
-        }
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([GalleryDate(2021_09_01)], wrapper.sections.itemsBySection.orderedKeys)
-        XCTAssertEqual([5], wrapper.sections.itemsBySection.orderedValues.map { $0.count })
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.loadEarlierSections(batchSize: 4))
+        XCTAssertEqual(1, sections.itemsBySection.count)
+        XCTAssertEqual([GalleryDate(2021_09_01)], sections.itemsBySection.orderedKeys)
+        XCTAssertEqual([5], sections.itemsBySection.orderedValues.map { $0.count })
+        XCTAssertFalse(sections.hasFetchedOldest)
+        XCTAssertTrue(sections.hasFetchedMostRecent)
 
-        wrapper.mutate { sections in
-            XCTAssertEqual(2, sections.loadEarlierSections(batchSize: 4))
-        }
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(2, sections.loadEarlierSections(batchSize: 4))
+        XCTAssertEqual(3, sections.itemsBySection.count)
         XCTAssertEqual([GalleryDate(2021_01_01), GalleryDate(2021_04_01), GalleryDate(2021_09_01)],
-                       wrapper.sections.itemsBySection.orderedKeys)
-        XCTAssertEqual([3, 2, 5], wrapper.sections.itemsBySection.orderedValues.map { $0.count })
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
+                       sections.itemsBySection.orderedKeys)
+        XCTAssertEqual([3, 2, 5], sections.itemsBySection.orderedValues.map { $0.count })
+        XCTAssertFalse(sections.hasFetchedOldest)
+        XCTAssertTrue(sections.hasFetchedMostRecent)
 
-        wrapper.mutate { sections in
-            XCTAssertEqual(0, sections.loadEarlierSections(batchSize: 4))
-        }
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(0, sections.loadEarlierSections(batchSize: 4))
+        XCTAssertEqual(3, sections.itemsBySection.count)
         XCTAssertEqual([GalleryDate(2021_01_01), GalleryDate(2021_04_01), GalleryDate(2021_09_01)],
-                       wrapper.sections.itemsBySection.orderedKeys)
-        XCTAssertEqual([3, 2, 5], wrapper.sections.itemsBySection.orderedValues.map { $0.count })
-        XCTAssertTrue(wrapper.sections.hasFetchedOldest)
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
+                       sections.itemsBySection.orderedKeys)
+        XCTAssertEqual([3, 2, 5], sections.itemsBySection.orderedValues.map { $0.count })
+        XCTAssertTrue(sections.hasFetchedOldest)
+        XCTAssertTrue(sections.hasFetchedMostRecent)
     }
 
     func testLoadSectionsForward() {
-        var wrapper = SectionsWrapper(sections: Sections(loader: standardFakeStore))
-        XCTAssertEqual(wrapper.sections.itemsBySection.count, 0)
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
+        var sections = MediaGallerySections(loader: standardFakeStore)
+        XCTAssertEqual(sections.itemsBySection.count, 0)
+        XCTAssertFalse(sections.hasFetchedOldest)
+        XCTAssertFalse(sections.hasFetchedMostRecent)
 
-        wrapper.mutate { sections in
-            XCTAssertEqual(2, sections.loadLaterSections(batchSize: 4))
-        }
-        XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([GalleryDate(2021_01_01), GalleryDate(2021_04_01)], wrapper.sections.itemsBySection.orderedKeys)
-        XCTAssertEqual([3, 2], wrapper.sections.itemsBySection.orderedValues.map { $0.count })
-        XCTAssertTrue(wrapper.sections.hasFetchedOldest)
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
+        XCTAssertEqual(2, sections.loadLaterSections(batchSize: 4))
+        XCTAssertEqual(2, sections.itemsBySection.count)
+        XCTAssertEqual([GalleryDate(2021_01_01), GalleryDate(2021_04_01)], sections.itemsBySection.orderedKeys)
+        XCTAssertEqual([3, 2], sections.itemsBySection.orderedValues.map { $0.count })
+        XCTAssertTrue(sections.hasFetchedOldest)
+        XCTAssertFalse(sections.hasFetchedMostRecent)
 
-        wrapper.mutate { sections in
-            XCTAssertEqual(1, sections.loadLaterSections(batchSize: 4))
-        }
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 4))
+        XCTAssertEqual(3, sections.itemsBySection.count)
         XCTAssertEqual([GalleryDate(2021_01_01), GalleryDate(2021_04_01), GalleryDate(2021_09_01)],
-                       wrapper.sections.itemsBySection.orderedKeys)
-        XCTAssertEqual([3, 2, 5], wrapper.sections.itemsBySection.orderedValues.map { $0.count })
-        XCTAssertTrue(wrapper.sections.hasFetchedOldest)
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
+                       sections.itemsBySection.orderedKeys)
+        XCTAssertEqual([3, 2, 5], sections.itemsBySection.orderedValues.map { $0.count })
+        XCTAssertTrue(sections.hasFetchedOldest)
+        XCTAssertFalse(sections.hasFetchedMostRecent)
 
-        wrapper.mutate { sections in
-            XCTAssertEqual(0, sections.loadLaterSections(batchSize: 4))
-        }
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(0, sections.loadLaterSections(batchSize: 4))
+        XCTAssertEqual(3, sections.itemsBySection.count)
         XCTAssertEqual([GalleryDate(2021_01_01), GalleryDate(2021_04_01), GalleryDate(2021_09_01)],
-                       wrapper.sections.itemsBySection.orderedKeys)
-        XCTAssertEqual([3, 2, 5], wrapper.sections.itemsBySection.orderedValues.map { $0.count })
-        XCTAssertTrue(wrapper.sections.hasFetchedOldest)
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
+                       sections.itemsBySection.orderedKeys)
+        XCTAssertEqual([3, 2, 5], sections.itemsBySection.orderedValues.map { $0.count })
+        XCTAssertTrue(sections.hasFetchedOldest)
+        XCTAssertTrue(sections.hasFetchedMostRecent)
     }
 
     func testStartIndexResolution() {
-        var wrapper = SectionsWrapper(sections: Sections(loader: standardFakeStore))
+        var sections = MediaGallerySections(loader: standardFakeStore)
         // Load April and September
-        XCTAssertEqual(2, wrapper.mutate { sections in sections.loadEarlierSections(batchSize: 6) })
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
+        XCTAssertEqual(2, sections.loadEarlierSections(batchSize: 6))
+        XCTAssertFalse(sections.hasFetchedOldest)
 
         XCTAssertEqual(IndexPath(item: 0, section: 1),
-                       wrapper.sections.resolveNaiveStartIndex(0, relativeToSection: 1))
+                       sections.resolveNaiveStartIndex(0, relativeToSection: 1))
         XCTAssertEqual(IndexPath(item: 4, section: 1),
-                       wrapper.sections.resolveNaiveStartIndex(4, relativeToSection: 1))
+                       sections.resolveNaiveStartIndex(4, relativeToSection: 1))
         XCTAssertEqual(IndexPath(item: 5, section: 1),
-                       wrapper.sections.resolveNaiveStartIndex(5, relativeToSection: 1))
+                       sections.resolveNaiveStartIndex(5, relativeToSection: 1))
 
         XCTAssertEqual(IndexPath(item: 1, section: 0),
-                       wrapper.sections.resolveNaiveStartIndex(-1, relativeToSection: 1))
+                       sections.resolveNaiveStartIndex(-1, relativeToSection: 1))
         XCTAssertEqual(IndexPath(item: 0, section: 0),
-                       wrapper.sections.resolveNaiveStartIndex(-2, relativeToSection: 1))
-        XCTAssertNil(wrapper.sections.resolveNaiveStartIndex(-3, relativeToSection: 1))
+                       sections.resolveNaiveStartIndex(-2, relativeToSection: 1))
+        XCTAssertNil(sections.resolveNaiveStartIndex(-3, relativeToSection: 1))
 
         // Load January
         do {
-            let actual = wrapper.mutate { sections in
-                sections.resolveNaiveStartIndex(-3, relativeToSection: 1, batchSize: 1)
-            }
+            let actual = sections.resolveNaiveStartIndex(-3, relativeToSection: 1, batchSize: 1)
             XCTAssertEqual(IndexPath(item: 2, section: 0), actual.path)
             XCTAssertEqual(1, actual.numberOfSectionsLoaded)
         }
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
+        XCTAssertFalse(sections.hasFetchedOldest)
 
         XCTAssertEqual(IndexPath(item: 2, section: 0),
-                       wrapper.sections.resolveNaiveStartIndex(-3, relativeToSection: 2))
+                       sections.resolveNaiveStartIndex(-3, relativeToSection: 2))
         XCTAssertEqual(IndexPath(item: 0, section: 0),
-                       wrapper.sections.resolveNaiveStartIndex(-5, relativeToSection: 2))
-        XCTAssertNil(wrapper.sections.resolveNaiveStartIndex(-6, relativeToSection: 2))
+                       sections.resolveNaiveStartIndex(-5, relativeToSection: 2))
+        XCTAssertNil(sections.resolveNaiveStartIndex(-6, relativeToSection: 2))
 
         // Find out that January was the earliest section.
         do {
-            let actual = wrapper.mutate { sections in
-                sections.resolveNaiveStartIndex(-6, relativeToSection: 2, batchSize: 1)
-            }
+            let actual = sections.resolveNaiveStartIndex(-6, relativeToSection: 2, batchSize: 1)
             XCTAssertEqual(IndexPath(item: 0, section: 0), actual.0)
             XCTAssertEqual(0, actual.1)
         }
 
-        XCTAssertTrue(wrapper.sections.hasFetchedOldest)
+        XCTAssertTrue(sections.hasFetchedOldest)
 
         XCTAssertEqual(IndexPath(item: 0, section: 0),
-                       wrapper.sections.resolveNaiveStartIndex(-6, relativeToSection: 2))
+                       sections.resolveNaiveStartIndex(-6, relativeToSection: 2))
     }
 
     func testEndIndexResolution() {
-        var wrapper = SectionsWrapper(sections: Sections(loader: standardFakeStore))
+        var sections = MediaGallerySections(loader: standardFakeStore)
         // Load January and April
-        XCTAssertEqual(2, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 4) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
+        XCTAssertEqual(2, sections.loadLaterSections(batchSize: 4))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
 
         XCTAssertEqual(IndexPath(item: 0, section: 0),
-                       wrapper.sections.resolveNaiveEndIndex(0, relativeToSection: 0))
+                       sections.resolveNaiveEndIndex(0, relativeToSection: 0))
         XCTAssertEqual(IndexPath(item: 2, section: 0),
-                       wrapper.sections.resolveNaiveEndIndex(2, relativeToSection: 0))
+                       sections.resolveNaiveEndIndex(2, relativeToSection: 0))
         // Note: (0, 3) rather than (1, 0), because this is an end index.
         XCTAssertEqual(IndexPath(item: 3, section: 0),
-                       wrapper.sections.resolveNaiveEndIndex(3, relativeToSection: 0))
+                       sections.resolveNaiveEndIndex(3, relativeToSection: 0))
         XCTAssertEqual(IndexPath(item: 1, section: 1),
-                       wrapper.sections.resolveNaiveEndIndex(4, relativeToSection: 0))
+                       sections.resolveNaiveEndIndex(4, relativeToSection: 0))
         // Note: (1, 2) rather than nil.
         XCTAssertEqual(IndexPath(item: 2, section: 1),
-                       wrapper.sections.resolveNaiveEndIndex(5, relativeToSection: 0))
-        XCTAssertNil(wrapper.sections.resolveNaiveEndIndex(6, relativeToSection: 0))
+                       sections.resolveNaiveEndIndex(5, relativeToSection: 0))
+        XCTAssertNil(sections.resolveNaiveEndIndex(6, relativeToSection: 0))
 
         // Load September
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 20) })
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 20))
+        XCTAssertTrue(sections.hasFetchedMostRecent)
 
         XCTAssertEqual(IndexPath(item: 2, section: 1),
-                       wrapper.sections.resolveNaiveEndIndex(5, relativeToSection: 0))
+                       sections.resolveNaiveEndIndex(5, relativeToSection: 0))
         XCTAssertEqual(IndexPath(item: 1, section: 2),
-                       wrapper.sections.resolveNaiveEndIndex(6, relativeToSection: 0))
+                       sections.resolveNaiveEndIndex(6, relativeToSection: 0))
         XCTAssertEqual(IndexPath(item: 4, section: 2),
-                       wrapper.sections.resolveNaiveEndIndex(9, relativeToSection: 0))
+                       sections.resolveNaiveEndIndex(9, relativeToSection: 0))
         XCTAssertEqual(IndexPath(item: 5, section: 2),
-                       wrapper.sections.resolveNaiveEndIndex(10, relativeToSection: 0))
+                       sections.resolveNaiveEndIndex(10, relativeToSection: 0))
         // Reached end.
         XCTAssertEqual(IndexPath(item: 5, section: 2),
-                       wrapper.sections.resolveNaiveEndIndex(11, relativeToSection: 0))
+                       sections.resolveNaiveEndIndex(11, relativeToSection: 0))
         XCTAssertEqual(IndexPath(item: 5, section: 2),
-                       wrapper.sections.resolveNaiveEndIndex(12, relativeToSection: 0))
+                       sections.resolveNaiveEndIndex(12, relativeToSection: 0))
 
         XCTAssertEqual(IndexPath(item: 1, section: 1),
-                       wrapper.sections.resolveNaiveEndIndex(1, relativeToSection: 1))
+                       sections.resolveNaiveEndIndex(1, relativeToSection: 1))
         XCTAssertEqual(IndexPath(item: 2, section: 1),
-                       wrapper.sections.resolveNaiveEndIndex(2, relativeToSection: 1))
+                       sections.resolveNaiveEndIndex(2, relativeToSection: 1))
         XCTAssertEqual(IndexPath(item: 1, section: 2),
-                       wrapper.sections.resolveNaiveEndIndex(3, relativeToSection: 1))
+                       sections.resolveNaiveEndIndex(3, relativeToSection: 1))
         XCTAssertEqual(IndexPath(item: 2, section: 2),
-                       wrapper.sections.resolveNaiveEndIndex(4, relativeToSection: 1))
+                       sections.resolveNaiveEndIndex(4, relativeToSection: 1))
         XCTAssertEqual(IndexPath(item: 5, section: 2),
-                       wrapper.sections.resolveNaiveEndIndex(10, relativeToSection: 1))
+                       sections.resolveNaiveEndIndex(10, relativeToSection: 1))
     }
 
     func testLoadingFromEnd() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load April and September
-        XCTAssertEqual(2, wrapper.mutate { sections in sections.loadEarlierSections(batchSize: 6) })
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
-        XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([3, 4], wrapper.sections.itemsBySection[0].value.map { $0.rowid })
-        XCTAssertEqual([5, 6, 7, 8, 9], wrapper.sections.itemsBySection[1].value.map { $0.rowid })
+        XCTAssertEqual(2, sections.loadEarlierSections(batchSize: 6))
+        XCTAssertFalse(sections.hasFetchedOldest)
+        XCTAssertEqual(2, sections.itemsBySection.count)
+        XCTAssertEqual([3, 4], sections.itemsBySection[0].value.map { $0.rowid })
+        XCTAssertEqual([5, 6, 7, 8, 9], sections.itemsBySection[1].value.map { $0.rowid })
 
-        XCTAssert(wrapper.mutate { sections in sections.ensureItemsLoaded(in: 1..<3, relativeToSection: 1) }.isEmpty)
-        XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[6], store.allItems[7], nil, nil], wrapper.sections.itemsBySection[1].value.map { $0.item })
-        XCTAssertEqual([nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssert(sections.ensureItemsLoaded(in: 1..<3, relativeToSection: 1).isEmpty)
+        XCTAssertEqual(2, sections.itemsBySection.count)
+        XCTAssertEqual([nil, store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([nil, nil], sections.itemsBySection[0].value.map { $0.item })
 
-        XCTAssert(wrapper.mutate { sections in sections.ensureItemsLoaded(in: 5..<5, relativeToSection: 1) }.isEmpty)
-        XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[6], store.allItems[7], nil, nil], wrapper.sections.itemsBySection[1].value.map { $0.item })
-        XCTAssertEqual([nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssert(sections.ensureItemsLoaded(in: 5..<5, relativeToSection: 1).isEmpty)
+        XCTAssertEqual(2, sections.itemsBySection.count)
+        XCTAssertEqual([nil, store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([nil, nil], sections.itemsBySection[0].value.map { $0.item })
 
-        XCTAssert(wrapper.mutate { sections in sections.ensureItemsLoaded(in: (-2)..<3, relativeToSection: 1) }.isEmpty)
-        XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([store.allItems[5], store.allItems[6], store.allItems[7], nil, nil], wrapper.sections.itemsBySection[1].value.map { $0.item })
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssert(sections.ensureItemsLoaded(in: (-2)..<3, relativeToSection: 1).isEmpty)
+        XCTAssertEqual(2, sections.itemsBySection.count)
+        XCTAssertEqual([store.allItems[5], store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[0].value.map { $0.item })
 
-        XCTAssertEqual(IndexSet(integer: 0), wrapper.mutate { sections in sections.ensureItemsLoaded(in: (-4)..<0, relativeToSection: 1) })
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([store.allItems[5], store.allItems[6], store.allItems[7], nil, nil], wrapper.sections.itemsBySection[2].value.map { $0.item })
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], wrapper.sections.itemsBySection[1].value.map { $0.item })
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual(IndexSet(integer: 0), sections.ensureItemsLoaded(in: (-4)..<0, relativeToSection: 1))
+        XCTAssertEqual(3, sections.itemsBySection.count)
+        XCTAssertEqual([store.allItems[5], store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[2].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testLoadingFromEndInBigJump() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
         // Load September
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadEarlierSections(batchSize: 1) })
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(1, sections.loadEarlierSections(batchSize: 1))
+        XCTAssertFalse(sections.hasFetchedOldest)
+        XCTAssertEqual(1, sections.itemsBySection.count)
 
-        XCTAssert(wrapper.mutate { sections in sections.ensureItemsLoaded(in: 1..<3, relativeToSection: 0) }.isEmpty)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[6], store.allItems[7], nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssert(sections.ensureItemsLoaded(in: 1..<3, relativeToSection: 0).isEmpty)
+        XCTAssertEqual(1, sections.itemsBySection.count)
+        XCTAssertEqual([nil, store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[0].value.map { $0.item })
 
-        XCTAssertEqual(IndexSet(integersIn: 0...1),
-                       wrapper.mutate { sections in sections.ensureItemsLoaded(in: (-4)..<0, relativeToSection: 0) })
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[6], store.allItems[7], nil, nil], wrapper.sections.itemsBySection[2].value.map { $0.item })
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], wrapper.sections.itemsBySection[1].value.map { $0.item })
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual(IndexSet(integersIn: 0...1), sections.ensureItemsLoaded(in: (-4)..<0, relativeToSection: 0))
+        XCTAssertEqual(3, sections.itemsBySection.count)
+        XCTAssertEqual([nil, store.allItems[6], store.allItems[7], nil, nil], sections.itemsBySection[2].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testLoadingFromStart() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load January and April
-        XCTAssertEqual(2, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 4) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(2, sections.loadLaterSections(batchSize: 4))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(2, sections.itemsBySection.count)
 
-        XCTAssert(wrapper.mutate { sections in sections.ensureItemsLoaded(in: 1..<3, relativeToSection: 0) }.isEmpty)
-        XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([nil, nil], wrapper.sections.itemsBySection[1].value.map { $0.item })
+        XCTAssert(sections.ensureItemsLoaded(in: 1..<3, relativeToSection: 0).isEmpty)
+        XCTAssertEqual(2, sections.itemsBySection.count)
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, nil], sections.itemsBySection[1].value.map { $0.item })
 
-        XCTAssert(wrapper.mutate { sections in sections.ensureItemsLoaded(in: 0..<0, relativeToSection: 0) }.isEmpty)
-        XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([nil, nil], wrapper.sections.itemsBySection[1].value.map { $0.item })
+        XCTAssert(sections.ensureItemsLoaded(in: 0..<0, relativeToSection: 0).isEmpty)
+        XCTAssertEqual(2, sections.itemsBySection.count)
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, nil], sections.itemsBySection[1].value.map { $0.item })
 
-        XCTAssert(wrapper.mutate { sections in sections.ensureItemsLoaded(in: 3..<4, relativeToSection: 0) }.isEmpty)
-        XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([store.allItems[3], nil], wrapper.sections.itemsBySection[1].value.map { $0.item })
+        XCTAssert(sections.ensureItemsLoaded(in: 3..<4, relativeToSection: 0).isEmpty)
+        XCTAssertEqual(2, sections.itemsBySection.count)
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], nil], sections.itemsBySection[1].value.map { $0.item })
 
-        XCTAssertEqual(IndexSet(integer: 2), wrapper.mutate { sections in sections.ensureItemsLoaded(in: 3..<7, relativeToSection: 0) })
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], wrapper.sections.itemsBySection[1].value.map { $0.item })
-        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], wrapper.sections.itemsBySection[2].value.map { $0.item })
+        XCTAssertEqual(IndexSet(integer: 2), sections.ensureItemsLoaded(in: 3..<7, relativeToSection: 0))
+        XCTAssertEqual(3, sections.itemsBySection.count)
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], sections.itemsBySection[2].value.map { $0.item })
     }
 
     func testLoadingFromStartInBigJump() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load January
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 1) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
 
-        XCTAssert(wrapper.mutate { sections in sections.ensureItemsLoaded(in: 1..<3, relativeToSection: 0) }.isEmpty)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssert(sections.ensureItemsLoaded(in: 1..<3, relativeToSection: 0).isEmpty)
+        XCTAssertEqual(1, sections.itemsBySection.count)
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
 
-        XCTAssert(wrapper.mutate { sections in sections.ensureItemsLoaded(in: 0..<0, relativeToSection: 0) }.isEmpty)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssert(sections.ensureItemsLoaded(in: 0..<0, relativeToSection: 0).isEmpty)
+        XCTAssertEqual(1, sections.itemsBySection.count)
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
 
-        XCTAssertEqual(IndexSet(integersIn: 1...2), wrapper.mutate { sections in sections.ensureItemsLoaded(in: 3..<7, relativeToSection: 0) })
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], wrapper.sections.itemsBySection[1].value.map { $0.item })
-        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], wrapper.sections.itemsBySection[2].value.map { $0.item })
+        XCTAssertEqual(IndexSet(integersIn: 1...2), sections.ensureItemsLoaded(in: 3..<7, relativeToSection: 0))
+        XCTAssertEqual(3, sections.itemsBySection.count)
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], sections.itemsBySection[2].value.map { $0.item })
     }
 
     func testLoadingFromMiddle() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
-        wrapper.mutate { sections in
-            sections.loadInitialSection(for: GalleryDate(2021_04_01))
-        }
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
+        sections.loadInitialSection(for: GalleryDate(2021_04_01))
+        XCTAssertEqual(1, sections.itemsBySection.count)
 
-        XCTAssert(wrapper.mutate { sections in sections.ensureItemsLoaded(in: 1..<2, relativeToSection: 0) }.isEmpty)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[4]], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssert(sections.ensureItemsLoaded(in: 1..<2, relativeToSection: 0).isEmpty)
+        XCTAssertEqual(1, sections.itemsBySection.count)
+        XCTAssertEqual([nil, store.allItems[4]], sections.itemsBySection[0].value.map { $0.item })
 
-        XCTAssertEqual(IndexSet([0, 2]), wrapper.mutate { sections in sections.ensureItemsLoaded(in: (-2)..<5, relativeToSection: 0) })
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], wrapper.sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual(IndexSet([0, 2]), sections.ensureItemsLoaded(in: (-2)..<5, relativeToSection: 0))
+        XCTAssertEqual(3, sections.itemsBySection.count)
+        XCTAssertEqual([nil, store.allItems[1], store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value.map { $0.item })
         XCTAssertEqual([store.allItems[5], store.allItems[6], store.allItems[7], nil, nil],
-                       wrapper.sections.itemsBySection[2].value.map { $0.item })
+                       sections.itemsBySection[2].value.map { $0.item })
     }
 
     func testReloadSection() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load January
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 1) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
 
-        XCTAssertEqual(IndexSet(integersIn: 1...2), wrapper.mutate { sections in sections.ensureItemsLoaded(in: 3..<7, relativeToSection: 0) })
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], wrapper.sections.itemsBySection[1].value.map { $0.item })
-        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], wrapper.sections.itemsBySection[2].value.map { $0.item })
+        XCTAssertEqual(IndexSet(integersIn: 1...2), sections.ensureItemsLoaded(in: 3..<7, relativeToSection: 0))
+        XCTAssertEqual(3, sections.itemsBySection.count)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], sections.itemsBySection[2].value.map { $0.item })
 
-        XCTAssertEqual(2, wrapper.mutate { sections in sections.reloadSection(for: GalleryDate(2021_04_01)) })
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([nil, nil], wrapper.sections.itemsBySection[1].value.map { $0.item })
-        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], wrapper.sections.itemsBySection[2].value.map { $0.item })
+        XCTAssertEqual(2, sections.reloadSection(for: GalleryDate(2021_04_01)))
+        XCTAssertEqual(3, sections.itemsBySection.count)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, nil], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], sections.itemsBySection[2].value.map { $0.item })
     }
 
     func testRemoveEmptySections() {
         let store = standardFakeStore.clone()
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load January
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 1) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
 
-        XCTAssertEqual(IndexSet(integersIn: 1...2), wrapper.mutate { sections in sections.ensureItemsLoaded(in: 3..<7, relativeToSection: 0) })
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(IndexSet(integersIn: 1...2), sections.ensureItemsLoaded(in: 3..<7, relativeToSection: 0))
+        XCTAssertEqual(3, sections.itemsBySection.count)
 
         // Note: To be really accurate, we'd have to change allItems as well.
         store.itemsBySection.replace(key: GalleryDate(2021_01_01), value: [])
         store.itemsBySection.replace(key: GalleryDate(2021_09_01), value: [])
 
-        XCTAssertEqual(0, wrapper.mutate { sections in sections.reloadSection(for: GalleryDate(2021_01_01)) })
-        XCTAssertEqual(0, wrapper.mutate { sections in sections.reloadSection(for: GalleryDate(2021_09_01)) })
-        XCTAssertEqual([], wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], wrapper.sections.itemsBySection[1].value.map { $0.item })
-        XCTAssertEqual([], wrapper.sections.itemsBySection[2].value.map { $0.item })
+        XCTAssertEqual(0, sections.reloadSection(for: GalleryDate(2021_01_01)))
+        XCTAssertEqual(0, sections.reloadSection(for: GalleryDate(2021_09_01)))
+        XCTAssertEqual([], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([], sections.itemsBySection[2].value.map { $0.item })
 
-        wrapper.mutate { sections in
-            sections.removeEmptySections(atIndexes: IndexSet([0, 2]))
-        }
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([GalleryDate(2021_04_01)], wrapper.sections.itemsBySection.orderedKeys)
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        sections.removeEmptySections(atIndexes: IndexSet([0, 2]))
+        XCTAssertEqual(1, sections.itemsBySection.count)
+        XCTAssertEqual([GalleryDate(2021_04_01)], sections.itemsBySection.orderedKeys)
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testResetWhenEmpty() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
-        wrapper.mutate { sections in
-            sections.reset()
-        }
+        var sections = MediaGallerySections(loader: store)
+        sections.reset()
 
-        XCTAssert(wrapper.sections.itemsBySection.isEmpty)
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
+        XCTAssert(sections.itemsBySection.isEmpty)
+        XCTAssertFalse(sections.hasFetchedOldest)
+        XCTAssertFalse(sections.hasFetchedMostRecent)
     }
 
     func testResetOneSection() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load January
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 1) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
 
-        wrapper.mutate { sections in
-            sections.reset()
-        }
+        sections.reset()
 
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertFalse(sections.hasFetchedOldest)
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testResetTwoSections() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load January
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 1) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
 
-        XCTAssertEqual(IndexSet(integer: 1), wrapper.mutate { sections in sections.ensureItemsLoaded(in: 3..<4, relativeToSection: 0) })
-        XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([store.allItems[3], nil], wrapper.sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual(IndexSet(integer: 1), sections.ensureItemsLoaded(in: 3..<4, relativeToSection: 0))
+        XCTAssertEqual(2, sections.itemsBySection.count)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], nil], sections.itemsBySection[1].value.map { $0.item })
 
-        wrapper.mutate { sections in
-            sections.reset()
-        }
+        sections.reset()
 
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([nil, nil], wrapper.sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertFalse(sections.hasFetchedOldest)
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(2, sections.itemsBySection.count)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, nil], sections.itemsBySection[1].value.map { $0.item })
     }
 
     func testResetFull() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load January
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 1) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
 
-        XCTAssertEqual(IndexSet(integersIn: 1...2), wrapper.mutate { sections in sections.ensureItemsLoaded(in: 2..<7, relativeToSection: 0) })
-        XCTAssertTrue(wrapper.sections.hasFetchedOldest)
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, store.allItems[2]], wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([store.allItems[3], store.allItems[4]], wrapper.sections.itemsBySection[1].value.map { $0.item })
-        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], wrapper.sections.itemsBySection[2].value.map { $0.item })
+        XCTAssertEqual(IndexSet(integersIn: 1...2), sections.ensureItemsLoaded(in: 2..<7, relativeToSection: 0))
+        XCTAssertTrue(sections.hasFetchedOldest)
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(3, sections.itemsBySection.count)
+        XCTAssertEqual([nil, nil, store.allItems[2]], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.allItems[3], store.allItems[4]], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([store.allItems[5], store.allItems[6], nil, nil, nil], sections.itemsBySection[2].value.map { $0.item })
 
-        wrapper.mutate { sections in
-            sections.reset()
-        }
+        sections.reset()
 
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([nil, nil], wrapper.sections.itemsBySection[1].value.map { $0.item })
-        XCTAssertEqual([nil, nil, nil, nil, nil], wrapper.sections.itemsBySection[2].value.map { $0.item })
+        XCTAssertFalse(sections.hasFetchedOldest)
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(3, sections.itemsBySection.count)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, nil], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[2].value.map { $0.item })
     }
 
     func testResetOneSectionAfterDeletingStart() {
         let store = standardFakeStore.clone()
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load January
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 1) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
 
         store.allItems.removeFirst(3)
         store.itemsBySection.replace(key: GalleryDate(2021_01_01), value: [])
 
-        wrapper.mutate { sections in
-            sections.reset()
-        }
+        sections.reset()
 
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([GalleryDate(2021_09_01)], wrapper.sections.itemsBySection.orderedKeys)
-        XCTAssertEqual([nil, nil, nil, nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertFalse(sections.hasFetchedOldest)
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
+        XCTAssertEqual([GalleryDate(2021_09_01)], sections.itemsBySection.orderedKeys)
+        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testResetTwoSectionsAfterDeletingStart() {
         let store = standardFakeStore.clone()
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load January
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 1) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
 
-        XCTAssertEqual(IndexSet(integer: 1), wrapper.mutate { sections in sections.ensureItemsLoaded(in: 3..<4, relativeToSection: 0) })
-        XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(IndexSet(integer: 1), sections.ensureItemsLoaded(in: 3..<4, relativeToSection: 0))
+        XCTAssertEqual(2, sections.itemsBySection.count)
 
         store.allItems.removeFirst(3)
         store.itemsBySection.replace(key: GalleryDate(2021_01_01), value: [])
 
-        wrapper.mutate { sections in
-            sections.reset()
-        }
+        sections.reset()
 
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([GalleryDate(2021_09_01)], wrapper.sections.itemsBySection.orderedKeys)
-        XCTAssertEqual([nil, nil, nil, nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertFalse(sections.hasFetchedOldest)
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
+        XCTAssertEqual([GalleryDate(2021_09_01)], sections.itemsBySection.orderedKeys)
+        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testResetTwoSectionsAfterDeletingEndWithAnotherSectionFollowing() {
         let store = standardFakeStore.clone()
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load January
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 1) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
 
-        XCTAssertEqual(IndexSet(integer: 1), wrapper.mutate { sections in sections.ensureItemsLoaded(in: 3..<4, relativeToSection: 0) })
-        XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(IndexSet(integer: 1), sections.ensureItemsLoaded(in: 3..<4, relativeToSection: 0))
+        XCTAssertEqual(2, sections.itemsBySection.count)
 
         store.allItems.removeSubrange(3..<5)
         store.itemsBySection.replace(key: GalleryDate(2021_04_01), value: [])
 
-        wrapper.mutate { sections in
-            sections.reset()
-        }
+        sections.reset()
 
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([nil, nil, nil, nil, nil], wrapper.sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertFalse(sections.hasFetchedOldest)
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(2, sections.itemsBySection.count)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[1].value.map { $0.item })
     }
 
     func testResetTwoSectionsAfterDeletingEndWithNothingFollowing() {
         let store = standardFakeStore.clone()
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load April and September
-        XCTAssertEqual(2, wrapper.mutate { sections in sections.loadEarlierSections(batchSize: 6) })
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
+        XCTAssertEqual(2, sections.loadEarlierSections(batchSize: 6))
+        XCTAssertTrue(sections.hasFetchedMostRecent)
 
         store.allItems.removeSubrange(5...)
         store.itemsBySection.replace(key: GalleryDate(2021_09_01), value: [])
 
-        wrapper.mutate { sections in
-            sections.reset()
-        }
+        sections.reset()
 
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([GalleryDate(2021_04_01)], wrapper.sections.itemsBySection.orderedKeys)
-        XCTAssertEqual([nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertFalse(sections.hasFetchedOldest)
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
+        XCTAssertEqual([GalleryDate(2021_04_01)], sections.itemsBySection.orderedKeys)
+        XCTAssertEqual([nil, nil], sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testResetFullAfterDeletingStart() {
         let store = standardFakeStore.clone()
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load January
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 1) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
 
-        XCTAssertEqual(IndexSet(integersIn: 1...2), wrapper.mutate { sections in sections.ensureItemsLoaded(in: 2..<7, relativeToSection: 0) })
-        XCTAssertTrue(wrapper.sections.hasFetchedOldest)
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(IndexSet(integersIn: 1...2), sections.ensureItemsLoaded(in: 2..<7, relativeToSection: 0))
+        XCTAssertTrue(sections.hasFetchedOldest)
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(3, sections.itemsBySection.count)
 
         store.allItems.removeFirst(3)
         store.itemsBySection.replace(key: GalleryDate(2021_01_01), value: [])
 
-        wrapper.mutate { sections in
-            sections.reset()
-        }
+        sections.reset()
 
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([nil, nil, nil, nil, nil], wrapper.sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertFalse(sections.hasFetchedOldest)
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        XCTAssertEqual(2, sections.itemsBySection.count)
+        XCTAssertEqual([nil, nil], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[1].value.map { $0.item })
     }
 
     func testResetFullAfterDeletingMiddle() {
         let store = standardFakeStore.clone()
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load January
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 1) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
 
-        XCTAssertEqual(IndexSet(integersIn: 1...2), wrapper.mutate { sections in sections.ensureItemsLoaded(in: 2..<7, relativeToSection: 0) })
-        XCTAssertTrue(wrapper.sections.hasFetchedOldest)
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(IndexSet(integersIn: 1...2), sections.ensureItemsLoaded(in: 2..<7, relativeToSection: 0))
+        XCTAssertTrue(sections.hasFetchedOldest)
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(3, sections.itemsBySection.count)
 
         store.allItems.removeSubrange(3..<5)
         store.itemsBySection.replace(key: GalleryDate(2021_04_01), value: [])
 
-        wrapper.mutate { sections in
-            sections.reset()
-        }
+        sections.reset()
 
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([nil, nil, nil, nil, nil], wrapper.sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertFalse(sections.hasFetchedOldest)
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        XCTAssertEqual(2, sections.itemsBySection.count)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, nil, nil, nil, nil], sections.itemsBySection[1].value.map { $0.item })
     }
 
     func testResetFullAfterDeletingEnd() {
         let store = standardFakeStore.clone()
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load January
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 1) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
 
-        XCTAssertEqual(IndexSet(integersIn: 1...2), wrapper.mutate { sections in sections.ensureItemsLoaded(in: 2..<7, relativeToSection: 0) })
-        XCTAssertTrue(wrapper.sections.hasFetchedOldest)
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(IndexSet(integersIn: 1...2), sections.ensureItemsLoaded(in: 2..<7, relativeToSection: 0))
+        XCTAssertTrue(sections.hasFetchedOldest)
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(3, sections.itemsBySection.count)
 
         store.allItems.removeSubrange(5...)
         store.itemsBySection.replace(key: GalleryDate(2021_09_01), value: [])
 
-        wrapper.mutate { sections in
-            sections.reset()
-        }
+        sections.reset()
 
-        XCTAssertFalse(wrapper.sections.hasFetchedOldest)
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([nil, nil], wrapper.sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertFalse(sections.hasFetchedOldest)
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        XCTAssertEqual(2, sections.itemsBySection.count)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, nil], sections.itemsBySection[1].value.map { $0.item })
     }
 
     func testGetOrAddItem() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load January
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 1) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
 
         let fakeItem = FakeItem(2021_01_05)
-        let newItem = wrapper.mutate { sections in sections.getOrReplaceItem(fakeItem, offsetInSection: 1) }
+        let newItem = sections.getOrReplaceItem(fakeItem, offsetInSection: 1)
         XCTAssertEqual(fakeItem, newItem)
-        XCTAssertEqual([nil, fakeItem, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, fakeItem, nil], sections.itemsBySection[0].value.map { $0.item })
 
         let fakeItem2 = FakeItem(2021_01_06)
-        let newItem2 = wrapper.mutate { sections in sections.getOrReplaceItem(fakeItem2, offsetInSection: 1) }
+        let newItem2 = sections.getOrReplaceItem(fakeItem2, offsetInSection: 1)
         XCTAssertEqual(fakeItem, newItem2)
-        XCTAssertEqual([nil, fakeItem, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([nil, fakeItem, nil], sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testIndexAfter() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load January
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 1) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
 
-        XCTAssertEqual(IndexPath(item: 1, section: 0), wrapper.sections.indexPath(after: IndexPath(item: 0, section: 0)))
-        XCTAssertEqual(IndexPath(item: 2, section: 0), wrapper.sections.indexPath(after: IndexPath(item: 1, section: 0)))
-        XCTAssertNil(wrapper.sections.indexPath(after: IndexPath(item: 2, section: 0)))
+        XCTAssertEqual(IndexPath(item: 1, section: 0), sections.indexPath(after: IndexPath(item: 0, section: 0)))
+        XCTAssertEqual(IndexPath(item: 2, section: 0), sections.indexPath(after: IndexPath(item: 1, section: 0)))
+        XCTAssertNil(sections.indexPath(after: IndexPath(item: 2, section: 0)))
 
         // Load remaining sections
-        XCTAssertEqual(2, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 20) })
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(2, sections.loadLaterSections(batchSize: 20))
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        XCTAssertEqual(3, sections.itemsBySection.count)
 
-        XCTAssertEqual(IndexPath(item: 1, section: 0), wrapper.sections.indexPath(after: IndexPath(item: 0, section: 0)))
-        XCTAssertEqual(IndexPath(item: 2, section: 0), wrapper.sections.indexPath(after: IndexPath(item: 1, section: 0)))
-        XCTAssertEqual(IndexPath(item: 0, section: 1), wrapper.sections.indexPath(after: IndexPath(item: 2, section: 0)))
-        XCTAssertEqual(IndexPath(item: 1, section: 1), wrapper.sections.indexPath(after: IndexPath(item: 0, section: 1)))
-        XCTAssertEqual(IndexPath(item: 0, section: 2), wrapper.sections.indexPath(after: IndexPath(item: 1, section: 1)))
-        XCTAssertNil(wrapper.sections.indexPath(after: IndexPath(item: 4, section: 2)))
+        XCTAssertEqual(IndexPath(item: 1, section: 0), sections.indexPath(after: IndexPath(item: 0, section: 0)))
+        XCTAssertEqual(IndexPath(item: 2, section: 0), sections.indexPath(after: IndexPath(item: 1, section: 0)))
+        XCTAssertEqual(IndexPath(item: 0, section: 1), sections.indexPath(after: IndexPath(item: 2, section: 0)))
+        XCTAssertEqual(IndexPath(item: 1, section: 1), sections.indexPath(after: IndexPath(item: 0, section: 1)))
+        XCTAssertEqual(IndexPath(item: 0, section: 2), sections.indexPath(after: IndexPath(item: 1, section: 1)))
+        XCTAssertNil(sections.indexPath(after: IndexPath(item: 4, section: 2)))
     }
 
     func testIndexBefore() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load January
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 1) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
-        XCTAssertEqual([nil, nil, nil], wrapper.sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 1))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
+        XCTAssertEqual([nil, nil, nil], sections.itemsBySection[0].value.map { $0.item })
 
-        XCTAssertEqual(IndexPath(item: 1, section: 0), wrapper.sections.indexPath(before: IndexPath(item: 2, section: 0)))
-        XCTAssertEqual(IndexPath(item: 0, section: 0), wrapper.sections.indexPath(before: IndexPath(item: 1, section: 0)))
-        XCTAssertNil(wrapper.sections.indexPath(before: IndexPath(item: 0, section: 0)))
+        XCTAssertEqual(IndexPath(item: 1, section: 0), sections.indexPath(before: IndexPath(item: 2, section: 0)))
+        XCTAssertEqual(IndexPath(item: 0, section: 0), sections.indexPath(before: IndexPath(item: 1, section: 0)))
+        XCTAssertNil(sections.indexPath(before: IndexPath(item: 0, section: 0)))
 
         // Load remaining sections
-        XCTAssertEqual(2, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 20) })
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(2, sections.loadLaterSections(batchSize: 20))
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        XCTAssertEqual(3, sections.itemsBySection.count)
 
-        XCTAssertEqual(IndexPath(item: 1, section: 1), wrapper.sections.indexPath(before: IndexPath(item: 0, section: 2)))
-        XCTAssertEqual(IndexPath(item: 0, section: 1), wrapper.sections.indexPath(before: IndexPath(item: 1, section: 1)))
-        XCTAssertEqual(IndexPath(item: 2, section: 0), wrapper.sections.indexPath(before: IndexPath(item: 0, section: 1)))
-        XCTAssertEqual(IndexPath(item: 1, section: 0), wrapper.sections.indexPath(before: IndexPath(item: 2, section: 0)))
-        XCTAssertEqual(IndexPath(item: 0, section: 0), wrapper.sections.indexPath(before: IndexPath(item: 1, section: 0)))
-        XCTAssertNil(wrapper.sections.indexPath(before: IndexPath(item: 0, section: 0)))
+        XCTAssertEqual(IndexPath(item: 1, section: 1), sections.indexPath(before: IndexPath(item: 0, section: 2)))
+        XCTAssertEqual(IndexPath(item: 0, section: 1), sections.indexPath(before: IndexPath(item: 1, section: 1)))
+        XCTAssertEqual(IndexPath(item: 2, section: 0), sections.indexPath(before: IndexPath(item: 0, section: 1)))
+        XCTAssertEqual(IndexPath(item: 1, section: 0), sections.indexPath(before: IndexPath(item: 2, section: 0)))
+        XCTAssertEqual(IndexPath(item: 0, section: 0), sections.indexPath(before: IndexPath(item: 1, section: 0)))
+        XCTAssertNil(sections.indexPath(before: IndexPath(item: 0, section: 0)))
     }
 
     func testIndexPathOf() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load all months
-        XCTAssertEqual(3, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 20) })
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(3, sections.loadLaterSections(batchSize: 20))
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        XCTAssertEqual(3, sections.itemsBySection.count)
 
         // Load all items.
-        XCTAssert(wrapper.mutate { sections in sections.ensureItemsLoaded(in: 0..<20, relativeToSection: 0) }.isEmpty)
+        XCTAssert(sections.ensureItemsLoaded(in: 0..<20, relativeToSection: 0).isEmpty)
 
-        XCTAssertEqual(IndexPath(item: 0, section: 0), wrapper.sections.indexPath(for: store.allItems[0]))
-        XCTAssertEqual(IndexPath(item: 1, section: 0), wrapper.sections.indexPath(for: store.allItems[1]))
-        XCTAssertEqual(IndexPath(item: 2, section: 0), wrapper.sections.indexPath(for: store.allItems[2]))
-        XCTAssertEqual(IndexPath(item: 0, section: 1), wrapper.sections.indexPath(for: store.allItems[3]))
-        XCTAssertEqual(IndexPath(item: 1, section: 1), wrapper.sections.indexPath(for: store.allItems[4]))
-        XCTAssertEqual(IndexPath(item: 0, section: 2), wrapper.sections.indexPath(for: store.allItems[5]))
-        XCTAssertEqual(IndexPath(item: 1, section: 2), wrapper.sections.indexPath(for: store.allItems[6]))
+        XCTAssertEqual(IndexPath(item: 0, section: 0), sections.indexPath(for: store.allItems[0]))
+        XCTAssertEqual(IndexPath(item: 1, section: 0), sections.indexPath(for: store.allItems[1]))
+        XCTAssertEqual(IndexPath(item: 2, section: 0), sections.indexPath(for: store.allItems[2]))
+        XCTAssertEqual(IndexPath(item: 0, section: 1), sections.indexPath(for: store.allItems[3]))
+        XCTAssertEqual(IndexPath(item: 1, section: 1), sections.indexPath(for: store.allItems[4]))
+        XCTAssertEqual(IndexPath(item: 0, section: 2), sections.indexPath(for: store.allItems[5]))
+        XCTAssertEqual(IndexPath(item: 1, section: 2), sections.indexPath(for: store.allItems[6]))
 
         // Different uniqueId -> no match, even though the timestamp matches.
         XCTAssert(store.allItems.contains { $0.timestamp == Date(compressedDate: 2021_09_09) })
-        XCTAssertNil(wrapper.sections.indexPath(for: FakeItem(2021_09_09)))
+        XCTAssertNil(sections.indexPath(for: FakeItem(2021_09_09)))
     }
 
     func testRemoveLoadedItems() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load all months
-        XCTAssertEqual(3, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 20) })
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(3, sections.loadLaterSections(batchSize: 20))
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        XCTAssertEqual(3, sections.itemsBySection.count)
 
         // Load all items.
-        XCTAssert(wrapper.mutate { sections in sections.ensureItemsLoaded(in: 0..<20, relativeToSection: 0) }.isEmpty)
+        XCTAssert(sections.ensureItemsLoaded(in: 0..<20, relativeToSection: 0).isEmpty)
 
-        XCTAssert(wrapper.mutate { sections in sections.removeLoadedItems(atIndexPaths: [IndexPath(item: 1, section: 1)]) }.isEmpty)
-        XCTAssertEqual(store.itemsBySection[0].value.map { $0 }, wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([store.itemsBySection[1].value[0]], wrapper.sections.itemsBySection[1].value.map { $0.item })
-        XCTAssertEqual(store.itemsBySection[2].value.map { $0 }, wrapper.sections.itemsBySection[2].value.map { $0.item })
+        XCTAssert(sections.removeLoadedItems(atIndexPaths: [IndexPath(item: 1, section: 1)]).isEmpty)
+        XCTAssertEqual(store.itemsBySection[0].value.map { $0 }, sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.itemsBySection[1].value[0]], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual(store.itemsBySection[2].value.map { $0 }, sections.itemsBySection[2].value.map { $0.item })
 
-        XCTAssert(wrapper.mutate { sections in sections.removeLoadedItems(atIndexPaths: [IndexPath(item: 1, section: 2),
-                                                                                         IndexPath(item: 3, section: 2)]) }.isEmpty)
-        XCTAssertEqual(store.itemsBySection[0].value, wrapper.sections.itemsBySection[0].value.map { $0.item })
-        XCTAssertEqual([store.itemsBySection[1].value[0]], wrapper.sections.itemsBySection[1].value.map { $0.item })
-        XCTAssertEqual([store.allItems[5], store.allItems[7], store.allItems[9]], wrapper.sections.itemsBySection[2].value.map { $0.item })
+        XCTAssert(sections.removeLoadedItems(atIndexPaths: [IndexPath(item: 1, section: 2),
+                                                            IndexPath(item: 3, section: 2)]).isEmpty)
+        XCTAssertEqual(store.itemsBySection[0].value, sections.itemsBySection[0].value.map { $0.item })
+        XCTAssertEqual([store.itemsBySection[1].value[0]], sections.itemsBySection[1].value.map { $0.item })
+        XCTAssertEqual([store.allItems[5], store.allItems[7], store.allItems[9]], sections.itemsBySection[2].value.map { $0.item })
 
         XCTAssertEqual(IndexSet([0, 2]),
-                       wrapper.mutate { sections in
-            sections.removeLoadedItems(atIndexPaths: [IndexPath(item: 0, section: 0),
-                                                      IndexPath(item: 1, section: 0),
-                                                      IndexPath(item: 2, section: 0),
-                                                      IndexPath(item: 0, section: 2),
-                                                      IndexPath(item: 1, section: 2),
-                                                      IndexPath(item: 2, section: 2)])
-        })
-        XCTAssertEqual([store.itemsBySection[1].value[0]], wrapper.sections.itemsBySection[0].value.map { $0.item })
+                       sections.removeLoadedItems(atIndexPaths: [IndexPath(item: 0, section: 0),
+                                                                 IndexPath(item: 1, section: 0),
+                                                                 IndexPath(item: 2, section: 0),
+                                                                 IndexPath(item: 0, section: 2),
+                                                                 IndexPath(item: 1, section: 2),
+                                                                 IndexPath(item: 2, section: 2)]))
+        XCTAssertEqual([store.itemsBySection[1].value[0]], sections.itemsBySection[0].value.map { $0.item })
     }
 
     func testTrimFromStart() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load all months
-        XCTAssertEqual(3, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 20) })
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(3, sections.loadLaterSections(batchSize: 20))
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        XCTAssertEqual(3, sections.itemsBySection.count)
 
         // _ _ _ | _ _ | x _ x x _
-        _ = wrapper.mutate { sections in sections.ensureItemsLoaded(in: 0..<1, relativeToSection: 2) }
-        _ = wrapper.mutate { sections in sections.ensureItemsLoaded(in: 2..<4, relativeToSection: 2) }
+        _ = sections.ensureItemsLoaded(in: 0..<1, relativeToSection: 2)
+        _ = sections.ensureItemsLoaded(in: 2..<4, relativeToSection: 2)
 
-        XCTAssertEqual(1..<4, wrapper.sections.trimLoadedItemsAtStart(from: 0..<4, relativeToSection: 2))
-        XCTAssertEqual(1..<5, wrapper.sections.trimLoadedItemsAtStart(from: 0..<5, relativeToSection: 2))
+        XCTAssertEqual(1..<4, sections.trimLoadedItemsAtStart(from: 0..<4, relativeToSection: 2))
+        XCTAssertEqual(1..<5, sections.trimLoadedItemsAtStart(from: 0..<5, relativeToSection: 2))
         // End index is not even checked.
-        XCTAssertEqual(1..<6, wrapper.sections.trimLoadedItemsAtStart(from: 0..<6, relativeToSection: 2))
+        XCTAssertEqual(1..<6, sections.trimLoadedItemsAtStart(from: 0..<6, relativeToSection: 2))
 
-        XCTAssertEqual(1..<4, wrapper.sections.trimLoadedItemsAtStart(from: 1..<4, relativeToSection: 2))
-        XCTAssertEqual(4..<4, wrapper.sections.trimLoadedItemsAtStart(from: 2..<4, relativeToSection: 2))
-        XCTAssertEqual(4..<5, wrapper.sections.trimLoadedItemsAtStart(from: 2..<5, relativeToSection: 2))
+        XCTAssertEqual(1..<4, sections.trimLoadedItemsAtStart(from: 1..<4, relativeToSection: 2))
+        XCTAssertEqual(4..<4, sections.trimLoadedItemsAtStart(from: 2..<4, relativeToSection: 2))
+        XCTAssertEqual(4..<5, sections.trimLoadedItemsAtStart(from: 2..<5, relativeToSection: 2))
 
-        XCTAssertEqual(-1 ..< 5, wrapper.sections.trimLoadedItemsAtStart(from: -1 ..< 5, relativeToSection: 2))
-        XCTAssertEqual(-5 ..< 5, wrapper.sections.trimLoadedItemsAtStart(from: -5 ..< 5, relativeToSection: 2))
+        XCTAssertEqual(-1 ..< 5, sections.trimLoadedItemsAtStart(from: -1 ..< 5, relativeToSection: 2))
+        XCTAssertEqual(-5 ..< 5, sections.trimLoadedItemsAtStart(from: -5 ..< 5, relativeToSection: 2))
 
         // _ _ _ | _ x | x _ x x _
-        _ = wrapper.mutate { sections in sections.ensureItemsLoaded(in: 1..<2, relativeToSection: 1) }
+        _ = sections.ensureItemsLoaded(in: 1..<2, relativeToSection: 1)
 
-        XCTAssertEqual(1..<5, wrapper.sections.trimLoadedItemsAtStart(from: -1 ..< 5, relativeToSection: 2))
-        XCTAssertEqual(-2 ..< 5, wrapper.sections.trimLoadedItemsAtStart(from: -2 ..< 5, relativeToSection: 2))
+        XCTAssertEqual(1..<5, sections.trimLoadedItemsAtStart(from: -1 ..< 5, relativeToSection: 2))
+        XCTAssertEqual(-2 ..< 5, sections.trimLoadedItemsAtStart(from: -2 ..< 5, relativeToSection: 2))
         // trimLoadedItemsAtStart never goes past the current section.
-        XCTAssertEqual(2..<4, wrapper.sections.trimLoadedItemsAtStart(from: 1..<4, relativeToSection: 1))
-        XCTAssertEqual(0..<4, wrapper.sections.trimLoadedItemsAtStart(from: 0..<4, relativeToSection: 1))
+        XCTAssertEqual(2..<4, sections.trimLoadedItemsAtStart(from: 1..<4, relativeToSection: 1))
+        XCTAssertEqual(0..<4, sections.trimLoadedItemsAtStart(from: 0..<4, relativeToSection: 1))
 
         // _ _ _ | x x | x _ x x _
-        _ = wrapper.mutate { sections in sections.ensureItemsLoaded(in: 0..<2, relativeToSection: 1) }
+        _ = sections.ensureItemsLoaded(in: 0..<2, relativeToSection: 1)
 
-        XCTAssertEqual(1..<5, wrapper.sections.trimLoadedItemsAtStart(from: -1 ..< 5, relativeToSection: 2))
-        XCTAssertEqual(1..<5, wrapper.sections.trimLoadedItemsAtStart(from: -2 ..< 5, relativeToSection: 2))
-        XCTAssertEqual(-3 ..< 5, wrapper.sections.trimLoadedItemsAtStart(from: -3 ..< 5, relativeToSection: 2))
+        XCTAssertEqual(1..<5, sections.trimLoadedItemsAtStart(from: -1 ..< 5, relativeToSection: 2))
+        XCTAssertEqual(1..<5, sections.trimLoadedItemsAtStart(from: -2 ..< 5, relativeToSection: 2))
+        XCTAssertEqual(-3 ..< 5, sections.trimLoadedItemsAtStart(from: -3 ..< 5, relativeToSection: 2))
         // trimLoadedItemsAtStart never goes past the current section.
-        XCTAssertEqual(2..<4, wrapper.sections.trimLoadedItemsAtStart(from: 1..<4, relativeToSection: 1))
-        XCTAssertEqual(2..<4, wrapper.sections.trimLoadedItemsAtStart(from: 0..<4, relativeToSection: 1))
+        XCTAssertEqual(2..<4, sections.trimLoadedItemsAtStart(from: 1..<4, relativeToSection: 1))
+        XCTAssertEqual(2..<4, sections.trimLoadedItemsAtStart(from: 0..<4, relativeToSection: 1))
 
         // _ _ x | x _ | x _ x x _
-        _ = wrapper.mutate { sections in sections.reloadSection(for: sections.sectionDates[1]) }
+        sections.reloadSection(for: sections.sectionDates[1])
 
-        _ = wrapper.mutate { sections in sections.ensureItemsLoaded(in: -1 ..< 1, relativeToSection: 1) }
-        XCTAssertEqual(-1 ..< 5, wrapper.sections.trimLoadedItemsAtStart(from: -1 ..< 5, relativeToSection: 2))
-        XCTAssertEqual(-1 ..< 5, wrapper.sections.trimLoadedItemsAtStart(from: -2 ..< 5, relativeToSection: 2))
-        XCTAssertEqual(-1 ..< 5, wrapper.sections.trimLoadedItemsAtStart(from: -3 ..< 5, relativeToSection: 2))
-        XCTAssertEqual(-4 ..< 5, wrapper.sections.trimLoadedItemsAtStart(from: -4 ..< 5, relativeToSection: 2))
-        XCTAssertEqual(1..<4, wrapper.sections.trimLoadedItemsAtStart(from: 1..<4, relativeToSection: 1))
-        XCTAssertEqual(1..<4, wrapper.sections.trimLoadedItemsAtStart(from: 0..<4, relativeToSection: 1))
+        _ = sections.ensureItemsLoaded(in: -1 ..< 1, relativeToSection: 1)
+        XCTAssertEqual(-1 ..< 5, sections.trimLoadedItemsAtStart(from: -1 ..< 5, relativeToSection: 2))
+        XCTAssertEqual(-1 ..< 5, sections.trimLoadedItemsAtStart(from: -2 ..< 5, relativeToSection: 2))
+        XCTAssertEqual(-1 ..< 5, sections.trimLoadedItemsAtStart(from: -3 ..< 5, relativeToSection: 2))
+        XCTAssertEqual(-4 ..< 5, sections.trimLoadedItemsAtStart(from: -4 ..< 5, relativeToSection: 2))
+        XCTAssertEqual(1..<4, sections.trimLoadedItemsAtStart(from: 1..<4, relativeToSection: 1))
+        XCTAssertEqual(1..<4, sections.trimLoadedItemsAtStart(from: 0..<4, relativeToSection: 1))
 
         // x x x | x x | x x x x x
-        _ = wrapper.mutate { sections in sections.ensureItemsLoaded(in: 0..<10, relativeToSection: 0) }
-        XCTAssertEqual(5..<5, wrapper.sections.trimLoadedItemsAtStart(from: -5 ..< 5, relativeToSection: 2))
-        XCTAssertEqual(3..<3, wrapper.sections.trimLoadedItemsAtStart(from: -5 ..< 3, relativeToSection: 2))
+        _ = sections.ensureItemsLoaded(in: 0..<10, relativeToSection: 0)
+        XCTAssertEqual(5..<5, sections.trimLoadedItemsAtStart(from: -5 ..< 5, relativeToSection: 2))
+        XCTAssertEqual(3..<3, sections.trimLoadedItemsAtStart(from: -5 ..< 3, relativeToSection: 2))
         // trimLoadedItemsAtStart never goes past the current section.
-        XCTAssertEqual(2..<7, wrapper.sections.trimLoadedItemsAtStart(from: -3 ..< 7, relativeToSection: 1))
+        XCTAssertEqual(2..<7, sections.trimLoadedItemsAtStart(from: -3 ..< 7, relativeToSection: 1))
     }
 
     func testTrimFromEnd() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load all months
-        XCTAssertEqual(3, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 20) })
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(3, sections.loadLaterSections(batchSize: 20))
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        XCTAssertEqual(3, sections.itemsBySection.count)
 
         // x x _ | _ _ | _ _ _ _ _
-        _ = wrapper.mutate { sections in sections.ensureItemsLoaded(in: 0..<2, relativeToSection: 0) }
+        _ = sections.ensureItemsLoaded(in: 0..<2, relativeToSection: 0)
 
-        XCTAssertEqual(0..<0, wrapper.sections.trimLoadedItemsAtEnd(from: 0..<1, relativeToSection: 0))
-        XCTAssertEqual(0..<0, wrapper.sections.trimLoadedItemsAtEnd(from: 0..<2, relativeToSection: 0))
-        XCTAssertEqual(0..<3, wrapper.sections.trimLoadedItemsAtEnd(from: 0..<3, relativeToSection: 0))
-        XCTAssertEqual(0..<4, wrapper.sections.trimLoadedItemsAtEnd(from: 0..<4, relativeToSection: 0))
+        XCTAssertEqual(0..<0, sections.trimLoadedItemsAtEnd(from: 0..<1, relativeToSection: 0))
+        XCTAssertEqual(0..<0, sections.trimLoadedItemsAtEnd(from: 0..<2, relativeToSection: 0))
+        XCTAssertEqual(0..<3, sections.trimLoadedItemsAtEnd(from: 0..<3, relativeToSection: 0))
+        XCTAssertEqual(0..<4, sections.trimLoadedItemsAtEnd(from: 0..<4, relativeToSection: 0))
         // We don't actually check the start index.
-        XCTAssertEqual(-5 ..< 0, wrapper.sections.trimLoadedItemsAtEnd(from: -5 ..< 2, relativeToSection: 0))
+        XCTAssertEqual(-5 ..< 0, sections.trimLoadedItemsAtEnd(from: -5 ..< 2, relativeToSection: 0))
     }
 
     func testLoadingTrimsRequestedRange() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load all months
-        XCTAssertEqual(3, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 20) })
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(3, sections.loadLaterSections(batchSize: 20))
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        XCTAssertEqual(3, sections.itemsBySection.count)
 
         // _ _ x | x x | x _ _ _ _
-        _ = wrapper.mutate { sections in sections.ensureItemsLoaded(in: -1 ..< 3, relativeToSection: 1) }
+        _ = sections.ensureItemsLoaded(in: -1 ..< 3, relativeToSection: 1)
         XCTAssertEqual(2..<6, store.mostRecentRequest)
 
         // _ _ x | x x | x x x _ _
-        _ = wrapper.mutate { sections in sections.ensureItemsLoaded(in: 0 ..< 5, relativeToSection: 1) }
+        _ = sections.ensureItemsLoaded(in: 0 ..< 5, relativeToSection: 1)
         // We only trim up to the current section, so the first item in September gets reloaded.
         XCTAssertEqual(5..<8, store.mostRecentRequest)
 
         // x x x | x x | x x x _ _
-        _ = wrapper.mutate { sections in sections.ensureItemsLoaded(in: -3 ..< 1, relativeToSection: 1) }
+        _ = sections.ensureItemsLoaded(in: -3 ..< 1, relativeToSection: 1)
         // We only trim down to the current section, so the last item in January gets reloaded.
         XCTAssertEqual(0..<3, store.mostRecentRequest)
 
         // x x x | _ _ | x x x _ _
-        _ = wrapper.mutate { sections in sections.reloadSection(for: sections.sectionDates[1]) }
+        sections.reloadSection(for: sections.sectionDates[1])
 
         // x x x | x x | x x x _ _
-        _ = wrapper.mutate { sections in sections.ensureItemsLoaded(in: -1 ..< 3, relativeToSection: 1) }
+        _ = sections.ensureItemsLoaded(in: -1 ..< 3, relativeToSection: 1)
         XCTAssertEqual(3..<5, store.mostRecentRequest)
 
         store.mostRecentRequest = 5000..<5000
-        _ = wrapper.mutate { sections in sections.ensureItemsLoaded(in: -1 ..< 3, relativeToSection: 1) }
+        _ = sections.ensureItemsLoaded(in: -1 ..< 3, relativeToSection: 1)
         // The request should be skipped entirely.
         XCTAssertEqual(5000..<5000, store.mostRecentRequest)
     }
 
     func testReloadSections() {
         let store = standardFakeStore.clone()
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
 
         // Load all months
-        XCTAssertEqual(3, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 20) })
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(3, sections.loadLaterSections(batchSize: 20))
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        XCTAssertEqual(3, sections.itemsBySection.count)
 
         // x x x | x x | x x x x x
-        _ = wrapper.mutate { sections in sections.ensureItemsLoaded(in: -1 ..< 10, relativeToSection: 1) }
+        _ = sections.ensureItemsLoaded(in: -1 ..< 10, relativeToSection: 1)
 
         let modifiedItems = store.allItems.filter {
             // Keep January unmodified, drop all of April, and drop one value from September.
@@ -1284,9 +1225,7 @@ class MediaGallerySectionsTest: SignalBaseTest {
 
         store.set(items: modifiedItems)
 
-        let (update, delete) = wrapper.mutate { sections in
-            sections.reloadSections(for: Set(sections.sectionDates + [GalleryDate(2022_01_01)]))
-        }
+        let (update, delete) = sections.reloadSections(for: Set(sections.sectionDates + [GalleryDate(2022_01_01)]))
 
         XCTAssertEqual(update, IndexSet([0, 1, 2]))
         XCTAssertEqual(delete, IndexSet(integer: 1))
@@ -1294,71 +1233,62 @@ class MediaGallerySectionsTest: SignalBaseTest {
 
     func testHandleNewAttachments_NewSectionButMostRecentUnfetched() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
         // Load the first month, January 2021
-        XCTAssertEqual(1, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 3) })
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(1, wrapper.sections.itemsBySection.count)
-        let expected = Sections.NewAttachmentHandlingResult(update: IndexSet(),
-                                                            didAddAtEnd: false,
-                                                            didReset: false)
-        let actual = wrapper.mutate { sections in sections.handleNewAttachments([GalleryDate(2022_01_01)]) }
+        XCTAssertEqual(1, sections.loadLaterSections(batchSize: 3))
+        XCTAssertFalse(sections.hasFetchedMostRecent)
+        XCTAssertEqual(1, sections.itemsBySection.count)
+        let expected = MediaGallerySections<FakeGalleryStore>.NewAttachmentHandlingResult(update: IndexSet(),
+                                                                                          didAddAtEnd: false,
+                                                                                          didReset: false)
+        let actual = sections.handleNewAttachments([GalleryDate(2022_01_01)])
         XCTAssertEqual(expected, actual)
     }
 
     func testHandleNewAttachments_NewSectionAndMostRecentFetched() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
         // Load all months
-        XCTAssertEqual(3, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 20) })
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
-        _ = wrapper.mutate { sections in sections.ensureItemsLoaded(in: -1 ..< 10, relativeToSection: 1) }
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        let expected = Sections.NewAttachmentHandlingResult(update: IndexSet(),
-                                                            didAddAtEnd: true,
-                                                            didReset: false)
-        let actual = wrapper.mutate { sections in sections.handleNewAttachments([GalleryDate(2022_01_01)]) }
-        XCTAssertFalse(wrapper.sections.hasFetchedMostRecent)
+        XCTAssertEqual(3, sections.loadLaterSections(batchSize: 20))
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        XCTAssertEqual(3, sections.itemsBySection.count)
+        _ = sections.ensureItemsLoaded(in: -1 ..< 10, relativeToSection: 1)
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        let expected = MediaGallerySections<FakeGalleryStore>.NewAttachmentHandlingResult(update: IndexSet(),
+                                                                                          didAddAtEnd: true,
+                                                                                          didReset: false)
+        let actual = sections.handleNewAttachments([GalleryDate(2022_01_01)])
+        XCTAssertFalse(sections.hasFetchedMostRecent)
         XCTAssertEqual(expected, actual)
     }
 
     func testHandleNewAttachments_ExistingSection() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
         // Load all months
-        XCTAssertEqual(3, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 20) })
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(3, sections.loadLaterSections(batchSize: 20))
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        XCTAssertEqual(3, sections.itemsBySection.count)
 
-        let expected = Sections.NewAttachmentHandlingResult(update: IndexSet(integer: 1),
-                                                            didAddAtEnd: false,
-                                                            didReset: false)
-        let actual = wrapper.mutate { sections in sections.handleNewAttachments([GalleryDate(2021_04_01)]) }
+        let expected = MediaGallerySections<FakeGalleryStore>.NewAttachmentHandlingResult(update: IndexSet(integer: 1),
+                                                                                          didAddAtEnd: false,
+                                                                                          didReset: false)
+        let actual = sections.handleNewAttachments([GalleryDate(2021_04_01)])
         XCTAssertEqual(expected, actual)
     }
 
     func testHandleNewAttachments_FirstAttachmentInNewSectionNotAtEnd() {
         let store = standardFakeStore
-        var wrapper = SectionsWrapper(sections: Sections(loader: store))
+        var sections = MediaGallerySections(loader: store)
         // Load all months
-        XCTAssertEqual(3, wrapper.mutate { sections in sections.loadLaterSections(batchSize: 20) })
-        XCTAssertTrue(wrapper.sections.hasFetchedMostRecent)
-        XCTAssertEqual(3, wrapper.sections.itemsBySection.count)
+        XCTAssertEqual(3, sections.loadLaterSections(batchSize: 20))
+        XCTAssertTrue(sections.hasFetchedMostRecent)
+        XCTAssertEqual(3, sections.itemsBySection.count)
 
-        let expected = Sections.NewAttachmentHandlingResult(update: IndexSet(),
-                                                            didAddAtEnd: false,
-                                                            didReset: true)
-        let actual = wrapper.mutate { sections in sections.handleNewAttachments([GalleryDate(2020_07_01)]) }
+        let expected = MediaGallerySections<FakeGalleryStore>.NewAttachmentHandlingResult(update: IndexSet(),
+                                                                                          didAddAtEnd: false,
+                                                                                          didReset: true)
+        let actual = sections.handleNewAttachments([GalleryDate(2020_07_01)])
         XCTAssertEqual(expected, actual)
-    }
-
-    func testUserData() {
-        var wrapper = SectionsWrapper(sections: Sections(loader: standardFakeStore))
-        wrapper.mutate { sections in
-            _ = sections.loadEarlierSections(batchSize: 1, userData: 42)
-            _ = sections.loadEarlierSections(batchSize: 1, userData: 420)
-        }
-        XCTAssertEqual(wrapper.userData, [42, 420])
     }
 }
