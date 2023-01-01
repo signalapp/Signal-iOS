@@ -395,8 +395,8 @@ extension StoryFinder {
         }
     }
 
-    public static func getAssocatedData(
-        forContactAdddress address: SignalServiceAddress,
+    public static func getAssociatedData(
+        forContactAddress address: SignalServiceAddress,
         transaction: SDSAnyReadTransaction
     ) -> StoryContextAssociatedData? {
         guard let uuid = address.uuid else {

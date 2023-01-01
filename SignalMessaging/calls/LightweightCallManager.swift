@@ -221,7 +221,7 @@ extension LightweightCallManager {
 extension LightweightCallManager: HTTPDelegate {
     /**
      * A HTTP request should be sent to the given url.
-     * Invoked on the main thread, asychronously.
+     * Invoked on the main thread, asynchronously.
      * The result of the call should be indicated by calling the receivedHttpResponse() function.
      */
     public func sendRequest(requestId: UInt32, request: HTTPRequest) {

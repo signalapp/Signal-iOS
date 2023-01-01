@@ -59,13 +59,13 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
 
         self.showCall(call)
 
-        startNotifiyingForIncomingCall(call)
+        startNotifyingForIncomingCall(call)
 
         completion(nil)
     }
 
     private var incomingCallNotificationTimer: Timer?
-    private func startNotifiyingForIncomingCall(_ call: SignalCall) {
+    private func startNotifyingForIncomingCall(_ call: SignalCall) {
         // Pull this out up front. Group calls don't necessarily keep the information around.
         guard let caller = call.caller else {
             return
@@ -74,7 +74,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         incomingCallNotificationTimer?.invalidate()
 
         // present lock screen notification if we're in the background.
-        // we re-present the notifiation every 3 seconds to make sure
+        // we re-present the notification every 3 seconds to make sure
         // the user sees that their phone is ringing
         incomingCallNotificationTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { [weak self] timer in
             guard let self = self else {

@@ -209,7 +209,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         )
         record.anyInsert(transaction: transaction)
 
-        // Nil associated datas are for outgoing contexts, where we don't need to keep track of received timestamp.
+        // Nil associated data is for outgoing contexts, where we don't need to keep track of received timestamp.
         record.context.associatedData(transaction: transaction)?.update(lastReceivedTimestamp: timestamp, transaction: transaction)
 
         return record

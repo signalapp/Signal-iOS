@@ -7,7 +7,7 @@ import Foundation
 
 public extension Sequence {
 
-    /// Builds a dicitonary mapping the elements of a sequence to the value returned from `valueBuilder`
+    /// Builds a dictionary mapping the elements of a sequence to the value returned from `valueBuilder`
     /// The elements of a dictionary must be unique.
     func dictionaryMappingToValues<Value>(_ valueBuilder: ((Element) throws -> Value)) rethrows -> [Element: Value] {
         let kvPairs = try map { key in

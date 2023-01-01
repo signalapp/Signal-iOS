@@ -260,7 +260,7 @@ class MessageReactionPicker: UIStackView {
         // Allows focus a fixed distance above the reaction bar
         focusArea.origin.y -= 20
 
-        // Encompases the width of the reaction, plus half of the padding on either side
+        // Encompasses the width of the reaction, plus half of the padding on either side
         focusArea.size.width = reactionHeight + pickerPadding
         focusArea.origin.x -= pickerPadding / 2
 

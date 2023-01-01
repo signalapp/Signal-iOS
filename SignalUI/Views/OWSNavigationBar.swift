@@ -52,7 +52,7 @@ public class OWSNavigationBar: UINavigationBar {
             appearanceBlurEffectViewBackgroundColorObservation = nil
         }
     }
-    /// These are KVO observations we keep on the nodes in the view heirarchy graph so
+    /// These are KVO observations we keep on the nodes in the view hierarchy graph so
     /// we can keep our `appearanceBlurEffectView` reference up to date.
     private var backgroundSublayerObservation: NSKeyValueObservation?
     private var appearanceBlurEffectViewSublayerObservation: NSKeyValueObservation?

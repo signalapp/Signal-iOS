@@ -191,7 +191,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
                 accessibilityIdentifier: "OWSActionSheets.skip",
                 style: .destructive
             ) { [weak self] _ in
-                Logger.debug("User is explicity skipping the double reminder, so dismniss the 'payments lock prompt' view entirely.")
+                Logger.debug("User is explicitly skipping the double reminder, so dismiss the 'payments lock prompt' view entirely.")
                 self?.dismiss(animated: true, completion: nil)
             }
         )

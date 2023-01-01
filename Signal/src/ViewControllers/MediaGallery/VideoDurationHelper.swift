@@ -119,7 +119,7 @@ class VideoDurationHelper {
         guard let pendingPromise = pendingPromises[uniqueId] else {
             return nil
         }
-        // We are already computing a duration for this attachemnt so there is no need to create a
+        // We are already computing a duration for this attachment so there is no need to create a
         // new promise. Add this context so that if the work hasn't already begun, the destruction
         // of the original context won't prevent the promise from being sealed.
         pendingPromises[uniqueId]?.contexts.append(currentContext)
@@ -237,7 +237,7 @@ class VideoDurationHelper {
             AVURLAsset.loadDuration(url: url) { duration in
                 // Warning! We might be in AVFoundation's private queue.
 
-                // A dirty trick to make `url` remain vaild until we're all done. Once
+                // A dirty trick to make `url` remain valid until we're all done. Once
                 // `signalAttachment` gets deinit'ed, it unlinks its file.
                 withExtendedLifetime(signalAttachment) { }
 
@@ -269,7 +269,7 @@ class VideoDurationHelper {
     }
 }
 
-/// AVURLAsset has no ability to do error checking prior to iOS 15. This extention makes it easy to
+/// AVURLAsset has no ability to do error checking prior to iOS 15. This extension makes it easy to
 /// get the duration with good error checking on modern iOS and hacky error checking on legacy
 /// versions. Please delete this when we drop iOS 14.
 extension AVURLAsset {

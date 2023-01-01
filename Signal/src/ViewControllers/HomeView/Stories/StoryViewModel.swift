@@ -62,7 +62,7 @@ struct StoryViewModel: Dependencies {
     }
 
     /// Returns nil if there are no messages left after deletions are applied.
-    /// Throws if databae lookups fail.
+    /// Throws if database lookups fail.
     func copy(
         updatedMessages: [StoryMessage],
         deletedMessageRowIds: [Int64],

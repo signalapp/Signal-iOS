@@ -395,7 +395,7 @@ public class TestSchedulerTest: XCTestCase {
         XCTAssertNil(dblNestedPromise.result)
 
         // Now when we advance to after the nested future is resolved,
-        // we shoud resolve the outer but not inner nested promise.
+        // we should resolve the outer but not inner nested promise.
         scheduler.advance(to: 60)
         XCTAssert(didInnerThen)
         XCTAssertFalse(didObserveResult)
@@ -793,12 +793,12 @@ public class TestSchedulerTest: XCTestCase {
         // Reset.
         scheduler.adjustTime(to: 0)
 
-        // We can't hit sub-10 second granularuty.
+        // We can't hit sub-10 second granularity.
         promise = Guarantee.after(on: scheduler, seconds: 5)
 
         didObserveResult = false
         promise.observe(on: scheduler) { _ in
-            // We can't hit sub-10 second granularuty,
+            // We can't hit sub-10 second granularity,
             // so it rounds to 1 tick.
             XCTAssertEqual(scheduler.currentTime, 1)
             didObserveResult = true

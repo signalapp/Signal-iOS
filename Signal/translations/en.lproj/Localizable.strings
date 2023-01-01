@@ -3329,7 +3329,7 @@
 "INCOMING_VIDEO_CALL" = "Incoming video call";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad. For your security, chat history isn't transferred to new linked devices.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
 "INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ changed their phone number.";
@@ -6529,7 +6529,7 @@
 /* Short context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION_SHORT" = "Hide";
 
-/* Toast shown when a story is successfuly hidden */
+/* Toast shown when a story is successfully hidden */
 "STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Story Hidden";
 
 /* Context menu action to view metadata about the story */
@@ -6619,7 +6619,7 @@
 /* Short context menu action to unhide the selected story */
 "STORIES_UNHIDE_STORY_ACTION_SHORT" = "Unhide";
 
-/* Toast shown when a story is successfuly unhidden */
+/* Toast shown when a story is successfully unhidden */
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Story Unhidden";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */

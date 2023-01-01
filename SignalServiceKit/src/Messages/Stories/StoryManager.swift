@@ -190,7 +190,7 @@ public class StoryManager: NSObject {
         shouldUpdateStorageService: Bool = true
     ) {
         guard hasSet != hasSetMyStoriesPrivacy(transaction: transaction) else {
-            // Don't trigger account record updates unneccesarily!
+            // Don't trigger account record updates unnecessarily!
             return
         }
         keyValueStore.setBool(hasSet, key: hasSetMyStoriesPrivacyKey, transaction: transaction)

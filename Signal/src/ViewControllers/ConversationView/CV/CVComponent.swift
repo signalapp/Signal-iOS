@@ -89,7 +89,7 @@ public protocol CVRootComponent: CVComponent {
 public protocol CVAccessibilityComponent: CVComponent {
     var accessibilityDescription: String { get }
 
-    // TODO: We should have a getter for "accessiblity actions",
+    // TODO: We should have a getter for "accessibility actions",
     //       presumably as [CVMessageAction].
 }
 

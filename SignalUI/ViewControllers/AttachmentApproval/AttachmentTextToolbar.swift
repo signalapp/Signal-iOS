@@ -362,7 +362,7 @@ extension AttachmentTextToolbar: UITextViewDelegate {
     }
 
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        // Though we can wrap the text, we don't want to encourage multline captions, plus a "done" button
+        // Though we can wrap the text, we don't want to encourage multiline captions, plus a "done" button
         // allows the user to get the keyboard out of the way while in the attachment approval view.
         if text == "\n" {
             textView.resignFirstResponder()

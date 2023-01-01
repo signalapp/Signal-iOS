@@ -156,7 +156,7 @@ fileprivate extension OWSContactsManager {
             cache.add(address: address)
             return false
         }
-        // ...and not in a whitelisted group with the locar user.
+        // ...and not in a whitelisted group with the local user.
         if isInWhitelistedGroupWithLocalUser(address: address,
                                              transaction: transaction) {
             cache.add(address: address)
@@ -724,7 +724,7 @@ extension OWSContactsManager {
                 // If we find a persisted contact that is not from the local address book,
                 // it represents a contact from the address book on the primary device that
                 // was synced to this (linked) device. We should keep it, and not overwrite
-                // it since the primary device's system contacts always take precendence.
+                // it since the primary device's system contacts always take precedence.
                 for signalAccount in oldSignalAccounts {
                     if signalAccount.contact?.isFromLocalAddressBook == false {
                         newSignalAccountsMap[signalAccount.recipientAddress] = signalAccount
@@ -1222,8 +1222,8 @@ extension OWSContactsManager {
     }
 
     @objc(cachedContactNameForAddress:transaction:)
-    func cachedContactName(for address: SignalServiceAddress, trasnaction: SDSAnyReadTransaction) -> String? {
-        return cachedContactNames(for: AnySequence([address]), transaction: trasnaction)[0]
+    func cachedContactName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String? {
+        return cachedContactNames(for: AnySequence([address]), transaction: transaction)[0]
     }
 
     func cachedContactNames(for addresses: AnySequence<SignalServiceAddress>,
@@ -1232,7 +1232,7 @@ extension OWSContactsManager {
         let accounts = fetchSignalAccounts(for: addresses, transaction: transaction)
         let accountFullNames = accounts.lazy.map { $0?.fullName }
 
-        // Build a list of addreses that don't have accounts. Leave nil placeholders for those
+        // Build a list of addresses that don't have accounts. Leave nil placeholders for those
         // addresses that don't need to be queried so that we can keep all our arrays parallel.
         let addressesToQuery = zip(addresses, accounts).map { tuple -> SignalServiceAddress? in
             let (address, account) = tuple

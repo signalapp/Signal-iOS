@@ -27,7 +27,7 @@ public enum FormattedNumberField {
         case forward
     }
 
-    /// Call this from your [`UITextFieldDelgate#textField`][0] method.
+    /// Call this from your [`UITextFieldDelegate#textField`][0] method.
     /// This will restrict inputs and format the text.
     ///
     /// - Parameter textField:
@@ -39,7 +39,7 @@ public enum FormattedNumberField {
     /// - Parameter maxDigits:
     /// The maximum number of digits allowed. Trying to type more digits than
     /// this won't be allowed, but it's possible for the field to be longer
-    /// than this if you set the value programatically or change this value.
+    /// than this if you set the value programmatically or change this value.
     /// - Parameter format:
     /// A function that turns an unformatted string (such as "42424242") into
     /// a formatted one (such as "4242 4242"). Must only include printable ASCII
@@ -313,7 +313,7 @@ public enum FormattedNumberField {
         }
 
         // The digit count can exceed the maximum under expected conditions.
-        // This could happen if the field's text is programatically changed or
+        // This could happen if the field's text is programmatically changed or
         // if the maximum digit count is changed dynamically. Therefore, we only
         // prevent input if the change causes us to *further* exceed the limit.
         if newUnformattedString.count > oldUnformattedString.count, newUnformattedString.count > maxDigits {

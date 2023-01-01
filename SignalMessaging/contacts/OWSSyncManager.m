@@ -131,7 +131,7 @@ NSString *const OWSSyncManagerSyncRequestedAppVersionKey = @"SyncRequestedAppVer
     [self sendSyncContactsMessageIfNecessary];
 }
 
-- (void)willEnterForeground:(id)notificaiton
+- (void)willEnterForeground:(id)notification
 {
     OWSAssertIsOnMainThread();
 

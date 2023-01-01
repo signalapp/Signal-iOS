@@ -52,7 +52,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // We don't need to use DeviceSleepManager in the SAE.
 
-        // We don't need to use applySignalAppearence in the SAE.
+        // We don't need to use applySignalAppearance in the SAE.
 
         if CurrentAppContext().isRunningTests {
             // TODO: Do we need to implement isRunningTests in the SAE context?
@@ -980,7 +980,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     //
     // I *did* verify that the size and SHA256 sum of the original url matches that of the copied url. So there
     // is no difference between the contents of the file, yet one works one doesn't.
-    // Perhaps the AVFoundation APIs require some extra file system permssion we don't have in the
+    // Perhaps the AVFoundation APIs require some extra file system permission we don't have in the
     // passed through URL.
     private func isVideoNeedingRelocation(itemProvider: NSItemProvider, itemUrl: URL) -> Bool {
         let pathExtension = itemUrl.pathExtension
@@ -1041,7 +1041,7 @@ private class ProgressPoller: NSObject {
     let progress: Progress
     private(set) var timer: Timer?
 
-    // Higher number offers higher ganularity
+    // Higher number offers higher granularity
     let progressTotalUnitCount: Int64 = 10000
     private let timeInterval: Double
     private let ratioCompleteBlock: () -> Float

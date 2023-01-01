@@ -873,7 +873,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
             if storyConversationItem.isMyStory,
                Self.databaseStorage.read(block: { !StoryManager.hasSetMyStoriesPrivacy(transaction: $0) }) {
-                // Show first time story privacy settings if selecting my story and settings have'nt been
+                // Show first time story privacy settings if selecting my story and settings haven't been
                 // changed before.
 
                 // Reload the row when we show the sheet, and when it goes away, so we reflect changes.
@@ -953,7 +953,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             let conversation = self.conversation(for: indexPath),
             let cell = tableView.cellForRow(at: indexPath) as? ConversationPickerCell
         else {
-            owsFailDebug("Showing a video trimming tooltop for an invalid index path")
+            owsFailDebug("Showing a video trimming tooltip for an invalid index path")
             return
         }
 

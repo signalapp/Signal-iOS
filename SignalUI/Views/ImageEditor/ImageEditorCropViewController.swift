@@ -43,7 +43,7 @@ class ImageEditorCropViewController: OWSViewController {
         view.isOpaque = false
         return view
     }()
-    // This constraint reflects current aspec ratio of the clip rectangle.
+    // This constraint reflects current aspect ratio of the clip rectangle.
     // This constraint gets updated using values from `transform` whenever user makes changes.
     private var clipViewAspectRatioConstraint: NSLayoutConstraint?
 
@@ -52,7 +52,7 @@ class ImageEditorCropViewController: OWSViewController {
     // The purpose of these two layout guides is to make animation of transition to/from crop view seamless.
     // Seamlessness is achieved when image center stays the same in both "review" and "crop" screens.
     // Two layout guides define size and position of the visible content:
-    // `initialStateContentLayoutGuide` designed to position content exacty as in `AttachmentPrepContentView`.
+    // `initialStateContentLayoutGuide` designed to position content exactly as in `AttachmentPrepContentView`.
     // `finalStateContentLayoutGuide` has the same center that `initialStateContentLayoutGuide` has,
     // but with non-zero margins on the sides and its height sized to clear rotation control at the bottom.
     // When VC's view appears on the screen initially (with no animation) content is constrained to `initialStateContentLayoutGuide`.
@@ -322,7 +322,7 @@ class ImageEditorCropViewController: OWSViewController {
     }
 
     private func updateImageViewTransform() {
-        // Force all pendging layouts to be done now because we're grabbing the size of `clipView`.
+        // Force all pending layouts to be done now because we're grabbing the size of `clipView`.
         view.layoutIfNeeded()
 
         let viewSize = clipView.bounds.size

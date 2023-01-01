@@ -322,7 +322,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         if let mediaEditingToolbarHeight = viewController.mediaEditingToolbarHeight {
             // For images there is an "edit" mode and it is necessary to keep image center the same
-            // when switching to/from "edit" mode. Therefore image is laid out usign bottom inset from "edit" mode screen.
+            // when switching to/from "edit" mode. Therefore image is laid out using bottom inset from "edit" mode screen.
             contentLayoutMargins.bottom = mediaEditingToolbarHeight
         } else {
             // bottomToolView contains UIStackView that doesn't always have a final frame at this point.

@@ -7,7 +7,7 @@ import Foundation
 import GRDB
 import SignalCoreKit
 
-@objc(OWSReaction) // Named explicitly to preserve NSKeyedUnarchiving compatability
+@objc(OWSReaction) // Named explicitly to preserve NSKeyedUnarchiving compatibility
 public final class OWSReaction: NSObject, SDSCodableModel, NSSecureCoding {
     public static let databaseTableName = "model_OWSReaction"
     public static var recordType: UInt { SDSRecordType.reaction.rawValue }

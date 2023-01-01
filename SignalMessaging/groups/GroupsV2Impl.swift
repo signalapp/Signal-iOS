@@ -1322,7 +1322,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
     // MARK: - ProfileKeyCredentials
 
-    /// Fetches and returnes the profile key credential for each passed UUID. If
+    /// Fetches and returns the profile key credential for each passed UUID. If
     /// any are missing, returns an error.
     public func loadProfileKeyCredentials(
         for uuids: [UUID],
@@ -2254,7 +2254,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                 // In both of these cases, our request has already been removed. We can proceed with updating the model.
                 return .value(nil)
             default:
-                // Otherwise, we don't recover and let the error propogate
+                // Otherwise, we don't recover and let the error propagate
                 throw error
             }
         }.map(on: DispatchQueue.global()) { (newRevision: UInt32?) -> TSGroupThread in

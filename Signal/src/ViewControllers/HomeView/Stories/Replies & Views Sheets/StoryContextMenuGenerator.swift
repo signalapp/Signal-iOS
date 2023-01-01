@@ -357,12 +357,12 @@ extension StoryContextMenuGenerator {
         if shouldHide {
             toastText = NSLocalizedString(
                 "STORIES_HIDE_STORY_CONFIRMATION_TOAST",
-                comment: "Toast shown when a story is successfuly hidden"
+                comment: "Toast shown when a story is successfully hidden"
             )
         } else {
             toastText = NSLocalizedString(
                 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST",
-                comment: "Toast shown when a story is successfuly unhidden"
+                comment: "Toast shown when a story is successfully unhidden"
             )
         }
         if delegate?.storyContextMenuDidUpdateHiddenState(message, isHidden: shouldHide) ?? true {

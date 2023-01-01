@@ -45,7 +45,7 @@ public final class CallService: LightweightCallManager {
     public var earlyRingNextIncomingCall = false
 
     /// Current call *must* be set on the main thread. It may be read off the main thread if the current call state must be consulted,
-    /// but othere call state may race (observer state, sleep state, etc.)
+    /// but other call states may race (observer state, sleep state, etc.)
     private var _currentCallLock = UnfairLock()
     private var _currentCall: SignalCall?
     @objc

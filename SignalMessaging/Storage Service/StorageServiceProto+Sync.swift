@@ -302,7 +302,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
             builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
         }
 
-        if let storyContextAssociatedData = StoryFinder.getAssocatedData(forContactAdddress: address, transaction: transaction) {
+        if let storyContextAssociatedData = StoryFinder.getAssociatedData(forContactAddress: address, transaction: transaction) {
             builder.setHideStory(storyContextAssociatedData.isHidden)
         }
 
@@ -493,7 +493,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
     ///
     /// On primary devices, confirms that storage service has the correct
     /// values. On linked devices, system contact data in this ContactRecord
-    /// will supercede any existing contact data for the given address.
+    /// will supersede any existing contact data for the given address.
     ///
     /// - Returns: True if the record in StorageService should be updated. This
     /// can happen on primary devices if StorageService has the wrong system
@@ -1470,7 +1470,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
         builder.setIdentifier(distributionListIdentifier)
 
         if let deletedAtTimestamp = TSPrivateStoryThread.deletedAtTimestamp(
-            forDistributionListIdentifer: distributionListIdentifier,
+            forDistributionListIdentifier: distributionListIdentifier,
             transaction: transaction
         ) {
             builder.setDeletedAtTimestamp(deletedAtTimestamp)
@@ -1515,7 +1515,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
             existingStory?.anyRemove(transaction: transaction)
             TSPrivateStoryThread.recordDeletedAtTimestamp(
                 record.deletedAtTimestamp,
-                forDistributionListIdentifer: identifier,
+                forDistributionListIdentifier: identifier,
                 transaction: transaction
             )
 

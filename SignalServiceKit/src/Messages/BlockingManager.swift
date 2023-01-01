@@ -661,7 +661,7 @@ extension BlockingManager {
 
 extension BlockingManager {
     enum TestingFlags {
-        // Usually, we wait until after MessageSender finishes sending before commiting our last-sync
+        // Usually, we wait until after MessageSender finishes sending before committing our last-sync
         // token. It's easier to just expose a knob for tests to force an early commit than having a test wait
         // for some nonexistent send.
         #if TESTABLE_BUILD

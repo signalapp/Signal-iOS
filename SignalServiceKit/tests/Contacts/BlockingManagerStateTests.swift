@@ -14,7 +14,7 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
     override func setUp() {
         super.setUp()
         databaseStorage.read { dut.reloadIfNecessary($0) }
-        assertInitalState(dut)
+        assertInitialState(dut)
     }
 
     // MARK: Mutations
@@ -28,7 +28,7 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
         let blockedBoth = CommonGenerator.address(hasUUID: true, hasPhoneNumber: true)
 
         // Test
-        // We add everthing twice, only the first pass should return true (i.e. didChange)
+        // We add everything twice, only the first pass should return true (i.e. didChange)
         XCTAssertTrue(dut.addBlockedGroup(blockedGroup))
         XCTAssertTrue(dut.addBlockedAddress(blockedUUID))
         XCTAssertTrue(dut.addBlockedAddress(blockedPhoneNumber))
@@ -332,7 +332,7 @@ class BlockingManagerStateTests: SSKBaseTestSwift {
 
     // MARK: Helpers
 
-    func assertInitalState(_ state: BlockingManager.State) {
+    func assertInitialState(_ state: BlockingManager.State) {
         XCTAssertEqual(dut.isDirty, false)
         XCTAssertEqual(dut.blockedPhoneNumbers.count, 0)
         XCTAssertEqual(dut.blockedUUIDStrings.count, 0)

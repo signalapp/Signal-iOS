@@ -178,7 +178,7 @@ class StoryGroupReplyCell: UITableViewCell {
         if let reuseIdentifier = reuseIdentifier, let cellType = CellType(rawValue: reuseIdentifier) {
             self.cellType = cellType
         } else {
-            owsFailDebug("Missing cellType for reuseIdentifer \(String(describing: reuseIdentifier))")
+            owsFailDebug("Missing cellType for reuseIdentifier \(String(describing: reuseIdentifier))")
             self.cellType = .init(kind: .text)
         }
 

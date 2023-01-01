@@ -199,7 +199,7 @@ open class OWSNavigationController: OWSNavigationControllerBase {
         // Only update when necessary to preserve performance and safe area changes.
         if shouldHideNavbar != isNavigationBarHidden {
             // Don't do our custom shenanigans if we are changing the hidden state
-            // as a result of view controler transitions.
+            // as a result of view controller transitions.
             if fromViewControllerTransition {
                 super.setNavigationBarHidden(shouldHideNavbar, animated: animated)
             } else {

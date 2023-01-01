@@ -332,7 +332,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
             return (IndexPath(item: offsetInCurrentSection, section: currentSectionIndex), totalLoadCount)
         }
 
-        /// Equivalant to calling the three-argument `resolveNaiveStartIndex` without a transaction.
+        /// Equivalent to calling the three-argument `resolveNaiveStartIndex` without a transaction.
         internal func resolveNaiveStartIndex(_ naiveIndex: Int, relativeToSection initialSectionIndex: Int) -> IndexPath? {
             // The five-argument form is `mutating`, but only so it can load more sections.
             // Thanks to Swift's copy-on-write data types, this will only do a few retains even in non-optimized builds.

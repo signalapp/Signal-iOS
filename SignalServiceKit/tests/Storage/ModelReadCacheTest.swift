@@ -118,7 +118,7 @@ class ModelReadCacheTest: SSKBaseTestSwift {
                 }
                 let keys = addresses.map { adapter.cacheKey(forKey: $0) }
 
-                // This should not have a side-effect of changing the cache beacuse the addresses were excluded.
+                // This should not have a side-effect of changing the cache because the addresses were excluded.
                 let actual = cache.readValues(for: AnySequence(keys), transaction: transaction)
                 let expected: [OWSUserProfile?] = [nil, nil]
                 XCTAssertEqual(actual, expected)

@@ -368,7 +368,7 @@ private extension Paypal {
                     .presentationContextInvalid:
                 owsFail("Unexpected issue with presentation context. Was the auth session set up correctly?")
             @unknown default:
-                completion(.error(OWSAssertionError("Unexpected auth sesion error code: \(authSessionError.code)")))
+                completion(.error(OWSAssertionError("Unexpected auth session error code: \(authSessionError.code)")))
             }
         }
     }

@@ -168,7 +168,7 @@ protocol ExperienceUpgradeSortable {
     ///
     /// Lower values indicate higher importance. When comparing, ties in the
     /// primary index are broken by the secondary index. Equal primary and
-    /// secondary indicies indicates equal importance.
+    /// secondary indices indicates equal importance.
     ///
     /// These values are not expected to remain stable.
     var importanceIndex: (primary: Int, secondary: Int) { get }
@@ -176,7 +176,7 @@ protocol ExperienceUpgradeSortable {
 
 extension Sequence where Element: ExperienceUpgradeSortable {
     /// Returns the elements sorted by importance order - i.e., each
-    /// element in the returned array should be preferred for presention over
+    /// element in the returned array should be preferred for presentation over
     /// its subsequent elements.
     func sortedByImportance() -> [Element] {
         sorted { lhs, rhs in

@@ -231,7 +231,7 @@ class StoryListDataSource: NSObject, Dependencies {
             )
 
             if !ok {
-                // If we encouter any errors, just hard reload everything.
+                // If we encounter any errors, just hard reload everything.
                 DispatchQueue.main.async { self.reloadStories() }
                 return
             }

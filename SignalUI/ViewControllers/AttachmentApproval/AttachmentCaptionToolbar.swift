@@ -45,7 +45,7 @@ class AttachmentCaptionToolbar: UIView, MentionTextViewDelegate {
 
         super.init(frame: CGRect.zero)
 
-        // Specifying autorsizing mask and an intrinsic content size allows proper
+        // Specifying autoresizing mask and an intrinsic content size allows proper
         // sizing when used as an input accessory view.
         self.autoresizingMask = .flexibleHeight
         self.translatesAutoresizingMaskIntoConstraints = false
@@ -145,7 +145,7 @@ class AttachmentCaptionToolbar: UIView, MentionTextViewDelegate {
     }
 
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        // Though we can wrap the text, we don't want to encourage multline captions, plus a "done" button
+        // Though we can wrap the text, we don't want to encourage multiline captions, plus a "done" button
         // allows the user to get the keyboard out of the way while in the attachment approval view.
         if text == "\n" {
             attachmentCaptionToolbarDelegate?.attachmentCaptionToolbarDidComplete()

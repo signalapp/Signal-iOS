@@ -176,7 +176,7 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
         }
         self.waitForExpectations(timeout: timeout)
 
-        // After we've fulfilled, try again, which should't redownload.
+        // After we've fulfilled, try again, which shouldn't redownload.
 
         mockSignalService.mockUrlSessionBuilder = { _, _, _ in
             XCTFail("Should not be issuing another network request.")

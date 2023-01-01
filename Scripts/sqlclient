@@ -145,7 +145,7 @@ parser = argparse.ArgumentParser(
                     If a database key could not be found and one was not provided through an argument, you'll be prompted
                     to enter one.
 
-                    Alternatively, you can provide a sqlcipher path directly via command line arguments. In this case,
+                    Alternatively, you can provide an sqlcipher path directly via command line arguments. In this case,
                     you'll be required to provide a database key through an argument or stdin.
 
                     If --use-gui is specified, this script will attempt to open the database using the "DB Browser for
@@ -153,7 +153,7 @@ parser = argparse.ArgumentParser(
 
                     If --gui-auto-decrypt-with-plaintext-key is passed alongside --use-gui, the script will place the
                     passphrase in a file next to the database file such that DBBfS is able to automatically decrypt and
-                    open the databse. Note that this file is in plaintext, and *ONLY USE* with databases containing
+                    open the database. Note that this file is in plaintext, and *ONLY USE* with databases containing
                     test data.
                 '''),
         usage="%(prog)s [--simulator simID [--staging] | --path dbPath] [--passphrase passphrase] [--quiet] [--use-gui [--gui-auto-decrypt-with-plaintext-key]]")
