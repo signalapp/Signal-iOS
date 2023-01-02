@@ -50,16 +50,6 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return [TSRequest requestWithUrl:[NSURL URLWithString:self.textSecure2FAAPI] method:@"DELETE" parameters:@{}];
 }
 
-+ (TSRequest *)acknowledgeMessageDeliveryRequestWithAddress:(SignalServiceAddress *)address timestamp:(UInt64)timestamp
-{
-    OWSAssertDebug(address.isValid);
-    OWSAssertDebug(timestamp > 0);
-
-    NSString *path = [NSString stringWithFormat:@"v1/messages/%@/%llu", address.serviceIdentifier, timestamp];
-
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"DELETE" parameters:@{}];
-}
-
 + (TSRequest *)acknowledgeMessageDeliveryRequestWithServerGuid:(NSString *)serverGuid
 {
     OWSAssertDebug(serverGuid.length > 0);

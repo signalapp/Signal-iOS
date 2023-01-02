@@ -658,8 +658,6 @@ private class MessageAckOperation: OWSOperation {
         let request: TSRequest
         if let serverGuid = envelopeInfo.serverGuid, !serverGuid.isEmpty {
             request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid)
-        } else if let sourceAddress = envelopeInfo.sourceAddress, sourceAddress.isValid, envelopeInfo.timestamp > 0 {
-            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(with: sourceAddress, timestamp: envelopeInfo.timestamp)
         } else {
             let error = OWSAssertionError("Cannot ACK message which has neither source, nor server GUID and timestamp.")
             reportError(error)
@@ -681,9 +679,9 @@ private class MessageAckOperation: OWSOperation {
             self.reportSuccess()
         }.catch(on: .global()) { error in
             if DebugFlags.internalLogging {
-                Logger.info("acknowledging delivery for message at timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp) " + " failed with error: \(error)")
+                Logger.info("acknowledging delivery for message at timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp) failed with error: \(error)")
             } else {
-                Logger.debug("acknowledging delivery for message at timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp) " + " failed with error: \(error)")
+                Logger.debug("acknowledging delivery for message at timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp) failed with error: \(error)")
             }
             self.reportError(error)
         }

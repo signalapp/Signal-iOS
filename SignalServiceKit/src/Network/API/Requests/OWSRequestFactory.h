@@ -30,8 +30,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 + (TSRequest *)disable2FARequest;
 
-+ (TSRequest *)acknowledgeMessageDeliveryRequestWithAddress:(SignalServiceAddress *)address timestamp:(UInt64)timestamp;
-
 + (TSRequest *)acknowledgeMessageDeliveryRequestWithServerGuid:(NSString *)serverGuid;
 
 + (TSRequest *)deleteDeviceRequestWithDevice:(OWSDevice *)device;
