@@ -422,24 +422,10 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
     ThreadAssociatedData *associatedData = [ThreadAssociatedData fetchOrDefaultForThread:self transaction:transaction];
 
-    BOOL needsToClearArchived = associatedData.isArchived && wasMessageInserted;
-
-    // Don't clear archived during migrations.
-    if (!CurrentAppContext().isRunningTests && !AppReadiness.isAppReady) {
-        needsToClearArchived = NO;
-    }
-
-    // Don't clear archived during thread import
-    if ([message isKindOfClass:TSInfoMessage.class]
-        && ((TSInfoMessage *)message).messageType == TSInfoMessageSyncedThread) {
-        needsToClearArchived = NO;
-    }
-
-    // Don't clear archive if muted and the user has
-    // requested we don't for muted conversations.
-    if (associatedData.isMuted && [SSKPreferences shouldKeepMutedChatsArchivedWithTransaction:transaction]) {
-        needsToClearArchived = NO;
-    }
+    BOOL needsToClearArchived = [self shouldClearArchivedStatusWhenUpdatingWithMessage:message
+                                                                    wasMessageInserted:wasMessageInserted
+                                                                  threadAssociatedData:associatedData
+                                                                           transaction:transaction];
 
     BOOL needsToUpdateLastInteractionRowId = messageSortId > self.lastInteractionRowId;
 
@@ -466,6 +452,41 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     } else {
         [self scheduleTouchFinalizationWithTransaction:transaction];
     }
+}
+
+- (BOOL)shouldClearArchivedStatusWhenUpdatingWithMessage:(TSInteraction *)message
+                                      wasMessageInserted:(BOOL)wasMessageInserted
+                                    threadAssociatedData:(ThreadAssociatedData *)threadAssociatedData
+                                             transaction:(SDSAnyReadTransaction *)transaction
+{
+    BOOL needsToClearArchived = threadAssociatedData.isArchived && wasMessageInserted;
+
+    // Shouldn't clear archived during migrations.
+    if (!CurrentAppContext().isRunningTests && !AppReadiness.isAppReady) {
+        needsToClearArchived = NO;
+    }
+
+    // Shouldn't clear archived during thread import.
+    if ([message isKindOfClass:TSInfoMessage.class]
+        && ((TSInfoMessage *)message).messageType == TSInfoMessageSyncedThread) {
+        needsToClearArchived = NO;
+    }
+
+    // Shouldn't clear archived if:
+    // - The thread is muted.
+    // - The user has requested we keep muted chats archived.
+    // - The message was sent by someone other than the current user. (If the
+    //   current user sent the message, we should clear archived.)
+    {
+        BOOL threadIsMuted = threadAssociatedData.isMuted;
+        BOOL shouldKeepMutedChatsArchived = [SSKPreferences shouldKeepMutedChatsArchivedWithTransaction:transaction];
+        BOOL wasMessageSentByUs = [message isKindOfClass:[TSOutgoingMessage class]];
+        if (threadIsMuted && shouldKeepMutedChatsArchived && !wasMessageSentByUs) {
+            needsToClearArchived = NO;
+        }
+    }
+
+    return needsToClearArchived;
 }
 
 - (void)updateWithRemovedMessage:(TSInteraction *)message transaction:(SDSAnyWriteTransaction *)transaction
