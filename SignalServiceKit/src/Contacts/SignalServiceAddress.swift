@@ -617,7 +617,7 @@ public class SignalServiceAddressCache: NSObject {
             if let phoneNumber = phoneNumber,
                let oldUuid = phoneNumberToUUIDCache[phoneNumber],
                oldUuid != uuid {
-                if uuidToHashValueCache[oldUuid] == hash {
+                if uuidToHashValueCache[oldUuid] == hashValue {
                     owsFailDebug("Unexpectedly using hash for old uuid.")
                 }
                 uuidToPhoneNumberCache[oldUuid] = nil
