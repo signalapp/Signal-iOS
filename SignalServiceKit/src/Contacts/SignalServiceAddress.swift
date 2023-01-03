@@ -614,20 +614,17 @@ public class SignalServiceAddressCache: NSObject {
             }
 
             // If we previously had a UUID, disassociate it from the phone number.
-            if let phoneNumber = phoneNumber,
-               let oldUuid = phoneNumberToUUIDCache[phoneNumber],
-               oldUuid != uuid {
+            if let phoneNumber, let oldUuid = phoneNumberToUUIDCache[phoneNumber], oldUuid != uuid {
                 if uuidToHashValueCache[oldUuid] == hashValue {
                     owsFailDebug("Unexpectedly using hash for old uuid.")
                 }
-                uuidToPhoneNumberCache[oldUuid] = nil
             }
 
             // Map the uuid to the new phone number
             uuidToPhoneNumberCache[uuid] = phoneNumber
             uuidToHashValueCache[uuid] = hashValue
 
-            if let phoneNumber = phoneNumber {
+            if let phoneNumber {
                 // Unmap the previous UUID from this phone number
                 if let oldUuid = phoneNumberToUUIDCache[phoneNumber] {
                     uuidToPhoneNumberCache[oldUuid] = nil
