@@ -171,9 +171,9 @@ public class ChangePhoneNumber: NSObject {
 
         databaseStorage.write { transaction in
             let address = SignalServiceAddress(uuid: serviceUuid, phoneNumber: servicePhoneNumber)
-            SignalRecipient.mark(asRegisteredAndGet: address,
-                                 trustLevel: .high,
-                                 transaction: transaction)
+
+            SignalRecipient.fetchOrCreate(for: address, trustLevel: .high, transaction: transaction)
+                .markAsRegistered(transaction: transaction)
 
             if servicePhoneNumber != localPhoneNumber || servicePni != localPni {
                 Logger.info("Recording new phone number: \(servicePhoneNumber), pni: \(servicePni)")

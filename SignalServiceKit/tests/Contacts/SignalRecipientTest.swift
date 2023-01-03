@@ -20,8 +20,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
     func testSelfRecipientWithExistingRecord() {
         write { transaction in
-            SignalRecipient.mark(asRegisteredAndGet: self.localAddress, trustLevel: .high, transaction: transaction)
-
+            createHighTrustRecipient(for: self.localAddress, transaction: transaction)
             XCTAssertTrue(SignalRecipient.isRegisteredRecipient(self.localAddress, transaction: transaction))
         }
     }
@@ -29,8 +28,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
     func testRecipientWithExistingRecord() {
         let recipient = CommonGenerator.address()
         write { transaction in
-            SignalRecipient.mark(asRegisteredAndGet: recipient, trustLevel: .high, transaction: transaction)
-
+            createHighTrustRecipient(for: recipient, transaction: transaction)
             XCTAssertTrue(SignalRecipient.isRegisteredRecipient(recipient, transaction: transaction))
         }
     }
@@ -41,8 +39,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         // Phone number only recipients are recorded
         let recipient = CommonGenerator.address(hasUUID: false)
         write { transaction in
-            SignalRecipient.mark(asRegisteredAndGet: recipient, trustLevel: .low, transaction: transaction)
-
+            createLowTrustRecipient(for: recipient, transaction: transaction)
             XCTAssertTrue(SignalRecipient.isRegisteredRecipient(recipient, transaction: transaction))
         }
     }
@@ -51,8 +48,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         // UUID only recipients are recorded
         let recipient = CommonGenerator.address(hasPhoneNumber: false)
         write { transaction in
-            SignalRecipient.mark(asRegisteredAndGet: recipient, trustLevel: .low, transaction: transaction)
-
+            createLowTrustRecipient(for: recipient, transaction: transaction)
             XCTAssertTrue(SignalRecipient.isRegisteredRecipient(recipient, transaction: transaction))
         }
     }
@@ -66,11 +62,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         XCTAssertNil(recipientAddressWithoutUUID.uuid)
 
         write { transaction in
-            let recipient = SignalRecipient.mark(
-                asRegisteredAndGet: recipientAddress,
-                trustLevel: .low,
-                transaction: transaction
-            )
+            let recipient = createLowTrustRecipient(for: recipientAddress, transaction: transaction)
 
             // The impartial address is *not* automatically filled
             // after marking the complete address as registered.
@@ -96,8 +88,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         // Phone number only recipients are recorded
         let recipient = CommonGenerator.address(hasUUID: false)
         write { transaction in
-            SignalRecipient.mark(asRegisteredAndGet: recipient, trustLevel: .high, transaction: transaction)
-
+            createHighTrustRecipient(for: recipient, transaction: transaction)
             XCTAssertTrue(SignalRecipient.isRegisteredRecipient(recipient, transaction: transaction))
         }
     }
@@ -106,8 +97,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         // UUID only recipients are recorded
         let recipient = CommonGenerator.address(hasPhoneNumber: false)
         write { transaction in
-            SignalRecipient.mark(asRegisteredAndGet: recipient, trustLevel: .high, transaction: transaction)
-
+            createHighTrustRecipient(for: recipient, transaction: transaction)
             XCTAssertTrue(SignalRecipient.isRegisteredRecipient(recipient, transaction: transaction))
         }
     }
@@ -121,11 +111,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
         XCTAssertNil(recipientAddressWithoutUUID.uuid)
 
         write { transaction in
-            let recipient = SignalRecipient.mark(
-                asRegisteredAndGet: recipientAddress,
-                trustLevel: .high,
-                transaction: transaction
-            )
+            let recipient = createHighTrustRecipient(for: recipientAddress, transaction: transaction)
 
             // The impartial address is automatically filled
             // after marking the complete address as registered.
@@ -154,23 +140,9 @@ class SignalRecipientTest: SSKBaseTestSwift {
         let address = SignalServiceAddress(uuid: uuidOnlyAddress.uuid!, phoneNumber: phoneNumberOnlyAddress.phoneNumber!)
 
         write { transaction in
-            let uuidRecipient = SignalRecipient.mark(
-                asRegisteredAndGet: uuidOnlyAddress,
-                trustLevel: .high,
-                transaction: transaction
-            )
-
-            let phoneNumberRecipient = SignalRecipient.mark(
-                asRegisteredAndGet: phoneNumberOnlyAddress,
-                trustLevel: .high,
-                transaction: transaction
-            )
-
-            let mergedRecipient = SignalRecipient.mark(
-                asRegisteredAndGet: address,
-                trustLevel: .high,
-                transaction: transaction
-            )
+            let uuidRecipient = createHighTrustRecipient(for: uuidOnlyAddress, transaction: transaction)
+            let phoneNumberRecipient = createHighTrustRecipient(for: phoneNumberOnlyAddress, transaction: transaction)
+            let mergedRecipient = createHighTrustRecipient(for: address, transaction: transaction)
 
             // TODO: test this more thoroughly. right now just confirming we prefer
             // the UUID recipient when no other info is available
@@ -207,20 +179,10 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
             let oldAccount = SignalAccount(address: oldAddress)
             oldAccount.anyInsert(transaction: transaction)
-
-            SignalRecipient.mark(
-                asRegisteredAndGet: oldAddress,
-                trustLevel: .high,
-                transaction: transaction
-            )
+            createHighTrustRecipient(for: oldAddress, transaction: transaction)
 
             let newAddress = SignalServiceAddress(uuid: oldAddress.uuid!, phoneNumber: CommonGenerator.e164())
-
-            SignalRecipient.mark(
-                asRegisteredAndGet: newAddress,
-                trustLevel: .high,
-                transaction: transaction
-            )
+            createHighTrustRecipient(for: newAddress, transaction: transaction)
 
             let newThread = TSContactThread.getOrCreateThread(
                 withContactAddress: newAddress,
@@ -291,20 +253,10 @@ class SignalRecipientTest: SSKBaseTestSwift {
 
             let oldAccount = SignalAccount(address: oldAddress)
             oldAccount.anyInsert(transaction: transaction)
-
-            SignalRecipient.mark(
-                asRegisteredAndGet: oldAddress,
-                trustLevel: .high,
-                transaction: transaction
-            )
+            createHighTrustRecipient(for: oldAddress, transaction: transaction)
 
             let newAddress = SignalServiceAddress(uuid: UUID(), phoneNumber: oldAddress.phoneNumber!)
-
-            SignalRecipient.mark(
-                asRegisteredAndGet: newAddress,
-                trustLevel: .high,
-                transaction: transaction
-            )
+            createHighTrustRecipient(for: newAddress, transaction: transaction)
 
             let newThread = TSContactThread.getOrCreateThread(
                 withContactAddress: newAddress,
@@ -406,18 +358,10 @@ class SignalRecipientTest: SSKBaseTestSwift {
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
 
             // User 1 has a SignalRecipient with a high-trust mapping; user 2 does not.
-            SignalRecipient.mark(
-                asRegisteredAndGet: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1),
-                trustLevel: .high,
-                transaction: transaction
-            )
+            createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1), transaction: transaction)
 
             // uuid1 becomes associated with phoneNumber2.
-            SignalRecipient.mark(
-                asRegisteredAndGet: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2),
-                trustLevel: .high,
-                transaction: transaction
-            )
+            createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2), transaction: transaction)
 
             // We should still have two group members: (u1, p2) and (u2, nil).
             XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
@@ -478,18 +422,10 @@ class SignalRecipientTest: SSKBaseTestSwift {
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
 
             // User 1 has a SignalRecipient with a high-trust mapping; user 2 does not.
-            SignalRecipient.mark(
-                asRegisteredAndGet: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1),
-                trustLevel: .high,
-                transaction: transaction
-            )
+            createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1), transaction: transaction)
 
             // uuid1 becomes associated with phoneNumber2.
-            SignalRecipient.mark(
-                asRegisteredAndGet: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2),
-                trustLevel: .high,
-                transaction: transaction
-            )
+            createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber2), transaction: transaction)
 
             // We should now have two group members: (u1, p2), (fake uuid, nil).
             XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
@@ -553,18 +489,10 @@ class SignalRecipientTest: SSKBaseTestSwift {
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
 
             // User 1 has a SignalRecipient with a high-trust mapping; user 2 does not.
-            SignalRecipient.mark(
-                asRegisteredAndGet: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1),
-                trustLevel: .high,
-                transaction: transaction
-            )
+            createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1), transaction: transaction)
 
             // uuid2 becomes associated with phoneNumber1.
-            SignalRecipient.mark(
-                asRegisteredAndGet: SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1),
-                trustLevel: .high,
-                transaction: transaction
-            )
+            createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1), transaction: transaction)
 
             // We should still have two group members: (u2, p1) and (u1, nil).
             XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
@@ -625,18 +553,10 @@ class SignalRecipientTest: SSKBaseTestSwift {
             XCTAssertEqual(3, TSThread.anyCount(transaction: transaction))
 
             // User 1 has a SignalRecipient with a high-trust mapping; user 2 does not.
-            SignalRecipient.mark(
-                asRegisteredAndGet: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1),
-                trustLevel: .high,
-                transaction: transaction
-            )
+            createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1), transaction: transaction)
 
             // uuid2 becomes associated with phoneNumber1.
-            SignalRecipient.mark(
-                asRegisteredAndGet: SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1),
-                trustLevel: .high,
-                transaction: transaction
-            )
+            createHighTrustRecipient(for: SignalServiceAddress(uuid: uuid2, phoneNumber: phoneNumber1), transaction: transaction)
 
             // We should now have two group members: (u2, p1), (fake uuid, nil).
             XCTAssertEqual(2, TSGroupMember.groupMembers(in: groupThread.uniqueId, transaction: transaction).count)
@@ -650,16 +570,73 @@ class SignalRecipientTest: SSKBaseTestSwift {
         let address = CommonGenerator.address()
 
         write {
-            let registeredRecipient = SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: $0)
+            let registeredRecipient = createHighTrustRecipient(for: address, transaction: $0)
             XCTAssertNil(registeredRecipient.unregisteredAtTimestamp)
 
-            SignalRecipient.mark(asUnregistered: address, transaction: $0)
+            SignalRecipient.fetchOrCreate(for: address, trustLevel: .low, transaction: $0)
+                .markAsUnregistered(transaction: $0)
 
             let unregisteredRecipient = AnySignalRecipientFinder().signalRecipient(for: address, transaction: $0)
             XCTAssert(unregisteredRecipient!.unregisteredAtTimestamp!.uint64Value > 0)
 
-            let reregisteredRecipient = SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: $0)
+            let reregisteredRecipient = createHighTrustRecipient(for: address, transaction: $0)
             XCTAssertNil(reregisteredRecipient.unregisteredAtTimestamp)
         }
+    }
+
+    func testMarkAsRegistered() {
+        struct TestCase {
+            var initialDeviceIds: Set<UInt32>
+            var addedDeviceId: UInt32
+            var expectedDeviceIds: Set<UInt32>
+        }
+        let testCases: [TestCase] = [
+            TestCase(initialDeviceIds: [], addedDeviceId: 1, expectedDeviceIds: [1]),
+            TestCase(initialDeviceIds: [], addedDeviceId: 2, expectedDeviceIds: [1, 2]),
+            TestCase(initialDeviceIds: [1], addedDeviceId: 1, expectedDeviceIds: [1]),
+            TestCase(initialDeviceIds: [1], addedDeviceId: 2, expectedDeviceIds: [1, 2]),
+            TestCase(initialDeviceIds: [2], addedDeviceId: 1, expectedDeviceIds: [1, 2]),
+            TestCase(initialDeviceIds: [2], addedDeviceId: 2, expectedDeviceIds: [1, 2]),
+            TestCase(initialDeviceIds: [3], addedDeviceId: 1, expectedDeviceIds: [1, 3]),
+            TestCase(initialDeviceIds: [3], addedDeviceId: 2, expectedDeviceIds: [1, 2, 3]),
+            TestCase(initialDeviceIds: [1, 2], addedDeviceId: 1, expectedDeviceIds: [1, 2]),
+            TestCase(initialDeviceIds: [1, 2], addedDeviceId: 2, expectedDeviceIds: [1, 2]),
+            TestCase(initialDeviceIds: [1, 2, 3], addedDeviceId: 1, expectedDeviceIds: [1, 2, 3]),
+            TestCase(initialDeviceIds: [1, 2, 3], addedDeviceId: 2, expectedDeviceIds: [1, 2, 3])
+        ]
+        write { transaction in
+            for testCase in testCases {
+                let recipient = SignalRecipient.fetchOrCreate(
+                    for: CommonGenerator.address(),
+                    trustLevel: .low,
+                    transaction: transaction
+                )
+                if !testCase.initialDeviceIds.isEmpty {
+                    recipient.anyUpdate(transaction: transaction) {
+                        $0.addDevices(Set(testCase.initialDeviceIds.map { NSNumber(value: $0) }), source: .local)
+                    }
+                }
+                recipient.markAsRegistered(deviceId: testCase.addedDeviceId, transaction: transaction)
+
+                let actualDeviceIds = Set(recipient.devices.map { ($0 as! NSNumber).uint32Value })
+                XCTAssertEqual(actualDeviceIds, testCase.expectedDeviceIds, "\(testCase)")
+            }
+        }
+    }
+
+    // MARK: - Helpers
+
+    @discardableResult
+    private func createLowTrustRecipient(for address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) -> SignalRecipient {
+        let result = SignalRecipient.fetchOrCreate(for: address, trustLevel: .low, transaction: transaction)
+        result.markAsRegistered(transaction: transaction)
+        return result
+    }
+
+    @discardableResult
+    private func createHighTrustRecipient(for address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) -> SignalRecipient {
+        let result = SignalRecipient.fetchOrCreate(for: address, trustLevel: .high, transaction: transaction)
+        result.markAsRegistered(transaction: transaction)
+        return result
     }
 }

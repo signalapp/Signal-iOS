@@ -79,10 +79,13 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue, Dependenci
 
         return databaseStorage.write { transaction in
             let registeredRecipients = Set(discoveredAddresses.map { address -> SignalRecipient in
-                return SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: transaction)
+                let recipient = SignalRecipient.fetchOrCreate(for: address, trustLevel: .high, transaction: transaction)
+                recipient.markAsRegistered(transaction: transaction)
+                return recipient
             })
             phoneNumberOnlyUndiscoverableAddresses.forEach { address in
-                SignalRecipient.mark(asUnregistered: address, transaction: transaction)
+                let recipient = SignalRecipient.fetchOrCreate(for: address, trustLevel: .low, transaction: transaction)
+                recipient.markAsUnregistered(transaction: transaction)
             }
             return registeredRecipients
         }

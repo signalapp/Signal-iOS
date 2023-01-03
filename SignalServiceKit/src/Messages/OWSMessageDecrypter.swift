@@ -733,12 +733,12 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
         let sourceDeviceId = UInt32(rawSourceDeviceId)
 
-        SignalRecipient.mark(
-            asRegisteredAndGet: sourceAddress,
-            deviceId: sourceDeviceId,
+        let recipient = SignalRecipient.fetchOrCreate(
+            for: sourceAddress,
             trustLevel: .high,
             transaction: transaction
         )
+        recipient.markAsRegistered(deviceId: sourceDeviceId, transaction: transaction)
 
         let plaintextData = decryptResult.paddedPayload.withoutPadding()
 

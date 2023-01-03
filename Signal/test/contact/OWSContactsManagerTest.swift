@@ -34,9 +34,8 @@ class OWSContactsManagerTest: SignalBaseTest {
         // Create recipients and accounts.
         write { transaction in
             for (address, _) in tuples {
-                SignalRecipient.mark(asRegisteredAndGet: address,
-                                     trustLevel: .high,
-                                     transaction: transaction)
+                let recipient = SignalRecipient.fetchOrCreate(for: address, trustLevel: .high, transaction: transaction)
+                recipient.markAsRegistered(transaction: transaction)
             }
             for (_, account) in tuples {
                 account.anyInsert(transaction: transaction)

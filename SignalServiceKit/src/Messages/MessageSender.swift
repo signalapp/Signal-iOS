@@ -117,12 +117,13 @@ extension MessageSender {
                     // Since we successfully fetched the prekey bundle,
                     // we know this device is registered. We can safely
                     // mark it as such to acquire a stable accountId.
-                    let recipient = SignalRecipient.mark(
-                        asRegisteredAndGet: messageSend.address,
-                        deviceId: deviceId,
+                    let recipient = SignalRecipient.fetchOrCreate(
+                        for: messageSend.address,
                         trustLevel: .low,
                         transaction: transaction
                     )
+                    recipient.markAsRegistered(deviceId: deviceId, transaction: transaction)
+
                     try self.createSession(
                         forPreKeyBundle: preKeyBundle,
                         accountId: recipient.accountId,
@@ -916,7 +917,8 @@ public extension MessageSender {
             // have a valid Signal account. This is low trust, because we
             // don't actually know for sure the fully qualified address is
             // valid.
-            SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .low, transaction: transaction)
+            let recipient = SignalRecipient.fetchOrCreate(for: address, trustLevel: .low, transaction: transaction)
+            recipient.markAsRegistered(transaction: transaction)
 
             Self.profileManager.didSendOrReceiveMessage(from: address, transaction: transaction)
         }
@@ -1081,7 +1083,8 @@ public extension MessageSender {
             return
         }
 
-        SignalRecipient.mark(asUnregistered: address, transaction: transaction)
+        let recipient = SignalRecipient.fetchOrCreate(for: address, trustLevel: .low, transaction: transaction)
+        recipient.markAsUnregistered(transaction: transaction)
         // TODO: Should we deleteAllSessionsForContact here?
         //       If so, we'll need to avoid doing a prekey fetch every
         //       time we try to send a message to an unregistered user.

@@ -16,6 +16,11 @@ typedef NS_CLOSED_ENUM(NSUInteger, SignalRecipientTrustLevel) {
     SignalRecipientTrustLevelHigh
 };
 
+typedef NS_CLOSED_ENUM(NSUInteger, SignalRecipientSource) {
+    SignalRecipientSourceLocal,
+    SignalRecipientSourceStorageService,
+};
+
 /// SignalRecipient serves two purposes:
 ///
 /// a) It serves as a cache of "known" Signal accounts.  When the service indicates
@@ -39,8 +44,9 @@ typedef NS_CLOSED_ENUM(NSUInteger, SignalRecipientTrustLevel) {
 // exposed for Swift interop
 - (instancetype)initWithAddress:(SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUUIDString:(NSString *)uuidString NS_DESIGNATED_INITIALIZER;
-- (void)addDevices:(NSSet<NSNumber *> *)devices;
-- (void)removeAllDevices;
+- (void)addDevices:(NSSet<NSNumber *> *)devices source:(SignalRecipientSource)source;
+- (void)removeAllDevicesWithUnregisteredAtTimestamp:(uint64_t)unregisteredAtTimestamp
+                                             source:(SignalRecipientSource)source;
 
 #if TESTABLE_BUILD
 - (instancetype)initWithPhoneNumber:(nullable NSString *)phoneNumber

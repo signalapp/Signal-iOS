@@ -283,7 +283,8 @@ extension MessageSender {
                         }
 
                         message.update(withSentRecipient: recipient.address, wasSentByUD: true, transaction: writeTx)
-                        SignalRecipient.mark(asRegisteredAndGet: recipient.address, trustLevel: .low, transaction: writeTx)
+                        SignalRecipient.fetchOrCreate(for: recipient.address, trustLevel: .low, transaction: writeTx)
+                            .markAsRegistered(transaction: writeTx)
                         self.profileManager.didSendOrReceiveMessage(from: recipient.address, transaction: writeTx)
 
                         guard let payloadId = payloadId else { return }

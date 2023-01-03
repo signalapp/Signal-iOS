@@ -45,7 +45,8 @@ class ModelReadCacheTest: SSKBaseTestSwift {
         // Create recipients and accounts.
         write { transaction in
             for address in addresses {
-                SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: transaction)
+                SignalRecipient.fetchOrCreate(for: address, trustLevel: .high, transaction: transaction)
+                    .markAsRegistered(transaction: transaction)
             }
             for account in accounts {
                 account.anyInsert(transaction: transaction)

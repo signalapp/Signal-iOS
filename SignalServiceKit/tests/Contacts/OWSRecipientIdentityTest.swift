@@ -36,9 +36,8 @@ class OWSRecipientIdentityTest: SSKBaseTestSwift {
         // Create recipients.
         write { transaction in
             for recipient in self.recipients {
-                SignalRecipient.mark(asRegisteredAndGet: recipient,
-                                     trustLevel: .high,
-                                     transaction: transaction)
+                SignalRecipient.fetchOrCreate(for: recipient, trustLevel: .high, transaction: transaction)
+                    .markAsRegistered(transaction: transaction)
             }
         }
         // Create identities for our recipients.

@@ -36,8 +36,9 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     _recipientUUID = uuidString;
     _recipientPhoneNumber = nil;
     _recipientSchemaVersion = SignalRecipientSchemaVersion;
-
-    _devices = [NSOrderedSet orderedSetWithObject:@(OWSDevicePrimaryDeviceId)];
+    // New recipients start out as "unregistered in the distant past"
+    _unregisteredAtTimestamp = @1;
+    _devices = [NSOrderedSet orderedSet];
 
     return self;
 }
@@ -53,8 +54,9 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     _recipientUUID = address.uuidString;
     _recipientPhoneNumber = address.phoneNumber;
     _recipientSchemaVersion = SignalRecipientSchemaVersion;
-
-    _devices = [NSOrderedSet orderedSetWithObject:@(OWSDevicePrimaryDeviceId)];
+    // New recipients start out as "unregistered in the distant past"
+    _unregisteredAtTimestamp = @1;
+    _devices = [NSOrderedSet orderedSet];
 
     return self;
 }
@@ -109,7 +111,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     if (![_devices containsObject:@(OWSDevicePrimaryDeviceId)]) {
         if (self.address.isLocalAddress) {
             OWSLogInfo(@"Adding primary device to self recipient.");
-            [self addDevices:[NSSet setWithObject:@(OWSDevicePrimaryDeviceId)]];
+            [self addDevices:[NSSet setWithObject:@(OWSDevicePrimaryDeviceId)] source:SignalRecipientSourceLocal];
         }
     }
 
@@ -171,35 +173,48 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
 #pragma mark -
 
-- (void)addDevices:(NSSet<NSNumber *> *)devices
+- (void)addDevices:(NSSet<NSNumber *> *)devices source:(SignalRecipientSource)source
 {
     OWSAssertDebug(devices.count > 0);
 
     NSMutableOrderedSet<NSNumber *> *updatedDevices = [self.devices mutableCopy];
     [updatedDevices unionSet:devices];
     self.devices = [updatedDevices copy];
-    self.unregisteredAtTimestamp = nil;
 
-    [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ self.accountId ]];
+    if ((self.devices.count > 0) && (self.unregisteredAtTimestamp != nil)) {
+        [self setUnregisteredAtTimestamp:nil source:source];
+    }
 }
 
-- (void)removeDevices:(NSSet<NSNumber *> *)devices
+- (void)removeDevices:(NSSet<NSNumber *> *)devices source:(SignalRecipientSource)source
 {
-    if (devices.count > 0) {
-        NSMutableOrderedSet<NSNumber *> *updatedDevices = [self.devices mutableCopy];
-        [updatedDevices minusSet:devices];
-        self.devices = [updatedDevices copy];
-    }
+    NSMutableOrderedSet<NSNumber *> *updatedDevices = [self.devices mutableCopy];
+    [updatedDevices minusSet:devices];
+    self.devices = [updatedDevices copy];
 
-    if (!self.devices.count && !self.unregisteredAtTimestamp) {
-        self.unregisteredAtTimestamp = @(NSDate.ows_millisecondTimeStamp);
+    if ((self.devices.count == 0) && (self.unregisteredAtTimestamp == nil)) {
+        [self setUnregisteredAtTimestamp:@(NSDate.ows_millisecondTimeStamp) source:source];
+    }
+}
+
+- (void)removeAllDevicesWithUnregisteredAtTimestamp:(uint64_t)unregisteredAtTimestamp
+                                             source:(SignalRecipientSource)source
+{
+    self.devices = [NSOrderedSet orderedSet];
+
+    [self setUnregisteredAtTimestamp:@(unregisteredAtTimestamp) source:source];
+}
+
+- (void)setUnregisteredAtTimestamp:(nullable NSNumber *)unregisteredAtTimestamp source:(SignalRecipientSource)source
+{
+    if ([NSObject isNullableObject:unregisteredAtTimestamp equalTo:self.unregisteredAtTimestamp]) {
+        return;
+    }
+    self.unregisteredAtTimestamp = unregisteredAtTimestamp;
+
+    if (source != SignalRecipientSourceStorageService) {
         [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ self.accountId ]];
     }
-}
-
-- (void)removeAllDevices
-{
-    [self removeDevices:self.devices.set];
 }
 
 + (void)updateWithAddress:(SignalServiceAddress *)address
@@ -210,9 +225,9 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     OWSAssertDebug(transaction);
     OWSAssertDebug(devicesToAdd.count > 0 || devicesToRemove.count > 0);
 
-    SignalRecipient *recipient = [self markAsRegisteredAndGet:address
-                                                   trustLevel:SignalRecipientTrustLevelLow
-                                                  transaction:transaction];
+    SignalRecipient *recipient = [self fetchOrCreateFor:address
+                                             trustLevel:SignalRecipientTrustLevelLow
+                                            transaction:transaction];
     [recipient updateWithDevicesToAdd:devicesToAdd devicesToRemove:devicesToRemove transaction:transaction];
 }
 
@@ -259,7 +274,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     [self anyReloadWithTransaction:transaction];
     [self anyUpdateWithTransaction:transaction
                              block:^(SignalRecipient *signalRecipient) {
-                                 [signalRecipient addDevices:devices];
+                                 [signalRecipient addDevices:devices source:SignalRecipientSourceLocal];
                              }];
 }
 
@@ -272,7 +287,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     [self anyReloadWithTransaction:transaction ignoreMissing:YES];
     [self anyUpdateWithTransaction:transaction
                              block:^(SignalRecipient *signalRecipient) {
-                                 [signalRecipient removeDevices:devices];
+                                 [signalRecipient removeDevices:devices source:SignalRecipientSourceLocal];
                              }];
 }
 

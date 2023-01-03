@@ -53,7 +53,8 @@ final class UUIDBackfillTaskTest: SSKBaseTestSwift {
         ]
         databaseStorage.write { transaction in
             for address in addressesMissingUUIDs + [CommonGenerator.address()] {
-                SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: transaction)
+                SignalRecipient.fetchOrCreate(for: address, trustLevel: .high, transaction: transaction)
+                    .markAsRegistered(transaction: transaction)
             }
         }
 

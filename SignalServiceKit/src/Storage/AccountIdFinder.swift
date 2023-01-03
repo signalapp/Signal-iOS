@@ -29,7 +29,7 @@ public class OWSAccountIdFinder: NSObject {
             return accountId
         }
 
-        let recipient = SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .low, transaction: transaction)
+        let recipient = SignalRecipient.fetchOrCreate(for: address, trustLevel: .low, transaction: transaction)
         return recipient.accountId
     }
 

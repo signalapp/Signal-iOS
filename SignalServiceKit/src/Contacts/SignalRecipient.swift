@@ -27,10 +27,48 @@ extension SignalRecipient {
 
     // MARK: -
 
+    public func markAsUnregistered(at timestamp: UInt64? = nil, source: SignalRecipientSource = .local, transaction: SDSAnyWriteTransaction) {
+        guard devices.count != 0 else {
+            return
+        }
+
+        let timestamp = timestamp ?? Date.ows_millisecondTimestamp()
+        anyUpdate(transaction: transaction) {
+            $0.removeAllDevicesWithUnregistered(atTimestamp: timestamp, source: source)
+        }
+    }
+
+    @objc
+    public func markAsRegisteredWithLocalSource(transaction: SDSAnyWriteTransaction) {
+        markAsRegistered(transaction: transaction)
+    }
+
+    public func markAsRegistered(
+        source: SignalRecipientSource = .local,
+        deviceId: UInt32 = OWSDevicePrimaryDeviceId,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        // Always add the primary device ID if we're adding any other.
+        let deviceIds: Set<UInt32> = [deviceId, OWSDevicePrimaryDeviceId]
+
+        let missingDeviceIds = deviceIds.filter { !devices.contains(NSNumber(value: $0)) }
+        guard !missingDeviceIds.isEmpty else {
+            return
+        }
+
+        Logger.debug("Adding devices \(missingDeviceIds) to existing recipient.")
+
+        anyUpdate(transaction: transaction) {
+            $0.addDevices(Set(missingDeviceIds.map { NSNumber(value: $0) }), source: source)
+        }
+    }
+
+    // MARK: -
+
     @objc
     @discardableResult
-    public class func mark(
-        asRegisteredAndGet address: SignalServiceAddress,
+    public class func fetchOrCreate(
+        for address: SignalServiceAddress,
         trustLevel: SignalRecipientTrustLevel,
         transaction: SDSAnyWriteTransaction
     ) -> SignalRecipient {
@@ -40,33 +78,8 @@ extension SignalRecipient {
         case .low:
             return lowTrustRecipient(for: address, transaction: transaction)
         case .high:
-            return highTrustRecipient(for: address, markAsRegistered: true, transaction: transaction)
+            return highTrustRecipient(for: address, transaction: transaction)
         }
-    }
-
-    @objc
-    @discardableResult
-    public class func mark(
-        asRegisteredAndGet address: SignalServiceAddress,
-        deviceId: UInt32,
-        trustLevel: SignalRecipientTrustLevel,
-        transaction: SDSAnyWriteTransaction
-    ) -> SignalRecipient {
-        owsAssertDebug(address.isValid)
-        owsAssertDebug(deviceId > 0)
-
-        let recipient = mark(asRegisteredAndGet: address, trustLevel: trustLevel, transaction: transaction)
-
-        if !recipient.devices.contains(NSNumber(value: deviceId)) {
-            Logger.debug("Adding device \(deviceId) to existing recipient.")
-
-            recipient.anyReload(transaction: transaction)
-            recipient.anyUpdate(transaction: transaction) {
-                $0.addDevices([NSNumber(value: deviceId)])
-            }
-        }
-
-        return recipient
     }
 
     /// Fetches (or creates) a low-trust recipient.
@@ -102,9 +115,6 @@ extension SignalRecipient {
             let newInstance = SignalRecipient(uuidString: uuidString)
             newInstance.anyInsert(transaction: transaction)
 
-            // Record with the new contact in the social graph
-            storageServiceManager.recordPendingUpdates(updatedAccountIds: [newInstance.accountId])
-
             return newInstance
         }
         if let phoneNumberInstance = finder.signalRecipientForPhoneNumber(address.phoneNumber, transaction: transaction) {
@@ -115,9 +125,6 @@ extension SignalRecipient {
 
         let newInstance = SignalRecipient(address: address)
         newInstance.anyInsert(transaction: transaction)
-
-        // Record with the new contact in the social graph
-        storageServiceManager.recordPendingUpdates(updatedAccountIds: [newInstance.accountId])
 
         return newInstance
     }
@@ -139,7 +146,6 @@ extension SignalRecipient {
     ///   they do, we must backfill the database to reflect the change.
     private static func highTrustRecipient(
         for address: SignalServiceAddress,
-        markAsRegistered: Bool,
         transaction: SDSAnyWriteTransaction
     ) -> SignalRecipient {
         owsAssertDebug(address.isValid)
@@ -280,23 +286,11 @@ extension SignalRecipient {
                 signalServiceAddressCache.updateMapping(uuid: uuid, phoneNumber: address.phoneNumber)
             }
 
-            // Record with the new contact in the social graph
-            storageServiceManager.recordPendingUpdates(updatedAccountIds: [newInstance.accountId])
             return newInstance
-        }
-
-        if markAsRegistered && existingInstance.devices.count == 0 {
-            shouldUpdate = true
-
-            // We know they're registered, so make sure they have at least one device.
-            // We assume it's the default device. If we're wrong, the service will
-            // correct us when we try to send a message to them.
-            existingInstance.addDevices([NSNumber(value: OWSDevicePrimaryDeviceId)])
         }
 
         // Record the updated contact in the social graph
         if shouldUpdate {
-            owsAssertDebug(existingInstance.devices.contains(NSNumber(value: OWSDevicePrimaryDeviceId)))
             existingInstance.anyOverwritingUpdate(transaction: transaction)
             storageServiceManager.recordPendingUpdates(updatedAccountIds: [existingInstance.accountId])
         }
@@ -362,38 +356,6 @@ extension SignalRecipient {
         OWSUserProfile.mergeUserProfilesIfNecessary(for: winningInstance.address, transaction: transaction)
 
         return winningInstance
-    }
-
-    public class func mark(asUnregistered address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) {
-        owsAssertDebug(address.isValid)
-
-        let recipient = lowTrustRecipient(for: address, transaction: transaction)
-
-        if recipient.devices.count > 0 {
-            Logger.debug("Marking recipient as not registered: \(address)")
-            recipient.anyUpdate(transaction: transaction) {
-                $0.removeAllDevices()
-            }
-        }
-    }
-
-    public class func markAsUnregistered(
-        fromStorageServiceAndGet address: SignalServiceAddress,
-        unregisteredAtTimestamp: UInt64,
-        transaction: SDSAnyWriteTransaction
-    ) -> SignalRecipient {
-        owsAssertDebug(address.isValid)
-        owsAssertDebug(unregisteredAtTimestamp > 0)
-
-        let recipient = highTrustRecipient(for: address, markAsRegistered: false, transaction: transaction)
-
-        Logger.debug("Marking recipient as not registered: \(address)")
-        recipient.anyUpdate(transaction: transaction) {
-            $0.removeAllDevices()
-            $0.unregisteredAtTimestamp = NSNumber(value: unregisteredAtTimestamp)
-        }
-
-        return recipient
     }
 
     // MARK: -

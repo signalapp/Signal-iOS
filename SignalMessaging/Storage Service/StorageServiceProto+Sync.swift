@@ -156,11 +156,11 @@ extension StorageServiceProtoContactRecord: Dependencies {
         // representing the remote and local last update time for every value we sync.
         // For now, we'd like to avoid that as it adds its own set of problems.
 
-        let recipient: SignalRecipient
+        let recipient = SignalRecipient.fetchOrCreate(for: address, trustLevel: .high, transaction: transaction)
         if unregisteredAtTimestamp > 0 {
-            recipient = SignalRecipient.markAsUnregistered(fromStorageServiceAndGet: address, unregisteredAtTimestamp: unregisteredAtTimestamp, transaction: transaction)
+            recipient.markAsUnregistered(at: unregisteredAtTimestamp, source: .storageService, transaction: transaction)
         } else {
-            recipient = SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: transaction)
+            recipient.markAsRegistered(source: .storageService, transaction: transaction)
         }
 
         var mergeState: MergeState = .resolved(recipient.accountId)

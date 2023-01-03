@@ -224,7 +224,8 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         Logger.debug("contactDetails: \(contactDetails)")
 
         // Mark as registered, since we trust the contact information sent from our other devices.
-        SignalRecipient.mark(asRegisteredAndGet: contactDetails.address, trustLevel: .high, transaction: transaction)
+        let recipient = SignalRecipient.fetchOrCreate(for: contactDetails.address, trustLevel: .high, transaction: transaction)
+        recipient.markAsRegistered(transaction: transaction)
 
         let contactThread: TSContactThread
         let isNewThread: Bool
