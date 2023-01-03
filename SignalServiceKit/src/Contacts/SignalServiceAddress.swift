@@ -587,7 +587,7 @@ public class SignalServiceAddressCache: NSObject {
 
     @objc
     @discardableResult
-    func updateMapping(uuid: UUID, phoneNumber: String?) -> SignalServiceAddress {
+    func updateMapping(uuid: UUID, phoneNumber: String?, transaction: SDSAnyWriteTransaction) -> SignalServiceAddress {
 
         Logger.info("phoneNumber: \(String(describing: phoneNumber)), uuid: \(uuid)")
 
@@ -639,8 +639,10 @@ public class SignalServiceAddressCache: NSObject {
         // Notify any existing address objects to update their backing phone number
         SignalServiceAddress.notifyMappingDidChange(forUuid: uuid, toPhoneNumber: phoneNumber)
 
-        if AppReadiness.isAppReady {
-            Self.bulkProfileFetch.fetchProfile(uuid: uuid)
+        transaction.addSyncCompletion {
+            if AppReadiness.isAppReady {
+                Self.bulkProfileFetch.fetchProfile(uuid: uuid)
+            }
         }
 
         return SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumber)

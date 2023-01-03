@@ -179,7 +179,7 @@ extension SignalRecipient {
                 }
 
                 // Update the SignalServiceAddressCache mappings with the now fully-qualified recipient.
-                signalServiceAddressCache.updateMapping(uuid: addressUuid, phoneNumber: address.phoneNumber)
+                signalServiceAddressCache.updateMapping(uuid: addressUuid, phoneNumber: address.phoneNumber, transaction: transaction)
 
             } else {
                 // The UUID differs between the two records; we need to migrate the phone
@@ -245,7 +245,7 @@ extension SignalRecipient {
                     phoneNumberInstance.recipientUUID = uuid.uuidString
 
                     // Update the SignalServiceAddressCache mappings with the now fully-qualified recipient.
-                    signalServiceAddressCache.updateMapping(uuid: uuid, phoneNumber: address.phoneNumber)
+                    signalServiceAddressCache.updateMapping(uuid: uuid, phoneNumber: address.phoneNumber, transaction: transaction)
                 }
 
                 existingInstance = phoneNumberInstance
@@ -283,7 +283,7 @@ extension SignalRecipient {
             newInstance.anyInsert(transaction: transaction)
 
             if let uuid = address.uuid {
-                signalServiceAddressCache.updateMapping(uuid: uuid, phoneNumber: address.phoneNumber)
+                signalServiceAddressCache.updateMapping(uuid: uuid, phoneNumber: address.phoneNumber, transaction: transaction)
             }
 
             return newInstance
@@ -481,7 +481,7 @@ extension SignalRecipient {
                 Self.signalServiceAddressCache.removeMapping(phoneNumber: oldPhoneNumber)
             }
 
-            Self.signalServiceAddressCache.updateMapping(uuid: newUuid, phoneNumber: newPhoneNumber)
+            Self.signalServiceAddressCache.updateMapping(uuid: newUuid, phoneNumber: newPhoneNumber, transaction: transaction.asAnyWrite)
 
             // Verify the mapping change worked as expected.
             owsAssertDebug(SignalServiceAddress(uuid: newUuid).phoneNumber == newPhoneNumber)

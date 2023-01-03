@@ -611,7 +611,9 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         }
 
         // Update the address cache mapping for the local user.
-        [SSKEnvironment.shared.signalServiceAddressCache updateMappingWithUuid:localAci phoneNumber:localNumber];
+        [SSKEnvironment.shared.signalServiceAddressCache updateMappingWithUuid:localAci
+                                                                   phoneNumber:localNumber
+                                                                   transaction:transaction];
 
         [self.keyValueStore removeValueForKey:TSAccountManager_ReregisteringPhoneNumberKey transaction:transaction];
         [self.keyValueStore removeValueForKey:TSAccountManager_ReregisteringUUIDKey transaction:transaction];

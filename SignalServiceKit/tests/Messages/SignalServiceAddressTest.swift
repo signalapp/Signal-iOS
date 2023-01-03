@@ -25,7 +25,9 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         // Single match works, ignores single missing.
         //
         // SignalServiceAddress's getters use a cache to fill in the blanks.
-        cache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber1)
+        write {
+            _ = cache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber1, transaction: $0)
+        }
 
         XCTAssertEqual(SignalServiceAddress(uuid: nil, phoneNumber: phoneNumber1),
                        SignalServiceAddress(uuid: uuid1, phoneNumber: phoneNumber1))
@@ -93,7 +95,9 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
             XCTAssertEqual(address2b.unresolvedUuid, uuid2)
             XCTAssertEqual(address2b.unresolvedPhoneNumber, phoneNumber2)
 
-            Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber1)
+            write {
+                _ = Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber1, transaction: $0)
+            }
 
             XCTAssertEqual(address1a.unresolvedUuid, uuid1)
             XCTAssertEqual(address1a.unresolvedPhoneNumber, phoneNumber1)
@@ -106,7 +110,9 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
             XCTAssertEqual(address2b.unresolvedUuid, uuid2)
             XCTAssertEqual(address2b.unresolvedPhoneNumber, phoneNumber2)
 
-            Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber3)
+            write {
+                _ = Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber3, transaction: $0)
+            }
 
             XCTAssertEqual(address1a.unresolvedUuid, uuid1)
             XCTAssertEqual(address1a.unresolvedPhoneNumber, phoneNumber3)
@@ -202,7 +208,9 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
 
         // uuid1, phoneNumber1 -> phoneNumber2
-        let hash2 = Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2).hash
+        let hash2 = write {
+            Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2, transaction: $0).hash
+        }
 
         // There should be hash continuity for uuid1, since the uuid remains the same.
         XCTAssertEqual(hash1, hash2)
@@ -218,7 +226,9 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(phoneNumber2, SignalServiceAddress(phoneNumber: phoneNumber2).phoneNumber)
 
         // uuid2, phoneNumber1
-        let hash3 = Self.signalServiceAddressCache.updateMapping(uuid: uuid2, phoneNumber: phoneNumber1).hash
+        let hash3 = write {
+            Self.signalServiceAddressCache.updateMapping(uuid: uuid2, phoneNumber: phoneNumber1, transaction: $0).hash
+        }
 
         // There should not be hash continuity for uuid2, since the uuid has changed.
         XCTAssertEqual(hash1, hash2)
@@ -300,7 +310,9 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash1, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
 
         // uuid1 -> uuid2, phoneNumber1
-        let hash2 = Self.signalServiceAddressCache.updateMapping(uuid: uuid2, phoneNumber: phoneNumber1).hash
+        let hash2 = write {
+            Self.signalServiceAddressCache.updateMapping(uuid: uuid2, phoneNumber: phoneNumber1, transaction: $0).hash
+        }
 
         // There should not be hash continuity for uuid2, since the phone number has been transferred between two uuids.
         XCTAssertNotEqual(hash1, hash2)
@@ -316,7 +328,9 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(phoneNumber1, SignalServiceAddress(phoneNumber: phoneNumber1).phoneNumber)
 
         // uuid1, phoneNumber2
-        let hash3 = Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2).hash
+        let hash3 = write {
+            Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2, transaction: $0).hash
+        }
 
         // There should be hash continuity for uuid1.
         XCTAssertNotEqual(hash1, hash2)
@@ -384,7 +398,9 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber1).hash)
 
         // Associate uuid1, phoneNumber1
-        let hash3 = Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber1).hash
+        let hash3 = write {
+            Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber1, transaction: $0).hash
+        }
 
         // There should be hash continuity for the uuid, not the phone number.
         XCTAssertNotEqual(hash1, hash2)
@@ -462,7 +478,9 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
 
         // Associate uuid1, phoneNumber2
-        let hash3 = Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2).hash
+        let hash3 = write {
+            Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2, transaction: $0).hash
+        }
 
         // There should be hash continuity for uuid1.
         XCTAssertNotEqual(hash1, hash2)
@@ -537,7 +555,9 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
 
         // Associate uuid1, phoneNumber2
-        let hash3 = Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2).hash
+        let hash3 = write {
+            Self.signalServiceAddressCache.updateMapping(uuid: uuid1, phoneNumber: phoneNumber2, transaction: $0).hash
+        }
 
         // There should be hash continuity for uuid1.
         XCTAssertNotEqual(hash1, hash2)
@@ -609,7 +629,9 @@ class SignalServiceAddressTest: SSKBaseTestSwift {
         XCTAssertEqual(hash2, SignalServiceAddress(phoneNumber: phoneNumber2).hash)
 
         // Associate uuid1, phoneNumber2
-        let hash3 = Self.signalServiceAddressCache.updateMapping(uuid: uuid2, phoneNumber: phoneNumber1).hash
+        let hash3 = write {
+            Self.signalServiceAddressCache.updateMapping(uuid: uuid2, phoneNumber: phoneNumber1, transaction: $0).hash
+        }
 
         // There should be hash continuity for uuid2.
         XCTAssertNotEqual(hash1, hash2)
