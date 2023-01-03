@@ -55,7 +55,6 @@ public extension Contact {
 public extension Contact {
     convenience init(
         address: SignalServiceAddress,
-        addressServiceIdentifier: String,
         phoneNumberLabel: String,
         givenName: String?,
         familyName: String?,
@@ -75,7 +74,7 @@ public extension Contact {
         }
 
         self.init(
-            uniqueId: addressServiceIdentifier,
+            uniqueId: UUID().uuidString,
             cnContactId: nil,
             firstName: givenName,
             lastName: familyName,

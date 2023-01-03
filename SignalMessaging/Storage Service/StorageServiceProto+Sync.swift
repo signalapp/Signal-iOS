@@ -309,18 +309,12 @@ extension StorageServiceProtoContactRecord: Dependencies {
             // pre-existing data should be superceded by these values, since
             // these represent a system contact from the primary device.
 
-            guard let addressServiceIdentifier = address.serviceIdentifier else {
-                owsFailDebug("Address unexpectedly missing service identifier!")
-                return
-            }
-
             if let existingAccount = maybeExistingAccount {
                 existingAccount.anyRemove(transaction: transaction)
             }
 
             let newContact = Contact(
                 address: address,
-                addressServiceIdentifier: addressServiceIdentifier,
                 phoneNumberLabel: CommonStrings.mainPhoneNumberLabel,
                 givenName: systemGivenName,
                 familyName: systemFamilyName,
