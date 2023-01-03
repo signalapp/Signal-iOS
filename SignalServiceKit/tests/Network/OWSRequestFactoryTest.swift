@@ -30,7 +30,7 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
         let recipientUuid = UUID()
 
         let request = OWSRequestFactory.submitMessageRequest(
-            with: SignalServiceAddress(uuid: recipientUuid),
+            withServiceId: recipientUuid,
             messages: [],
             timestamp: 1234,
             udAccessKey: udAccessKey,

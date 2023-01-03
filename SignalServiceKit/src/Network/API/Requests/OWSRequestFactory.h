@@ -80,13 +80,13 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                                             transport:(TSVerificationTransport)transport
     NS_SWIFT_NAME(requestVerificationCodeRequest(e164:preauthChallenge:captchaToken:transport:));
 
-+ (TSRequest *)submitMessageRequestWithAddress:(SignalServiceAddress *)recipientAddress
-                                      messages:(NSArray *)messages
-                                     timestamp:(uint64_t)timestamp
-                                   udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
-                                      isOnline:(BOOL)isOnline
-                                      isUrgent:(BOOL)isUrgent
-                                       isStory:(BOOL)isStory;
++ (TSRequest *)submitMessageRequestWithServiceId:(NSUUID *)serviceId
+                                        messages:(NSArray *)messages
+                                       timestamp:(uint64_t)timestamp
+                                     udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
+                                        isOnline:(BOOL)isOnline
+                                        isUrgent:(BOOL)isUrgent
+                                         isStory:(BOOL)isStory;
 
 + (TSRequest *)submitMultiRecipientMessageRequestWithCiphertext:(NSData *)ciphertext
                                            compositeUDAccessKey:(SMKUDAccessKey *)udAccessKey

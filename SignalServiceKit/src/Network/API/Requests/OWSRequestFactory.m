@@ -521,19 +521,18 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return [capabilities copy];
 }
 
-+ (TSRequest *)submitMessageRequestWithAddress:(SignalServiceAddress *)recipientAddress
-                                      messages:(NSArray *)messages
-                                     timestamp:(uint64_t)timestamp
-                                   udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
-                                      isOnline:(BOOL)isOnline
-                                      isUrgent:(BOOL)isUrgent
-                                       isStory:(BOOL)isStory
++ (TSRequest *)submitMessageRequestWithServiceId:(NSUUID *)serviceId
+                                        messages:(NSArray *)messages
+                                       timestamp:(uint64_t)timestamp
+                                     udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
+                                        isOnline:(BOOL)isOnline
+                                        isUrgent:(BOOL)isUrgent
+                                         isStory:(BOOL)isStory
 {
     // NOTE: messages may be empty; See comments in OWSDeviceManager.
-    OWSAssertDebug(recipientAddress.isValid);
     OWSAssertDebug(timestamp > 0);
 
-    NSString *path = [self.textSecureMessagesAPI stringByAppendingString:recipientAddress.serviceIdentifier];
+    NSString *path = [self.textSecureMessagesAPI stringByAppendingString:serviceId.UUIDString];
 
     path = [path stringByAppendingFormat:@"?story=%@", isStory ? @"true" : @"false"];
 

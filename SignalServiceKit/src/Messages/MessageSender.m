@@ -1004,8 +1004,8 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
     // A prior CDS lookup would've resolved the UUID for this recipient if it was registered
     // If we have no UUID, consider the recipient unregistered.
-    BOOL isInvalidRecipient = (address.uuid == nil);
-    if (isInvalidRecipient) {
+    NSUUID *serviceId = address.uuid;
+    if (serviceId == nil) {
         [self failSendForUnregisteredRecipient:messageSend];
         return;
     }
@@ -1120,7 +1120,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         }
     }
 
-    [self performMessageSendRequest:messageSend deviceMessages:deviceMessages];
+    [self performMessageSendRequest:messageSend serviceId:serviceId deviceMessages:deviceMessages];
 }
 
 - (void)handleMessageSentLocally:(TSOutgoingMessage *)message

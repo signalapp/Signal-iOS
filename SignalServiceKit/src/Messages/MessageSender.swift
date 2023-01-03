@@ -786,8 +786,11 @@ public extension MessageSender {
 
     typealias DeviceMessageType = [String: AnyObject]
 
-    func performMessageSendRequest(_ messageSend: OWSMessageSend,
-                                   deviceMessages: [DeviceMessageType]) {
+    func performMessageSendRequest(
+        _ messageSend: OWSMessageSend,
+        serviceId: UUID,
+        deviceMessages: [DeviceMessageType]
+    ) {
         owsAssertDebug(!Thread.isMainThread)
 
         let address: SignalServiceAddress = messageSend.address
@@ -814,7 +817,7 @@ public extension MessageSender {
             label: "Message Send",
             requestFactoryBlock: { (udAccessKey: SMKUDAccessKey?) in
                 OWSRequestFactory.submitMessageRequest(
-                    with: address,
+                    withServiceId: serviceId,
                     messages: deviceMessages,
                     timestamp: message.timestamp,
                     udAccessKey: udAccessKey,
