@@ -88,22 +88,20 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         ))
         contents.addSection(contactSection)
 
-        if RemoteConfig.keepMutedChatsArchivedOption {
-            let keepMutedChatsArchived = OWSTableSection()
-            keepMutedChatsArchived.add(.switch(
-                withText: NSLocalizedString("SETTINGS_KEEP_MUTED_ARCHIVED_LABEL", comment: "When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings."),
-                isOn: {
-                    Self.databaseStorage.read { SSKPreferences.shouldKeepMutedChatsArchived(transaction: $0) }
-                },
-                target: self,
-                selector: #selector(didToggleShouldKeepMutedChatsArchivedSwitch)
-            ))
-            keepMutedChatsArchived.footerTitle = NSLocalizedString(
-                "SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION",
-                comment: "When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings."
-            )
-            contents.addSection(keepMutedChatsArchived)
-        }
+        let keepMutedChatsArchived = OWSTableSection()
+        keepMutedChatsArchived.add(.switch(
+            withText: NSLocalizedString("SETTINGS_KEEP_MUTED_ARCHIVED_LABEL", comment: "When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings."),
+            isOn: {
+                Self.databaseStorage.read { SSKPreferences.shouldKeepMutedChatsArchived(transaction: $0) }
+            },
+            target: self,
+            selector: #selector(didToggleShouldKeepMutedChatsArchivedSwitch)
+        ))
+        keepMutedChatsArchived.footerTitle = NSLocalizedString(
+            "SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION",
+            comment: "When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings."
+        )
+        contents.addSection(keepMutedChatsArchived)
 
         let clearHistorySection = OWSTableSection()
         clearHistorySection.add(.actionItem(

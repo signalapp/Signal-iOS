@@ -251,11 +251,6 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
-    public static var keepMutedChatsArchivedOption: Bool {
-        DebugFlags.internalSettings || isEnabled(.keepMutedChatsArchivedOption)
-    }
-
-    @objc
     public static var canReceiveGiftBadges: Bool {
         FeatureFlags.shouldUseRemoteConfigForReceivingGiftBadges && isEnabled(.canReceiveGiftBadges, defaultValue: true)
     }
@@ -498,7 +493,6 @@ private struct Flags {
         case messageResendKillSwitch
         case donorBadgeDisplayKillSwitch
         case changePhoneNumberUI
-        case keepMutedChatsArchivedOption
         case canSendGiftBadgesInPrerelease
         case canReceiveGiftBadges
         case groupRings2
