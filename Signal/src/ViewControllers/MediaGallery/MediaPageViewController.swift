@@ -444,6 +444,10 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     // MARK: MediaGalleryDelegate
 
+    func mediaGallery(_ mediaGallery: MediaGallery, applyUpdate update: MediaGallery.Update) {
+        Logger.debug("")
+    }
+
     func mediaGallery(_ mediaGallery: MediaGallery, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
         Logger.debug("")
 

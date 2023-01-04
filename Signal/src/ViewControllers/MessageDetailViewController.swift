@@ -631,6 +631,13 @@ extension MessageDetailViewController {
 // MARK: -
 
 extension MessageDetailViewController: MediaGalleryDelegate {
+    func mediaGallery(_ mediaGallery: MediaGallery, sectionsDidChange journal: MediaGallery.Journal) {
+        Logger.info("")
+    }
+
+    func mediaGallery(_ mediaGallery: MediaGallery, applyUpdate update: MediaGallery.Update) {
+        Logger.debug("")
+    }
 
     func mediaGallery(_ mediaGallery: MediaGallery, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
         Logger.info("")
