@@ -1098,7 +1098,7 @@
 			<key>one</key>
 			<string>L&apos;un des contenus n&apos;a pas pu être ajouté à la story choisie car le type de fichier sélectionné n&apos;est pas pris en charge.</string>
 			<key>other</key>
-			<string>Tous les contenus n’ont pas pu être ajoutés aux stories choisies car certains types de fichiers sélectionnés ne sont pas pris en charge.</string>
+			<string>Tous les contenus n’ont pas pu être ajoutés aux Stories choisies car certains types de fichiers sélectionnés ne sont pas pris en charge.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>

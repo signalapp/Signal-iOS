@@ -184,6 +184,45 @@
 /* Name indicating that the system theme is enabled. */
 "APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "Système";
 
+/* Apple Pay donation error for decline failures where authentication is required. */
+"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "Try another payment method or contact your bank for more information.";
+
+/* Apple Pay donation error for decline failures where the user may need to contact their card or bank. */
+"APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+
+/* Apple Pay donation error for decline failures where the card is not supported. */
+"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+
+/* Apple Pay donation error for decline failures where the card has expired. */
+"APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+
+/* Apple Pay donation error for decline failures where the card number is incorrect. */
+"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+
+/* Apple Pay donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
+"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+
+/* Apple Pay donation error for decline failures where the card has insufficient funds. */
+"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+
+/* Apple Pay donation error for decline failures where the expiration month on the payment method is incorrect. */
+"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+
+/* Apple Pay donation error for decline failures where the expiration year on the payment method is incorrect. */
+"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+
+/* Apple Pay donation error for decline failures where the card number is incorrect. */
+"APPLE_PAY_DONATION_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+
+/* Apple Pay donation error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
+"APPLE_PAY_DONATION_ERROR_ISSUER_NOT_AVAILABLE" = "Try completing the payment again or contact your bank for more information.";
+
+/* Apple Pay donation error for unspecified decline failures. */
+"APPLE_PAY_DONATION_ERROR_OTHER" = "Try another payment method or contact your bank for more information.";
+
+/* Apple Pay donation error for decline failures where the payment cannot be authorized. */
+"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
 
@@ -1459,6 +1498,27 @@
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Sélectionner l’indicatif de pays";
 
+/* Credit/debit card donation error for decline failures where the card has expired. */
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Your card has expired. Verify your card details are correct and try again.";
+
+/* Credit/debit card donation error for decline failures where the card number is incorrect. */
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Verify your card details are correct and try again.";
+
+/* Credit/debit card donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your card's CVC number is incorrect. Verify your card details are correct and try again.";
+
+/* Credit/debit card donation error for decline failures where the expiration month on the payment method is incorrect. */
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your card is incorrect. Verify your card details are correct and try again.";
+
+/* Credit/debit card donation error for decline failures where the expiration year on the payment method is incorrect. */
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your card is incorrect. Verify your card details are correct and try again.";
+
+/* Credit/debit card donation error for unspecified decline failures. */
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_OTHER" = "Verify your card details are correct and try again. If the problem continues, contact your bank.";
+
+/* Credit/debit card donation error for decline failures where the payment cannot be authorized. */
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Verify your card details are correct and try again.";
+
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Déplacer et mettre à l’échelle";
 
@@ -1816,8 +1876,8 @@
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Sélectionnez le montant du don.";
 
-/* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. */
-"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT" = "Sélectionnez un don d’un montant supérieur.";
+/* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. Embeds {{currency string}}, such as \"$5\". */
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "The minimum amount you can donate is %1$@.";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "Mensuel";
@@ -1839,51 +1899,6 @@
 
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Mettre à jour l’abonnement";
-
-/* Users can donate to Signal. They may be asked to confirm their donation after entering payment information. If the user clicks this button, their payment will be confirmed. */
-"DONATION_CONFIRMATION_BUTTON_CONFIRM" = "Complete Donation";
-
-/* Users can donate to Signal. They may be asked to confirm their donation after entering payment information. This text will show the payment method, such as PayPal, next to it. */
-"DONATION_CONFIRMATION_PAYMENT_METHOD" = "Payment Method";
-
-/* Donation payment error for decline failures where authentication is required. */
-"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Essayez un autre mode de paiement ou contactez votre banque pour plus d’informations.";
-
-/* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Vérifiez si votre mode de paiement est à jour dans Apple Pay. Dans le cas contraire, mettez-le à jour puis réessayez. Si le problème persiste, veuillez contacter votre banque.";
-
-/* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Votre carte ne permet pas ce type d’achat. Essayez un autre mode de paiement ou contactez votre banque pour en savoir plus.";
-
-/* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Votre carte a expiré. Vérifiez si votre mode de paiement est à jour dans Apple Pay. Dans le cas contraire, mettez-le à jour et réessayez.";
-
-/* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Le numéro de votre carte est incorrect. Vérifiez si votre mode de paiement a bien été saisi dans Apple Pay. Dans le cas contraire, mettez-le à jour et réessayez.";
-
-/* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Votre code de sécurité est incorrect. Vérifiez si votre code de sécurité a bien été saisi dans Apple Pay. Dans le cas contraire, mettez-le à jour et réessayez.";
-
-/* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Les fonds disponibles sur votre carte sont insuffisants. Veuillez essayer un autre mode de paiement ou contacter votre banque pour en savoir plus.";
-
-/* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "La date de validité de votre mode de paiement est incorrecte. Mettez-la à jour dans Apple Pay et réessayez.";
-
-/* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "L'année d'expiration de votre mode de paiement est incorrecte. Mettez-la à jour dans Apple Pay et réessayez";
-
-/* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Votre numéro de carte est incorrect. Mettez-le à jour dans Google Pay puis réessayez.";
-
-/* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
-"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Essayez à nouveau d’effectuer le paiement ou contactez votre banque pour plus d’informations.";
-
-/* Donation payment error for unspecified decline failures. */
-"DONATION_PAYMENT_ERROR_OTHER" = "Essayez un autre mode de paiement ou contactez votre banque pour plus d’informations.";
-
-/* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Vérifiez si votre mode de paiement est à jour dans Apple Pay. Dans le cas contraire, mettez-le à jour et réessayez.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Messagerie privée. Aucune publicité, aucun traqueur, aucune surveillance.";
@@ -2909,7 +2924,7 @@
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Voulez-vous vraiment supprimer « %1$@ » ?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Les membres du groupe de la discussion “%1$@” peuvent consulter et interagir avec cette story. Vous pouvez paramétrer les spectateurs depuis la discussion du groupe.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Les membres du groupe de la discussion “%1$@” peuvent consulter et interagir avec cette Story. Vous pouvez paramétrer les spectateurs depuis la discussion du groupe.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Qui peut voir cette story";
@@ -3851,7 +3866,7 @@
 "MUTED_BADGE" = "En sourdine";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Les mises à jour de votre story apparaîtront ici.";
+"MY_STORIES_NO_STORIES" = "Les mises à jour de votre Story apparaîtront ici.";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Tout le monde sauf…";
@@ -3866,16 +3881,16 @@
 "MY_STORIES_TITLE" = "Mes stories";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
-"MY_STORY_NAME" = "Ma story";
+"MY_STORY_NAME" = "Ma Story";
 
 /* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
-"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Choisissez qui peut voir votre story";
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Choisissez qui peut voir votre Story";
 
 /* Title for the my story settings sheet */
 "MY_STORY_SETTINGS_SHEET_TITLE" = "Confidentialité de ma story";
 
 /* Title for the my story settings view */
-"MY_STORY_SETTINGS_TITLE" = "Ma story";
+"MY_STORY_SETTINGS_TITLE" = "Ma Story";
 
 /* Prompt to add to your story */
 "MY_STORY_TAP_TO_ADD" = "Appuyez pour ajouter";
@@ -3953,13 +3968,13 @@
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "Créer";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Un nom de story est requis.";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Un nom de Story est requis.";
 
 /* Title for error alert indicating that a story name is required. */
 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Nom de la story manquant";
 
 /* Section footer for the name text field on the 'new private story' creation view */
-"NEW_PRIVATE_STORY_NAME_FOOTER" = "Vous seul pouvez voir le nom de cette story.";
+"NEW_PRIVATE_STORY_NAME_FOOTER" = "Vous seul pouvez voir le nom de cette Story.";
 
 /* Placeholder text for a new private story name */
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Nom de la story (obligatoire)";
@@ -4811,13 +4826,13 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Effacer la story personnalisée";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Voulez-vous vraiment supprimer « %1$@ » ? Les nouveaux contenus ajoutés à cette story seront également supprimés.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Voulez-vous vraiment supprimer « %1$@ » ? Les nouveaux contenus ajoutés à cette Story seront également supprimés.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Supprimer";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Cette personne ne pourra plus voir cette story.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Cette personne ne pourra plus voir cette Story.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Retirer %1$@ ?";
@@ -4940,10 +4955,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Le message original est introuvable.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "A réagi à votre story";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "A réagi à votre Story";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "A réagi à la story de %1$@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "A réagi à la Story de %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Story";
@@ -5026,9 +5041,6 @@
 /* Alert title. Shown after selecting a phone number that isn't a Signal user. */
 "RECIPIENT_PICKER_INVITE_TITLE" = "Inviter à rejoindre Signal";
 
-/* Label for 'I forgot my PIN' link in the 2FA registration view. */
-"REGISTER_2FA_FORGOT_PIN" = "J’ai oublié mon NIP.";
-
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Besoin d’aide ?";
 
@@ -5046,9 +5058,6 @@
 
 /* Indicates the work we are doing while verifying the user's pin */
 "REGISTER_2FA_PIN_PROGRESS" = "Confirmation du NIP…";
-
-/* Label for 'submit' button in the 2FA registration view. */
-"REGISTER_2FA_SUBMIT_BUTTON" = "Envoyer";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Bienvenue !";
@@ -6317,7 +6326,7 @@
 "STORIES_GO_TO_CHAT_ACTION" = "Accéder à la conversation";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Vous ne pouvez pas interagir sur cette story, car vous n'êtes plus membre de ce groupe.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Vous ne pouvez pas interagir sur cette Story, car vous n'êtes plus membre de ce groupe.";
 
 /* Header for the hidden stories section of the stories list */
 "STORIES_HIDDEN_SECTION_HEADER" = "Stories masquées";
@@ -6326,10 +6335,10 @@
 "STORIES_HIDE_STORY_ACTION" = "Cacher la story";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
-"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Les nouvelles stories de %1$@ n'apparaîtront plus en haut de la liste des stories.";
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Les nouvelles Stories de %1$@ n'apparaîtront plus en haut de la liste des Stories.";
 
 /* Title asking the user if they are sure they want to hide stories from another user */
-"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Masquer la story ?";
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Masquer la Story ?";
 
 /* Short context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION_SHORT" = "Cacher";
@@ -6350,7 +6359,7 @@
 "STORIES_NO_VIEWS_YET" = "Aucune vue pour le moment";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Permettez aux personnes qui peuvent voir votre story de réagir et de répondre.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Permettez aux personnes qui peuvent voir votre Story de réagir et de répondre.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Réponses et réactions";
@@ -6368,25 +6377,25 @@
 "STORIES_SAVE_STORY_ACTION" = "Enregistrer";
 
 /* Footer for the 'Stories' section of the stories settings */
-"STORIES_SETTINGS_STORIES_FOOTER" = "Les nouveaux contenus ajoutés aux stories sont automatiquement supprimés après 24 heures. Identifiez les spectateurs autorisés à voir votre story ou créez de nouvelles stories en identifiant des spectateurs ou des groupes spécifiques.";
+"STORIES_SETTINGS_STORIES_FOOTER" = "Les nouveaux contenus ajoutés aux stories sont automatiquement supprimés après 24 heures. Identifiez les spectateurs autorisés à voir votre Story ou créez de nouvelles Stories en identifiant des spectateurs ou des groupes spécifiques.";
 
 /* Header for the 'Stories' section of the stories settings */
 "STORIES_SETTINGS_STORIES_HEADER" = "Stories";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Vous ne pourrez plus partager ou voir de stories. Les nouveaux contenus récemment ajoutés à vos stories seront également supprimés.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Vous ne pourrez plus partager ou voir de Stories. Les nouveaux contenus récemment ajoutés à vos stories seront également supprimés.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Désactiver et supprimer les stories";
 
 /* Footer for the 'turn off' section of the stories settings */
-"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Si vous décidez de quitter la fonction stories, vous ne pourrez plus en partager ni en consulter.";
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Si vous décidez de quitter la fonction Stories, vous ne pourrez plus en partager ni en consulter.";
 
 /* Button to turn off stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Désactiver les stories";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "Partagez des stories et consultez les stories partagées par d'autres membres. Les stories disparaissent automatiquement après 24 heures.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Partagez des Stories et consultez les Stories partagées par d'autres membres. Les Stories disparaissent automatiquement après 24 heures.";
 
 /* Button to turn on stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Activer les stories";
@@ -6395,7 +6404,7 @@
 "STORIES_SETTINGS_VIEW_RECEIPTS" = "Confirmation de vue";
 
 /* Footer for the 'view receipts' section of the stories settings */
-"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Voir et partager lorsque les stories sont visionnées. Si cette option est désactivée, vous ne pourrez pas savoir si un spectateur regarde votre story.";
+"STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER" = "Voir et partager lorsque les Stories sont visionnées. Si cette option est désactivée, vous ne pourrez pas savoir si un spectateur regarde votre Story.";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Partager";
@@ -6428,7 +6437,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Story démasquée";
 
 /* Text explaining that you will not see any views for your story because you have view receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Activer les confirmations de vue pour savoir qui a consulté vos stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Activer les confirmations de vue pour savoir qui a consulté vos Stories.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Vues";
@@ -6440,7 +6449,7 @@
 "STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Impossible de charger le lien. Vérifiez votre connexion et réessayez.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Partager un lien avec les personnes qui voient votre story";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Partager un lien avec les personnes qui voient votre Story";
 
 /* Placeholder text in text stories compose UI */
 "STORY_COMPOSER_TAP_ADD_TEXT" = "Touchez pour ajouter du texte";
@@ -6464,19 +6473,19 @@
 "STORY_PRIVACY_TITLE" = "Confidentialité de la story";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "A envoyé %1$@ à votre story";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "A envoyé %1$@ à votre Story";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "A envoyé %1$@ à votre story";
+"STORY_REACTION_QUOTE_FORMAT" = "A envoyé %1$@ à votre Story";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "A envoyé %1$@ à %2$@ pour sa story";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "A envoyé %1$@ à %2$@ pour sa Story";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Répondre";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "A réagi à la story";
+"STORY_REPLY_REACTION" = "A réagi à la Story";
 
 /* header text for replying to private story. Embeds {{author name}} */
 "STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Réponse privée à %1$@";
@@ -6488,10 +6497,10 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "Répondre au groupe";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Impossible d'envoyer la story. Vérifiez votre connexion puis réessayez";
+"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Impossible d'envoyer la Story. Vérifiez votre connexion puis réessayez";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Cette story n’a pas pu être envoyée à certains contacts. Vérifiez votre connexion et réessayez";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Cette Story n’a pas pu être envoyée à certains contacts. Vérifiez votre connexion et réessayez";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Partager uniquement avec…";
@@ -6536,16 +6545,16 @@
 "STORY_SETTINGS_TITLE" = "Stories";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choisissez qui peut voir votre story. Les changements ne s'appliqueront pas aux stories que vous avez déjà envoyées.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choisissez qui peut voir votre Story. Les changements ne s'appliqueront pas aux Stories que vous avez déjà envoyées.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Qui peut voir cette story";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choisissez les connexions Signal qui peuvent voir votre story. Vous pouvez modifier ce choix dans les paramètres de confidentialité.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choisissez les connexions Signal qui peuvent voir votre Story. Vous pouvez modifier ce choix dans les paramètres de confidentialité.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Les vidéos envoyées dans les stories seront coupées en clips de %1$d s pour être envoyées sous forme de plusieurs stories.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Les vidéos envoyées dans les Stories seront coupées en clips de %1$d s pour être envoyées sous forme de plusieurs Stories.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "Appuyez pour avancer";
