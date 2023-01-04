@@ -234,11 +234,6 @@ public extension MessageSender {
                 // to this recipient also use basic auth.
                 messageSend.setHasUDAuthFailed()
             },
-            websocketFailureBlock: {
-                // Note the websocket failure so subsequent retries
-                // to this recipient also use REST.
-                messageSend.hasWebsocketSendFailed = true
-            },
             address: recipientAddress,
             udAccess: udAccess,
             options: [.allowIdentifiedFallback]
@@ -831,11 +826,6 @@ public extension MessageSender {
                 // to this recipient also use basic auth.
                 messageSend.setHasUDAuthFailed()
             },
-            websocketFailureBlock: {
-                // Note the websocket failure so subsequent retries
-                // to this recipient also use REST.
-                messageSend.hasWebsocketSendFailed = true
-            },
             address: address,
             udAccess: messageSend.udSendingAccess?.udAccess,
             options: []
@@ -1001,11 +991,6 @@ public extension MessageSender {
 
             handleMismatchedDevices(response, messageSend: messageSend)
 
-            if messageSend.isLocalAddress {
-                // Don't use websocket; it may have obsolete cached state.
-                messageSend.hasWebsocketSendFailed = true
-            }
-
             retrySend()
 
         case 410:
@@ -1020,11 +1005,6 @@ public extension MessageSender {
             }
 
             handleStaleDevices(staleDevices: response.staleDevices, address: address)
-
-            if messageSend.isLocalAddress {
-                // Don't use websocket; it may have obsolete cached state.
-                messageSend.hasWebsocketSendFailed = true
-            }
 
             retrySend()
         case 428:

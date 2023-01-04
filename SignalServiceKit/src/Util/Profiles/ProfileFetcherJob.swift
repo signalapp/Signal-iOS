@@ -388,9 +388,6 @@ public class ProfileFetcherJob: NSObject {
             udAuthFailureBlock: {
                 // Do nothing
             },
-            websocketFailureBlock: {
-                // Do nothing
-            },
             address: address,
             udAccess: udAccess,
             options: [.allowIdentifiedFallback, .isProfileFetch]

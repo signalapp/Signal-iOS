@@ -45,7 +45,6 @@ public final class RequestMaker: Dependencies {
 
     public typealias RequestFactoryBlock = (SMKUDAccessKey?) -> TSRequest?
     public typealias UDAuthFailureBlock = () -> Void
-    public typealias WebsocketFailureBlock = () -> Void
 
     public struct Options: OptionSet {
         public let rawValue: Int
@@ -66,7 +65,6 @@ public final class RequestMaker: Dependencies {
     private let label: String
     private let requestFactoryBlock: RequestFactoryBlock
     private let udAuthFailureBlock: UDAuthFailureBlock
-    private let websocketFailureBlock: WebsocketFailureBlock
     private let address: SignalServiceAddress
     private let udAccess: OWSUDAccess?
     private let options: Options
@@ -75,7 +73,6 @@ public final class RequestMaker: Dependencies {
         label: String,
         requestFactoryBlock: @escaping RequestFactoryBlock,
         udAuthFailureBlock: @escaping UDAuthFailureBlock,
-        websocketFailureBlock: @escaping WebsocketFailureBlock,
         address: SignalServiceAddress,
         udAccess: OWSUDAccess?,
         options: Options
@@ -83,7 +80,6 @@ public final class RequestMaker: Dependencies {
         self.label = label
         self.requestFactoryBlock = requestFactoryBlock
         self.udAuthFailureBlock = udAuthFailureBlock
-        self.websocketFailureBlock = websocketFailureBlock
         self.address = address
         self.udAccess = udAccess
         self.options = options
@@ -158,7 +154,6 @@ public final class RequestMaker: Dependencies {
                     }
                 }
 
-                self.websocketFailureBlock()
                 if isUDRequest {
                     Logger.info("UD Web socket request '\(self.label)' failed; failing over to REST request: \(error).")
                 } else {

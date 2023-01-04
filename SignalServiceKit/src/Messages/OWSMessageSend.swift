@@ -37,15 +37,6 @@ public class OWSMessageSend: NSObject {
         set { _remainingAttempts.set(newValue) }
     }
 
-    // We "fail over" to REST sends after _any_ error sending
-    // via the web socket.
-    private var _hasWebsocketSendFailed = AtomicBool(false)
-    @objc
-    public var hasWebsocketSendFailed: Bool {
-        get { return _hasWebsocketSendFailed.get() }
-        set { _hasWebsocketSendFailed.set(newValue) }
-    }
-
     private var _udSendingAccess = AtomicOptional<OWSUDSendingAccess>(nil)
     @objc
     public var udSendingAccess: OWSUDSendingAccess? {
