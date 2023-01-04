@@ -236,7 +236,9 @@ public extension MessageSender {
             },
             address: recipientAddress,
             udAccess: udAccess,
-            options: [.allowIdentifiedFallback]
+            // The v2/keys endpoint isn't supported via web sockets, so don't try and
+            // send pre key requests via the web socket.
+            options: [.allowIdentifiedFallback, .skipWebSocket]
         )
 
         firstly(on: .global()) { () -> Promise<RequestMakerResult> in

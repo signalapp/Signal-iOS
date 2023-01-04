@@ -60,6 +60,9 @@ public final class RequestMaker: Dependencies {
         /// This RequestMaker is used when fetching profiles, so it shouldn't kick
         /// off additional profile fetches when errors occur.
         static let isProfileFetch = Options(rawValue: 1 << 1)
+
+        /// This request can't be sent over a web socket, so don't bother trying.
+        static let skipWebSocket = Options(rawValue: 1 << 2)
     }
 
     private let label: String
@@ -86,7 +89,7 @@ public final class RequestMaker: Dependencies {
     }
 
     public func makeRequest() -> Promise<RequestMakerResult> {
-        return makeRequestInternal(skipUD: false, skipWebsocket: false)
+        return makeRequestInternal(skipUD: false, skipWebsocket: options.contains(.skipWebSocket))
     }
 
     private func makeRequestInternal(skipUD: Bool, skipWebsocket: Bool) -> Promise<RequestMakerResult> {
