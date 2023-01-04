@@ -62,11 +62,11 @@ public extension TSAccountManager {
 
     @objc
     var storedServerUsername: String? {
-        guard let serviceIdentifier = self.localAddress?.serviceIdentifier else {
+        guard let serviceId = self.localAddress?.uuidString else {
             return nil
         }
 
-        return isRegisteredPrimaryDevice ? serviceIdentifier : "\(serviceIdentifier).\(storedDeviceId())"
+        return isRegisteredPrimaryDevice ? serviceId : "\(serviceId).\(storedDeviceId())"
     }
 
     @objc
