@@ -1198,10 +1198,13 @@ extension CVComponentSystemMessage {
                                                              newNameComponents: profileChangeNewNameComponents))
 
         case .phoneNumberChange:
-            guard let uuidString = infoMessage.infoMessageUserInfo?[.changePhoneNumberUuid] as? String,
-                  let uuid = UUID(uuidString: uuidString),
-                  let phoneNumberOld = infoMessage.infoMessageUserInfo?[.changePhoneNumberOld] as? String,
-                  let phoneNumberNew = infoMessage.infoMessageUserInfo?[.changePhoneNumberNew] as? String else {
+            guard
+                let userInfo = infoMessage.infoMessageUserInfo,
+                let uuidString = userInfo[.changePhoneNumberUuid] as? String,
+                let uuid = UUID(uuidString: uuidString),
+                let phoneNumberOld = userInfo[.changePhoneNumberOld] as? String,
+                let phoneNumberNew = userInfo[.changePhoneNumberNew] as? String
+            else {
                 owsFailDebug("Invalid info message.")
                 return nil
             }
