@@ -182,12 +182,14 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                           failure:(dispatch_block_t)failure
 {
     if (remainingRetries < 1) {
-        OWSLogInfo(@"Aborting orphan data search.");
+        OWSLogInfo(@"Aborting orphan data search. No more retries.");
         dispatch_async(self.workQueue, ^{
             failure();
         });
         return;
     }
+
+    OWSLogInfo(@"Enqueuing an orphan data search. Remaining retries: %ld", (long)remainingRetries);
 
     // Wait until the app is active...
     [CurrentAppContext() runNowOrWhenMainAppIsActive:^{
