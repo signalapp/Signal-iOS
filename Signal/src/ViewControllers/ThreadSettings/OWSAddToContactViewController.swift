@@ -19,8 +19,6 @@ public class OWSAddToContactViewController: OWSViewController {
 
     private lazy var contacts = [Contact]()
 
-    fileprivate let contactCellReuseIdentifier = "contactCellReuseIdentifier"
-
     @objc
     public init(address: SignalServiceAddress) {
         self.address = address
@@ -53,7 +51,7 @@ public class OWSAddToContactViewController: OWSViewController {
         tableView.allowsMultipleSelection = false
 
         tableView.separatorInset = UIEdgeInsets(top: 0, left: ContactCell.kSeparatorHInset, bottom: 0, right: 16)
-        tableView.register(ContactCell.self, forCellReuseIdentifier: contactCellReuseIdentifier)
+        tableView.register(ContactCell.self, forCellReuseIdentifier: ContactCell.reuseIdentifier)
 
         title = NSLocalizedString(
             "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
@@ -107,18 +105,13 @@ extension OWSAddToContactViewController: UITableViewDataSource {
     }
 
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: contactCellReuseIdentifier, for: indexPath) as? ContactCell else {
-            owsFailDebug("cell had unexpected type")
+        guard let contact = contacts[safe: indexPath.row] else {
+            owsFailDebug("failed to lookup contact")
             return UITableViewCell()
         }
 
-        guard let contact = contacts[safe: indexPath.row] else {
-            owsFailDebug("failed to lookup contact")
-            return cell
-        }
-
+        let cell = tableView.dequeueReusableCell(ContactCell.self, for: indexPath)!
         cell.configure(contact: contact, subtitleType: .none, showsWhenSelected: false)
-
         return cell
     }
 

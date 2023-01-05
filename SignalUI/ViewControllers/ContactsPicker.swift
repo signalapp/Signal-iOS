@@ -35,8 +35,6 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
 
     // MARK: - Properties
 
-    private let contactCellReuseIdentifier = "contactCellReuseIdentifier"
-
     private let collation = UILocalizedIndexedCollation.current()
     public var collationForTests: UILocalizedIndexedCollation { collation }
     private let contactStore = CNContactStore()
@@ -131,7 +129,7 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
     }
 
     private func registerContactCell() {
-        tableView.register(ContactCell.self, forCellReuseIdentifier: contactCellReuseIdentifier)
+        tableView.register(ContactCell.self, forCellReuseIdentifier: ContactCell.reuseIdentifier)
     }
 
     // MARK: - Contact Operations
@@ -227,10 +225,7 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
     // MARK: - Table View Delegates
 
     open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: contactCellReuseIdentifier, for: indexPath) as? ContactCell else {
-            owsFailDebug("cell had unexpected type")
-            return UITableViewCell()
-        }
+        let cell = tableView.dequeueReusableCell(ContactCell.self, for: indexPath)!
 
         let dataSource = filteredSections
         let cnContact = dataSource[indexPath.section][indexPath.row]

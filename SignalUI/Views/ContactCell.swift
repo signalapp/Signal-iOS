@@ -7,7 +7,7 @@ import UIKit
 import Contacts
 import SignalServiceKit
 
-public class ContactCell: UITableViewCell {
+public class ContactCell: UITableViewCell, ReusableTableViewCell {
     public static let reuseIdentifier = "ContactCell"
 
     public static let kSeparatorHInset: CGFloat = CGFloat(kAvatarDiameter) + 16 + 8
