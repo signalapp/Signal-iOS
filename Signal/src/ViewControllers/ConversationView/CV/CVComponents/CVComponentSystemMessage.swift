@@ -1180,15 +1180,15 @@ extension CVComponentSystemMessage {
             let currentProfileName = Self.profileManager.fullName(for: profileChangeAddress,
                                                                   transaction: transaction)
 
-            // Don't show the update contact button if the system contact name
-            // is already equivalent to the new profile name.
+            // Only show the button if the address book contact's name is different
+            // than the profile name.
             guard systemContactName != newProfileName else {
                 return nil
             }
 
-            // If the new profile name is not the current profile name, it's no
-            // longer relevant to ask you to update your contact.
-            guard currentProfileName != newProfileName else {
+            // Only show the button if the new name is the latest(/current) profile
+            // name we know about.
+            guard currentProfileName == newProfileName else {
                 return nil
             }
 
