@@ -810,10 +810,31 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         }
     }
 
+    internal mutating func asyncLoadEarlierSections(batchSize: Int,
+                                                    userData: UpdateUserData? = nil,
+                                                    completion: ((Int) -> Void)?) {
+        snapshotManager.mutateAsync(userData: userData) { state, transaction in
+            return state.loadEarlierSections(batchSize: batchSize, transaction: transaction)
+        } completion: { numberOfSectionsLoaded in
+            completion?(numberOfSectionsLoaded)
+        }
+    }
+
     internal mutating func loadLaterSections(batchSize: Int, userData: UpdateUserData? = nil) -> Int {
         return snapshotManager.mutate(userData: userData) { state, transaction in
             return state.loadLaterSections(batchSize: batchSize, transaction: transaction)
         }
+    }
+
+    internal mutating func asyncLoadLaterSections(batchSize: Int,
+                                                  userData: UpdateUserData? = nil,
+                                                  completion: ((Int) -> Void)?) {
+        snapshotManager.mutateAsync(userData: userData) { state, transaction in
+            return state.loadLaterSections(batchSize: batchSize, transaction: transaction)
+        } completion: { numberOfSectionsLoaded in
+            completion?(numberOfSectionsLoaded)
+        }
+
     }
 
     internal mutating func loadInitialSection(for date: GalleryDate, userData: UpdateUserData? = nil) {

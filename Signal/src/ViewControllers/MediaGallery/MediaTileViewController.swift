@@ -828,22 +828,20 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         let userData = MediaGalleryUpdateUserData(disableAnimations: true)
 
         isFetchingMoreData = true
-        // Note that this hack is temporary and will be mooted by eager loading.
-        DispatchQueue.main.async { [weak self] in
-            self?.isFetchingMoreData = false
-        }
-        let newSections: Range<Int>
         switch direction {
         case .before:
-            newSections = 0..<mediaGallery.loadEarlierSections(batchSize: kLoadBatchSize, userData: userData)
+            mediaGallery.asyncLoadEarlierSections(batchSize: kLoadBatchSize, userData: userData) { [weak self] newSections in
+                Logger.debug("found new sections: \(newSections)")
+                self?.isFetchingMoreData = false
+            }
         case .after:
-            let newSectionCount = mediaGallery.loadLaterSections(batchSize: kLoadBatchSize, userData: userData)
-            let newEnd = mediaGallery.galleryDates.count
-            newSections = (newEnd - newSectionCount)..<newEnd
+            mediaGallery.asyncLoadLaterSections(batchSize: kLoadBatchSize, userData: userData) { [weak self] newSections in
+                Logger.debug("found new sections: \(newSections)")
+                self?.isFetchingMoreData = false
+            }
         case .around:
             preconditionFailure() // unused
         }
-        Logger.debug("found new sections: \(newSections)")
     }
 }
 

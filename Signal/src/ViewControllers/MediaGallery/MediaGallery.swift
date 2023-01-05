@@ -549,6 +549,16 @@ class MediaGallery: Dependencies {
         }
     }
 
+    internal func asyncLoadEarlierSections(batchSize: Int,
+                                           userData: MediaGalleryUpdateUserData? = nil,
+                                           completion: ((Int) -> Void)?) {
+        mutateAsync { sections, callback in
+            sections.asyncLoadEarlierSections(batchSize: batchSize, userData: userData, completion: callback)
+        } completion: { numberOfSectionsLoaded in
+            completion?(numberOfSectionsLoaded)
+        }
+    }
+
     /// Loads at least one section after the latest section, though not any of the items in it.
     ///
     /// Operates in bulk in an attempt to cut down on database traffic, meaning it may measure multiple sections at once.
@@ -558,6 +568,17 @@ class MediaGallery: Dependencies {
         return mutate { sections in
             sections.loadLaterSections(batchSize: batchSize, userData: userData)
         }
+    }
+
+    internal func asyncLoadLaterSections(batchSize: Int,
+                                         userData: MediaGalleryUpdateUserData? = nil,
+                                         completion: ((Int) -> Void)?) {
+        mutateAsync { sections, callback in
+            sections.asyncLoadLaterSections(batchSize: batchSize, userData: userData, completion: callback)
+        } completion: { numberOfSectionsLoaded in
+            completion?(numberOfSectionsLoaded)
+        }
+
     }
 
     // MARK: -
