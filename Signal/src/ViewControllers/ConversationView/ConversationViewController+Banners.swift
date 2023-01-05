@@ -135,13 +135,9 @@ public extension ConversationViewController {
     func createGroupMembershipCollisionBannerIfNecessary() -> UIView? {
         guard let groupThread = thread as? TSGroupThread else { return nil }
 
-        // Collision discovery can be expensive, so we only build our banner if we've already done the expensive bit
-        guard let collisionFinder = viewState.groupNameCollisionFinder, collisionFinder.hasFetchedProfileUpdateMessages else {
-            guard viewState.groupNameCollisionFinder == nil else {
-                // We already have a collision finder. It just hasn't finished fetching.
-                return nil
-            }
-
+        // Collision discovery can be expensive, so we only build our banner if
+        // we've already done the expensive bit
+        guard let collisionFinder = viewState.groupNameCollisionFinder else {
             let collisionFinder = GroupMembershipNameCollisionFinder(thread: groupThread)
             viewState.groupNameCollisionFinder = collisionFinder
 
@@ -155,6 +151,11 @@ public extension ConversationViewController {
             }.catch { error in
                 owsFailDebug("\(error)")
             }
+            return nil
+        }
+
+        guard collisionFinder.hasFetchedProfileUpdateMessages else {
+            // We already have a collision finder. It just hasn't finished fetching.
             return nil
         }
 
