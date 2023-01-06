@@ -138,7 +138,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     private func endCallOnceReported(_ call: SignalCall, reason: CXCallEndedReason) {
         Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
-            guard call.systemState != .pending else {
+            switch call.systemState {
+            case .notReported:
+                // Do nothing. This call was never reported to CallKit, so we don't need to report it ending.
+                // This happens for calls missed while offline.
+                // (If CallKit ever adds a way to report *past* missed calls, this might be a place to do it.)
+                break
+            case .pending:
+                // We've reported the call to CallKit, but CallKit hasn't confirmed it yet.
                 // Try again soon, but give up if the call ends some other way and is destroyed.
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), qos: .userInitiated) { [weak call] in
                     guard let call = call else {
@@ -146,11 +153,12 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
                     }
                     self.endCallOnceReported(call, reason: reason)
                 }
-                return
+            case .reported:
+                self.provider.reportCall(with: call.localId, endedAt: nil, reason: reason)
+                self.callManager.removeCall(call)
+            case .removed:
+                Logger.warn("call \(call.localId) already ended, but is now ending a second time with reason code \(reason)")
             }
-
-            self.provider.reportCall(with: call.localId, endedAt: nil, reason: reason)
-            self.callManager.removeCall(call)
         }
     }
 
