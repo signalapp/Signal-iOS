@@ -707,6 +707,8 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         private var mutableState: State
         private var snapshot: State
         private(set) var pendingUpdate = AtomicValue(Update.noop, lock: AtomicLock())
+        private var highPriorityStack: AtomicArray<() -> Void> = AtomicArray()
+        private var lowPriorityStack: AtomicArray<() -> Void> = AtomicArray()
 
         var state: State {
             dispatchPrecondition(condition: .onQueue(.main))
@@ -752,11 +754,16 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
 
         /// Runs `block` on the mutation queue and then runs `completion` on the main queue, but the main queue is not
         /// blocked while waiting for `block` to complete.
+        ///
+        /// Note that mutations go on a stack rather than a queue. The last call to `mutateAsync` will be the first one to run after any current operation completes.
+        ///
+        /// All `highPriority` mutations will occur before any low-priority mutation. Clients are advised to treat user-initiated updates as high-priority.
         func mutateAsync<T>(userData: UpdateUserData?,
+                            highPriority: Bool,
                             _ block: @escaping (inout State) -> (T),
                             completion: @escaping (T) -> Void) {
             dispatchPrecondition(condition: .onQueue(.main))
-            queue.async { [weak self] in
+            let closure = { [weak self] in
                 guard let self else {
                     return
                 }
@@ -765,12 +772,21 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
                     completion(result)
                 }
             }
+            (highPriority ? highPriorityStack : lowPriorityStack).pushTail(closure)
+            queue.async { [weak self] in
+                guard let self else {
+                    return
+                }
+                let closure = self.highPriorityStack.popTail() ?? self.lowPriorityStack.popTail()
+                closure?()
+            }
         }
 
         func mutateAsync<T>(userData: UpdateUserData?,
+                            highPriority: Bool,
                             _ block: @escaping (inout State, SDSAnyReadTransaction) -> (T),
                             completion: @escaping (T) -> Void) {
-            mutateAsync(userData: userData) { mutableState in
+            mutateAsync(userData: userData, highPriority: highPriority) { mutableState in
                 return Self.databaseStorage.read { transaction in
                     block(&mutableState, transaction)
                 }
@@ -811,9 +827,10 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
     }
 
     internal mutating func asyncLoadEarlierSections(batchSize: Int,
+                                                    highPriority: Bool,
                                                     userData: UpdateUserData? = nil,
                                                     completion: ((Int) -> Void)?) {
-        snapshotManager.mutateAsync(userData: userData) { state, transaction in
+        snapshotManager.mutateAsync(userData: userData, highPriority: highPriority) { state, transaction in
             return state.loadEarlierSections(batchSize: batchSize, transaction: transaction)
         } completion: { numberOfSectionsLoaded in
             completion?(numberOfSectionsLoaded)
@@ -829,7 +846,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
     internal mutating func asyncLoadLaterSections(batchSize: Int,
                                                   userData: UpdateUserData? = nil,
                                                   completion: ((Int) -> Void)?) {
-        snapshotManager.mutateAsync(userData: userData) { state, transaction in
+        snapshotManager.mutateAsync(userData: userData, highPriority: true) { state, transaction in
             return state.loadLaterSections(batchSize: batchSize, transaction: transaction)
         } completion: { numberOfSectionsLoaded in
             completion?(numberOfSectionsLoaded)
@@ -1083,7 +1100,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
             }
             return
         }
-        snapshotManager.mutateAsync(userData: userData) { state, transaction in
+        snapshotManager.mutateAsync(userData: userData, highPriority: true) { state, transaction in
             return state.ensureItemsLoaded(request: request,
                                            transaction: transaction)
         } completion: { newlyLoadedSectionIndexes in

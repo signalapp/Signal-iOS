@@ -200,6 +200,9 @@ struct MediaGalleryUpdateUserData {
     /// If enabled, animations will be disabled for the batch update. Other mutations that ended up in the journal will also get their animations disabled if any user
     /// data in the update has this set to true.
     var disableAnimations = false
+
+    /// Set to true when inserts to the top should not cause a scroll.
+    var shouldRecordContentSizeBeforeInsertingToTop = false
 }
 
 /// A backing store for media views (page-based or tile-based)
@@ -550,10 +553,14 @@ class MediaGallery: Dependencies {
     }
 
     internal func asyncLoadEarlierSections(batchSize: Int,
+                                           highPriority: Bool,
                                            userData: MediaGalleryUpdateUserData? = nil,
                                            completion: ((Int) -> Void)?) {
         mutateAsync { sections, callback in
-            sections.asyncLoadEarlierSections(batchSize: batchSize, userData: userData, completion: callback)
+            sections.asyncLoadEarlierSections(batchSize: batchSize,
+                                              highPriority: highPriority,
+                                              userData: userData,
+                                              completion: callback)
         } completion: { numberOfSectionsLoaded in
             completion?(numberOfSectionsLoaded)
         }

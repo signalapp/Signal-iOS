@@ -307,12 +307,21 @@ public class AtomicArray<T> {
         }
     }
 
-    public var popHead: T? {
+    public func popHead() -> T? {
         lock.perform {
             guard !values.isEmpty else {
                 return nil
             }
             return values.removeFirst()
+        }
+    }
+
+    public func popTail() -> T? {
+        lock.perform {
+            guard !values.isEmpty else {
+                return nil
+            }
+            return values.removeLast()
         }
     }
 

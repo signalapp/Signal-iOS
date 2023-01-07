@@ -164,6 +164,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                 // There must be no media.
                 return
             }
+            eagerlyLoadMoreIfPossible()
         }
 
         let lastSectionItemCount = mediaGallery.numberOfItemsInSection(mediaGallery.galleryDates.count - 1)
@@ -727,6 +728,9 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         let saved = UIView.areAnimationsEnabled
         UIView.setAnimationsEnabled(shouldAnimate && UIView.areAnimationsEnabled && saved)
 
+        if update.userData.contains(where: { $0.shouldRecordContentSizeBeforeInsertingToTop }) {
+            mediaTileViewLayout.recordContentSizeBeforeInsertingToTop()
+        }
         // Within `performBatchUpdates` and before our closure runs, `UICollectionView` may call `numberOfItemsInSection`
         // and it will expect us to give it "old" values (before any changes are applied).
         self.collectionView.performBatchUpdates {
@@ -773,7 +777,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
 
     func didReloadAllSectionsInMediaGallery(_ mediaGallery: MediaGallery) {
-        // This is a hack, but it won't live forever. When this class is changed to load sections eagerly, the solution becomes much simpler (just restart an eager load). But we're not there yet.
         // If you receive a new attachment for an earlier month, MediaGallerySections resets itself and throws out a bunch of data. It resets hasFetched{Oldest,MostRecent} to false. This causes "Loading older…" and "Loading newer…" to become visible, even if there are no older or newer months in the db. Those only get updated on scroll. If the collection view's content size is less than its visible size then scrolling is impossible and they are stuck forever. Load sections until we either have everything or there's enough room for the user to scroll.
         while collectionView.contentSize.height < collectionView.visibleSize.height && (!mediaGallery.hasFetchedOldest || !mediaGallery.hasFetchedMostRecent) {
             if !mediaGallery.hasFetchedOldest {
@@ -783,16 +786,41 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                 _ = mediaGallery.loadLaterSections(batchSize: kLoadBatchSize)
             }
         }
+        if eagerLoadingDidComplete {
+            // There might be more to load so restart eager loading.
+            eagerLoadingDidComplete = false
+            eagerlyLoadMoreIfPossible()
+        }
     }
 
     // MARK: Lazy Loading
 
-    var isFetchingMoreData: Bool = false
-    let kLoadBatchSize: Int = 50
+    var isFetchingMoreData = false
+    let kLoadBatchSize: Int = 1024
 
     let kLoadOlderSectionIdx: Int = 0
     var loadNewerSectionIdx: Int {
         return mediaGallery.galleryDates.count + 1
+    }
+    private var eagerLoadingDidComplete = false
+
+    private func eagerlyLoadMoreIfPossible() {
+        Logger.debug("")
+        guard !mediaGallery.hasFetchedOldest else {
+            Logger.debug("done")
+            eagerLoadingDidComplete = true
+            return
+        }
+        let userData = MediaGalleryUpdateUserData(disableAnimations: true,
+                                                  shouldRecordContentSizeBeforeInsertingToTop: true)
+        // This is a low priority update because we never want eager loads to starve user-initiated
+        // loads (such as loading more sections because of scrolling or loading items to display).
+        mediaGallery.asyncLoadEarlierSections(batchSize: kLoadBatchSize,
+                                              highPriority: false,
+                                              userData: userData) { [weak self] newSections in
+            Logger.debug("Eagerly loaded \(newSections)")
+            self?.eagerlyLoadMoreIfPossible()
+        }
     }
 
     public func autoLoadMoreIfNecessary() {
@@ -807,9 +835,10 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         let oldContentHeight = collectionView.contentSize.height
         let direction: GalleryDirection
 
+        var shouldRecordContentSizeBeforeInsertingToTop = false
         if contentOffsetY < kEdgeThreshold && !mediaGallery.hasFetchedOldest {
             // Near the top, load older content
-            mediaTileViewLayout.recordContentSizeBeforeInsertingToTop()
+            shouldRecordContentSizeBeforeInsertingToTop = true
             direction = .before
 
         } else if oldContentHeight - contentOffsetY < kEdgeThreshold && !mediaGallery.hasFetchedMostRecent {
@@ -825,12 +854,15 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             return
         }
 
-        let userData = MediaGalleryUpdateUserData(disableAnimations: true)
+        let userData = MediaGalleryUpdateUserData(disableAnimations: true,
+                                                  shouldRecordContentSizeBeforeInsertingToTop: shouldRecordContentSizeBeforeInsertingToTop)
 
         isFetchingMoreData = true
         switch direction {
         case .before:
-            mediaGallery.asyncLoadEarlierSections(batchSize: kLoadBatchSize, userData: userData) { [weak self] newSections in
+            mediaGallery.asyncLoadEarlierSections(batchSize: kLoadBatchSize,
+                                                  highPriority: true,
+                                                  userData: userData) { [weak self] newSections in
                 Logger.debug("found new sections: \(newSections)")
                 self?.isFetchingMoreData = false
             }
