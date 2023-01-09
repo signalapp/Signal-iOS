@@ -19,6 +19,8 @@ public class OWSAddToContactViewController: OWSViewController {
 
     private lazy var contacts = [Contact]()
 
+    private let sortOrder: CNContactSortOrder = CNContactsUserDefaults.shared().sortOrder
+
     @objc
     public init(address: SignalServiceAddress) {
         self.address = address
@@ -111,7 +113,7 @@ extension OWSAddToContactViewController: UITableViewDataSource {
         }
 
         let cell = tableView.dequeueReusableCell(ContactCell.self, for: indexPath)!
-        cell.configure(contact: contact, subtitleType: .none, showsWhenSelected: false)
+        cell.configure(contact: contact, sortOrder: sortOrder, subtitleType: .none, showsWhenSelected: false)
         return cell
     }
 

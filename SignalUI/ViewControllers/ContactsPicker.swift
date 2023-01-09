@@ -36,7 +36,6 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
     // MARK: - Properties
 
     private let collation = UILocalizedIndexedCollation.current()
-    public var collationForTests: UILocalizedIndexedCollation { collation }
     private let contactStore = CNContactStore()
 
     // Data Source State
@@ -50,6 +49,7 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
     private let subtitleCellType: SubtitleCellValue
     private let allowsMultipleSelection: Bool
     private let allowedContactKeys: [CNKeyDescriptor] = ContactsFrameworkContactStoreAdaptee.allowedContactKeys
+    private let sortOrder: CNContactSortOrder = CNContactsUserDefaults.shared().sortOrder
 
     // MARK: - Initializers
 
@@ -196,7 +196,12 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
     }
 
     public func collatedContacts(_ contacts: [CNContact]) -> [[CNContact]] {
-        let selector: Selector = #selector(getter: CNContact.nameForCollating)
+        let selector: Selector
+        if sortOrder == .familyName {
+            selector = #selector(getter: CNContact.collationNameSortedByFamilyName)
+        } else {
+            selector = #selector(getter: CNContact.collationNameSortedByGivenName)
+        }
 
         var collated = Array(repeating: [CNContact](), count: collation.sectionTitles.count)
         for contact in contacts {
@@ -231,7 +236,7 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
         let cnContact = dataSource[indexPath.section][indexPath.row]
         let contact = Contact(systemContact: cnContact)
 
-        cell.configure(contact: contact, subtitleType: subtitleCellType, showsWhenSelected: self.allowsMultipleSelection)
+        cell.configure(contact: contact, sortOrder: sortOrder, subtitleType: subtitleCellType, showsWhenSelected: self.allowsMultipleSelection)
         let isSelected = selectedContacts.contains(where: { $0.uniqueId == contact.uniqueId })
         cell.isSelected = isSelected
 
@@ -343,44 +348,23 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
     }
 }
 
-let ContactSortOrder = computeSortOrder()
-
-func computeSortOrder() -> CNContactSortOrder {
-    let comparator = CNContact.comparator(forNameSortOrder: .userDefault)
-
-    let contact0 = CNMutableContact()
-    contact0.givenName = "A"
-    contact0.familyName = "Z"
-
-    let contact1 = CNMutableContact()
-    contact1.givenName = "Z"
-    contact1.familyName = "A"
-
-    let result = comparator(contact0, contact1)
-
-    if result == .orderedAscending {
-        return .givenName
-    } else {
-        return .familyName
-    }
-}
-
-fileprivate extension CNContact {
-    /**
-     * Sorting Key used by collation
-     */
+extension CNContact {
     @objc
-    var nameForCollating: String {
-        if self.familyName.isEmpty && self.givenName.isEmpty {
-            return self.emailAddresses.first?.value as String? ?? ""
-        }
+    fileprivate var collationNameSortedByGivenName: String { collationName(sortOrder: .givenName) }
 
-        let compositeName: String
-        if ContactSortOrder == .familyName {
-            compositeName = "\(self.familyName) \(self.givenName)"
-        } else {
-            compositeName = "\(self.givenName) \(self.familyName)"
+    @objc
+    fileprivate var collationNameSortedByFamilyName: String { collationName(sortOrder: .familyName) }
+
+    func collationName(sortOrder: CNContactSortOrder) -> String {
+        return (collationContactName(sortOrder: sortOrder) ?? (emailAddresses.first?.value as String?) ?? "")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private func collationContactName(sortOrder: CNContactSortOrder) -> String? {
+        let contactNames: [String] = [familyName.nilIfEmpty, givenName.nilIfEmpty].compacted()
+        guard !contactNames.isEmpty else {
+            return nil
         }
-        return compositeName.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        return ((sortOrder == .familyName) ? contactNames : contactNames.reversed()).joined(separator: " ")
     }
 }

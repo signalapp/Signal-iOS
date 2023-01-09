@@ -73,14 +73,14 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
         self.subtitleLabel.font = UIFont.ows_dynamicTypeSubheadline
     }
 
-    public func configure(contact: Contact, subtitleType: SubtitleCellValue, showsWhenSelected: Bool) {
+    public func configure(contact: Contact, sortOrder: CNContactSortOrder, subtitleType: SubtitleCellValue, showsWhenSelected: Bool) {
 
         self.contact = contact
         self.showsWhenSelected = showsWhenSelected
 
         if let cnContactId = contact.cnContactId,
             let cnContact = contactsManager.cnContact(withId: cnContactId) {
-            titleLabel.attributedText = cnContact.formattedFullName(font: titleLabel.font)
+            titleLabel.attributedText = cnContact.formattedFullName(sortOrder: sortOrder, font: titleLabel.font)
         } else {
             titleLabel.text = contact.fullName
         }
@@ -140,8 +140,8 @@ fileprivate extension CNContact {
     /**
      * Bold the sorting portion of the name. e.g. if we sort by family name, bold the family name.
      */
-    func formattedFullName(font: UIFont) -> NSAttributedString? {
-        let keyToHighlight = ContactSortOrder == .familyName ? CNContactFamilyNameKey : CNContactGivenNameKey
+    func formattedFullName(sortOrder: CNContactSortOrder, font: UIFont) -> NSAttributedString? {
+        let keyToHighlight = sortOrder == .familyName ? CNContactFamilyNameKey : CNContactGivenNameKey
 
         let boldDescriptor = font.fontDescriptor.withSymbolicTraits(.traitBold)
         let boldAttributes = [

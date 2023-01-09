@@ -5,80 +5,39 @@
 
 import XCTest
 import Contacts
-@testable import Signal
+@testable import SignalUI
 
-final class ContactsPickerTest: SignalBaseTest {
-    private var prevLang: Any?
-
-    override func setUp() {
-        super.setUp()
-
-        prevLang = getLang()
-    }
-
-    override func tearDown() {
-        super.tearDown()
-
-        if let prevLang = prevLang {
-            setLang(value: prevLang)
+final class ContactsPickerTest: XCTestCase {
+    func testCollation() {
+        struct TestCase {
+            var givenName: String?
+            var familyName: String?
+            var emailAddress: String?
+            var sortOrder: CNContactSortOrder
+            var expectedResult: String
         }
-    }
+        let testCases: [TestCase] = [
+            TestCase(givenName: nil, familyName: nil, sortOrder: .familyName, expectedResult: ""),
+            TestCase(givenName: " Alice", familyName: nil, sortOrder: .familyName, expectedResult: "Alice"),
+            TestCase(givenName: "", familyName: "Johnson ", sortOrder: .familyName, expectedResult: "Johnson"),
+            TestCase(givenName: "Alice ", familyName: " Johnson", sortOrder: .familyName, expectedResult: "Johnson Alice"),
+            TestCase(givenName: "Alice ", familyName: " Johnson", emailAddress: "abc@example.com", sortOrder: .givenName, expectedResult: "Alice   Johnson"),
+            TestCase(emailAddress: "  abc@example.com", sortOrder: .givenName, expectedResult: "abc@example.com")
+        ]
+        for testCase in testCases {
+            let cnContact = CNMutableContact()
+            if let givenName = testCase.givenName {
+                cnContact.givenName = givenName
+            }
+            if let familyName = testCase.familyName {
+                cnContact.familyName = familyName
+            }
+            if let emailAddress = testCase.emailAddress {
+                cnContact.emailAddresses.append(CNLabeledValue(label: nil, value: emailAddress as NSString))
+            }
 
-    func testContactSectionMatchesEmailFirstLetterWhenOnlyEmailContact() {
-        setLangEN()
-
-        let emailOnlyContactB = CNMutableContact()
-        emailOnlyContactB.emailAddresses.append(CNLabeledValue(label: nil, value: "bla@bla.com"))
-
-        let emailOnlyContactD = CNMutableContact()
-        emailOnlyContactD.emailAddresses.append(CNLabeledValue(label: nil, value: "dude@bla.com"))
-
-        let contactsPicker = ContactsPicker(allowsMultipleSelection: false, subtitleCellType: .phoneNumber)
-        let collatedContacts = contactsPicker.collatedContacts([emailOnlyContactB, emailOnlyContactD])
-
-        let sectionTitles = contactsPicker.collationForTests.sectionTitles
-        if let bIndex = sectionTitles.firstIndex(of: "B") {
-            let bSectionContacts = collatedContacts[bIndex]
-            XCTAssertEqual(bSectionContacts.first, emailOnlyContactB)
+            let actualResult = cnContact.collationName(sortOrder: testCase.sortOrder)
+            XCTAssertEqual(actualResult, testCase.expectedResult)
         }
-
-        if let dIndex = sectionTitles.firstIndex(of: "D") {
-            let dSectionContacts = collatedContacts[dIndex]
-            XCTAssertEqual(dSectionContacts.first, emailOnlyContactD)
-        }
-    }
-
-    func testContactSectionMatchesNameFirstLetterWhenNameExistsInContact() {
-        setLangEN()
-
-        let nameAndEmailContact = CNMutableContact()
-        nameAndEmailContact.givenName = "Alice"
-        nameAndEmailContact.emailAddresses.append(CNLabeledValue(label: nil, value: "nameAndEmail@bla.com"))
-
-        let contactsPicker = ContactsPicker(allowsMultipleSelection: false, subtitleCellType: .phoneNumber)
-        let collatedContacts = contactsPicker.collatedContacts([nameAndEmailContact])
-
-        let sectionTitles = contactsPicker.collationForTests.sectionTitles
-        if let aIndex = sectionTitles.firstIndex(of: "A") {
-            let aSectionContacts = collatedContacts[aIndex]
-            XCTAssertEqual(aSectionContacts.first, nameAndEmailContact)
-        }
-    }
-
-    private func setLangEN() {
-        setLang(value: "en")
-    }
-
-    private func setLang(value: Any) {
-        UserDefaults.standard.set(value, forKey: "AppleLanguages")
-        UserDefaults.standard.synchronize()
-    }
-
-    private func setLang(value: String) {
-        setLang(value: [value])
-    }
-
-    private func getLang() -> Any? {
-        return UserDefaults.standard.value(forKey: "AppleLanguages")
     }
 }
