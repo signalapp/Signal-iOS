@@ -181,6 +181,11 @@ public extension MessageSender {
 
         Logger.info("recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
 
+        guard let recipientUuid = recipientAddress.uuid else {
+            owsFailDebug("Skipping prekey request due to missing uuid.")
+            return failure(MessageSenderError.missingDevice)
+        }
+
         guard isDeviceNotMissing(
             recipientAddress: recipientAddress,
             deviceId: deviceId
@@ -219,7 +224,7 @@ public extension MessageSender {
             requestFactoryBlock: { (udAccessKeyForRequest: SMKUDAccessKey?) -> TSRequest? in
                 Logger.verbose("Building prekey request for recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
                 return OWSRequestFactory.recipientPreKeyRequest(
-                    with: recipientAddress,
+                    withServiceId: recipientUuid,
                     deviceId: deviceId.stringValue,
                     udAccessKey: udAccessKeyForRequest
                 )

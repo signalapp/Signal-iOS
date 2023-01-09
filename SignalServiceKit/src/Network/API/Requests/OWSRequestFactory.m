@@ -196,15 +196,13 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)recipientPreKeyRequestWithAddress:(SignalServiceAddress *)address
-                                        deviceId:(NSString *)deviceId
-                                     udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
++ (TSRequest *)recipientPreKeyRequestWithServiceId:(NSUUID *)serviceId
+                                          deviceId:(NSString *)deviceId
+                                       udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
 {
-    OWSAssertDebug(address.isValid);
     OWSAssertDebug(deviceId.length > 0);
 
-    NSString *path =
-        [NSString stringWithFormat:@"%@/%@/%@", self.textSecureKeysAPI, address.serviceIdentifier, deviceId];
+    NSString *path = [NSString stringWithFormat:@"%@/%@/%@", self.textSecureKeysAPI, serviceId.UUIDString, deviceId];
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     if (udAccessKey != nil) {
