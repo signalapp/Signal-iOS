@@ -1302,7 +1302,6 @@
 		F973DFBA0991C967C4934B08 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */; };
 		F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7928CB89CC00472E68 /* PngChunker.swift */; };
 		F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7728CB894400472E68 /* PngChunkerTest.swift */; };
-		F9783F29293A899C009CDC23 /* DonateInfoSheetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9783F28293A899C009CDC23 /* DonateInfoSheetHeaderView.swift */; };
 		F97A2EEA282578C000610669 /* BadgeExpirationSheetStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */; };
 		F97D10FB291C7FF900F0FFAA /* FakeCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97D10FA291C7FF900F0FFAA /* FakeCallMessageHandler.swift */; };
 		F9844C492867936400B16DD4 /* SignalMeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9844C482867936400B16DD4 /* SignalMeTest.swift */; };
@@ -3695,7 +3694,6 @@
 		F972180128DCFDF100113D9F /* TSContactThreadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSContactThreadTest.swift; sourceTree = "<group>"; };
 		F972180528DE37A200113D9F /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		F97391A228EF0B20002DDE5D /* ProtoParsingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtoParsingTest.swift; sourceTree = "<group>"; };
-		F9783F28293A899C009CDC23 /* DonateInfoSheetHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonateInfoSheetHeaderView.swift; sourceTree = "<group>"; };
 		F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheetStateTest.swift; sourceTree = "<group>"; };
 		F97D10FA291C7FF900F0FFAA /* FakeCallMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeCallMessageHandler.swift; sourceTree = "<group>"; };
 		F9844C482867936400B16DD4 /* SignalMeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMeTest.swift; sourceTree = "<group>"; };
@@ -7049,7 +7047,6 @@
 				F94360F02910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift */,
 				F9C8CFCB2935700B0094469C /* CreditOrDebitCardReadMoreSheetViewController.swift */,
 				F96B66A12912B88A004FFFAA /* DonateChoosePaymentMethodSheet.swift */,
-				F9783F28293A899C009CDC23 /* DonateInfoSheetHeaderView.swift */,
 				F96B66A32912B88A004FFFAA /* DonateViewController+DonationMode.swift */,
 				F96B66A82912B88B004FFFAA /* DonateViewController+MonthlyApplePayDonation.swift */,
 				F96B66A72912B88B004FFFAA /* DonateViewController+MonthlySubscriptionLevelView.swift */,
@@ -10370,7 +10367,6 @@
 				34A95501271B503E00B05242 /* DisplayableText.swift in Sources */,
 				5011D1CB293FC7E000064098 /* DomainFrontingCountryViewController.swift in Sources */,
 				F96B66AA2912B88B004FFFAA /* DonateChoosePaymentMethodSheet.swift in Sources */,
-				F9783F29293A899C009CDC23 /* DonateInfoSheetHeaderView.swift in Sources */,
 				F96B66AC2912B88B004FFFAA /* DonateViewController+DonationMode.swift in Sources */,
 				F96B66B12912B88B004FFFAA /* DonateViewController+MonthlyApplePayDonation.swift in Sources */,
 				F96B66B02912B88B004FFFAA /* DonateViewController+MonthlySubscriptionLevelView.swift in Sources */,
