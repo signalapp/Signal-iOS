@@ -144,16 +144,7 @@ public class GiftBadgeCellView: UIStackView {
         titleLabel.numberOfLines = 0
 
         let secondLineLabel = UILabel()
-        secondLineLabel.text = NSLocalizedString(
-            "BADGE_GIFTING_GIFT_ROW_SUBTITLE",
-            comment: "When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title"
-        )
-        secondLineLabel.textColor = Theme.primaryTextColor
-        secondLineLabel.font = .ows_dynamicTypeBody2
-        secondLineLabel.numberOfLines = 0
-
-        let thirdLineLabel = UILabel()
-        thirdLineLabel.text = {
+        secondLineLabel.text = {
             let formattedPrice = DonationUtilities.format(money: price)
 
             let formattedDuration: String = {
@@ -188,11 +179,11 @@ public class GiftBadgeCellView: UIStackView {
                 formattedPrice, formattedDurationText
             )
         }()
-        thirdLineLabel.textColor = Theme.primaryTextColor
-        thirdLineLabel.font = .ows_dynamicTypeBody2
-        thirdLineLabel.numberOfLines = 0
+        secondLineLabel.textColor = Theme.primaryTextColor
+        secondLineLabel.font = .ows_dynamicTypeBody2
+        secondLineLabel.numberOfLines = 0
 
-        let vStackView = UIStackView(arrangedSubviews: [titleLabel, secondLineLabel, thirdLineLabel])
+        let vStackView = UIStackView(arrangedSubviews: [titleLabel, secondLineLabel])
         vStackView.axis = .vertical
         vStackView.distribution = .equalCentering
         vStackView.spacing = 4

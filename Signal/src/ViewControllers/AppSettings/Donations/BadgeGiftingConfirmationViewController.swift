@@ -34,10 +34,16 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     }
 
     private class func showRecipientIsBlockedError() {
-        OWSActionSheets.showActionSheet(title: NSLocalizedString("BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE",
-                                                                 comment: "Title for error message dialog indicating that the person you're trying to send to has been blocked."),
-                                        message: NSLocalizedString("BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY",
-                                                                   comment: "Error message indicating that the person you're trying to send has been blocked."))
+        OWSActionSheets.showActionSheet(
+            title: NSLocalizedString(
+                "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE",
+                comment: "Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked."
+            ),
+            message: NSLocalizedString(
+                "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY",
+                comment: "Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked."
+            )
+        )
     }
 
     // MARK: - Callbacks
@@ -49,8 +55,10 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
         databaseStorage.appendDatabaseChangeDelegate(self)
 
-        title = NSLocalizedString("BADGE_GIFTING_CONFIRMATION_TITLE",
-                                  comment: "Title on the screen where you confirm sending of a gift badge, and can write a message")
+        title = NSLocalizedString(
+            "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE",
+            comment: "Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend."
+        )
 
         updateTableContents()
         setUpBottomFooter()
@@ -218,12 +226,12 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                 case .cannotReceiveGiftBadges:
                     OWSActionSheets.showActionSheet(
                         title: NSLocalizedString(
-                            "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE",
-                            comment: "Title for error message dialog indicating that a user can't receive gifts."
+                            "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_TITLE",
+                            comment: "Users can donate on a friend's behalf. If the friend cannot receive these donations, an error dialog will be shown. This is the title of that error dialog."
                         ),
                         message: NSLocalizedString(
-                            "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY",
-                            comment: "Error message indicating that a user can't receive gifts."
+                            "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_BODY",
+                            comment: "Users can donate on a friend's behalf. If the friend cannot receive these donations, this error message will be shown."
                         )
                     )
                     return
@@ -233,10 +241,16 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             }
 
             owsFailDebugUnlessNetworkFailure(error)
-            OWSActionSheets.showActionSheet(title: NSLocalizedString("BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE",
-                                                                     comment: "Title for error message dialog indicating that you can't send the gift badge for some reason."),
-                                            message: NSLocalizedString("BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY",
-                                                                       comment: "Error message indicating that you can't send the gift badge for some reason."))
+            OWSActionSheets.showActionSheet(
+                title: NSLocalizedString(
+                    "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE",
+                    comment: "Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, an error dialog is shown. This is the title of that dialog."
+                ),
+                message: NSLocalizedString(
+                    "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY",
+                    comment: "Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown."
+                )
+            )
         }
     }
 
@@ -246,8 +260,10 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
     private lazy var messageTextView: TextViewWithPlaceholder = {
         let view = TextViewWithPlaceholder()
-        view.placeholderText = NSLocalizedString("BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER",
-                                                 comment: "Placeholder in the text field where you can add text for a message along with your gift")
+        view.placeholderText = NSLocalizedString(
+            "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER",
+            comment: "Users can donate on a friend's behalf and can optionally add a message. This is the placeholder in the text field for that additional message."
+        )
         view.returnKeyType = .done
         view.delegate = self
         return view
@@ -346,8 +362,10 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             let cell = AppSettingsViewsUtil.newCell(cellOuterInsets: self.cellOuterInsets)
 
             let messageInfoLabel = UILabel()
-            messageInfoLabel.text = NSLocalizedString("BADGE_GIFTING_ADDITIONAL_MESSAGE",
-                                                      comment: "Text telling the user that they can add a message along with their gift badge")
+            messageInfoLabel.text = NSLocalizedString(
+                "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO",
+                comment: "Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message."
+            )
             messageInfoLabel.font = .ows_dynamicTypeBody2
             messageInfoLabel.textColor = Theme.primaryTextColor
             messageInfoLabel.numberOfLines = 0
@@ -432,8 +450,10 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
         let amountView: UIStackView = {
             let descriptionLabel = UILabel()
-            descriptionLabel.text = NSLocalizedString("BADGE_GIFTING_PAYMENT_DESCRIPTION",
-                                                      comment: "Text telling the user that their gift is a one-time donation")
+            descriptionLabel.text = NSLocalizedString(
+                "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION",
+                comment: "Users can donate on a friend's behalf. This tells users that this will be a one-time donation."
+            )
             descriptionLabel.font = .ows_dynamicTypeBody
             descriptionLabel.numberOfLines = 0
 
@@ -764,15 +784,27 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
             case .recipientIsBlocked:
                 Self.showRecipientIsBlockedError()
             case .failedAndUserNotCharged, .cannotReceiveGiftBadges:
-                OWSActionSheets.showActionSheet(title: NSLocalizedString("BADGE_GIFTING_PAYMENT_FAILED_TITLE",
-                                                                         comment: "Title for the action sheet when you try to send a gift badge but the payment failed"),
-                                                message: NSLocalizedString("BADGE_GIFTING_PAYMENT_FAILED_BODY",
-                                                                           comment: "Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged"))
+                OWSActionSheets.showActionSheet(
+                    title: NSLocalizedString(
+                        "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE",
+                        comment: "Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog."
+                    ),
+                    message: NSLocalizedString(
+                        "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY",
+                        comment: "Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown."
+                    )
+                )
             case .failedAndUserMaybeCharged:
-                OWSActionSheets.showActionSheet(title: NSLocalizedString("BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE",
-                                                                         comment: "Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support."),
-                                                message: NSLocalizedString("BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY",
-                                                                           comment: "Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support."))
+                OWSActionSheets.showActionSheet(
+                    title: NSLocalizedString(
+                        "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE",
+                        comment: "Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog."
+                    ),
+                    message: NSLocalizedString(
+                        "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY",
+                        comment: "Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown."
+                    )
+                )
             }
         }
     }
