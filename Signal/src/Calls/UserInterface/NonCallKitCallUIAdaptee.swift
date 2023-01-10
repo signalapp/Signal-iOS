@@ -43,7 +43,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
             case .doNotRing, .shouldRing:
                 // Immediately consider ourselves connected.
                 recipientAcceptedCall(call)
-            case .incomingRing:
+            case .incomingRing, .incomingRingCancelled:
                 owsFailDebug("should not happen for an outgoing call")
                 // Recover by considering ourselves connected
                 recipientAcceptedCall(call)

@@ -100,9 +100,12 @@ public class SignalCall: NSObject, CallManagerCallReference {
         return call
     }
 
-    public var isTerminatedIndividualCall: Bool {
+    public var hasTerminated: Bool {
         switch mode {
         case .group:
+            if case .incomingRingCancelled = groupCallRingState {
+                return true
+            }
             return false
         case .individual(let call):
             return call.hasTerminated
@@ -175,12 +178,15 @@ public class SignalCall: NSObject, CallManagerCallReference {
         case ringing
         case ringingEnded
         case incomingRing(caller: SignalServiceAddress, ringId: Int64)
+        case incomingRingCancelled
 
         var isIncomingRing: Bool {
-            if case .incomingRing = self {
+            switch self {
+            case .incomingRing, .incomingRingCancelled:
                 return true
+            default:
+                return false
             }
-            return false
         }
     }
 

@@ -1352,6 +1352,7 @@ extension CallService: CallManagerDelegate {
                 }
 
                 self.terminate(call: currentCall)
+                currentCall.groupCallRingState = .incomingRingCancelled
             }
 
             databaseStorage.asyncWrite { transaction in

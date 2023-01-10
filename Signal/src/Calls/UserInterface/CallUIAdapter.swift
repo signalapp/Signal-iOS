@@ -40,12 +40,12 @@ extension CallUIAdaptee {
     internal func showCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        guard !call.isTerminatedIndividualCall else {
-            Logger.info("Not showing window for terminated individual call")
+        guard !call.hasTerminated else {
+            Logger.info("Not showing window for terminated call \(call)")
             return
         }
 
-        Logger.info("showCall")
+        Logger.info("\(call)")
 
         let callViewController: UIViewController & CallViewControllerWindowReference
         if call.isGroupCall {
