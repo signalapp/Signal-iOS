@@ -15,11 +15,11 @@ struct BadgeGiftingStrings {
         )
     }
 
-    static func youReceived(from fullName: String) -> String {
+    static func youReceived(from shortName: String) -> String {
         let formatText = NSLocalizedString(
-            "BADGE_GIFTING_YOU_RECEIVED_FORMAT",
-            comment: "Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}."
+            "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT",
+            comment: "A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}."
         )
-        return String(format: formatText, fullName)
+        return String(format: formatText, shortName)
     }
 }

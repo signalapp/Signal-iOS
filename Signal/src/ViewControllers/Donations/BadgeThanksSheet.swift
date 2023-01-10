@@ -117,7 +117,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
     enum BadgeType {
         case boost
         case subscription
-        case gift(shortName: String, fullName: String, notNowAction: () -> Void, incomingMessage: TSIncomingMessage)
+        case gift(shortName: String, notNowAction: () -> Void, incomingMessage: TSIncomingMessage)
     }
 
     private let badge: ProfileBadge
@@ -165,7 +165,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         switch self.badgeType {
         case .boost, .subscription:
             self.saveVisibilityChanges()
-        case .gift(_, _, notNowAction: let notNowAction, _):
+        case let .gift(_, notNowAction, _):
             notNowAction()
         }
     }
@@ -241,10 +241,10 @@ class BadgeThanksSheet: OWSTableSheetViewController {
                 "BADGE_THANKS_TITLE",
                 comment: "When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet."
             )
-        case .gift(shortName: let shortName, _, _, _):
+        case let .gift(shortName, _, _):
             let formatText = NSLocalizedString(
-                "BADGE_GIFTING_REDEEM_TITLE_FORMAT",
-                comment: "Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}."
+                "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT",
+                comment: "A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}."
             )
             return String(format: formatText, shortName)
         }
@@ -258,8 +258,8 @@ class BadgeThanksSheet: OWSTableSheetViewController {
                 comment: "When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet."
             )
             return String(format: formatText, self.badge.localizedName)
-        case .gift(_, fullName: let fullName, _, _):
-            return BadgeGiftingStrings.youReceived(from: fullName)
+        case let .gift(shortName, _, _):
+            return BadgeGiftingStrings.youReceived(from: shortName)
         }
     }
 
@@ -305,26 +305,33 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             stackView.setCustomSpacing(30, after: bodyLabel)
 
             let badgeImageView = UIImageView()
+            let shouldShowBadgeLabel: Bool
             switch self.badgeType {
             case .boost, .subscription:
                 badgeImageView.image = self.badge.assets?.universal160
                 badgeImageView.autoSetDimensions(to: CGSize(square: 160))
+                shouldShowBadgeLabel = true
             case .gift:
                 // Use a smaller image for gifts since they have an extra button.
                 badgeImageView.image = self.badge.assets?.universal112
                 badgeImageView.autoSetDimensions(to: CGSize(square: 112))
+                shouldShowBadgeLabel = false
             }
             stackView.addArrangedSubview(badgeImageView)
-            stackView.setCustomSpacing(14, after: badgeImageView)
 
-            let badgeLabel = UILabel()
-            badgeLabel.font = .ows_dynamicTypeTitle3.ows_semibold
-            badgeLabel.textColor = Theme.primaryTextColor
-            badgeLabel.textAlignment = .center
-            badgeLabel.numberOfLines = 0
-            badgeLabel.text = self.badge.localizedName
-            stackView.addArrangedSubview(badgeLabel)
-            stackView.setCustomSpacing(36, after: badgeLabel)
+            if shouldShowBadgeLabel {
+                let badgeLabel = UILabel()
+                badgeLabel.font = .ows_dynamicTypeTitle3.ows_semibold
+                badgeLabel.textColor = Theme.primaryTextColor
+                badgeLabel.textAlignment = .center
+                badgeLabel.numberOfLines = 0
+                badgeLabel.text = self.badge.localizedName
+                stackView.addArrangedSubview(badgeLabel)
+                stackView.setCustomSpacing(14, after: badgeImageView)
+                stackView.setCustomSpacing(36, after: badgeLabel)
+            } else {
+                stackView.setCustomSpacing(36, after: badgeImageView)
+            }
 
             return cell
         }, actionBlock: nil))
@@ -334,7 +341,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         }
 
         switch self.badgeType {
-        case let .gift(_, _, notNowAction: notNowAction, incomingMessage: incomingMessage):
+        case let .gift(_, notNowAction, incomingMessage):
             contents.addSection(self.buildRedeemButtonSection(notNowAction: notNowAction, incomingMessage: incomingMessage))
         case .boost, .subscription:
             contents.addSection(self.buildDoneButtonSection())
@@ -445,12 +452,12 @@ class BadgeThanksSheet: OWSTableSheetViewController {
                 } errorHandler: { error in
                     OWSActionSheets.showActionSheet(
                         title: NSLocalizedString(
-                            "BADGE_GIFTING_REDEEM_ERROR_TITLE",
-                            comment: "Shown as the title of an alert when failing to redeem a gift."
+                            "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE",
+                            comment: "Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf."
                         ),
                         message: NSLocalizedString(
-                            "BADGE_GIFTING_REDEEM_ERROR_BODY",
-                            comment: "Shown as the body of an alert when failing to redeem a gift."
+                            "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY",
+                            comment: "Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf."
                         )
                     )
                 }

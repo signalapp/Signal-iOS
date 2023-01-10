@@ -9,13 +9,13 @@ import UIKit
 
 class BadgeGiftingAlreadyRedeemedSheet: OWSTableSheetViewController {
     private let profileBadge: ProfileBadge
-    private let fullName: String
+    private let shortName: String
 
-    public init(badge: ProfileBadge, fullName: String) {
+    public init(badge: ProfileBadge, shortName: String) {
         owsAssertDebug(badge.assets != nil)
 
         self.profileBadge = badge
-        self.fullName = fullName
+        self.shortName = shortName
 
         super.init()
 
@@ -68,7 +68,7 @@ class BadgeGiftingAlreadyRedeemedSheet: OWSTableSheetViewController {
             label.font = .ows_dynamicTypeBody
             label.textColor = Theme.primaryTextColor
             label.numberOfLines = 0
-            label.text = BadgeGiftingStrings.youReceived(from: self.fullName)
+            label.text = BadgeGiftingStrings.youReceived(from: self.shortName)
             label.textAlignment = .center
             stackView.addArrangedSubview(label)
 
