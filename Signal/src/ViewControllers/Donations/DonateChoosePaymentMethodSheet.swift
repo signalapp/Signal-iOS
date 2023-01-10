@@ -9,8 +9,14 @@ import SignalServiceKit
 import SignalMessaging
 
 class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
+    enum DonationMode {
+        case oneTime
+        case monthly
+        case gift(recipientFullName: String)
+    }
+
     private let amount: FiatMoney
-    private let badge: ProfileBadge?
+    private let badge: ProfileBadge
     private let donationMode: DonationMode
     private let supportedPaymentMethods: Set<DonationPaymentMethod>
     private let didChoosePaymentMethod: (DonateChoosePaymentMethodSheet, DonationPaymentMethod) -> Void
@@ -38,33 +44,41 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
             )
             return String(format: format, moneyPerMonthString)
         case .gift:
-            owsFail("Not yet supported.")
+            let format = NSLocalizedString(
+                "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND",
+                comment: "When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\"."
+            )
+            return String(format: format, currencyString)
         }
     }
 
     private var bodyText: String? {
-        guard let badge else { return nil }
-
-        let format: String
         switch donationMode {
         case .oneTime:
-            format = NSLocalizedString(
+            let format = NSLocalizedString(
                 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION",
                 comment: "When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\"." )
+            return String(format: format, badge.localizedName)
+
         case .monthly:
-            format = NSLocalizedString(
+            let format = NSLocalizedString(
                 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION",
                 comment: "When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\"."
             )
-        case .gift:
-            owsFail("Not yet supported.")
+            return String(format: format, badge.localizedName)
+
+        case let .gift(recipientFullName):
+            let format = NSLocalizedString(
+                "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND",
+                comment: "When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the subtitle on that sheet. Embeds {{recipient's name}}."
+            )
+            return String(format: format, recipientFullName)
         }
-        return String(format: format, badge.localizedName)
     }
 
     init(
         amount: FiatMoney,
-        badge: ProfileBadge?,
+        badge: ProfileBadge,
         donationMode: DonationMode,
         supportedPaymentMethods: Set<DonationPaymentMethod>,
         didChoosePaymentMethod: @escaping (DonateChoosePaymentMethodSheet, DonationPaymentMethod) -> Void
@@ -96,7 +110,7 @@ class DonateChoosePaymentMethodSheet: OWSTableSheetViewController {
             stackView.alignment = .center
             stackView.spacing = 6
 
-            if let assets = badge?.assets {
+            if let assets = badge.assets {
                 let badgeImageView = UIImageView(image: assets.universal112)
                 badgeImageView.autoSetDimensions(to: CGSize(square: 112))
                 stackView.addArrangedSubview(badgeImageView)

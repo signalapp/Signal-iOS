@@ -4,15 +4,24 @@
 //
 
 import Foundation
+import SignalMessaging
 import SignalServiceKit
 
 class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewController {
+    typealias PaymentMethodsConfiguration = SubscriptionManager.DonationConfiguration.PaymentMethodsConfiguration
+
     private let badge: ProfileBadge
     private let price: FiatMoney
+    private let paymentMethodsConfiguration: PaymentMethodsConfiguration
 
-    public init(badge: ProfileBadge, price: FiatMoney) {
+    public init(
+        badge: ProfileBadge,
+        price: FiatMoney,
+        paymentMethodsConfiguration: PaymentMethodsConfiguration
+    ) {
         self.badge = badge
         self.price = price
+        self.paymentMethodsConfiguration = paymentMethodsConfiguration
     }
 
     public override func viewDidLoad() {
@@ -69,7 +78,12 @@ extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate {
             owsFail("Recipient is missing address, but we expected one")
         }
         let thread = databaseStorage.write { TSContactThread.getOrCreateThread(withContactAddress: address, transaction: $0) }
-        let vc = BadgeGiftingConfirmationViewController(badge: badge, price: price, thread: thread)
+        let vc = BadgeGiftingConfirmationViewController(
+            badge: badge,
+            price: price,
+            paymentMethodsConfiguration: paymentMethodsConfiguration,
+            thread: thread
+        )
         self.navigationController?.pushViewController(vc, animated: true)
     }
 

@@ -10,19 +10,24 @@ import SignalServiceKit
 import UIKit
 
 class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
+    typealias PaymentMethodsConfiguration = SubscriptionManager.DonationConfiguration.PaymentMethodsConfiguration
+
     // MARK: - View state
 
     private let badge: ProfileBadge
     private let price: FiatMoney
+    private let paymentMethodsConfiguration: PaymentMethodsConfiguration
     private let thread: TSContactThread
 
     public init(
         badge: ProfileBadge,
         price: FiatMoney,
+        paymentMethodsConfiguration: PaymentMethodsConfiguration,
         thread: TSContactThread
     ) {
         self.badge = badge
         self.price = price
+        self.paymentMethodsConfiguration = paymentMethodsConfiguration
         self.thread = thread
     }
 
@@ -134,8 +139,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         return (needsUserInteraction: needsUserInteraction, promise: promise)
     }
 
-    @objc
-    private func checkRecipientAndRequestApplePay() {
+    private func checkRecipientAndPresentChoosePaymentMethodSheet() {
         // We want to resign this SOMETIME before this VC dismisses and switches to the chat.
         // In addition to offering slightly better UX, resigning first responder status prevents it
         // from eating events after the VC is dismissed.
@@ -172,19 +176,37 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                 break
             }
 
-            Logger.info("[Gifting] Requesting Apple Pay...")
+            let recipientFullName = self.databaseStorage.read { transaction in
+                self.contactsManager.displayName(for: self.thread, transaction: transaction)
+            }
 
-            let request = DonationUtilities.newPaymentRequest(for: self.price, isRecurring: false)
-
-            let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
-            paymentController.delegate = self
-            paymentController.present { presented in
-                if !presented {
-                    // This can happen under normal conditions if the user double-taps the button,
-                    // but may also indicate a problem.
-                    Logger.warn("[Gifting] Failed to present payment controller")
+            let sheet = DonateChoosePaymentMethodSheet(
+                amount: self.price,
+                badge: self.badge,
+                donationMode: .gift(recipientFullName: recipientFullName),
+                supportedPaymentMethods: DonationUtilities.supportedDonationPaymentMethods(
+                    forDonationMode: .gift,
+                    usingCurrency: self.price.currencyCode,
+                    withConfiguration: self.paymentMethodsConfiguration,
+                    localNumber: Self.tsAccountManager.localNumber
+                )
+            ) { [weak self] (sheet, paymentMethod) in
+                sheet.dismiss(animated: true) { [weak self] in
+                    guard let self else { return }
+                    switch paymentMethod {
+                    case .applePay:
+                        self.startApplePay()
+                    case .creditOrDebitCard:
+                        // TODO: (GB) Support gifting with card.
+                        OWSActionSheets.showErrorAlert(message: "Cards not yet supported.")
+                    case .paypal:
+                        // TODO: [PayPal] Support gifting with PayPal.
+                        OWSActionSheets.showErrorAlert(message: "PayPal not yet supported.")
+                    }
                 }
             }
+
+            self.present(sheet, animated: true)
         }.catch { error in
             if let error = error as? SendGiftBadgeError {
                 Logger.warn("[Gifting] Error \(error)")
@@ -402,11 +424,15 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             return view
         }()
 
-        let applePayButton = ApplePayButton { [weak self] in
-            self?.checkRecipientAndRequestApplePay()
+        let continueButton = OWSButton(title: CommonStrings.continueButton) { [weak self] in
+            self?.checkRecipientAndPresentChoosePaymentMethodSheet()
         }
+        continueButton.dimsWhenHighlighted = true
+        continueButton.layer.cornerRadius = 8
+        continueButton.backgroundColor = .ows_accentBlue
+        continueButton.titleLabel?.font = UIFont.ows_dynamicTypeBody.ows_semibold
 
-        for view in [amountView, applePayButton] {
+        for view in [amountView, continueButton] {
             bottomFooterStackView.addArrangedSubview(view)
             view.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
             view.autoPinWidthToSuperview(withMargin: 23)
@@ -466,7 +492,7 @@ extension BadgeGiftingConfirmationViewController: TextViewWithPlaceholderDelegat
     }
 }
 
-// MARK: - Apple Pay delegate
+// MARK: - Apple Pay
 
 extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControllerDelegate {
     private struct PreparedPayment {
@@ -480,6 +506,22 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
         case failedAndUserMaybeCharged
         case cannotReceiveGiftBadges
         case userCanceledBeforeChargeCompleted
+    }
+
+    func startApplePay() {
+        Logger.info("[Gifting] Requesting Apple Pay...")
+
+        let request = DonationUtilities.newPaymentRequest(for: self.price, isRecurring: false)
+
+        let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
+        paymentController.delegate = self
+        paymentController.present { presented in
+            if !presented {
+                // This can happen under normal conditions if the user double-taps the button,
+                // but may also indicate a problem.
+                Logger.warn("[Gifting] Failed to present payment controller")
+            }
+        }
     }
 
     private func prepareToPay(authorizedPayment: PKPayment) -> Promise<PreparedPayment> {

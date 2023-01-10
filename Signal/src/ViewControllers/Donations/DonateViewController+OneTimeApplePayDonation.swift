@@ -26,13 +26,10 @@ extension DonateViewController {
             completion(result)
         }
 
-        guard
-            let oneTime = state.oneTime,
-            let amount = oneTime.amount,
-            let boostBadge = oneTime.profileBadge
-        else {
-            owsFail("Amount, currency code, or boost badge are missing")
+        guard let oneTime = state.oneTime, let amount = oneTime.amount else {
+            owsFail("Amount or currency code are missing")
         }
+        let boostBadge = oneTime.profileBadge
 
         firstly(on: .global()) {
             Stripe.boost(

@@ -40,7 +40,7 @@ extension DonateViewController {
             }
 
             public let selectedAmount: SelectedAmount
-            public let profileBadge: ProfileBadge?
+            public let profileBadge: ProfileBadge
 
             fileprivate let presets: [Currency.Code: DonationUtilities.Preset]
             fileprivate let minimumAmounts: [Currency.Code: FiatMoney]

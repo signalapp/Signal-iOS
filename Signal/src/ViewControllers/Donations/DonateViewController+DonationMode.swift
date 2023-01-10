@@ -14,11 +14,20 @@ extension DonateViewController {
         case monthly
 
         /// Converts the donation mode (one-time or monthly) for this view to
+        /// the view-agnostic donation mode.
+        var asDonationMode: SignalMessaging.DonationMode {
+            switch self {
+            case .oneTime: return .oneTime
+            case .monthly: return .monthly
+            }
+        }
+
+        /// Converts the donation mode (one-time or monthly) for this view to
         /// the equivalent in the "choose payment method" sheet.
         ///
         /// We need this because this view supports one-time or monthly, but the
         /// sheet supports one-time, monthly, and gifting.
-        var asDonationMode: SignalMessaging.DonationMode {
+        var forChoosePaymentMethodSheet: DonateChoosePaymentMethodSheet.DonationMode {
             switch self {
             case .oneTime: return .oneTime
             case .monthly: return .monthly

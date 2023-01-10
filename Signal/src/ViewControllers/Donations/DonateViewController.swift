@@ -274,7 +274,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
     private func presentChoosePaymentMethodSheet(
         amount: FiatMoney,
-        badge: ProfileBadge?,
+        badge: ProfileBadge,
         donateMode: DonateMode,
         supportedPaymentMethods: Set<DonationPaymentMethod>
     ) {
@@ -283,7 +283,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         let sheet = DonateChoosePaymentMethodSheet(
             amount: amount,
             badge: badge,
-            donationMode: donateMode.asDonationMode,
+            donationMode: donateMode.forChoosePaymentMethodSheet,
             supportedPaymentMethods: supportedPaymentMethods
         ) { [weak self] (sheet, paymentMethod) in
             sheet.dismiss(animated: true) { [weak self] in

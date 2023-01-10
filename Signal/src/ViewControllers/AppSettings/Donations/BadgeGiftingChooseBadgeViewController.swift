@@ -8,6 +8,9 @@ import UIKit
 import SignalMessaging
 
 public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
+    typealias GiftConfiguration = SubscriptionManager.DonationConfiguration.GiftConfiguration
+    typealias PaymentMethodsConfiguration = SubscriptionManager.DonationConfiguration.PaymentMethodsConfiguration
+
     // MARK: - State management
 
     enum State {
@@ -16,16 +19,16 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
         case loadFailed
         case loaded(
             selectedCurrencyCode: Currency.Code,
-            badge: ProfileBadge,
-            pricesByCurrencyCode: [Currency.Code: FiatMoney]
+            giftConfiguration: GiftConfiguration,
+            paymentMethodsConfiguration: PaymentMethodsConfiguration
         )
 
         public var canContinue: Bool {
             switch self {
             case .initializing, .loading, .loadFailed:
                 return false
-            case let .loaded(selectedCurrencyCode, _, pricesByCurrencyCode):
-                let isValid = pricesByCurrencyCode[selectedCurrencyCode] != nil
+            case let .loaded(selectedCurrencyCode, giftConfiguration, _):
+                let isValid = giftConfiguration.presetAmount[selectedCurrencyCode] != nil
                 owsAssertDebug(isValid, "State was loaded but it was invalid")
                 return isValid
             }
@@ -36,14 +39,16 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             case .initializing, .loading, .loadFailed:
                 assertionFailure("Invalid state; cannot select currency code")
                 return self
-            case let .loaded(_, badge, pricesByCurrencyCode):
-                guard pricesByCurrencyCode[newCurrencyCode] != nil else {
+            case let .loaded(_, giftConfiguration, paymentMethodsConfiguration):
+                guard giftConfiguration.presetAmount[newCurrencyCode] != nil else {
                     assertionFailure("Tried to select a currency code that doesn't exist")
                     return self
                 }
-                return .loaded(selectedCurrencyCode: newCurrencyCode,
-                               badge: badge,
-                               pricesByCurrencyCode: pricesByCurrencyCode)
+                return .loaded(
+                    selectedCurrencyCode: newCurrencyCode,
+                    giftConfiguration: giftConfiguration,
+                    paymentMethodsConfiguration: paymentMethodsConfiguration
+                )
             }
         }
     }
@@ -66,25 +71,22 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
     }
 
     private func loadData() -> Guarantee<State> {
-        firstly { () -> Promise<(ProfileBadge, [Currency.Code: FiatMoney])> in
-            Logger.info("[Gifting] Fetching badge data...")
-            return SubscriptionManager.fetchDonationConfiguration().map { donationConfiguration in
-                (
-                    donationConfiguration.gift.badge,
-                    donationConfiguration.gift.presetAmount
-                )
-            }
-        }.then { (giftBadge: ProfileBadge, pricesByCurrencyCode: [Currency.Code: FiatMoney]) -> Promise<(ProfileBadge, [Currency.Code: FiatMoney])> in
+        firstly {
+            Logger.info("[Gifting] Fetching donation configuration...")
+            return SubscriptionManager.fetchDonationConfiguration()
+        }.then { donationConfiguration -> Promise<SubscriptionManager.DonationConfiguration> in
             Logger.info("[Gifting] Populating badge assets...")
-            return self.profileManager.badgeStore.populateAssetsOnBadge(giftBadge).map { (giftBadge, pricesByCurrencyCode) }
-        }.then { (giftBadge: ProfileBadge, pricesByCurrencyCode: [Currency.Code: FiatMoney]) -> Guarantee<State> in
+            let giftBadge = donationConfiguration.gift.badge
+            return self.profileManager.badgeStore.populateAssetsOnBadge(giftBadge)
+                .map { donationConfiguration }
+        }.then { donationConfiguration -> Guarantee<State> in
             let defaultCurrencyCode = DonationUtilities.chooseDefaultCurrency(
                 preferred: [
                     Locale.current.currencyCode?.uppercased(),
                     "USD",
-                    pricesByCurrencyCode.keys.first
+                    donationConfiguration.gift.presetAmount.keys.first
                 ],
-                supported: pricesByCurrencyCode.keys
+                supported: donationConfiguration.gift.presetAmount.keys
             )
             guard let defaultCurrencyCode = defaultCurrencyCode else {
                 // This indicates a bug, either in the iOS app or the server.
@@ -94,8 +96,8 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
 
             return Guarantee.value(.loaded(
                 selectedCurrencyCode: defaultCurrencyCode,
-                badge: giftBadge,
-                pricesByCurrencyCode: pricesByCurrencyCode
+                giftConfiguration: donationConfiguration.gift,
+                paymentMethodsConfiguration: donationConfiguration.paymentMethods
             ))
         }.recover { error -> Guarantee<State> in
             Logger.warn("\(error)")
@@ -107,12 +109,16 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
         switch state {
         case .initializing, .loading, .loadFailed:
             owsFailDebug("Tapped next when the state wasn't loaded")
-        case let .loaded(selectedCurrencyCode, badge, pricesByCurrencyCode):
-            guard let price = pricesByCurrencyCode[selectedCurrencyCode] else {
+        case let .loaded(selectedCurrencyCode, giftConfiguration, paymentMethodsConfiguration):
+            guard let price = giftConfiguration.presetAmount[selectedCurrencyCode] else {
                 owsFailDebug("State is invalid. We selected a currency code that we don't have a price for")
                 return
             }
-            let vc = BadgeGiftingChooseRecipientViewController(badge: badge, price: price)
+            let vc = BadgeGiftingChooseRecipientViewController(
+                badge: giftConfiguration.badge,
+                price: price,
+                paymentMethodsConfiguration: paymentMethodsConfiguration
+            )
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }
@@ -184,8 +190,12 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             result += loadingSections()
         case .loadFailed:
             result += loadFailedSections()
-        case let .loaded(selectedCurrencyCode, badge, pricesByCurrencyCode):
-            result += loadedSections(selectedCurrencyCode: selectedCurrencyCode, badge: badge, pricesByCurrencyCode: pricesByCurrencyCode)
+        case let .loaded(selectedCurrencyCode, giftConfiguration, _):
+            result += loadedSections(
+                selectedCurrencyCode: selectedCurrencyCode,
+                badge: giftConfiguration.badge,
+                pricesByCurrencyCode: giftConfiguration.presetAmount
+            )
         }
 
         return result
