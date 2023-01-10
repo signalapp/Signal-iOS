@@ -212,6 +212,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addCancelledGroupRingsTable
         case addPaymentProcessorColumnToJobRecords
         case addCdsPreviousE164
+        case addCallRecordTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -268,7 +269,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 53
+    public static let grdbSchemaVersionLatest: UInt = 54
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2060,6 +2061,30 @@ public class GRDBSchemaMigrator: NSObject {
             }
             return .success(())
         } // end: .addCdsPreviousE164
+
+        migrator.registerMigration(.addCallRecordTable) { transaction in
+            /// Add the CallRecord table which from here on out is used to track when calls
+            /// are accepted/declined, missed, etc, across linked devices.
+            /// See `CallRecord`.
+            try transaction.database.create(table: "model_CallRecord") { (table: TableDefinition) in
+                table.column("id", .integer).primaryKey().notNull()
+                table.column("uniqueId", .text).unique(onConflict: .fail).notNull()
+                table.column("callId", .text).unique(onConflict: .ignore).notNull()
+                table.column("interactionUniqueId", .text)
+                    .notNull()
+                    .references("model_TSInteraction", column: "uniqueId", onDelete: .cascade)
+                table.column("peerUuid", .text).notNull()
+                table.column("type", .integer).notNull()
+                table.column("direction", .integer).notNull()
+                table.column("status", .integer).notNull()
+            }
+            try transaction.database.create(
+                index: "index_call_record_on_interaction_unique_id",
+                on: "model_CallRecord",
+                columns: ["interactionUniqueId"]
+            )
+            return .success(())
+        }
 
         // MARK: - Schema Migration Insertion Point
     }

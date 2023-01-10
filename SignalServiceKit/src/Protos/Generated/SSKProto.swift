@@ -14308,6 +14308,357 @@ extension SSKProtoSyncMessageOutgoingPaymentBuilder {
 
 #endif
 
+// MARK: - SSKProtoSyncMessageCallEventType
+
+@objc
+public enum SSKProtoSyncMessageCallEventType: Int32 {
+    case unknownType = 0
+    case audioCall = 1
+    case videoCall = 2
+}
+
+private func SSKProtoSyncMessageCallEventTypeWrap(_ value: SignalServiceProtos_SyncMessage.CallEvent.TypeEnum) -> SSKProtoSyncMessageCallEventType {
+    switch value {
+    case .unknownType: return .unknownType
+    case .audioCall: return .audioCall
+    case .videoCall: return .videoCall
+    }
+}
+
+private func SSKProtoSyncMessageCallEventTypeUnwrap(_ value: SSKProtoSyncMessageCallEventType) -> SignalServiceProtos_SyncMessage.CallEvent.TypeEnum {
+    switch value {
+    case .unknownType: return .unknownType
+    case .audioCall: return .audioCall
+    case .videoCall: return .videoCall
+    }
+}
+
+// MARK: - SSKProtoSyncMessageCallEventDirection
+
+@objc
+public enum SSKProtoSyncMessageCallEventDirection: Int32 {
+    case unknownDirection = 0
+    case incoming = 1
+    case outgoing = 2
+}
+
+private func SSKProtoSyncMessageCallEventDirectionWrap(_ value: SignalServiceProtos_SyncMessage.CallEvent.Direction) -> SSKProtoSyncMessageCallEventDirection {
+    switch value {
+    case .unknownDirection: return .unknownDirection
+    case .incoming: return .incoming
+    case .outgoing: return .outgoing
+    }
+}
+
+private func SSKProtoSyncMessageCallEventDirectionUnwrap(_ value: SSKProtoSyncMessageCallEventDirection) -> SignalServiceProtos_SyncMessage.CallEvent.Direction {
+    switch value {
+    case .unknownDirection: return .unknownDirection
+    case .incoming: return .incoming
+    case .outgoing: return .outgoing
+    }
+}
+
+// MARK: - SSKProtoSyncMessageCallEventEvent
+
+@objc
+public enum SSKProtoSyncMessageCallEventEvent: Int32 {
+    case unknownAction = 0
+    case accepted = 1
+    case notAccepted = 2
+}
+
+private func SSKProtoSyncMessageCallEventEventWrap(_ value: SignalServiceProtos_SyncMessage.CallEvent.Event) -> SSKProtoSyncMessageCallEventEvent {
+    switch value {
+    case .unknownAction: return .unknownAction
+    case .accepted: return .accepted
+    case .notAccepted: return .notAccepted
+    }
+}
+
+private func SSKProtoSyncMessageCallEventEventUnwrap(_ value: SSKProtoSyncMessageCallEventEvent) -> SignalServiceProtos_SyncMessage.CallEvent.Event {
+    switch value {
+    case .unknownAction: return .unknownAction
+    case .accepted: return .accepted
+    case .notAccepted: return .notAccepted
+    }
+}
+
+// MARK: - SSKProtoSyncMessageCallEvent
+
+@objc
+public class SSKProtoSyncMessageCallEvent: NSObject, Codable, NSSecureCoding {
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.CallEvent
+
+    @objc
+    public var peerUuid: Data? {
+        guard hasPeerUuid else {
+            return nil
+        }
+        return proto.peerUuid
+    }
+    @objc
+    public var hasPeerUuid: Bool {
+        return proto.hasPeerUuid && !proto.peerUuid.isEmpty
+    }
+
+    @objc
+    public var id: UInt64 {
+        return proto.id
+    }
+    @objc
+    public var hasID: Bool {
+        return proto.hasID
+    }
+
+    @objc
+    public var timestamp: UInt64 {
+        return proto.timestamp
+    }
+    @objc
+    public var hasTimestamp: Bool {
+        return proto.hasTimestamp
+    }
+
+    public var type: SSKProtoSyncMessageCallEventType? {
+        guard hasType else {
+            return nil
+        }
+        return SSKProtoSyncMessageCallEventTypeWrap(proto.type)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc
+    public var unwrappedType: SSKProtoSyncMessageCallEventType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: CallEvent.type.")
+        }
+        return SSKProtoSyncMessageCallEventTypeWrap(proto.type)
+    }
+    @objc
+    public var hasType: Bool {
+        return proto.hasType
+    }
+
+    public var direction: SSKProtoSyncMessageCallEventDirection? {
+        guard hasDirection else {
+            return nil
+        }
+        return SSKProtoSyncMessageCallEventDirectionWrap(proto.direction)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc
+    public var unwrappedDirection: SSKProtoSyncMessageCallEventDirection {
+        if !hasDirection {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: CallEvent.direction.")
+        }
+        return SSKProtoSyncMessageCallEventDirectionWrap(proto.direction)
+    }
+    @objc
+    public var hasDirection: Bool {
+        return proto.hasDirection
+    }
+
+    public var event: SSKProtoSyncMessageCallEventEvent? {
+        guard hasEvent else {
+            return nil
+        }
+        return SSKProtoSyncMessageCallEventEventWrap(proto.event)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc
+    public var unwrappedEvent: SSKProtoSyncMessageCallEventEvent {
+        if !hasEvent {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: CallEvent.event.")
+        }
+        return SSKProtoSyncMessageCallEventEventWrap(proto.event)
+    }
+    @objc
+    public var hasEvent: Bool {
+        return proto.hasEvent
+    }
+
+    public var hasUnknownFields: Bool {
+        return !proto.unknownFields.data.isEmpty
+    }
+    public var unknownFields: SwiftProtobuf.UnknownStorage? {
+        guard hasUnknownFields else { return nil }
+        return proto.unknownFields
+    }
+
+    private init(proto: SignalServiceProtos_SyncMessage.CallEvent) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public convenience init(serializedData: Data) throws {
+        let proto = try SignalServiceProtos_SyncMessage.CallEvent(serializedData: serializedData)
+        try self.init(proto)
+    }
+
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.CallEvent) throws {
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessageCallEvent -
+
+        // MARK: - End Validation Logic for SSKProtoSyncMessageCallEvent -
+
+        self.init(proto: proto)
+    }
+
+    public required convenience init(from decoder: Swift.Decoder) throws {
+        let singleValueContainer = try decoder.singleValueContainer()
+        let serializedData = try singleValueContainer.decode(Data.self)
+        try self.init(serializedData: serializedData)
+    }
+    public func encode(to encoder: Swift.Encoder) throws {
+        var singleValueContainer = encoder.singleValueContainer()
+        try singleValueContainer.encode(try serializedData())
+    }
+
+    public static var supportsSecureCoding: Bool { true }
+
+    public required convenience init?(coder: NSCoder) {
+        guard let serializedData = coder.decodeData() else { return nil }
+        do {
+            try self.init(serializedData: serializedData)
+        } catch {
+            owsFailDebug("Failed to decode serialized data \(error)")
+            return nil
+        }
+    }
+
+    public func encode(with coder: NSCoder) {
+        do {
+            coder.encode(try serializedData())
+        } catch {
+            owsFailDebug("Failed to encode serialized data \(error)")
+        }
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+extension SSKProtoSyncMessageCallEvent {
+    @objc
+    public static func builder() -> SSKProtoSyncMessageCallEventBuilder {
+        return SSKProtoSyncMessageCallEventBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoSyncMessageCallEventBuilder {
+        let builder = SSKProtoSyncMessageCallEventBuilder()
+        if let _value = peerUuid {
+            builder.setPeerUuid(_value)
+        }
+        if hasID {
+            builder.setId(id)
+        }
+        if hasTimestamp {
+            builder.setTimestamp(timestamp)
+        }
+        if let _value = type {
+            builder.setType(_value)
+        }
+        if let _value = direction {
+            builder.setDirection(_value)
+        }
+        if let _value = event {
+            builder.setEvent(_value)
+        }
+        if let _value = unknownFields {
+            builder.setUnknownFields(_value)
+        }
+        return builder
+    }
+}
+
+@objc
+public class SSKProtoSyncMessageCallEventBuilder: NSObject {
+
+    private var proto = SignalServiceProtos_SyncMessage.CallEvent()
+
+    @objc
+    fileprivate override init() {}
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setPeerUuid(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.peerUuid = valueParam
+    }
+
+    public func setPeerUuid(_ valueParam: Data) {
+        proto.peerUuid = valueParam
+    }
+
+    @objc
+    public func setId(_ valueParam: UInt64) {
+        proto.id = valueParam
+    }
+
+    @objc
+    public func setTimestamp(_ valueParam: UInt64) {
+        proto.timestamp = valueParam
+    }
+
+    @objc
+    public func setType(_ valueParam: SSKProtoSyncMessageCallEventType) {
+        proto.type = SSKProtoSyncMessageCallEventTypeUnwrap(valueParam)
+    }
+
+    @objc
+    public func setDirection(_ valueParam: SSKProtoSyncMessageCallEventDirection) {
+        proto.direction = SSKProtoSyncMessageCallEventDirectionUnwrap(valueParam)
+    }
+
+    @objc
+    public func setEvent(_ valueParam: SSKProtoSyncMessageCallEventEvent) {
+        proto.event = SSKProtoSyncMessageCallEventEventUnwrap(valueParam)
+    }
+
+    public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
+        proto.unknownFields = unknownFields
+    }
+
+    @objc
+    public func build() throws -> SSKProtoSyncMessageCallEvent {
+        return try SSKProtoSyncMessageCallEvent(proto)
+    }
+
+    @objc
+    public func buildSerializedData() throws -> Data {
+        return try SSKProtoSyncMessageCallEvent(proto).serializedData()
+    }
+}
+
+#if TESTABLE_BUILD
+
+extension SSKProtoSyncMessageCallEvent {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageCallEventBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoSyncMessageCallEvent? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoSyncMessage
 
 @objc
@@ -14364,6 +14715,9 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
     public let pniIdentity: SSKProtoSyncMessagePniIdentity?
 
     @objc
+    public let callEvent: SSKProtoSyncMessageCallEvent?
+
+    @objc
     public var padding: Data? {
         guard hasPadding else {
             return nil
@@ -14399,7 +14753,8 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
                  messageRequestResponse: SSKProtoSyncMessageMessageRequestResponse?,
                  outgoingPayment: SSKProtoSyncMessageOutgoingPayment?,
                  viewed: [SSKProtoSyncMessageViewed],
-                 pniIdentity: SSKProtoSyncMessagePniIdentity?) {
+                 pniIdentity: SSKProtoSyncMessagePniIdentity?,
+                 callEvent: SSKProtoSyncMessageCallEvent?) {
         self.proto = proto
         self.sent = sent
         self.contacts = contacts
@@ -14417,6 +14772,7 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
         self.outgoingPayment = outgoingPayment
         self.viewed = viewed
         self.pniIdentity = pniIdentity
+        self.callEvent = callEvent
     }
 
     @objc
@@ -14505,6 +14861,11 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
             pniIdentity = try SSKProtoSyncMessagePniIdentity(proto.pniIdentity)
         }
 
+        var callEvent: SSKProtoSyncMessageCallEvent?
+        if proto.hasCallEvent {
+            callEvent = try SSKProtoSyncMessageCallEvent(proto.callEvent)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoSyncMessage -
 
         // MARK: - End Validation Logic for SSKProtoSyncMessage -
@@ -14525,7 +14886,8 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
                   messageRequestResponse: messageRequestResponse,
                   outgoingPayment: outgoingPayment,
                   viewed: viewed,
-                  pniIdentity: pniIdentity)
+                  pniIdentity: pniIdentity,
+                  callEvent: callEvent)
     }
 
     public required convenience init(from decoder: Swift.Decoder) throws {
@@ -14618,6 +14980,9 @@ extension SSKProtoSyncMessage {
         builder.setViewed(viewed)
         if let _value = pniIdentity {
             builder.setPniIdentity(_value)
+        }
+        if let _value = callEvent {
+            builder.setCallEvent(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -14816,6 +15181,17 @@ public class SSKProtoSyncMessageBuilder: NSObject {
 
     public func setPniIdentity(_ valueParam: SSKProtoSyncMessagePniIdentity) {
         proto.pniIdentity = valueParam.proto
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setCallEvent(_ valueParam: SSKProtoSyncMessageCallEvent?) {
+        guard let valueParam = valueParam else { return }
+        proto.callEvent = valueParam.proto
+    }
+
+    public func setCallEvent(_ valueParam: SSKProtoSyncMessageCallEvent) {
+        proto.callEvent = valueParam.proto
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

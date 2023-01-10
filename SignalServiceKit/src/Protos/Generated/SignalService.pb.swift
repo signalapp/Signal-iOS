@@ -2809,6 +2809,15 @@ struct SignalServiceProtos_SyncMessage {
   /// Clears the value of `pniIdentity`. Subsequent reads from it will return its default value.
   mutating func clearPniIdentity() {_uniqueStorage()._pniIdentity = nil}
 
+  var callEvent: SignalServiceProtos_SyncMessage.CallEvent {
+    get {return _storage._callEvent ?? SignalServiceProtos_SyncMessage.CallEvent()}
+    set {_uniqueStorage()._callEvent = newValue}
+  }
+  /// Returns true if `callEvent` has been explicitly set.
+  var hasCallEvent: Bool {return _storage._callEvent != nil}
+  /// Clears the value of `callEvent`. Subsequent reads from it will return its default value.
+  mutating func clearCallEvent() {_uniqueStorage()._callEvent = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   struct Sent {
@@ -3669,6 +3678,164 @@ struct SignalServiceProtos_SyncMessage {
     fileprivate var _mobileCoin: SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin? = nil
   }
 
+  struct CallEvent {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var peerUuid: Data {
+      get {return _peerUuid ?? Data()}
+      set {_peerUuid = newValue}
+    }
+    /// Returns true if `peerUuid` has been explicitly set.
+    var hasPeerUuid: Bool {return self._peerUuid != nil}
+    /// Clears the value of `peerUuid`. Subsequent reads from it will return its default value.
+    mutating func clearPeerUuid() {self._peerUuid = nil}
+
+    var id: UInt64 {
+      get {return _id ?? 0}
+      set {_id = newValue}
+    }
+    /// Returns true if `id` has been explicitly set.
+    var hasID: Bool {return self._id != nil}
+    /// Clears the value of `id`. Subsequent reads from it will return its default value.
+    mutating func clearID() {self._id = nil}
+
+    var timestamp: UInt64 {
+      get {return _timestamp ?? 0}
+      set {_timestamp = newValue}
+    }
+    /// Returns true if `timestamp` has been explicitly set.
+    var hasTimestamp: Bool {return self._timestamp != nil}
+    /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
+    mutating func clearTimestamp() {self._timestamp = nil}
+
+    var type: SignalServiceProtos_SyncMessage.CallEvent.TypeEnum {
+      get {return _type ?? .unknownType}
+      set {_type = newValue}
+    }
+    /// Returns true if `type` has been explicitly set.
+    var hasType: Bool {return self._type != nil}
+    /// Clears the value of `type`. Subsequent reads from it will return its default value.
+    mutating func clearType() {self._type = nil}
+
+    var direction: SignalServiceProtos_SyncMessage.CallEvent.Direction {
+      get {return _direction ?? .unknownDirection}
+      set {_direction = newValue}
+    }
+    /// Returns true if `direction` has been explicitly set.
+    var hasDirection: Bool {return self._direction != nil}
+    /// Clears the value of `direction`. Subsequent reads from it will return its default value.
+    mutating func clearDirection() {self._direction = nil}
+
+    var event: SignalServiceProtos_SyncMessage.CallEvent.Event {
+      get {return _event ?? .unknownAction}
+      set {_event = newValue}
+    }
+    /// Returns true if `event` has been explicitly set.
+    var hasEvent: Bool {return self._event != nil}
+    /// Clears the value of `event`. Subsequent reads from it will return its default value.
+    mutating func clearEvent() {self._event = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum TypeEnum: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+      case unknownType // = 0
+      case audioCall // = 1
+      case videoCall // = 2
+
+      init() {
+        self = .unknownType
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .unknownType
+        case 1: self = .audioCall
+        case 2: self = .videoCall
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .unknownType: return 0
+        case .audioCall: return 1
+        case .videoCall: return 2
+        }
+      }
+
+    }
+
+    enum Direction: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+      case unknownDirection // = 0
+      case incoming // = 1
+      case outgoing // = 2
+
+      init() {
+        self = .unknownDirection
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .unknownDirection
+        case 1: self = .incoming
+        case 2: self = .outgoing
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .unknownDirection: return 0
+        case .incoming: return 1
+        case .outgoing: return 2
+        }
+      }
+
+    }
+
+    enum Event: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+      case unknownAction // = 0
+      case accepted // = 1
+      case notAccepted // = 2
+
+      init() {
+        self = .unknownAction
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .unknownAction
+        case 1: self = .accepted
+        case 2: self = .notAccepted
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .unknownAction: return 0
+        case .accepted: return 1
+        case .notAccepted: return 2
+        }
+      }
+
+    }
+
+    init() {}
+
+    fileprivate var _peerUuid: Data? = nil
+    fileprivate var _id: UInt64? = nil
+    fileprivate var _timestamp: UInt64? = nil
+    fileprivate var _type: SignalServiceProtos_SyncMessage.CallEvent.TypeEnum? = nil
+    fileprivate var _direction: SignalServiceProtos_SyncMessage.CallEvent.Direction? = nil
+    fileprivate var _event: SignalServiceProtos_SyncMessage.CallEvent.Event? = nil
+  }
+
   init() {}
 
   fileprivate var _storage = _StorageClass.defaultInstance
@@ -3689,6 +3856,18 @@ extension SignalServiceProtos_SyncMessage.FetchLatest.TypeEnum: CaseIterable {
 }
 
 extension SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension SignalServiceProtos_SyncMessage.CallEvent.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension SignalServiceProtos_SyncMessage.CallEvent.Direction: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension SignalServiceProtos_SyncMessage.CallEvent.Event: CaseIterable {
   // Support synthesized by the compiler.
 }
 
@@ -4667,6 +4846,10 @@ extension SignalServiceProtos_SyncMessage.MessageRequestResponse: @unchecked Sen
 extension SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.OutgoingPayment: @unchecked Sendable {}
 extension SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.CallEvent: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.CallEvent.TypeEnum: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.CallEvent.Direction: @unchecked Sendable {}
+extension SignalServiceProtos_SyncMessage.CallEvent.Event: @unchecked Sendable {}
 extension SignalServiceProtos_AttachmentPointer: @unchecked Sendable {}
 extension SignalServiceProtos_AttachmentPointer.Flags: @unchecked Sendable {}
 extension SignalServiceProtos_GroupContext: @unchecked Sendable {}
@@ -7411,6 +7594,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     15: .same(proto: "outgoingPayment"),
     16: .same(proto: "viewed"),
     17: .same(proto: "pniIdentity"),
+    19: .same(proto: "callEvent"),
   ]
 
   fileprivate class _StorageClass {
@@ -7431,6 +7615,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _outgoingPayment: SignalServiceProtos_SyncMessage.OutgoingPayment? = nil
     var _viewed: [SignalServiceProtos_SyncMessage.Viewed] = []
     var _pniIdentity: SignalServiceProtos_SyncMessage.PniIdentity? = nil
+    var _callEvent: SignalServiceProtos_SyncMessage.CallEvent? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -7454,6 +7639,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _outgoingPayment = source._outgoingPayment
       _viewed = source._viewed
       _pniIdentity = source._pniIdentity
+      _callEvent = source._callEvent
     }
   }
 
@@ -7489,6 +7675,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 15: try { try decoder.decodeSingularMessageField(value: &_storage._outgoingPayment) }()
         case 16: try { try decoder.decodeRepeatedMessageField(value: &_storage._viewed) }()
         case 17: try { try decoder.decodeSingularMessageField(value: &_storage._pniIdentity) }()
+        case 19: try { try decoder.decodeSingularMessageField(value: &_storage._callEvent) }()
         default: break
         }
       }
@@ -7552,6 +7739,9 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       try { if let v = _storage._pniIdentity {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 17)
       } }()
+      try { if let v = _storage._callEvent {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 19)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7578,6 +7768,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._outgoingPayment != rhs_storage._outgoingPayment {return false}
         if _storage._viewed != rhs_storage._viewed {return false}
         if _storage._pniIdentity != rhs_storage._pniIdentity {return false}
+        if _storage._callEvent != rhs_storage._callEvent {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -8507,6 +8698,96 @@ extension SignalServiceProtos_SyncMessage.OutgoingPayment.MobileCoin: SwiftProto
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension SignalServiceProtos_SyncMessage.CallEvent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".CallEvent"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "peerUuid"),
+    2: .same(proto: "id"),
+    3: .same(proto: "timestamp"),
+    4: .same(proto: "type"),
+    5: .same(proto: "direction"),
+    6: .same(proto: "event"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._peerUuid) }()
+      case 2: try { try decoder.decodeSingularUInt64Field(value: &self._id) }()
+      case 3: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
+      case 4: try { try decoder.decodeSingularEnumField(value: &self._type) }()
+      case 5: try { try decoder.decodeSingularEnumField(value: &self._direction) }()
+      case 6: try { try decoder.decodeSingularEnumField(value: &self._event) }()
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._peerUuid {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    } }()
+    try { if let v = self._id {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
+    } }()
+    try { if let v = self._timestamp {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 3)
+    } }()
+    try { if let v = self._type {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 4)
+    } }()
+    try { if let v = self._direction {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 5)
+    } }()
+    try { if let v = self._event {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 6)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.CallEvent, rhs: SignalServiceProtos_SyncMessage.CallEvent) -> Bool {
+    if lhs._peerUuid != rhs._peerUuid {return false}
+    if lhs._id != rhs._id {return false}
+    if lhs._timestamp != rhs._timestamp {return false}
+    if lhs._type != rhs._type {return false}
+    if lhs._direction != rhs._direction {return false}
+    if lhs._event != rhs._event {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_SyncMessage.CallEvent.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "UNKNOWN_TYPE"),
+    1: .same(proto: "AUDIO_CALL"),
+    2: .same(proto: "VIDEO_CALL"),
+  ]
+}
+
+extension SignalServiceProtos_SyncMessage.CallEvent.Direction: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "UNKNOWN_DIRECTION"),
+    1: .same(proto: "INCOMING"),
+    2: .same(proto: "OUTGOING"),
+  ]
+}
+
+extension SignalServiceProtos_SyncMessage.CallEvent.Event: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "UNKNOWN_ACTION"),
+    1: .same(proto: "ACCEPTED"),
+    2: .same(proto: "NOT_ACCEPTED"),
+  ]
 }
 
 extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

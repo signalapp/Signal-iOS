@@ -47,17 +47,8 @@ final public class IndividualCallService: NSObject {
             return
         }
 
-        // Create a callRecord for outgoing calls immediately.
-        let callRecord = TSCall(
-            callType: .outgoingIncomplete,
-            offerType: call.individualCall.offerMediaType,
-            thread: call.individualCall.thread,
-            sentAtTimestamp: call.individualCall.sentAtTimestamp
-        )
-        databaseStorage.asyncWrite { transaction in
-            callRecord.anyInsert(transaction: transaction)
-        }
-        call.individualCall.callRecord = callRecord
+        // Create a call interaction for outgoing calls immediately.
+        call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoingIncomplete)
 
         // Get the current local device Id, must be valid for lifetime of the call.
         let localDeviceId = tsAccountManager.storedDeviceId()
@@ -94,16 +85,7 @@ final public class IndividualCallService: NSObject {
             return
         }
 
-        let callRecord = TSCall(
-            callType: .incomingIncomplete,
-            offerType: call.individualCall.offerMediaType,
-            thread: call.individualCall.thread,
-            sentAtTimestamp: call.individualCall.sentAtTimestamp
-        )
-        databaseStorage.asyncWrite { transaction in
-            callRecord.anyInsert(transaction: transaction)
-        }
-        call.individualCall.callRecord = callRecord
+        call.individualCall.createOrUpdateCallInteractionAsync(callType: .incomingIncomplete)
 
         // It's key that we configure the AVAudioSession for a call *before* we fulfill the
         // CXAnswerCallAction.
@@ -137,21 +119,12 @@ final public class IndividualCallService: NSObject {
             return
         }
 
-        if let callRecord = call.individualCall.callRecord {
-            if callRecord.callType == .outgoingIncomplete {
-                callRecord.updateCallType(.outgoingMissed)
+        if let callType = call.individualCall.callType {
+            if callType == .outgoingIncomplete {
+                call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoingMissed)
             }
         } else if [.localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting].contains(call.individualCall.state) {
-            let callRecord = TSCall(
-                callType: .incomingDeclined,
-                offerType: call.individualCall.offerMediaType,
-                thread: call.individualCall.thread,
-                sentAtTimestamp: call.individualCall.sentAtTimestamp
-            )
-            databaseStorage.asyncWrite { transaction in
-                callRecord.anyInsert(transaction: transaction)
-            }
-            call.individualCall.callRecord = callRecord
+            call.individualCall.createOrUpdateCallInteractionAsync(callType: .incomingDeclined)
         } else {
             owsFailDebug("missing call record")
         }
@@ -188,8 +161,8 @@ final public class IndividualCallService: NSObject {
     }
 
     private struct CallIdentityKeys {
-      let localIdentityKey: Data
-      let contactIdentityKey: Data
+        let localIdentityKey: Data
+        let contactIdentityKey: Data
     }
 
     private func getIdentityKeys(thread: TSContactThread) -> CallIdentityKeys? {
@@ -247,15 +220,7 @@ final public class IndividualCallService: NSObject {
 
         guard tsAccountManager.isOnboarded(with: transaction) else {
             Logger.warn("user is not onboarded, skipping call.")
-            let callRecord = TSCall(
-                callType: .incomingMissed,
-                offerType: newCall.individualCall.offerMediaType,
-                thread: thread,
-                sentAtTimestamp: sentAtTimestamp
-            )
-            assert(newCall.individualCall.callRecord == nil)
-            newCall.individualCall.callRecord = callRecord
-            callRecord.anyInsert(transaction: transaction)
+            newCall.individualCall.createOrUpdateCallInteraction(callType: .incomingMissed, transaction: transaction)
 
             newCall.individualCall.state = .localFailure
             callService.terminate(call: newCall)
@@ -283,15 +248,7 @@ final public class IndividualCallService: NSObject {
                     caller: thread.contactAddress)
             }
 
-            let callRecord = TSCall(
-                callType: .incomingMissedBecauseOfChangedIdentity,
-                offerType: newCall.individualCall.offerMediaType,
-                thread: thread,
-                sentAtTimestamp: sentAtTimestamp
-            )
-            assert(newCall.individualCall.callRecord == nil)
-            newCall.individualCall.callRecord = callRecord
-            callRecord.anyInsert(transaction: transaction)
+            newCall.individualCall.createOrUpdateCallInteraction(callType: .incomingMissedBecauseOfChangedIdentity, transaction: transaction)
 
             newCall.individualCall.state = .localFailure
             callService.terminate(call: newCall)
@@ -301,15 +258,7 @@ final public class IndividualCallService: NSObject {
 
         guard let identityKeys = getIdentityKeys(thread: thread, transaction: transaction) else {
             owsFailDebug("missing identity keys, skipping call.")
-            let callRecord = TSCall(
-                callType: .incomingMissed,
-                offerType: newCall.individualCall.offerMediaType,
-                thread: thread,
-                sentAtTimestamp: sentAtTimestamp
-            )
-            assert(newCall.individualCall.callRecord == nil)
-            newCall.individualCall.callRecord = callRecord
-            callRecord.anyInsert(transaction: transaction)
+            newCall.individualCall.createOrUpdateCallInteraction(callType: .incomingMissed, transaction: transaction)
 
             newCall.individualCall.state = .localFailure
             callService.terminate(call: newCall)
@@ -334,15 +283,7 @@ final public class IndividualCallService: NSObject {
             // Store the call as a missed call for the local user. They will see it in the conversation
             // along with the message request dialog. When they accept the dialog, they can call back
             // or the caller can try again.
-            let callRecord = TSCall(
-                callType: .incomingMissed,
-                offerType: newCall.individualCall.offerMediaType,
-                thread: thread,
-                sentAtTimestamp: sentAtTimestamp
-            )
-            assert(newCall.individualCall.callRecord == nil)
-            newCall.individualCall.callRecord = callRecord
-            callRecord.anyInsert(transaction: transaction)
+            newCall.individualCall.createOrUpdateCallInteraction(callType: .incomingMissed, transaction: transaction)
 
             newCall.individualCall.state = .localFailure
             callService.terminate(call: newCall)
@@ -692,11 +633,7 @@ final public class IndividualCallService: NSObject {
             }
 
             assert(call.individualCall.direction == .outgoing)
-            if let callRecord = call.individualCall.callRecord {
-                callRecord.updateCallType(.outgoingMissed)
-            } else {
-                owsFailDebug("outgoing call should have call record")
-            }
+            call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoingMissed)
 
             call.individualCall.state = .remoteBusy
 
@@ -711,33 +648,26 @@ final public class IndividualCallService: NSObject {
                 return
             }
 
-            if let callRecord = call.individualCall.callRecord {
-                switch callRecord.callType {
+            if let callType = call.individualCall.callType {
+                switch callType {
                 case .outgoingMissed, .incomingDeclined, .incomingMissed, .incomingMissedBecauseOfChangedIdentity, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere, .incomingMissedBecauseOfDoNotDisturb:
                     // already handled and ended, don't update the call record.
                     break
                 case .incomingIncomplete, .incoming:
-                    callRecord.updateCallType(.incomingMissed)
+                    call.individualCall.createOrUpdateCallInteractionAsync(callType: .incomingMissed)
                     callService.callUIAdapter.reportMissedCall(call)
                 case .outgoingIncomplete:
-                    callRecord.updateCallType(.outgoingMissed)
+                    call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoingMissed)
                     callService.callUIAdapter.remoteBusy(call)
                 case .outgoing:
-                    callRecord.updateCallType(.outgoingMissed)
+                    call.individualCall.createOrUpdateCallInteractionAsync(callType: .outgoingMissed)
                     callService.callUIAdapter.reportMissedCall(call)
                 @unknown default:
-                    owsFailDebug("unknown RPRecentCallType: \(callRecord.callType)")
+                    owsFailDebug("unknown RPRecentCallType: \(callType)")
                 }
             } else {
                 assert(call.individualCall.direction == .incoming)
-                let callRecord = TSCall(
-                    callType: .incomingMissed,
-                    offerType: call.individualCall.offerMediaType,
-                    thread: call.individualCall.thread,
-                    sentAtTimestamp: call.individualCall.sentAtTimestamp
-                )
-                databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
-                call.individualCall.callRecord = callRecord
+                call.individualCall.createOrUpdateCallInteractionAsync(callType: .incomingMissed)
                 callService.callUIAdapter.reportMissedCall(call)
             }
             call.individualCall.state = .localHangup
@@ -1065,60 +995,25 @@ final public class IndividualCallService: NSObject {
             }
         }
 
-        let callRecord: TSCall
-        if let existingCallRecord = call.individualCall.callRecord {
-            callRecord = existingCallRecord
-        } else {
-            callRecord = TSCall(
-                callType: .incomingMissed,
-                offerType: call.individualCall.offerMediaType,
-                thread: call.individualCall.thread,
-                sentAtTimestamp: call.individualCall.sentAtTimestamp
-            )
-            call.individualCall.callRecord = callRecord
-        }
+        let oldCallType = call.individualCall.callType
+        call.individualCall.createOrUpdateCallInteractionAsync(callType: callType)
 
-        switch callRecord.callType {
-        case .incomingMissed:
-            databaseStorage.asyncWrite { transaction in
-                callRecord.updateCallType(callType, transaction: transaction)
-                callRecord.anyUpsert(transaction: transaction)
-            }
+        switch oldCallType {
+        case .incomingMissed, .none:
             callService.callUIAdapter.reportMissedCall(call)
         case .incomingIncomplete, .incoming:
-            callRecord.updateCallType(callType)
             callService.callUIAdapter.reportMissedCall(call)
-        case .outgoingIncomplete:
-            callRecord.updateCallType(callType)
-        case .incomingMissedBecauseOfChangedIdentity, .incomingDeclined, .outgoingMissed, .outgoing, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere, .incomingMissedBecauseOfDoNotDisturb:
-            owsFailDebug("unexpected RPRecentCallType: \(callRecord.callType)")
-            databaseStorage.asyncWrite { transaction in
-                callRecord.anyUpsert(transaction: transaction)
-            }
+        case .outgoingIncomplete, .incomingDeclined, .incomingDeclinedElsewhere, .incomingAnsweredElsewhere:
+            break
+        case .incomingMissedBecauseOfChangedIdentity, .outgoingMissed, .outgoing, .incomingBusyElsewhere, .incomingMissedBecauseOfDoNotDisturb:
+            owsFailDebug("unexpected RPRecentCallType: \(String(describing: oldCallType))")
         @unknown default:
-            databaseStorage.asyncWrite { transaction in
-                callRecord.anyUpsert(transaction: transaction)
-            }
-            owsFailDebug("unknown RPRecentCallType: \(callRecord.callType)")
+            owsFailDebug("unknown RPRecentCallType: \(String(describing: oldCallType))")
         }
     }
 
     func handleAnsweredElsewhere(call: SignalCall) {
-        if let existingCallRecord = call.individualCall.callRecord {
-            // There should only be an existing call record due to a race where the call is answered
-            // simultaneously on multiple devices, and the caller is proceeding with the *other*
-            // devices call.
-            existingCallRecord.updateCallType(.incomingAnsweredElsewhere)
-        } else {
-            let callRecord = TSCall(
-                callType: .incomingAnsweredElsewhere,
-                offerType: call.individualCall.offerMediaType,
-                thread: call.individualCall.thread,
-                sentAtTimestamp: call.individualCall.sentAtTimestamp
-            )
-            call.individualCall.callRecord = callRecord
-            databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
-        }
+        call.individualCall.createOrUpdateCallInteractionAsync(callType: .incomingAnsweredElsewhere)
 
         call.individualCall.state = .answeredElsewhere
 
@@ -1129,21 +1024,7 @@ final public class IndividualCallService: NSObject {
     }
 
     func handleDeclinedElsewhere(call: SignalCall) {
-        if let existingCallRecord = call.individualCall.callRecord {
-            // There should only be an existing call record due to a race where the call is answered
-            // simultaneously on multiple devices, and the caller is proceeding with the *other*
-            // devices call.
-            existingCallRecord.updateCallType(.incomingDeclinedElsewhere)
-        } else {
-            let callRecord = TSCall(
-                callType: .incomingDeclinedElsewhere,
-                offerType: call.individualCall.offerMediaType,
-                thread: call.individualCall.thread,
-                sentAtTimestamp: call.individualCall.sentAtTimestamp
-            )
-            call.individualCall.callRecord = callRecord
-            databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
-        }
+        call.individualCall.createOrUpdateCallInteractionAsync(callType: .incomingDeclinedElsewhere)
 
         call.individualCall.state = .declinedElsewhere
 
@@ -1154,21 +1035,7 @@ final public class IndividualCallService: NSObject {
     }
 
     func handleBusyElsewhere(call: SignalCall) {
-        if let existingCallRecord = call.individualCall.callRecord {
-            // There should only be an existing call record due to a race where the call is answered
-            // simultaneously on multiple devices, and the caller is proceeding with the *other*
-            // devices call.
-            existingCallRecord.updateCallType(.incomingBusyElsewhere)
-        } else {
-            let callRecord = TSCall(
-                callType: .incomingBusyElsewhere,
-                offerType: call.individualCall.offerMediaType,
-                thread: call.individualCall.thread,
-                sentAtTimestamp: call.individualCall.sentAtTimestamp
-            )
-            call.individualCall.callRecord = callRecord
-            databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
-        }
+        call.individualCall.createOrUpdateCallInteractionAsync(callType: .incomingBusyElsewhere)
 
         call.individualCall.state = .busyElsewhere
 
@@ -1370,11 +1237,11 @@ final public class IndividualCallService: NSObject {
 
         switch failedCall.individualCall.state {
         case .answering, .localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting:
-            assert(failedCall.individualCall.callRecord == nil)
+            assert(failedCall.individualCall.callType == nil)
             // call failed before any call record could be created, make one now.
             handleMissedCall(failedCall, error: callError)
         default:
-            assert(failedCall.individualCall.callRecord != nil)
+            assert(failedCall.individualCall.callType != nil)
         }
 
         guard !failedCall.individualCall.isEnded else {
@@ -1474,6 +1341,11 @@ final public class IndividualCallService: NSObject {
 
         self.activeCallTimer?.invalidate()
         self.activeCallTimer = nil
+    }
+
+    enum InteractionUpdateMethod {
+        case writeAsync
+        case inTransaction(SDSAnyWriteTransaction)
     }
 }
 

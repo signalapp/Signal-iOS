@@ -415,7 +415,11 @@ public class SignalCall: NSObject, CallManagerCallReference {
     }
 
     func markRemovedFromSystem() {
-        owsAssertDebug(systemState == .reported, "call \(localId) had unexpected system state: \(systemState)")
+        // This was an assert that was firing when coming back online after missing
+        // a call while offline. See IOS-3416
+        if systemState != .reported {
+            Logger.warn("call \(localId) had unexpected system state: \(systemState)")
+        }
         systemState = .removed
     }
 }

@@ -35,6 +35,9 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 
 @interface TSCall : TSInteraction <OWSReadTracking, OWSPreviewText>
 
+/// Encodes both what kind of call it is, and the state of that call (pending, answered, missed, etc.)
+/// Written to by CallKit callbacks, but also by incoming call event sync messages from linked
+/// devices, by way of `CallRecord`.
 @property (nonatomic, readonly) RPRecentCallType callType;
 @property (nonatomic, readonly) TSRecentCallOfferType offerType;
 

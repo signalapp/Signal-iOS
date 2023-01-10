@@ -149,34 +149,54 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    TSThread *thread = [self threadWithTransaction:transaction];
-    OWSAssertDebug([thread isKindOfClass:[TSContactThread class]]);
-    TSContactThread *contactThread = (TSContactThread *)thread;
-    NSString *shortName = [SSKEnvironment.shared.contactsManager shortDisplayNameForAddress:contactThread.contactAddress
-                                                                                transaction:transaction];
-
     // We don't actually use the `transaction` but other sibling classes do.
     switch (_callType) {
         case RPRecentCallTypeIncoming:
         case RPRecentCallTypeIncomingIncomplete:
         case RPRecentCallTypeIncomingAnsweredElsewhere: {
-            NSString *format = OWSLocalizedString(
-                @"INCOMING_CALL_FORMAT", @"info message text in conversation view. {embeds callee name}");
-            return [NSString stringWithFormat:format, shortName];
+            switch (_offerType) {
+                case TSRecentCallOfferTypeAudio:
+                    return OWSLocalizedString(@"INCOMING_AUDIO_CALL", @"info message text in conversation view");
+                case TSRecentCallOfferTypeVideo:
+                    return OWSLocalizedString(@"INCOMING_VIDEO_CALL", @"info message text in conversation view");
+            }
         }
         case RPRecentCallTypeOutgoing:
-        case RPRecentCallTypeOutgoingIncomplete:
+        case RPRecentCallTypeOutgoingIncomplete: {
+            switch (_offerType) {
+                case TSRecentCallOfferTypeAudio:
+                    return OWSLocalizedString(@"OUTGOING_AUDIO_CALL", @"info message text in conversation view");
+                case TSRecentCallOfferTypeVideo:
+                    return OWSLocalizedString(@"OUTGOING_VIDEO_CALL", @"info message text in conversation view");
+            }
+        }
         case RPRecentCallTypeOutgoingMissed: {
-            NSString *format = OWSLocalizedString(
-                @"OUTGOING_CALL_FORMAT", @"info message text in conversation view. {embeds callee name}");
-            return [NSString stringWithFormat:format, shortName];
+            switch (_offerType) {
+                case TSRecentCallOfferTypeAudio:
+                    return OWSLocalizedString(@"OUTGOING_MISSED_AUDIO_CALL", @"info message text in conversation view");
+                case TSRecentCallOfferTypeVideo:
+                    return OWSLocalizedString(@"OUTGOING_MISSED_VIDEO_CALL", @"info message text in conversation view");
+            }
         }
         case RPRecentCallTypeIncomingMissed:
         case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
-        case RPRecentCallTypeIncomingBusyElsewhere:
+        case RPRecentCallTypeIncomingBusyElsewhere: {
+            switch (_offerType) {
+                case TSRecentCallOfferTypeAudio:
+                    return OWSLocalizedString(@"MISSED_AUDIO_CALL", @"info message text in conversation view");
+                case TSRecentCallOfferTypeVideo:
+                    return OWSLocalizedString(@"MISSED_VIDEO_CALL", @"info message text in conversation view");
+            }
+        }
         case RPRecentCallTypeIncomingDeclined:
-        case RPRecentCallTypeIncomingDeclinedElsewhere:
-            return OWSLocalizedString(@"MISSED_CALL", @"info message text in conversation view");
+        case RPRecentCallTypeIncomingDeclinedElsewhere: {
+            switch (_offerType) {
+                case TSRecentCallOfferTypeAudio:
+                    return OWSLocalizedString(@"DECLINED_AUDIO_CALL", @"info message text in conversation view");
+                case TSRecentCallOfferTypeVideo:
+                    return OWSLocalizedString(@"DECLINED_VIDEO_CALL", @"info message text in conversation view");
+            }
+        }
         case RPRecentCallTypeIncomingMissedBecauseOfDoNotDisturb:
             if (@available(iOS 15, *)) {
                 return OWSLocalizedString(@"MISSED_CALL_FOCUS_MODE",
@@ -228,9 +248,8 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 - (void)updateCallType:(RPRecentCallType)callType
 {
-    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self updateCallType:callType transaction:transaction];
-    });
+    DatabaseStorageAsyncWrite(self.databaseStorage,
+        ^(SDSAnyWriteTransaction *transaction) { [self updateCallType:callType transaction:transaction]; });
 }
 
 - (void)updateCallType:(RPRecentCallType)callType transaction:(SDSAnyWriteTransaction *)transaction
@@ -247,6 +266,8 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
                                  block:^(TSCall *call) {
                                      call.callType = callType;
                                  }];
+
+    [CallRecord updateIfExistsForInteraction:self transaction:transaction];
 }
 
 @end

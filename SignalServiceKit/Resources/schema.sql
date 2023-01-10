@@ -1410,3 +1410,28 @@ CREATE
             ,"e164" TEXT NOT NULL
         )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_CallRecord" (
+            "id" INTEGER PRIMARY KEY NOT NULL
+            ,"uniqueId" TEXT NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"callId" TEXT NOT NULL UNIQUE
+                ON CONFLICT IGNORE
+            ,"interactionUniqueId" TEXT NOT NULL REFERENCES "model_TSInteraction"("uniqueId"
+        )
+            ON DELETE
+                CASCADE
+                ,"peerUuid" TEXT NOT NULL
+                ,"type" INTEGER NOT NULL
+                ,"direction" INTEGER NOT NULL
+                ,"status" INTEGER NOT NULL
+)
+;
+
+CREATE
+    INDEX "index_call_record_on_interaction_unique_id"
+        ON "model_CallRecord"("interactionUniqueId"
+)
+;

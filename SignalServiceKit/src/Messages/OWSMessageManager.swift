@@ -546,6 +546,9 @@ extension SSKProtoSyncMessage {
         if pniIdentity != nil {
             return "PniIdentity"
         }
+        if callEvent != nil {
+            return "CallDispositionEvent"
+        }
         owsFailDebug("Unknown sync message type")
         return "Unknown"
 

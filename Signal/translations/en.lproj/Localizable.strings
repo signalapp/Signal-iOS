@@ -1648,6 +1648,12 @@
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "Info about debug logs";
 
+/* info message text in conversation view */
+"DECLINED_AUDIO_CALL" = "You declined a voice call";
+
+/* info message text in conversation view */
+"DECLINED_VIDEO_CALL" = "You declined a video call";
+
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Delete Account";
 
@@ -3307,8 +3313,11 @@
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
 
-/* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ called you";
+/* info message text in conversation view */
+"INCOMING_AUDIO_CALL" = "Incoming voice call";
+
+/* info message text in conversation view */
+"INCOMING_VIDEO_CALL" = "Incoming video call";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3833,13 +3842,16 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "New Messages";
 
 /* info message text in conversation view */
-"MISSED_CALL" = "Missed call";
+"MISSED_AUDIO_CALL" = "Missed voice call";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
 "MISSED_CALL_DO_NOT_DISTURB" = "Missed call while on Do Not Disturb";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
 "MISSED_CALL_FOCUS_MODE" = "Missed call while using Focus";
+
+/* info message text in conversation view */
+"MISSED_VIDEO_CALL" = "Missed video call";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app to make video calls in Signal.";
@@ -4249,8 +4261,17 @@
 /* Label warning the user that they should update Signal to continue using payments. */
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Update Signal to continue using payments. Your balance may not be up-to-date.";
 
-/* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "You called %@";
+/* info message text in conversation view */
+"OUTGOING_AUDIO_CALL" = "Outgoing voice call";
+
+/* info message text in conversation view */
+"OUTGOING_MISSED_AUDIO_CALL" = "Unanswered voice call";
+
+/* info message text in conversation view */
+"OUTGOING_MISSED_VIDEO_CALL" = "Unanswered video call";
+
+/* info message text in conversation view */
+"OUTGOING_VIDEO_CALL" = "Outgoing video call";
 
 /* Button used to decline a payment request. */
 "PAYMENTS_ACTION_DECLINE_REQUEST" = "Decline Request";

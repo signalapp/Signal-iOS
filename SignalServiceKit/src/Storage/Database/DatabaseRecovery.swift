@@ -408,7 +408,9 @@ public extension DatabaseRecovery {
             InstalledSticker.table.tableName,
             TestModel.table.tableName,
             CancelledGroupRing.databaseTableName,
-            CdsPreviousE164.databaseTableName
+            CdsPreviousE164.databaseTableName,
+            // Used to update data for active calls, useless retroactively.
+            CallRecord.databaseTableName
         ]
 
         /// Log the tables we're explicitly skipping.

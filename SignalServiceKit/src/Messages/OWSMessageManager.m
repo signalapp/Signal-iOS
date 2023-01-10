@@ -1866,6 +1866,11 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.pniIdentity) {
         OWSLogInfo(@"Received PNI identity");
         [self.identityManager processIncomingPniIdentityProto:syncMessage.pniIdentity transaction:transaction];
+    } else if (syncMessage.callEvent) {
+        OWSLogInfo(@"Received call event sync message.");
+        [CallRecord createOrUpdateForSyncMessage:syncMessage.callEvent
+                                messageTimestamp:envelope.timestamp
+                                     transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }
