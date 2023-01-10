@@ -61,17 +61,25 @@ public class BadgeExpirationSheetState {
     public lazy var titleText: String = {
         switch mode {
         case .subscriptionExpiredBecauseOfChargeFailure, .subscriptionExpiredBecauseNotRenewed:
-            return NSLocalizedString("BADGE_EXPIRED_SUBSCRIPTION_TITLE",
-                                     comment: "Title for subscription on the badge expiration sheet.")
+            return NSLocalizedString(
+                "BADGE_EXPIRED_SUBSCRIPTION_TITLE",
+                comment: "Title for subscription on the badge expiration sheet."
+            )
         case .boostExpired:
-            return NSLocalizedString("BADGE_EXPIRED_BOOST_TITLE",
-                                     comment: "Title for boost on the badge expiration sheet.")
+            return NSLocalizedString(
+                "BADGE_EXPIRED_BOOST_TITLE",
+                comment: "Title for boost on the badge expiration sheet."
+            )
         case .giftBadgeExpired:
-            return NSLocalizedString("BADGE_EXPIRED_GIFT_TITLE",
-                                     comment: "Title for gift on the badge expiration sheet.")
+            return NSLocalizedString(
+                "DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE",
+                comment: "Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet."
+            )
         case .giftNotRedeemed:
-            return NSLocalizedString("GIFT_NOT_REDEEMED_TITLE",
-                                     comment: "Title when trying to redeem a gift that's already expired.")
+            return NSLocalizedString(
+                "DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE",
+                comment: "Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet."
+            )
         }
     }()
 
@@ -92,8 +100,10 @@ public class BadgeExpirationSheetState {
             )
             return Body(String(format: formatText, failureSpecificText), hasLearnMoreLink: true)
         case .subscriptionExpiredBecauseNotRenewed:
-            let formatText = NSLocalizedString("BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT",
-                                               comment: "Body of the sheet shown when your subscription is canceled due to inactivity")
+            let formatText = NSLocalizedString(
+                "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT",
+                comment: "Body of the sheet shown when your subscription is canceled due to inactivity"
+            )
             return Body(String(format: formatText, badge.localizedName), hasLearnMoreLink: true)
         case let .boostExpired(hasCurrentSubscription):
             let bodyText: String
@@ -109,16 +119,16 @@ public class BadgeExpirationSheetState {
                 )
             }
             return Body(bodyText)
-        case let .giftBadgeExpired(hasCurrentSubscription):
+        case .giftBadgeExpired:
             let bodyText = NSLocalizedString(
-                "BADGE_EXPIRED_GIFT_BODY",
-                comment: "String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet."
+                "DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY",
+                comment: "Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet."
             )
             return Body(bodyText)
         case let .giftNotRedeemed(fullName):
             let formatText = NSLocalizedString(
-                "GIFT_NOT_REDEEMED_BODY_FORMAT",
-                comment: "Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}."
+                "DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT",
+                comment: "Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}."
             )
             return Body(String(format: formatText, fullName))
         }

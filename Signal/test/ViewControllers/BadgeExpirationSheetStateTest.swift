@@ -70,8 +70,10 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                     mode: .subscriptionExpiredBecauseOfChargeFailure(chargeFailure: Subscription.ChargeFailure(code: "insufficient_funds")),
                     canDonate: true
                 ),
-                NSLocalizedString("BADGE_EXPIRED_SUBSCRIPTION_TITLE",
-                                  comment: "Title for subscription on the badge expiration sheet.")
+                NSLocalizedString(
+                    "BADGE_EXPIRED_SUBSCRIPTION_TITLE",
+                    comment: "Title for subscription on the badge expiration sheet."
+                )
             ),
             (
                 State(
@@ -79,8 +81,10 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                     mode: .subscriptionExpiredBecauseNotRenewed,
                     canDonate: true
                 ),
-                NSLocalizedString("BADGE_EXPIRED_SUBSCRIPTION_TITLE",
-                                  comment: "Title for subscription on the badge expiration sheet.")
+                NSLocalizedString(
+                    "BADGE_EXPIRED_SUBSCRIPTION_TITLE",
+                    comment: "Title for subscription on the badge expiration sheet."
+                )
             ),
             (
                 State(
@@ -88,8 +92,10 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                     mode: .boostExpired(hasCurrentSubscription: true),
                     canDonate: true
                 ),
-                NSLocalizedString("BADGE_EXPIRED_BOOST_TITLE",
-                                  comment: "Title for boost on the badge expiration sheet.")
+                NSLocalizedString(
+                    "BADGE_EXPIRED_BOOST_TITLE",
+                    comment: "Title for boost on the badge expiration sheet."
+                )
             ),
             (
                 State(
@@ -97,8 +103,10 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                     mode: .giftBadgeExpired(hasCurrentSubscription: true),
                     canDonate: true
                 ),
-                NSLocalizedString("BADGE_EXPIRED_GIFT_TITLE",
-                                  comment: "Title for gift on the badge expiration sheet.")
+                NSLocalizedString(
+                    "DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE",
+                    comment: "Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet."
+                )
             ),
             (
                 State(
@@ -106,8 +114,10 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                     mode: .giftNotRedeemed(fullName: ""),
                     canDonate: true
                 ),
-                NSLocalizedString("GIFT_NOT_REDEEMED_TITLE",
-                                  comment: "Title when trying to redeem a gift that's already expired.")
+                NSLocalizedString(
+                    "DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE",
+                    comment: "Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet."
+                )
             )
         ]
 
@@ -241,24 +251,12 @@ class BadgeExpirationSheetStateTest: XCTestCase {
             (
                 State(
                     badge: getGiftBadge(),
-                    mode: .giftBadgeExpired(hasCurrentSubscription: false),
-                    canDonate: true
-                ),
-                NSLocalizedString(
-                    "BADGE_EXPIRED_GIFT_BODY",
-                    comment: "String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet."
-                ),
-                false
-            ),
-            (
-                State(
-                    badge: getGiftBadge(),
                     mode: .giftBadgeExpired(hasCurrentSubscription: true),
                     canDonate: true
                 ),
                 NSLocalizedString(
-                    "BADGE_EXPIRED_GIFT_BODY",
-                    comment: "String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet."
+                    "DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY",
+                    comment: "Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet."
                 ),
                 false
             ),
@@ -269,8 +267,8 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                     canDonate: true
                 ),
                 NSLocalizedString(
-                    "GIFT_NOT_REDEEMED_BODY_FORMAT",
-                    comment: "Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}."
+                    "DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT",
+                    comment: "Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}."
                 ).replacingOccurrences(of: "%@", with: "John Doe").replacingOccurrences(of: "%1$@", with: "John Doe"),
                 false
             )
