@@ -2027,14 +2027,7 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
 
     private func updateHeightWithTextView(_ textView: UITextView) {
 
-        let maxTextWidth = textView.textContainer.size.width
-        let textRect = textView.attributedText.boundingRect(
-            with: CGSize(width: maxTextWidth, height: .greatestFiniteMagnitude),
-            options: [ .usesLineFragmentOrigin, .usesFontLeading ],
-            context: nil
-        ).inset(by: textView.textContainerInset.inverted())
-
-        let contentSize = textRect.size.roundedForScreenScale()
+        let contentSize = textView.sizeThatFits(CGSize(width: textView.width, height: CGFloat.greatestFiniteMagnitude))
 
         // `textView.contentSize` isn't accurate when restoring a multiline draft, so we compute it here.
         textView.contentSize = contentSize
