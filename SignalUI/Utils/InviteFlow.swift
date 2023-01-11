@@ -12,7 +12,25 @@ import SignalServiceKit
 @objc(OWSInviteFlow)
 public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, ContactsPickerDelegate {
     private enum Channel {
-        case message, mail, twitter
+        case message, mail
+
+        var actionTitle: String {
+            switch self {
+            case .message:
+                return OWSLocalizedString("SHARE_ACTION_MESSAGE", comment: "action sheet item to open native messages app")
+            case .mail:
+                return OWSLocalizedString("SHARE_ACTION_MAIL", comment: "action sheet item to open native mail app")
+            }
+        }
+
+        var cellSubtitleType: SubtitleCellValue {
+            switch self {
+            case .message:
+                return .phoneNumber
+            case .mail:
+                return .email
+            }
+        }
     }
 
     private let installUrl = "https://signal.org/install/"
@@ -47,18 +65,18 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
 
     @objc
     public func present(isAnimated: Bool, completion: (() -> Void)?) {
-        let actions = [messageAction(), mailAction()].compactMap { $0 }
-        if actions.count > 1 {
+        let channels = [messageChannel(), mailChannel()].compacted()
+        if channels.count > 1 {
             let actionSheetController = ActionSheetController(title: nil, message: nil)
             actionSheetController.addAction(OWSActionSheets.dismissAction)
-            for action in actions {
-                actionSheetController.addAction(action)
+            for channel in channels {
+                actionSheetController.addAction(ActionSheetAction(title: channel.actionTitle, style: .default) { [weak self] _ in
+                    self?.presentInviteFlow(channel: channel)
+                })
             }
             presentingViewController?.present(actionSheetController, animated: isAnimated, completion: completion)
-        } else if messageAction() != nil {
-            presentInviteViaSMSFlow()
-        } else if mailAction() != nil {
-            presentInviteViaMailFlow()
+        } else if let supportedChannel = channels.first {
+            presentInviteFlow(channel: supportedChannel)
         }
     }
 
@@ -95,8 +113,6 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
         case .mail:
             let recipients: [String] = contacts.map { $0.emails.first }.filter { $0 != nil }.map { $0! }
             sendMailTo(emails: recipients)
-        default:
-            Logger.error("unexpected channel after returning from contact picker: \(inviteChannel)")
         }
     }
 
@@ -111,10 +127,7 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
             return contact.userTextPhoneNumbers.count > 0
         case .mail:
             return contact.emails.count > 0
-        default:
-            Logger.error("unexpected channel after returning from contact picker: \(inviteChannel)")
         }
-        return true
     }
 
     public func contactsPicker(_: ContactsPicker, contactFetchDidFail error: NSError) {
@@ -136,38 +149,39 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
 
     // MARK: SMS
 
-    private func messageAction() -> ActionSheetAction? {
+    private func messageChannel() -> Channel? {
         guard MFMessageComposeViewController.canSendText() else {
             Logger.info("Device cannot send text")
             return nil
         }
-
-        let messageTitle = OWSLocalizedString("SHARE_ACTION_MESSAGE", comment: "action sheet item to open native messages app")
-        return ActionSheetAction(title: messageTitle, style: .default) { [weak self] _ in
-            Logger.debug("Chose message.")
-            self?.presentInviteViaSMSFlow()
-        }
+        return .message
     }
 
-    private func presentInviteViaSMSFlow() {
-        self.channel = .message
-        let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .phoneNumber)
+    private func presentInviteFlow(channel: Channel) {
+        self.channel = channel
+        let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: channel.cellSubtitleType)
         picker.contactsPickerDelegate = self
         picker.title = OWSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
-
         presentViewController(picker, animated: true)
     }
 
     public func dismissAndSendSMSTo(phoneNumbers: [String]) {
         popToPresentingViewController(animated: true) {
             if phoneNumbers.count > 1 {
-                let warning = ActionSheetController(title: nil,
-                                                    message: OWSLocalizedString("INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT",
-                                                                                comment: "Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other."))
-                warning.addAction(ActionSheetAction(title: CommonStrings.continueButton,
-                                                style: .default, handler: { [weak self] _ in
-                                                    self?.sendSMSTo(phoneNumbers: phoneNumbers)
-                }))
+                let warning = ActionSheetController(
+                    title: nil,
+                    message: OWSLocalizedString(
+                        "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT",
+                        comment: "Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other."
+                    )
+                )
+                warning.addAction(ActionSheetAction(
+                    title: CommonStrings.continueButton,
+                    style: .default,
+                    handler: { [weak self] _ in
+                        self?.sendSMSTo(phoneNumbers: phoneNumbers)
+                    }
+                ))
                 warning.addAction(OWSActionSheets.cancelAction)
 
                 self.presentingViewController?.presentActionSheet(warning)
@@ -209,27 +223,12 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
 
     // MARK: Mail
 
-    private func mailAction() -> ActionSheetAction? {
+    private func mailChannel() -> Channel? {
         guard MFMailComposeViewController.canSendMail() else {
             Logger.info("Device cannot send mail")
             return nil
         }
-
-        let mailActionTitle = OWSLocalizedString("SHARE_ACTION_MAIL", comment: "action sheet item to open native mail app")
-        return ActionSheetAction(title: mailActionTitle, style: .default) { [weak self] _ in
-            Logger.debug("Chose mail.")
-            self?.presentInviteViaMailFlow()
-        }
-    }
-
-    private func presentInviteViaMailFlow() {
-        self.channel = .mail
-
-        let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .email)
-        picker.contactsPickerDelegate = self
-        picker.title = OWSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
-
-        presentViewController(picker, animated: true)
+        return .mail
     }
 
     private func sendMailTo(emails recipientEmails: [String]) {
@@ -268,5 +267,4 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
             }
         }
     }
-
 }
