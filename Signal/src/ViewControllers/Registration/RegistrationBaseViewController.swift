@@ -6,7 +6,7 @@
 import UIKit
 
 @objc
-public class RegistrationBaseViewController: OWSViewController {
+public class RegistrationBaseViewController: OWSViewController, OWSNavigationChildController {
 
     // MARK: - Factory Methods
 
@@ -109,34 +109,12 @@ public class RegistrationBaseViewController: OWSViewController {
         navigationController?.popViewController(animated: true)
     }
 
-    @objc
-    public var shouldHideBackButton = true
-
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        if shouldHideBackButton {
-            Self.hideBackButton(self)
-        }
+    public var prefersNavigationBarHidden: Bool {
+        true
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        if shouldHideBackButton {
-            Self.hideBackButton(self)
-        }
-    }
-
-    public static func hideBackButton(_ vc: UIViewController) {
-        vc.navigationController?.isNavigationBarHidden = true
-        // Disable "back" gesture.
-        vc.navigationController?.navigationItem.backBarButtonItem?.isEnabled = false
-    }
-
-    public static func restoreBackButton(_ vc: UIViewController) {
-        vc.navigationController?.isNavigationBarHidden = false
-        vc.navigationController?.navigationItem.backBarButtonItem?.isEnabled = true
+    public var shouldCancelNavigationBack: Bool {
+        true
     }
 
     // The margins for `primaryView` will update to reflect the current traitCollection.

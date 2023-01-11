@@ -46,7 +46,6 @@ public extension RegistrationUtils {
                         viewController.hideBackLink()
                         let navigationController = OnboardingNavigationController(onboardingController: onboardingController)
                         navigationController.setViewControllers([ viewController ], animated: false)
-                        navigationController.isNavigationBarHidden = true
                         let window: UIWindow = CurrentAppContext().mainWindow!
                         window.rootViewController = navigationController
                     }

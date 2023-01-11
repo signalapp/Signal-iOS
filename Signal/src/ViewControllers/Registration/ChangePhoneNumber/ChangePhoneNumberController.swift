@@ -128,8 +128,6 @@ class ChangePhoneNumberController: Dependencies {
             return
         }
 
-        RegistrationBaseViewController.restoreBackButton(changePhoneNumberViewFromViewController)
-
         if didSucceed {
             guard let newPhoneNumber = newPhoneNumber else {
                 owsFailDebug("Missing new number.")

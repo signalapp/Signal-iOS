@@ -51,7 +51,6 @@ public class ProvisioningController: NSObject {
         navController.setViewControllers([vc], animated: false)
 
         provisioningController.awaitProvisioning(from: vc, navigationController: navController)
-        navController.isNavigationBarHidden = true
         CurrentAppContext().mainWindow?.rootViewController = navController
     }
 

@@ -58,12 +58,9 @@ extension ChangePhoneNumberCaptchaViewController: RegistrationCaptchaViewControl
 
         changePhoneNumberController.requestVerification(fromViewController: self, isSMS: true) { [weak self] willDismiss, _ in
 
-            if let self = self,
-               !willDismiss {
-                RegistrationBaseViewController.restoreBackButton(self)
-
-                // There's nothing left to do here. If onboardingController isn't taking us anywhere, let's
-                // just pop back to the phone number verification controller
+            if let self = self, !willDismiss {
+                // There's nothing left to do here. If onboardingController isn't taking us
+                // anywhere, let's just pop back to the phone number confirm controller
                 self.navigationController?.popViewController(animated: true)
             }
             viewModel.removeProgressView(progressView)

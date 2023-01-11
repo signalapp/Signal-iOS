@@ -64,11 +64,6 @@ public class ChangePhoneNumberVerificationViewController: RegistrationBaseViewCo
     // MARK: - Methods
 
     @objc
-    public func hideBackLink() {
-        backLink?.isHidden = true
-    }
-
-    @objc
     public func setVerificationCodeAndTryToVerify(_ verificationCode: String) {
         AssertIsOnMainThread()
 
@@ -136,8 +131,6 @@ extension ChangePhoneNumberVerificationViewController: RegistrationVerificationV
         AssertIsOnMainThread()
 
         Logger.info("")
-
-        RegistrationBaseViewController.restoreBackButton(self)
 
         let phoneNumberVC = navigationController?.viewControllers
             .filter { $0 is ChangePhoneNumberSplashViewController }.last
