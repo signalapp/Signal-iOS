@@ -997,14 +997,16 @@ private class WebSocketTaskState: TaskState {
     }
 
     func reject(error: Error, task: URLSessionTask) {
-        // If there's an HTTP status code, prefer that.
-        if let httpResponse = task.response as? HTTPURLResponse {
+        // We only want to return HTTP errors during the initial web socket
+        // upgrade. Once we've switched protocols, the HTTP response is no longer
+        // relevant but the property remains defined on the task. We use
+        // `badServerResponse` to distinguish errors during the initial handshake
+        // from other unexpected errors that occur later (eg losing internet).
+        if case URLError.badServerResponse = error, let httpResponse = task.response as? HTTPURLResponse {
             let retryAfter = OWSHttpHeaders(response: httpResponse).retryAfterDate
             closeBlock(WebSocketError.httpError(statusCode: httpResponse.statusCode, retryAfter: retryAfter))
             return
         }
-        // We shouldn't have non-HTTP responses, but we might not have a response at all.
-        owsAssertDebug(task.response == nil)
         closeBlock(error)
     }
 }
