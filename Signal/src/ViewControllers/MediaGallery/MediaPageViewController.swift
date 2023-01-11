@@ -92,7 +92,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         delegate = self
         transitioningDelegate = self
 
+        Logger.info("will ensureLoadedForDetailView")
         let galleryItem = mediaGallery.ensureLoadedForDetailView(focusedAttachment: initialMediaAttachment)
+        Logger.info("ensureLoadedForDetailView done")
 
         guard let initialItem = galleryItem else {
             owsFailDebug("unexpectedly failed to build initialDetailItem.")

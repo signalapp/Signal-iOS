@@ -277,7 +277,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
 
     override public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        Logger.debug("")
+        Logger.info("")
 
         guard let gridCell = self.collectionView(collectionView, cellForItemAt: indexPath) as? PhotoGridViewCell else {
             owsFailDebug("galleryCell was unexpectedly nil")
@@ -796,7 +796,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     // MARK: Lazy Loading
 
     var isFetchingMoreData = false
-    let kLoadBatchSize: Int = 1024
+    let kLoadBatchSize: Int = 100
 
     let kLoadOlderSectionIdx: Int = 0
     var loadNewerSectionIdx: Int {

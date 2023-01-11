@@ -425,6 +425,7 @@ class MediaGallery: Dependencies {
                                            async: Bool = false,
                                            userData: MediaGalleryUpdateUserData? = nil,
                                            completion: ((_ newSections: IndexSet) -> Void)? = nil) {
+        Logger.info("")
         let anchorItem: MediaGalleryItem? = sections.loadedItem(at: IndexPath(item: itemIndex, section: sectionIndex))
 
         // May include a negative start location.
@@ -461,6 +462,7 @@ class MediaGallery: Dependencies {
         }()
 
         if async {
+            Logger.info("will ensure loaded asynchronously")
             mutateAsync { sections, callback in
                 sections.asyncEnsureItemsLoaded(in: naiveRequestRange,
                                                 relativeToSection: sectionIndex,
@@ -471,6 +473,7 @@ class MediaGallery: Dependencies {
                 completion?(newlyLoadedSections)
             }
         } else {
+            Logger.info("will ensure loaded synchronously")
             let newlyLoadedSections = mutate { sections in
                 sections.ensureItemsLoaded(in: naiveRequestRange,
                                            relativeToSection: sectionIndex,
@@ -497,6 +500,7 @@ class MediaGallery: Dependencies {
     }
 
     internal func ensureLoadedForDetailView(focusedAttachment: TSAttachment) -> MediaGalleryItem? {
+        Logger.info("")
         let newItem: MediaGalleryItem? = databaseStorage.read { transaction in
             guard let focusedItem = buildGalleryItem(attachment: focusedAttachment, transaction: transaction) else {
                 return nil
@@ -527,10 +531,12 @@ class MediaGallery: Dependencies {
 
         // For a speedy load, we only fetch a few items on either side of
         // the initial message
+        Logger.info("ensureGalleryItemsLoaded: will call")
         ensureGalleryItemsLoaded(.around,
                                  item: focusedItem,
                                  amount: kGallerySwipeLoadBatchSize * 2,
                                  shouldLoadAlbumRemainder: true)
+        Logger.info("ensureGalleryItemsLoaded: finished")
 
         return focusedItem
     }
