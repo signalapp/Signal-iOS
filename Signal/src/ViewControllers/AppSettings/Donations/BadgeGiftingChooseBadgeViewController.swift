@@ -160,8 +160,10 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
 
                 let titleLabel = UILabel()
                 introStack.addArrangedSubview(titleLabel)
-                titleLabel.text = NSLocalizedString("BADGE_GIFTING_CHOOSE_BADGE_TITLE",
-                                                    comment: "Title on the screen where you choose a gift badge")
+                titleLabel.text = NSLocalizedString(
+                    "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE",
+                    comment: "Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive."
+                )
                 titleLabel.textAlignment = .center
                 titleLabel.font = UIFont.ows_dynamicTypeTitle2.ows_semibold
                 titleLabel.numberOfLines = 0
@@ -170,8 +172,10 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
 
                 let paragraphLabel = UILabel()
                 introStack.addArrangedSubview(paragraphLabel)
-                paragraphLabel.text = NSLocalizedString("BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION",
-                                                        comment: "Short paragraph on the screen where you choose a gift badge")
+                paragraphLabel.text = NSLocalizedString(
+                    "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION",
+                    comment: "Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive."
+                )
                 paragraphLabel.textAlignment = .center
                 paragraphLabel.font = UIFont.ows_dynamicTypeBody
                 paragraphLabel.numberOfLines = 0
