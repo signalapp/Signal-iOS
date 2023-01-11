@@ -1,3 +1,3 @@
-• Keep your muted & archived chats quiet permanently by going to Settings > Chats > Keep Muted Chats Archived. You won’t receive any alerts, buzzes, or pings when you get a new message in a chat you’ve already muted and archived.
-• When you send a message to a chat that you’ve archived, it will automatically un-archive for you.
-• Other bug fixes and performance improvements.
+• Håll tystade och arkiverade chattar permanent tysta genom att gå till Inställningar> Chattar> Håll tystade chattar arkiverade. Du får ingen avisering när du får ett nytt meddelande i en chatt som du redan har tystat och arkiverat.
+• När du skickar ett meddelande till en chatt som du har arkiverat kommer den automatiskt att avarkiveras åt dig.
+• Andra buggfixar och prestandaförbättringar.

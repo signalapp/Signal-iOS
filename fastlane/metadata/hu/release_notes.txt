@@ -1,3 +1,3 @@
-• Keep your muted & archived chats quiet permanently by going to Settings > Chats > Keep Muted Chats Archived. You won’t receive any alerts, buzzes, or pings when you get a new message in a chat you’ve already muted and archived.
-• When you send a message to a chat that you’ve archived, it will automatically un-archive for you.
-• Other bug fixes and performance improvements.
+• A némított és archivált csevegéseket a Beállítások > Csevegések > Elnémított csevegések archiválása menüben tarthatod némítva. Sem értesítés, sem rezgés vagy pittyegés nem jelez olyan csevegés esetén, amelyet már némítottál és archiváltál.
+• Ha üzenetet küldesz egy archivált csevegésbe, az automatikusan törli az archiválást.
+• Egyéb hibajavítások és teljesítménybeli fejlesztések.

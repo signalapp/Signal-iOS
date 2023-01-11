@@ -1,3 +1,3 @@
-• Keep your muted & archived chats quiet permanently by going to Settings > Chats > Keep Muted Chats Archived. You won’t receive any alerts, buzzes, or pings when you get a new message in a chat you’ve already muted and archived.
-• When you send a message to a chat that you’ve archived, it will automatically un-archive for you.
-• Other bug fixes and performance improvements.
+• Pour garder vos conversations en sourdine et archivées en mode silencieux en permanence, rendez-vous dans Paramètres > Conversations > Garder les conversations en mode silencieux archivées. Vous ne recevrez pas d’alertes et votre téléphone ne vibrera ni ne sonnera lorsque vous recevrez un nouveau message dans une conversation que vous avez déjà mise en sourdine et archivée.
+• Lorsque vous envoyez un message dans une conversation que vous avez archivée, elle sera automatiquement désarchivée.
+• Autres corrections de bugs et améliorations des performances.

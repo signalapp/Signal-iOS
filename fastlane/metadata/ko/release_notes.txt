@@ -1,3 +1,3 @@
-• Keep your muted & archived chats quiet permanently by going to Settings > Chats > Keep Muted Chats Archived. You won’t receive any alerts, buzzes, or pings when you get a new message in a chat you’ve already muted and archived.
-• When you send a message to a chat that you’ve archived, it will automatically un-archive for you.
-• Other bug fixes and performance improvements.
+• '설정 > 채팅 > 음소거된 채팅 보관'으로 이동하여 음소거하거나 보관한 채팅을 유지하세요. 음소거하거나 보관한 채팅에 새 메시지가 와도 진동이나 소리 알림이 울리지 않습니다.
+• 보관한 채팅으로 메시지를 보낼 경우 자동으로 채팅 보관 설정을 해지합니다.
+• 기타 버그 수정 및 성능 개선 사항을 적용했습니다.

@@ -1,3 +1,3 @@
-• Keep your muted & archived chats quiet permanently by going to Settings > Chats > Keep Muted Chats Archived. You won’t receive any alerts, buzzes, or pings when you get a new message in a chat you’ve already muted and archived.
-• When you send a message to a chat that you’ve archived, it will automatically un-archive for you.
-• Other bug fixes and performance improvements.
+★ Păstrează-ți conversațiile pe silențios și cele arhivate în mod permanent de la Setări > Conversații > Păstrează conversațiile arhivate pe silențios. Nu o să primești alerte când primești un nou mesaj într-o conversație silențioasă sau arhivată.
+• Când trimiți un mesaj într-o conversație pe care ai arhivat-o, se va dezarhiva automat pentru tine.
+• Alte remedieri de erori și îmbunătățiri ale performanței.
