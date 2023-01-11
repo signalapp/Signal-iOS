@@ -256,7 +256,15 @@ public class RemoteConfig: BaseFlags {
     }
 
     public static var canSendGiftBadges: Bool {
-        return FeatureFlags.isPrerelease && isEnabled(.canSendGiftBadgesInPrerelease, defaultValue: false)
+        if DebugFlags.internalSettings {
+            return true
+        }
+
+        if FeatureFlags.isPrerelease {
+            return isEnabled(.canSendGiftBadgesInPrerelease, defaultValue: false)
+        }
+
+        return false
     }
 
     public static var inboundGroupRings: Bool {
