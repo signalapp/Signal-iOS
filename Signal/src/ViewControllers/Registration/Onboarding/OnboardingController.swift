@@ -43,9 +43,6 @@ public class OnboardingController: NSObject {
 
     public static let defaultOnboardingMode: OnboardingMode = UIDevice.current.isIPad ? .provisioning : .registering
     public var onboardingMode: OnboardingMode
-    public var isOnboardingModeOverriden: Bool {
-        return onboardingMode != OnboardingController.defaultOnboardingMode
-    }
 
     public class func ascertainOnboardingMode() -> OnboardingMode {
         if tsAccountManager.isRegisteredPrimaryDevice {
@@ -218,26 +215,20 @@ public class OnboardingController: NSObject {
         viewController.navigationController?.pushViewController(view, animated: true)
     }
 
-    public func toggleModeSwitch(viewController: UIViewController) {
+    public func overrideDefaultRegistrationMode(viewController: UIViewController) {
         AssertIsOnMainThread()
 
         Logger.info("")
 
-        let wasOverridden = isOnboardingModeOverriden
-        switch onboardingMode {
-        case .provisioning:
-            onboardingMode  = .registering
+        switch Self.defaultOnboardingMode {
         case .registering:
             onboardingMode = .provisioning
+        case .provisioning:
+            onboardingMode = .registering
         }
 
-        if wasOverridden {
-            onboardingMode = OnboardingController.defaultOnboardingMode
-            viewController.navigationController?.popToRootViewController(animated: true)
-        } else {
-            let view = OnboardingPermissionsViewController(onboardingController: self)
-            viewController.navigationController?.pushViewController(view, animated: true)
-        }
+        let view = OnboardingPermissionsViewController(onboardingController: self)
+        viewController.navigationController?.pushViewController(view, animated: true)
     }
 
     public func onboardingPermissionsWasSkipped(viewController: UIViewController) {

@@ -19,7 +19,7 @@ public class OnboardingBaseViewController: RegistrationBaseViewController {
     }
 
     func shouldShowBackButton() -> Bool {
-        return onboardingController.isOnboardingModeOverriden
+        return onboardingController.onboardingMode != OnboardingController.defaultOnboardingMode
     }
 
     // MARK: - View Lifecycle

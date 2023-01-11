@@ -91,6 +91,15 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         stackView.autoPinEdgesToSuperviewMargins()
     }
 
+    override public func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        // Whenever this view appears, we should switch back to the default
+        // registration mode. If the user wants to use the other one, they need to
+        // tap the link icon and confirm their selection.
+        onboardingController.onboardingMode = OnboardingController.defaultOnboardingMode
+    }
+
     // MARK: - Events
 
     @objc

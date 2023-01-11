@@ -89,10 +89,14 @@ class OnboardingModeSwitchConfirmationViewController: OnboardingBaseViewControll
     func didPressNext() {
         let actionSheet = ActionSheetController(message: warningText)
 
-        let continueAction = ActionSheetAction(title: CommonStrings.continueButton,
-                                               accessibilityIdentifier: "onboarding.modeSwitch.continue") { _ in
-            self.onboardingController.toggleModeSwitch(viewController: self)
-        }
+        let continueAction = ActionSheetAction(
+            title: CommonStrings.continueButton,
+            accessibilityIdentifier: "onboarding.modeSwitch.continue",
+            handler: { [weak self] _ in
+                guard let self else { return }
+                self.onboardingController.overrideDefaultRegistrationMode(viewController: self)
+            }
+        )
         actionSheet.addAction(continueAction)
         actionSheet.addAction(OWSActionSheets.cancelAction)
 

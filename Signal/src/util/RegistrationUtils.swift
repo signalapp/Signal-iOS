@@ -38,7 +38,7 @@ public extension RegistrationUtils {
                     modalActivityIndicator.dismiss {
                         AssertIsOnMainThread()
 
-                        let onboardingController = OnboardingController()
+                        let onboardingController = OnboardingController(onboardingMode: .registering)
                         let registrationPhoneNumber = RegistrationPhoneNumber(e164: phoneNumber, userInput: phoneNumber)
                         onboardingController.update(phoneNumber: registrationPhoneNumber)
 
