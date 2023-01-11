@@ -56,19 +56,27 @@ class BadgeGiftingAlreadyRedeemedSheet: OWSTableSheetViewController {
             stackView.setCustomSpacing(24, after: badgeImageView)
 
             let titleLabel = UILabel()
+            let titleFormat = NSLocalizedString(
+                "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT",
+                comment: "A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}."
+            )
             titleLabel.font = .ows_dynamicTypeTitle2.ows_semibold
             titleLabel.textColor = Theme.primaryTextColor
             titleLabel.textAlignment = .center
             titleLabel.numberOfLines = 0
-            titleLabel.text = BadgeGiftingStrings.giftBadgeTitle
+            titleLabel.text = String(format: titleFormat, self.shortName)
             stackView.addArrangedSubview(titleLabel)
             stackView.setCustomSpacing(12, after: titleLabel)
 
             let label = UILabel()
+            let labelFormat = NSLocalizedString(
+                "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT",
+                comment: "A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}."
+            )
             label.font = .ows_dynamicTypeBody
             label.textColor = Theme.primaryTextColor
             label.numberOfLines = 0
-            label.text = BadgeGiftingStrings.youReceived(from: self.shortName)
+            label.text = String(format: labelFormat, self.shortName)
             label.textAlignment = .center
             stackView.addArrangedSubview(label)
 

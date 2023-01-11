@@ -27,8 +27,10 @@ class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewCon
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE",
-                                  comment: "Title on the screen where you choose a gift badge's recipient")
+        title = NSLocalizedString(
+            "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE",
+            comment: "Title on the screen where you choose who you're going to donate on behalf of."
+        )
 
         recipientPicker.allowsAddByPhoneNumber = false
         recipientPicker.shouldHideLocalRecipient = true

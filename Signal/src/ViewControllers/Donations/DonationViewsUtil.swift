@@ -165,8 +165,8 @@ public class GiftBadgeCellView: UIStackView {
             }()
             let formattedDurationText = String(
                 format: NSLocalizedString(
-                    "BADGE_GIFTING_ROW_DURATION",
-                    comment: "When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}."
+                    "DONATION_FOR_A_FRIEND_ROW_DURATION",
+                    comment: "When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}."
                 ),
                 formattedDuration
             )
