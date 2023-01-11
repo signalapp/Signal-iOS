@@ -169,8 +169,10 @@ class InternalSettingsViewController: OWSTableViewController2 {
         infoSection.add(.copyableItem(label: "Region Code", value: Locale.current.regionCode?.nilIfEmpty))
         infoSection.add(.copyableItem(label: "Currency Code", value: Locale.current.currencyCode?.nilIfEmpty))
 
-        if let subscriberID = subscriberID {
-            infoSection.add(.label(withText: "subscriberID \(subscriberID.asBase64Url)"))
+        if let subscriberID {
+            // This empty label works around a layout bug where the label is unreadable.
+            // We should fix that bug but this works for now, as it's just for internal settings.
+            infoSection.add(.copyableItem(label: "", value: "Subscriber ID: \(subscriberID.asBase64Url)"))
         }
 
         contents.addSection(infoSection)
