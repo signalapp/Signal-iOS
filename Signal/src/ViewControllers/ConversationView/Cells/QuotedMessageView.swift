@@ -278,8 +278,8 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             } else if self.quotedReplyModel.isGiftBadge {
                 attributedText = NSAttributedString(
                     string: NSLocalizedString(
-                        "BADGE_GIFTING_REPLY",
-                        comment: "Shown when you're replying to a gift message to indicate that it contains a gift."
+                        "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY",
+                        comment: "Shown when you're replying to a donation message."
                     ),
                     // This appears in the same context as fileType, so use the same font/color.
                     attributes: [.font: self.fileTypeFont, .foregroundColor: self.fileTypeTextColor]

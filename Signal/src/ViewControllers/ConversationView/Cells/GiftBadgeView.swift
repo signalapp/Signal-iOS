@@ -24,6 +24,7 @@ class GiftBadgeView: ManualStackView {
         let badge: Badge
         let messageUniqueId: String
         let timeRemainingText: String
+        let otherUserShortName: String
         let redemptionState: OWSGiftBadgeRedemptionState
         let isIncoming: Bool
         let conversationStyle: ConversationStyle
@@ -61,9 +62,24 @@ class GiftBadgeView: ManualStackView {
 
     private let titleLabel = CVLabel()
     private static func titleLabelConfig(for state: State) -> CVLabelConfig {
+        let textFormat: String
+        if state.isIncoming {
+            textFormat = NSLocalizedString(
+                "DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT",
+                comment: "You received a donation from a friend. This is the title of that message in the chat. Embeds {{short contact name}}."
+            )
+        } else {
+            textFormat = NSLocalizedString(
+                "DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT",
+                comment: "You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}."
+            )
+        }
+        let text = String(format: textFormat, state.otherUserShortName)
+
         let textColor = state.conversationStyle.bubbleTextColor(isIncoming: state.isIncoming)
+
         return CVLabelConfig(
-            text: BadgeGiftingStrings.giftBadgeTitle,
+            text: text,
             font: .ows_dynamicTypeBody,
             textColor: textColor,
             numberOfLines: 0
@@ -74,8 +90,8 @@ class GiftBadgeView: ManualStackView {
         let timeRemaining = expirationDate.timeIntervalSinceNow
         guard timeRemaining > 0 else {
             return NSLocalizedString(
-                "BADGE_GIFTING_CHAT_EXPIRED",
-                comment: "Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed."
+                "DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED",
+                comment: "If a donation badge has been sent, indicates that it's expired and can no longer be redeemed. This is shown in the chat."
             )
         }
         return self.localizedDurationText(for: timeRemaining)
@@ -166,15 +182,15 @@ class GiftBadgeView: ManualStackView {
                 attrString.appendTemplatedImage(named: "check-circle-outline-24", font: font)
                 attrString.append("\u{2004}\u{2009}")
                 attrString.append(NSLocalizedString(
-                    "BADGE_GIFTING_REDEEMED",
-                    comment: "Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark."
+                    "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED",
+                    comment: "Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark."
                 ))
                 return attrString
             }
         } else {
             nonAttributedString = NSLocalizedString(
-                "BADGE_GIFTING_VIEW",
-                comment: "A button shown on a gift message you send to view additional details about the badge."
+                "DONATION_ON_BEHALF_OF_A_FRIEND_VIEW",
+                comment: "A button shown on a donation message you send, to view additional details about the badge that was sent."
             )
         }
         return NSAttributedString(string: nonAttributedString)

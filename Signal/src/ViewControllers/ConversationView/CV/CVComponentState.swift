@@ -166,6 +166,7 @@ public class CVComponentState: Equatable, Dependencies {
 
     struct GiftBadge: Equatable {
         let messageUniqueId: String
+        let otherUserShortName: String
         let cachedBadge: CachedBadge
         let expirationDate: Date
         let redemptionState: OWSGiftBadgeRedemptionState
@@ -1184,6 +1185,7 @@ fileprivate extension CVComponentState.Builder {
         let (level, expirationDate) = try giftBadge.getReceiptDetails()
         self.giftBadge = GiftBadge(
             messageUniqueId: messageUniqueId,
+            otherUserShortName: threadViewModel.shortName ?? threadViewModel.name,
             cachedBadge: SubscriptionManager.getCachedBadge(level: .giftBadge(level)),
             expirationDate: expirationDate,
             redemptionState: giftBadge.redemptionState

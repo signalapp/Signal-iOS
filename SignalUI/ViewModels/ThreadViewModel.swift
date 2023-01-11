@@ -13,6 +13,7 @@ public class ThreadViewModel: NSObject {
     public let unreadCount: UInt
     public let contactAddress: SignalServiceAddress?
     public let name: String
+    public let shortName: String?
     public let associatedData: ThreadAssociatedData
     public let hasPendingMessageRequest: Bool
     public let disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
@@ -56,8 +57,13 @@ public class ThreadViewModel: NSObject {
 
         if let contactThread = thread as? TSContactThread {
             self.contactAddress = contactThread.contactAddress
+            self.shortName = Self.contactsManager.shortDisplayName(
+                for: contactThread.contactAddress,
+                transaction: transaction
+            )
         } else {
             self.contactAddress = nil
+            self.shortName = nil
         }
 
         let unreadCount = InteractionFinder(threadUniqueId: thread.uniqueId).unreadCount(transaction: transaction.unwrapGrdbRead)

@@ -47,6 +47,7 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
             badge: stateBadge,
             messageUniqueId: self.giftBadge.messageUniqueId,
             timeRemainingText: self.viewState.timeRemainingText,
+            otherUserShortName: self.giftBadge.otherUserShortName,
             redemptionState: self.giftBadge.redemptionState,
             isIncoming: self.isIncoming,
             conversationStyle: self.conversationStyle

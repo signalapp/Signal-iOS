@@ -217,8 +217,8 @@ public class CommonStrings: NSObject {
 
     static public var redeemGiftButton: String {
         return OWSLocalizedString(
-            "BADGE_GIFTING_REDEEM",
-            comment: "Label for a button used to redeem a gift and add the gift's badge to your profile."
+            "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE",
+            comment: "Label for a button used to redeem a badge that was received as a donation on your behalf."
         )
     }
 

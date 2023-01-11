@@ -506,7 +506,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 - (nullable NSString *)giftTypeForSnippet
 {
     return NSLocalizedString(
-        @"BADGE_GIFTING_REPLY", @"Shown when you're replying to a gift message to indicate that it contains a gift.");
+        @"DONATION_ON_BEHALF_OF_A_FRIEND_REPLY", @"Shown when you're replying to a donation message.");
 }
 
 - (BOOL)isAudioAttachment
