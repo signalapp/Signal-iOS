@@ -390,8 +390,14 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
         section.add(.disclosureItem(
             icon: .settingsGift,
-            name: NSLocalizedString("DONATION_VIEW_GIFT", comment: "Title for the 'Gift a Badge' link in the donation view"),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "giftBadge"),
+            name: NSLocalizedString(
+                "DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND",
+                comment: "Title for the \"donate for a friend\" button on the donation view."
+            ),
+            accessibilityIdentifier: UIView.accessibilityIdentifier(
+                in: self,
+                name: "donationOnBehalfOfAFriend"
+            ),
             actionBlock: { [weak self] in
                 guard let self = self else { return }
 
