@@ -57,8 +57,10 @@ class BadgeGiftingThanksSheet: OWSTableViewController2 {
             let cell = Self.tableCell()
 
             let titleLabel = UILabel()
-            titleLabel.text = NSLocalizedString("BADGE_GIFT_THANKS_TITLE",
-                                                comment: "Title for the sheet that's shown when you gift someone a badge")
+            titleLabel.text = NSLocalizedString(
+                "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE",
+                comment: "When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet."
+            )
             titleLabel.textAlignment = .center
             titleLabel.font = .ows_dynamicTypeTitle2.ows_semibold
             titleLabel.numberOfLines = 0
@@ -75,9 +77,11 @@ class BadgeGiftingThanksSheet: OWSTableViewController2 {
             let cell = Self.tableCell()
 
             let infoLabel = UILabel()
-            infoLabel.text = String(format: NSLocalizedString("BADGE_GIFT_THANKS_BODY",
-                                                              comment: "Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}."),
-                                    recipientName)
+            let infoLabelFormat = NSLocalizedString(
+                "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT",
+                comment: "When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}."
+            )
+            infoLabel.text = String(format: infoLabelFormat, recipientName)
             infoLabel.textAlignment = .center
             infoLabel.font = .ows_dynamicTypeBody
             infoLabel.numberOfLines = 0

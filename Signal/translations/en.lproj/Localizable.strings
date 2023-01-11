@@ -424,12 +424,6 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly donation canceled";
 
-/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
-
-/* Title for the sheet that's shown when you gift someone a badge */
-"BADGE_GIFT_THANKS_TITLE" = "Thanks for your support!";
-
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "Expired";
 
@@ -1908,6 +1902,12 @@
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ made a donation for you";
+
+/* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "You’ve made a donation to Signal on behalf of %1$@. They’ll be given the option to show their support on their profile.";
+
+/* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "Thanks for your support!";
 
 /* A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ made a donation to Signal on your behalf! Show your support for Signal on your profile.";
