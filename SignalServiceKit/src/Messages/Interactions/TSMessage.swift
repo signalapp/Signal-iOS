@@ -229,4 +229,39 @@ public extension TSMessage {
 
         Self.notificationsManager?.cancelNotifications(messageIds: [self.uniqueId])
     }
+
+    // MARK: - Preview text
+
+    @objc(previewTextForGiftBadgeWithTransaction:)
+    func previewTextForGiftBadge(transaction: SDSAnyReadTransaction) -> String {
+        let otherUserAddress: SignalServiceAddress
+        let format: String
+
+        if let incomingMessage = self as? TSIncomingMessage {
+            otherUserAddress = incomingMessage.authorAddress
+            format = OWSLocalizedString(
+                "DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING",
+                comment: "A friend has donated on your behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}."
+            )
+        } else if let outgoingMessage = self as? TSOutgoingMessage {
+            let recipients = outgoingMessage.recipientAddresses()
+            guard let recipient = recipients.first, recipients.count == 1 else {
+                owsFail("[Gifting] Expected exactly 1 recipient but got \(recipients.count)")
+            }
+            otherUserAddress = recipient
+
+            format = OWSLocalizedString(
+                "DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING",
+                comment: "You have a made a donation on a friend's behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}."
+            )
+        } else {
+            owsFail("Could not generate preview text because message wasn't incoming or outgoing")
+        }
+
+        return String(
+            format: format,
+            contactsManager.shortDisplayName(for: otherUserAddress, transaction: transaction)
+        )
+    }
+
 }

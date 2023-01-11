@@ -577,13 +577,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
             return stickerDescription;
         }
     } else if (self.giftBadge != nil) {
-        if ([self isKindOfClass:[TSIncomingMessage class]]) {
-            return OWSLocalizedString(@"BADGE_GIFTING_PREVIEW_INCOMING",
-                @"Shown on the list of chats when the most recent message is a gift you received from someone else.");
-        } else {
-            return OWSLocalizedString(@"BADGE_GIFTING_PREVIEW_OUTGOING",
-                @"Shown on the list of chats when the most recent message is a gift you sent to someone else.");
-        }
+        return [self previewTextForGiftBadgeWithTransaction:transaction];
     } else {
         // This can happen when initially saving outgoing messages
         // with camera first capture over the conversation list.
