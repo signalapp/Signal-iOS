@@ -185,43 +185,43 @@
 "APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "সিস্টেম";
 
 /* Apple Pay donation error for decline failures where authentication is required. */
-"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "Try another payment method or contact your bank for more information.";
+"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "অন্য পেমেন্ট পদ্ধতি ব্যবহার করে দেখুন বা আরো তথ্যের জন্য আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।";
 
 /* Apple Pay donation error for decline failures where the user may need to contact their card or bank. */
-"APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Apple Pay-তে আপনার পেমেন্ট পদ্ধতি আপ টু ডেট আছে কিনা তা পরীক্ষা করে দেখুন। যদি না থাকে, এটি আপডেট করুন এবং আবার চেষ্টা করুন। আপনার যদি এখনো সমস্যা হয় তবে আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।";
 
 /* Apple Pay donation error for decline failures where the card is not supported. */
-"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "আপনার কার্ড এই ধরণের ক্রয় সমর্থন করে না। অন্য পেমেন্ট পদ্ধতি ব্যবহার করে দেখুন বা আরো তথ্যের জন্য আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।";
 
 /* Apple Pay donation error for decline failures where the card has expired. */
-"APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "আপনার কার্ডের মেয়াদ শেষ হয়ে গেছে। Apple Pay-তে আপনার পেমেন্ট পদ্ধতি আপ টু ডেট আছে কিনা তা পরীক্ষা করে দেখুন। যদি না থাকে, এটি আপডেট করুন এবং আবার চেষ্টা করুন।";
 
 /* Apple Pay donation error for decline failures where the card number is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "আপনার কার্ড নাম্বার ভুল। আপনার পেমেন্ট পদ্ধতি Apple Pay-তে সঠিকভাবে প্রবেশ করানো হয়েছে কিনা তা পরীক্ষা করে দেখুন। যদি না হয়ে থাকে, এটি আপডেট করুন এবং আবার চেষ্টা করুন।";
 
 /* Apple Pay donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "আপনার সিভিসি নাম্বারটি সঠিক নয়। Apple Pay-তে আপনার সিভিসি নাম্বার সঠিকভাবে লেখা আছে কিনা তা দেখুন। যদি না থেকে থাকে, তবে এটি আপডেট করুন এবং আবার চেষ্টা করুন।";
 
 /* Apple Pay donation error for decline failures where the card has insufficient funds. */
-"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "এই ক্রয়টি সম্পন্ন করার জন্য আপনার কার্ডে পর্যাপ্ত ব্যালেন্স নেই। অন্য পেমেন্ট পদ্ধতি ব্যবহার করে দেখুন বা আরো তথ্যের জন্য আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।";
 
 /* Apple Pay donation error for decline failures where the expiration month on the payment method is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "আপনার পেমেন্ট পদ্ধতিতে মেয়াদ শেষ হওয়ার মাসটি ভুল। Apple Pay-তে এটি আপডেট করুন এবং আবার চেষ্টা করুন।";
 
 /* Apple Pay donation error for decline failures where the expiration year on the payment method is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "আপনার পেমেন্ট পদ্ধতিতে মেয়াদ শেষ হওয়ার বছরটি ভুল। Apple Pay-তে এটি আপডেট করুন এবং আবার চেষ্টা করুন।";
 
 /* Apple Pay donation error for decline failures where the card number is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+"APPLE_PAY_DONATION_ERROR_INVALID_NUMBER" = "আপনার কার্ড নাম্বারটি সঠিক নয়। Apple Pay-তে আপডেট করে আবার চেষ্টা করুন।";
 
 /* Apple Pay donation error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
-"APPLE_PAY_DONATION_ERROR_ISSUER_NOT_AVAILABLE" = "Try completing the payment again or contact your bank for more information.";
+"APPLE_PAY_DONATION_ERROR_ISSUER_NOT_AVAILABLE" = "পেমেন্ট সম্পন্ন করার জন্য আবার চেষ্টা করুন বা আরো তথ্যের জন্য আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।";
 
 /* Apple Pay donation error for unspecified decline failures. */
-"APPLE_PAY_DONATION_ERROR_OTHER" = "Try another payment method or contact your bank for more information.";
+"APPLE_PAY_DONATION_ERROR_OTHER" = "অন্য পেমেন্ট পদ্ধতি ব্যবহার করে দেখুন বা আরো তথ্যের জন্য আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।";
 
 /* Apple Pay donation error for decline failures where the payment cannot be authorized. */
-"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Apple Pay-তে আপনার পেমেন্ট পদ্ধতি আপ টু ডেট আছে কিনা দেখুন। যদি না থাকে তবে আপডেট করে আবার চেষ্টা করুন।";
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
@@ -418,119 +418,23 @@
 /* Button text when a badge expires, asking users to donate */
 "BADGE_EXPIRED_DONATE_BUTTON" = "ডোনেট করুন";
 
-/* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_BODY" = "আপনার গিফট ব্যাজের মেয়াদ শেষ হয়ে গেছে এবং আপনার প্রোফাইলে তা আর দেখা যাবে না৷";
-
-/* Title for gift on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_TITLE" = "আপনার গিফট ব্যাজের মেয়াদ শেষ হয়ে গেছে";
-
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "আরও জানুন।";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "মাসিক ডোনেশন বাতিল করা হয়েছে";
 
-/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "আপনি %1$@-কে একটি ব্যাজ উপহার দিয়েছেন। তারা এটি গ্রহণ করলে, ব্যাজ দেখানোর বা লুকিয়ে রাখার জন্য তাদেরকে একটি অপশন দেওয়া হবে।";
-
-/* Title for the sheet that's shown when you gift someone a badge */
-"BADGE_GIFT_THANKS_TITLE" = "আপনার সহযোগীতার জন্য ধন্যবাদ!";
-
-/* Text telling the user that they can add a message along with their gift badge */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "উপহারটি প্রাপকের কাছে সরাসরি ম্যাসেজ করে পাঠানো হবে। নীচে আপনার নিজের ম্যাসেজ যোগ করুন।";
-
-/* Placeholder in the text field where you can add text for a message along with your gift */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "বার্তা যোগ করুন";
-
-/* Error message indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "গিফট ব্যাজ পাঠানো যায়নি। আপনার সংযোগ ঠিক আছে কি না দেখুন এবং আবার চেষ্টা করুন।";
-
-/* Title for error message dialog indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "গিফট ব্যাজ পাঠানো যায়নি";
-
-/* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
-"BADGE_GIFTING_CHAT_EXPIRED" = "বাতিল";
-
 /* Shown on a gift badge message and when tapping a redeemed gift message to denote the presence of a gift badge. */
 "BADGE_GIFTING_CHAT_TITLE" = "গিফট ব্যাজ";
-
-/* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Signal-এ একটি অনুদান দিয়ে কাউকে একটি ব্যাজ উপহার দিন। নিজেদের প্রোফাইলে প্রদর্শন করার জন্য তারা একটি ব্যাজ পাবেন।";
-
-/* Title on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "একটি ব্যাজ উপহার দিন";
 
 /* Title on the screen where you choose a gift badge's recipient */
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "প্রাপক নির্বাচন করুন";
 
-/* Title on the screen where you confirm sending of a gift badge, and can write a message */
-"BADGE_GIFTING_CONFIRMATION_TITLE" = "উপহার নিশ্চিত করুন";
-
-/* Error message indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "এই ব্যবহারকারী Signal আপগ্রেড না করা পর্যন্ত উপহার গ্রহণ করতে পারবেন না।";
-
-/* Title for error message dialog indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "গিফট ব্যাজ পাঠাতে পারছে না";
-
-/* Error message indicating that the person you're trying to send has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "এই ব্যবহারকারী আপনার উপহার গ্রহণ করতে পারবেন না কারণ আপনি তাকে ব্লক করেছেন।";
-
-/* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "গিফট ব্যাজ পাঠানো সফল হয়নি";
-
-/* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
-"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "একটি গিফট ব্যাজ পাঠান";
-
-/* Text telling the user that their gift is a one-time donation */
-"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "এক-কালীন ডোনেশন";
-
-/* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "আপনার পেমেন্ট প্রক্রিয়া করা যায়নি এবং আপনাকে চার্জ করা হয়নি। অনুগ্রহপূর্বক আবার চেষ্টা করুন।";
-
-/* Title for the action sheet when you try to send a gift badge but the payment failed */
-"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "পেমেন্ট সফল হয়নি";
-
-/* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "আপনার পেমেন্ট প্রক্রিয়া সম্পন্ন হয়েছে কিন্তু Signal আপনার গিফট ব্যাজ পাঠাতে পারেনি। অনুগ্রহপূর্বক সাপোর্ট-এ যোগাযোগ করুন।";
-
-/* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "ব্যাজ উপহার সফল হয়নি";
-
-/* Shown on the list of chats when the most recent message is a gift you received from someone else. */
-"BADGE_GIFTING_PREVIEW_INCOMING" = "আপনি একটি উপহার পেয়েছেন";
-
-/* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
-"BADGE_GIFTING_PREVIEW_OUTGOING" = "আপনি একটি উপহার পাঠিয়েছেন";
-
-/* Label for a button used to redeem a gift and add the gift's badge to your profile. */
-"BADGE_GIFTING_REDEEM" = "ফিরে পান";
-
-/* Shown as the body of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_BODY" = "আপনার গিফট ছাড় করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।";
-
-/* Shown as the title of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "গিফট ছাড় করা যায়নি";
-
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "আপনি পরে আপনার ব্যাজ ছাড় করতে পারবেন";
 
-/* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
-"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%1$@ আপনাকে একটি উপহার পাঠিয়েছেন";
-
-/* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
-"BADGE_GIFTING_REDEEMED" = "ফিরে পাওয়া গেছে";
-
-/* Shown when you're replying to a gift message to indicate that it contains a gift. */
-"BADGE_GIFTING_REPLY" = "উপহার";
-
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "স্থায়িত্ব %1$@";
-
-/* A button shown on a gift message you send to view additional details about the badge. */
-"BADGE_GIFTING_VIEW" = "দেখুন";
-
-/* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "আপনি %1$@-এর কাছ থেকে একটি গিফট ব্যাজ পেয়েছেন। Signal-এ অনুদান দেয়ার জন্য সচেতনতা তৈরি করতে আপনার প্রোফাইলে এই ব্যাজটি প্রদর্শন করুন৷";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "আপনার পুনরাবৃত্ত মাসিক ডোনেশন বাতিল করা হয়েছে। %1$@ আপনার ব্যাজ আপনার প্রোফাইলে আর দৃশ্যমান নয়।\n\nSignal-কে সমর্থন করা চালিয়ে যেতে এবং আপনার ব্যাজ পুনরায় সক্রিয় করতে, আপনার পেমেন্টের বিবরণ আপডেট করুন এবং আবারো ডোনেট করুন।";
@@ -1499,25 +1403,25 @@
 "COUNTRYCODE_SELECT_TITLE" = "দেশ কোড নির্বাচন করুন";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Your card has expired. Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "আপনার কার্ডের মেয়াদ শেষ হয়ে গেছে। আপনার কার্ডের বিবরণ সঠিক কি না তা যাচাই করুন এবং আবার চেষ্টা করুন।";
 
 /* Credit/debit card donation error for decline failures where the card number is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "আপনার কার্ডের নম্বরটি সঠিক নয়। আপনার কার্ডের বিবরণ সঠিক কি না তা যাচাই করুন এবং আবার চেষ্টা করুন।";
 
 /* Credit/debit card donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your card's CVC number is incorrect. Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "আপনার কার্ডের সিভিসি নম্বর সঠিক নয়। আপনার কার্ডের বিবরণ সঠিক কি না তা যাচাই করুন এবং আবার চেষ্টা করুন।";
 
 /* Credit/debit card donation error for decline failures where the expiration month on the payment method is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your card is incorrect. Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "আপনার কার্ডের মেয়াদোত্তীর্ণের মাস সঠিক নয়। আপনার কার্ডের বিবরণ সঠিক কি না তা যাচাই করুন এবং আবার চেষ্টা করুন।";
 
 /* Credit/debit card donation error for decline failures where the expiration year on the payment method is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your card is incorrect. Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "আপনার কার্ডের মেয়াদোত্তীর্ণের বছর সঠিক নয়। আপনার কার্ডের বিবরণ সঠিক কি না তা যাচাই করুন এবং আবার চেষ্টা করুন।";
 
 /* Credit/debit card donation error for unspecified decline failures. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_OTHER" = "Verify your card details are correct and try again. If the problem continues, contact your bank.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_OTHER" = "আপনার কার্ডের বিবরণ সঠিক কি না তা যাচাই করুন এবং আবার চেষ্টা করুন। সমস্যা চলতে থাকলে, আপনার ব্যাংকের সাথে যোগাযোগ করুন।";
 
 /* Credit/debit card donation error for decline failures where the payment cannot be authorized. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "আপনার কার্ডের বিবরণ সঠিক কি না তা যাচাই করুন এবং আবার চেষ্টা করুন।";
 
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "সরান এবং স্কেল করুন";
@@ -1647,6 +1551,12 @@
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "ডিবাগ লগ সম্পর্কিত তথ্য";
+
+/* info message text in conversation view */
+"DECLINED_AUDIO_CALL" = "You declined a voice call";
+
+/* info message text in conversation view */
+"DECLINED_VIDEO_CALL" = "You declined a video call";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "অ্যাকাউন্ট মুছুন";
@@ -1861,23 +1771,38 @@
 /* When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with credit or debit card. */
 "DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD" = "ক্রেডিট বা ডেবিট কার্ড";
 
-/* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet, as well as a similar sheet that is sometimes shown asking users to confirm their payment. Embeds {{localized badge name}}, such as \"Planet\". */
+/* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the subtitle on that sheet. Embeds {{recipient's name}}. */
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "On behalf of %1$@";
+
+/* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "%1$@ ব্যাজ নিন";
 
-/* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet, as well as a similar sheet that is sometimes shown asking users to confirm their payment. Embeds {{localized badge name}}, such as \"Boost\". */
+/* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "এক মাসের জন্য %1$@ ব্যাজ অর্জন করুন";
 
-/* When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet, as well as a similar sheet that is sometimes shown asking users to confirm their payment. Embeds {{amount of money per month}}, such as \"$5/month\". */
+/* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "%1$@ Donation to Signal";
+
+/* When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Signal-এ %1$@ ডোনেট করুন";
 
-/* When users make one-time donations, they see a sheet that lets them pick a payment method. This is the title on that sheet, as well as a similar sheet that is sometimes shown asking users to confirm their payment. Embeds {{amount of money}}, such as \"$5\". */
+/* When users make one-time donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Signal-এ %1$@ ডোনেট করুন";
+
+/* Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message. */
+"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "The recipient will be notified of the donation in a 1 on 1 message. Add your own message below.";
+
+/* Users can donate on a friend's behalf and can optionally add a message. This is the placeholder in the text field for that additional message. */
+"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Add a message";
+
+/* If a donation badge has been sent, indicates that it's expired and can no longer be redeemed. This is shown in the chat. */
+"DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Expired";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "ডোনেট করার জন্য অর্থের পরিমাণ বেছে নিন।";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. Embeds {{currency string}}, such as \"$5\". */
-"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "The minimum amount you can donate is %1$@.";
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "আপনি সর্বনিম্ন যে পরিমাণ অর্থ ডোনেট করতে পারবেন তা হলো %1$@।";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "মাসিক";
@@ -1899,6 +1824,99 @@
 
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "সাবস্ক্রিপশন আপডেট করুন";
+
+/* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Your badge has expired and is no longer available to be displayed on your profile.";
+
+/* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Your Badge Has Expired";
+
+/* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Your badge from %1$@ has expired and can no longer be redeemed.";
+
+/* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Your Badge Has Expired";
+
+/* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Redeemed";
+
+/* Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Support Signal by making a donation for a friend or family member who uses Signal. They’ll have the option to show their support on their profile.";
+
+/* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Donate for a Friend";
+
+/* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Confirm Donation";
+
+/* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Disappearing messages are turned on for this chat. Your donation message will disappear in %1$@.";
+
+/* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Cannot donate. Check your connection and try again.";
+
+/* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, an error dialog is shown. This is the title of that dialog. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE" = "Cannot Donate";
+
+/* Users can donate on a friend's behalf. This tells users that this will be a one-time donation. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "One-time Donation";
+
+/* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+
+/* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "Payment Failed";
+
+/* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Your payment was processed but Signal could not send your donation message. Please contact support.";
+
+/* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "Donation Failed";
+
+/* A friend has donated on your behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ %1$@ donated for you";
+
+/* You have a made a donation on a friend's behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ You donated for %1$@";
+
+/* You received a donation from a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "%1$@ donated to Signal on your behalf";
+
+/* Users can donate on a friend's behalf. If the friend cannot receive these donations, this error message will be shown. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_BODY" = "You can’t make a donation for this user until they upgrade Signal.";
+
+/* Users can donate on a friend's behalf. If the friend cannot receive these donations, an error dialog will be shown. This is the title of that error dialog. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_TITLE" = "Cannot Make Donation";
+
+/* Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "You can’t make a donation for this user because you blocked them.";
+
+/* Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "Cannot Make Donation";
+
+/* Label for a button used to redeem a badge that was received as a donation on your behalf. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "Redeem";
+
+/* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ made a donation for you";
+
+/* Shown when you're replying to a donation message. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Donation";
+
+/* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation to %1$@";
+
+/* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "You’ve made a donation to Signal on behalf of %1$@. They’ll be given the option to show their support on their profile.";
+
+/* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "Thanks for your support!";
+
+/* A button shown on a donation message you send, to view additional details about the badge that was sent. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "View";
+
+/* A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ made a donation to Signal on your behalf! Show your support for Signal on your profile.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "ব্যক্তিগত ম্যাসেজিং। নেই কোনো বিজ্ঞাপন, নেই কোনো ট্র্যাকার, নেই কোনো নজরদারি।";
@@ -1927,8 +1945,8 @@
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "Signal-এর পাশে থাকার জন্য আপনাকে ধন্যবাদ। আপনার অবদান এমন একটি ওপেন সোর্স প্রাইভেসি টেকনোলজির ক্রমবিকাশের মিশনে ইন্ধন জোগাতে সাহায্য করে যা স্বাধীন মতপ্রকাশকে রক্ষা করে এবং সারা বিশ্বের লক্ষ লক্ষ মানুষের জন্য নিরাপদ বৈশ্বিক যোগাযোগ সক্ষম করে। আপনি যদি মার্কিন যুক্তরাষ্ট্রের বাসিন্দা হন, তাহলে আপনার ট্যাক্স রেকর্ডের জন্য এই রিসিপ্টটি রাখুন। Signal Technology Foundation অভ্যন্তরীণ রাজস্ব কোডের ধারা 501c3-এর অধীনে মার্কিন যুক্তরাষ্ট্রে অবস্থিত একটি কর-মুক্ত অলাভজনক সংস্থা। আমাদের Federal Tax ID হলো 82-4506840।";
 
-/* Title for gift donation receipts */
-"DONATION_RECEIPT_GIFT" = "উপহার";
+/* Title for receipts for donations given on a friend's behalf */
+"DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Donation for a Friend";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "এক-কালীন";
@@ -1960,11 +1978,11 @@
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
 "DONATION_SCREENS_HEADER_TITLE" = "ব্যবসায়িক লাভের চেয়ে গোপনীয়তার প্রাধান্য বেশি";
 
+/* Title for the \"donate for a friend\" button on the donation view. */
+"DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Donate for a Friend";
+
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Signal-এ অনুদান";
-
-/* Title for the 'Gift a Badge' link in the donation view */
-"DONATION_VIEW_GIFT" = "একটি ব্যাজ উপহার দিন";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "নেটওয়ার্ক ত্রুটি। আপনার সংযোগ পরীক্ষা করুন এবং আবার চেষ্টা করুন।";
@@ -2206,6 +2224,12 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "%1$@ এর  সাথে আপনার নিরাপত্তা নাম্বার সম্প্রতি পরিবর্তিত হয়েছে। আপনি এই বার্তাটি আবার পাঠানোর আগে যাচাই করতে পারেন।";
 
+/* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Your badge couldn’t be redeemed. Check your connection and try again.";
+
+/* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Couldn’t Redeem Badge";
+
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "নিরাপত্তা নাম্বার যাচাই করতে ব্যর্থ!";
 
@@ -2301,12 +2325,6 @@
 
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "যা অনুসন্ধান করতে চান লিখুন।";
-
-/* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
-"GIFT_NOT_REDEEMED_BODY_FORMAT" = "%1$@ থেকে আপনার গিফটের মেয়াদ শেষ হয়ে গেছে এবং এটি আর ছাড় করা যাবে না।";
-
-/* Title when trying to redeem a gift that's already expired. */
-"GIFT_NOT_REDEEMED_TITLE" = "আপনার গিফটের মেয়াদ শেষ হয়ে গেছে";
 
 /* Label for the 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "সেটিংস-এ যান";
@@ -3301,8 +3319,11 @@
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "এখনো কোন চ্যাট নেই।\nএকজন বন্ধুকে মেসেজ পাঠানোর মাধ্যমে শুরু করুন।";
 
-/* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%1$@ আপনাকে কল করেছেন";
+/* info message text in conversation view */
+"INCOMING_AUDIO_CALL" = "Incoming voice call";
+
+/* info message text in conversation view */
+"INCOMING_VIDEO_CALL" = "Incoming video call";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3827,13 +3848,16 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "নতুন বার্তাসমূহ";
 
 /* info message text in conversation view */
-"MISSED_CALL" = "ব্যর্থ কল";
+"MISSED_AUDIO_CALL" = "Missed voice call";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
 "MISSED_CALL_DO_NOT_DISTURB" = "'বিরক্ত করবেন না' চালু থাকা অবস্থায় মিসড কল";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
 "MISSED_CALL_FOCUS_MODE" = "ফোকাস ব্যবহার করা অবস্থায় মিসড কল";
+
+/* info message text in conversation view */
+"MISSED_VIDEO_CALL" = "Missed video call";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal থেকে ভিডিও কল সমূহ করতে আপনি iOS সেটিংস অ্যাপ থেকে ক্যামেরা অ্যাক্সেস সক্ষম করতে পারেন।";
@@ -4243,8 +4267,17 @@
 /* Label warning the user that they should update Signal to continue using payments. */
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "পেমেন্ট ব্যবহার চালিয়ে যেতে Signal আপডেট করুন। আপনার ব্যালেন্স আপ-টু-ডেট নাও থাকতে পারে।";
 
-/* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "আপনি %1$@-কে কল করেছেন";
+/* info message text in conversation view */
+"OUTGOING_AUDIO_CALL" = "Outgoing voice call";
+
+/* info message text in conversation view */
+"OUTGOING_MISSED_AUDIO_CALL" = "Unanswered voice call";
+
+/* info message text in conversation view */
+"OUTGOING_MISSED_VIDEO_CALL" = "Unanswered video call";
+
+/* info message text in conversation view */
+"OUTGOING_VIDEO_CALL" = "Outgoing video call";
 
 /* Button used to decline a payment request. */
 "PAYMENTS_ACTION_DECLINE_REQUEST" = "অনুরোধ প্রত্যাখ্যান করুন";

@@ -185,43 +185,43 @@
 "APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "系統";
 
 /* Apple Pay donation error for decline failures where authentication is required. */
-"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "Try another payment method or contact your bank for more information.";
+"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "試試換另一個付款方法，又或者聯絡您的銀行取得更多資訊。";
 
 /* Apple Pay donation error for decline failures where the user may need to contact their card or bank. */
-"APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "請到 Apple Pay 查看您的付款方法是否仍然有效。若已過期，請先更新資料，然後再試一次。若問題仍然持續，請聯絡您的銀行。";
 
 /* Apple Pay donation error for decline failures where the card is not supported. */
-"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "您的信用卡不支援此類型的購買。試試換另一個付款方法，又或者聯絡您的銀行取得更多資訊。";
 
 /* Apple Pay donation error for decline failures where the card has expired. */
-"APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "您的信用卡已過期。請到 Apple Pay 查看您的付款方法是否仍然有效。若已過期，請先更新資料，然後再試一次。";
 
 /* Apple Pay donation error for decline failures where the card number is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "您的信用卡號碼不正確。請到 Apple Pay 查看您輸入的付款方法是否正確。若然有誤，請先更新資料，然後再試一次。";
 
 /* Apple Pay donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "您的信用卡驗證碼 (CVC) 不正確。請到 Apple Pay 查看您的信用卡驗證碼是否輸入正確。若然有誤，請先更新資料，然後再試一次。";
 
 /* Apple Pay donation error for decline failures where the card has insufficient funds. */
-"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "您的信用卡資金不足以完成此次購買。請嘗試其他付款方法，或者聯絡您的銀行以了解詳情。";
 
 /* Apple Pay donation error for decline failures where the expiration month on the payment method is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "您的付款方法所述的到期月份不正確。請到 Apple Pay 更新資料，然後再試一次。";
 
 /* Apple Pay donation error for decline failures where the expiration year on the payment method is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "您的付款方法所述的到期年份不正確。請到 Apple Pay 更新資料，然後再試一次。";
 
 /* Apple Pay donation error for decline failures where the card number is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+"APPLE_PAY_DONATION_ERROR_INVALID_NUMBER" = "您的信用卡號碼不正確。請到 Apple Pay 更新此資訊，然後再試一次。";
 
 /* Apple Pay donation error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
-"APPLE_PAY_DONATION_ERROR_ISSUER_NOT_AVAILABLE" = "Try completing the payment again or contact your bank for more information.";
+"APPLE_PAY_DONATION_ERROR_ISSUER_NOT_AVAILABLE" = "再試試完成付款，又或者聯絡您的銀行取得更多資訊。";
 
 /* Apple Pay donation error for unspecified decline failures. */
-"APPLE_PAY_DONATION_ERROR_OTHER" = "Try another payment method or contact your bank for more information.";
+"APPLE_PAY_DONATION_ERROR_OTHER" = "試試換另一個付款方法，又或者聯絡您的銀行取得更多資訊。";
 
 /* Apple Pay donation error for decline failures where the payment cannot be authorized. */
-"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "請到 Apple Pay 查看您的付款方法是否仍然有效。若已過時，請先更新資料，然後再試一次。";
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
@@ -418,119 +418,23 @@
 /* Button text when a badge expires, asking users to donate */
 "BADGE_EXPIRED_DONATE_BUTTON" = "捐款";
 
-/* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_BODY" = "你的饋贈徽章已過期，且不會再在你的個人檔案上顯示。";
-
-/* Title for gift on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_TITLE" = "你的饋贈徽章已過期";
-
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "了解更多。";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "已取消每月捐款";
 
-/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "你已送贈了一枚徽章給 %1$@。當對方換領後，就可以選擇顯示或隱藏徽章。";
-
-/* Title for the sheet that's shown when you gift someone a badge */
-"BADGE_GIFT_THANKS_TITLE" = "感謝您力撐支持！";
-
-/* Text telling the user that they can add a message along with their gift badge */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "您的禮品將以一對一訊息傳送給收取人。請於下方新增您自己的訊息。";
-
-/* Placeholder in the text field where you can add text for a message along with your gift */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "新增訊息";
-
-/* Error message indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "無法傳送饋贈徽章。請檢查網絡連線，然後再試一次。";
-
-/* Title for error message dialog indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "無法傳送饋贈徽章";
-
-/* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
-"BADGE_GIFTING_CHAT_EXPIRED" = "已過期";
-
 /* Shown on a gift badge message and when tapping a redeemed gift message to denote the presence of a gift badge. */
 "BADGE_GIFTING_CHAT_TITLE" = "饋贈徽章";
-
-/* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "捐款支持 Signal 就可以向好友饋贈徽章。對方更可以在個人檔案上展示徽章。";
-
-/* Title on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "饋贈徽章";
 
 /* Title on the screen where you choose a gift badge's recipient */
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "選擇收款人";
 
-/* Title on the screen where you confirm sending of a gift badge, and can write a message */
-"BADGE_GIFTING_CONFIRMATION_TITLE" = "確認禮品";
-
-/* Error message indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "該使用者必須先更新 Signal 才能接收禮品。";
-
-/* Title for error message dialog indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "無法傳送饋贈徽章";
-
-/* Error message indicating that the person you're trying to send has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "你封鎖了這位用戶，因此對方無法接收你的禮物。";
-
-/* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "無法傳送饋贈徽章";
-
-/* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
-"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "送贈一枚禮品徽章";
-
-/* Text telling the user that their gift is a one-time donation */
-"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "單次捐款";
-
-/* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "系統無法處理您的付款，付款尚未成功。請再試一次。";
-
-/* Title for the action sheet when you try to send a gift badge but the payment failed */
-"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "付款失敗";
-
-/* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "系統已經處理您的付款，但 Signal 無法傳送您的饋贈徽章。請聯絡支援團隊。";
-
-/* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "徽章饋贈失敗";
-
-/* Shown on the list of chats when the most recent message is a gift you received from someone else. */
-"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 你收到一份禮物";
-
-/* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
-"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 你送出了一份禮物";
-
-/* Label for a button used to redeem a gift and add the gift's badge to your profile. */
-"BADGE_GIFTING_REDEEM" = "換領";
-
-/* Shown as the body of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_BODY" = "無法兌換你的禮品。請檢查你的網絡連線，然後再試一次。";
-
-/* Shown as the title of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "無法兌換禮品";
-
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "你可以稍後再兌換你的徽章";
 
-/* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
-"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%1$@ 送了一份禮物給你";
-
-/* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
-"BADGE_GIFTING_REDEEMED" = "已換領";
-
-/* Shown when you're replying to a gift message to indicate that it contains a gift. */
-"BADGE_GIFTING_REPLY" = "禮品";
-
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "為期 %1$@";
-
-/* A button shown on a gift message you send to view additional details about the badge. */
-"BADGE_GIFTING_VIEW" = "檢視";
-
-/* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "你收到來自 %1$@ 的饋贈徽章。不妨在你的個人資料展示此徽章，讓大家一呼百應，齊來捐款撐起 Signal。";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "你的每月定期捐款己被取消。%1$@ 你的徽章不會再顯示在你的個人檔案中。\n\n要繼續支持 Signal 並重新啟動你的徽章，請更新你的付款詳情並再次捐款。";
@@ -1499,25 +1403,25 @@
 "COUNTRYCODE_SELECT_TITLE" = "選取國家代碼";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Your card has expired. Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "您的信用卡已過期。驗證您的信用卡資料是否正確，然後重試。";
 
 /* Credit/debit card donation error for decline failures where the card number is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "您的信用卡號碼不正確。驗證您的信用卡資料是否正確，然後重試。";
 
 /* Credit/debit card donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your card's CVC number is incorrect. Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "您的信用卡驗證碼 (CVC) 不正確。驗證您的信用卡資料是否正確，然後重試。";
 
 /* Credit/debit card donation error for decline failures where the expiration month on the payment method is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your card is incorrect. Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "您信用卡上的有效日期不正確。驗證您的信用卡資料是否正確，然後重試。";
 
 /* Credit/debit card donation error for decline failures where the expiration year on the payment method is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your card is incorrect. Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "您信用卡上的有效日期不正確。驗證您的信用卡資料是否正確，然後重試。";
 
 /* Credit/debit card donation error for unspecified decline failures. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_OTHER" = "Verify your card details are correct and try again. If the problem continues, contact your bank.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_OTHER" = "驗證您的信用卡資料是否正確，然後重試。如果問題仍然存在，請與您的銀行聯絡。";
 
 /* Credit/debit card donation error for decline failures where the payment cannot be authorized. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "驗證您的信用卡資料是否正確，然後重試。";
 
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "移動及縮放";
@@ -1647,6 +1551,12 @@
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "關於除錯記錄檔的資訊。";
+
+/* info message text in conversation view */
+"DECLINED_AUDIO_CALL" = "You declined a voice call";
+
+/* info message text in conversation view */
+"DECLINED_VIDEO_CALL" = "You declined a video call";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "刪除帳戶";
@@ -1861,23 +1771,38 @@
 /* When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with credit or debit card. */
 "DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD" = "信用卡或簽帳金融卡";
 
-/* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet, as well as a similar sheet that is sometimes shown asking users to confirm their payment. Embeds {{localized badge name}}, such as \"Planet\". */
+/* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the subtitle on that sheet. Embeds {{recipient's name}}. */
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "On behalf of %1$@";
+
+/* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "獲得 %1$@ 徽章";
 
-/* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet, as well as a similar sheet that is sometimes shown asking users to confirm their payment. Embeds {{localized badge name}}, such as \"Boost\". */
+/* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "獲得為期一個月的 %1$@ 徽章";
 
-/* When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet, as well as a similar sheet that is sometimes shown asking users to confirm their payment. Embeds {{amount of money per month}}, such as \"$5/month\". */
+/* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "%1$@ Donation to Signal";
+
+/* When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "捐款 %1$@ 給 Signal";
 
-/* When users make one-time donations, they see a sheet that lets them pick a payment method. This is the title on that sheet, as well as a similar sheet that is sometimes shown asking users to confirm their payment. Embeds {{amount of money}}, such as \"$5\". */
+/* When users make one-time donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "捐款 %1$@ 給 Signal";
+
+/* Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message. */
+"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "The recipient will be notified of the donation in a 1 on 1 message. Add your own message below.";
+
+/* Users can donate on a friend's behalf and can optionally add a message. This is the placeholder in the text field for that additional message. */
+"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Add a message";
+
+/* If a donation badge has been sent, indicates that it's expired and can no longer be redeemed. This is shown in the chat. */
+"DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Expired";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "請選擇要捐贈的金額。";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. Embeds {{currency string}}, such as \"$5\". */
-"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "The minimum amount you can donate is %1$@.";
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "你可以捐款的最低金額為 %1$@。";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "每月";
@@ -1899,6 +1824,99 @@
 
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "更新定期贊助";
+
+/* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Your badge has expired and is no longer available to be displayed on your profile.";
+
+/* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Your Badge Has Expired";
+
+/* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Your badge from %1$@ has expired and can no longer be redeemed.";
+
+/* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Your Badge Has Expired";
+
+/* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Redeemed";
+
+/* Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Support Signal by making a donation for a friend or family member who uses Signal. They’ll have the option to show their support on their profile.";
+
+/* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Donate for a Friend";
+
+/* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Confirm Donation";
+
+/* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Disappearing messages are turned on for this chat. Your donation message will disappear in %1$@.";
+
+/* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Cannot donate. Check your connection and try again.";
+
+/* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, an error dialog is shown. This is the title of that dialog. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE" = "Cannot Donate";
+
+/* Users can donate on a friend's behalf. This tells users that this will be a one-time donation. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "One-time Donation";
+
+/* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+
+/* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "Payment Failed";
+
+/* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Your payment was processed but Signal could not send your donation message. Please contact support.";
+
+/* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "Donation Failed";
+
+/* A friend has donated on your behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ %1$@ donated for you";
+
+/* You have a made a donation on a friend's behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ You donated for %1$@";
+
+/* You received a donation from a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "%1$@ donated to Signal on your behalf";
+
+/* Users can donate on a friend's behalf. If the friend cannot receive these donations, this error message will be shown. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_BODY" = "You can’t make a donation for this user until they upgrade Signal.";
+
+/* Users can donate on a friend's behalf. If the friend cannot receive these donations, an error dialog will be shown. This is the title of that error dialog. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_TITLE" = "Cannot Make Donation";
+
+/* Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "You can’t make a donation for this user because you blocked them.";
+
+/* Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "Cannot Make Donation";
+
+/* Label for a button used to redeem a badge that was received as a donation on your behalf. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "Redeem";
+
+/* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ made a donation for you";
+
+/* Shown when you're replying to a donation message. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Donation";
+
+/* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation to %1$@";
+
+/* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "You’ve made a donation to Signal on behalf of %1$@. They’ll be given the option to show their support on their profile.";
+
+/* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "Thanks for your support!";
+
+/* A button shown on a donation message you send, to view additional details about the badge that was sent. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "View";
+
+/* A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ made a donation to Signal on your behalf! Show your support for Signal on your profile.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "私密通訊。無廣告、無追蹤、無監控。";
@@ -1927,8 +1945,8 @@
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "感謝您支持 Signal。您的捐款驅動我們的使命，致力開發開放原始碼的私隱技術，保護自由表達並讓全球通訊變得安全，讓世界各地數以百萬計「惜爐」使用者，共星光中作私密通訊。若您是美國居民，請保留此收據作為您的稅務紀錄。Signal Technology Foundation 是在美國依據《國稅法規》(IRC) 第 501c3 條的免稅非盈利組織。我們的聯邦稅識別號碼為 82-4506840。";
 
-/* Title for gift donation receipts */
-"DONATION_RECEIPT_GIFT" = "禮品";
+/* Title for receipts for donations given on a friend's behalf */
+"DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Donation for a Friend";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "單次";
@@ -1960,11 +1978,11 @@
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
 "DONATION_SCREENS_HEADER_TITLE" = "隱私比盈利更重要";
 
+/* Title for the \"donate for a friend\" button on the donation view. */
+"DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Donate for a Friend";
+
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "捐款給 Signal";
-
-/* Title for the 'Gift a Badge' link in the donation view */
-"DONATION_VIEW_GIFT" = "饋贈徽章";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "網絡錯誤。請檢查您的連線，然後再試一次。";
@@ -2206,6 +2224,12 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "您與 %1$@ 的安全碼近期已更改。建議您驗證新安全碼後，再傳送此訊息。";
 
+/* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Your badge couldn’t be redeemed. Check your connection and try again.";
+
+/* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Couldn’t Redeem Badge";
+
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "無法驗證安全碼！";
 
@@ -2301,12 +2325,6 @@
 
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "請輸入您的搜尋字詞。";
-
-/* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
-"GIFT_NOT_REDEEMED_BODY_FORMAT" = "%1$@ 送給你的禮品已過期，無法再兌換。";
-
-/* Title when trying to redeem a gift that's already expired. */
-"GIFT_NOT_REDEEMED_TITLE" = "你的禮品已過期";
 
 /* Label for the 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "前往設定";
@@ -3301,8 +3319,11 @@
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "未有任何對話。\n找個好友聊天，開始使用吧。";
 
-/* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%1$@ 來電。";
+/* info message text in conversation view */
+"INCOMING_AUDIO_CALL" = "Incoming voice call";
+
+/* info message text in conversation view */
+"INCOMING_VIDEO_CALL" = "Incoming video call";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3827,13 +3848,16 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "新訊息";
 
 /* info message text in conversation view */
-"MISSED_CALL" = "未接來電";
+"MISSED_AUDIO_CALL" = "Missed voice call";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
 "MISSED_CALL_DO_NOT_DISTURB" = "使用「請勿打擾」模式時的未接來電";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
 "MISSED_CALL_FOCUS_MODE" = "使用「專注模式」時的未接來電";
+
+/* info message text in conversation view */
+"MISSED_VIDEO_CALL" = "Missed video call";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "您可以在 iOS 「設定」app 中允許存取相機，以便在 Signal 發起視像通話。";
@@ -4243,8 +4267,17 @@
 /* Label warning the user that they should update Signal to continue using payments. */
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "請更新 Signal 以繼續使用付款功能。你的餘額可能尚未更新。";
 
-/* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "您已致電 %1$@";
+/* info message text in conversation view */
+"OUTGOING_AUDIO_CALL" = "Outgoing voice call";
+
+/* info message text in conversation view */
+"OUTGOING_MISSED_AUDIO_CALL" = "Unanswered voice call";
+
+/* info message text in conversation view */
+"OUTGOING_MISSED_VIDEO_CALL" = "Unanswered video call";
+
+/* info message text in conversation view */
+"OUTGOING_VIDEO_CALL" = "Outgoing video call";
 
 /* Button used to decline a payment request. */
 "PAYMENTS_ACTION_DECLINE_REQUEST" = "拒絕請求";

@@ -185,43 +185,43 @@
 "APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "Sistem";
 
 /* Apple Pay donation error for decline failures where authentication is required. */
-"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "Try another payment method or contact your bank for more information.";
+"APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED" = "Încearcă o altă metodă de plată sau ia legătura cu banca ta pentru mai multe informații.";
 
 /* Apple Pay donation error for decline failures where the user may need to contact their card or bank. */
-"APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"APPLE_PAY_DONATION_ERROR_CALL_ISSUER" = "Verifică dacă metoda ta de plată este actualizată în Apple Pay. Dacă nu, actualizează-o și încearcă din nou. Dacă problema persistă, contactează-ți banca.";
 
 /* Apple Pay donation error for decline failures where the card is not supported. */
-"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+"APPLE_PAY_DONATION_ERROR_CARD_NOT_SUPPORTED" = "Cardul tău nu suportă acest tip de achiziție. Încearcă altă metodă de plată sau contactează-ți banca pentru mai multe informații.";
 
 /* Apple Pay donation error for decline failures where the card has expired. */
-"APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"APPLE_PAY_DONATION_ERROR_EXPIRED_CARD" = "Cardul tău a expirat. Verifică dacă metoda ta de plată este actualizată în Apple Pay. Dacă nu, actualizează-o și încearcă din nou.";
 
 /* Apple Pay donation error for decline failures where the card number is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Numărul cardului tău este greșit. Verifică dacă metoda ta de plată este introdusă corect in Apple Pay. Dacă nu este, actualizează-o și încearcă din nou.";
 
 /* Apple Pay donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"APPLE_PAY_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Numărul tău CVC este greșit. Verifică dacă ai introdus corect codul CVC in Apple Pay. Dacă nu este, actualizează-l și încearcă din nou.";
 
 /* Apple Pay donation error for decline failures where the card has insufficient funds. */
-"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"APPLE_PAY_DONATION_ERROR_INSUFFICIENT_FUNDS" = "Cardul tău nu are suficiente fonduri pentru a finaliza tranzacția. Încearcă o altă metodă de plată sau contactează-ți banca pentru mai multe informații.";
 
 /* Apple Pay donation error for decline failures where the expiration month on the payment method is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "Luna de expirare a metodei de plată este incorectă. Actualizează-o în Apple Pay și încearcă din nou.";
 
 /* Apple Pay donation error for decline failures where the expiration year on the payment method is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+"APPLE_PAY_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "Anul de expirare a metodei de plată este incorect. Actualizează-l în Apple Pay și încearcă din nou.";
 
 /* Apple Pay donation error for decline failures where the card number is incorrect. */
-"APPLE_PAY_DONATION_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+"APPLE_PAY_DONATION_ERROR_INVALID_NUMBER" = "Numărul cardului tău este incorect. Actualizează-l în Google Pay și încearcă din nou.";
 
 /* Apple Pay donation error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
-"APPLE_PAY_DONATION_ERROR_ISSUER_NOT_AVAILABLE" = "Try completing the payment again or contact your bank for more information.";
+"APPLE_PAY_DONATION_ERROR_ISSUER_NOT_AVAILABLE" = "Încearcă să finalizezi din nou plata sau ia legătura cu banca ta pentru mai multe informații.";
 
 /* Apple Pay donation error for unspecified decline failures. */
-"APPLE_PAY_DONATION_ERROR_OTHER" = "Try another payment method or contact your bank for more information.";
+"APPLE_PAY_DONATION_ERROR_OTHER" = "Încearcă o altă metodă de plată sau ia legătura cu banca ta pentru mai multe informații.";
 
 /* Apple Pay donation error for decline failures where the payment cannot be authorized. */
-"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"APPLE_PAY_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Verifică dacă metoda ta de plată este actualizată în Apple Pay. Dacă nu, actualizează-o și încearcă din nou.";
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
@@ -418,119 +418,23 @@
 /* Button text when a badge expires, asking users to donate */
 "BADGE_EXPIRED_DONATE_BUTTON" = "Donează";
 
-/* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_BODY" = "Insigna ta cadou a expirat și nu mai este disponibilă pentru a fi afișată la profil.";
-
-/* Title for gift on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_TITLE" = "Insigna Ta Cadou A Expirat";
-
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "Află mai multe.";
 
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Donație lunară anulată";
 
-/* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "Ai oferit cadou o insignă pentru %1$@. Când o răscumpără, o să aibă opțiunea de a o afișa sau a o ascunde.";
-
-/* Title for the sheet that's shown when you gift someone a badge */
-"BADGE_GIFT_THANKS_TITLE" = "Îți mulțumim pentru sprijin!";
-
-/* Text telling the user that they can add a message along with their gift badge */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Cadoul tău va fi trimis destinatarului printr-un mesaj direct. Adaugă propriul mesaj mai jos.";
-
-/* Placeholder in the text field where you can add text for a message along with your gift */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Adaugă un mesaj";
-
-/* Error message indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Nu se poate trimite insigna cadou. Verifică-ți conexiunea și încearcă din nou.";
-
-/* Title for error message dialog indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Nu se Poate Trimite Insigna Cadou";
-
-/* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
-"BADGE_GIFTING_CHAT_EXPIRED" = "Expirat";
-
 /* Shown on a gift badge message and when tapping a redeemed gift message to denote the presence of a gift badge. */
 "BADGE_GIFTING_CHAT_TITLE" = "Insignă cadou";
-
-/* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Oferă unei persoane o insignă printr-o donație către Signal. Astfel, va primi o insignă pe care o poate afișa la profil.";
-
-/* Title on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Oferă cadou o insignă";
 
 /* Title on the screen where you choose a gift badge's recipient */
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Alege destinatarul";
 
-/* Title on the screen where you confirm sending of a gift badge, and can write a message */
-"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirmare cadou";
-
-/* Error message indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "Acest utilizator nu poate primi cadouri până nu actualizează Signal.";
-
-/* Title for error message dialog indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Nu se Poate Trimite Insigna Cadou";
-
-/* Error message indicating that the person you're trying to send has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "Acest utilizator nu poate primi cadoul tău pentru că l-ai blocat.";
-
-/* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Nu se Poate Trimite Insigna Cadou";
-
-/* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
-"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Trimite o insignă cadou";
-
-/* Text telling the user that their gift is a one-time donation */
-"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Donație unică";
-
-/* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Plata nu a putut fi procesată și nu ți s-au luat bani. Te rugăm să încerci din nou.";
-
-/* Title for the action sheet when you try to send a gift badge but the payment failed */
-"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Plata a eșuat";
-
-/* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Plata a fost procesată, dar Signal nu a putut să trimită insigna cadou. Contactează serviciul de asistență.";
-
-/* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Cadoul Insignă a eșuat";
-
-/* Shown on the list of chats when the most recent message is a gift you received from someone else. */
-"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 Ai primit un cadou";
-
-/* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
-"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 Ai trimis un cadou";
-
-/* Label for a button used to redeem a gift and add the gift's badge to your profile. */
-"BADGE_GIFTING_REDEEM" = "Revendică";
-
-/* Shown as the body of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_BODY" = "Cadoul tău nu a putut fi valorificat. Verifică-ți conexiunea și încearcă din nou.";
-
-/* Shown as the title of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "Nu am Putut să Valorific Cadoul";
-
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "Poți să-ți revendici insigna mai târziu";
 
-/* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
-"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%1$@ ți-a trimis un cadou";
-
-/* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
-"BADGE_GIFTING_REDEEMED" = "Revendicat";
-
-/* Shown when you're replying to a gift message to indicate that it contains a gift. */
-"BADGE_GIFTING_REPLY" = "Cadou";
-
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Durează %1$@";
-
-/* A button shown on a gift message you send to view additional details about the badge. */
-"BADGE_GIFTING_VIEW" = "Vizualizare";
-
-/* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "Ai primit o insignă cadou de la %1$@. Afișează-ți insigna la profil ca să încurajezi și alte persoane să doneze la Signal.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Donația ta lunară recurentă a fost anulată. %1$@ Insigna ta nu mai este vizibilă la profil.\n\nPentru a continua să susții Signal, și pentru a-ți reactiva insigna, actualizează-ți detaliile de plată și donează din nou.";
@@ -1499,25 +1403,25 @@
 "COUNTRYCODE_SELECT_TITLE" = "Alege codul țării";
 
 /* Credit/debit card donation error for decline failures where the card has expired. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Your card has expired. Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_EXPIRED_CARD" = "Cardul tău a expirat. Verifică dacă detaliile cardului sunt corecte și încearcă din nou.";
 
 /* Credit/debit card donation error for decline failures where the card number is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_NUMBER" = "Numărul cardului tău este incorect. Verifică dacă detaliile cardului sunt corecte și încearcă din nou.";
 
 /* Credit/debit card donation error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your card's CVC number is incorrect. Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Numărul CVc al cardului tău este incorect. Verifică dacă detaliile cardului sunt corecte și încearcă din nou.";
 
 /* Credit/debit card donation error for decline failures where the expiration month on the payment method is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your card is incorrect. Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_MONTH" = "Luna de expirare de pe cardul tău este incorectă. Verifică dacă detaliile cardului sunt corecte și încearcă din nou.";
 
 /* Credit/debit card donation error for decline failures where the expiration year on the payment method is incorrect. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your card is incorrect. Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_INVALID_EXPIRY_YEAR" = "Anul de expirare de pe cardul tău este incorect. Verifică dacă detaliile cardului sunt corecte și încearcă din nou.";
 
 /* Credit/debit card donation error for unspecified decline failures. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_OTHER" = "Verify your card details are correct and try again. If the problem continues, contact your bank.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_OTHER" = "Verifică dacă detaliile cardului sunt corecte și încearcă din nou. Dacă problema continuă, contactează-ți banca.";
 
 /* Credit/debit card donation error for decline failures where the payment cannot be authorized. */
-"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Verify your card details are correct and try again.";
+"CREDIT_OR_DEBIT_CARD_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Verifică dacă detaliile cardului sunt corecte și încearcă din nou.";
 
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Mută și scalează";
@@ -1647,6 +1551,12 @@
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "Informații despre jurnalele de depanare";
+
+/* info message text in conversation view */
+"DECLINED_AUDIO_CALL" = "You declined a voice call";
+
+/* info message text in conversation view */
+"DECLINED_VIDEO_CALL" = "You declined a video call";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Șterge Contul";
@@ -1861,23 +1771,38 @@
 /* When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with credit or debit card. */
 "DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD" = "Card de credit sau debit";
 
-/* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet, as well as a similar sheet that is sometimes shown asking users to confirm their payment. Embeds {{localized badge name}}, such as \"Planet\". */
+/* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the subtitle on that sheet. Embeds {{recipient's name}}. */
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "On behalf of %1$@";
+
+/* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Obține insigna %1$@";
 
-/* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet, as well as a similar sheet that is sometimes shown asking users to confirm their payment. Embeds {{localized badge name}}, such as \"Boost\". */
+/* When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Câștigă insigna %1$@ pentru o lună";
 
-/* When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet, as well as a similar sheet that is sometimes shown asking users to confirm their payment. Embeds {{amount of money per month}}, such as \"$5/month\". */
+/* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "%1$@ Donation to Signal";
+
+/* When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Donează %1$@ către Signal";
 
-/* When users make one-time donations, they see a sheet that lets them pick a payment method. This is the title on that sheet, as well as a similar sheet that is sometimes shown asking users to confirm their payment. Embeds {{amount of money}}, such as \"$5\". */
+/* When users make one-time donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Donează %1$@ către Signal";
+
+/* Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message. */
+"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "The recipient will be notified of the donation in a 1 on 1 message. Add your own message below.";
+
+/* Users can donate on a friend's behalf and can optionally add a message. This is the placeholder in the text field for that additional message. */
+"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Add a message";
+
+/* If a donation badge has been sent, indicates that it's expired and can no longer be redeemed. This is shown in the chat. */
+"DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Expired";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Selectează o sumă de donat.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. Embeds {{currency string}}, such as \"$5\". */
-"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "The minimum amount you can donate is %1$@.";
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "Suma minimă pe care o poți dona este %1$@.";
 
 /* On the donation screen, you can choose between one-time and monthly donations. This is the text on the picker for one-time donations. */
 "DONATE_SCREEN_MONTHLY_CHOICE" = "Lunar";
@@ -1899,6 +1824,99 @@
 
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Actualizare Abonament";
+
+/* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Your badge has expired and is no longer available to be displayed on your profile.";
+
+/* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Your Badge Has Expired";
+
+/* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Your badge from %1$@ has expired and can no longer be redeemed.";
+
+/* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Your Badge Has Expired";
+
+/* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Redeemed";
+
+/* Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Support Signal by making a donation for a friend or family member who uses Signal. They’ll have the option to show their support on their profile.";
+
+/* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Donate for a Friend";
+
+/* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Confirm Donation";
+
+/* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Disappearing messages are turned on for this chat. Your donation message will disappear in %1$@.";
+
+/* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Cannot donate. Check your connection and try again.";
+
+/* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, an error dialog is shown. This is the title of that dialog. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE" = "Cannot Donate";
+
+/* Users can donate on a friend's behalf. This tells users that this will be a one-time donation. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "One-time Donation";
+
+/* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+
+/* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "Payment Failed";
+
+/* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Your payment was processed but Signal could not send your donation message. Please contact support.";
+
+/* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "Donation Failed";
+
+/* A friend has donated on your behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ %1$@ donated for you";
+
+/* You have a made a donation on a friend's behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ You donated for %1$@";
+
+/* You received a donation from a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "%1$@ donated to Signal on your behalf";
+
+/* Users can donate on a friend's behalf. If the friend cannot receive these donations, this error message will be shown. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_BODY" = "You can’t make a donation for this user until they upgrade Signal.";
+
+/* Users can donate on a friend's behalf. If the friend cannot receive these donations, an error dialog will be shown. This is the title of that error dialog. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_TITLE" = "Cannot Make Donation";
+
+/* Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "You can’t make a donation for this user because you blocked them.";
+
+/* Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "Cannot Make Donation";
+
+/* Label for a button used to redeem a badge that was received as a donation on your behalf. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "Redeem";
+
+/* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ made a donation for you";
+
+/* Shown when you're replying to a donation message. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Donation";
+
+/* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation to %1$@";
+
+/* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "You’ve made a donation to Signal on behalf of %1$@. They’ll be given the option to show their support on their profile.";
+
+/* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "Thanks for your support!";
+
+/* A button shown on a donation message you send, to view additional details about the badge that was sent. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "View";
+
+/* A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ made a donation to Signal on your behalf! Show your support for Signal on your profile.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Mesaje private. Fără anunțuri, fără sisteme de urmărire.";
@@ -1927,8 +1945,8 @@
 /* Footer text at the bottom of donation receipts */
 "DONATION_RECEIPT_FOOTER" = "Mulțumim pentru că susții Signal. Contribuția ta ajută la dezvoltarea tehnologiilor open source pentru confidențialitate care protejează libertatea de exprimare și facilitează o comunicare globală sigură pentru milioane de oameni din întreaga lume. Dacă ești rezident al Statelor Unite, te rugăm să păstrezi acest bon pentru dosarul tău fiscal. Signal Technology Foundation este o organizație non-profit scutită de impozit în Statele Unite, conform secțiunii 501c3 din Codul fiscal intern. Numărul nostru de identificare fiscală este 82-4506840.";
 
-/* Title for gift donation receipts */
-"DONATION_RECEIPT_GIFT" = "Cadou";
+/* Title for receipts for donations given on a friend's behalf */
+"DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Donation for a Friend";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "O dată";
@@ -1960,11 +1978,11 @@
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
 "DONATION_SCREENS_HEADER_TITLE" = "Confidențialitate mai presus de profit";
 
+/* Title for the \"donate for a friend\" button on the donation view. */
+"DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Donate for a Friend";
+
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Donație pentru Signal";
-
-/* Title for the 'Gift a Badge' link in the donation view */
-"DONATION_VIEW_GIFT" = "Oferă cadou o insignă";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "Eroare de rețea. Verifică-ți conexiunea și încearcă din nou.";
@@ -2206,6 +2224,12 @@
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Numărul tău de siguranță pentru %1$@ s-a schimbat recent. S-ar putea să dorești să-l verifici înainte de trimite acest mesaj din nou.";
 
+/* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Your badge couldn’t be redeemed. Check your connection and try again.";
+
+/* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Couldn’t Redeem Badge";
+
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Verificarea Numărului de Siguranță a eșuat!";
 
@@ -2301,12 +2325,6 @@
 
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Introdu termenul de căutare";
-
-/* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
-"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Cadoul tău de la %1$@ a expirat și nu mai poate fi răscumpărat.";
-
-/* Title when trying to redeem a gift that's already expired. */
-"GIFT_NOT_REDEEMED_TITLE" = "Cadoul Tău A Expirat";
 
 /* Label for the 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "Mergi la Setări";
@@ -3301,8 +3319,11 @@
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Nicio conversație încă.\nÎncepe prin a trimite un mesaj unui prieten.";
 
-/* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%1$@ te-a sunat";
+/* info message text in conversation view */
+"INCOMING_AUDIO_CALL" = "Incoming voice call";
+
+/* info message text in conversation view */
+"INCOMING_VIDEO_CALL" = "Incoming video call";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3827,13 +3848,16 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Mesaje noi";
 
 /* info message text in conversation view */
-"MISSED_CALL" = "Apel ratat";
+"MISSED_AUDIO_CALL" = "Missed voice call";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
 "MISSED_CALL_DO_NOT_DISTURB" = "Apel ratat în timp ce era activat Nu Deranja";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
 "MISSED_CALL_FOCUS_MODE" = "Apel ratat în timp ce era activat Concentrare";
+
+/* info message text in conversation view */
+"MISSED_VIDEO_CALL" = "Missed video call";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Poți permite accesul la cameră din aplicația iOS Setări pentru a putea realiza apeluri video în Signal.";
@@ -4243,8 +4267,17 @@
 /* Label warning the user that they should update Signal to continue using payments. */
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Actualizează Signal ca să continui să folosești plăți. Soldul este posibil să nu fie actualizat.";
 
-/* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "Ai apelat pe %1$@";
+/* info message text in conversation view */
+"OUTGOING_AUDIO_CALL" = "Outgoing voice call";
+
+/* info message text in conversation view */
+"OUTGOING_MISSED_AUDIO_CALL" = "Unanswered voice call";
+
+/* info message text in conversation view */
+"OUTGOING_MISSED_VIDEO_CALL" = "Unanswered video call";
+
+/* info message text in conversation view */
+"OUTGOING_VIDEO_CALL" = "Outgoing video call";
 
 /* Button used to decline a payment request. */
 "PAYMENTS_ACTION_DECLINE_REQUEST" = "Respinge solicitarea";

@@ -1,3 +1,3 @@
-• Keep your muted & archived chats quiet permanently by going to Settings > Chats > Keep Muted Chats Archived. You won’t receive any alerts, buzzes, or pings when you get a new message in a chat you’ve already muted and archived.
-• When you send a message to a chat that you’ve archived, it will automatically un-archive for you.
-• Other bug fixes and performance improvements.
+• We improved the way that information about incoming, outgoing, and missed calls is displayed and synchronized across linked devices. Now you can make the right call about all of the calls you didn't answer in time.
+• The "All Media" view has been optimized to let you scroll through the past much faster in the future.
+• Performance enhancements for audio calls in low-bandwidth environments will help you stay connected to a great conversation even when your connection isn't great.
