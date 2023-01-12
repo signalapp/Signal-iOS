@@ -24,6 +24,9 @@ disabled_rules:
 - unused_closure_parameter
 opt_in_rules:
 - attributes
+- comma_inheritance
+- empty_string
+- sorted_first_last
 attributes:
   always_on_line_above: ["@objc", "@nonobjc"]
 inclusive_language:
