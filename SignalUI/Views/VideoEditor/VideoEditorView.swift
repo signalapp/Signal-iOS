@@ -17,7 +17,7 @@ protocol VideoEditorViewControllerProviding: AnyObject {
 }
 
 // A view for editing outgoing video attachments.
-class VideoEditorView: AttachmentPrepContentView {
+class VideoEditorView: UIView {
 
     weak var delegate: VideoEditorViewDelegate?
     weak var dataSource: VideoEditorDataSource?
@@ -85,12 +85,12 @@ class VideoEditorView: AttachmentPrepContentView {
         addSubview(view)
         // This emulates the behavior of contentMode = .scaleAspectFit using iOS auto layout constraints.
         addConstraints({
-            let constraints = [ view.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor),
-                                view.centerYAnchor.constraint(equalTo: contentLayoutGuide.centerYAnchor) ]
+            let constraints = [ view.centerXAnchor.constraint(equalTo: centerXAnchor),
+                                view.centerYAnchor.constraint(equalTo: centerYAnchor) ]
             constraints.forEach { $0.priority = .defaultHigh - 100 }
             return constraints
         }())
-        addConstraint(view.topAnchor.constraint(greaterThanOrEqualTo: contentLayoutGuide.topAnchor))
+        addConstraint(view.topAnchor.constraint(greaterThanOrEqualTo: topAnchor))
         view.autoPin(toAspectRatio: aspectRatio)
         view.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual)
         view.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual)

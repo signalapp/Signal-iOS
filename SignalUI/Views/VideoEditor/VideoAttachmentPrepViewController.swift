@@ -48,7 +48,7 @@ class VideoAttachmentPrepViewController: AttachmentPrepViewController {
         model.add(observer: self)
     }
 
-    override var contentView: AttachmentPrepContentView {
+    override var contentView: UIView {
         editorView
     }
 

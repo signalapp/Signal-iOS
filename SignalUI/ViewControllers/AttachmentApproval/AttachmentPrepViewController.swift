@@ -17,11 +17,6 @@ protocol AttachmentPrepViewControllerDelegate: AnyObject {
 // MARK: -
 
 public class AttachmentPrepViewController: OWSViewController {
-    // We sometimes shrink the attachment view so that it remains somewhat visible
-    // when the keyboard is presented.
-    public enum AttachmentViewScale {
-        case fullsize, compact
-    }
 
     // MARK: - Properties
 
@@ -33,9 +28,6 @@ public class AttachmentPrepViewController: OWSViewController {
     }
 
     var toolbarSupplementaryView: UIView? { nil }
-
-    private(set) var scrollView: UIScrollView!
-    private(set) var contentContainer: UIView!
 
     // MARK: - Initializers
 
@@ -59,7 +51,7 @@ public class AttachmentPrepViewController: OWSViewController {
 
     private lazy var genericContentView = MediaMessageView(attachment: attachment)
 
-    var contentView: AttachmentPrepContentView {
+    var contentView: UIView {
         return genericContentView
     }
 
@@ -85,45 +77,38 @@ public class AttachmentPrepViewController: OWSViewController {
      */
     var mediaEditingToolbarHeight: CGFloat? { nil }
 
-    // MARK: - View Lifecycle
+    // MARK: UIViewController
 
-    override public func loadView() {
-        view = UIView(frame: UIScreen.main.bounds)
+    override public func viewDidLoad() {
         view.backgroundColor = .ows_black
 
-        // Anything that should be shrunk when user pops keyboard lives in the contentContainer.
-        contentContainer = UIView(frame: view.bounds)
-        view.addSubview(contentContainer)
-        contentContainer.autoPinEdgesToSuperviewEdges()
-
-        // Scroll View - used to zoom/pan on images and video
-        scrollView = UIScrollView(frame: contentContainer.bounds)
-        scrollView.delegate = self
-        scrollView.showsHorizontalScrollIndicator = false
-        scrollView.showsVerticalScrollIndicator = false
-        // Panning should stop pretty soon after the user stops scrolling
-        scrollView.decelerationRate = .fast
-        // We want scroll view content up and behind the system status bar content
-        // but we want other content (e.g. bar buttons) to respect the top layout guide.
-        scrollView.contentInsetAdjustmentBehavior = .never
-        contentContainer.addSubview(scrollView)
-        scrollView.autoPinEdgesToSuperviewEdges()
+        // Zoomable scroll view.
+        view.addSubview(scrollView)
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        view.addConstraints([ scrollViewLeading, scrollViewTop, scrollViewTrailing, scrollViewBottom ])
 
         // Create full screen container view so the scrollView
         // can compute an appropriate content size in which to center
         // our media view.
         let containerView = UIView.container()
-        containerView.frame = view.bounds
+        containerView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(containerView)
-        containerView.autoPinEdgesToSuperviewEdges()
-        containerView.autoMatch(.height, to: .height, of: view)
-        containerView.autoMatch(.width, to: .width, of: view)
+        scrollView.addConstraints([
+            containerView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            containerView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            containerView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            containerView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor)
+        ])
+        containerView.autoMatch(.height, to: .height, of: scrollView)
+        containerView.autoMatch(.width, to: .width, of: scrollView)
 
         let contentView = contentView
         contentView.frame = containerView.bounds
         prepareContentView()
         containerView.addSubview(contentView)
         contentView.autoPinEdgesToSuperviewEdges()
+
+        updateMinZoomScaleForSize(view.bounds.size)
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -145,65 +130,84 @@ public class AttachmentPrepViewController: OWSViewController {
         super.viewWillTransition(to: size, with: coordinator)
         coordinator.animate { _ in
             self.updateMinZoomScaleForSize(size)
-            self.ensureAttachmentViewScale(animated: false)
         }
     }
 
-    // MARK: - Helpers
+    // MARK: Layout
 
-    func zoomOut(animated: Bool) {
-        if scrollView.zoomScale != scrollView.minimumZoomScale {
-            scrollView.setZoomScale(scrollView.minimumZoomScale, animated: animated)
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.delegate = self
+        scrollView.showsHorizontalScrollIndicator = false
+        scrollView.showsVerticalScrollIndicator = false
+        // Panning should stop pretty soon after the user stops scrolling
+        scrollView.decelerationRate = .fast
+        // We want scroll view content up and behind the system status bar content
+        // but we want other content (e.g. bar buttons) to respect the top layout guide.
+        scrollView.contentInsetAdjustmentBehavior = .never
+        return scrollView
+    }()
+
+    private lazy var scrollViewLeading = scrollView.leadingAnchor.constraint(
+        equalTo: view.leadingAnchor,
+        constant: contentLayoutMargins.leading
+    )
+    private lazy var scrollViewTop = scrollView.topAnchor.constraint(
+        equalTo: view.topAnchor,
+        constant: contentLayoutMargins.top
+    )
+    private lazy var scrollViewTrailing = scrollView.trailingAnchor.constraint(
+        equalTo: view.trailingAnchor,
+        constant: -contentLayoutMargins.trailing
+    )
+    private lazy var scrollViewBottom = scrollView.bottomAnchor.constraint(
+        equalTo: view.bottomAnchor,
+        constant: -contentLayoutMargins.bottom
+    )
+    var contentLayoutMargins: UIEdgeInsets = .zero {
+        didSet {
+            guard oldValue != contentLayoutMargins else { return }
+            scrollViewLeading.constant = contentLayoutMargins.leading
+            scrollViewTop.constant = contentLayoutMargins.top
+            scrollViewTrailing.constant = -contentLayoutMargins.trailing
+            scrollViewBottom.constant = -contentLayoutMargins.bottom
         }
     }
 
-    // When the keyboard is popped, it can obscure the attachment view.
-    // so we sometimes allow resizing the attachment.
-    var shouldAllowAttachmentViewResizing: Bool = true
+    private var zoomAnimationCompletionBlock: (() -> Void)?
 
-    var attachmentViewScale: AttachmentViewScale = .fullsize
-    public func setAttachmentViewScale(_ attachmentViewScale: AttachmentViewScale, animated: Bool) {
-        self.attachmentViewScale = attachmentViewScale
-        ensureAttachmentViewScale(animated: animated)
-    }
-
-    func ensureAttachmentViewScale(animated: Bool) {
-        let animationDuration = animated ? 0.2 : 0
-        guard shouldAllowAttachmentViewResizing else {
-            if contentContainer.transform != CGAffineTransform.identity {
-                UIView.animate(withDuration: animationDuration) {
-                    self.contentContainer.transform = CGAffineTransform.identity
-                }
-            }
+    func zoomOut(animated: Bool, completion: (() -> Void)? = nil) {
+        guard scrollView.zoomScale != scrollView.minimumZoomScale else {
+            zoomAnimationCompletionBlock = nil
+            completion?()
             return
         }
 
-        switch attachmentViewScale {
-        case .fullsize:
-            guard contentContainer.transform != .identity else {
-                return
-            }
-            UIView.animate(withDuration: animationDuration) {
-                self.contentContainer.transform = CGAffineTransform.identity
-            }
-        case .compact:
-            guard contentContainer.transform == .identity else {
-                return
-            }
-            UIView.animate(withDuration: animationDuration) {
-                let kScaleFactor: CGFloat = 0.7
-                let scale = CGAffineTransform(scaleX: kScaleFactor, y: kScaleFactor)
+        zoomAnimationCompletionBlock = completion
+        scrollView.setZoomScale(scrollView.minimumZoomScale, animated: animated)
+    }
 
-                let originalHeight = self.scrollView.bounds.size.height
-
-                // Position the new scaled item to be centered with respect
-                // to it's new size.
-                let heightDelta = originalHeight * (1 - kScaleFactor)
-                let translate = CGAffineTransform(translationX: 0, y: -heightDelta / 2)
-
-                self.contentContainer.transform = scale.concatenating(translate)
-            }
+    // Implicitly animatable.
+    var keyboardHeight: CGFloat = 0 {
+        didSet {
+            updateScrollViewTransformForKeyboardHeight()
         }
+    }
+
+    private func updateScrollViewTransformForKeyboardHeight() {
+        guard keyboardHeight > 0 else {
+            scrollView.transform = .identity
+            return
+        }
+
+        let contentViewSize = contentView.bounds.size
+        let scaledContentViewSize = contentView.bounds.inset(by: .init(margin: 20)).size
+        let scale = min(scaledContentViewSize.width / contentViewSize.width,
+                        scaledContentViewSize.height / contentViewSize.height)
+
+        let offsetY = 0.5 * max(0, keyboardHeight - contentLayoutMargins.bottom)
+
+        scrollView.transform = .scale(scale).translate(.init(x: 0, y: -offsetY))
     }
 
     private func presentFullScreen(viewController: UIViewController) {
@@ -213,7 +217,9 @@ public class AttachmentPrepViewController: OWSViewController {
         }
 
         viewController.modalPresentationStyle = .fullScreen
-        presentFullScreen(viewController, animated: false)
+        zoomOut(animated: true) { [weak self] in
+            self?.presentFullScreen(viewController, animated: false)
+        }
     }
 
     final func presentMediaTool(viewController: UIViewController) {
@@ -260,8 +266,7 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
     // Keep the media view centered within the scroll view as you zoom
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
         // The scroll view has zoomed, so you need to re-center the contents
-        let scrollViewSize = visibleSize(ofScrollView: scrollView)
-        let scrollViewCenter = center(ofScrollView: scrollView)
+        let scrollViewSize = scrollView.frame.size
 
         // First assume that mediaMessageView center coincides with the contents center
         // This is correct when the mediaMessageView is bigger than scrollView due to zoom
@@ -269,33 +274,24 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
 
         // if mediaMessageView is smaller than the scrollView visible size - fix the content center accordingly
         if scrollView.contentSize.width < scrollViewSize.width {
-            contentCenter.x = scrollViewCenter.x
+            contentCenter.x = 0.5 * scrollViewSize.width
         }
-
         if scrollView.contentSize.height < scrollViewSize.height {
-            contentCenter.y = scrollViewCenter.y
+            contentCenter.y = 0.5 * scrollViewSize.height
         }
 
         contentView.center = contentCenter
     }
 
+    public func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+        if let zoomAnimationCompletionBlock {
+            zoomAnimationCompletionBlock()
+            self.zoomAnimationCompletionBlock = nil
+        }
+    }
+
     private var isZoomable: Bool {
         // No zoom for audio or generic attachments.
         return attachment.isImage || attachment.isVideo
-    }
-
-    // return the scroll view center
-    private func center(ofScrollView scrollView: UIScrollView) -> CGPoint {
-        let size = visibleSize(ofScrollView: scrollView)
-        return CGPoint(x: (size.width / 2), y: (size.height / 2))
-    }
-
-    // Return scrollview size without the area overlapping with tab and nav bar.
-    private func visibleSize(ofScrollView scrollView: UIScrollView) -> CGSize {
-        let contentInset = scrollView.contentInset
-        let scrollViewSize = scrollView.bounds.standardized.size
-        let width = scrollViewSize.width - (contentInset.left + contentInset.right)
-        let height = scrollViewSize.height - (contentInset.top + contentInset.bottom)
-        return CGSize(width: width, height: height)
     }
 }

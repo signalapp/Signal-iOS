@@ -174,7 +174,7 @@ class ImageEditorCropViewController: OWSViewController {
         initialStateContentLayoutGuide.identifier = "Content - Initial State"
         view.addLayoutGuide(initialStateContentLayoutGuide)
         let topConstraint: NSLayoutConstraint = {
-            if UIDevice.current.hasIPhoneXNotch {
+            if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
                 return initialStateContentLayoutGuide.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
             } else {
                 return initialStateContentLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor)

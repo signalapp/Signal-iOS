@@ -114,6 +114,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     private var observerToken: NSObjectProtocol?
 
+    private var observingKeyboardNotifications = false
+    private var keyboardHeight: CGFloat = 0
+
     required public init(options: AttachmentApprovalViewControllerOptions,
                          attachmentApprovalItems: [AttachmentApprovalItem]) {
         assert(attachmentApprovalItems.count > 0)
@@ -276,8 +279,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         updateContents(animated: false)
 
-        if let currentPageViewController = currentPageViewController {
-            self.updateContentLayoutMargins(for: currentPageViewController)
+        if let currentPageViewController {
+            updateContentLayoutMargins(for: currentPageViewController)
         }
     }
 
@@ -291,13 +294,14 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         super.viewWillDisappear(animated)
 
         currentPageViewController?.prepareToMoveOffscreen()
+        stopObservingKeyboardNotifications()
     }
 
     public override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
 
-        if let currentPageViewController = currentPageViewController {
-            self.updateContentLayoutMargins(for: currentPageViewController)
+        if let currentPageViewController {
+            updateContentLayoutMargins(for: currentPageViewController)
         }
     }
 
@@ -307,33 +311,32 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         // does not create any changes to media's size and position.
         // However AttachmentPrepViewController's view is always full screen and is managed by UIPageViewController,
         // which makes it not possible to constrain any of its subviews to the bottom toolbar.
-        // The solution is to allow to set layout margins in AttachmentPrepViewController's view externally,
-        // which is achieved through use of AttachmentPrepContentView.contentLayoutMargins.
+        // The solution is to allow to set layout margins in AttachmentPrepViewController's view externally.
 
         var contentLayoutMargins: UIEdgeInsets = .zero
         // On devices with a screen notch at the top content is constrained to safe area inset so that status bar is visible.
-        // On all other devices content is pinned to the top of the screen (status bar is hidden on those devices).
-        if UIDevice.current.hasIPhoneXNotch {
+        // On older devices content is pinned to the top of the screen and status bar is hidden to allow for more screen room.
+        if UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad {
             contentLayoutMargins.top = view.safeAreaInsets.top
         }
 
-        // Generally it is necessary to constrain bottom of the content in the current page to the top
-        // of bottom toolbar in review screen. However, for images we have "edit" mode and we want
-        // the bottom margin to not change when switching to/from "edit" mode, with edit mode toolbar's height
-        // being the one to be used in the review screen.
         if let mediaEditingToolbarHeight = viewController.mediaEditingToolbarHeight {
+            // For images there is an "edit" mode and it is necessary to keep image center the same
+            // when switching to/from "edit" mode. Therefore image is laid out usign bottom inset from "edit" mode screen.
             contentLayoutMargins.bottom = mediaEditingToolbarHeight
         } else {
             // bottomToolView contains UIStackView that doesn't always have a final frame at this point.
             bottomToolView.layoutIfNeeded()
             contentLayoutMargins.bottom = bottomToolView.opaqueAreaHeight
+
+            // For videos there's thumbnail timelinebar embedded into the `bottomToolView`
             if let supplementaryView = viewController.toolbarSupplementaryView {
                 contentLayoutMargins.bottom += supplementaryView.height
             }
         }
         contentLayoutMargins.bottom += view.safeAreaInsets.bottom
 
-        viewController.contentView.contentLayoutMargins = contentLayoutMargins
+        viewController.contentLayoutMargins = contentLayoutMargins
     }
 
     private func updateContents(animated: Bool) {
@@ -467,19 +470,18 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                                    willTransitionTo pendingViewControllers: [UIViewController]) {
         Logger.debug("")
 
+        owsAssertDebug(pendingViewControllers.count == 1)
+
         // Pause video playback for current page
         currentPageViewController?.prepareToMoveOffscreen()
 
-        assert(pendingViewControllers.count == 1)
+        // Update layout margins for view controllers to become visible.
         pendingViewControllers.forEach { viewController in
             guard let pendingPage = viewController as? AttachmentPrepViewController else {
                 owsFailDebug("unexpected viewController: \(viewController)")
                 return
             }
-
-            // use compact scale when keyboard is popped.
-            let scale: AttachmentPrepViewController.AttachmentViewScale = self.bottomToolView.isEditingMediaMessage ? .compact : .fullsize
-            pendingPage.setAttachmentViewScale(scale, animated: false)
+            updateContentLayoutMargins(for: pendingPage)
         }
     }
 
@@ -583,6 +585,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             return
         }
 
+        let previousPage = currentPageViewController
+
         // Pause video playback for current page
         currentPageViewController?.prepareToMoveOffscreen()
 
@@ -590,7 +594,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         updateContentLayoutMargins(for: page)
 
         Logger.debug("currentItem for attachment: \(item.attachment.debugDescription)")
-        setViewControllers([page], direction: direction, animated: animated)
+        setViewControllers([page], direction: direction, animated: animated) { _ in
+            previousPage?.zoomOut(animated: false)
+        }
 
         // This does make animations smoother.
         DispatchQueue.main.async {
@@ -867,11 +873,6 @@ extension AttachmentApprovalViewController {
 
     @objc
     private func didTapSend() {
-        // Toolbar flickers in and out if there are errors
-        // and remains visible momentarily after share extension is dismissed.
-        // It's easiest to just hide it at this point since we're done with it.
-        currentPageViewController?.shouldAllowAttachmentViewResizing = false
-
         // Generate the attachments once, so that any changes we
         // make below are reflected afterwards.
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modalVC in
@@ -934,7 +935,7 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         if contentDimmerView.gestureRecognizers?.isEmpty ?? true {
             contentDimmerView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapContentDimmerView(gesture:))))
         }
-   }
+    }
 
     private func hideContentDimmerView() {
         UIView.animate(withDuration: 0.2,
@@ -951,13 +952,15 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         _ = bottomToolView.resignFirstResponder()
     }
 
+    func attachmentTextToolbarWillBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
+        startObservingKeyboardNotifications()
+    }
+
     func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        currentPageViewController?.setAttachmentViewScale(.compact, animated: true)
         showContentDimmerView()
     }
 
     func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        currentPageViewController?.setAttachmentViewScale(.fullsize, animated: true)
         hideContentDimmerView()
     }
 
@@ -966,6 +969,81 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
     }
 
     func attachmentTextToolBarDidChangeHeight(_ attachmentTextToolbar: AttachmentTextToolbar) { }
+
+    private func startObservingKeyboardNotifications() {
+        guard !observingKeyboardNotifications else { return }
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleKeyboardNotification(_:)),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleKeyboardNotification(_:)),
+            name: UIResponder.keyboardWillChangeFrameNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleKeyboardNotification(_:)),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleKeyboardNotification(_:)),
+            name: UIResponder.keyboardDidHideNotification,
+            object: nil
+        )
+        observingKeyboardNotifications = true
+    }
+
+    private func stopObservingKeyboardNotifications() {
+        guard observingKeyboardNotifications else { return }
+
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidHideNotification, object: nil)
+        observingKeyboardNotifications = false
+    }
+
+    @objc
+    private func handleKeyboardNotification(_ notification: Notification) {
+        guard
+            let currentPageViewController = currentPageViewController,
+            let userInfo = notification.userInfo,
+            let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+
+        var keyboardHeight = endFrame.height
+
+        switch notification.name {
+        case UIResponder.keyboardDidHideNotification, UIResponder.keyboardWillHideNotification:
+            keyboardHeight = 0
+
+        default: break
+        }
+
+        guard self.keyboardHeight != keyboardHeight else { return }
+        self.keyboardHeight = keyboardHeight
+
+        if
+            let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval,
+            let rawAnimationCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int,
+            let animationCurve = UIView.AnimationCurve(rawValue: rawAnimationCurve)
+        {
+            UIView.beginAnimations("AttachmentResize", context: nil)
+            UIView.setAnimationBeginsFromCurrentState(true)
+            UIView.setAnimationCurve(animationCurve)
+            UIView.setAnimationDuration(animationDuration)
+            currentPageViewController.keyboardHeight = keyboardHeight
+            UIView.commitAnimations()
+        } else {
+            currentPageViewController.keyboardHeight = keyboardHeight
+        }
+    }
 }
 
 // MARK: - Media Quality Selection Sheet

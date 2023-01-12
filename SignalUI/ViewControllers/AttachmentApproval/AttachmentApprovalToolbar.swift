@@ -255,6 +255,10 @@ class AttachmentApprovalToolbar: UIView {
 
 extension AttachmentApprovalToolbar: AttachmentTextToolbarDelegate {
 
+    func attachmentTextToolbarWillBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
+        attachmentTextToolbarDelegate?.attachmentTextToolbarWillBeginEditing(attachmentTextToolbar)
+    }
+
     func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
         updateContents(animated: true)
         attachmentTextToolbarDelegate?.attachmentTextToolbarDidBeginEditing(attachmentTextToolbar)

@@ -821,7 +821,6 @@
 		763D7DDB27E155ED002EA7E6 /* RoundMediaButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */; };
 		763D7DDD27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */; };
 		766035A9286CE4CB00F6B71C /* MediaTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766035A8286CE4CB00F6B71C /* MediaTopBar.swift */; };
-		766035AB286FEC2F00F6B71C /* AttachmentPrepContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766035AA286FEC2F00F6B71C /* AttachmentPrepContentView.swift */; };
 		7666D54428331E1100A3BDB9 /* ImageEditorViewController+Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54328331E1100A3BDB9 /* ImageEditorViewController+Draw.swift */; };
 		7666D54628331E4800A3BDB9 /* ImageEditorViewController+Blur.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */; };
 		7666D54828331E6900A3BDB9 /* ImageEditorViewController+Text.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */; };
@@ -3135,7 +3134,6 @@
 		763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundMediaButton.swift; sourceTree = "<group>"; };
 		763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalTopBar.swift; sourceTree = "<group>"; };
 		766035A8286CE4CB00F6B71C /* MediaTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTopBar.swift; sourceTree = "<group>"; };
-		766035AA286FEC2F00F6B71C /* AttachmentPrepContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentPrepContentView.swift; sourceTree = "<group>"; };
 		7666D54328331E1100A3BDB9 /* ImageEditorViewController+Draw.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Draw.swift"; sourceTree = "<group>"; };
 		7666D54528331E4800A3BDB9 /* ImageEditorViewController+Blur.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Blur.swift"; sourceTree = "<group>"; };
 		7666D54728331E6900A3BDB9 /* ImageEditorViewController+Text.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+Text.swift"; sourceTree = "<group>"; };
@@ -5515,7 +5513,6 @@
 				763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */,
 				34A9559C271B510500B05242 /* AttachmentApprovalViewController.swift */,
 				34A95598271B510500B05242 /* AttachmentItemCollection.swift */,
-				766035AA286FEC2F00F6B71C /* AttachmentPrepContentView.swift */,
 				34A95599271B510500B05242 /* AttachmentPrepViewController.swift */,
 				34A9559E271B510500B05242 /* AttachmentTextToolbar.swift */,
 				34A95597271B510500B05242 /* AttachmentTextView.swift */,
@@ -9785,7 +9782,6 @@
 				3402AA4A271D9DCD0084CBAE /* AttachmentApprovalViewController.swift in Sources */,
 				3402AA34271D9DCD0084CBAE /* AttachmentItemCollection.swift in Sources */,
 				3402A9EC271D98440084CBAE /* AttachmentMultisend.swift in Sources */,
-				766035AB286FEC2F00F6B71C /* AttachmentPrepContentView.swift in Sources */,
 				3402AA3D271D9DCD0084CBAE /* AttachmentPrepViewController.swift in Sources */,
 				34A954E7271B4F6A00B05242 /* AttachmentSharing.m in Sources */,
 				3402AA42271D9DCD0084CBAE /* AttachmentTextToolbar.swift in Sources */,

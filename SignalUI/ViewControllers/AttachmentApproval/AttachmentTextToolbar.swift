@@ -11,6 +11,7 @@ import SignalMessaging
 let kMaxMessageBodyCharacterCount = 2000
 
 protocol AttachmentTextToolbarDelegate: AnyObject {
+    func attachmentTextToolbarWillBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar)
@@ -228,14 +229,13 @@ class AttachmentTextToolbar: UIView {
     }()
 
     private lazy var addMessageButton: UIButton = {
-        let button = OWSButton(title: placeholderText) { [weak self] in
-            guard let self = self else { return }
-            self.didTapAddMessage()
-        }
+        let button = UIButton(type: .custom)
+        button.setTitle(placeholderText, for: .normal)
         button.setTitleColor(.ows_white, for: .normal)
         button.titleLabel?.lineBreakMode = .byTruncatingTail
         button.titleLabel?.textAlignment = .center
         button.titleLabel?.font = .ows_dynamicTypeBodyClamped
+        button.addTarget(self, action: #selector(didTapAddMessage), for: .touchDown)
         return button
     }()
 
@@ -373,6 +373,8 @@ extension AttachmentTextToolbar: UITextViewDelegate {
     }
 
     public func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        delegate?.attachmentTextToolbarWillBeginEditing(self)
+
         // Putting these lines in `textViewDidBeginEditing` doesn't work.
         textView.textContainer.lineBreakMode = .byWordWrapping
         textView.textContainer.maximumNumberOfLines = 0

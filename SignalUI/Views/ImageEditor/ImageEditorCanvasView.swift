@@ -90,7 +90,7 @@ private class TextFrameLayer: CAShapeLayer {
 // MARK: -
 
 // A view for previewing an image editor model.
-class ImageEditorCanvasView: AttachmentPrepContentView {
+class ImageEditorCanvasView: UIView {
 
     private let model: ImageEditorModel
 
@@ -116,14 +116,6 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
     var selectedTextItemId: String? {
         didSet {
             updateSelectedTextFrame()
-        }
-    }
-
-    override var contentLayoutMargins: UIEdgeInsets {
-        didSet {
-            if oldValue != contentLayoutMargins {
-                updateLayout()
-            }
         }
     }
 
@@ -222,30 +214,26 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
     private func updateLayout() {
         NSLayoutConstraint.deactivate(contentViewConstraints)
         contentViewConstraints = ImageEditorCanvasView.updateContentLayout(transform: model.currentTransform(),
-                                                                           contentView: clipView,
-                                                                           layoutMargins: contentLayoutMargins)
+                                                                           contentView: clipView)
     }
 
     class func updateContentLayout(transform: ImageEditorTransform,
-                                   contentView: UIView,
-                                   layoutMargins: UIEdgeInsets = .zero) -> [NSLayoutConstraint] {
+                                   contentView: UIView) -> [NSLayoutConstraint] {
         guard let superview = contentView.superview else {
             owsFailDebug("Content view has no superview.")
             return []
         }
 
         let aspectRatio = transform.outputSizePixels
-        let centerOffset = CGPoint(x: 0.5 * (layoutMargins.leading - layoutMargins.trailing),
-                                   y: 0.5 * (layoutMargins.top - layoutMargins.bottom))
 
         // This emulates the behavior of contentMode = .scaleAspectFit using iOS auto layout constraints.
         var constraints = [NSLayoutConstraint]()
         NSLayoutConstraint.autoSetPriority(.defaultHigh + 100) {
-            constraints.append(contentView.autoAlignAxis(.vertical, toSameAxisOf: superview, withOffset: centerOffset.x))
-            constraints.append(contentView.autoAlignAxis(.horizontal, toSameAxisOf: superview, withOffset: centerOffset.y))
+            constraints.append(contentView.autoAlignAxis(.vertical, toSameAxisOf: superview))
+            constraints.append(contentView.autoAlignAxis(.horizontal, toSameAxisOf: superview))
         }
-        constraints.append(contentView.autoPinEdge(.top, to: .top, of: superview, withOffset: layoutMargins.top, relation: .greaterThanOrEqual))
-        constraints.append(contentView.autoPinEdge(.bottom, to: .bottom, of: superview, withOffset: -layoutMargins.bottom, relation: .lessThanOrEqual))
+        constraints.append(contentView.autoPinEdge(.top, to: .top, of: superview, withOffset: 0, relation: .greaterThanOrEqual))
+        constraints.append(contentView.autoPinEdge(.bottom, to: .bottom, of: superview, withOffset: 0, relation: .lessThanOrEqual))
         constraints.append(contentView.autoPin(toAspectRatio: aspectRatio.width / aspectRatio.height))
         constraints.append(contentView.autoMatch(.width, to: .width, of: superview, withMultiplier: 1.0, relation: .lessThanOrEqual))
         constraints.append(contentView.autoMatch(.height, to: .height, of: superview, withMultiplier: 1.0, relation: .lessThanOrEqual))

@@ -7,7 +7,7 @@ import SignalMessaging
 import UIKit
 import YYImage
 
-class MediaMessageView: AttachmentPrepContentView, AudioPlayerDelegate {
+class MediaMessageView: UIView, AudioPlayerDelegate {
 
     private let attachment: SignalAttachment
 
@@ -113,11 +113,11 @@ class MediaMessageView: AttachmentPrepContentView, AudioPlayerDelegate {
         let stackView = wrapViewsInVerticalStack(subviews: subviews)
         addSubview(stackView)
 
-        stackView.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor).isActive = true
-        stackView.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor).isActive = true
-        stackView.centerYAnchor.constraint(equalTo: contentLayoutGuide.centerYAnchor).isActive = true
-        stackView.topAnchor.constraint(greaterThanOrEqualTo: contentLayoutGuide.topAnchor).isActive = true
-        stackView.bottomAnchor.constraint(lessThanOrEqualTo: contentLayoutGuide.bottomAnchor).isActive = true
+        stackView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        stackView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        stackView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        stackView.topAnchor.constraint(greaterThanOrEqualTo: topAnchor).isActive = true
+        stackView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor).isActive = true
     }
 
     private func createLoopingVideoPreview() {
@@ -161,8 +161,8 @@ class MediaMessageView: AttachmentPrepContentView, AudioPlayerDelegate {
         addSubview(view)
 
         // This emulates the behavior of contentMode = .scaleAspectFit using iOS auto layout constraints.
-        view.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor).isActive = true
-        view.centerYAnchor.constraint(equalTo: contentLayoutGuide.centerYAnchor).isActive = true
+        view.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        view.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         view.autoPin(toAspectRatio: aspectRatio)
         view.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual)
         view.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual)
@@ -172,8 +172,8 @@ class MediaMessageView: AttachmentPrepContentView, AudioPlayerDelegate {
         addSubview(view)
 
         // This emulates the behavior of contentMode = .scaleAspectFill using iOS auto layout constraints.
-        view.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor).isActive = true
-        view.centerYAnchor.constraint(equalTo: contentLayoutGuide.centerYAnchor).isActive = true
+        view.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        view.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         view.autoPin(toAspectRatio: aspectRatio)
         view.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .greaterThanOrEqual)
         view.autoMatch(.width, to: .width, of: self, withMultiplier: 1.0, relation: .greaterThanOrEqual)
@@ -237,11 +237,11 @@ class MediaMessageView: AttachmentPrepContentView, AudioPlayerDelegate {
         let stackView = wrapViewsInVerticalStack(subviews: subviews)
         addSubview(stackView)
 
-        stackView.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor).isActive = true
-        stackView.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor).isActive = true
-        stackView.centerYAnchor.constraint(equalTo: contentLayoutGuide.centerYAnchor).isActive = true
-        stackView.topAnchor.constraint(greaterThanOrEqualTo: contentLayoutGuide.topAnchor).isActive = true
-        stackView.bottomAnchor.constraint(lessThanOrEqualTo: contentLayoutGuide.bottomAnchor).isActive = true
+        stackView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        stackView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        stackView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        stackView.topAnchor.constraint(greaterThanOrEqualTo: topAnchor).isActive = true
+        stackView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor).isActive = true
     }
 
     private var createHeroViewSize: CGFloat {

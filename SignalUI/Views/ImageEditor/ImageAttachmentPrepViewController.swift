@@ -22,7 +22,7 @@ class ImageAttachmentPrepViewController: AttachmentPrepViewController {
         super.init(attachmentApprovalItem: attachmentApprovalItem)
     }
 
-    override var contentView: AttachmentPrepContentView {
+    override var contentView: UIView {
         editorView
     }
 

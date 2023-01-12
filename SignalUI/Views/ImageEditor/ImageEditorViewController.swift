@@ -228,7 +228,7 @@ class ImageEditorViewController: OWSViewController {
         imageEditorView.configureSubviews()
         view.addSubview(imageEditorView)
         imageEditorView.autoPinWidthToSuperview()
-        imageEditorView.autoPinEdge(toSuperviewEdge: .top)
+        imageEditorView.autoPinEdge(toSuperviewSafeArea: .top)
 
         // Top toolbar
         updateTopBar()
@@ -278,11 +278,6 @@ class ImageEditorViewController: OWSViewController {
         }
     }
 
-    override func viewSafeAreaInsetsDidChange() {
-        super.viewSafeAreaInsetsDidChange()
-        updateContentLayoutMargins()
-    }
-
     override func keyboardFrameDidChange(_ newFrame: CGRect, animationDuration: TimeInterval, animationOptions: UIView.AnimationOptions) {
         super.keyboardFrameDidChange(newFrame, animationDuration: animationDuration, animationOptions: animationOptions)
 
@@ -298,17 +293,6 @@ class ImageEditorViewController: OWSViewController {
     }
 
     // MARK: -
-
-    private func updateContentLayoutMargins() {
-        var contentLayoutMargins: UIEdgeInsets = .zero
-        if UIDevice.current.hasIPhoneXNotch {
-            contentLayoutMargins.top = view.safeAreaInsets.top
-        }
-
-        // Unlike code in `AttachmentApprovalViewController` bottom inset is zero
-        // because bottom of ImageEditorView is constrained to the top of toolbar.
-        imageEditorView.contentLayoutMargins = contentLayoutMargins
-    }
 
     private func updateUIForCurrentMode() {
         switch mode {
