@@ -15,5 +15,6 @@ extension CreditOrDebitCardDonationViewController {
             currentSubscription: Subscription?,
             currentSubscriptionLevel: SubscriptionLevel?
         )
+        case gift(thread: TSContactThread, messageText: String)
     }
 }

@@ -80,6 +80,8 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
                     priorSubscriptionLevel: currentSubscriptionLevel,
                     subscriberID: subscriberID
                 )
+            case let .gift(thread, messageText):
+                giftDonation(with: creditOrDebitCard, in: thread, messageText: messageText)
             }
         }
     }
@@ -91,7 +93,7 @@ class CreditOrDebitCardDonationViewController: OWSTableViewController2 {
             paymentMethod: .creditOrDebitCard,
             currentSubscription: {
                 switch donationMode {
-                case .oneTime: return nil
+                case .oneTime, .gift: return nil
                 case let .monthly(_, _, currentSubscription, _): return currentSubscription
                 }
             }()

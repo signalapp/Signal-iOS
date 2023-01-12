@@ -74,9 +74,29 @@ extension DonationViewsUtil {
             amount: FiatMoney,
             applePayPayment: PKPayment
         ) -> Promise<PreparedGiftPayment> {
-            let paymentMethod: Stripe.PaymentMethod = .applePay(payment: applePayPayment)
+            prepareToPay(
+                amount: amount,
+                withStripePaymentMethod: .applePay(payment: applePayPayment)
+            )
+        }
 
-            return firstly(on: .sharedUserInitiated) {
+        /// Prepare a payment with a credit/debit card, using Stripe.
+        static func prepareToPay(
+            amount: FiatMoney,
+            creditOrDebitCard: Stripe.PaymentMethod.CreditOrDebitCard
+        ) -> Promise<PreparedGiftPayment> {
+            prepareToPay(
+                amount: amount,
+                withStripePaymentMethod: .creditOrDebitCard(creditOrDebitCard: creditOrDebitCard)
+            )
+        }
+
+        /// Prepare a payment with Stripe.
+        private static func prepareToPay(
+            amount: FiatMoney,
+            withStripePaymentMethod paymentMethod: Stripe.PaymentMethod
+        ) -> Promise<PreparedGiftPayment> {
+            firstly(on: .sharedUserInitiated) {
                 Stripe.createBoostPaymentIntent(for: amount, level: .giftBadge(.signalGift))
             }.then(on: .sharedUserInitiated) { paymentIntent -> Promise<PreparedGiftPayment> in
                 Stripe.createPaymentMethod(with: paymentMethod).map { paymentMethodId in

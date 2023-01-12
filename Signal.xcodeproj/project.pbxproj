@@ -1307,6 +1307,7 @@
 		F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7928CB89CC00472E68 /* PngChunker.swift */; };
 		F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7728CB894400472E68 /* PngChunkerTest.swift */; };
 		F97A2EEA282578C000610669 /* BadgeExpirationSheetStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */; };
+		F97D02112970778E003756C0 /* BadgeGiftingConfirmationViewController+CreditOrDebitCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97D02102970778E003756C0 /* BadgeGiftingConfirmationViewController+CreditOrDebitCard.swift */; };
 		F97D10FB291C7FF900F0FFAA /* FakeCallMessageHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97D10FA291C7FF900F0FFAA /* FakeCallMessageHandler.swift */; };
 		F9844C492867936400B16DD4 /* SignalMeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9844C482867936400B16DD4 /* SignalMeTest.swift */; };
 		F988DC13289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */; };
@@ -2067,6 +2068,7 @@
 		F9E3720C2948E32800975224 /* BadgeGiftingConfirmationViewController+ApplePay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9E3720B2948E32800975224 /* BadgeGiftingConfirmationViewController+ApplePay.swift */; };
 		F9E39CE929493D4C001D7721 /* DisappearingMessageFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F925A3AC29493D35009024D0 /* DisappearingMessageFinderTest.swift */; };
 		F9F4DE2A283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */; };
+		F9F797DF296CC54A0025C103 /* CreditOrDebitCardDonationViewController+GiftDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F797DE296CC54A0025C103 /* CreditOrDebitCardDonationViewController+GiftDonation.swift */; };
 		F9F797E1296CCC630025C103 /* DonationViewsUtil+Gifting.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F797E0296CCC630025C103 /* DonationViewsUtil+Gifting.swift */; };
 		FC75EC0C7B35F3C9B2041A6B /* Pods_SignalServiceKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89095AC0DD065D55A4A5F8C6 /* Pods_SignalServiceKit.framework */; };
 		FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB11D8B1A129A76002F93FB /* CoreMedia.framework */; };
@@ -3705,6 +3707,7 @@
 		F972180528DE37A200113D9F /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		F97391A228EF0B20002DDE5D /* ProtoParsingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtoParsingTest.swift; sourceTree = "<group>"; };
 		F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheetStateTest.swift; sourceTree = "<group>"; };
+		F97D02102970778E003756C0 /* BadgeGiftingConfirmationViewController+CreditOrDebitCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BadgeGiftingConfirmationViewController+CreditOrDebitCard.swift"; sourceTree = "<group>"; };
 		F97D10FA291C7FF900F0FFAA /* FakeCallMessageHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeCallMessageHandler.swift; sourceTree = "<group>"; };
 		F9844C482867936400B16DD4 /* SignalMeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMeTest.swift; sourceTree = "<group>"; };
 		F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingReactionMessageTest.swift; sourceTree = "<group>"; };
@@ -4465,6 +4468,7 @@
 		F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationViewsUtil.swift; sourceTree = "<group>"; };
 		F9E3720B2948E32800975224 /* BadgeGiftingConfirmationViewController+ApplePay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BadgeGiftingConfirmationViewController+ApplePay.swift"; sourceTree = "<group>"; };
 		F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingConfirmationViewController.swift; sourceTree = "<group>"; };
+		F9F797DE296CC54A0025C103 /* CreditOrDebitCardDonationViewController+GiftDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreditOrDebitCardDonationViewController+GiftDonation.swift"; sourceTree = "<group>"; };
 		F9F797E0296CCC630025C103 /* DonationViewsUtil+Gifting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+Gifting.swift"; sourceTree = "<group>"; };
 		FC3BD9871A30A790005B96BB /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		FCB11D8B1A129A76002F93FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -7052,6 +7056,7 @@
 				F98ED2CD2922F114008483DC /* CreditOrDebitCardDonationViewController+DonationMode.swift */,
 				F9C8CFD12936656E0094469C /* CreditOrDebitCardDonationViewController+FormFieldView.swift */,
 				F93461AF291EB5E300366682 /* CreditOrDebitCardDonationViewController+FormState.swift */,
+				F9F797DE296CC54A0025C103 /* CreditOrDebitCardDonationViewController+GiftDonation.swift */,
 				F98ED2CF2922F24C008483DC /* CreditOrDebitCardDonationViewController+MonthlyDonation.swift */,
 				F93461B2291EB8C700366682 /* CreditOrDebitCardDonationViewController+OneTimeDonation.swift */,
 				F94360F02910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift */,
@@ -7337,6 +7342,7 @@
 				F9D83011282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift */,
 				F9A335CB282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift */,
 				F9E3720B2948E32800975224 /* BadgeGiftingConfirmationViewController+ApplePay.swift */,
+				F97D02102970778E003756C0 /* BadgeGiftingConfirmationViewController+CreditOrDebitCard.swift */,
 				F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */,
 				F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */,
 				F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */,
@@ -10176,6 +10182,7 @@
 				F9D83012282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift in Sources */,
 				F9A335CC282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift in Sources */,
 				F9E3720C2948E32800975224 /* BadgeGiftingConfirmationViewController+ApplePay.swift in Sources */,
+				F97D02112970778E003756C0 /* BadgeGiftingConfirmationViewController+CreditOrDebitCard.swift in Sources */,
 				F9F4DE2A283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift in Sources */,
 				F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */,
 				8880179427430DDB00346E9A /* BadgeThanksSheet.swift in Sources */,
@@ -10277,6 +10284,7 @@
 				F98ED2CE2922F114008483DC /* CreditOrDebitCardDonationViewController+DonationMode.swift in Sources */,
 				F9C8CFD22936656E0094469C /* CreditOrDebitCardDonationViewController+FormFieldView.swift in Sources */,
 				F93461B0291EB5E300366682 /* CreditOrDebitCardDonationViewController+FormState.swift in Sources */,
+				F9F797DF296CC54A0025C103 /* CreditOrDebitCardDonationViewController+GiftDonation.swift in Sources */,
 				F98ED2D02922F24C008483DC /* CreditOrDebitCardDonationViewController+MonthlyDonation.swift in Sources */,
 				F93461B3291EB8C700366682 /* CreditOrDebitCardDonationViewController+OneTimeDonation.swift in Sources */,
 				F94360F12910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift in Sources */,

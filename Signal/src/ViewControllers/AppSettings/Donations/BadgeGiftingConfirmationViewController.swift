@@ -167,8 +167,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                     case .applePay:
                         self.startApplePay()
                     case .creditOrDebitCard:
-                        // TODO: (GB) Support gifting with card.
-                        OWSActionSheets.showErrorAlert(message: "Cards not yet supported.")
+                        self.startCreditOrDebitCard()
                     case .paypal:
                         // TODO: [PayPal] Support gifting with PayPal.
                         OWSActionSheets.showErrorAlert(message: "PayPal not yet supported.")
