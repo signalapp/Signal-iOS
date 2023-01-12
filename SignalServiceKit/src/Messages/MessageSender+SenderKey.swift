@@ -159,8 +159,18 @@ extension MessageSender {
                 // If all registrationIds aren't valid, we should fallback to fanout
                 // This should be removed once we've sorted out why there are invalid
                 // registrationIds
-                guard candidate.hasValidRegistrationIds(transaction: readTx) else {
+                let registrationIdStatus = candidate.registrationIdStatus(transaction: readTx)
+                switch registrationIdStatus {
+                case .valid:
+                    // All good, keep going.
+                    break
+                case .invalid:
+                    // Don't bother with SKDM, fall back to fanout.
                     senderKeyStatus.participants[candidate] = .FanoutOnly
+                    return
+                case .noSession:
+                    // This recipient has no session; thats ok, just fall back to SKDM.
+                    senderKeyStatus.participants[candidate] = .NeedsSKDM
                     return
                 }
 
@@ -795,19 +805,32 @@ extension MessageSender {
 }
 
 fileprivate extension SignalServiceAddress {
-    // We shouldn't send a SenderKey message to addresses with a session record with
-    // an invalid registrationId.
-    //
-    // LibSignalClient expects registrationIds to fit in 15 bits for multiRecipientEncrypt,
-    // but there are some reports of clients having larger registrationIds.
-    //
-    // For now, let's perform a check to filter out invalid registrationIds. An
-    // investigation into cleaning up these invalid registrationIds is ongoing.
-    // Once we've done this, we can remove this entire filter clause.
-    func hasValidRegistrationIds(transaction readTx: SDSAnyReadTransaction) -> Bool {
+
+    enum RegistrationIdStatus {
+        /// The address has a session with a valid registration id
+        case valid
+        /// LibSignalClient expects registrationIds to fit in 15 bits for multiRecipientEncrypt,
+        /// but there are some reports of clients having larger registrationIds. Unclear why.
+        case invalid
+        /// There is no session for this address. Unclear why this would happen; but in this case
+        /// the address should receive an SKDM.
+        case noSession
+    }
+
+    /// We shouldn't send a SenderKey message to addresses with a session record with
+    /// an invalid registrationId.
+    /// We should send an SKDM to addresses with no session record at all.
+    ///
+    /// For now, let's perform a check to filter out invalid registrationIds. An
+    /// investigation into cleaning up these invalid registrationIds is ongoing.
+    ///
+    /// Also check for missing sessions (shouldn't happen if we've gotten this far, since
+    /// SenderKeyStore already said this address has previous Sender Key sends). We should
+    /// investigate how this ever happened, but for now fall back to sending another SKDM.
+    func registrationIdStatus(transaction readTx: SDSAnyReadTransaction) -> RegistrationIdStatus {
         let candidateDevices = MessageSender.Recipient(address: self, transaction: readTx).devices
         let sessionStore = signalProtocolStore(for: .aci).sessionStore
-        return candidateDevices.allSatisfy { deviceId in
+        for deviceId in candidateDevices {
             do {
                 guard
                     let sessionRecord = try sessionStore.loadSession(
@@ -816,15 +839,20 @@ fileprivate extension SignalServiceAddress {
                         transaction: readTx
                     ),
                     sessionRecord.hasCurrentState
-                else { return true }
+                else { return .noSession }
                 let registrationId = try sessionRecord.remoteRegistrationId()
                 let isValidRegistrationId = (registrationId & 0x3fff == registrationId)
                 owsAssertDebug(isValidRegistrationId)
-                return isValidRegistrationId
+                if !isValidRegistrationId {
+                    return .invalid
+                }
             } catch {
+                // An error is never thrown on nil result; only if there's something
+                // on disk but parsing fails.
                 owsFailDebug("Failed to fetch registrationId for \(self): \(error)")
-                return false
+                return .invalid
             }
         }
+        return .valid
     }
 }
