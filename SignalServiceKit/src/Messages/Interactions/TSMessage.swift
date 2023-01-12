@@ -234,34 +234,37 @@ public extension TSMessage {
 
     @objc(previewTextForGiftBadgeWithTransaction:)
     func previewTextForGiftBadge(transaction: SDSAnyReadTransaction) -> String {
-        let otherUserAddress: SignalServiceAddress
-        let format: String
-
         if let incomingMessage = self as? TSIncomingMessage {
-            otherUserAddress = incomingMessage.authorAddress
-            format = OWSLocalizedString(
+            let senderShortName = contactsManager.shortDisplayName(
+                for: incomingMessage.authorAddress, transaction: transaction
+            )
+            let format = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING",
                 comment: "A friend has donated on your behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}."
             )
+            return String(format: format, senderShortName)
         } else if let outgoingMessage = self as? TSOutgoingMessage {
+            let recipientShortName: String
             let recipients = outgoingMessage.recipientAddresses()
-            guard let recipient = recipients.first, recipients.count == 1 else {
-                owsFail("[Gifting] Expected exactly 1 recipient but got \(recipients.count)")
+            if let recipient = recipients.first, recipients.count == 1 {
+                recipientShortName = contactsManager.shortDisplayName(
+                    for: recipient, transaction: transaction
+                )
+            } else {
+                owsFailDebug("[Gifting] Expected exactly 1 recipient but got \(recipients.count)")
+                recipientShortName = OWSLocalizedString(
+                    "UNKNOWN_USER",
+                    comment: "Label indicating an unknown user."
+                )
             }
-            otherUserAddress = recipient
-
-            format = OWSLocalizedString(
+            let format = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING",
                 comment: "You have a made a donation on a friend's behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}."
             )
+            return String(format: format, recipientShortName)
         } else {
             owsFail("Could not generate preview text because message wasn't incoming or outgoing")
         }
-
-        return String(
-            format: format,
-            contactsManager.shortDisplayName(for: otherUserAddress, transaction: transaction)
-        )
     }
 
 }
