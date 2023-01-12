@@ -697,9 +697,7 @@ extension CVComponentSystemMessage {
             case .incomingMissed,
                  .incomingMissedBecauseOfChangedIdentity,
                  .incomingMissedBecauseOfDoNotDisturb,
-                 .incomingBusyElsewhere,
-                 .incomingDeclined,
-                 .incomingDeclinedElsewhere:
+                 .incomingBusyElsewhere:
                 // We use a custom red here, as we consider changing
                 // our red everywhere for better accessibility
                 return UIColor(rgbHex: 0xE51D0E)
