@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import PassKit
 import SignalMessaging
 import SignalServiceKit
 import UIKit
@@ -14,10 +13,10 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
     // MARK: - View state
 
-    private let badge: ProfileBadge
-    private let price: FiatMoney
+    let badge: ProfileBadge
+    let price: FiatMoney
     private let paymentMethodsConfiguration: PaymentMethodsConfiguration
-    private let thread: TSContactThread
+    let thread: TSContactThread
 
     private var previouslyRenderedDisappearingMessagesDuration: UInt32?
 
@@ -31,19 +30,6 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         self.price = price
         self.paymentMethodsConfiguration = paymentMethodsConfiguration
         self.thread = thread
-    }
-
-    private class func showRecipientIsBlockedError() {
-        OWSActionSheets.showActionSheet(
-            title: NSLocalizedString(
-                "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE",
-                comment: "Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked."
-            ),
-            message: NSLocalizedString(
-                "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY",
-                comment: "Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked."
-            )
-        )
     }
 
     // MARK: - Callbacks
@@ -71,12 +57,14 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         setUpBottomFooter()
     }
 
-    private func isRecipientBlocked(transaction: SDSAnyReadTransaction) -> Bool {
-        self.blockingManager.isAddressBlocked(self.thread.contactAddress, transaction: transaction)
-    }
-
-    private func isRecipientBlockedWithSneakyTransaction() -> Bool {
-        databaseStorage.read { self.isRecipientBlocked(transaction: $0) }
+    func didCompleteDonation() {
+        SignalApp.shared().presentConversation(for: thread, action: .none, animated: false)
+        dismiss(animated: true) {
+            SignalApp.shared().conversationSplitViewControllerForSwift?.present(
+                BadgeGiftingThanksSheet(thread: self.thread, badge: self.badge),
+                animated: true
+            )
+        }
     }
 
     /// Queries the database to see if the recipient can receive gift badges.
@@ -127,61 +115,33 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         return resultPromise
     }
 
-    private enum SafetyNumberConfirmationResult {
-        case userDidNotConfirmSafetyNumberChange
-        case userConfirmedSafetyNumberChangeOrNoChangeWasNeeded
-    }
-
-    private func showSafetyNumberConfirmationIfNecessary() -> (needsUserInteraction: Bool, promise: Promise<SafetyNumberConfirmationResult>) {
-        let (promise, future) = Promise<SafetyNumberConfirmationResult>.pending()
-
-        let needsUserInteraction = SafetyNumberConfirmationSheet.presentIfNecessary(address: thread.contactAddress,
-                                                                                    confirmationText: SafetyNumberStrings.confirmSendButton) { didConfirm in
-            future.resolve(didConfirm ? .userConfirmedSafetyNumberChangeOrNoChangeWasNeeded : .userDidNotConfirmSafetyNumberChange)
-        }
-        if needsUserInteraction {
-            Logger.info("[Gifting] Showing safety number confirmation sheet")
-        } else {
-            Logger.info("[Gifting] Not showing safety number confirmation sheet; it was not needed")
-            future.resolve(.userConfirmedSafetyNumberChangeOrNoChangeWasNeeded)
-        }
-
-        return (needsUserInteraction: needsUserInteraction, promise: promise)
-    }
-
     private func checkRecipientAndPresentChoosePaymentMethodSheet() {
         // We want to resign this SOMETIME before this VC dismisses and switches to the chat.
         // In addition to offering slightly better UX, resigning first responder status prevents it
         // from eating events after the VC is dismissed.
         messageTextView.resignFirstResponder()
 
-        guard !isRecipientBlockedWithSneakyTransaction() else {
-            Logger.warn("[Gifting] Not requesting Apple Pay because recipient is blocked")
-            Self.showRecipientIsBlockedError()
-            return
-        }
-
         firstly(on: .main) { [weak self] () -> Promise<Bool> in
             guard let self = self else {
-                throw SendGiftBadgeError.userCanceledBeforeChargeCompleted
+                throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
             }
             return self.canReceiveGiftBadgesWithUi()
-        }.then(on: .main) { [weak self] canReceiveGiftBadges -> Promise<SafetyNumberConfirmationResult> in
+        }.then(on: .main) { [weak self] canReceiveGiftBadges -> Promise<DonationViewsUtil.Gifts.SafetyNumberConfirmationResult> in
             guard let self = self else {
-                throw SendGiftBadgeError.userCanceledBeforeChargeCompleted
+                throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
             }
             guard canReceiveGiftBadges else {
-                throw SendGiftBadgeError.cannotReceiveGiftBadges
+                throw DonationViewsUtil.Gifts.SendGiftError.cannotReceiveGiftBadges
             }
-            return self.showSafetyNumberConfirmationIfNecessary().promise
+            return DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: self.thread).promise
         }.done(on: .main) { [weak self] safetyNumberConfirmationResult in
             guard let self = self else {
-                throw SendGiftBadgeError.userCanceledBeforeChargeCompleted
+                throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
             }
 
             switch safetyNumberConfirmationResult {
             case .userDidNotConfirmSafetyNumberChange:
-                throw SendGiftBadgeError.userCanceledBeforeChargeCompleted
+                throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
             case .userConfirmedSafetyNumberChangeOrNoChangeWasNeeded:
                 break
             }
@@ -218,7 +178,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
             self.present(sheet, animated: true)
         }.catch { error in
-            if let error = error as? SendGiftBadgeError {
+            if let error = error as? DonationViewsUtil.Gifts.SendGiftError {
                 Logger.warn("[Gifting] Error \(error)")
                 switch error {
                 case .userCanceledBeforeChargeCompleted:
@@ -258,7 +218,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
     private lazy var avatarViewDataSource: ConversationAvatarDataSource = .thread(self.thread)
 
-    private lazy var messageTextView: TextViewWithPlaceholder = {
+    lazy var messageTextView: TextViewWithPlaceholder = {
         let view = TextViewWithPlaceholder()
         view.placeholderText = NSLocalizedString(
             "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER",
@@ -269,7 +229,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         return view
     }()
 
-    private var messageText: String {
+    var messageText: String {
         (messageTextView.text ?? "").ows_stripped()
     }
 
@@ -538,278 +498,5 @@ extension BadgeGiftingConfirmationViewController: TextViewWithPlaceholderDelegat
             uiTextView.resignFirstResponder()
         }
         return true
-    }
-}
-
-// MARK: - Apple Pay
-
-extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControllerDelegate {
-    private struct PreparedPayment {
-        let paymentIntent: Stripe.PaymentIntent
-        let paymentMethodId: String
-    }
-
-    enum SendGiftBadgeError: Error {
-        case recipientIsBlocked
-        case failedAndUserNotCharged
-        case failedAndUserMaybeCharged
-        case cannotReceiveGiftBadges
-        case userCanceledBeforeChargeCompleted
-    }
-
-    func startApplePay() {
-        Logger.info("[Gifting] Requesting Apple Pay...")
-
-        let request = DonationUtilities.newPaymentRequest(for: self.price, isRecurring: false)
-
-        let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
-        paymentController.delegate = self
-        paymentController.present { presented in
-            if !presented {
-                // This can happen under normal conditions if the user double-taps the button,
-                // but may also indicate a problem.
-                Logger.warn("[Gifting] Failed to present payment controller")
-            }
-        }
-    }
-
-    private func prepareToPay(authorizedPayment: PKPayment) -> Promise<PreparedPayment> {
-        firstly {
-            Stripe.createBoostPaymentIntent(
-                for: self.price,
-                level: .giftBadge(.signalGift)
-            )
-        }.then { paymentIntent in
-            Stripe.createPaymentMethod(with: .applePay(payment: authorizedPayment)).map { paymentMethodId in
-                PreparedPayment(paymentIntent: paymentIntent, paymentMethodId: paymentMethodId)
-            }
-        }
-    }
-
-    func paymentAuthorizationController(
-        _ controller: PKPaymentAuthorizationController,
-        didAuthorizePayment payment: PKPayment,
-        handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
-    ) {
-        var hasCalledCompletion = false
-        func wrappedCompletion(_ result: PKPaymentAuthorizationResult) {
-            guard !hasCalledCompletion else { return }
-            hasCalledCompletion = true
-            completion(result)
-        }
-
-        firstly(on: .global()) { () -> Promise<PreparedPayment> in
-            // Bail if the user is already sending a gift to this person. This unusual case can happen if:
-            //
-            // 1. The user enqueues a "send gift badge" job for this recipient
-            // 2. The app is terminated (e.g., due to a crash)
-            // 3. Before the job finishes, the user restarts the app and tries to gift another badge to the same person
-            //
-            // This *could* happen without a Signal developer making a mistake, if the app is terminated at the right time.
-            let isAlreadyGifting = self.databaseStorage.read {
-                DonationUtilities.sendGiftBadgeJobQueue.alreadyHasJob(for: self.thread, transaction: $0)
-            }
-            guard !isAlreadyGifting else {
-                Logger.warn("Already sending a gift to this recipient")
-                throw SendGiftBadgeError.failedAndUserNotCharged
-            }
-
-            // Prepare to pay. We haven't charged the user yet, so we don't need to do anything durably,
-            // e.g. a job.
-            return firstly { () -> Promise<PreparedPayment> in
-                self.prepareToPay(authorizedPayment: payment)
-            }.timeout(seconds: 30) {
-                Logger.warn("Timed out after preparing gift badge payment")
-                return SendGiftBadgeError.failedAndUserNotCharged
-            }.recover(on: .global()) { error -> Promise<PreparedPayment> in
-                if !(error is SendGiftBadgeError) { owsFailDebugUnlessNetworkFailure(error) }
-                throw SendGiftBadgeError.failedAndUserNotCharged
-            }
-        }.then { [weak self] preparedPayment -> Promise<PreparedPayment> in
-            guard let self = self else { throw SendGiftBadgeError.userCanceledBeforeChargeCompleted }
-
-            let safetyNumberConfirmationResult = self.showSafetyNumberConfirmationIfNecessary()
-            if safetyNumberConfirmationResult.needsUserInteraction {
-                wrappedCompletion(.init(status: .success, errors: nil))
-            }
-
-            return safetyNumberConfirmationResult.promise.map { safetyNumberConfirmationResult in
-                switch safetyNumberConfirmationResult {
-                case .userDidNotConfirmSafetyNumberChange:
-                    throw SendGiftBadgeError.userCanceledBeforeChargeCompleted
-                case .userConfirmedSafetyNumberChangeOrNoChangeWasNeeded:
-                    return preparedPayment
-                }
-            }
-        }.then { [weak self] preparedPayment -> Promise<Void> in
-            guard let self = self else { throw SendGiftBadgeError.userCanceledBeforeChargeCompleted }
-
-            // We know our payment processor here is Stripe, since we are in an
-            // Apple Pay flow.
-            let paymentProcessor: PaymentProcessor = .stripe
-
-            // Durably enqueue a job to (1) do the charge (2) redeem the receipt credential (3) enqueue
-            // a gift badge message (and optionally a text message) to the recipient. We also want to
-            // update the UI partway through the job's execution, and when it completes.
-            let jobRecord = SendGiftBadgeJobQueue.createJob(
-                paymentProcessor: paymentProcessor,
-                receiptRequest: SubscriptionManager.generateReceiptRequest(),
-                amount: self.price,
-                paymentIntent: preparedPayment.paymentIntent,
-                paymentMethodId: preparedPayment.paymentMethodId,
-                thread: self.thread,
-                messageText: self.messageText
-            )
-            let jobId = jobRecord.uniqueId
-
-            let (promise, future) = Promise<Void>.pending()
-
-            var modalActivityIndicatorViewController: ModalActivityIndicatorViewController?
-            var shouldDismissActivityIndicator = false
-            func presentModalActivityIndicatorIfNotAlreadyPresented() {
-                guard modalActivityIndicatorViewController == nil else { return }
-                ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
-                    DispatchQueue.main.async {
-                        modalActivityIndicatorViewController = modal
-                        // Depending on how things are dispatched, we could need the modal closed immediately.
-                        if shouldDismissActivityIndicator {
-                            modal.dismiss {}
-                        }
-                    }
-                }
-            }
-
-            // This is unusual, but can happen if the Apple Pay sheet was dismissed earlier in the process,
-            // which can happen if the user needed to confirm a safety number change.
-            if hasCalledCompletion {
-                presentModalActivityIndicatorIfNotAlreadyPresented()
-            }
-
-            var hasCharged = false
-
-            // The happy path is two steps: payment method is charged (showing a spinner), then job finishes (opening the chat).
-            //
-            // The valid sad paths are:
-            // 1. We started charging the card but we don't know whether it succeeded before the job failed
-            // 2. The card is "definitively" charged, but then the job fails
-            //
-            // There are some invalid sad paths that we try to handle, but those indicate Signal bugs.
-            let observer = NotificationCenter.default.addObserver(forName: SendGiftBadgeJobQueue.JobEventNotification,
-                                                                  object: nil,
-                                                                  queue: .main) { notification in
-                guard let userInfo = notification.userInfo,
-                      let notificationJobId = userInfo["jobId"] as? String,
-                      let rawJobEvent = userInfo["jobEvent"] as? Int,
-                      let jobEvent = SendGiftBadgeJobQueue.JobEvent(rawValue: rawJobEvent) else {
-                    owsFail("Received a gift badge job event with invalid user data")
-                }
-                guard notificationJobId == jobId else {
-                    // This can happen if:
-                    //
-                    // 1. The user enqueues a "send gift badge" job
-                    // 2. The app terminates before it can complete (e.g., due to a crash)
-                    // 3. Before the job finishes, the user restarts the app and tries to gift another badge
-                    //
-                    // This is unusual and may indicate a bug, so we log, but we don't error/crash because it can happen under "normal" circumstances.
-                    Logger.warn("Received an event for a different badge gifting job.")
-                    return
-                }
-
-                switch jobEvent {
-                case .jobFailed:
-                    future.reject(SendGiftBadgeError.failedAndUserMaybeCharged)
-                case .chargeSucceeded:
-                    guard !hasCharged else {
-                        // This job event can be emitted twice if the job fails (e.g., due to network) after the payment method is charged, and then it's restarted.
-                        // That's unusual, but isn't necessarily a bug.
-                        Logger.warn("Received a \"charge succeeded\" event more than once")
-                        break
-                    }
-                    hasCharged = true
-                    wrappedCompletion(.init(status: .success, errors: nil))
-                    controller.dismiss()
-                    presentModalActivityIndicatorIfNotAlreadyPresented()
-                case .jobSucceeded:
-                    future.resolve(())
-                }
-            }
-
-            try self.databaseStorage.write { transaction in
-                // We should already have checked this earlier, but it's possible that the state has changed on another device.
-                // We'll also check this inside the job before running it.
-                guard !self.isRecipientBlocked(transaction: transaction) else {
-                    throw SendGiftBadgeError.recipientIsBlocked
-                }
-
-                DonationUtilities.sendGiftBadgeJobQueue.addJob(jobRecord, transaction: transaction)
-            }
-
-            func finish() {
-                NotificationCenter.default.removeObserver(observer)
-                if let modalActivityIndicatorViewController = modalActivityIndicatorViewController {
-                    modalActivityIndicatorViewController.dismiss {}
-                } else {
-                    shouldDismissActivityIndicator = true
-                }
-            }
-
-            return promise.done(on: .main) {
-                owsAssertDebug(hasCharged, "Expected \"charge succeeded\" event")
-                finish()
-            }.recover(on: .main) { error in
-                finish()
-                throw error
-            }
-        }.done { [weak self] in
-            // We shouldn't need to dismiss the Apple Pay sheet here, but if the `chargeSucceeded` event was missed, we do our best.
-            wrappedCompletion(.init(status: .success, errors: nil))
-            guard let self = self else { return }
-            SignalApp.shared().presentConversation(for: self.thread, action: .none, animated: false)
-            self.dismiss(animated: true) {
-                SignalApp.shared().conversationSplitViewControllerForSwift?.present(
-                    BadgeGiftingThanksSheet(thread: self.thread, badge: self.badge),
-                    animated: true
-                )
-            }
-        }.catch { error in
-            guard let error = error as? SendGiftBadgeError else {
-                owsFail("\(error)")
-            }
-
-            wrappedCompletion(.init(status: .failure, errors: [error]))
-
-            switch error {
-            case .userCanceledBeforeChargeCompleted:
-                break
-            case .recipientIsBlocked:
-                Self.showRecipientIsBlockedError()
-            case .failedAndUserNotCharged, .cannotReceiveGiftBadges:
-                OWSActionSheets.showActionSheet(
-                    title: NSLocalizedString(
-                        "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE",
-                        comment: "Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog."
-                    ),
-                    message: NSLocalizedString(
-                        "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY",
-                        comment: "Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown."
-                    )
-                )
-            case .failedAndUserMaybeCharged:
-                OWSActionSheets.showActionSheet(
-                    title: NSLocalizedString(
-                        "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE",
-                        comment: "Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog."
-                    ),
-                    message: NSLocalizedString(
-                        "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY",
-                        comment: "Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown."
-                    )
-                )
-            }
-        }
-    }
-
-    func paymentAuthorizationControllerDidFinish(_ controller: PKPaymentAuthorizationController) {
-        controller.dismiss()
     }
 }

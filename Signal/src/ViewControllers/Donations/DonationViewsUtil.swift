@@ -365,6 +365,11 @@ public final class DonationViewsUtil {
             return
         }
 
+        if let sendGiftError = rawError as? Gifts.SendGiftError {
+            Gifts.presentErrorSheetIfApplicable(for: sendGiftError)
+            return
+        }
+
         let error: DonationJobError
         if let jobError = rawError as? DonationJobError {
             error = jobError
