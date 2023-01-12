@@ -139,22 +139,22 @@ class UserNotificationPresenter: Dependencies {
         SwiftSingletons.register(self)
     }
 
+    /// Request notification permissions.
+    ///
+    /// Resolves even if the user denies the request.
     func registerNotificationSettings() -> Promise<Void> {
         return Promise { future in
             Self.notificationCenter.requestAuthorization(options: [.badge, .sound, .alert]) { (granted, error) in
                 Self.notificationCenter.setNotificationCategories(UserNotificationConfig.allNotificationCategories)
 
                 if granted {
-                    Logger.debug("succeeded.")
-                } else if let error = error {
-                    Logger.error("failed with error: \(error)")
+                    Logger.info("User granted notification permission")
+                } else if let error {
+                    owsFailDebug("Notification permission request failed with error: \(error)")
                 } else {
-                    Logger.info("failed without error. User denied notification permissions.")
+                    Logger.info("User denied notification permission")
                 }
 
-                // Note that the promise is fulfilled regardless of if notification permissions were
-                // granted. This promise only indicates that the user has responded, so we can
-                // proceed with requesting push tokens and complete registration.
                 future.resolve()
             }
         }

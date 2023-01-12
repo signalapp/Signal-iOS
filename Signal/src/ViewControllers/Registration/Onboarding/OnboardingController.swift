@@ -202,8 +202,7 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        let view = OnboardingPermissionsViewController(onboardingController: self)
-        viewController.navigationController?.pushViewController(view, animated: true)
+        pushPermissionsViewOrSkipToRegistration(onto: viewController)
     }
 
     public func onboardingSplashRequestedModeSwitch(viewController: UIViewController) {
@@ -266,6 +265,36 @@ public class OnboardingController: NSObject {
         } else {
             let view = RegistrationPhoneNumberViewController(onboardingController: self)
             navigationController.pushViewController(view, animated: true)
+        }
+    }
+
+    private func pushPermissionsViewOrSkipToRegistration(
+        onto viewController: UIViewController
+    ) {
+        func showPermissionsView() {
+            let view = OnboardingPermissionsViewController(onboardingController: self)
+            viewController.navigationController?.pushViewController(view, animated: true)
+        }
+
+        firstly(on: .sharedUserInitiated) {
+            OnboardingPermissionsViewController.needsToAskForAnyPermissions()
+        }
+        // If we don't get an answer quickly, assume we need to ask.
+        // We don't expect to hit this timeout, but we really don't want to keep
+        // users waiting during registration.
+        .timeout(seconds: 1, substituteValue: true)
+        .done(on: .main) { (needsToAskForAnyPermissions: Bool) in
+            if needsToAskForAnyPermissions {
+                showPermissionsView()
+            } else {
+                self.onboardingPermissionsDidComplete(viewController: viewController)
+            }
+        }.recover(on: .main) { error in
+            // This could only happen if something rejects, which we don't expect.
+            // However, because it's registration, we assume we need to ask
+            // instead of crashing—that's better than preventing registration.
+            owsFailDebug("\(error)")
+            showPermissionsView()
         }
     }
 

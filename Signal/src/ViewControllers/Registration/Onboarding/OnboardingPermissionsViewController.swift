@@ -65,15 +65,29 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
         self.animationView.play()
     }
 
-    // MARK: Request Access
+    // MARK: Requesting permissions
 
-    private func requestAccess() {
+    public static func needsToAskForAnyPermissions() -> Guarantee<Bool> {
+        if CNContactStore.authorizationStatus(for: .contacts) == .notDetermined {
+            return Guarantee.value(true)
+        }
+
+        return Guarantee<Bool> { resolve in
+            UNUserNotificationCenter.current().getNotificationSettings { settings in
+                resolve(settings.authorizationStatus == .notDetermined)
+            }
+        }
+    }
+
+    private func requestPermissions() {
         Logger.info("")
 
+        // If you request any additional permissions, make sure to add them to
+        // `needsToAskForAnyPermissions`.
         firstly {
             PushRegistrationManager.shared.registerUserNotificationSettings()
         }.then { _ in
-            self.requestContactsAccess()
+            self.requestContactsPermission()
         }.done {
             self.onboardingController.onboardingPermissionsDidComplete(viewController: self)
         }.catch { error in
@@ -81,17 +95,21 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
         }
     }
 
-    private func requestContactsAccess() -> Promise<Void> {
+    /// Request contacts permissions.
+    ///
+    /// Always resolves, even if the user denies the request.
+    private func requestContactsPermission() -> Promise<Void> {
         Logger.info("")
 
         let (promise, future) = Promise<Void>.pending()
         CNContactStore().requestAccess(for: CNEntityType.contacts) { (granted, error) -> Void in
             if granted {
-                Logger.info("Granted.")
+                Logger.info("User granted contacts permission")
             } else {
-                Logger.error("Error: \(String(describing: error)).")
+                // Unfortunately, we can't easily disambiguate "not granted" and
+                // "other error".
+                Logger.warn("User denied contacts permission or there was an error. Error: \(String(describing: error))")
             }
-            // Always fulfill.
             future.resolve()
         }
         return promise
@@ -110,7 +128,7 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
     func giveAccessPressed() {
         Logger.info("")
 
-        requestAccess()
+        requestPermissions()
     }
 
     @objc
