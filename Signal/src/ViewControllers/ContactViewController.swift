@@ -9,7 +9,7 @@ import SignalMessaging
 import ContactsUI
 import MessageUI
 
-class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
+class ContactViewController: OWSViewController, ContactShareViewHelperDelegate, OWSNavigationChildController {
 
     enum ContactViewMode {
         case systemContactWithSignal,
@@ -34,8 +34,6 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     private let contactShare: ContactShareViewModel
 
     private var contactShareViewHelper: ContactShareViewHelper
-
-    private weak var postDismissNavigationController: UINavigationController?
 
     // MARK: - Initializers
 
@@ -62,39 +60,13 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
     // MARK: - View Lifecycle
 
+    var prefersNavigationBarHidden: Bool { true }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        guard let navigationController = self.navigationController else {
-            owsFailDebug("navigationController was unexpectedly nil")
-            return
-        }
-
-        // self.navigationController is nil in viewWillDisappear when transition via message/call buttons
-        // so we maintain our own reference to restore the navigation bars.
-        postDismissNavigationController = navigationController
-        navigationController.isNavigationBarHidden = true
-
-        contactsManagerImpl.requestSystemContactsOnce(completion: { [weak self] _ in
-            guard let strongSelf = self else { return }
-            strongSelf.updateMode()
-        })
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        if self.presentedViewController == nil {
-            // No need to do this when we're disappearing due to a modal presentation.
-            // We'll eventually return to to this view and need to hide again. But also, there is a visible
-            // animation glitch where the navigation bar for this view controller starts to appear while
-            // the whole nav stack is about to be obscured by the modal we are presenting.
-            guard let postDismissNavigationController = self.postDismissNavigationController else {
-                owsFailDebug("postDismissNavigationController was unexpectedly nil")
-                return
-            }
-
-            postDismissNavigationController.setNavigationBarHidden(false, animated: animated)
+        contactsManagerImpl.requestSystemContactsOnce { [weak self] _ in
+            self?.updateMode()
         }
     }
 
