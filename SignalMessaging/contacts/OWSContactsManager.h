@@ -20,6 +20,25 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 
 @protocol ContactsManagerCache;
 
+typedef NS_CLOSED_ENUM(NSUInteger, RawContactAuthorizationStatus) {
+    RawContactAuthorizationStatusNotDetermined,
+    RawContactAuthorizationStatusDenied,
+    RawContactAuthorizationStatusRestricted,
+    RawContactAuthorizationStatusAuthorized,
+};
+
+typedef NS_CLOSED_ENUM(NSUInteger, ContactAuthorizationForEditing) {
+    ContactAuthorizationForEditingDenied,
+    ContactAuthorizationForEditingRestricted,
+    ContactAuthorizationForEditingAuthorized,
+};
+
+typedef NS_CLOSED_ENUM(NSUInteger, ContactAuthorizationForSharing) {
+    ContactAuthorizationForSharingNotDetermined,
+    ContactAuthorizationForSharingDenied,
+    ContactAuthorizationForSharingAuthorized,
+};
+
 /**
  * Get latest Signal contacts, and be notified when they change.
  */
@@ -48,11 +67,9 @@ extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 #pragma mark - System Contact Fetching
 
 // Must call `requestSystemContactsOnce` before accessing this method
-@property (nonatomic, readonly) BOOL isSystemContactsAuthorized;
-@property (nonatomic, readonly) BOOL isSystemContactsDenied;
-@property (nonatomic, readonly) BOOL systemContactsHaveBeenRequestedAtLeastOnce;
+@property (nonatomic, readonly) ContactAuthorizationForEditing editingAuthorization;
 
-@property (nonatomic, readonly) BOOL supportsContactEditing;
+@property (nonatomic, readonly) ContactAuthorizationForSharing sharingAuthorization;
 
 @property (atomic, readonly) BOOL isSetup;
 

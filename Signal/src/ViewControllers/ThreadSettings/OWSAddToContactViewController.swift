@@ -73,17 +73,23 @@ public class OWSAddToContactViewController: OWSViewController {
     }
 
     fileprivate func presentContactViewController(forContact contact: Contact) {
-        if !contactsManagerImpl.supportsContactEditing {
-            return
+        guard let navigationController else {
+            return owsFailDebug("Missing navigationController.")
         }
-
-        let cnContact = contactsManager.cnContact(withId: contact.cnContactId)
-        guard let contactViewController = contactsViewHelper.contactViewController(for: address, editImmediately: true, addToExisting: cnContact, updatedNameComponents: nil) else {
-            return
-        }
-
-        contactViewController.delegate = self
-        navigationController?.pushViewController(contactViewController, animated: true)
+        contactsViewHelper.checkEditingAuthorization(
+            authorizedBehavior: .pushViewController(on: navigationController, viewController: {
+                let cnContact = self.contactsManager.cnContact(withId: contact.cnContactId)
+                let result = self.contactsViewHelper.contactViewController(
+                    for: self.address,
+                    editImmediately: true,
+                    addToExisting: cnContact,
+                    updatedNameComponents: nil
+                )
+                result.delegate = self
+                return result
+            }),
+            unauthorizedBehavior: .presentError(from: self)
+        )
     }
 
     private func updateData() {

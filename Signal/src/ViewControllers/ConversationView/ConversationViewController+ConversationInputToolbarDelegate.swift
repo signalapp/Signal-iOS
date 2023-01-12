@@ -515,15 +515,20 @@ fileprivate extension ConversationViewController {
     func chooseContactForSending() {
         AssertIsOnMainThread()
 
-        let contactsPicker = ContactsPicker(allowsMultipleSelection: false,
-                                            subtitleCellType: .none)
-        contactsPicker.contactsPickerDelegate = self
-        contactsPicker.title = NSLocalizedString("CONTACT_PICKER_TITLE",
-                                                 comment: "navbar title for contact picker when sharing a contact")
-
-        let navigationController = OWSNavigationController(rootViewController: contactsPicker)
         dismissKeyBoard()
-        presentFormSheet(navigationController, animated: true)
+        contactsViewHelper.checkSharingAuthorization(
+            purpose: .share,
+            authorizedBehavior: .runAction({
+                let contactsPicker = ContactsPicker(allowsMultipleSelection: false, subtitleCellType: .none)
+                contactsPicker.contactsPickerDelegate = self
+                contactsPicker.title = NSLocalizedString(
+                    "CONTACT_PICKER_TITLE",
+                    comment: "navbar title for contact picker when sharing a contact"
+                )
+                self.presentFormSheet(OWSNavigationController(rootViewController: contactsPicker), animated: true)
+            }),
+            unauthorizedBehavior: .presentError(from: self)
+        )
     }
 
     // MARK: - Attachment Picking: Documents

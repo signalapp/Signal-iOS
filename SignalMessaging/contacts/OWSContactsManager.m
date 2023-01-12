@@ -81,7 +81,41 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     self.isSetup = YES;
 }
 
-#pragma mark - System Contact Fetching
+#pragma mark - Sharing Contacts
+
+- (ContactAuthorizationForSharing)sharingAuthorization
+{
+    switch (self.systemContactsFetcher.rawAuthorizationStatus) {
+        case RawContactAuthorizationStatusNotDetermined:
+            return ContactAuthorizationForSharingNotDetermined;
+
+        case RawContactAuthorizationStatusDenied:
+        case RawContactAuthorizationStatusRestricted:
+            return ContactAuthorizationForSharingDenied;
+
+        case RawContactAuthorizationStatusAuthorized:
+            return ContactAuthorizationForSharingAuthorized;
+    }
+}
+
+#pragma mark - Editing/Syncing Contacts
+
+- (ContactAuthorizationForEditing)editingAuthorization
+{
+    switch (self.systemContactsFetcher.rawAuthorizationStatus) {
+        case RawContactAuthorizationStatusNotDetermined:
+            OWSFailDebug(@"should have called `requestOnce` before checking authorization status.");
+            // fallthrough
+        case RawContactAuthorizationStatusDenied:
+            return ContactAuthorizationForEditingDenied;
+
+        case RawContactAuthorizationStatusRestricted:
+            return ContactAuthorizationForEditingRestricted;
+
+        case RawContactAuthorizationStatusAuthorized:
+            return ContactAuthorizationForEditingAuthorized;
+    }
+}
 
 // Request contacts access if you haven't asked recently.
 - (void)requestSystemContactsOnce
@@ -111,26 +145,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             }
         }];
     });
-}
-
-- (BOOL)isSystemContactsAuthorized
-{
-    return self.systemContactsFetcher.isAuthorized;
-}
-
-- (BOOL)isSystemContactsDenied
-{
-    return self.systemContactsFetcher.isDenied;
-}
-
-- (BOOL)systemContactsHaveBeenRequestedAtLeastOnce
-{
-    return self.systemContactsFetcher.systemContactsHaveBeenRequestedAtLeastOnce;
-}
-
-- (BOOL)supportsContactEditing
-{
-    return self.systemContactsFetcher.supportsContactEditing;
 }
 
 #pragma mark - CNContacts
@@ -190,12 +204,16 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 }
 
 - (void)systemContactsFetcher:(SystemContactsFetcher *)systemContactsFetcher
-       hasAuthorizationStatus:(enum ContactStoreAuthorizationStatus)authorizationStatus
+       hasAuthorizationStatus:(RawContactAuthorizationStatus)authorizationStatus
 {
-    if (authorizationStatus == ContactStoreAuthorizationStatusRestricted
-        || authorizationStatus == ContactStoreAuthorizationStatusDenied) {
-        // Clear the contacts cache if access to the system contacts is revoked.
-        [self updateWithContacts:@[] didLoad:NO isUserRequested:NO];
+    switch (authorizationStatus) {
+        case RawContactAuthorizationStatusRestricted:
+        case RawContactAuthorizationStatusDenied:
+            // Clear the contacts cache if access to the system contacts is revoked.
+            [self updateWithContacts:@[] didLoad:NO isUserRequested:NO];
+        case RawContactAuthorizationStatusNotDetermined:
+        case RawContactAuthorizationStatusAuthorized:
+            break;
     }
 }
 

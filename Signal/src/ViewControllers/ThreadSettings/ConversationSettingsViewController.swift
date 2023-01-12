@@ -186,20 +186,34 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         updateTableContents()
     }
 
+    private var shouldShowEditButton: Bool {
+        if isGroupThread {
+            return true
+        }
+        switch contactsManagerImpl.editingAuthorization {
+        case .denied, .restricted:
+            return false
+        case .authorized:
+            return true
+        }
+    }
+
     func updateNavigationBar() {
         guard canEditConversationAttributes else {
             navigationItem.rightBarButtonItem = nil
             return
         }
 
-        if isGroupThread || contactsManagerImpl.isSystemContactsAuthorized {
+        if shouldShowEditButton {
             navigationItem.rightBarButtonItem = UIBarButtonItem(
-                title: NSLocalizedString("CONVERSATION_SETTINGS_EDIT",
-                                         comment: "Label for the 'edit' button in conversation settings view."),
+                title: NSLocalizedString(
+                    "CONVERSATION_SETTINGS_EDIT",
+                    comment: "Label for the 'edit' button in conversation settings view."
+                ),
                 style: .plain,
                 target: self,
-                action: #selector(editButtonWasPressed))
-
+                action: #selector(editButtonWasPressed)
+            )
         } else {
             navigationItem.rightBarButtonItem = nil
         }
@@ -336,22 +350,29 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     func showAddToSystemContactsActionSheet(contactThread: TSContactThread) {
         let actionSheet = ActionSheetController()
-        let createNewTitle = NSLocalizedString("CONVERSATION_SETTINGS_NEW_CONTACT",
-                                               comment: "Label for 'new contact' button in conversation settings view.")
-        actionSheet.addAction(ActionSheetAction(title: createNewTitle,
-                                                style: .default,
-                                                handler: { [weak self] _ in
-                                                    self?.presentContactViewController()
-        }))
+        let createNewTitle = NSLocalizedString(
+            "CONVERSATION_SETTINGS_NEW_CONTACT",
+            comment: "Label for 'new contact' button in conversation settings view."
+        )
+        actionSheet.addAction(ActionSheetAction(
+            title: createNewTitle,
+            style: .default,
+            handler: { [weak self] _ in
+                self?.presentContactViewController()
+            }
+        ))
 
-        let addToExistingTitle = NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
-                                                   comment: "Label for 'new contact' button in conversation settings view.")
-        actionSheet.addAction(ActionSheetAction(title: addToExistingTitle,
-                                                style: .default,
-                                                handler: { [weak self] _ in
-                                                    self?.presentAddToContactViewController(address:
-                                                        contactThread.contactAddress)
-        }))
+        let addToExistingTitle = NSLocalizedString(
+            "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
+            comment: "Label for 'new contact' button in conversation settings view."
+        )
+        actionSheet.addAction(ActionSheetAction(
+            title: addToExistingTitle,
+            style: .default,
+            handler: { [weak self] _ in
+                self?.presentAddToContactViewController(address: contactThread.contactAddress)
+            }
+        ))
 
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
@@ -497,23 +518,18 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     func presentContactViewController() {
-        if !contactsManagerImpl.supportsContactEditing {
-            owsFailDebug("Contact editing not supported")
-            return
+        guard let navigationController else {
+            return owsFailDebug("Missing navigationController.")
         }
-        guard let contactThread = thread as? TSContactThread else {
-            owsFailDebug("Invalid thread.")
-            return
-        }
-
-        guard let contactViewController =
-                contactsViewHelper.contactViewController(for: contactThread.contactAddress, editImmediately: true) else {
-            owsFailDebug("Unexpectedly missing contact VC")
-            return
-        }
-
-        contactViewController.delegate = self
-        navigationController?.pushViewController(contactViewController, animated: true)
+        contactsViewHelper.checkEditingAuthorization(
+            authorizedBehavior: .pushViewController(on: navigationController, viewController: {
+                guard let contactThread = self.thread as? TSContactThread else { return nil }
+                let result = self.contactsViewHelper.contactViewController(for: contactThread.contactAddress, editImmediately: true)
+                result.delegate = self
+                return result
+            }),
+            unauthorizedBehavior: .presentError(from: self)
+        )
     }
 
     func presentAvatarViewController() {
@@ -537,20 +553,15 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     private func presentAddToContactViewController(address: SignalServiceAddress) {
-
-        if !contactsManagerImpl.supportsContactEditing {
-            // Should not expose UI that lets the user get here.
-            owsFailDebug("Contact editing not supported.")
-            return
+        guard let navigationController else {
+            return owsFailDebug("Missing navigationController.")
         }
-
-        if !contactsManagerImpl.isSystemContactsAuthorized {
-            contactsViewHelper.presentMissingContactAccessAlertController(from: self)
-            return
-        }
-
-        let viewController = OWSAddToContactViewController(address: address)
-        navigationController?.pushViewController(viewController, animated: true)
+        contactsViewHelper.checkEditingAuthorization(
+            authorizedBehavior: .pushViewController(on: navigationController, viewController: {
+                OWSAddToContactViewController(address: address)
+            }),
+            unauthorizedBehavior: .presentError(from: self)
+        )
     }
 
     func didTapLeaveGroup() {

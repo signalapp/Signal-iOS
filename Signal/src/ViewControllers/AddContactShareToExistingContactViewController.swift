@@ -36,17 +36,6 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
 
     // MARK: - ContactsPickerDelegate
 
-    func contactsPicker(_: ContactsPicker, contactFetchDidFail error: NSError) {
-        owsFailDebug("with error: \(error)")
-
-        guard let navigationController = self.navigationController else {
-            owsFailDebug("navigationController was unexpectedly nil")
-            return
-        }
-
-        navigationController.popViewController(animated: true)
-    }
-
     func contactsPickerDidCancel(_: ContactsPicker) {
         Logger.debug("")
         guard let navigationController = self.navigationController else {

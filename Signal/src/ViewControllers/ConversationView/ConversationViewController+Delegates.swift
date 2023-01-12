@@ -75,14 +75,6 @@ extension ConversationViewController: AttachmentApprovalViewControllerDataSource
 
 extension ConversationViewController: ContactsPickerDelegate {
 
-    public func contactsPicker(_: ContactsPicker, contactFetchDidFail error: NSError) {
-        AssertIsOnMainThread()
-
-        Logger.verbose("Error: \(error)")
-
-        dismiss(animated: true, completion: nil)
-    }
-
     public func contactsPickerDidCancel(_: ContactsPicker) {
         AssertIsOnMainThread()
 

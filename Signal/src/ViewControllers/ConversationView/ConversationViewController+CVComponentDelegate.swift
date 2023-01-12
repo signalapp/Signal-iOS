@@ -737,54 +737,51 @@ extension ConversationViewController: CVComponentDelegate {
         UIApplication.shared.open(URL(string: url)!, options: [:], completionHandler: nil)
     }
 
-    public func didTapUpdateSystemContact(_ address: SignalServiceAddress,
-                                          newNameComponents: PersonNameComponents) {
-        AssertIsOnMainThread()
-
-        guard contactsManagerImpl.supportsContactEditing else {
-            owsFailDebug("Contact editing unexpectedly unsupported")
-            return
+    public func didTapUpdateSystemContact(_ address: SignalServiceAddress, newNameComponents: PersonNameComponents) {
+        guard let navigationController else {
+            return owsFailDebug("Missing navigationController.")
         }
-
-        guard let contactViewController = contactsViewHelper.contactViewController(for: address,
-                                                                                   editImmediately: true,
-                                                                                   addToExisting: nil,
-                                                                                   updatedNameComponents: newNameComponents) else {
-            owsFailDebug("Could not build contact view.")
-            return
-        }
-        contactViewController.delegate = self
-        navigationController?.pushViewController(contactViewController, animated: true)
+        contactsViewHelper.checkEditingAuthorization(
+            authorizedBehavior: .pushViewController(on: navigationController, viewController: {
+                let result = self.contactsViewHelper.contactViewController(
+                    for: address,
+                    editImmediately: true,
+                    addToExisting: nil,
+                    updatedNameComponents: newNameComponents
+                )
+                result.delegate = self
+                return result
+            }),
+            unauthorizedBehavior: .presentError(from: self)
+        )
     }
 
-    public func didTapPhoneNumberChange(uuid: UUID,
-                                        phoneNumberOld: String,
-                                        phoneNumberNew: String) {
-        AssertIsOnMainThread()
-
-        guard contactsManagerImpl.supportsContactEditing else {
-            owsFailDebug("Contact editing unexpectedly unsupported")
-            return
+    public func didTapPhoneNumberChange(uuid: UUID, phoneNumberOld: String, phoneNumberNew: String) {
+        guard let navigationController else {
+            return owsFailDebug("Missing navigationController.")
         }
+        contactsViewHelper.checkEditingAuthorization(
+            authorizedBehavior: .pushViewController(on: navigationController, viewController: {
+                guard let existingContact: CNContact = self.databaseStorage.read(block: {
+                    guard let contact = self.contactsManagerImpl.contact(forPhoneNumber: phoneNumberOld, transaction: $0) else { return nil }
+                    return self.contactsManager.cnContact(withId: contact.cnContactId)
+                }) else {
+                    owsFailDebug("Missing existing contact for phone number change.")
+                    return nil
+                }
 
-        guard let existingContact: CNContact = databaseStorage.read(block: {
-            guard let contact = contactsManagerImpl.contact(forPhoneNumber: phoneNumberOld, transaction: $0) else { return nil }
-            return contactsManager.cnContact(withId: contact.cnContactId)
-        }) else {
-            owsFailDebug("Missing existing contact for phone number change.")
-            return
-        }
-
-        let address = SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumberNew)
-        guard let contactViewController = contactsViewHelper.contactViewController(for: address,
-                                                                                   editImmediately: true,
-                                                                                   addToExisting: existingContact,
-                                                                                   updatedNameComponents: nil) else {
-            owsFailDebug("Could not build contact view.")
-            return
-        }
-        contactViewController.delegate = self
-        navigationController?.pushViewController(contactViewController, animated: true)
+                let address = SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumberNew)
+                let result = self.contactsViewHelper.contactViewController(
+                    for: address,
+                    editImmediately: true,
+                    addToExisting: existingContact,
+                    updatedNameComponents: nil
+                )
+                result.delegate = self
+                return result
+            }),
+            unauthorizedBehavior: .presentError(from: self)
+        )
     }
 
     public func didTapViewOnceAttachment(_ interaction: TSInteraction) {

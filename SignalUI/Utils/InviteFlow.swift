@@ -130,13 +130,6 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
         }
     }
 
-    public func contactsPicker(_: ContactsPicker, contactFetchDidFail error: NSError) {
-        Logger.error("with error: \(error)")
-        popToPresentingViewController(animated: true) {
-            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("ERROR_COULD_NOT_FETCH_CONTACTS", comment: "Error indicating that the phone's contacts could not be retrieved."))
-        }
-    }
-
     public func contactsPickerDidCancel(_: ContactsPicker) {
         Logger.debug("")
         popToPresentingViewController(animated: true)
@@ -158,11 +151,19 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
     }
 
     private func presentInviteFlow(channel: Channel) {
+        guard let presentingViewController else { return }
+
         self.channel = channel
-        let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: channel.cellSubtitleType)
-        picker.contactsPickerDelegate = self
-        picker.title = OWSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
-        presentViewController(picker, animated: true)
+        contactsViewHelper.checkSharingAuthorization(
+            purpose: .invite,
+            authorizedBehavior: .runAction({
+                let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: channel.cellSubtitleType)
+                picker.contactsPickerDelegate = self
+                picker.title = OWSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
+                self.presentViewController(picker, animated: true)
+            }),
+            unauthorizedBehavior: .presentError(from: presentingViewController)
+        )
     }
 
     public func dismissAndSendSMSTo(phoneNumbers: [String]) {

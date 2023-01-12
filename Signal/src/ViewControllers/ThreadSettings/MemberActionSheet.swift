@@ -198,61 +198,33 @@ class MemberActionSheet: OWSTableSheetViewController {
             }
         ))
 
-        if contactsManagerImpl.supportsContactEditing {
-            let isSystemContact = databaseStorage.read { transaction in
-                contactsManager.isSystemContact(address: address, transaction: transaction)
-            }
-            if isSystemContact {
-                section.add(.actionItem(
-                    icon: .settingsUserInContacts,
-                    name: NSLocalizedString(
-                        "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT",
-                        comment: "Indicates that user is in the system contacts list."
-                    ),
-                    accessibilityIdentifier: "MemberActionSheet.contact",
-                    actionBlock: { [weak self] in
-                        guard let self = self,
-                              let fromViewController = self.fromViewController,
-                              let navController = fromViewController.navigationController else { return }
-                        self.dismiss(animated: true) {
-                            guard let contactVC = self.contactsViewHelper.contactViewController(
-                                for: self.address,
-                                editImmediately: false
-                            ) else {
-                                return owsFailDebug("unexpectedly failed to present contact view")
-                             }
-                             self.strongSelf = self
-                             contactVC.delegate = self
-                             navController.pushViewController(contactVC, animated: true)
-                        }
-                    }
-                ))
-            } else {
-                section.add(.actionItem(
-                    icon: .settingsAddToContacts,
-                    name: NSLocalizedString(
-                        "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS",
-                                            comment: "button in conversation settings view."
-                    ),
-                    accessibilityIdentifier: "MemberActionSheet.add_to_contacts",
-                    actionBlock: { [weak self] in
-                        guard let self = self,
-                              let fromViewController = self.fromViewController,
-                              let navController = fromViewController.navigationController else { return }
-                        self.dismiss(animated: true) {
-                            guard let contactVC = self.contactsViewHelper.contactViewController(
-                                for: self.address,
-                                editImmediately: true
-                            ) else {
-                                return owsFailDebug("unexpectedly failed to present contact view")
-                             }
-                             self.strongSelf = self
-                             contactVC.delegate = self
-                             navController.pushViewController(contactVC, animated: true)
-                        }
-                    }
-                ))
-            }
+        let isSystemContact = databaseStorage.read { transaction in
+            contactsManager.isSystemContact(address: address, transaction: transaction)
+        }
+        if isSystemContact {
+            section.add(.actionItem(
+                icon: .settingsUserInContacts,
+                name: NSLocalizedString(
+                    "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT",
+                    comment: "Indicates that user is in the system contacts list."
+                ),
+                accessibilityIdentifier: "MemberActionSheet.contact",
+                actionBlock: { [weak self] in
+                    self?.handleContactAction(editImmediately: false)
+                }
+            ))
+        } else {
+            section.add(.actionItem(
+                icon: .settingsAddToContacts,
+                name: NSLocalizedString(
+                    "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS",
+                    comment: "button in conversation settings view."
+                ),
+                accessibilityIdentifier: "MemberActionSheet.add_to_contacts",
+                actionBlock: { [weak self] in
+                    self?.handleContactAction(editImmediately: true)
+                }
+            ))
         }
 
         section.add(.actionItem(
@@ -269,6 +241,29 @@ class MemberActionSheet: OWSTableSheetViewController {
                 }
             }
         ))
+    }
+
+    private func handleContactAction(editImmediately: Bool) {
+        guard
+            let viewController = fromViewController,
+            let navigationController = viewController.navigationController
+        else {
+            return
+        }
+        self.dismiss(animated: true) {
+            self.contactsViewHelper.checkEditingAuthorization(
+                authorizedBehavior: .pushViewController(on: navigationController, viewController: {
+                    let result = self.contactsViewHelper.contactViewController(
+                        for: self.address,
+                        editImmediately: editImmediately
+                    )
+                    self.strongSelf = self
+                    result.delegate = self
+                    return result
+                }),
+                unauthorizedBehavior: .presentError(from: viewController)
+            )
+        }
     }
 }
 

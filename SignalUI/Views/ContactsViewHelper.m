@@ -250,45 +250,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Editing
 
-- (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController
-{
-    OWSAssertDebug(!CurrentAppContext().isNSE);
-
-    [ContactsViewHelper presentMissingContactAccessAlertControllerFromViewController:viewController];
-}
-
-+ (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController
-{
-    OWSAssertDebug(!CurrentAppContext().isNSE);
-
-    ActionSheetController *alert = [[ActionSheetController alloc]
-        initWithTitle:OWSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
-                                        : @"Alert title for when the user has just tried to edit a "
-                                          @"contacts after declining to give Signal contacts "
-                                          @"permissions")
-              message:OWSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY", comment
-                                        : @"Alert body for when the user has just tried to edit a "
-                                          @"contacts after declining to give Signal contacts "
-                                          @"permissions")];
-
-    [alert addAction:[[ActionSheetAction alloc]
-                                   initWithTitle:OWSLocalizedString(@"AB_PERMISSION_MISSING_ACTION_NOT_NOW",
-                                                     @"Button text to dismiss missing contacts permission alert")
-                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"not_now")
-                                           style:ActionSheetActionStyleCancel
-                                         handler:nil]];
-
-    ActionSheetAction *_Nullable openSystemSettingsAction =
-        [AppContextUtils openSystemSettingsActionWithCompletion:nil];
-    if (openSystemSettingsAction) {
-        [alert addAction:openSystemSettingsAction];
-    }
-
-    [viewController presentActionSheet:alert];
-}
-
-- (nullable CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
-                                                      editImmediately:(BOOL)shouldEditImmediately
+- (CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
+                                             editImmediately:(BOOL)shouldEditImmediately
 {
     OWSAssertDebug(!CurrentAppContext().isNSE);
 
@@ -298,27 +261,16 @@ NS_ASSUME_NONNULL_BEGIN
                            updatedNameComponents:nil];
 }
 
-- (nullable CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
-                                                      editImmediately:(BOOL)shouldEditImmediately
-                                               addToExistingCnContact:(nullable CNContact *)existingContact
-                                                updatedNameComponents:
-                                                    (nullable NSPersonNameComponents *)updatedNameComponents
+- (CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
+                                             editImmediately:(BOOL)shouldEditImmediately
+                                      addToExistingCnContact:(nullable CNContact *)existingContact
+                                       updatedNameComponents:(nullable NSPersonNameComponents *)updatedNameComponents
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(!CurrentAppContext().isNSE);
+    OWSAssertDebug(self.contactsManagerImpl.editingAuthorization == ContactAuthorizationForEditingAuthorized);
 
     SignalAccount *signalAccount = [self fetchSignalAccountForAddress:address];
-
-    if (!self.contactsManagerImpl.supportsContactEditing) {
-        // Should not expose UI that lets the user get here.
-        OWSFailDebug(@"Contact editing not supported.");
-        return nil;
-    }
-
-    if (!self.contactsManagerImpl.isSystemContactsAuthorized) {
-        [self presentMissingContactAccessAlertControllerFromViewController:CurrentAppContext().frontmostViewController];
-        return nil;
-    }
 
     CNContactViewController *_Nullable contactViewController;
     CNContact *_Nullable cnContact = nil;

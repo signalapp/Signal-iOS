@@ -144,52 +144,39 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     // MARK: -
 
     private func presentNewContactView(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
-        guard contactsManagerImpl.supportsContactEditing else {
-            owsFailDebug("Contact editing not supported")
-            return
-        }
-
-        guard let systemContact = OWSContacts.systemContact(for: contactShare.dbRecord, imageData: contactShare.avatarImageData) else {
-            owsFailDebug("Could not derive system contact.")
-            return
-        }
-
-        guard contactsManagerImpl.isSystemContactsAuthorized else {
-            ContactsViewHelper.presentMissingContactAccessAlertController(from: fromViewController)
-            return
-        }
-
-        let contactViewController = CNContactViewController(forNewContact: systemContact)
-        contactViewController.delegate = self
-        contactViewController.allowsActions = false
-        contactViewController.allowsEditing = true
-        contactViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: CommonStrings.cancelButton,
-                                                                                 style: .plain,
-                                                                                 target: self,
-                                                                                 action: #selector(didFinishEditingContact))
-
-        let modal = OWSNavigationController(rootViewController: contactViewController)
-        fromViewController.present(modal, animated: true)
+        contactsViewHelper.checkEditingAuthorization(
+            authorizedBehavior: .runAction({
+                guard let systemContact = OWSContacts.systemContact(for: contactShare.dbRecord, imageData: contactShare.avatarImageData) else {
+                    owsFailDebug("Could not derive system contact.")
+                    return
+                }
+                let contactViewController = CNContactViewController(forNewContact: systemContact)
+                contactViewController.delegate = self
+                contactViewController.allowsActions = false
+                contactViewController.allowsEditing = true
+                contactViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(
+                    title: CommonStrings.cancelButton,
+                    style: .plain,
+                    target: self,
+                    action: #selector(self.didFinishEditingContact)
+                )
+                let modal = OWSNavigationController(rootViewController: contactViewController)
+                fromViewController.present(modal, animated: true)
+            }),
+            unauthorizedBehavior: .presentError(from: fromViewController)
+        )
     }
 
     private func presentSelectAddToExistingContactView(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
-        guard contactsManagerImpl.supportsContactEditing else {
-            owsFailDebug("Contact editing not supported")
-            return
-        }
-
-        guard contactsManagerImpl.isSystemContactsAuthorized else {
-            ContactsViewHelper.presentMissingContactAccessAlertController(from: fromViewController)
-            return
-        }
-
         guard let navigationController = fromViewController.navigationController else {
-            owsFailDebug("missing navigationController")
-            return
+            return owsFailDebug("Missing navigationController.")
         }
-
-        let viewController = AddContactShareToExistingContactViewController(contactShare: contactShare)
-        navigationController.pushViewController(viewController, animated: true)
+        contactsViewHelper.checkEditingAuthorization(
+            authorizedBehavior: .pushViewController(on: navigationController, viewController: {
+                AddContactShareToExistingContactViewController(contactShare: contactShare)
+            }),
+            unauthorizedBehavior: .presentError(from: fromViewController)
+        )
     }
 
     // MARK: - CNContactViewControllerDelegate

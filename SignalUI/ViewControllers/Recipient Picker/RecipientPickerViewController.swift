@@ -113,6 +113,88 @@ private extension RecipientPickerViewController {
     }
 }
 
+// MARK: - No Contacts
+
+extension RecipientPickerViewController {
+    @objc
+    func shouldNoContactsModeBeActive() -> Bool {
+        switch contactsManagerImpl.editingAuthorization {
+        case .denied, .restricted:
+            // don't show "no signal contacts", show "no contact access"
+            return false
+        case .authorized:
+            return (
+                contactsViewHelper.hasUpdatedContactsAtLeastOnce
+                && allSignalAccounts().isEmpty
+                && !preferences.hasDeclinedNoContactsView()
+            )
+        }
+    }
+
+    @objc
+    func noContactsTableItem() -> OWSTableItem {
+        return OWSTableItem.softCenterLabel(
+            withText: OWSLocalizedString(
+                "SETTINGS_BLOCK_LIST_NO_CONTACTS",
+                comment: "A label that indicates the user has no Signal contacts that they haven't blocked."
+            ),
+            customRowHeight: UITableView.automaticDimension
+        )
+    }
+
+    @objc
+    func loadingContactsTableItem() -> OWSTableItem {
+        let cell = OWSTableItem.newCell()
+
+        let activityIndicatorView = UIActivityIndicatorView(style: .gray)
+        cell.contentView.addSubview(activityIndicatorView)
+        activityIndicatorView.startAnimating()
+        activityIndicatorView.autoCenterInSuperview()
+        activityIndicatorView.setCompressionResistanceHigh()
+        activityIndicatorView.setContentHuggingHigh()
+
+        // Hide separator for loading cell. The loading cell doesn't really feel like a cell
+        cell.backgroundView = UIView()
+
+        cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "loading")
+
+        return OWSTableItem(
+            customCellBlock: { cell },
+            customRowHeight: 40
+        )
+    }
+
+    @objc
+    func contactAccessReminderSection() -> OWSTableSection? {
+        let tableItem: OWSTableItem
+        switch contactsManagerImpl.editingAuthorization {
+        case .authorized, .restricted:
+            return nil
+        case .denied:
+            tableItem = contactAccessDeniedReminderItem()
+        }
+        return OWSTableSection(items: [tableItem])
+    }
+
+    private func contactAccessDeniedReminderItem() -> OWSTableItem {
+        return OWSTableItem(customCellBlock: {
+            let reminderView = ReminderView.nag(
+                text: OWSLocalizedString(
+                    "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION",
+                    comment: "Multi-line label explaining why compose-screen contact picker is empty."),
+                tapAction: { CurrentAppContext().openSystemSettings() }
+            )
+
+            let cell = OWSTableItem.newCell()
+            cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "missing_contacts")
+            cell.contentView.addSubview(reminderView)
+            reminderView.autoPinEdgesToSuperviewEdges()
+
+            return cell
+        })
+    }
+}
+
 // MARK: - Contacts, Connections, & Groups
 
 extension RecipientPickerViewController {

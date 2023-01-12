@@ -270,16 +270,17 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
     }
 
     private func presentContactUpdateSheet(for address: SignalServiceAddress) {
-        owsAssertDebug(navigationController != nil)
-        guard contactsManagerImpl.supportsContactEditing else {
-            return owsFailDebug("Contact editing unsupported")
+        guard let navigationController else {
+            return owsFailDebug("Missing navigationController.")
         }
-        guard let contactVC = contactsViewHelper.contactViewController(for: address, editImmediately: true) else {
-            return owsFailDebug("Failed to create contact view controller")
-        }
-
-        contactVC.delegate = self
-        navigationController?.pushViewController(contactVC, animated: true)
+        contactsViewHelper.checkEditingAuthorization(
+            authorizedBehavior: .pushViewController(on: navigationController, viewController: {
+                let result = self.contactsViewHelper.contactViewController(for: address, editImmediately: true)
+                result.delegate = self
+                return result
+            }),
+            unauthorizedBehavior: .presentError(from: self)
+        )
         // We observe contact updates and will automatically update our model in response
     }
 
@@ -301,7 +302,7 @@ extension NameCollisionResolutionViewController: CNContactViewControllerDelegate
 
     func shouldShowContactUpdateAction(for address: SignalServiceAddress) -> Bool {
         databaseStorage.read { transaction in
-            contactsManager.isSystemContact(address: address, transaction: transaction) && contactsManagerImpl.supportsContactEditing
+            contactsManager.isSystemContact(address: address, transaction: transaction)
         }
     }
 

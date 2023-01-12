@@ -359,31 +359,10 @@ const NSUInteger kMinimumSearchLength = 1;
 
     __weak __typeof(self) weakSelf = self;
 
-    // App is killed and restarted when the user changes their contact permissions, so need need to "observe" anything
-    // to re-render this.
-    if (self.contactsManagerImpl.isSystemContactsDenied) {
-        OWSTableItem *contactReminderItem = [OWSTableItem
-            itemWithCustomCellBlock:^{
-                UITableViewCell *cell = [OWSTableItem newCell];
-
-                ReminderView *reminderView = [ReminderView
-                    nagWithText:OWSLocalizedString(@"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION",
-                                    @"Multi-line label explaining why compose-screen contact picker is empty.")
-                      tapAction:^{
-                    [CurrentAppContext() openSystemSettings];
-                      }];
-                [cell.contentView addSubview:reminderView];
-                [reminderView autoPinEdgesToSuperviewEdges];
-
-                cell.accessibilityIdentifier
-                    = ACCESSIBILITY_IDENTIFIER_WITH_NAME(RecipientPickerViewController, @"missing_contacts");
-
-                return cell;
-            }
-                        actionBlock:nil];
-
-        OWSTableSection *reminderSection = [OWSTableSection new];
-        [reminderSection addItem:contactReminderItem];
+    // App is killed and restarted when the user changes their contact
+    // permissions, so no need to "observe" anything to re-render this.
+    OWSTableSection *reminderSection = [self contactAccessReminderSection];
+    if (reminderSection != nil) {
         [contents addSection:reminderSection];
     }
 
@@ -429,7 +408,7 @@ const NSUInteger kMinimumSearchLength = 1;
                                     }]];
     }
 
-    if (self.contactsManagerImpl.isSystemContactsAuthorized && self.shouldShowInvites && !isSearching) {
+    if (self.shouldShowInvites && !isSearching && self.contactsManagerImpl.sharingAuthorization != ContactAuthorizationForSharingDenied) {
         // Invite Contacts
         [staticSection
             addItem:[OWSTableItem
@@ -553,40 +532,18 @@ const NSUInteger kMinimumSearchLength = 1;
         // No Contacts
         OWSTableSection *contactsSection = [OWSTableSection new];
 
-        if (self.contactsManagerImpl.isSystemContactsAuthorized) {
-            if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce) {
-
-                [contactsSection
-                    addItem:[OWSTableItem
-                                softCenterLabelItemWithText:OWSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
-                                                                @"A label that indicates the user has no Signal "
-                                                                @"contacts that they haven't blocked.")
-                                            customRowHeight:UITableViewAutomaticDimension]];
-            } else {
-                UITableViewCell *loadingCell = [OWSTableItem newCell];
-                OWSAssertDebug(loadingCell.contentView);
-
-                UIActivityIndicatorView *activityIndicatorView =
-                    [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-                [loadingCell.contentView addSubview:activityIndicatorView];
-                [activityIndicatorView startAnimating];
-
-                [activityIndicatorView autoCenterInSuperview];
-                [activityIndicatorView setCompressionResistanceHigh];
-                [activityIndicatorView setContentHuggingHigh];
-
-                // hide separator for loading cell. The loading cell doesn't really feel like a cell
-                loadingCell.backgroundView = [UIView new];
-
-                loadingCell.accessibilityIdentifier
-                    = ACCESSIBILITY_IDENTIFIER_WITH_NAME(RecipientPickerViewController, @"loading");
-
-                OWSTableItem *loadingItem = [OWSTableItem
-                    itemWithCustomCellBlock:^{ return loadingCell; }
-                            customRowHeight:40
-                                actionBlock:nil];
-                [contactsSection addItem:loadingItem];
-            }
+        switch (self.contactsManagerImpl.editingAuthorization) {
+            case ContactAuthorizationForEditingDenied:
+            case ContactAuthorizationForEditingRestricted:
+                // Do nothing.
+                break;
+            case ContactAuthorizationForEditingAuthorized:
+                if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce) {
+                    [contactsSection addItem:[self noContactsTableItem]];
+                } else {
+                    [contactsSection addItem:[self loadingContactsTableItem]];
+                }
+                break;
         }
 
         return @[ contactsSection ];
@@ -764,17 +721,7 @@ const NSUInteger kMinimumSearchLength = 1;
 
 - (void)showContactAppropriateViews
 {
-    if (self.contactsManagerImpl.isSystemContactsAuthorized) {
-        if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce && self.allSignalAccounts.count < 1
-            && ![Environment.shared.preferences hasDeclinedNoContactsView]) {
-            self.isNoContactsModeActive = YES;
-        } else {
-            self.isNoContactsModeActive = NO;
-        }
-    } else {
-        // don't show "no signal contacts", show "no contact access"
-        self.isNoContactsModeActive = NO;
-    }
+    self.isNoContactsModeActive = [self shouldNoContactsModeBeActive];
 }
 
 - (void)newGroupButtonPressed

@@ -207,9 +207,7 @@ extension ConversationSettingsViewController {
     }
 
     private func addSystemContactItemIfNecessary(to section: OWSTableSection) {
-        guard !thread.isNoteToSelf,
-              let contactThread = thread as? TSContactThread,
-              contactsManagerImpl.supportsContactEditing else { return }
+        guard !thread.isNoteToSelf, let contactThread = thread as? TSContactThread else { return }
 
         if hasExistingSystemContact {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
@@ -218,20 +216,21 @@ extension ConversationSettingsViewController {
                     return OWSTableItem.newCell()
                 }
 
-                return OWSTableItem.buildDisclosureCell(name: NSLocalizedString(
-                                                            "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT",
-                                                            comment: "Indicates that user is in the system contacts list."),
-                                                        icon: .settingsUserInContacts,
-                                                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "is_in_contacts"))
+                return OWSTableItem.buildDisclosureCell(
+                    name: NSLocalizedString(
+                        "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT",
+                        comment: "Indicates that user is in the system contacts list."
+                    ),
+                    icon: .settingsUserInContacts,
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "is_in_contacts")
+                )
             },
             actionBlock: { [weak self] in
                 guard let self = self else {
                     owsFailDebug("Missing self")
                     return
                 }
-                if self.contactsManagerImpl.supportsContactEditing {
-                    self.presentContactViewController()
-                }
+                self.presentContactViewController()
             }))
         } else {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
@@ -239,10 +238,14 @@ extension ConversationSettingsViewController {
                     owsFailDebug("Missing self")
                     return OWSTableItem.newCell()
                 }
-                return OWSTableItem.buildDisclosureCell(name: NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS",
-                                                                                comment: "button in conversation settings view."),
-                                                        icon: .settingsAddToContacts,
-                                                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "add_to_system_contacts"))
+                return OWSTableItem.buildDisclosureCell(
+                    name: NSLocalizedString(
+                        "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS",
+                        comment: "button in conversation settings view."
+                    ),
+                    icon: .settingsAddToContacts,
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "add_to_system_contacts")
+                )
             },
             actionBlock: { [weak self] in
                 self?.showAddToSystemContactsActionSheet(contactThread: contactThread)

@@ -15,7 +15,6 @@ import UIKit
 
 @objc
 public protocol ContactsPickerDelegate: AnyObject {
-    func contactsPicker(_: ContactsPicker, contactFetchDidFail error: NSError)
     func contactsPickerDidCancel(_: ContactsPicker)
     func contactsPicker(_: ContactsPicker, didSelectContact contact: Contact)
     func contactsPicker(_: ContactsPicker, didSelectMultipleContacts contacts: [Contact])
@@ -135,63 +134,19 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
     // MARK: - Contact Operations
 
     private func reloadContacts() {
-        getContacts( onError: { error in
-            Logger.error("failed to reload contacts with error:\(error)")
-        })
-    }
-
-    private func getContacts(onError errorHandler: @escaping (_ error: Error) -> Void) {
-        switch CNContactStore.authorizationStatus(for: CNEntityType.contacts) {
-        case CNAuthorizationStatus.denied, CNAuthorizationStatus.restricted:
-            let title = NSLocalizedString("INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE", comment: "Alert title when contacts disabled while trying to invite contacts to signal")
-            let body = NSLocalizedString("INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY", comment: "Alert body when contacts disabled while trying to invite contacts to signal")
-
-            let alert = ActionSheetController(title: title, message: body)
-
-            let dismissText = CommonStrings.cancelButton
-
-            let cancelAction = ActionSheetAction(title: dismissText, style: .cancel, handler: {  _ in
-                let error = NSError(domain: "contactsPickerErrorDomain", code: 1, userInfo: [NSLocalizedDescriptionKey: "No Contacts Access"])
-                self.contactsPickerDelegate?.contactsPicker(self, contactFetchDidFail: error)
-                errorHandler(error)
-            })
-            alert.addAction(cancelAction)
-
-            let settingsText = CommonStrings.openSettingsButton
-            let openSettingsAction = ActionSheetAction(title: settingsText, style: .default, handler: { (_) in
-                CurrentAppContext().openSystemSettings()
-            })
-            alert.addAction(openSettingsAction)
-
-            self.presentActionSheet(alert)
-
-        case CNAuthorizationStatus.notDetermined:
-            // This case means the user is prompted for the first time for allowing contacts
-            contactStore.requestAccess(for: CNEntityType.contacts) { (granted, error) -> Void in
-                // At this point an alert is provided to the user to provide access to contacts. This will get invoked if a user responds to the alert
-                if granted {
-                    self.getContacts(onError: errorHandler)
-                } else {
-                    errorHandler(error!)
-                }
-            }
-
-        case  CNAuthorizationStatus.authorized:
-            // Authorization granted by user for this app.
+        guard contactsManagerImpl.sharingAuthorization == .authorized else {
+            return owsFailDebug("Not authorized.")
+        }
+        do {
             var contacts = [CNContact]()
-
-            do {
-                let contactFetchRequest = CNContactFetchRequest(keysToFetch: allowedContactKeys)
-                contactFetchRequest.sortOrder = .userDefault
-                try contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
-                    contacts.append(contact)
-                }
-                self.sections = collatedContacts(contacts)
-            } catch {
-                Logger.error("Failed to fetch contacts with error: \(error)")
+            let contactFetchRequest = CNContactFetchRequest(keysToFetch: allowedContactKeys)
+            contactFetchRequest.sortOrder = .userDefault
+            try contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
+                contacts.append(contact)
             }
-        @unknown default:
-            errorHandler(OWSAssertionError("Unexpected enum value"))
+            self.sections = collatedContacts(contacts)
+        } catch {
+            Logger.error("Failed to fetch contacts with error: \(error)")
         }
     }
 

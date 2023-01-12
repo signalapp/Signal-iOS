@@ -498,7 +498,7 @@ extension ExperienceUpgradeManifest {
     }
 
     private static func checkPreconditionsForContactsPermissionReminder() -> Bool {
-        return CNContactStore.authorizationStatus(for: CNEntityType.contacts) != .authorized
+        return CNContactStore.authorizationStatus(for: .contacts) != .authorized
     }
 
     // MARK: Remote megaphone preconditions
