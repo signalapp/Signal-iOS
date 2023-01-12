@@ -93,7 +93,8 @@ public class FeatureFlags: BaseFlags {
 
     public static let isPrerelease = build.includes(.beta)
 
-    static let contactDiscoveryV2 = build.includes(.internal)
+    @objc
+    public static let contactDiscoveryV2 = build.includes(.internal)
 
     @objc
     public static var notificationServiceExtension: Bool {
