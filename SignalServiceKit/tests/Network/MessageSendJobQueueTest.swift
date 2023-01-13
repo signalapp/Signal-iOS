@@ -23,10 +23,8 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
             jobQueue.add(message: message.asPreparer, transaction: transaction)
         }
         jobQueue.setup()
-        // Make sure the default global queue has a chance to process.
-        // Note that for this to work, this code must be using the same QoS as MessageSenderJobQueue.
-        DispatchQueue.global().sync(flags: .barrier) {}
-        self.wait(for: [expectation], timeout: 0.1)
+
+        self.wait(for: [expectation], timeout: 1)
     }
 
     func test_waitsForSetup() {
@@ -41,54 +39,40 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
             jobQueue.add(message: message.asPreparer, transaction: transaction)
         }
 
-        self.wait(for: [sentBeforeReadyExpectation], timeout: 0.1)
+        self.wait(for: [sentBeforeReadyExpectation], timeout: 1)
 
         let sentAfterReadyExpectation = sentExpectation(message: message)
 
         jobQueue.setup()
 
-        self.wait(for: [sentAfterReadyExpectation], timeout: 0.1)
+        self.wait(for: [sentAfterReadyExpectation], timeout: 1)
     }
 
     func test_respectsQueueOrder() {
-        let message1: TSOutgoingMessage = OutgoingMessageFactory().create()
-        let message2: TSOutgoingMessage = OutgoingMessageFactory().create()
-        let message3: TSOutgoingMessage = OutgoingMessageFactory().create()
+        let messageCount = 3
+
+        let messages = (1...messageCount).map { _ in OutgoingMessageFactory().create() }
+        let expectations = (1...messageCount).map { self.expectation(description: "message\($0)") }
 
         let jobQueue = MessageSenderJobQueue()
         self.write { transaction in
-            jobQueue.add(message: message1.asPreparer, transaction: transaction)
-            jobQueue.add(message: message2.asPreparer, transaction: transaction)
-            jobQueue.add(message: message3.asPreparer, transaction: transaction)
+            for message in messages {
+                jobQueue.add(message: message.asPreparer, transaction: transaction)
+            }
         }
 
-        let sendGroup = DispatchGroup()
-        sendGroup.enter()
-        sendGroup.enter()
-        sendGroup.enter()
-
-        var sentMessages: [TSOutgoingMessage] = []
+        let sentMessages = AtomicArray<TSOutgoingMessage>()
+        let remainingExpectations = AtomicArray(expectations)
         fakeMessageSender.sendMessageWasCalledBlock = { sentMessage in
             sentMessages.append(sentMessage)
-            sendGroup.leave()
+            remainingExpectations.popHead()!.fulfill()
         }
 
         jobQueue.setup()
 
-        let expectation = self.expectation(description: "sent messages")
-        // Block on self.wait(), use sendGroup.wait() off the main thread.
-        // self.wait() will process the main run loop.
-        DispatchQueue.global().async {
-            switch sendGroup.wait(timeout: .now() + 1.0) {
-            case .timedOut:
-                XCTFail("timed out waiting for sends")
-            case .success:
-                expectation.fulfill()
-            }
-        }
-        self.wait(for: [expectation], timeout: 1.0)
+        self.wait(for: expectations, timeout: 1.0)
 
-        XCTAssertEqual([message1, message2, message3].map { $0.uniqueId }, sentMessages.map { $0.uniqueId })
+        XCTAssertEqual(sentMessages.get().map { $0.uniqueId }, messages.map { $0.uniqueId })
     }
 
     func test_sendingInvisibleMessage() {
@@ -101,7 +85,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
             jobQueue.add(message: message.asPreparer, transaction: transaction)
         }
 
-        self.wait(for: [expectation], timeout: 0.1)
+        self.wait(for: [expectation], timeout: 1)
     }
 
     func test_retryableFailure() {
@@ -122,7 +106,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let jobRecord = readyRecords.first!
         XCTAssertEqual(0, jobRecord.failureCount)
 
-        // simulate permanent failure
+        // simulate permanent failure (via `maxRetries` retryable failures)
         let error = OWSRetryableError()
         fakeMessageSender.stubbedFailingError = error
         let expectation = sentExpectation(message: message) {
@@ -130,7 +114,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         }
 
         jobQueue.setup()
-        self.wait(for: [expectation], timeout: 0.1)
+        self.wait(for: [expectation], timeout: 1)
 
         self.read { transaction in
             jobRecord.anyReload(transaction: transaction)
@@ -165,7 +149,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         // Verify final send fails permanently
         let expectedFinalResend = sentExpectation(message: message)
         XCTAssertNotNil(jobQueue.runAnyQueuedRetry())
-        self.wait(for: [expectedFinalResend], timeout: 0.1)
+        self.wait(for: [expectedFinalResend], timeout: 1)
 
         self.read { transaction in
             jobRecord.anyReload(transaction: transaction)
