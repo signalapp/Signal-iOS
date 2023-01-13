@@ -215,6 +215,7 @@ final public class IndividualCallService: NSObject {
             sentAtTimestamp: sentAtTimestamp,
             callType: callType
         )
+        newCall.individualCall.callId = callId
 
         BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.localId)")
 
