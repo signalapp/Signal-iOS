@@ -280,20 +280,11 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
     OnboardingNavigationController *navController =
         [[OnboardingNavigationController alloc] initWithOnboardingController:onboardingController];
 
-#if TESTABLE_BUILD
-    AccountManager *accountManager = AppEnvironment.shared.accountManager;
-    UITapGestureRecognizer *registerGesture =
-        [[UITapGestureRecognizer alloc] initWithTarget:accountManager action:@selector(fakeRegistration)];
-    registerGesture.numberOfTapsRequired = 8;
-    registerGesture.delaysTouchesEnded = NO;
-    [navController.view addGestureRecognizer:registerGesture];
-#else
     UITapGestureRecognizer *submitLogGesture =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(submitOnboardingLogs)];
     submitLogGesture.numberOfTapsRequired = 8;
     submitLogGesture.delaysTouchesEnded = NO;
     [navController.view addGestureRecognizer:submitLogGesture];
-#endif
 
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     appDelegate.window.rootViewController = navController;

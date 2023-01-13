@@ -459,35 +459,6 @@ public class AccountManager: NSObject {
         }
     }
 
-    @objc
-    public func fakeRegistration() {
-        fakeRegisterForTests(phoneNumber: "+15551231234", uuid: UUID())
-        SignalApp.shared().showConversationSplitView()
-    }
-
-    private func fakeRegisterForTests(phoneNumber: String, uuid: UUID) {
-        let serverAuthToken = generateServerAuthToken()
-        let identityKeyPair = Curve25519.generateKeyPair()
-        let profileKey = OWSAES256Key.generateRandom()
-
-        tsAccountManager.phoneNumberAwaitingVerification = phoneNumber
-        tsAccountManager.uuidAwaitingVerification = uuid
-
-        databaseStorage.write { transaction in
-            // PNI TODO: set a PNI identity key as well.
-            self.identityManager.storeIdentityKeyPair(identityKeyPair,
-                                                      for: .aci,
-                                                      transaction: transaction)
-            self.profileManagerImpl.setLocalProfileKey(profileKey,
-                                                       userProfileWriter: .debugging,
-                                                       transaction: transaction)
-            self.tsAccountManager.setStoredServerAuthToken(serverAuthToken,
-                                                           deviceId: 1,
-                                                           transaction: transaction)
-        }
-        completeRegistration()
-    }
-
     private func createPreKeys() -> Promise<Void> {
         return Promise { future in
             TSPreKeyManager.createPreKeys(success: { future.resolve() },
