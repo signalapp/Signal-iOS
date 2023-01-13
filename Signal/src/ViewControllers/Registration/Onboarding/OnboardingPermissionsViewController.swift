@@ -13,6 +13,18 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
 
     private let animationView = AnimationView(name: "notificationPermission")
 
+    let shouldRequestAccessToContacts: Bool
+
+    override public init(onboardingController: OnboardingController) {
+        switch onboardingController.onboardingMode {
+        case .registering: // primary
+            shouldRequestAccessToContacts = true
+        case .provisioning:  // linked
+            shouldRequestAccessToContacts = !FeatureFlags.contactDiscoveryV2
+        }
+        super.init(onboardingController: onboardingController)
+    }
+
     override public func loadView() {
         view = UIView()
         view.addSubview(primaryView)
@@ -25,23 +37,53 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
                                                             target: self,
                                                             action: #selector(skipWasPressed))
 
-        let titleLabel = self.createTitleLabel(text: NSLocalizedString("ONBOARDING_PERMISSIONS_TITLE", comment: "Title of the 'onboarding permissions' view."))
-        titleLabel.accessibilityIdentifier = "onboarding.permissions." + "titleLabel"
+        let titleText: String
+        let explanationText: String
+        let giveAccessText: String
+        if shouldRequestAccessToContacts {
+            titleText = NSLocalizedString(
+                "ONBOARDING_PERMISSIONS_TITLE",
+                comment: "Title of the 'onboarding permissions' view."
+            )
+            explanationText = NSLocalizedString(
+                "ONBOARDING_PERMISSIONS_EXPLANATION",
+                comment: "Explanation in the 'onboarding permissions' view."
+            )
+            giveAccessText = NSLocalizedString(
+                "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON",
+                comment: "Label for the 'give access' button in the 'onboarding permissions' view."
+            )
+        } else {
+            titleText = NSLocalizedString(
+                "LINKED_ONBOARDING_PERMISSIONS_TITLE",
+                comment: "Title of the 'onboarding permissions' view."
+            )
+            explanationText = NSLocalizedString(
+                "LINKED_ONBOARDING_PERMISSIONS_EXPLANATION",
+                comment: "Explanation in the 'onboarding permissions' view."
+            )
+            giveAccessText = NSLocalizedString(
+                "LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON",
+                comment: "Label for the 'give access' button in the 'onboarding permissions' view."
+            )
+        }
 
-        let explanationLabel = self.createExplanationLabel(explanationText: NSLocalizedString("ONBOARDING_PERMISSIONS_EXPLANATION",
-                                                                                  comment: "Explanation in the 'onboarding permissions' view."))
+        let titleLabel = self.createTitleLabel(text: titleText)
+        titleLabel.accessibilityIdentifier = "onboarding.permissions." + "titleLabel"
+        titleLabel.setCompressionResistanceVerticalHigh()
+
+        let explanationLabel = self.createExplanationLabel(explanationText: explanationText)
         explanationLabel.accessibilityIdentifier = "onboarding.permissions." + "explanationLabel"
+        explanationLabel.setCompressionResistanceVerticalHigh()
+
+        let giveAccessButton = self.primaryButton(title: giveAccessText, selector: #selector(giveAccessPressed))
+        giveAccessButton.accessibilityIdentifier = "onboarding.permissions." + "giveAccessButton"
+        giveAccessButton.setCompressionResistanceVerticalHigh()
 
         animationView.loopMode = .playOnce
         animationView.backgroundBehavior = .pauseAndRestore
         animationView.contentMode = .scaleAspectFit
         animationView.setContentHuggingHigh()
-
-        let giveAccessButton = self.primaryButton(title: NSLocalizedString("ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON",
-                                                                    comment: "Label for the 'give access' button in the 'onboarding permissions' view."),
-                                           selector: #selector(giveAccessPressed))
-        giveAccessButton.accessibilityIdentifier = "onboarding.permissions." + "giveAccessButton"
-        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: giveAccessButton)
 
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
@@ -50,7 +92,7 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
             UIView.spacer(withHeight: 60),
             animationView,
             UIView.vStretchingSpacer(minHeight: 80),
-            primaryButtonView
+            OnboardingBaseViewController.horizontallyWrap(primaryButton: giveAccessButton)
         ])
         stackView.axis = .vertical
         stackView.alignment = .fill
@@ -67,9 +109,9 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
 
     // MARK: Requesting permissions
 
-    public static func needsToAskForAnyPermissions() -> Guarantee<Bool> {
-        if CNContactStore.authorizationStatus(for: .contacts) == .notDetermined {
-            return Guarantee.value(true)
+    public func needsToAskForAnyPermissions() -> Guarantee<Bool> {
+        if shouldRequestAccessToContacts, CNContactStore.authorizationStatus(for: .contacts) == .notDetermined {
+            return .value(true)
         }
 
         return Guarantee<Bool> { resolve in
@@ -87,7 +129,7 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
         firstly {
             PushRegistrationManager.shared.registerUserNotificationSettings()
         }.then { _ in
-            self.requestContactsPermission()
+            self.requestContactsPermissionIfNeeded()
         }.done {
             self.onboardingController.onboardingPermissionsDidComplete(viewController: self)
         }.catch { error in
@@ -98,8 +140,12 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
     /// Request contacts permissions.
     ///
     /// Always resolves, even if the user denies the request.
-    private func requestContactsPermission() -> Promise<Void> {
+    private func requestContactsPermissionIfNeeded() -> Promise<Void> {
         Logger.info("")
+
+        guard shouldRequestAccessToContacts else {
+            return .value(())
+        }
 
         let (promise, future) = Promise<Void>.pending()
         CNContactStore().requestAccess(for: CNEntityType.contacts) { (granted, error) -> Void in
@@ -129,12 +175,5 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
         Logger.info("")
 
         requestPermissions()
-    }
-
-    @objc
-    func notNowPressed() {
-        Logger.info("")
-
-        onboardingController.onboardingPermissionsWasSkipped(viewController: self)
     }
 }

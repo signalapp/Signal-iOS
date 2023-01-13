@@ -3457,6 +3457,15 @@
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Linked Devices";
 
+/* Label for the 'give access' button in the 'onboarding permissions' view. */
+"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Allow Notifications";
+
+/* Explanation in the 'onboarding permissions' view. */
+"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications lets you know when you receive messages, calls or updates about new conversation activity.";
+
+/* Title of the 'onboarding permissions' view. */
+"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Allow Notifications";
+
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Linking Device Failed";
 
