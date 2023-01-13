@@ -33,12 +33,13 @@ public protocol ContactsManagerCache: AnyObject {
 @objc
 public class ContactsManagerCacheSummary: NSObject {
     @objc
-    public let contactCount: UInt
+    public let phoneNumberCount: UInt
+
     @objc
     public let signalAccountCount: UInt
 
-    required init(contactCount: UInt, signalAccountCount: UInt) {
-        self.contactCount = contactCount
+    required init(phoneNumberCount: UInt, signalAccountCount: UInt) {
+        self.phoneNumberCount = phoneNumberCount
         self.signalAccountCount = signalAccountCount
     }
 }
@@ -161,26 +162,26 @@ public class ContactsManagerCacheInDatabase: NSObject, ContactsManagerCache {
         // Ignore.
     }
 
-    private static let uniqueIdStore = SDSKeyValueStore(collection: "ContactsManagerCache.uniqueIdStore")
+    private static let deprecated_uniqueIdStore = SDSKeyValueStore(collection: "ContactsManagerCache.uniqueIdStore")
     private static let phoneNumberStore = SDSKeyValueStore(collection: "ContactsManagerCache.phoneNumberStore")
     private static let contactsStore = SDSKeyValueStore(collection: "ContactsManagerCache.allContacts")
 
     private static func serializeContact(_ contact: Contact, label: String) -> Data? {
-        let data = NSKeyedArchiver.archivedData(withRootObject: contact)
-        guard !data.isEmpty else {
-            owsFailDebug("Could not serialize contact: \(label).")
+        do {
+            return try NSKeyedArchiver.archivedData(withRootObject: contact, requiringSecureCoding: false)
+        } catch {
+            owsFailDebug("Could not serialize contact (\(label)): \(error)")
             return nil
         }
-        return data
     }
 
     private static func serializeContacts(_ contacts: [Contact]) -> Data? {
-        let data = NSKeyedArchiver.archivedData(withRootObject: contacts)
-        guard !data.isEmpty else {
-            owsFailDebug("Could not serialize contacts.")
+        do {
+            return try NSKeyedArchiver.archivedData(withRootObject: contacts, requiringSecureCoding: false)
+        } catch {
+            owsFailDebug("Could not serialize contacts: \(error)")
             return nil
         }
-        return data
     }
 
     private static func deserializeContact(data: Data, label: String) -> Contact? {
@@ -231,8 +232,8 @@ public class ContactsManagerCacheInDatabase: NSObject, ContactsManagerCache {
             }
             if contacts.isEmpty {
                 // this legacy code path should be executed only once
-                Self.uniqueIdStore.enumerateKeys(transaction: transaction) { (key, _) in
-                    let data = Self.uniqueIdStore.getData(key, transaction: transaction)
+                Self.deprecated_uniqueIdStore.enumerateKeys(transaction: transaction) { (key, _) in
+                    let data = Self.deprecated_uniqueIdStore.getData(key, transaction: transaction)
                     guard let data = data else {
                         owsFailDebug("Missing data for key: \(key).")
                         return
@@ -244,9 +245,11 @@ public class ContactsManagerCacheInDatabase: NSObject, ContactsManagerCache {
                     contacts.append(contact)
                 }
                 Logger.verbose("did read \(contacts.count) entries using legacy code path")
-                DispatchQueue.sharedBackground.async {
-                    self.databaseStorage.write { transaction in
-                        self.persist(contacts: contacts, transaction: transaction)
+                if !contacts.isEmpty {
+                    DispatchQueue.sharedBackground.async {
+                        self.databaseStorage.write { transaction in
+                            self.persist(contacts: contacts, transaction: transaction)
+                        }
                     }
                 }
             }
@@ -262,20 +265,24 @@ public class ContactsManagerCacheInDatabase: NSObject, ContactsManagerCache {
     }
 
     @objc
-    public func setContactsMaps(_ newContactsMaps: ContactsMaps,
-                                localNumber: String?,
-                                transaction: SDSAnyWriteTransaction) {
+    public func setContactsMaps(
+        _ newContactsMaps: ContactsMaps,
+        localNumber: String?,
+        transaction: SDSAnyWriteTransaction
+    ) {
         self.setContactsMaps(newContactsMaps, localNumber: localNumber, transaction: transaction, oldContactsMaps: nil)
     }
 
-    public func setContactsMaps(_ newContactsMaps: ContactsMaps,
-                                localNumber: String?,
-                                transaction: SDSAnyWriteTransaction,
-                                oldContactsMaps: ContactsMaps?) {
+    fileprivate func setContactsMaps(
+        _ newContactsMaps: ContactsMaps,
+        localNumber: String?,
+        transaction: SDSAnyWriteTransaction,
+        oldContactsMaps: ContactsMaps?
+    ) {
         guard !newContactsMaps.uniqueIdToContactMap.isEmpty else {
             Logger.info("wiping contacts info in db")
             InstrumentsMonitor.measure(category: "runtime", parent: "ContactsManagerCache", name: "wipe") {
-                Self.uniqueIdStore.removeAll(transaction: transaction)
+                Self.deprecated_uniqueIdStore.removeAll(transaction: transaction)
                 Self.phoneNumberStore.removeAll(transaction: transaction)
                 Self.contactsStore.removeAll(transaction: transaction)
             }
@@ -284,76 +291,53 @@ public class ContactsManagerCacheInDatabase: NSObject, ContactsManagerCache {
 
         var shallPersist = true
         InstrumentsMonitor.measure(category: "runtime", parent: "ContactsManagerCache", name: "update") {
-            let checkIfNecessary = oldContactsMaps == nil
-            let oldContactsMaps = oldContactsMaps ?? self.contactsMaps(transaction: transaction)
-            if checkIfNecessary {
-                if oldContactsMaps.isEqualForCache(newContactsMaps) {
-                    Logger.verbose("Ignoring redundant contactsMap update.")
-                    shallPersist = false
+            let oldContactsMaps = oldContactsMaps ?? contactsMaps(transaction: transaction)
+
+            // If there aren't any changes, we don't need to modify anything.
+            if oldContactsMaps.isEqualForCache(newContactsMaps) {
+                Logger.verbose("Ignoring redundant contactsMap update.")
+                shallPersist = false
+                return
+            }
+
+            // Once we load the old contact maps, we can delete `uniqueIdStore`
+            // entirely, which isn't needed after we migrate.
+            Self.deprecated_uniqueIdStore.removeAll(transaction: transaction)
+
+            func removePhoneNumbers(for contact: Contact) {
+                let phoneNumbers = ContactsMaps.phoneNumbers(forContact: contact, localNumber: localNumber)
+                Self.phoneNumberStore.removeValues(forKeys: phoneNumbers, transaction: transaction)
+            }
+
+            func addPhoneNumbers(for contact: Contact) {
+                guard let contactData = Self.serializeContact(contact, label: contact.uniqueId) else {
                     return
                 }
+                for phoneNumber in ContactsMaps.phoneNumbers(forContact: contact, localNumber: localNumber) {
+                    Self.phoneNumberStore.setData(contactData, key: phoneNumber, transaction: transaction)
+                }
             }
 
-            let oldContactsUUIDs = Set<String>(oldContactsMaps.uniqueIdToContactMap.keys)
-            let newContactsUUIDs = Set<String>(newContactsMaps.uniqueIdToContactMap.keys)
-            let deletedUUIDs = oldContactsUUIDs.subtracting(newContactsUUIDs)
-            let newUUIDs = newContactsUUIDs.subtracting(oldContactsUUIDs)
-            let sameUUIDs = oldContactsUUIDs.intersection(newContactsUUIDs)
-
-            for contactUUID in deletedUUIDs {
+            for (contactUUID, oldContact) in oldContactsMaps.uniqueIdToContactMap {
+                guard newContactsMaps.uniqueIdToContactMap[contactUUID] == nil else {
+                    continue
+                }
+                // The contact no longer exists -- remove it.
                 Logger.verbose("deleting system contact with UUID \(contactUUID)")
-                Self.uniqueIdStore.removeValue(forKey: contactUUID, transaction: transaction)
-                if let oldContact = oldContactsMaps.uniqueIdToContactMap[contactUUID] {
-                    let phoneNumbers = ContactsMaps.phoneNumbers(forContact: oldContact, localNumber: localNumber)
-                    if !phoneNumbers.isEmpty {
-                        Self.phoneNumberStore.removeValues(forKeys: phoneNumbers, transaction: transaction)
-                    }
-                }
+                removePhoneNumbers(for: oldContact)
             }
 
-            // check for updates of existing entries
-            for contactUUID in sameUUIDs {
-                if let oldContact = oldContactsMaps.uniqueIdToContactMap[contactUUID], let newContact = newContactsMaps.uniqueIdToContactMap[contactUUID] {
-                    if !newContact.isEqualForCache(oldContact) {
-                        Logger.verbose("updating existing system contact with UUID \(contactUUID)")
-                        let oldPhoneNumbers = ContactsMaps.phoneNumbers(forContact: oldContact, localNumber: localNumber)
-                        if !oldPhoneNumbers.isEmpty {
-                            Self.phoneNumberStore.removeValues(forKeys: oldPhoneNumbers, transaction: transaction)
-                        }
-                        guard let contactData = Self.serializeContact(newContact, label: contactUUID) else {
-                            Self.uniqueIdStore.removeValue(forKey: contactUUID, transaction: transaction)
-                            continue
-                        }
-                        Self.uniqueIdStore.setData(contactData, key: contactUUID, transaction: transaction)
-                        let phoneNumbers = ContactsMaps.phoneNumbers(forContact: newContact, localNumber: localNumber)
-                        if !phoneNumbers.isEmpty {
-                            for phoneNumber in phoneNumbers {
-                                Self.phoneNumberStore.setData(contactData, key: phoneNumber, transaction: transaction)
-                            }
-                        }
-                    }
-                } else {
-                    owsFailDebug("This can't happen (check code): system contact \(contactUUID) is expected to be present in both maps")
-                }
-            }
-
-            // add new entries
-            for contactUUID in newUUIDs {
-                if let contact = newContactsMaps.uniqueIdToContactMap[contactUUID] {
+            for (contactUUID, newContact) in newContactsMaps.uniqueIdToContactMap {
+                switch oldContactsMaps.uniqueIdToContactMap[contactUUID] {
+                case .some(let oldContact) where oldContact.isEqualForCache(newContact):
+                    break
+                case .some(let oldContact):
+                    Logger.verbose("updating existing system contact with UUID \(contactUUID)")
+                    removePhoneNumbers(for: oldContact)
+                    addPhoneNumbers(for: newContact)
+                case .none:
                     Logger.verbose("adding new system contact with UUID \(contactUUID)")
-                    let phoneNumbers = ContactsMaps.phoneNumbers(forContact: contact, localNumber: localNumber)
-                    guard !phoneNumbers.isEmpty else {
-                        continue
-                    }
-                    guard let contactData = Self.serializeContact(contact, label: contact.uniqueId) else {
-                        continue
-                    }
-                    Self.uniqueIdStore.setData(contactData, key: contact.uniqueId, transaction: transaction)
-                    for phoneNumber in phoneNumbers {
-                        Self.phoneNumberStore.setData(contactData, key: phoneNumber, transaction: transaction)
-                    }
-                } else {
-                    owsFailDebug("This can't happen (check code): system contact \(contactUUID) can't be added, because it's missing in uniqueIdToContactMap")
+                    addPhoneNumbers(for: newContact)
                 }
             }
         }
@@ -365,9 +349,9 @@ public class ContactsManagerCacheInDatabase: NSObject, ContactsManagerCache {
     @objc
     public func warmCaches(transaction: SDSAnyReadTransaction) -> ContactsManagerCacheSummary {
         // Only load the summary.
-        let contactCount = Self.uniqueIdStore.numberOfKeys(transaction: transaction)
+        let phoneNumberCount = Self.phoneNumberStore.numberOfKeys(transaction: transaction)
         let signalAccountCount = SignalAccount.anyCount(transaction: transaction)
-        return ContactsManagerCacheSummary(contactCount: contactCount, signalAccountCount: signalAccountCount)
+        return ContactsManagerCacheSummary(phoneNumberCount: phoneNumberCount, signalAccountCount: signalAccountCount)
     }
 
     private func persist(contacts: [Contact], transaction: SDSAnyWriteTransaction) {
@@ -464,30 +448,28 @@ public class ContactsManagerCacheInMemory: NSObject, ContactsManagerCache {
     }
 
     @objc
-    public func setContactsMaps(_ contactsMaps: ContactsMaps,
-                                localNumber: String?,
-                                transaction: SDSAnyWriteTransaction) {
-        var updateInDB = true
-        var oldContactsMaps: ContactsMaps?
-        unfairLock.withLock {
-            oldContactsMaps = contactsMapsCache
-            if oldContactsMaps != nil && oldContactsMaps!.isEqualForCache(contactsMaps) {
-                updateInDB = false
-            } else {
-                // Update cache.
-                contactsMapsCache = contactsMaps
-            }
+    public func setContactsMaps(
+        _ contactsMaps: ContactsMaps,
+        localNumber: String?,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        let oldContactsMaps = unfairLock.withLock {
+            let oldValue = contactsMapsCache
+            contactsMapsCache = contactsMaps
+            return oldValue
         }
-        if updateInDB {
-            contactsManagerCacheInDatabase.setContactsMaps(contactsMaps,
-                                                           localNumber: localNumber,
-                                                           transaction: transaction,
-                                                           oldContactsMaps: oldContactsMaps)
-        }
+        contactsManagerCacheInDatabase.setContactsMaps(
+            contactsMaps,
+            localNumber: localNumber,
+            transaction: transaction,
+            oldContactsMaps: oldContactsMaps
+        )
     }
 
     @objc
     public func warmCaches(transaction: SDSAnyReadTransaction) -> ContactsManagerCacheSummary {
+        var phoneNumberCount: UInt?
+        var signalAccountCount: UInt?
         InstrumentsMonitor.measure(category: "appstart", parent: "caches", name: "warmContactsManagerCache") {
             // We consult the contactsMapsCache when sorting the
             // sortedSignalAccounts, so make sure it is set first.
@@ -495,15 +477,16 @@ public class ContactsManagerCacheInMemory: NSObject, ContactsManagerCache {
             unfairLock.withLock {
                 contactsMapsCache = contactsMaps
             }
+            phoneNumberCount = UInt(contactsMaps.phoneNumberToContactMap.count)
 
             let sortedSignalAccounts = contactsManagerCacheInDatabase.sortedSignalAccounts(transaction: transaction)
             unfairLock.withLock {
                 sortedSignalAccountsCache = sortedSignalAccounts
             }
+            signalAccountCount = UInt(sortedSignalAccounts.count)
         }
         // Don't call contactsManagerCacheInDatabase.warmCaches().
-        return ContactsManagerCacheSummary(contactCount: UInt(contactsMapsCache!.uniqueIdToContactMap.count),
-                                           signalAccountCount: UInt(sortedSignalAccountsCache!.count))
+        return ContactsManagerCacheSummary(phoneNumberCount: phoneNumberCount!, signalAccountCount: signalAccountCount!)
     }
 }
 

@@ -754,6 +754,7 @@
 		5011D1CD29400E7300064098 /* DeviceProvisioningURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */; };
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
 		503614CF282AF657008128B4 /* GiftBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503614CE282AF657008128B4 /* GiftBadgeView.swift */; };
+		503BDDB4296F3E2C00FED3B2 /* ContactsManagerCacheTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503BDDB3296F3E2C00FED3B2 /* ContactsManagerCacheTest.swift */; };
 		5042EAA3287F96FB00C9B19F /* VisibleBadgeResolverTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5042EAA2287F96FB00C9B19F /* VisibleBadgeResolverTest.swift */; };
 		5049FA2F28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA2D28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift */; };
 		5049FA3028BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA2E28BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift */; };
@@ -3065,6 +3066,7 @@
 		503614D1282C5728008128B4 /* fi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = fi; path = translations/fi.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D2282C572F008128B4 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = id; path = translations/id.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D6282C7B76008128B4 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = zh_CN; path = translations/zh_CN.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
+		503BDDB3296F3E2C00FED3B2 /* ContactsManagerCacheTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsManagerCacheTest.swift; sourceTree = "<group>"; };
 		5042EAA2287F96FB00C9B19F /* VisibleBadgeResolverTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisibleBadgeResolverTest.swift; sourceTree = "<group>"; };
 		5049FA2D28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryV2Operation.swift; sourceTree = "<group>"; };
 		5049FA2E28BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryV2Connection.swift; sourceTree = "<group>"; };
@@ -8473,6 +8475,7 @@
 			isa = PBXGroup;
 			children = (
 				F9C612B3284E466B00B2199A /* CGPointExtensionsTest.swift */,
+				503BDDB3296F3E2C00FED3B2 /* ContactsManagerCacheTest.swift */,
 				F992ACC328F8C9D900906038 /* StripeTest.swift */,
 			);
 			path = test;
@@ -10697,6 +10700,7 @@
 				34F1072226D045290053EF4D /* BatchUpdateTest.swift in Sources */,
 				3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */,
 				F9C612B4284E466B00B2199A /* CGPointExtensionsTest.swift in Sources */,
+				503BDDB4296F3E2C00FED3B2 /* ContactsManagerCacheTest.swift in Sources */,
 				954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */,
 				4C6E6C6924241C00009DE948 /* ConversationViewControllerTest.swift in Sources */,
 				34635330256EA52A003C5428 /* ConversationViewTest.swift in Sources */,
