@@ -506,7 +506,7 @@ extension AvatarSettingsViewController: UIImagePickerControllerDelegate, UINavig
 }
 
 extension AvatarSettingsViewController: PHPickerViewControllerDelegate {
-    
+
     @available(iOS 14.0, *)
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
 
@@ -526,9 +526,9 @@ extension AvatarSettingsViewController: PHPickerViewControllerDelegate {
                                     if asset.type == .photo {
                                         let options = PHAssetResourceRequestOptions()
                                         options.isNetworkAccessAllowed = true
-                                        PHAssetResourceManager.default().requestData(for: asset, options: options, dataReceivedHandler: { (data:Data) in
+                                        PHAssetResourceManager.default().requestData(for: asset, options: options, dataReceivedHandler: { (data: Data) in
                                             photoBuffer.append(data)
-                                        }, completionHandler: { (error:Error?) in
+                                        }, completionHandler: { (error: Error?) in
                                             guard let image = UIImage(data: photoBuffer as Data) else { return }
                                             let vc = CropScaleImageViewController(srcImage: image) { croppedImage in
                                                 let imageModel = self.databaseStorage.write { transaction in
