@@ -32,11 +32,6 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
 
         view.backgroundColor = Theme.backgroundColor
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: CommonStrings.skipButton,
-                                                            style: .plain,
-                                                            target: self,
-                                                            action: #selector(skipWasPressed))
-
         let titleText: String
         let explanationText: String
         let giveAccessText: String
@@ -162,13 +157,6 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
     }
 
      // MARK: - Events
-
-    @objc
-    func skipWasPressed() {
-        Logger.info("")
-
-        onboardingController.onboardingPermissionsWasSkipped(viewController: self)
-    }
 
     @objc
     func giveAccessPressed() {

@@ -229,19 +229,6 @@ public class OnboardingController: NSObject {
         pushPermissionsViewOrSkipToRegistration(onto: viewController)
     }
 
-    public func onboardingPermissionsWasSkipped(viewController: UIViewController) {
-        AssertIsOnMainThread()
-
-        Logger.info("")
-
-        guard let navigationController = viewController.navigationController else {
-            owsFailDebug("navigationController was unexpectedly nil")
-            return
-        }
-
-        pushStartDeviceRegistrationView(onto: navigationController)
-    }
-
     public func onboardingPermissionsDidComplete(viewController: UIViewController) {
         AssertIsOnMainThread()
 
