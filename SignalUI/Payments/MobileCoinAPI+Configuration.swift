@@ -48,50 +48,56 @@ extension MobileCoinAPI {
     // MARK: - MobileCoinNetworkConfig
 
     struct MobileCoinNetworkConfig {
-        let consensusUrl: String
+        let consensusUrls: [String]
         let fogUrl: String
         let fogReportUrl: String
 
         static var signalMainNet: MobileCoinNetworkConfig {
-            let consensusUrl = "mc://node1.prod.mobilecoinww.com"
+            let consensusUrls = [
+                "mc://node1.consensus.mob.production.namda.net",
+                "mc://node2.consensus.mob.production.namda.net"
+            ]
             let fogUrl = "fog://service.fog.mob.production.namda.net"
             let fogReportUrl = "fog://fog-rpt-prd.namda.net"
-            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
+            return MobileCoinNetworkConfig(consensusUrls: consensusUrls, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
         }
 
         static var mobileCoinMainNet: MobileCoinNetworkConfig {
-            let consensusUrl = "mc://node1.prod.mobilecoinww.com"
+            let consensusUrls = ["mc://node1.prod.mobilecoinww.com"]
             let fogUrl = "fog://fog.prod.mobilecoinww.com"
             let fogReportUrl = fogUrl
-            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
+            return MobileCoinNetworkConfig(consensusUrls: consensusUrls, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
         }
 
         static var signalTestNet: MobileCoinNetworkConfig {
-            let consensusUrl = "mc://node1.test.mobilecoin.com"
+            let consensusUrls = [
+                "mc://node1.consensus.mob.staging.namda.net",
+                "mc://node2.consensus.mob.staging.namda.net"
+            ]
             let fogUrl = "fog://service.fog.mob.staging.namda.net"
             let fogReportUrl = "fog://fog-rpt-stg.namda.net"
-            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
+            return MobileCoinNetworkConfig(consensusUrls: consensusUrls, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
         }
 
         static var mobileCoinTestNet: MobileCoinNetworkConfig {
-            let consensusUrl = "mc://node1.test.mobilecoin.com"
+            let consensusUrls = ["mc://node1.test.mobilecoin.com"]
             let fogUrl = "fog://fog.test.mobilecoin.com"
             let fogReportUrl = fogUrl
-            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
+            return MobileCoinNetworkConfig(consensusUrls: consensusUrls, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
         }
 
         static var mobileCoinAlphaNet: MobileCoinNetworkConfig {
-            let consensusUrl = "mc://consensus.alpha.mobilecoin.com"
+            let consensusUrls = ["mc://consensus.alpha.mobilecoin.com"]
             let fogUrl = "fog://fog.alpha.mobilecoin.com"
             let fogReportUrl = fogUrl
-            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
+            return MobileCoinNetworkConfig(consensusUrls: consensusUrls, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
         }
 
         static var mobileCoinMobileDev: MobileCoinNetworkConfig {
-            let consensusUrl = "mc://consensus.mobiledev.mobilecoin.com"
+            let consensusUrls = ["mc://consensus.mobiledev.mobilecoin.com"]
             let fogUrl = "fog://fog.mobiledev.mobilecoin.com"
             let fogReportUrl = fogUrl
-            return MobileCoinNetworkConfig(consensusUrl: consensusUrl, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
+            return MobileCoinNetworkConfig(consensusUrls: consensusUrls, fogUrl: fogUrl, fogReportUrl: fogReportUrl)
         }
 
         static func networkConfig(environment: Environment) -> MobileCoinNetworkConfig {
@@ -627,9 +633,9 @@ extension MobileCoinAPI {
             let networkConfig = MobileCoinNetworkConfig.networkConfig(environment: environment)
             let authorization = self.authorization(signalAuthorization: signalAuthorization)
             let attestationConfig = OWSAttestationConfig.attestationConfig(environment: environment)
-            let configResult = MobileCoinClient.Config.make(consensusUrl: networkConfig.consensusUrl,
+            let configResult = MobileCoinClient.Config.make(consensusUrls: networkConfig.consensusUrls,
                                                             consensusAttestation: attestationConfig.consensus,
-                                                            fogUrl: networkConfig.fogUrl,
+                                                            fogUrls: [networkConfig.fogUrl],
                                                             fogViewAttestation: attestationConfig.fogView,
                                                             fogKeyImageAttestation: attestationConfig.fogKeyImage,
                                                             fogMerkleProofAttestation: attestationConfig.fogMerkleProof,
