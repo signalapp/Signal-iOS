@@ -504,49 +504,12 @@ const NSUInteger kMinimumSearchLength = 1;
     self.tableViewController.contents = contents;
 }
 
-- (NSArray<SignalAccount *> *)allSignalAccounts
-{
-    return [self.contactsViewHelper signalAccountsIncludingLocalUser:!self.shouldHideLocalRecipient];
-}
-
 - (NSArray<OWSTableSection *> *)contactsSection
 {
-    NSArray<SignalAccount *> *signalAccountsToShow = self.allSignalAccounts;
+    NSArray<SignalAccount *> *signalAccountsToShow = [self filteredSignalAccounts];
 
-    // As an optimization, we can skip the database lookup if you have no connections.
-    if (self.allSignalAccounts.count > 0) {
-        __block NSSet<SignalServiceAddress *> *addressesToSkip;
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            addressesToSkip = [self.blockingManager blockedAddressesWithTransaction:transaction];
-        }];
-
-        // This is an optimization for users that have no blocked addresses.
-        if (addressesToSkip.count > 0) {
-            NSPredicate *predicate = [NSPredicate predicateWithBlock:^BOOL(SignalAccount *signalAccount,
-                NSDictionary *bindings) { return ![addressesToSkip containsObject:signalAccount.recipientAddress]; }];
-            signalAccountsToShow = [self.allSignalAccounts filteredArrayUsingPredicate:predicate];
-        }
-    }
-
-    if (signalAccountsToShow.count < 1) {
-        // No Contacts
-        OWSTableSection *contactsSection = [OWSTableSection new];
-
-        switch (self.contactsManagerImpl.editingAuthorization) {
-            case ContactAuthorizationForEditingDenied:
-            case ContactAuthorizationForEditingRestricted:
-                // Do nothing.
-                break;
-            case ContactAuthorizationForEditingAuthorized:
-                if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce) {
-                    [contactsSection addItem:[self noContactsTableItem]];
-                } else {
-                    [contactsSection addItem:[self loadingContactsTableItem]];
-                }
-                break;
-        }
-
-        return @[ contactsSection ];
+    if (signalAccountsToShow.count == 0) {
+        return @[ [self noContactsTableSection] ];
     }
 
     NSMutableArray<OWSTableSection *> *contactSections = [NSMutableArray new];

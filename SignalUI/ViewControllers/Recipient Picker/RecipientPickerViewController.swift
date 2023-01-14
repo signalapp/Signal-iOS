@@ -117,22 +117,97 @@ private extension RecipientPickerViewController {
 
 extension RecipientPickerViewController {
     @objc
+    func filteredSignalAccounts() -> [SignalAccount] {
+        Array(lazyFilteredSignalAccounts())
+    }
+
+    /// Fetches the Signal Connections for the recipient picker.
+    ///
+    /// Excludes the local address (if `shouldHideLocalRecipient` is true) as
+    /// well as any addresses that have been blocked.
+    private func lazyFilteredSignalAccounts() -> LazyFilterSequence<[SignalAccount]> {
+        let allSignalAccounts = contactsViewHelper.signalAccounts(includingLocalUser: !shouldHideLocalRecipient)
+        lazy var blockedAddresses = databaseStorage.read { blockingManager.blockedAddresses(transaction: $0) }
+        return allSignalAccounts.lazy.filter { !blockedAddresses.contains($0.recipientAddress) }
+    }
+
+    /// Checks if we should show the dedicated "no contacts" view.
+    ///
+    /// If you don't have any contacts, there's a special UX we'll show to the
+    /// user that looks a bit nicer than a (mostly) empty table view; that UX
+    /// doesn't look anything like a normal table view. If you dismiss that
+    /// view, we'll switch to a normal table view with a row that says "You have
+    /// no contacts on Signal." This method controls whether or not we show this
+    /// special UX to the user.
+    ///
+    /// However, it also works closely in tandem with `noContactsTableSection`
+    /// and `contactAccessReminderSection`. If this method returns true, those
+    /// sections can't possibly be shown. If they should be visible, this method
+    /// must return false. The former is shown in place of the list of contacts,
+    /// and it's either a loading spinner or the "You have no contacts on
+    /// Signal." row. The latter is shown at the very top of the recipient
+    /// picker and may contain a banner if the user has disabled access to their
+    /// contacts. So, if the user doesn't have any contacts but has also
+    /// prevented Signal from accessing their contacts, we don't show the
+    /// special UX and instead allow the banner to be visible.
+    @objc
     func shouldNoContactsModeBeActive() -> Bool {
         switch contactsManagerImpl.editingAuthorization {
         case .denied, .restricted:
-            // don't show "no signal contacts", show "no contact access"
+            // Return false so `contactAccessReminderSection` is invoked.
+            return false
+        case .authorized where !contactsViewHelper.hasUpdatedContactsAtLeastOnce:
+            // Return false so `noContactsTableSection` can show a spinner.
             return false
         case .authorized:
-            return (
-                contactsViewHelper.hasUpdatedContactsAtLeastOnce
-                && allSignalAccounts().isEmpty
-                && !preferences.hasDeclinedNoContactsView()
-            )
+            if !lazyFilteredSignalAccounts().isEmpty {
+                // Return false if we have any contacts; we want to show them!
+                return false
+            }
+            if preferences.hasDeclinedNoContactsView() {
+                // Return false if the user has explicitly told us to hide the UX.
+                return false
+            }
+            return true
         }
     }
 
+    /// Returns a section when there's no contacts to show.
+    ///
+    /// Works closely with `shouldNoContactsModeBeActive` and therefore might
+    /// not be invoked even if the user has no contacts.
     @objc
-    func noContactsTableItem() -> OWSTableItem {
+    func noContactsTableSection() -> OWSTableSection {
+        switch contactsManagerImpl.editingAuthorization {
+        case .denied, .restricted:
+            return OWSTableSection()
+        case .authorized where !contactsViewHelper.hasUpdatedContactsAtLeastOnce:
+            return OWSTableSection(items: [loadingContactsTableItem()])
+        case .authorized:
+            return OWSTableSection(items: [noContactsTableItem()])
+        }
+    }
+
+    /// Returns a section with a banner at the top of the picker.
+    ///
+    /// Works closely with `shouldNoContactsModeBeActive`.
+    @objc
+    func contactAccessReminderSection() -> OWSTableSection? {
+        let tableItem: OWSTableItem
+        switch contactsManagerImpl.editingAuthorization {
+        case .denied:
+            tableItem = contactAccessDeniedReminderItem()
+        case .restricted:
+            // TODO: We don't show a reminder when the user isn't allowed to give
+            // contacts permission. Should we?
+            return nil
+        case .authorized:
+            return nil
+        }
+        return OWSTableSection(items: [tableItem])
+    }
+
+    private func noContactsTableItem() -> OWSTableItem {
         return OWSTableItem.softCenterLabel(
             withText: OWSLocalizedString(
                 "SETTINGS_BLOCK_LIST_NO_CONTACTS",
@@ -142,8 +217,7 @@ extension RecipientPickerViewController {
         )
     }
 
-    @objc
-    func loadingContactsTableItem() -> OWSTableItem {
+    private func loadingContactsTableItem() -> OWSTableItem {
         let cell = OWSTableItem.newCell()
 
         let activityIndicatorView = UIActivityIndicatorView(style: .gray)
@@ -153,27 +227,12 @@ extension RecipientPickerViewController {
         activityIndicatorView.setCompressionResistanceHigh()
         activityIndicatorView.setContentHuggingHigh()
 
-        // Hide separator for loading cell. The loading cell doesn't really feel like a cell
-        cell.backgroundView = UIView()
-
         cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "loading")
 
         return OWSTableItem(
             customCellBlock: { cell },
             customRowHeight: 40
         )
-    }
-
-    @objc
-    func contactAccessReminderSection() -> OWSTableSection? {
-        let tableItem: OWSTableItem
-        switch contactsManagerImpl.editingAuthorization {
-        case .authorized, .restricted:
-            return nil
-        case .denied:
-            tableItem = contactAccessDeniedReminderItem()
-        }
-        return OWSTableSection(items: [tableItem])
     }
 
     private func contactAccessDeniedReminderItem() -> OWSTableItem {

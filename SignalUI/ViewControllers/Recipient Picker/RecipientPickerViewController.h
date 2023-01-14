@@ -68,7 +68,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, RecipientPickerViewControllerSelectionMode) {
 // Swift interop
 
 @property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
-- (NSArray<SignalAccount *> *)allSignalAccounts;
 
 @end
 
