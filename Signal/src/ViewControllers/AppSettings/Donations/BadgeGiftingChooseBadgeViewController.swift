@@ -90,7 +90,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             )
             guard let defaultCurrencyCode = defaultCurrencyCode else {
                 // This indicates a bug, either in the iOS app or the server.
-                owsFailDebug("[Gifting] Successfully loaded data, but a preferred currency could not be found")
+                owsFailBeta("[Gifting] Successfully loaded data, but a preferred currency could not be found")
                 return Guarantee.value(.loadFailed)
             }
 
@@ -108,10 +108,10 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
     private func didTapNext() {
         switch state {
         case .initializing, .loading, .loadFailed:
-            owsFailDebug("Tapped next when the state wasn't loaded")
+            owsFailBeta("Tapped next when the state wasn't loaded")
         case let .loaded(selectedCurrencyCode, giftConfiguration, paymentMethodsConfiguration):
             guard let price = giftConfiguration.presetAmount[selectedCurrencyCode] else {
-                owsFailDebug("State is invalid. We selected a currency code that we don't have a price for")
+                owsFailBeta("State is invalid. We selected a currency code that we don't have a price for")
                 return
             }
             let vc = BadgeGiftingChooseRecipientViewController(
@@ -294,7 +294,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             let cell = AppSettingsViewsUtil.newCell(cellOuterInsets: self.cellOuterInsets)
 
             guard let price = pricesByCurrencyCode[selectedCurrencyCode] else {
-                owsFailDebug("State is invalid. We selected a currency code that we don't have a price for.")
+                owsFailBeta("State is invalid. We selected a currency code that we don't have a price for.")
                 return cell
             }
             let badgeCellView = GiftBadgeCellView(badge: badge, price: price)

@@ -59,7 +59,7 @@ class BadgeGiftingChooseRecipientViewController: RecipientPickerContainerViewCon
 extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate {
     private static func getRecipientAddress(_ recipient: PickedRecipient) -> SignalServiceAddress? {
         guard let address = recipient.address, address.isValid, !address.isLocalAddress else {
-            owsFailDebug("Invalid recipient. Did a group make its way in?")
+            owsFailBeta("Invalid recipient. Did a group make its way in?")
             return nil
         }
         return address
