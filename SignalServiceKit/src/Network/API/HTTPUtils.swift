@@ -347,6 +347,21 @@ public func owsFailDebugUnlessNetworkFailure(_ error: Error,
     }
 }
 
+@inlinable
+public func owsFailBetaUnlessNetworkFailure(
+    _ error: Error,
+    file: String = #file,
+    function: String = #function,
+    line: Int = #line
+) {
+    if error.isNetworkConnectivityFailure {
+        // Log but otherwise ignore network failures.
+        Logger.warn("Error: \(error)", file: file, function: function, line: line)
+    } else {
+        owsFailBeta("Error: \(error)", file: file, function: function, line: line)
+    }
+}
+
 // MARK: -
 
 extension NSError {
