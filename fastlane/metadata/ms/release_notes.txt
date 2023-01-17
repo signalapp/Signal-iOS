@@ -1,3 +1,3 @@
-• We improved the way that information about incoming, outgoing, and missed calls is displayed and synchronized across linked devices. Now you can make the right call about all of the calls you didn't answer in time.
-• The "All Media" view has been optimized to let you scroll through the past much faster in the future.
-• Performance enhancements for audio calls in low-bandwidth environments will help you stay connected to a great conversation even when your connection isn't great.
+• Kami menambah baik cara maklumat tentang panggilan masuk, pangilan keluar dan panggilan terlepas dipaparkan dan disegerakkan pada semua peranti yang dipautkan. Kini anda boleh membuat panggilan yang betul untuk semua panggilan yang anda tidak jawab pada masanya.
+• Paparan "Semua Media" telah dioptimumkan untuk membolehkan anda menatal masa lalu dengan lebih pantas pada masa hadapan.
+• Peningkatan prestasi untuk panggilan audio dalam persekitaran lebar jalur rendah akan membantu anda kekal berhubung dengan perbualan yang hebat walaupun sambungan anda tidak bagus.

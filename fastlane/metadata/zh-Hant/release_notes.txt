@@ -1,3 +1,3 @@
-• We improved the way that information about incoming, outgoing, and missed calls is displayed and synchronized across linked devices. Now you can make the right call about all of the calls you didn't answer in time.
-• The "All Media" view has been optimized to let you scroll through the past much faster in the future.
-• Performance enhancements for audio calls in low-bandwidth environments will help you stay connected to a great conversation even when your connection isn't great.
+• 我們改進了來電、撥出和未接通話的相關資訊在已連結裝置上的顯示和同步方式。你現在可以適當地處理所有未接通話。
+•「所有多媒體」檢視畫面已經過優化，讓你能更快速瀏覽以往的多媒體檔案。
+• 增強語音通話在低頻寬環境中的效能表現，讓你在網路連線較差的情況下都能保持良好的通話品質。

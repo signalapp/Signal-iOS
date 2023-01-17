@@ -1,3 +1,3 @@
-• We improved the way that information about incoming, outgoing, and missed calls is displayed and synchronized across linked devices. Now you can make the right call about all of the calls you didn't answer in time.
-• The "All Media" view has been optimized to let you scroll through the past much faster in the future.
-• Performance enhancements for audio calls in low-bandwidth environments will help you stay connected to a great conversation even when your connection isn't great.
+• 연결한 기기 전반에서 수신, 발신, 부재중 전화가 표시되고 동기화되는 방식을 개선했습니다. 이제 제때 받지 못한 모든 부재중 전화에 정확하게 회신하세요.
+• 지난 항목부터 최신 항목까지 훨씬 빠르게 훑어볼 수 있도록 '모든 미디어' 보기를 최적화했습니다.
+• 연결 상태가 좋지 않을 때도 대화에 집중할 수 있도록 낮은 대역대 환경의 음성 통화 품질을 향상했습니다.

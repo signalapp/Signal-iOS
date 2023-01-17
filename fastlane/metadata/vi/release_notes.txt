@@ -1,3 +1,3 @@
-• We improved the way that information about incoming, outgoing, and missed calls is displayed and synchronized across linked devices. Now you can make the right call about all of the calls you didn't answer in time.
-• The "All Media" view has been optimized to let you scroll through the past much faster in the future.
-• Performance enhancements for audio calls in low-bandwidth environments will help you stay connected to a great conversation even when your connection isn't great.
+• Chúng tôi đã cải thiện cách thể hiện và đồng bộ thông tin về cuộc gọi đến, cuộc gọi đi, và cuộc gọi nhỡ trên các thiết bị đã liên kết. Giờ đây bạn có thể đưa ra quyết định chuẩn xác cho các cuộc gọi bạn không nhận.
+• Chế độ xem "Tất cả Tập tin Đa phương tiện" đã được tối ưu để bạn có thể cuộn xem lại tập tin cũ nhanh hơn.
+• Các cải thiện hiệu năng cho cuộc gọi thoại trong môi trường băng thông thấp sẽ giúp bạn duy trì kết nối để có thể trò chuyện xuyên suốt ngay cả khi không có kết nối tốt.

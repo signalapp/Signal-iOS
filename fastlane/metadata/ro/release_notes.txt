@@ -1,3 +1,3 @@
-• We improved the way that information about incoming, outgoing, and missed calls is displayed and synchronized across linked devices. Now you can make the right call about all of the calls you didn't answer in time.
-• The "All Media" view has been optimized to let you scroll through the past much faster in the future.
-• Performance enhancements for audio calls in low-bandwidth environments will help you stay connected to a great conversation even when your connection isn't great.
+• Am îmbunătățit modul în care se afișează și sincronizează informațiile despre apelurile primite, efectuate și cele ratate pe mai multe dispozitive asociate. Acum nu mai vei rata nicio informație despre apelurile ratate.
+• Modul de vizualizare „Toate Fișierele Media“ a fost optimizat ca să poți derula mai rapid în viitor.
+• Îmbunătățirile performanței pentru apeluri audio în medii cu lățime de bandă redusă te vor ajuta să rămâi conectat/ă la o conversație reușită chiar și când conexiunea ta nu e grozavă.

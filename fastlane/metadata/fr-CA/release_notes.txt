@@ -1,3 +1,3 @@
-• We improved the way that information about incoming, outgoing, and missed calls is displayed and synchronized across linked devices. Now you can make the right call about all of the calls you didn't answer in time.
-• The "All Media" view has been optimized to let you scroll through the past much faster in the future.
-• Performance enhancements for audio calls in low-bandwidth environments will help you stay connected to a great conversation even when your connection isn't great.
+• Nous avons amélioré l'affichage et la synchronisation des informations sur les appels entrants, sortants et manqués des appareils liés. Vous disposez désormais des données nécessaires pour prendre une décision éclairée concernant vos appels manqués.
+• L'écran « Tous les contenus » a été optimisé pour que vous puissiez faire défiler vos anciens médias plus rapidement à l'avenir.
+• L'amélioration des performances des appels audio dans les environnements à faible bande passante vous permettra de rester mieux connecté avec vos proches, même lorsque votre connexion est mauvaise.

@@ -1,3 +1,3 @@
-• We improved the way that information about incoming, outgoing, and missed calls is displayed and synchronized across linked devices. Now you can make the right call about all of the calls you didn't answer in time.
-• The "All Media" view has been optimized to let you scroll through the past much faster in the future.
-• Performance enhancements for audio calls in low-bandwidth environments will help you stay connected to a great conversation even when your connection isn't great.
+• Gelen, giden ve cevapsız aramalarla ilgili bilgilerin bağlı cihazlarda görüntülenme ve senkronize edilme şeklini geliştirdik. Artık zamanında cevaplamadığın tüm aramalar için doğru aramayı yapabilirsin.
+• "Tüm Medya" görünümü, arama geçmişinde çok daha hızlı ilerlemeni sağlamak için optimize edildi.
+• Düşük bant genişliğine sahip ortamlarda sesli aramalar için performans iyileştirmeleri, bağlantın mükemmel olmasa bile keyifli bir sohbete devam etmene yardımcı olacak.

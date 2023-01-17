@@ -1,3 +1,3 @@
-• We improved the way that information about incoming, outgoing, and missed calls is displayed and synchronized across linked devices. Now you can make the right call about all of the calls you didn't answer in time.
-• The "All Media" view has been optimized to let you scroll through the past much faster in the future.
-• Performance enhancements for audio calls in low-bandwidth environments will help you stay connected to a great conversation even when your connection isn't great.
+• Jobbá tettük a bejövő, kimenő és nem fogadott hívásokkal kapcsolatos információk megjelenítésének és szinkronizálásának módját a kapcsolt eszközök között. Mostantól könnyebb jó döntést hoznod minden olyan hívás esetén, amelyet nem fogadtál időben.
+• Az „Összes média” nézetet úgy optimalizáltuk, hogy a jövőben sokkal gyorsabban görgethess végig a múlton.
+• Az alacsony sávszélességű környezetben zajló hanghívások teljesítményének javítása segít abban, hogy akkor is nagyszerű beszélgetésben legyen részed, ha a kapcsolat nem megfelelő.

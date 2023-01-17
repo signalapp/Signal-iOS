@@ -1,3 +1,3 @@
-• We improved the way that information about incoming, outgoing, and missed calls is displayed and synchronized across linked devices. Now you can make the right call about all of the calls you didn't answer in time.
-• The "All Media" view has been optimized to let you scroll through the past much faster in the future.
-• Performance enhancements for audio calls in low-bandwidth environments will help you stay connected to a great conversation even when your connection isn't great.
+• Hem millorat la manera en què la informació sobre trucades entrants, sortints i perdudes es mostra i sincronitza entre els dispositius enllaçats. Ara podràs deixar de perdre el temps buscant totes les trucades que no has pogut respondre a temps.
+• La vista "Tots els arxius" s'ha optimitzat per permetre't desplaçar-t'hi molt més ràpid en el futur.
+• Les millores de rendiment de les trucades d'àudio en entorns de poca amplada de banda t'ajudaran a mantenir-te connectat a una conversa fantàstica, fins i tot quan la teva connexió no sigui excel·lent.

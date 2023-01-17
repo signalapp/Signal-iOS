@@ -1,3 +1,3 @@
-• We improved the way that information about incoming, outgoing, and missed calls is displayed and synchronized across linked devices. Now you can make the right call about all of the calls you didn't answer in time.
-• The "All Media" view has been optimized to let you scroll through the past much faster in the future.
-• Performance enhancements for audio calls in low-bandwidth environments will help you stay connected to a great conversation even when your connection isn't great.
+• Βελτιώσαμε τον τρόπο με τον οποίο οι πληροφορίες σχετικά με τις εισερχόμενες, τις εξερχόμενες και τις αναπάντητες κλήσεις εμφανίζονται και συγχρονίζονται σε συνδεδεμένες συσκευές. Τώρα μπορείς να κάνεις τη σωστή επιλογή για όλες τις κλήσεις που δεν απάντησες εγκαίρως.
+• Η προβολή "Όλα τα μέσα" έχει βελτιστοποιηθεί για να σου επιτρέπει να περιηγηθείς στο παρελθόν πολύ πιο γρήγορα στο μέλλον.
+• Οι βελτιώσεις απόδοσης για ηχητικές κλήσεις σε περιβάλλοντα χαμηλού εύρους ζώνης θα σε βοηθήσουν να παραμείνεις σε σύνδεση σε μια εξαιρετική συνομιλία ακόμα και όταν η σύνδεσή σου δεν είναι καλή.
