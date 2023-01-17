@@ -96,7 +96,7 @@ public struct Stripe: Dependencies {
         firstly(on: .sharedUserInitiated) { () -> Promise<String> in
             createPaymentMethod(with: paymentMethod)
         }.then(on: .sharedUserInitiated) { paymentMethodId -> Promise<ConfirmedIntent> in
-            try confirmPaymentIntent(
+            confirmPaymentIntent(
                 paymentIntentClientSecret: clientSecret,
                 paymentIntentId: paymentIntentId,
                 paymentMethodId: paymentMethodId
@@ -109,7 +109,7 @@ public struct Stripe: Dependencies {
         paymentIntentId: String,
         paymentMethodId: String,
         idempotencyKey: String? = nil
-    ) throws -> Promise<ConfirmedIntent> {
+    ) -> Promise<ConfirmedIntent> {
         firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
             try API.postForm(endpoint: "payment_intents/\(paymentIntentId)/confirm",
                              parameters: [

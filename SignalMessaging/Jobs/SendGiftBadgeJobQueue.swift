@@ -193,11 +193,13 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
         )
     }
 
-    private func confirmPaymentIntent() throws -> Promise<Void> {
-        try Stripe.confirmPaymentIntent(paymentIntentClientSecret: self.paymentIntentClientSecret,
-                                        paymentIntentId: self.paymentIntentId,
-                                        paymentMethodId: self.paymentMethodId,
-                                        idempotencyKey: self.jobRecord.uniqueId).asVoid()
+    private func confirmPaymentIntent() -> Promise<Void> {
+        Stripe.confirmPaymentIntent(
+            paymentIntentClientSecret: self.paymentIntentClientSecret,
+            paymentIntentId: self.paymentIntentId,
+            paymentMethodId: self.paymentMethodId,
+            idempotencyKey: self.jobRecord.uniqueId
+        ).asVoid()
     }
 
     private func getReceiptCredentialPresentation() throws -> Promise<ReceiptCredentialPresentation> {
@@ -245,7 +247,7 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
             return Promise.value(())
         }.then { () -> Promise<Void> in
             Logger.info("[Gifting] Confirming payment intent...")
-            return try self.confirmPaymentIntent()
+            return self.confirmPaymentIntent()
         }.then { () -> Promise<ReceiptCredentialPresentation> in
             self.postJobEventNotification(.chargeSucceeded)
             Logger.info("[Gifting] Charge succeeded! Getting receipt credential...")
