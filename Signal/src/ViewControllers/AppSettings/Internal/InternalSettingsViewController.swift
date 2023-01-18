@@ -79,6 +79,22 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 SignalApp.showDatabaseIntegrityCheckUI(from: self)
             }
         ))
+        debugSection.add(.actionItem(
+            withText: "Clean Orphaned Data",
+            actionBlock: { [weak self] in
+                guard let self else { return }
+                ModalActivityIndicatorViewController.present(
+                    fromViewController: self,
+                    canCancel: false
+                ) { modalActivityIndicator in
+                    DispatchQueue.main.async {
+                        OWSOrphanDataCleaner.auditAndCleanup(true) {
+                            DispatchQueue.main.async { modalActivityIndicator.dismiss {} }
+                        }
+                    }
+                }
+            }
+        ))
 
         contents.addSection(debugSection)
 
