@@ -35,7 +35,7 @@ extension CreditOrDebitCardDonationViewController {
                 return DonationViewsUtil.Gifts.prepareToPay(
                     amount: self.donationAmount, creditOrDebitCard: creditOrDebitCard
                 )
-            }.then(on: .sharedUserInitiated) { [weak self] preparedPayment -> Promise<DonationViewsUtil.Gifts.PreparedGiftPayment> in
+            }.then(on: .main) { [weak self] preparedPayment -> Promise<DonationViewsUtil.Gifts.PreparedGiftPayment> in
                 if self == nil {
                     throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
 
