@@ -266,17 +266,19 @@ extension LocationPicker: UISearchResultsUpdating {
         // clear old results
         showItemsForSearchResult(nil)
 
+        searchTimer?.invalidate()
+        searchTimer = nil
+
         let searchTerm = term.trimmingCharacters(in: CharacterSet.whitespaces)
         if !searchTerm.isEmpty {
             // Search after a slight delay to debounce while the user is typing.
-            searchTimer = Timer.weakScheduledTimer(withTimeInterval: 0.1,
-                                                   target: self,
-                                                   selector: #selector(searchFromTimer),
-                                                   userInfo: [LocationPicker.SearchTermKey: searchTerm],
-                                                   repeats: false)
-        } else {
-            searchTimer?.invalidate()
-            searchTimer = nil
+            searchTimer = Timer.weakScheduledTimer(
+                withTimeInterval: 0.1,
+                target: self,
+                selector: #selector(searchFromTimer),
+                userInfo: [LocationPicker.SearchTermKey: searchTerm],
+                repeats: false
+            )
         }
     }
 
