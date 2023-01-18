@@ -35,10 +35,7 @@ extension CreditOrDebitCardDonationViewController {
             }.then(on: .sharedUserInitiated) { () -> Promise<Data> in
                 Logger.info("[Donations] Preparing new monthly subscription with card")
 
-                return SubscriptionManager.prepareNewSubscription(
-                    subscription: newSubscriptionLevel,
-                    currencyCode: currencyCode
-                )
+                return SubscriptionManager.prepareNewSubscription(currencyCode: currencyCode)
             }.then(on: .sharedUserInitiated) { subscriberId -> Promise<(Data, String)> in
                 firstly { () -> Promise<String> in
                     Logger.info("[Donations] Creating Signal payment method for new monthly subscription with card")

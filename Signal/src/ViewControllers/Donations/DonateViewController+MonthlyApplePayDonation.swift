@@ -42,7 +42,6 @@ extension DonateViewController {
             Logger.info("[Donations] Preparing new monthly subscription with Apple Pay")
 
             return SubscriptionManager.prepareNewSubscription(
-                subscription: selectedSubscriptionLevel,
                 currencyCode: monthly.selectedCurrencyCode
             )
         }.then(on: .sharedUserInitiated) { subscriberId -> Promise<(Data, String)> in

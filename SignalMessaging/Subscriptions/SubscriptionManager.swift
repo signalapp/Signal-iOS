@@ -314,11 +314,8 @@ public class SubscriptionManager: NSObject {
     /// Perform processor-agnostic steps to set up a new subscription, before
     /// payment has been authorized.
     ///
-    /// - Returns the new subscriber ID.
-    public class func prepareNewSubscription(
-        subscription: SubscriptionLevel,
-        currencyCode: Currency.Code
-    ) -> Promise<Data> {
+    /// - Returns: The new subscriber ID.
+    public class func prepareNewSubscription(currencyCode: Currency.Code) -> Promise<Data> {
         firstly {
             Logger.info("[Donations] Setting up new subscription")
 

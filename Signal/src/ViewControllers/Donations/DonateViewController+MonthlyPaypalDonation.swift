@@ -109,7 +109,6 @@ extension DonateViewController {
                 Logger.info("[Donations] Preparing new monthly subscription with PayPal")
 
                 return SubscriptionManager.prepareNewSubscription(
-                    subscription: selectedSubscriptionLevel,
                     currencyCode: monthly.selectedCurrencyCode
                 )
             }.then(on: .sharedUserInitiated) { subscriberId -> Promise<(Data, Paypal.SubscriptionAuthorizationParams)> in
