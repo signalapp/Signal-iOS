@@ -175,8 +175,7 @@ public class RemoteConfig: BaseFlags {
     }
 
     public static var canDonateMonthlyWithPaypal: Bool {
-        // TODO: [PayPal] Once monthly donations are supported, remove this override.
-        !isEnabled(.paypalMonthlyDonationKillSwitch) && false
+        !isEnabled(.paypalMonthlyDonationKillSwitch)
     }
 
     public static var paypalDisabledRegions: PhoneNumberRegions {

@@ -12,32 +12,32 @@ extension DonateViewController {
     /// Executes a PayPal one-time donation flow.
     func startPaypalBoost(
         with amount: FiatMoney,
-        badge: ProfileBadge?
+        badge: ProfileBadge
     ) {
         Logger.info("[Donations] Starting one-time PayPal donation")
-
-        guard let badge else {
-            owsFail("[Donations] Missing badge!")
-        }
 
         firstly(on: .main) { [weak self] () -> Promise<URL> in
             guard let self else { throw OWSAssertionError("[Donations] Missing self!") }
 
-            // First, create a PayPal payment.
-
+            Logger.info("[Donations] Creating one-time PayPal payment")
             return DonationViewsUtil.Paypal.createPaypalPaymentBehindActivityIndicator(
                 amount: amount,
                 level: .boostBadge,
                 fromViewController: self
             )
-        }.then(on: .main) { [weak self] approvalUrl -> Promise<Paypal.WebAuthApprovalParams> in
+        }.then(on: .main) { [weak self] approvalUrl -> Promise<Paypal.OneTimePaymentWebAuthApprovalParams> in
             guard let self else { throw OWSAssertionError("[Donations] Missing self!") }
 
             Logger.info("[Donations] Presenting PayPal web UI for user approval of one-time donation")
             if #available(iOS 13, *) {
-                return Paypal.present(approvalUrl: approvalUrl, withPresentationContext: self)
+                return Paypal.presentExpectingApprovalParams(
+                    approvalUrl: approvalUrl,
+                    withPresentationContext: self
+                )
             } else {
-                return Paypal.present(approvalUrl: approvalUrl)
+                return Paypal.presentExpectingApprovalParams(
+                    approvalUrl: approvalUrl
+                )
             }
         }.then(on: .main) { [weak self] approvalParams -> Promise<Void> in
             guard let self else { return .value(()) }
@@ -49,22 +49,23 @@ extension DonateViewController {
                     amount: amount,
                     approvalParams: approvalParams
                 )
-            ).map(on: .main) { [weak self] in
-                Logger.info("[Donations] One-time PayPal donation finished")
-                guard let self else { return }
-                self.didCompleteDonation(badge: badge, thanksSheetType: .boost)
-            }
-        }.catch(on: .main) { [weak self] error in
-            Logger.info("[Donations] One-time PayPal donation failed")
+            )
+        }.done(on: .main) { [weak self] in
+            guard let self else { return }
 
+            Logger.info("[Donations] One-time PayPal donation finished")
+            self.didCompleteDonation(badge: badge, thanksSheetType: .boost)
+        }.catch(on: .main) { [weak self] error in
             guard let self else { return }
 
             if let webAuthError = error as? Paypal.AuthError {
                 switch webAuthError {
                 case .userCanceled:
+                    Logger.info("[Donations] One-time PayPal donation canceled")
                     self.didCancelDonation()
                 }
             } else {
+                Logger.info("[Donations] One-time PayPal donation failed")
                 self.didFailDonation(error: error, mode: .oneTime, paymentMethod: .paypal)
             }
         }
@@ -72,7 +73,7 @@ extension DonateViewController {
 
     private func confirmPaypalPaymentAndRedeemBoost(
         amount: FiatMoney,
-        approvalParams: Paypal.WebAuthApprovalParams
+        approvalParams: Paypal.OneTimePaymentWebAuthApprovalParams
     ) -> Promise<Void> {
         firstly { () -> Promise<String> in
             Paypal.confirmOneTimePayment(

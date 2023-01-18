@@ -212,8 +212,14 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 + (TSRequest *)setSubscriptionIDRequest:(NSString *)base64SubscriberID;
 + (TSRequest *)deleteSubscriptionIDRequest:(NSString *)base64SubscriberID;
 + (TSRequest *)subscriptionGetCurrentSubscriptionLevelRequest:(NSString *)base64SubscriberID;
-+ (TSRequest *)subscriptionCreatePaymentMethodRequest:(NSString *)base64SubscriberID;
-+ (TSRequest *)subscriptionSetDefaultPaymentMethodRequest:(NSString *)base64SubscriberID paymentID:(NSString *)paymentID;
++ (TSRequest *)subscriptionCreateStripePaymentMethodRequest:(NSString *)base64SubscriberID;
++ (TSRequest *)subscriptionCreatePaypalPaymentMethodRequest:(NSString *)base64SubscriberID
+                                                  returnUrl:(NSURL *)returnUrl
+                                                  cancelUrl:(NSURL *)cancelUrl
+    NS_SWIFT_NAME(subscriptionCreatePaypalPaymentMethodRequest(subscriberId:returnUrl:cancelUrl:));
++ (TSRequest *)subscriptionSetDefaultPaymentMethodRequest:(NSString *)base64SubscriberID
+                                                processor:(NSString *)processor
+                                                paymentID:(NSString *)paymentID;
 + (TSRequest *)subscriptionSetSubscriptionLevelRequest:(NSString *)base64SubscriberID level:(NSString *)level currency:(NSString *)currency idempotencyKey:(NSString *)idempotencyKey;
 + (TSRequest *)subscriptionReceiptCredentialsRequest:(NSString *)base64SubscriberID
                                              request:(NSString *)base64ReceiptCredentialRequest;

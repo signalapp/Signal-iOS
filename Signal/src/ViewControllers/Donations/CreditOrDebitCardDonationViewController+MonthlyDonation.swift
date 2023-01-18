@@ -14,39 +14,70 @@ extension CreditOrDebitCardDonationViewController {
         with creditOrDebitCard: Stripe.PaymentMethod.CreditOrDebitCard,
         newSubscriptionLevel: SubscriptionLevel,
         priorSubscriptionLevel: SubscriptionLevel?,
-        subscriberID: Data?
+        subscriberID existingSubscriberId: Data?
     ) {
+        let currencyCode = self.donationAmount.currencyCode
+
         Logger.info("[Donations] Starting monthly card donation")
 
         DonationViewsUtil.wrapPromiseInProgressView(
             from: self,
             promise: firstly(on: .sharedUserInitiated) { () -> Promise<Void> in
-                if let subscriberID, priorSubscriptionLevel != nil {
+                if let existingSubscriberId, priorSubscriptionLevel != nil {
                     Logger.info("[Donations] Cancelling existing subscription")
-                    return SubscriptionManager.cancelSubscription(for: subscriberID)
+
+                    return SubscriptionManager.cancelSubscription(for: existingSubscriberId)
                 } else {
+                    Logger.info("[Donations] No existing subscription to cancel")
+
                     return Promise.value(())
                 }
             }.then(on: .sharedUserInitiated) { () -> Promise<Data> in
-                Logger.info("[Donations] Setting up new monthly subscription with card")
-                return SubscriptionManager.setupNewSubscription(
+                Logger.info("[Donations] Preparing new monthly subscription with card")
+
+                return SubscriptionManager.prepareNewSubscription(
                     subscription: newSubscriptionLevel,
-                    creditOrDebitCard: creditOrDebitCard,
-                    currencyCode: self.donationAmount.currencyCode,
-                    show3DS: { [weak self] redirectUrl -> Promise<Void> in
-                        guard let self else { return .init(error: DonationJobError.assertion) }
-                        Logger.info("[Donations] Monthly card donation needs 3DS. Presenting...")
-                        return self.show3DS(for: redirectUrl).asVoid()
-                    }
+                    currencyCode: currencyCode
                 )
-            }.then(on: .sharedUserInitiated) { (subscriberID: Data) in
+            }.then(on: .sharedUserInitiated) { subscriberId -> Promise<(Data, String)> in
+                firstly { () -> Promise<String> in
+                    Logger.info("[Donations] Creating Signal payment method for new monthly subscription with card")
+
+                    return Stripe.createSignalPaymentMethodForSubscription(subscriberId: subscriberId)
+                }.then(on: .sharedUserInitiated) { clientSecret -> Promise<String> in
+                    Logger.info("[Donations] Authorizing payment for new monthly subscription with card")
+
+                    return Stripe.setupNewSubscription(
+                        clientSecret: clientSecret,
+                        paymentMethod: .creditOrDebitCard(creditOrDebitCard: creditOrDebitCard),
+                        show3DS: { redirectUrl in
+                            Logger.info("[Donations] Monthly card donation needs 3DS. Presenting...")
+                            return self.show3DS(for: redirectUrl).asVoid()
+                        }
+                    )
+                }.map(on: .sharedUserInitiated) { paymentId -> (Data, String) in
+                    (subscriberId, paymentId)
+                }
+            }.then(on: .sharedUserInitiated) { (subscriberId, paymentId) -> Promise<Data> in
+                Logger.info("[Donations] Finalizing new subscription for card donation")
+
+                return SubscriptionManager.finalizeNewSubscription(
+                    forSubscriberId: subscriberId,
+                    withPaymentId: paymentId,
+                    usingPaymentMethod: .creditOrDebitCard,
+                    subscription: newSubscriptionLevel,
+                    currencyCode: currencyCode
+                ).map(on: .sharedUserInitiated) { _ in subscriberId }
+            }.then(on: .sharedUserInitiated) { subscriberId in
                 Logger.info("[Donations] Redeeming monthly receipts for card donation")
+
                 DonationViewsUtil.redeemMonthlyReceipts(
                     usingPaymentProcessor: .stripe,
-                    subscriberID: subscriberID,
+                    subscriberID: subscriberId,
                     newSubscriptionLevel: newSubscriptionLevel,
                     priorSubscriptionLevel: priorSubscriptionLevel
                 )
+
                 return DonationViewsUtil.waitForSubscriptionJob()
             }
         ).done(on: .main) { [weak self] in

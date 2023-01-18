@@ -119,7 +119,7 @@ public struct Subscription: Equatable {
         }
     }
 
-    public enum StripeSubscriptionStatus: String {
+    public enum SubscriptionStatus: String {
         case unknown
         case trialing = "trialing"
         case active = "active"
@@ -136,7 +136,8 @@ public struct Subscription: Equatable {
     public let billingCycleAnchor: TimeInterval
     public let active: Bool
     public let cancelAtEndOfPeriod: Bool
-    public let status: StripeSubscriptionStatus
+    public let status: SubscriptionStatus
+    public let paymentProcessor: PaymentProcessor
     public let chargeFailure: ChargeFailure?
 
     public var debugDescription: String {
@@ -173,7 +174,15 @@ public struct Subscription: Equatable {
         billingCycleAnchor = try params.required(key: "billingCycleAnchor")
         active = try params.required(key: "active")
         cancelAtEndOfPeriod = try params.required(key: "cancelAtPeriodEnd")
-        status = StripeSubscriptionStatus(rawValue: try params.required(key: "status")) ?? .unknown
+        status = SubscriptionStatus(rawValue: try params.required(key: "status")) ?? .unknown
+
+        let processorString: String = try params.required(key: "processor")
+        if let paymentProcessor = PaymentProcessor(rawValue: processorString) {
+            self.paymentProcessor = paymentProcessor
+        } else {
+            throw OWSAssertionError("Unexpected payment processor: \(processorString)")
+        }
+
         if let chargeFailureDict = chargeFailureDict {
             chargeFailure = ChargeFailure(jsonDictionary: chargeFailureDict)
         } else {
@@ -256,6 +265,7 @@ public class SubscriptionManager: NSObject {
     fileprivate static let mostRecentlyExpiredGiftBadgeIDKey = "mostRecentlyExpiredGiftBadgeIDKey"
     fileprivate static let showExpirySheetOnHomeScreenKey = "showExpirySheetOnHomeScreenKey"
     fileprivate static let mostRecentSubscriptionBadgeChargeFailureCodeKey = "mostRecentSubscriptionBadgeChargeFailureCode"
+    fileprivate static let mostRecentSubscriptionPaymentMethodKey = "mostRecentSubscriptionPaymentMethod"
     fileprivate static let hasMigratedToStorageServiceKey = "hasMigratedToStorageServiceKey"
 
     // MARK: Current subscription status
@@ -301,9 +311,114 @@ public class SubscriptionManager: NSObject {
 
     // MARK: Subscription management
 
+    /// Perform processor-agnostic steps to set up a new subscription, before
+    /// payment has been authorized.
+    ///
+    /// - Returns the new subscriber ID.
+    public class func prepareNewSubscription(
+        subscription: SubscriptionLevel,
+        currencyCode: Currency.Code
+    ) -> Promise<Data> {
+        firstly {
+            Logger.info("[Donations] Setting up new subscription")
+
+            return setupNewSubscriberID()
+        }.map(on: .sharedUserInitiated) { subscriberID -> Data in
+            Logger.info("[Donations] Caching params after setting up new subscription")
+
+            databaseStorage.write { transaction in
+                self.setUserManuallyCancelledSubscription(false, transaction: transaction)
+                self.setSubscriberID(subscriberID, transaction: transaction)
+                self.setSubscriberCurrencyCode(currencyCode, transaction: transaction)
+                self.setMostRecentlyExpiredBadgeID(badgeID: nil, transaction: transaction)
+                self.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
+                self.storageServiceManager.recordPendingLocalAccountUpdates()
+            }
+
+            return subscriberID
+        }
+    }
+
+    /// Finalize a new subscription, after payment has been authorized with the
+    /// given processor.
+    public class func finalizeNewSubscription(
+        forSubscriberId subscriberId: Data,
+        withPaymentId paymentId: String,
+        usingPaymentMethod paymentMethod: DonationPaymentMethod,
+        subscription: SubscriptionLevel,
+        currencyCode: Currency.Code
+    ) -> Promise<Subscription> {
+        firstly { () -> Promise<Void> in
+            Logger.info("[Donations] Setting default payment method on service")
+
+            return setDefaultPaymentMethod(
+                for: subscriberId,
+                using: paymentMethod.paymentProcessor,
+                paymentID: paymentId
+            )
+        }.then(on: .sharedUserInitiated) { _ -> Promise<Subscription> in
+            Logger.info("[Donations] Selecting subscription level on service")
+
+            databaseStorage.write { transaction in
+                Self.setMostRecentSubscriptionPaymentMethod(paymentMethod: paymentMethod, transaction: transaction)
+                Self.clearMostRecentSubscriptionBadgeChargeFailure(transaction: transaction)
+            }
+
+            return setSubscription(
+                for: subscriberId,
+                subscription: subscription,
+                currencyCode: currencyCode
+            )
+        }
+    }
+
+    /// Update the subscription level for the given subscriber ID.
+    public class func updateSubscriptionLevel(
+        for subscriberID: Data,
+        to subscription: SubscriptionLevel,
+        currencyCode: Currency.Code
+    ) -> Promise<Subscription> {
+        Logger.info("[Donations] Updating subscription level")
+
+        return setSubscription(
+            for: subscriberID,
+            subscription: subscription,
+            currencyCode: currencyCode
+        )
+    }
+
+    /// Cancel a subscription for the given subscriber ID.
+    public class func cancelSubscription(for subscriberID: Data) -> Promise<Void> {
+        Logger.info("[Donations] Cancelling subscription")
+
+        let request = OWSRequestFactory.deleteSubscriptionIDRequest(subscriberID.asBase64Url)
+        return firstly {
+            networkManager.makePromise(request: request)
+        }.map(on: .global()) { response in
+            let statusCode = response.responseStatusCode
+            if statusCode != 200 {
+                throw OWSAssertionError("Got bad response code \(statusCode).")
+            } else {
+                databaseStorage.write { transaction in
+                    self.setSubscriberID(nil, transaction: transaction)
+                    self.setSubscriberCurrencyCode(nil, transaction: transaction)
+                    self.setLastSubscriptionExpirationDate(nil, transaction: transaction)
+                    self.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
+                    self.setMostRecentSubscriptionPaymentMethod(paymentMethod: nil, transaction: transaction)
+                    self.setUserManuallyCancelledSubscription(true, transaction: transaction)
+                    self.storageServiceManager.recordPendingLocalAccountUpdates()
+                }
+            }
+        }
+    }
+
+    /// Generate and register an ID for a new subscriber.
+    ///
+    /// - Returns the new subscriber ID.
     private class func setupNewSubscriberID() -> Promise<Data> {
         Logger.info("[Donations] Setting up new subscriber ID")
-        let newSubscriberID = generateSubscriberID()
+
+        let newSubscriberID = Cryptography.generateRandomBytes(UInt(32))
         return firstly {
             self.postSubscriberID(subscriberID: newSubscriberID)
         }.map(on: .global()) { _ in
@@ -324,178 +439,17 @@ public class SubscriptionManager: NSObject {
         }
     }
 
-    private class func generateSubscriberID() -> Data {
-        return Cryptography.generateRandomBytes(UInt(32))
-    }
-
-    public class func setupNewSubscription(
-        subscription: SubscriptionLevel,
-        applePayPayment: PKPayment,
-        currencyCode: Currency.Code
-    ) -> Promise<Data> {
-        setupNewSubscription(
-            subscription: subscription,
-            paymentMethod: .applePay(payment: applePayPayment),
-            currencyCode: currencyCode,
-            show3DS: { _ in
-                owsFail("[Donations] 3D Secure should not be shown for Apple Pay")
-            }
-        )
-    }
-
-    public class func setupNewSubscription(
-        subscription: SubscriptionLevel,
-        creditOrDebitCard: Stripe.PaymentMethod.CreditOrDebitCard,
-        currencyCode: Currency.Code,
-        show3DS: @escaping (URL) -> Promise<Void>
-    ) -> Promise<Data> {
-        setupNewSubscription(
-            subscription: subscription,
-            paymentMethod: .creditOrDebitCard(creditOrDebitCard: creditOrDebitCard),
-            currencyCode: currencyCode,
-            show3DS: show3DS
-        )
-    }
-
-    private class func setupNewSubscription(
-        subscription: SubscriptionLevel,
-        paymentMethod: Stripe.PaymentMethod,
-        currencyCode: Currency.Code,
-        show3DS: @escaping (URL) -> Promise<Void>
-    ) -> Promise<Data> {
-        Logger.info("[Donations] Setting up new subscription")
-
-        var generatedSubscriberID = Data()
-        var generatedClientSecret = ""
-        var generatedPaymentID = ""
-
-        return firstly {
-            setupNewSubscriberID()
-
-        // Create Stripe SetupIntent against new subscriberID
-        }.then(on: .sharedUserInitiated) { subscriberID -> Promise<String> in
-            generatedSubscriberID = subscriberID
-
-            databaseStorage.write { transaction in
-                self.setUserManuallyCancelledSubscription(false, transaction: transaction)
-                self.setSubscriberID(subscriberID, transaction: transaction)
-                self.setSubscriberCurrencyCode(currencyCode, transaction: transaction)
-                self.setMostRecentlyExpiredBadgeID(badgeID: nil, transaction: transaction)
-                self.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
-                self.storageServiceManager.recordPendingLocalAccountUpdates()
-            }
-
-            return createPaymentMethod(for: subscriberID)
-
-        // Create new payment method
-        }.then(on: .sharedUserInitiated) { clientSecret -> Promise<String> in
-            generatedClientSecret = clientSecret
-            return Stripe.createPaymentMethod(with: paymentMethod)
-
-        // Bind payment method to SetupIntent, confirm SetupIntent
-        }.then(on: .sharedUserInitiated) { paymentID -> Promise<Stripe.ConfirmedIntent> in
-            generatedPaymentID = paymentID
-            return Stripe.confirmSetupIntent(
-                for: generatedPaymentID,
-                clientSecret: generatedClientSecret
-            )
-
-            // Show 3DS UI if necessary
-        }.then(on: .main) { confirmedIntent -> Promise<Void> in
-            if let redirectToUrl = confirmedIntent.redirectToUrl {
-                return show3DS(redirectToUrl)
-            } else {
-                return Promise.value(())
-            }
-
-            // Update payment on server
-        }.then(on: .sharedUserInitiated) { () -> Promise<Void> in
-            return setDefaultPaymentMethod(for: generatedSubscriberID, paymentID: generatedPaymentID)
-
-        // Select subscription level
-        }.then(on: .sharedUserInitiated) { _ -> Promise<Void> in
-            databaseStorage.write {
-                Self.clearMostRecentSubscriptionBadgeChargeFailure(transaction: $0)
-            }
-
-            return setSubscription(
-                for: generatedSubscriberID,
-                subscription: subscription,
-                currencyCode: currencyCode
-            )
-        }.map { generatedSubscriberID }
-    }
-
-    public class func updateSubscriptionLevel(
-        for subscriberID: Data,
-        to subscription: SubscriptionLevel,
-        currencyCode: Currency.Code
-    ) -> Promise<Void> {
-        Logger.info("[Donations] Updating subscription level")
-
-        return setSubscription(
-            for: subscriberID,
-            subscription: subscription,
-            currencyCode: currencyCode
-        )
-    }
-
-    public class func cancelSubscription(for subscriberID: Data) -> Promise<Void> {
-        Logger.info("[Donations] Cancelling subscription")
-
-        let request = OWSRequestFactory.deleteSubscriptionIDRequest(subscriberID.asBase64Url)
-        return firstly {
-            networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
-            let statusCode = response.responseStatusCode
-            if statusCode != 200 {
-                throw OWSAssertionError("Got bad response code \(statusCode).")
-            } else {
-                databaseStorage.write { transaction in
-                    self.setSubscriberID(nil, transaction: transaction)
-                    self.setSubscriberCurrencyCode(nil, transaction: transaction)
-                    self.setLastSubscriptionExpirationDate(nil, transaction: transaction)
-                    self.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
-                    self.setUserManuallyCancelledSubscription(true, transaction: transaction)
-                    self.storageServiceManager.recordPendingLocalAccountUpdates()
-                }
-            }
-        }
-    }
-
-    private class func createPaymentMethod(for subscriberID: Data) -> Promise<String> {
-        let request = OWSRequestFactory.subscriptionCreatePaymentMethodRequest(subscriberID.asBase64Url)
-        return firstly {
-            networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
-            let statusCode = response.responseStatusCode
-
-            if statusCode != 200 {
-                throw OWSAssertionError("Got bad response code \(statusCode).")
-            }
-
-            guard let json = response.responseBodyJson as? [String: Any] else {
-                throw OWSAssertionError("Unable to parse response body.")
-            }
-
-            guard let parser = ParamParser(responseObject: json) else {
-                throw OWSAssertionError("Missing or invalid response.")
-            }
-
-            do {
-                let clientSecret: String = try parser.required(key: "clientSecret")
-                return clientSecret
-            } catch {
-                throw OWSAssertionError("Missing clientID key")
-            }
-        }
-    }
-
     private class func setDefaultPaymentMethod(
         for subscriberID: Data,
+        using processor: PaymentProcessor,
         paymentID: String
     ) -> Promise<Void> {
-        let request = OWSRequestFactory.subscriptionSetDefaultPaymentMethodRequest(subscriberID.asBase64Url, paymentID: paymentID)
+        let request = OWSRequestFactory.subscriptionSetDefaultPaymentMethodRequest(
+            subscriberID.asBase64Url,
+            processor: processor.rawValue,
+            paymentID: paymentID
+        )
+
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in
@@ -506,11 +460,15 @@ public class SubscriptionManager: NSObject {
         }
     }
 
+    /// Set the current subscription to the given level and currency.
+    ///
+    /// - Returns
+    /// The updated subscription.
     private class func setSubscription(
         for subscriberID: Data,
         subscription: SubscriptionLevel,
         currencyCode: Currency.Code
-    ) -> Promise<Void> {
+    ) -> Promise<Subscription> {
 
         let subscriberIDURL = subscriberID.asBase64Url
         let key = Cryptography.generateRandomBytes(UInt(32)).asBase64Url
@@ -530,14 +488,19 @@ public class SubscriptionManager: NSObject {
             }
 
             return self.getCurrentSubscriptionStatus(for: subscriberID)
-        }.done(on: .global()) { subscription in
+        }.map(on: .global()) { subscription in
             guard let subscription = subscription else {
                 throw OWSAssertionError("Failed to fetch valid subscription object after setSubscription")
             }
 
             databaseStorage.write { transaction in
+                self.setSubscriberCurrencyCode(currencyCode, transaction: transaction)
+                self.storageServiceManager.recordPendingLocalAccountUpdates()
+
                 self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
             }
+
+            return subscription
         }
     }
 
@@ -810,7 +773,7 @@ public class SubscriptionManager: NSObject {
                 Logger.info("[Donations] Triggering receipt redemption job during heartbeat, last expiration \(lastSubscriptionExpiration), new expiration \(newDate)")
                 self.requestAndRedeemReceiptsIfNecessary(
                     for: subscriberID,
-                    usingPaymentProcessor: .stripe, // TODO: [PayPal] Implement subscriptions
+                    usingPaymentProcessor: subscription.paymentProcessor,
                     subscriptionLevel: subscription.level,
                     priorSubscriptionLevel: nil
                 )
@@ -1056,6 +1019,26 @@ extension SubscriptionManager {
             return nil
         }
         return code == SUBSCRIPTION_CHARGE_FAILURE_FALLBACK_CODE ? Subscription.ChargeFailure() : Subscription.ChargeFailure(code: code)
+    }
+
+    public static func setMostRecentSubscriptionPaymentMethod(
+        paymentMethod: DonationPaymentMethod?,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        subscriptionKVS.setString(paymentMethod?.rawValue, key: mostRecentSubscriptionPaymentMethodKey, transaction: transaction)
+    }
+
+    public static func getMostRecentSubscriptionPaymentMethod(transaction: SDSAnyReadTransaction) -> DonationPaymentMethod? {
+        guard let paymentMethodString = subscriptionKVS.getString(mostRecentSubscriptionPaymentMethodKey, transaction: transaction) else {
+            return nil
+        }
+
+        guard let paymentMethod = DonationPaymentMethod(rawValue: paymentMethodString) else {
+            owsFailBeta("Unexpected payment method string: \(paymentMethodString)")
+            return nil
+        }
+
+        return paymentMethod
     }
 
     private static func setMostRecentSubscriptionBadgeChargeFailureCode(code: String, transaction: SDSAnyWriteTransaction) {

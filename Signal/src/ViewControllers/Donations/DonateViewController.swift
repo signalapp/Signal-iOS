@@ -220,11 +220,11 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         donateMode: DonateMode
     ) {
         guard let navigationController else {
-            owsFail("Cannot open credit/debit card screen if we're not in a navigation controller")
+            owsFail("[Donations] Cannot open credit/debit card screen if we're not in a navigation controller")
         }
 
         guard let badge else {
-            owsFail("Missing badge")
+            owsFail("[Donations] Missing badge")
         }
 
         let cardDonationMode: CreditOrDebitCardDonationViewController.DonationMode
@@ -263,12 +263,15 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         badge: ProfileBadge?,
         donateMode: DonateMode
     ) {
+        guard let badge else {
+            owsFail("[Donations] Missing badge!")
+        }
+
         switch donateMode {
         case .oneTime:
             startPaypalBoost(with: amount, badge: badge)
         case .monthly:
-            // TODO: [PayPal] support for monthly payments
-            owsFail("Monthly not yet supported - should be impossible from the UI!")
+            startPaypalSubscription(with: amount, badge: badge)
         }
     }
 
@@ -382,9 +385,9 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                         to: selectedSubscriptionLevel,
                         currencyCode: monthly.selectedCurrencyCode
                     )
-                }.then(on: .sharedUserInitiated) {
+                }.then(on: .sharedUserInitiated) { subscription -> Promise<Void> in
                     DonationViewsUtil.redeemMonthlyReceipts(
-                        usingPaymentProcessor: .stripe, // TODO: [PayPal] Implement subscriptions
+                        usingPaymentProcessor: subscription.paymentProcessor,
                         subscriberID: subscriberID,
                         newSubscriptionLevel: selectedSubscriptionLevel,
                         priorSubscriptionLevel: monthly.currentSubscriptionLevel
@@ -400,12 +403,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 self?.didFailDonation(
                     error: error,
                     mode: .monthly,
-                    // TODO: [PayPal] We don't know the payment method here. Instead of figuring it
-                    // out (probably by persisting the payment method), we hard-code a payment
-                    // method. We will likely refactor this when it's time to add monthly PayPal
-                    // donations. So for now, hard-code credit/debit card errors which are more
-                    // generic.
-                    paymentMethod: .creditOrDebitCard
+                    paymentMethod: monthly.previousMonthlySubscriptionPaymentMethod
                 )
             }
         default:
@@ -536,7 +534,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     internal func didFailDonation(
         error: Error,
         mode: DonateMode,
-        paymentMethod: DonationPaymentMethod
+        paymentMethod: DonationPaymentMethod?
     ) {
         DonationViewsUtil.presentDonationErrorSheet(
             from: self,
@@ -576,11 +574,13 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         let (
             subscriberID,
             previousSubscriberCurrencyCode,
+            previousSubscriberPaymentMethod,
             lastReceiptRedemptionFailure
         ) = databaseStorage.read {
             (
                 SubscriptionManager.getSubscriberID(transaction: $0),
                 SubscriptionManager.getSubscriberCurrencyCode(transaction: $0),
+                SubscriptionManager.getMostRecentSubscriptionPaymentMethod(transaction: $0),
                 SubscriptionManager.lastReceiptRedemptionFailed(transaction: $0)
             )
         }
@@ -620,6 +620,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 subscriberID: subscriberID,
                 lastReceiptRedemptionFailure: lastReceiptRedemptionFailure,
                 previousMonthlySubscriptionCurrencyCode: previousSubscriberCurrencyCode,
+                previousMonthlySubscriptionPaymentMethod: previousSubscriberPaymentMethod,
                 locale: Locale.current,
                 localNumber: Self.tsAccountManager.localNumber
             )

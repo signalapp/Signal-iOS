@@ -43,7 +43,8 @@ class SubscriptionTest: XCTestCase {
             "billingCycleAnchor": billingCycleAnchorRawValue,
             "active": true,
             "cancelAtPeriodEnd": false,
-            "status": "active"
+            "status": "active",
+            "processor": "STRIPE"
         ]
     }()
 

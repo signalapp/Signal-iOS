@@ -19,7 +19,10 @@ public enum BadgeExpirationSheetAction {
 
 public class BadgeExpirationSheetState {
     public enum Mode {
-        case subscriptionExpiredBecauseOfChargeFailure(chargeFailure: Subscription.ChargeFailure)
+        case subscriptionExpiredBecauseOfChargeFailure(
+            chargeFailure: Subscription.ChargeFailure,
+            paymentMethod: DonationPaymentMethod?
+        )
         case subscriptionExpiredBecauseNotRenewed
         case boostExpired(hasCurrentSubscription: Bool)
         case giftBadgeExpired(hasCurrentSubscription: Bool)
@@ -85,14 +88,10 @@ public class BadgeExpirationSheetState {
 
     public lazy var body: Body = {
         switch mode {
-        case let .subscriptionExpiredBecauseOfChargeFailure(chargeFailure):
+        case let .subscriptionExpiredBecauseOfChargeFailure(chargeFailure, paymentMethod):
             let failureSpecificText = DonationViewsUtil.localizedDonationFailure(
-                stripeCode: chargeFailure.code,
-                // TODO: [PayPal] We don't know the payment method here. Instead of figuring it
-                // out (probably by persisting the payment method), we hard-code a payment
-                // method. We will likely refactor this when it's time to add monthly PayPal
-                // donations. So for now, hard-code Apple Pay errors.
-                paymentMethod: .applePay
+                chargeErrorCode: chargeFailure.code,
+                paymentMethod: paymentMethod
             )
             let formatText = NSLocalizedString(
                 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT",

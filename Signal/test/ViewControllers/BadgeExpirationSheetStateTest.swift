@@ -67,7 +67,10 @@ class BadgeExpirationSheetStateTest: XCTestCase {
             (
                 State(
                     badge: getSubscriptionBadge(),
-                    mode: .subscriptionExpiredBecauseOfChargeFailure(chargeFailure: Subscription.ChargeFailure(code: "insufficient_funds")),
+                    mode: .subscriptionExpiredBecauseOfChargeFailure(
+                        chargeFailure: Subscription.ChargeFailure(code: "insufficient_funds"),
+                        paymentMethod: nil
+                    ),
                     canDonate: true
                 ),
                 NSLocalizedString(
@@ -126,7 +129,7 @@ class BadgeExpirationSheetStateTest: XCTestCase {
         }
     }
 
-    func testBody() throws {
+    func testBodyForApplePay() throws {
         let subscriptionBadge = getSubscriptionBadge()
 
         let chargeFailureTestCases: [[String?]: String] = [
@@ -205,7 +208,10 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                 }
                 let state = State(
                     badge: subscriptionBadge,
-                    mode: .subscriptionExpiredBecauseOfChargeFailure(chargeFailure: chargeFailure),
+                    mode: .subscriptionExpiredBecauseOfChargeFailure(
+                        chargeFailure: chargeFailure,
+                        paymentMethod: .applePay
+                    ),
                     canDonate: true
                 )
                 let body = state.body
@@ -284,7 +290,10 @@ class BadgeExpirationSheetStateTest: XCTestCase {
         let dismissButtonStates: [State] = [
             .init(
                 badge: getSubscriptionBadge(),
-                mode: .subscriptionExpiredBecauseOfChargeFailure(chargeFailure: Subscription.ChargeFailure(code: "insufficient_funds")),
+                mode: .subscriptionExpiredBecauseOfChargeFailure(
+                    chargeFailure: Subscription.ChargeFailure(code: "insufficient_funds"),
+                    paymentMethod: nil
+                ),
                 canDonate: true
             ),
             .init(

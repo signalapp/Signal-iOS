@@ -25,22 +25,59 @@ extension DonateViewController {
             owsFail("[Donations] Invalid state; cannot pay")
         }
 
+        Logger.info("[Donations] Starting monthly Apple Pay donation")
+
         // See also: code for other payment methods, such as credit/debit card.
         firstly(on: .sharedUserInitiated) { () -> Promise<Void> in
-            if let subscriberID = monthly.subscriberID, monthly.currentSubscription != nil {
-                return SubscriptionManager.cancelSubscription(for: subscriberID)
+            if let existingSubscriberId = monthly.subscriberID, monthly.currentSubscription != nil {
+                Logger.info("[Donations] Cancelling existing subscription")
+
+                return SubscriptionManager.cancelSubscription(for: existingSubscriberId)
             } else {
+                Logger.info("[Donations] No existing subscription to cancel")
+
                 return Promise.value(())
             }
-        }.then(on: .sharedUserInitiated) {
-            SubscriptionManager.setupNewSubscription(
+        }.then(on: .sharedUserInitiated) { () -> Promise<Data> in
+            Logger.info("[Donations] Preparing new monthly subscription with Apple Pay")
+
+            return SubscriptionManager.prepareNewSubscription(
                 subscription: selectedSubscriptionLevel,
-                applePayPayment: payment,
                 currencyCode: monthly.selectedCurrencyCode
             )
-        }.done(on: .main) { (subscriberID: Data) in
+        }.then(on: .sharedUserInitiated) { subscriberId -> Promise<(Data, String)> in
+            firstly { () -> Promise<String> in
+                Logger.info("[Donations] Creating Signal payment method for new monthly subscription with Apple Pay")
+
+                return Stripe.createSignalPaymentMethodForSubscription(subscriberId: subscriberId)
+            }.then(on: .sharedUserInitiated) { clientSecret -> Promise<String> in
+                Logger.info("[Donations] Authorizing payment for new monthly subscription with Apple Pay")
+
+                return Stripe.setupNewSubscription(
+                    clientSecret: clientSecret,
+                    paymentMethod: .applePay(payment: payment),
+                    show3DS: { _ in
+                        owsFail("[Donations] 3D Secure should not be shown for Apple Pay")
+                    }
+                )
+            }.map(on: .sharedUserInitiated) { paymentId in
+                (subscriberId, paymentId)
+            }
+        }.then(on: .sharedUserInitiated) { (subscriberId, paymentId) -> Promise<Data> in
+            Logger.info("[Donations] Finalizing new subscription for Apple Pay donation")
+
+            return SubscriptionManager.finalizeNewSubscription(
+                forSubscriberId: subscriberId,
+                withPaymentId: paymentId,
+                usingPaymentMethod: .applePay,
+                subscription: selectedSubscriptionLevel,
+                currencyCode: monthly.selectedCurrencyCode
+            ).map(on: .sharedUserInitiated) { _ in subscriberId }
+        }.done(on: .main) { subscriberID in
             let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
             completion(authResult)
+
+            Logger.info("[Donations] Redeeming monthly receipt for Apple Pay donation")
 
             DonationViewsUtil.redeemMonthlyReceipts(
                 usingPaymentProcessor: .stripe,
@@ -53,11 +90,15 @@ extension DonateViewController {
                 from: self,
                 promise: DonationViewsUtil.waitForSubscriptionJob()
             ).done(on: .main) {
+                Logger.info("[Donations] Monthly card donation finished")
+
                 self.didCompleteDonation(
                     badge: selectedSubscriptionLevel.badge,
                     thanksSheetType: .subscription
                 )
             }.catch(on: .main) { [weak self] error in
+                Logger.info("[Donations] Monthly card donation failed")
+
                 self?.didFailDonation(error: error, mode: .monthly, paymentMethod: .applePay)
             }
         }.catch(on: .main) { error in

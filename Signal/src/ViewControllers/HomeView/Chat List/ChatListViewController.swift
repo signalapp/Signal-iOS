@@ -92,11 +92,13 @@ public extension ChatListViewController {
             expiredBadgeID,
             shouldShowExpirySheet,
             mostRecentSubscriptionBadgeChargeFailure,
+            mostRecentSubscriptionPaymentMethod,
             hasCurrentSubscription
         ) = databaseStorage.read { transaction in (
             SubscriptionManager.mostRecentlyExpiredBadgeID(transaction: transaction),
             SubscriptionManager.showExpirySheetOnHomeScreenKey(transaction: transaction),
             SubscriptionManager.getMostRecentSubscriptionBadgeChargeFailure(transaction: transaction),
+            SubscriptionManager.getMostRecentSubscriptionPaymentMethod(transaction: transaction),
             subscriptionManager.hasCurrentSubscription(transaction: transaction)
         )}
 
@@ -159,7 +161,10 @@ public extension ChatListViewController {
 
                     let mode: BadgeExpirationSheetState.Mode
                     if let mostRecentSubscriptionBadgeChargeFailure = mostRecentSubscriptionBadgeChargeFailure {
-                        mode = .subscriptionExpiredBecauseOfChargeFailure(chargeFailure: mostRecentSubscriptionBadgeChargeFailure)
+                        mode = .subscriptionExpiredBecauseOfChargeFailure(
+                            chargeFailure: mostRecentSubscriptionBadgeChargeFailure,
+                            paymentMethod: mostRecentSubscriptionPaymentMethod
+                        )
                     } else {
                         mode = .subscriptionExpiredBecauseNotRenewed
                     }

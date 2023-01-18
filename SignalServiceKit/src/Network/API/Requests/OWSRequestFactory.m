@@ -957,7 +957,8 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return request;
 }
 
-+ (TSRequest *)subscriptionCreatePaymentMethodRequest:(NSString *)base64SubscriberID {
++ (TSRequest *)subscriptionCreateStripePaymentMethodRequest:(NSString *)base64SubscriberID
+{
     TSRequest *request =  [TSRequest requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@/create_payment_method", base64SubscriberID]]
                                               method:@"POST"
                                          parameters:@{}];
@@ -966,10 +967,33 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return request;
 }
 
-+ (TSRequest *)subscriptionSetDefaultPaymentMethodRequest:(NSString *)base64SubscriberID paymentID:(NSString *)paymentID {
-    TSRequest *request =  [TSRequest requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@/default_payment_method/%@", base64SubscriberID, paymentID]]
-                                              method:@"POST"
-                                         parameters:@{}];
++ (TSRequest *)subscriptionCreatePaypalPaymentMethodRequest:(NSString *)base64SubscriberID
+                                                  returnUrl:(NSURL *)returnUrl
+                                                  cancelUrl:(NSURL *)cancelUrl
+{
+    TSRequest *request = [TSRequest
+        requestWithUrl:[NSURL
+                           URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@/create_payment_method/paypal",
+                                                   base64SubscriberID]]
+                method:@"POST"
+            parameters:@{ @"returnUrl" : returnUrl.absoluteString, @"cancelUrl" : cancelUrl.absoluteString }];
+    request.shouldHaveAuthorizationHeaders = NO;
+    request.shouldRedactUrlInLogs = YES;
+    return request;
+}
+
++ (TSRequest *)subscriptionSetDefaultPaymentMethodRequest:(NSString *)base64SubscriberID
+                                                processor:(NSString *)processor
+                                                paymentID:(NSString *)paymentID
+{
+    TSRequest *request = [TSRequest
+        requestWithUrl:[NSURL
+                           URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@/default_payment_method/%@/%@",
+                                                   base64SubscriberID,
+                                                   processor,
+                                                   paymentID]]
+                method:@"POST"
+            parameters:@{}];
     request.shouldHaveAuthorizationHeaders = NO;
     request.shouldRedactUrlInLogs = YES;
     return request;

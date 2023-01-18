@@ -144,7 +144,8 @@ final class DonateViewControllerTest: SignalBaseTest {
                 "billingCycleAnchor": TimeInterval(5678),
                 "active": true,
                 "cancelAtPeriodEnd": false,
-                "status": "active"
+                "status": "active",
+                "processor": "STRIPE"
             ],
             chargeFailureDict: nil
         )
@@ -173,6 +174,7 @@ final class DonateViewControllerTest: SignalBaseTest {
             subscriberID: nil,
             lastReceiptRedemptionFailure: .none,
             previousMonthlySubscriptionCurrencyCode: nil,
+            previousMonthlySubscriptionPaymentMethod: nil,
             locale: Locale(identifier: "en-US"),
             localNumber: Self.localNumber
         )
@@ -187,6 +189,7 @@ final class DonateViewControllerTest: SignalBaseTest {
             subscriberID: Data([1, 2, 3]),
             lastReceiptRedemptionFailure: .none,
             previousMonthlySubscriptionCurrencyCode: "USD",
+            previousMonthlySubscriptionPaymentMethod: .applePay,
             locale: Locale(identifier: "en-US"),
             localNumber: Self.localNumber
         )
@@ -209,6 +212,7 @@ final class DonateViewControllerTest: SignalBaseTest {
             subscriberID: subscriberID,
             lastReceiptRedemptionFailure: .none,
             previousMonthlySubscriptionCurrencyCode: previousMonthlySubscriptionCurrencyCode,
+            previousMonthlySubscriptionPaymentMethod: .applePay,
             locale: locale,
             localNumber: Self.localNumber
         )
@@ -434,8 +438,7 @@ final class DonateViewControllerTest: SignalBaseTest {
 
         let monthlyPaymentRequest = state.monthly!.paymentRequest!
         XCTAssertEqual(monthlyPaymentRequest.amount, 15.as("USD"))
-        // TODO: [PayPal] Currently, PayPal is not supported for monthly.
-        XCTAssertEqual(monthlyPaymentRequest.supportedPaymentMethods, [.applePay])
+        XCTAssertEqual(monthlyPaymentRequest.supportedPaymentMethods, [.paypal, .applePay])
     }
 }
 

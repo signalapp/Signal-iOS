@@ -8,21 +8,25 @@ import SignalMessaging
 
 extension DonationViewsUtil {
     static func localizedDonationFailure(
-        stripeCode: String?,
-        paymentMethod: DonationPaymentMethod
+        chargeErrorCode: String?,
+        paymentMethod: DonationPaymentMethod?
     ) -> String {
         switch paymentMethod {
         case .applePay:
-            return localizedDonationFailureForApplePay(stripeCode: stripeCode)
+            return localizedDonationFailureForApplePay(chargeErrorCode: chargeErrorCode)
         case .creditOrDebitCard:
-            return localizedDonationFailureForCreditOrDebitCard(stripeCode: stripeCode)
-        case .paypal:
-            owsFail("[Donations] Got into a Stripe method with a PayPal donation")
+            return localizedDonationFailureForCreditOrDebitCard(chargeErrorCode: chargeErrorCode)
+        case .paypal, nil:
+            // TODO: [PayPal] Use the charge error code to put together a non-generic error.
+            return OWSLocalizedString(
+                "SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE",
+                comment: "Action sheet message for Couldn't Add Badge sheet"
+            )
         }
     }
 
-    private static func localizedDonationFailureForApplePay(stripeCode: String?) -> String {
-        switch stripeCode {
+    private static func localizedDonationFailureForApplePay(chargeErrorCode: String?) -> String {
+        switch chargeErrorCode {
         case "authentication_required":
             return NSLocalizedString(
                 "APPLE_PAY_DONATION_ERROR_AUTHENTICATION_REQUIRED",
@@ -91,8 +95,8 @@ extension DonationViewsUtil {
         }
     }
 
-    private static func localizedDonationFailureForCreditOrDebitCard(stripeCode: String?) -> String {
-        switch stripeCode {
+    private static func localizedDonationFailureForCreditOrDebitCard(chargeErrorCode: String?) -> String {
+        switch chargeErrorCode {
         case "approve_with_id":
             return NSLocalizedString(
                 "CREDIT_OR_DEBIT_CARD_DONATION_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED",

@@ -24,8 +24,7 @@ extension CreditOrDebitCardDonationViewController {
                     level: .boostBadge,
                     for: .creditOrDebitCard(creditOrDebitCard: creditOrDebitCard)
                 )
-            }.then(on: .main) { [weak self] confirmedIntent in
-                guard let self else { throw DonationJobError.assertion }
+            }.then(on: .main) { confirmedIntent in
                 if let redirectUrl = confirmedIntent.redirectToUrl {
                     Logger.info("[Donations] One-time card donation needed 3DS. Presenting...")
                     return self.show3DS(for: redirectUrl)
