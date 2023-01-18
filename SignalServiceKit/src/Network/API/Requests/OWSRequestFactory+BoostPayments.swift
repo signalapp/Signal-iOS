@@ -53,8 +53,8 @@ public extension OWSRequestFactory {
         return request
     }
 
-    /// A request to confirm a PayPal payment for a boost.
-    static func boostPaypalConfirmPayment(
+    /// A request to confirm a PayPal payment for a one-time payment.
+    static func oneTimePaypalConfirmPayment(
         integerMoneyValue: UInt,
         inCurrencyCode currencyCode: Currency.Code,
         level: UInt64,

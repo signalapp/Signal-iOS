@@ -64,6 +64,9 @@ public struct JobRecordRecord: SDSRecord {
     public let waitForMessageProcessing: Bool?
     public let isCompleteContactSync: Bool?
     public let paymentProcessor: String?
+    public let paypalPayerId: String?
+    public let paypalPaymentId: String?
+    public let paypalPaymentToken: String?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -102,6 +105,9 @@ public struct JobRecordRecord: SDSRecord {
         case waitForMessageProcessing
         case isCompleteContactSync
         case paymentProcessor
+        case paypalPayerId
+        case paypalPaymentId
+        case paypalPaymentToken
     }
 
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -161,6 +167,9 @@ public extension JobRecordRecord {
         waitForMessageProcessing = row[33]
         isCompleteContactSync = row[34]
         paymentProcessor = row[35]
+        paypalPayerId = row[36]
+        paypalPaymentId = row[37]
+        paypalPaymentToken = row[38]
     }
 }
 
@@ -325,12 +334,15 @@ extension SSKJobRecord {
             let status: SSKJobRecordStatus = record.status
             let amountSerialized: Data? = record.amount
             let amount: NSDecimalNumber = try SDSDeserialization.unarchive(amountSerialized, name: "amount")
-            let boostPaymentIntentID: String = try SDSDeserialization.required(record.boostPaymentIntentID, name: "boostPaymentIntentID")
+            let boostPaymentIntentID: String? = record.boostPaymentIntentID
             let currencyCode: String = try SDSDeserialization.required(record.currencyCode, name: "currencyCode")
             let messageText: String = try SDSDeserialization.required(record.messageText, name: "messageText")
-            let paymentIntentClientSecret: String = try SDSDeserialization.required(record.paymentIntentClientSecret, name: "paymentIntentClientSecret")
-            let paymentMethodId: String = try SDSDeserialization.required(record.paymentMethodId, name: "paymentMethodId")
+            let paymentIntentClientSecret: String? = record.paymentIntentClientSecret
+            let paymentMethodId: String? = record.paymentMethodId
             let paymentProcessor: String = try SDSDeserialization.required(record.paymentProcessor, name: "paymentProcessor")
+            let paypalPayerId: String? = record.paypalPayerId
+            let paypalPaymentId: String? = record.paypalPaymentId
+            let paypalPaymentToken: String? = record.paypalPaymentToken
             let receiptCredentailRequest: Data = try SDSDeserialization.required(record.receiptCredentailRequest, name: "receiptCredentailRequest")
             let receiptCredentailRequestContext: Data = try SDSDeserialization.required(record.receiptCredentailRequestContext, name: "receiptCredentailRequestContext")
             let threadId: String = try SDSDeserialization.required(record.threadId, name: "threadId")
@@ -349,6 +361,9 @@ extension SSKJobRecord {
                                              paymentIntentClientSecret: paymentIntentClientSecret,
                                              paymentMethodId: paymentMethodId,
                                              paymentProcessor: paymentProcessor,
+                                             paypalPayerId: paypalPayerId,
+                                             paypalPaymentId: paypalPaymentId,
+                                             paypalPaymentToken: paypalPaymentToken,
                                              receiptCredentailRequest: receiptCredentailRequest,
                                              receiptCredentailRequestContext: receiptCredentailRequestContext,
                                              threadId: threadId)
@@ -616,12 +631,15 @@ extension SSKJobRecord: DeepCopyable {
             // NOTE: If this generates build errors, you made need to
             // implement DeepCopyable for this type in DeepCopy.swift.
             let amount: NSDecimalNumber = try DeepCopies.deepCopy(modelToCopy.amount)
-            let boostPaymentIntentID: String = modelToCopy.boostPaymentIntentID
+            let boostPaymentIntentID: String? = modelToCopy.boostPaymentIntentID
             let currencyCode: String = modelToCopy.currencyCode
             let messageText: String = modelToCopy.messageText
-            let paymentIntentClientSecret: String = modelToCopy.paymentIntentClientSecret
-            let paymentMethodId: String = modelToCopy.paymentMethodId
+            let paymentIntentClientSecret: String? = modelToCopy.paymentIntentClientSecret
+            let paymentMethodId: String? = modelToCopy.paymentMethodId
             let paymentProcessor: String = modelToCopy.paymentProcessor
+            let paypalPayerId: String? = modelToCopy.paypalPayerId
+            let paypalPaymentId: String? = modelToCopy.paypalPaymentId
+            let paypalPaymentToken: String? = modelToCopy.paypalPaymentToken
             let receiptCredentailRequest: Data = modelToCopy.receiptCredentailRequest
             let receiptCredentailRequestContext: Data = modelToCopy.receiptCredentailRequestContext
             let threadId: String = modelToCopy.threadId
@@ -640,6 +658,9 @@ extension SSKJobRecord: DeepCopyable {
                                              paymentIntentClientSecret: paymentIntentClientSecret,
                                              paymentMethodId: paymentMethodId,
                                              paymentProcessor: paymentProcessor,
+                                             paypalPayerId: paypalPayerId,
+                                             paypalPaymentId: paypalPaymentId,
+                                             paypalPaymentToken: paypalPaymentToken,
                                              receiptCredentailRequest: receiptCredentailRequest,
                                              receiptCredentailRequestContext: receiptCredentailRequestContext,
                                              threadId: threadId)
@@ -864,6 +885,9 @@ extension SSKJobRecordSerializer {
     static var waitForMessageProcessingColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "waitForMessageProcessing", columnType: .int, isOptional: true) }
     static var isCompleteContactSyncColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isCompleteContactSync", columnType: .int, isOptional: true) }
     static var paymentProcessorColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "paymentProcessor", columnType: .unicodeString, isOptional: true) }
+    static var paypalPayerIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "paypalPayerId", columnType: .unicodeString, isOptional: true) }
+    static var paypalPaymentIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "paypalPaymentId", columnType: .unicodeString, isOptional: true) }
+    static var paypalPaymentTokenColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "paypalPaymentToken", columnType: .unicodeString, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -906,7 +930,10 @@ extension SSKJobRecordSerializer {
         replacementAdminUuidColumn,
         waitForMessageProcessingColumn,
         isCompleteContactSyncColumn,
-        paymentProcessorColumn
+        paymentProcessorColumn,
+        paypalPayerIdColumn,
+        paypalPaymentIdColumn,
+        paypalPaymentTokenColumn
         ])
     }
 }
@@ -1330,8 +1357,11 @@ class SSKJobRecordSerializer: SDSSerializer {
         let waitForMessageProcessing: Bool? = nil
         let isCompleteContactSync: Bool? = nil
         let paymentProcessor: String? = nil
+        let paypalPayerId: String? = nil
+        let paypalPaymentId: String? = nil
+        let paypalPaymentToken: String? = nil
 
-        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority, receiptCredentailRequest: receiptCredentailRequest, receiptCredentailRequestContext: receiptCredentailRequestContext, priorSubscriptionLevel: priorSubscriptionLevel, subscriberID: subscriberID, targetSubscriptionLevel: targetSubscriptionLevel, boostPaymentIntentID: boostPaymentIntentID, isBoost: isBoost, receiptCredentialPresentation: receiptCredentialPresentation, amount: amount, currencyCode: currencyCode, unsavedMessagesToSend: unsavedMessagesToSend, messageText: messageText, paymentIntentClientSecret: paymentIntentClientSecret, paymentMethodId: paymentMethodId, replacementAdminUuid: replacementAdminUuid, waitForMessageProcessing: waitForMessageProcessing, isCompleteContactSync: isCompleteContactSync, paymentProcessor: paymentProcessor)
+        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority, receiptCredentailRequest: receiptCredentailRequest, receiptCredentailRequestContext: receiptCredentailRequestContext, priorSubscriptionLevel: priorSubscriptionLevel, subscriberID: subscriberID, targetSubscriptionLevel: targetSubscriptionLevel, boostPaymentIntentID: boostPaymentIntentID, isBoost: isBoost, receiptCredentialPresentation: receiptCredentialPresentation, amount: amount, currencyCode: currencyCode, unsavedMessagesToSend: unsavedMessagesToSend, messageText: messageText, paymentIntentClientSecret: paymentIntentClientSecret, paymentMethodId: paymentMethodId, replacementAdminUuid: replacementAdminUuid, waitForMessageProcessing: waitForMessageProcessing, isCompleteContactSync: isCompleteContactSync, paymentProcessor: paymentProcessor, paypalPayerId: paypalPayerId, paypalPaymentId: paypalPaymentId, paypalPaymentToken: paypalPaymentToken)
     }
 }
 

@@ -11,16 +11,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSSendGiftBadgeJobRecord : SSKJobRecord
 
+// Several of these properties aren't right but match their database columns.
+//
+// - Several columns are Stripe-specific, from a time before PayPal was supported as a processor
+// - "Credential" is misspelled as "credentail"
+//
+// In the long term, we should rename these columns.
 @property (nonatomic, readonly) NSString *paymentProcessor;
-// These are deliberately misspelled ("credentail" instead of "credential") to match
-// misspelled database columns. In the long term, we should fix this.
 @property (nonatomic, readonly) NSData *receiptCredentailRequestContext;
 @property (nonatomic, readonly) NSData *receiptCredentailRequest;
 @property (nonatomic, readonly) NSDecimalNumber *amount;
 @property (nonatomic, readonly) NSString *currencyCode;
-@property (nonatomic, readonly) NSString *paymentIntentClientSecret;
-@property (nonatomic, readonly) NSString *boostPaymentIntentID;
-@property (nonatomic, readonly) NSString *paymentMethodId;
+@property (nonatomic, readonly, nullable) NSString *paymentIntentClientSecret;
+@property (nonatomic, readonly, nullable) NSString *boostPaymentIntentID;
+@property (nonatomic, readonly, nullable) NSString *paymentMethodId;
+@property (nonatomic, readonly, nullable) NSString *paypalPayerId;
+@property (nonatomic, readonly, nullable) NSString *paypalPaymentId;
+@property (nonatomic, readonly, nullable) NSString *paypalPaymentToken;
 @property (nonatomic, readonly) NSString *threadId;
 @property (nonatomic, readonly) NSString *messageText;
 
@@ -31,9 +38,12 @@ NS_ASSUME_NONNULL_BEGIN
                 receiptCredentialRequest:(NSData *)receiptCredentialRequest
                                   amount:(NSDecimalNumber *)amount
                             currencyCode:(NSString *)currencyCode
-               paymentIntentClientSecret:(NSString *)paymentIntentClientSecret
-                         paymentIntentId:(NSString *)paymentIntentId
-                         paymentMethodId:(NSString *)paymentMethodId
+               paymentIntentClientSecret:(nullable NSString *)paymentIntentClientSecret
+                         paymentIntentId:(nullable NSString *)paymentIntentId
+                         paymentMethodId:(nullable NSString *)paymentMethodId
+                           paypalPayerId:(nullable NSString *)paypalPayerId
+                         paypalPaymentId:(nullable NSString *)paypalPaymentId
+                      paypalPaymentToken:(nullable NSString *)paypalPaymentToken
                                 threadId:(NSString *)threadId
                              messageText:(NSString *)messageText
                                    label:(NSString *)label NS_DESIGNATED_INITIALIZER;
@@ -63,16 +73,19 @@ NS_ASSUME_NONNULL_BEGIN
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                           amount:(NSDecimalNumber *)amount
-            boostPaymentIntentID:(NSString *)boostPaymentIntentID
+            boostPaymentIntentID:(nullable NSString *)boostPaymentIntentID
                     currencyCode:(NSString *)currencyCode
                      messageText:(NSString *)messageText
-       paymentIntentClientSecret:(NSString *)paymentIntentClientSecret
-                 paymentMethodId:(NSString *)paymentMethodId
+       paymentIntentClientSecret:(nullable NSString *)paymentIntentClientSecret
+                 paymentMethodId:(nullable NSString *)paymentMethodId
                 paymentProcessor:(NSString *)paymentProcessor
+                   paypalPayerId:(nullable NSString *)paypalPayerId
+                 paypalPaymentId:(nullable NSString *)paypalPaymentId
+              paypalPaymentToken:(nullable NSString *)paypalPaymentToken
         receiptCredentailRequest:(NSData *)receiptCredentailRequest
  receiptCredentailRequestContext:(NSData *)receiptCredentailRequestContext
                         threadId:(NSString *)threadId
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:exclusiveProcessIdentifier:failureCount:label:sortId:status:amount:boostPaymentIntentID:currencyCode:messageText:paymentIntentClientSecret:paymentMethodId:paymentProcessor:receiptCredentailRequest:receiptCredentailRequestContext:threadId:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:exclusiveProcessIdentifier:failureCount:label:sortId:status:amount:boostPaymentIntentID:currencyCode:messageText:paymentIntentClientSecret:paymentMethodId:paymentProcessor:paypalPayerId:paypalPaymentId:paypalPaymentToken:receiptCredentailRequest:receiptCredentailRequestContext:threadId:));
 
 // clang-format on
 

@@ -25,9 +25,10 @@ extension DonateViewController {
 
             // First, create a PayPal payment.
 
-            return self.createPaypalPaymentBehindActivityIndicator(
+            return DonationViewsUtil.Paypal.createPaypalPaymentBehindActivityIndicator(
                 amount: amount,
-                level: .boostBadge
+                level: .boostBadge,
+                fromViewController: self
             )
         }.then(on: .main) { [weak self] approvalUrl -> Promise<Paypal.WebAuthApprovalParams> in
             guard let self else { throw OWSAssertionError("[Donations] Missing self!") }
@@ -69,36 +70,12 @@ extension DonateViewController {
         }
     }
 
-    /// Create a PayPal payment, returning a PayPal URL to present to the user
-    /// for authentication. Presents an activity indicator while in-progress.
-    private func createPaypalPaymentBehindActivityIndicator(
-        amount: FiatMoney,
-        level: OneTimeBadgeLevel
-    ) -> Promise<URL> {
-        let (promise, future) = Promise<URL>.pending()
-
-        ModalActivityIndicatorViewController.present(
-            fromViewController: self,
-            canCancel: false
-        ) { modal in
-            firstly {
-                Paypal.createBoost(amount: amount, level: level)
-            }.map(on: .main) { approvalUrl in
-                modal.dismiss { future.resolve(approvalUrl) }
-            }.catch(on: .main) { error in
-                modal.dismiss { future.reject(error) }
-            }
-        }
-
-        return promise
-    }
-
     private func confirmPaypalPaymentAndRedeemBoost(
         amount: FiatMoney,
         approvalParams: Paypal.WebAuthApprovalParams
     ) -> Promise<Void> {
         firstly { () -> Promise<String> in
-            Paypal.confirmBoost(
+            Paypal.confirmOneTimePayment(
                 amount: amount,
                 level: .boostBadge,
                 approvalParams: approvalParams

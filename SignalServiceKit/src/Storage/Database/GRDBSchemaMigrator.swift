@@ -213,6 +213,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addPaymentProcessorColumnToJobRecords
         case addCdsPreviousE164
         case addCallRecordTable
+        case addColumnsForGiftingWithPaypalToJobRecords
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2083,6 +2084,15 @@ public class GRDBSchemaMigrator: NSObject {
                 on: "model_CallRecord",
                 columns: ["interactionUniqueId"]
             )
+            return .success(())
+        }
+
+        migrator.registerMigration(.addColumnsForGiftingWithPaypalToJobRecords) { transaction in
+            try transaction.database.alter(table: "model_SSKJobRecord") { (table: TableAlteration) in
+                table.add(column: "paypalPayerId", .text)
+                table.add(column: "paypalPaymentId", .text)
+                table.add(column: "paypalPaymentToken", .text)
+            }
             return .success(())
         }
 

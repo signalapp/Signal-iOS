@@ -20,6 +20,9 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
     private var previouslyRenderedDisappearingMessagesDuration: UInt32?
 
+    public override var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
+    public override var navbarBackgroundColorOverride: UIColor? { .clear }
+
     public init(
         badge: ProfileBadge,
         price: FiatMoney,
@@ -169,8 +172,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                     case .creditOrDebitCard:
                         self.startCreditOrDebitCard()
                     case .paypal:
-                        // TODO: [PayPal] Support gifting with PayPal.
-                        OWSActionSheets.showErrorAlert(message: "PayPal not yet supported.")
+                        self.startPaypal()
                     }
                 }
             }

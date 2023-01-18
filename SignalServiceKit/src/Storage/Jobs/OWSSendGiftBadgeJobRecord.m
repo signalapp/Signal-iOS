@@ -16,9 +16,12 @@
                 receiptCredentialRequest:(NSData *)receiptCredentialRequest
                                   amount:(NSDecimalNumber *)amount
                             currencyCode:(NSString *)currencyCode
-               paymentIntentClientSecret:(NSString *)paymentIntentClientSecret
-                         paymentIntentId:(NSString *)paymentIntentId
-                         paymentMethodId:(NSString *)paymentMethodId
+               paymentIntentClientSecret:(nullable NSString *)paymentIntentClientSecret
+                         paymentIntentId:(nullable NSString *)paymentIntentId
+                         paymentMethodId:(nullable NSString *)paymentMethodId
+                           paypalPayerId:(nullable NSString *)paypalPayerId
+                         paypalPaymentId:(nullable NSString *)paypalPaymentId
+                      paypalPaymentToken:(nullable NSString *)paypalPaymentToken
                                 threadId:(NSString *)threadId
                              messageText:(NSString *)messageText
                                    label:(NSString *)label
@@ -33,6 +36,9 @@
         _paymentIntentClientSecret = paymentIntentClientSecret;
         _boostPaymentIntentID = paymentIntentId;
         _paymentMethodId = paymentMethodId;
+        _paypalPayerId = paypalPayerId;
+        _paypalPaymentId = paypalPaymentId;
+        _paypalPaymentToken = paypalPaymentToken;
         _threadId = threadId;
         _messageText = messageText;
     }
@@ -59,12 +65,15 @@
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                           amount:(NSDecimalNumber *)amount
-            boostPaymentIntentID:(NSString *)boostPaymentIntentID
+            boostPaymentIntentID:(nullable NSString *)boostPaymentIntentID
                     currencyCode:(NSString *)currencyCode
                      messageText:(NSString *)messageText
-       paymentIntentClientSecret:(NSString *)paymentIntentClientSecret
-                 paymentMethodId:(NSString *)paymentMethodId
+       paymentIntentClientSecret:(nullable NSString *)paymentIntentClientSecret
+                 paymentMethodId:(nullable NSString *)paymentMethodId
                 paymentProcessor:(NSString *)paymentProcessor
+                   paypalPayerId:(nullable NSString *)paypalPayerId
+                 paypalPaymentId:(nullable NSString *)paypalPaymentId
+              paypalPaymentToken:(nullable NSString *)paypalPaymentToken
         receiptCredentailRequest:(NSData *)receiptCredentailRequest
  receiptCredentailRequestContext:(NSData *)receiptCredentailRequestContext
                         threadId:(NSString *)threadId
@@ -88,6 +97,9 @@
     _paymentIntentClientSecret = paymentIntentClientSecret;
     _paymentMethodId = paymentMethodId;
     _paymentProcessor = paymentProcessor;
+    _paypalPayerId = paypalPayerId;
+    _paypalPaymentId = paypalPaymentId;
+    _paypalPaymentToken = paypalPaymentToken;
     _receiptCredentailRequest = receiptCredentailRequest;
     _receiptCredentailRequestContext = receiptCredentailRequestContext;
     _threadId = threadId;

@@ -195,6 +195,12 @@ public extension Paypal {
             case paymentToken = "token"
         }
 
+        public init(payerId: String, paymentId: String, paymentToken: String) {
+            self.payerId = payerId
+            self.paymentId = paymentId
+            self.paymentToken = paymentToken
+        }
+
         fileprivate init?(queryItems: [URLQueryItem]) {
             let queryItemMap: [QueryKey: String] = queryItems.reduce(into: [:]) { partialResult, queryItem in
                 guard let queryKey = QueryKey(rawValue: queryItem.name) else {

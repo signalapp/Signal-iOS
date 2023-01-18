@@ -1182,6 +1182,7 @@
 		F927478828CFE9B10056EAFE /* test-png.png in Resources */ = {isa = PBXBuildFile; fileRef = F927478728CFE9B10056EAFE /* test-png.png */; };
 		F927478A28CFE9C60056EAFE /* test-png-with-metadata.png in Resources */ = {isa = PBXBuildFile; fileRef = F927478928CFE9C60056EAFE /* test-png-with-metadata.png */; };
 		F927478B28CFEA680056EAFE /* test-apng.png in Resources */ = {isa = PBXBuildFile; fileRef = F908AA7C28CE629700472E68 /* test-apng.png */; };
+		F9292634297743EF0097F8FF /* PreparedGiftPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9292633297743EF0097F8FF /* PreparedGiftPayment.swift */; };
 		F93461B0291EB5E300366682 /* CreditOrDebitCardDonationViewController+FormState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461AF291EB5E300366682 /* CreditOrDebitCardDonationViewController+FormState.swift */; };
 		F93461B3291EB8C700366682 /* CreditOrDebitCardDonationViewController+OneTimeDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461B2291EB8C700366682 /* CreditOrDebitCardDonationViewController+OneTimeDonation.swift */; };
 		F93461B9291ED28A00366682 /* CreditAndDebitCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461B8291ED28900366682 /* CreditAndDebitCards.swift */; };
@@ -1286,6 +1287,7 @@
 		F963F816292D1B5B007DBBBD /* UIButton+SignalUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963F815292D1B5B007DBBBD /* UIButton+SignalUI.swift */; };
 		F963F818292D7E53007DBBBD /* FormattedNumberField.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963F817292D7E53007DBBBD /* FormattedNumberField.swift */; };
 		F963F81A292DA8E2007DBBBD /* FormattedNumberFieldTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963F819292DA8E2007DBBBD /* FormattedNumberFieldTest.swift */; };
+		F964D2A529770180003C39DA /* BadgeGiftingConfirmationViewController+Paypal.swift in Sources */ = {isa = PBXBuildFile; fileRef = F964D2A429770180003C39DA /* BadgeGiftingConfirmationViewController+Paypal.swift */; };
 		F96A534328A1AE7C003262D4 /* OutgoingGroupUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */; };
 		F96B66A92912B88B004FFFAA /* DonateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66A02912B88A004FFFAA /* DonateViewController.swift */; };
 		F96B66AA2912B88B004FFFAA /* DonateChoosePaymentMethodSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96B66A12912B88A004FFFAA /* DonateChoosePaymentMethodSheet.swift */; };
@@ -1343,6 +1345,7 @@
 		F9B0DC5D28948656004E07B7 /* GTSR2.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4B28948656004E07B7 /* GTSR2.crt */; };
 		F9B0DC5E28948656004E07B7 /* GTSR1.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4C28948656004E07B7 /* GTSR1.crt */; };
 		F9B0DC5F28948656004E07B7 /* GTSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4D28948656004E07B7 /* GTSR4.crt */; };
+		F9B368732977027E00CF1E6D /* DonationViewsUtil+Paypal.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B368722977027E00CF1E6D /* DonationViewsUtil+Paypal.swift */; };
 		F9B3A9292935452B0071EB95 /* CreditOrDebitCardDonationViewController+3DSecure.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A9282935452B0071EB95 /* CreditOrDebitCardDonationViewController+3DSecure.swift */; };
 		F9B3A92B2935472F0071EB95 /* Stripe+3DSecure.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */; };
 		F9B3A92D293553930071EB95 /* ASWebAuthenticationSession+Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B3A92C293553930071EB95 /* ASWebAuthenticationSession+Util.swift */; };
@@ -3582,6 +3585,7 @@
 		F925A3AC29493D35009024D0 /* DisappearingMessageFinderTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisappearingMessageFinderTest.swift; sourceTree = "<group>"; };
 		F927478728CFE9B10056EAFE /* test-png.png */ = {isa = PBXFileReference; explicitFileType = compiled; path = "test-png.png"; sourceTree = "<group>"; };
 		F927478928CFE9C60056EAFE /* test-png-with-metadata.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-png-with-metadata.png"; sourceTree = "<group>"; };
+		F9292633297743EF0097F8FF /* PreparedGiftPayment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreparedGiftPayment.swift; sourceTree = "<group>"; };
 		F93461AF291EB5E300366682 /* CreditOrDebitCardDonationViewController+FormState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreditOrDebitCardDonationViewController+FormState.swift"; sourceTree = "<group>"; };
 		F93461B2291EB8C700366682 /* CreditOrDebitCardDonationViewController+OneTimeDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreditOrDebitCardDonationViewController+OneTimeDonation.swift"; sourceTree = "<group>"; };
 		F93461B8291ED28900366682 /* CreditAndDebitCards.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreditAndDebitCards.swift; sourceTree = "<group>"; };
@@ -3687,6 +3691,7 @@
 		F963F815292D1B5B007DBBBD /* UIButton+SignalUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+SignalUI.swift"; sourceTree = "<group>"; };
 		F963F817292D7E53007DBBBD /* FormattedNumberField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattedNumberField.swift; sourceTree = "<group>"; };
 		F963F819292DA8E2007DBBBD /* FormattedNumberFieldTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattedNumberFieldTest.swift; sourceTree = "<group>"; };
+		F964D2A429770180003C39DA /* BadgeGiftingConfirmationViewController+Paypal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BadgeGiftingConfirmationViewController+Paypal.swift"; sourceTree = "<group>"; };
 		F965C5B87BFDF8F86556C04C /* Pods-SignalNSE.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.profiling.xcconfig"; sourceTree = "<group>"; };
 		F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingGroupUpdateMessage.swift; sourceTree = "<group>"; };
 		F96B66A02912B88A004FFFAA /* DonateViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DonateViewController.swift; sourceTree = "<group>"; };
@@ -3744,6 +3749,7 @@
 		F9B0DC4B28948656004E07B7 /* GTSR2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR2.crt; sourceTree = "<group>"; };
 		F9B0DC4C28948656004E07B7 /* GTSR1.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR1.crt; sourceTree = "<group>"; };
 		F9B0DC4D28948656004E07B7 /* GTSR4.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR4.crt; sourceTree = "<group>"; };
+		F9B368722977027E00CF1E6D /* DonationViewsUtil+Paypal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonationViewsUtil+Paypal.swift"; sourceTree = "<group>"; };
 		F9B3A9282935452B0071EB95 /* CreditOrDebitCardDonationViewController+3DSecure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreditOrDebitCardDonationViewController+3DSecure.swift"; sourceTree = "<group>"; };
 		F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Stripe+3DSecure.swift"; sourceTree = "<group>"; };
 		F9B3A92C293553930071EB95 /* ASWebAuthenticationSession+Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ASWebAuthenticationSession+Util.swift"; sourceTree = "<group>"; };
@@ -7013,6 +7019,7 @@
 				D9517ABF292C5A3900DDD37E /* Paypal+API.swift */,
 				D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */,
 				D938CD5F29283402006FB16A /* Paypal.swift */,
+				F9292633297743EF0097F8FF /* PreparedGiftPayment.swift */,
 				F9B3A92A2935472F0071EB95 /* Stripe+3DSecure.swift */,
 				F98ED2D529255E92008483DC /* Stripe+PaymentMethod.swift */,
 				F9189ABD2947D7C300CD8EF6 /* Stripe+StripeError.swift */,
@@ -7078,6 +7085,7 @@
 				F9189ABF2947D9F300CD8EF6 /* DonationViewsUtil+LocalizedStripeError.swift */,
 				F90B731E2926B48E0027318D /* DonationViewsUtil+MonthlyReceiptRedemption.swift */,
 				F90B731A2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift */,
+				F9B368722977027E00CF1E6D /* DonationViewsUtil+Paypal.swift */,
 				F90B731C2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift */,
 				F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */,
 				F9CA468728FF0CA600C074F6 /* OneTimeDonationCustomAmountTextField.swift */,
@@ -7345,6 +7353,7 @@
 				F9A335CB282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift */,
 				F9E3720B2948E32800975224 /* BadgeGiftingConfirmationViewController+ApplePay.swift */,
 				F97D02102970778E003756C0 /* BadgeGiftingConfirmationViewController+CreditOrDebitCard.swift */,
+				F964D2A429770180003C39DA /* BadgeGiftingConfirmationViewController+Paypal.swift */,
 				F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */,
 				F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */,
 				F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */,
@@ -10087,6 +10096,7 @@
 				D9517AC0292C5A3900DDD37E /* Paypal+API.swift in Sources */,
 				D9517ABE292C596B00DDD37E /* Paypal+WebAuthentication.swift in Sources */,
 				D938CD6029283402006FB16A /* Paypal.swift in Sources */,
+				F9292634297743EF0097F8FF /* PreparedGiftPayment.swift in Sources */,
 				4CB93DC22180FF07004B9764 /* ProximityMonitoringManager.swift in Sources */,
 				3406D31E25DBF70400885B14 /* RefreshEvent.swift in Sources */,
 				451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */,
@@ -10186,6 +10196,7 @@
 				F9A335CC282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift in Sources */,
 				F9E3720C2948E32800975224 /* BadgeGiftingConfirmationViewController+ApplePay.swift in Sources */,
 				F97D02112970778E003756C0 /* BadgeGiftingConfirmationViewController+CreditOrDebitCard.swift in Sources */,
+				F964D2A529770180003C39DA /* BadgeGiftingConfirmationViewController+Paypal.swift in Sources */,
 				F9F4DE2A283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift in Sources */,
 				F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */,
 				8880179427430DDB00346E9A /* BadgeThanksSheet.swift in Sources */,
@@ -10414,6 +10425,7 @@
 				F9189AC02947D9F300CD8EF6 /* DonationViewsUtil+LocalizedStripeError.swift in Sources */,
 				F90B731F2926B48E0027318D /* DonationViewsUtil+MonthlyReceiptRedemption.swift in Sources */,
 				F90B731B2926A0840027318D /* DonationViewsUtil+PaymentInProgressView.swift in Sources */,
+				F9B368732977027E00CF1E6D /* DonationViewsUtil+Paypal.swift in Sources */,
 				F90B731D2926AFCF0027318D /* DonationViewsUtil+WaitForSubscriptionJob.swift in Sources */,
 				F9DD70B92811AF82000C5960 /* DonationViewsUtil.swift in Sources */,
 				3428577D26BD8777005A2A96 /* Emoji+Available.swift in Sources */,

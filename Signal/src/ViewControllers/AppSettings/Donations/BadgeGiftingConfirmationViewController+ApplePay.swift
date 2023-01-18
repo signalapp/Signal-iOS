@@ -48,7 +48,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
             return Promise.value(())
         }.then(on: .global()) {
             DonationViewsUtil.Gifts.prepareToPay(amount: self.price, applePayPayment: payment)
-        }.then(on: .main) { [weak self] preparedPayment -> Promise<DonationViewsUtil.Gifts.PreparedGiftPayment> in
+        }.then(on: .main) { [weak self] preparedPayment -> Promise<PreparedGiftPayment> in
             guard let self else {
                 throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
             }
@@ -104,7 +104,6 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
 
             return DonationViewsUtil.Gifts.startJob(
                 amount: self.price,
-                paymentProcessor: .stripe,
                 preparedPayment: preparedPayment,
                 thread: self.thread,
                 messageText: self.messageText,

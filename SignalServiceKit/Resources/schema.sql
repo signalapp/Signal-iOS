@@ -272,6 +272,9 @@ CREATE
             ,"waitForMessageProcessing" BOOLEAN
             ,"isCompleteContactSync" BOOLEAN DEFAULT 0
             ,"paymentProcessor" TEXT
+            ,"paypalPayerId" TEXT
+            ,"paypalPaymentId" TEXT
+            ,"paypalPaymentToken" TEXT
         )
 ;
 

@@ -32,12 +32,6 @@ extension DonationViewsUtil {
             case userCanceledBeforeChargeCompleted
         }
 
-        // TODO: [PayPal] This will change when we add PayPal support.
-        struct PreparedGiftPayment {
-            let paymentIntent: Stripe.PaymentIntent
-            let paymentMethodId: String
-        }
-
         enum SafetyNumberConfirmationResult {
             case userDidNotConfirmSafetyNumberChange
             case userConfirmedSafetyNumberChangeOrNoChangeWasNeeded
@@ -100,7 +94,7 @@ extension DonationViewsUtil {
                 Stripe.createBoostPaymentIntent(for: amount, level: .giftBadge(.signalGift))
             }.then(on: .sharedUserInitiated) { paymentIntent -> Promise<PreparedGiftPayment> in
                 Stripe.createPaymentMethod(with: paymentMethod).map { paymentMethodId in
-                    .init(paymentIntent: paymentIntent, paymentMethodId: paymentMethodId)
+                    .forStripe(paymentIntent: paymentIntent, paymentMethodId: paymentMethodId)
                 }
             }.timeout(seconds: 30) {
                 Logger.warn("[Gifting] Timed out after preparing gift badge payment")
@@ -155,7 +149,6 @@ extension DonationViewsUtil {
         /// There are some invalid sad paths that we try to handle, but those indicate Signal bugs.
         static func startJob(
             amount: FiatMoney,
-            paymentProcessor: PaymentProcessor,
             preparedPayment: PreparedGiftPayment,
             thread: TSContactThread,
             messageText: String,
@@ -164,11 +157,9 @@ extension DonationViewsUtil {
             onChargeSucceeded: @escaping () -> Void = {}
         ) -> Promise<Void> {
             let jobRecord = SendGiftBadgeJobQueue.createJob(
-                paymentProcessor: paymentProcessor,
+                preparedPayment: preparedPayment,
                 receiptRequest: SubscriptionManager.generateReceiptRequest(),
                 amount: amount,
-                paymentIntent: preparedPayment.paymentIntent,
-                paymentMethodId: preparedPayment.paymentMethodId,
                 thread: thread,
                 messageText: messageText
             )

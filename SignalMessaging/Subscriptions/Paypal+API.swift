@@ -48,13 +48,13 @@ public extension Paypal {
 public extension Paypal {
     /// Confirms a payment after a successful authentication via PayPal's web
     /// UI. Returns a payment ID that can be used to get receipt credentials.
-    static func confirmBoost(
+    static func confirmOneTimePayment(
         amount: FiatMoney,
         level: OneTimeBadgeLevel,
         approvalParams: WebAuthApprovalParams
     ) -> Promise<String> {
         firstly(on: .sharedUserInitiated) {
-            let confirmBoostRequest = OWSRequestFactory.boostPaypalConfirmPayment(
+            let confirmOneTimePaymentRequest = OWSRequestFactory.oneTimePaypalConfirmPayment(
                 integerMoneyValue: DonationUtilities.integralAmount(for: amount),
                 inCurrencyCode: amount.currencyCode,
                 level: level.rawValue,
@@ -63,7 +63,7 @@ public extension Paypal {
                 paymentToken: approvalParams.paymentToken
             )
 
-            return networkManager.makePromise(request: confirmBoostRequest)
+            return networkManager.makePromise(request: confirmOneTimePaymentRequest)
         }.map(on: .sharedUserInitiated) { response throws -> String in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("[Donations] Missing or invalid JSON")

@@ -27,7 +27,7 @@ extension CreditOrDebitCardDonationViewController {
                     )
                 }
                 return Promise.value(())
-            }.then(on: .sharedUserInitiated) { [weak self] () -> Promise<DonationViewsUtil.Gifts.PreparedGiftPayment> in
+            }.then(on: .sharedUserInitiated) { [weak self] () -> Promise<PreparedGiftPayment> in
                 guard let self else {
                     throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
 
@@ -35,7 +35,7 @@ extension CreditOrDebitCardDonationViewController {
                 return DonationViewsUtil.Gifts.prepareToPay(
                     amount: self.donationAmount, creditOrDebitCard: creditOrDebitCard
                 )
-            }.then(on: .main) { [weak self] preparedPayment -> Promise<DonationViewsUtil.Gifts.PreparedGiftPayment> in
+            }.then(on: .main) { [weak self] preparedPayment -> Promise<PreparedGiftPayment> in
                 if self == nil {
                     throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
 
@@ -57,7 +57,6 @@ extension CreditOrDebitCardDonationViewController {
 
                 return DonationViewsUtil.Gifts.startJob(
                     amount: self.donationAmount,
-                    paymentProcessor: .stripe,
                     preparedPayment: preparedPayment,
                     thread: thread,
                     messageText: messageText,
