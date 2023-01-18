@@ -219,7 +219,7 @@ public extension Paypal {
             self.paymentToken = paymentToken
         }
 
-        public init?(queryItems: [URLQueryItem]) {
+        public init?(fromFinalUrlQueryItems queryItems: [URLQueryItem]) {
             let queryItemMap: [QueryKey: String] = queryItems.reduce(into: [:]) { partialResult, queryItem in
                 guard let queryKey = QueryKey(rawValue: queryItem.name) else {
                     Logger.warn("[Donations] Unexpected query item: \(queryItem.name)")

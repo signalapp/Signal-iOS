@@ -73,7 +73,7 @@ public class SendGiftBadgeJobQueue: NSObject, JobQueue {
         let paymentProcessor: PaymentProcessor
         var stripePaymentIntent: Stripe.PaymentIntent?
         var stripePaymentMethodId: String?
-        var paypalApprovalParams: Paypal.WebAuthApprovalParams?
+        var paypalApprovalParams: Paypal.OneTimePaymentWebAuthApprovalParams?
 
         switch preparedPayment {
         case let .forStripe(paymentIntent, paymentMethodId):
@@ -149,7 +149,7 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
             paymentIntentId: String,
             paymentMethodId: String
         )
-        case forBraintree(paypalApprovalParams: Paypal.WebAuthApprovalParams)
+        case forBraintree(paypalApprovalParams: Paypal.OneTimePaymentWebAuthApprovalParams)
 
         var processor: PaymentProcessor {
             switch self {
