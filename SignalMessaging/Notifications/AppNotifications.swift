@@ -56,6 +56,7 @@ public struct AppNotificationUserInfoKey {
     public static let callBackUuid = "Signal.AppNotificationsUserInfoKey.callBackUuid"
     public static let callBackPhoneNumber = "Signal.AppNotificationsUserInfoKey.callBackPhoneNumber"
     public static let localCallId = "Signal.AppNotificationsUserInfoKey.localCallId"
+    public static let isMissedCall = "Signal.AppNotificationsUserInfoKey.isMissedCall"
     public static let defaultAction = "Signal.AppNotificationsUserInfoKey.defaultAction"
 }
 
@@ -469,6 +470,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         if let phoneNumber = remoteAddress.phoneNumber {
             userInfo[AppNotificationUserInfoKey.callBackPhoneNumber] = phoneNumber
         }
+        userInfo[AppNotificationUserInfoKey.isMissedCall] = true
         return userInfo
     }
 
@@ -984,6 +986,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     public func cancelNotifications(reactionId: String) {
         performNotificationActionAsync { completion in
             self.presenter.cancelNotifications(reactionId: reactionId, completion: completion)
+        }
+    }
+
+    public func cancelNotificationsForMissedCalls(threadUniqueId: String) {
+        performNotificationActionAsync { completion in
+            self.presenter.cancelNotificationsForMissedCalls(withThreadUniqueId: threadUniqueId, completion: completion)
         }
     }
 

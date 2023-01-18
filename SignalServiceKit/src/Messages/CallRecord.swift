@@ -289,19 +289,30 @@ public final class CallRecord: NSObject, SDSCodableModel {
                 {
                     callInteraction.updateCallType(callType, transaction: transaction)
                     if
-                        callInteraction.wasRead.negated,
                         let thread = TSContactThread.anyFetch(
                             uniqueId: callInteraction.uniqueThreadId,
                             transaction: transaction
                         )
                     {
-                        callInteraction.markAsRead(
-                            atTimestamp: messageTimestamp,
+                        if callInteraction.wasRead.negated {
+                            callInteraction.markAsRead(
+                                atTimestamp: messageTimestamp,
+                                thread: thread,
+                                circumstance: .onLinkedDevice,
+                                shouldClearNotifications: true,
+                                transaction: transaction
+                            )
+                        }
+                        // Mark previous unread call interactions as read.
+                        OWSReceiptManager.markAllCallInteractionsAsReadLocally(
+                            beforeSQLId: callInteraction.grdbId,
                             thread: thread,
-                            circumstance: .onLinkedDevice,
-                            shouldClearNotifications: true,
                             transaction: transaction
                         )
+                        let threadUniqueId = thread.uniqueId
+                        DispatchQueue.main.async {
+                            Self.notificationPresenter?.cancelNotificationsForMissedCalls(threadUniqueId: threadUniqueId)
+                        }
                     }
                 }
             }
@@ -327,6 +338,16 @@ public final class CallRecord: NSObject, SDSCodableModel {
                     shouldClearNotifications: true,
                     transaction: transaction
                 )
+            }
+            // Mark previous unread call interactions as read.
+            OWSReceiptManager.markAllCallInteractionsAsReadLocally(
+                beforeSQLId: callInteraction.grdbId,
+                thread: thread,
+                transaction: transaction
+            )
+            let threadUniqueId = thread.uniqueId
+            DispatchQueue.main.async {
+                Self.notificationPresenter?.cancelNotificationsForMissedCalls(threadUniqueId: threadUniqueId)
             }
             Self.createOrUpdate(
                 interaction: callInteraction,

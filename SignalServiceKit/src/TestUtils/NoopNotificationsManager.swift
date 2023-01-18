@@ -58,4 +58,8 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
     public func cancelNotifications(reactionId: String) {
         Logger.warn("cancelNotifications for reactionId: \(reactionId)")
     }
+
+    public func cancelNotificationsForMissedCalls(threadUniqueId: String) {
+        Logger.warn("cancelNotificationsForMissedCalls for threadId: \(threadUniqueId)")
+    }
 }

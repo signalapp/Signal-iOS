@@ -54,6 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)cancelNotificationsForMessageIds:(NSArray<NSString *> *)uniqueMessageIds
     NS_SWIFT_NAME(cancelNotifications(messageIds:));
 - (void)cancelNotificationsForReactionId:(NSString *)uniqueReactionId NS_SWIFT_NAME(cancelNotifications(reactionId:));
+- (void)cancelNotificationsForMissedCallsInThreadWithUniqueId:(NSString *)threadUniqueId
+    NS_SWIFT_NAME(cancelNotificationsForMissedCalls(threadUniqueId:));
 
 @end
 

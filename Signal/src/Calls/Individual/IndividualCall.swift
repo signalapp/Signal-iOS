@@ -342,6 +342,19 @@ public class IndividualCall: NSObject {
         callInteraction.anyInsert(transaction: transaction)
         self.callInteraction = callInteraction
         createOrUpdateCallRecordIfNeeded(for: callInteraction, transaction: transaction)
+
+        if callInteraction.wasRead {
+            // Mark previous unread call interactions as read.
+            OWSReceiptManager.markAllCallInteractionsAsReadLocally(
+                beforeSQLId: callInteraction.grdbId,
+                thread: self.thread,
+                transaction: transaction
+            )
+            let threadUniqueId = self.thread.uniqueId
+            DispatchQueue.main.async {
+                Self.notificationPresenter.cancelNotificationsForMissedCalls(threadUniqueId: threadUniqueId)
+            }
+        }
     }
 
     private func fetchCallRecord(

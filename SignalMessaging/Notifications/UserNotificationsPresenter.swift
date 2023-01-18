@@ -374,6 +374,10 @@ class UserNotificationPresenter: Dependencies {
         cancel(cancellation: .reactionId(reactionId), completion: completion)
     }
 
+    func cancelNotificationsForMissedCalls(withThreadUniqueId threadId: String, completion: @escaping NotificationActionCompletion) {
+        cancel(cancellation: .missedCalls(inThreadWithUniqueId: threadId), completion: completion)
+    }
+
     func clearAllNotifications() {
         Logger.warn("Clearing all notifications")
 
@@ -385,6 +389,7 @@ class UserNotificationPresenter: Dependencies {
         case threadId(String)
         case messageIds(Set<String>)
         case reactionId(String)
+        case missedCalls(inThreadWithUniqueId: String)
     }
 
     private func getNotificationsRequests(completion: @escaping ([UNNotificationRequest]) -> Void) {
@@ -429,6 +434,14 @@ class UserNotificationPresenter: Dependencies {
                 if
                     let requestReactionId = request.content.userInfo[AppNotificationUserInfoKey.reactionId] as? String,
                     requestReactionId == reactionId
+                {
+                    return true
+                }
+            case .missedCalls(let threadUniqueId):
+                if
+                    (request.content.userInfo[AppNotificationUserInfoKey.isMissedCall] as? Bool) == true,
+                    let requestThreadId = request.content.userInfo[AppNotificationUserInfoKey.threadId] as? String,
+                    threadUniqueId == requestThreadId
                 {
                     return true
                 }
