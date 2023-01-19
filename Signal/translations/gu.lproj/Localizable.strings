@@ -424,18 +424,6 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "માસિક દાન રદ કર્યું";
 
-/* Shown on a gift badge message and when tapping a redeemed gift message to denote the presence of a gift badge. */
-"BADGE_GIFTING_CHAT_TITLE" = "ગિફ્ટ બૅજ";
-
-/* Title on the screen where you choose a gift badge's recipient */
-"BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "પ્રાપ્તકર્તા પસંદ કરો";
-
-/* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
-"BADGE_GIFTING_REDEEM_LATER" = "તમે તમારું બૅજ પછી રિડિમ કરી શકો છો";
-
-/* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "%1$@ સુધી ચાલશે";
-
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "તમારું પુનરાવર્તિત માસિક દાન રદ કરવામાં આવ્યું હતું. %1$@ તમારું બૅજ હવે તમારી પ્રોફાઇલ પર દેખાશે નથી.\n\nSignalને સપોર્ટ કરવાનું ચાલુ રાખવા અને તમારા બૅજને ફરીથી સક્રિય કરવા માટે, તમારી ચુકવણીની વિગતો અપડેટ કરો અને ફરીથી દાન કરો.";
 
@@ -1553,10 +1541,10 @@
 "DEBUG_LOG_INFO_BUTTON" = "ડિબગ લૉગ વિશે માહિતી";
 
 /* info message text in conversation view */
-"DECLINED_AUDIO_CALL" = "You declined a voice call";
+"DECLINED_AUDIO_CALL" = "તમે વૉઇસ કૉલ નકાર્યો";
 
 /* info message text in conversation view */
-"DECLINED_VIDEO_CALL" = "You declined a video call";
+"DECLINED_VIDEO_CALL" = "તમે વિડિયો કૉલ નકાર્યો";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "એકાઉન્ટ કાઢી નાખો";
@@ -1772,7 +1760,7 @@
 "DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD" = "ક્રેડિટ અથવા ડેબિટ કાર્ડ";
 
 /* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the subtitle on that sheet. Embeds {{recipient's name}}. */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "On behalf of %1$@";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "%1$@ વતી";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "%1$@ બૅજ મેળવો";
@@ -1781,7 +1769,7 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "એક મહિના માટે %1$@ બેજ કમાઓ";
 
 /* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "%1$@ Donation to Signal";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "%1$@ Signal માટે દાન";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Signal માટે %1$@ નું દાન કરો";
@@ -1790,13 +1778,13 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Signal માટે %1$@ નું દાન કરો";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message. */
-"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "The recipient will be notified of the donation in a 1 on 1 message. Add your own message below.";
+"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "પ્રાપ્તકર્તાને 1-1 કરીને મેસેજમાં દાનની જાણ કરવામાં આવશે. નીચે તમારો પોતાનો મેસેજ ઉમેરો.";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is the placeholder in the text field for that additional message. */
-"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Add a message";
+"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER" = "મેસેજ ઉમેરો";
 
 /* If a donation badge has been sent, indicates that it's expired and can no longer be redeemed. This is shown in the chat. */
-"DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Expired";
+"DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "સમયસીમા સમાપ્ત";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "દાન આપવા માટે રકમ પસંદ કરો";
@@ -1825,98 +1813,107 @@
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "સબ્સ્ક્રિપ્શન અપડેટ કરો";
 
+/* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
+"DONATION_FOR_A_FRIEND_ROW_DURATION" = "Lasts %1$@";
+
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Your badge has expired and is no longer available to be displayed on your profile.";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "તમારા બૅજની સમયસીમા સમાપ્ત થઈ ગઈ છે અને હવે તમારી પ્રોફાઇલ પર દર્શાવવા માટે ઉપલબ્ધ નથી.";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Your Badge Has Expired";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "તમારા બૅજની સમયસીમા સમાપ્ત થઈ ગઈ છે";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Your badge from %1$@ has expired and can no longer be redeemed.";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "તમારા %1$@ પાસેથી મળેલા બૅજની સમયસીમા સમાપ્ત થઈ ગઈ છે અને હવે રિડિમ કરી શકાતું નથી.";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Your Badge Has Expired";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "તમારા બૅજની સમયસીમા સમાપ્ત થઈ ગઈ છે";
 
 /* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Redeemed";
+"DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "રિડિમ કર્યું";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Support Signal by making a donation for a friend or family member who uses Signal. They’ll have the option to show their support on their profile.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Signalનો ઉપયોગ કરતા મિત્ર અથવા કુટુંબના સભ્ય માટે દાન કરીને Signalને સપોર્ટ કરો. તેમની પ્રોફાઇલ પર તેમનો સપોર્ટ બતાવવાનો વિકલ્પ તેઓ પાસે હશે.";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Donate for a Friend";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "મિત્ર માટે દાન આપો";
+
+/* Title on the screen where you choose who you're going to donate on behalf of. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Choose Recipient";
 
 /* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Confirm Donation";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "દાનની પુષ્ટિ કરો";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
-"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Disappearing messages are turned on for this chat. Your donation message will disappear in %1$@.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "આ ચેટ માટે ગાયબ થતાં મેસેજ ચાલુ છે. તમારો દાનનો મેસેજ %1$@ માં ગાયબ થઈ જશે.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Cannot donate. Check your connection and try again.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "દાન આપી શકતા નથી. તમારું કનેક્શન તપાસો અને ફરીથી પ્રયત્ન કરો.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, an error dialog is shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE" = "Cannot Donate";
+"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE" = "દાન આપી શકાતું નથી";
 
 /* Users can donate on a friend's behalf. This tells users that this will be a one-time donation. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "One-time Donation";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "એક-વખતનું દાન";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "તમારી ચુકવણીની પ્રક્રિયા થઈ ન શકી અને તમારી પાસેથી ચાર્જ લેવામાં આવ્યો નથી. કૃપા કરીને ફરીથી પ્રયત્ન કરો.";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "Payment Failed";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "ચુકવણી નિષ્ફળ";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Your payment was processed but Signal could not send your donation message. Please contact support.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "તમારી ચુકવણીની પ્રક્રિયા કરવામાં આવી હતી પરંતુ Signal તમારો દાનનો મેસેજ મોકલી શક્યું નથી. કૃપા કરીને સપોર્ટનો સંપર્ક કરો.";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "Donation Failed";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "દાન આપવાનું નિષ્ફળ";
 
 /* A friend has donated on your behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ %1$@ donated for you";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ %1$@એ તમારા માટે દાન કર્યું";
 
 /* You have a made a donation on a friend's behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ You donated for %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ તમે %1$@ માટે દાન આપ્યું";
 
 /* You received a donation from a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "%1$@ donated to Signal on your behalf";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "%1$@એ તમારા વતી Signalને દાન આપ્યું";
 
 /* Users can donate on a friend's behalf. If the friend cannot receive these donations, this error message will be shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_BODY" = "You can’t make a donation for this user until they upgrade Signal.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_BODY" = "જ્યાં સુધી આ ઉપયોગકર્તા Signalને અપગ્રેડ ન કરે ત્યાં સુધી તમે તેમના માટે દાન આપી શકતા નથી.";
 
 /* Users can donate on a friend's behalf. If the friend cannot receive these donations, an error dialog will be shown. This is the title of that error dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_TITLE" = "Cannot Make Donation";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_TITLE" = "દાન આપી શકાતું નથી";
 
 /* Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "You can’t make a donation for this user because you blocked them.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "તમે આ ઉપયોગકર્તા માટે દાન આપી શકતા નથી કારણ કે તમે તેમને બ્લોક કર્યા છે.";
 
 /* Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "Cannot Make Donation";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "દાન આપી શકાતું નથી";
 
 /* Label for a button used to redeem a badge that was received as a donation on your behalf. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "Redeem";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "રિડિમ કરો";
+
+/* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "You can redeem your badge later";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ made a donation for you";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@એ તમારા માટે દાન કર્યું";
 
 /* Shown when you're replying to a donation message. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Donation";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "દાન";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation to %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "%1$@ને દાન";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "You’ve made a donation to Signal on behalf of %1$@. They’ll be given the option to show their support on their profile.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "તમે %1$@ વતી Signalને દાન આપ્યું છે. તેમની પ્રોફાઇલ પર તેમનો સપોર્ટ બતાવવાનો વિકલ્પ તેઓને આપવામાં આવશે.";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "Thanks for your support!";
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "આપના સહયોગ બદલ આભાર!";
 
 /* A button shown on a donation message you send, to view additional details about the badge that was sent. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "View";
+"DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "જુઓ";
 
 /* A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ made a donation to Signal on your behalf! Show your support for Signal on your profile.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@એ તમારા વતી Signalને દાન આપ્યું! તમારી પ્રોફાઇલ પર Signal માટે તમારો સપોર્ટ બતાવો.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "ખાનગી મેસેજિંગ. કોઈ જાહેરાતો નહીં, કોઈ પગેરું નહીં, કોઈ દેખરેખ નહીં.";
@@ -1946,7 +1943,7 @@
 "DONATION_RECEIPT_FOOTER" = "Signalને સમર્થન આપવા બદલ આપનો આભાર. તમારું યોગદાન ઓપન સોર્સ પ્રાઇવસી ટેક્નોલોજી વિકસિત કરવાના મિશનને વેગ આપવામાં મદદ કરે છે જે મુક્ત અભિવ્યક્તિનું રક્ષણ કરે છે અને વિશ્વના લાખો લોકો માટે સુરક્ષિત વૈશ્વિક સંચારને સક્રિય કરે છે. જો તમે યુનાઇટેડ સ્ટેટ્સના રહેવાસી હો, તો કૃપા કરીને તમારા ટેક્સ રેકોર્ડ માટે આ રસીદને સાચવી રાખો. Signal Technology Foundation એ યુનાઇટેડ સ્ટેટ્સમાં Internal Revenue Code (આંતરિક મહેસૂલ સંહિતા)ની કલમ 501c3 હેઠળ એક કરવેરા-મુક્ત બિનલાભકારી સંસ્થા છે. અમારું સંઘીય ટેક્સ ID છે 82-4506840.";
 
 /* Title for receipts for donations given on a friend's behalf */
-"DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Donation for a Friend";
+"DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "મિત્ર માટે દાન";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "એક-વખત";
@@ -1979,7 +1976,7 @@
 "DONATION_SCREENS_HEADER_TITLE" = "નફા કરતાં ગોપનીયતા વધુ મહત્વની છે";
 
 /* Title for the \"donate for a friend\" button on the donation view. */
-"DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Donate for a Friend";
+"DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "મિત્ર માટે દાન આપો";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Signal માટે ફાળો";
@@ -2091,9 +2088,6 @@
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "કૉલ નિષ્ફળ.";
-
-/* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "સંપર્કો એક્સેસ કરી શક્યાં નથી.";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "મેસેજ ફોરવર્ડ ન કરી શક્યા.";
@@ -2225,10 +2219,10 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "%1$@ સાથેનો તમારો સલામતી નંબર તાજેતરમાં બદલાઈ ગયો છે. તમે આ મેસેજ ફરીથી મોકલતા પહેલા ચકાસવાની ઇચ્છા કરી શકો છો.";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Your badge couldn’t be redeemed. Check your connection and try again.";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "તમારું બૅજ રિડિમ કરી શકાયું નહીં. તમારું કનેક્શન તપાસો અને ફરીથી પ્રયત્ન કરો.";
 
 /* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Couldn’t Redeem Badge";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "બૅજ રિડિમ કરી શક્યા નહીં";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "સલામતી નંબર ચકાસવામાં નિષ્ફળ!";
@@ -3320,10 +3314,10 @@
 "INBOX_VIEW_EMPTY_INBOX" = "હજી સુધી કોઈ ચેટ નથી.\nમિત્રને મેસેજ કરીને શરૂઆત કરો.";
 
 /* info message text in conversation view */
-"INCOMING_AUDIO_CALL" = "Incoming voice call";
+"INCOMING_AUDIO_CALL" = "ઇનકમિંગ વૉઇસ કૉલ";
 
 /* info message text in conversation view */
-"INCOMING_VIDEO_CALL" = "Incoming video call";
+"INCOMING_VIDEO_CALL" = "ઇનકમિંગ વિડિયો કૉલ";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3462,6 +3456,15 @@
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "લિંક થયેલ ડિવાઇસ";
+
+/* Label for the 'give access' button in the 'onboarding permissions' view. */
+"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Allow Notifications";
+
+/* Explanation in the 'onboarding permissions' view. */
+"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications lets you know when you receive messages, calls or updates about new conversation activity.";
+
+/* Title of the 'onboarding permissions' view. */
+"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Allow Notifications";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "ડિવાઇસને જોડવાનું નિષ્ફળ થયું";
@@ -3848,7 +3851,7 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "નવા મેસેજ";
 
 /* info message text in conversation view */
-"MISSED_AUDIO_CALL" = "Missed voice call";
+"MISSED_AUDIO_CALL" = "મિસ્ડ વૉઇસ કૉલ";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
 "MISSED_CALL_DO_NOT_DISTURB" = "'ખલેલ ન કરશો'માં હતા ત્યારે મિસ્ડ કોલ આવ્યો";
@@ -3857,7 +3860,7 @@
 "MISSED_CALL_FOCUS_MODE" = "ફોકસનો ઉપયોગ કરતી વખતે મિસ્ડ કોલ આવ્યો";
 
 /* info message text in conversation view */
-"MISSED_VIDEO_CALL" = "Missed video call";
+"MISSED_VIDEO_CALL" = "મિસ્ડ વિડિયો કૉલ";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "તમે Signal માં વિડિયો કૉલ કરવા માટે iOS સેટિંગ્સ એપ્લિકેશનમાં કૅમેરાના એક્સેસને સક્ષમ કરી શકો છો.";
@@ -4268,16 +4271,16 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "ચુકવણીઓનો ઉપયોગ કરતાં રહેવા માટે Signalને અપડેટ કરો. તમારું બેલેન્સ અપ-ટૂ-ડેટ ન પણ હોઈ શકે.";
 
 /* info message text in conversation view */
-"OUTGOING_AUDIO_CALL" = "Outgoing voice call";
+"OUTGOING_AUDIO_CALL" = "આઉટગોઇંગ વૉઇસ કૉલ";
 
 /* info message text in conversation view */
-"OUTGOING_MISSED_AUDIO_CALL" = "Unanswered voice call";
+"OUTGOING_MISSED_AUDIO_CALL" = "ન ઉપાડેલો વૉઇસ કૉલ";
 
 /* info message text in conversation view */
-"OUTGOING_MISSED_VIDEO_CALL" = "Unanswered video call";
+"OUTGOING_MISSED_VIDEO_CALL" = "ન ઉપાડેલો વિડિયો કૉલ";
 
 /* info message text in conversation view */
-"OUTGOING_VIDEO_CALL" = "Outgoing video call";
+"OUTGOING_VIDEO_CALL" = "આઉટગોઇંગ વિડિયો કૉલ";
 
 /* Button used to decline a payment request. */
 "PAYMENTS_ACTION_DECLINE_REQUEST" = "વિનંતીનો અસ્વીકાર કરો";

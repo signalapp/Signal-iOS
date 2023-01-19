@@ -424,18 +424,6 @@
 /* Title for subscription on the badge expiration sheet. */
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Mjesečna donacija je otkazana";
 
-/* Shown on a gift badge message and when tapping a redeemed gift message to denote the presence of a gift badge. */
-"BADGE_GIFTING_CHAT_TITLE" = "Značka na poklon";
-
-/* Title on the screen where you choose a gift badge's recipient */
-"BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Odaberite primatelja";
-
-/* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
-"BADGE_GIFTING_REDEEM_LATER" = "Značku možete preuzeti kasnije";
-
-/* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "Traje %1$@";
-
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Vaša obnavljajuća mjesečna donacija je otkazana. %1$@ Vaša značka više nije vidljiva na vašem profilu.\n\nDa biste nastavili podržavati Signal i ponovno aktivirali svoju značku, ažurirajte podatke o plaćanju i ponovno donirajte.";
 
@@ -1553,10 +1541,10 @@
 "DEBUG_LOG_INFO_BUTTON" = "Informacije o zapisnicima pogreške";
 
 /* info message text in conversation view */
-"DECLINED_AUDIO_CALL" = "You declined a voice call";
+"DECLINED_AUDIO_CALL" = "Odbili ste glasovni poziv";
 
 /* info message text in conversation view */
-"DECLINED_VIDEO_CALL" = "You declined a video call";
+"DECLINED_VIDEO_CALL" = "Odbili ste videopoziv";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Izbriši račun";
@@ -1772,7 +1760,7 @@
 "DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD" = "Kreditna ili debitna kartica";
 
 /* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the subtitle on that sheet. Embeds {{recipient's name}}. */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "On behalf of %1$@";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "U ime korisnika %1$@";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION" = "Osvojite značku %1$@";
@@ -1781,7 +1769,7 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "Osvojite značku %1$@ na mjesec dana";
 
 /* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "%1$@ Donation to Signal";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "%1$@ Donacija Signalu";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Donirajte %1$@ Signalu";
@@ -1790,13 +1778,13 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Donirajte %1$@ Signalu";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message. */
-"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "The recipient will be notified of the donation in a 1 on 1 message. Add your own message below.";
+"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "Primatelj će biti obaviješten o donaciji u privatnoj poruci. U nastavku napišite poruku.";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is the placeholder in the text field for that additional message. */
-"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Add a message";
+"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Dodaj poruku";
 
 /* If a donation badge has been sent, indicates that it's expired and can no longer be redeemed. This is shown in the chat. */
-"DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Expired";
+"DONATE_ON_BEHALF_OF_A_FRIEND_CHAT_EXPIRED" = "Istekla";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
 "DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "Odaberite iznos za donaciju.";
@@ -1825,98 +1813,107 @@
 /* On the donation screen, if you already have a subscription, you'll see a button to update your subscription. This is the text on that button. */
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Nadogradnja pretplate";
 
+/* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
+"DONATION_FOR_A_FRIEND_ROW_DURATION" = "Lasts %1$@";
+
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Your badge has expired and is no longer available to be displayed on your profile.";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Vaša značka je istekla i više nije dostupna za prikaz na vašem profilu.";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Your Badge Has Expired";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Vaša značka je istekla";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Your badge from %1$@ has expired and can no longer be redeemed.";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Značka koju ste dobili od korisnika %1$@ istekla je i više se ne može preuzeti.";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Your Badge Has Expired";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Vaša značka je istekla";
 
 /* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Redeemed";
+"DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Preuzeta";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Support Signal by making a donation for a friend or family member who uses Signal. They’ll have the option to show their support on their profile.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Podržite Signal donacijom u ime prijatelja ili člana obitelji koji koristi Signal. Moći će izabrati hoće li iskazati podršku na svom profilu.";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Donate for a Friend";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Donirajte u ime prijatelja";
+
+/* Title on the screen where you choose who you're going to donate on behalf of. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Choose Recipient";
 
 /* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Confirm Donation";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Potvrdite donaciju";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
-"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Disappearing messages are turned on for this chat. Your donation message will disappear in %1$@.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "Za ovaj razgovor uključene su nestajuće poruke. Vaša poruka o donaciji nestat će za %1$@.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Cannot donate. Check your connection and try again.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "Nije moguće izvršiti donaciju. Provjerite internetsku vezu i pokušajte ponovno.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, an error dialog is shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE" = "Cannot Donate";
+"DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_TITLE" = "Nije moguće izvršiti donaciju";
 
 /* Users can donate on a friend's behalf. This tells users that this will be a one-time donation. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "One-time Donation";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "Jednokratna donacija";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY" = "Vašu transakciju nije bilo moguće obraditi te vam se iznos neće naplatiti. Molimo pokušajte ponovno.";
 
 /* Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "Payment Failed";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "Plaćanje nije uspjelo";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Your payment was processed but Signal could not send your donation message. Please contact support.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "Vaša uplata je obrađena, ali Signal nije mogao poslati vašu poruku uz donaciju. Molimo kontaktirajte podršku.";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "Donation Failed";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "Donacija nije uspjela";
 
 /* A friend has donated on your behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ %1$@ donated for you";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ Korisnik %1$@ donirao je u vaše ime";
 
 /* You have a made a donation on a friend's behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ You donated for %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ Izvršili ste donaciju u ime korisnika %1$@";
 
 /* You received a donation from a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "%1$@ donated to Signal on your behalf";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "Korisnik %1$@ donirao je Signalu u vaše ime";
 
 /* Users can donate on a friend's behalf. If the friend cannot receive these donations, this error message will be shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_BODY" = "You can’t make a donation for this user until they upgrade Signal.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_BODY" = "Ne možete donirati u ime korisnika dok ne nadogradi Signal.";
 
 /* Users can donate on a friend's behalf. If the friend cannot receive these donations, an error dialog will be shown. This is the title of that error dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_TITLE" = "Cannot Make Donation";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_TITLE" = "Nije moguće izvršiti donaciju";
 
 /* Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "You can’t make a donation for this user because you blocked them.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "Nije moguće donirati u ime korisnika kojega ste blokirali.";
 
 /* Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "Cannot Make Donation";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "Nije moguće izvršiti donaciju";
 
 /* Label for a button used to redeem a badge that was received as a donation on your behalf. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "Redeem";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "Preuzmi";
+
+/* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "You can redeem your badge later";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ made a donation for you";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "Korisnik %1$@ izvršio je donaciju u vaše ime";
 
 /* Shown when you're replying to a donation message. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Donation";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "Donacija";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donation to %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Donacija u ime korisnika %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "You’ve made a donation to Signal on behalf of %1$@. They’ll be given the option to show their support on their profile.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Izvršili ste donaciju Signalu u ime korisnika %1$@. Korisnik će moći izabrati hoće li iskazati podršku na svom profilu.";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "Thanks for your support!";
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "Hvala vam na podršci!";
 
 /* A button shown on a donation message you send, to view additional details about the badge that was sent. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "View";
+"DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "Pregledaj";
 
 /* A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ made a donation to Signal on your behalf! Show your support for Signal on your profile.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "Korisnik %1$@ donirao je Signalu u vaše ime! Pokažite svoju podršku Signalu na svom profilu.";
 
 /* There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen. */
 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1" = "Privatna razmjena poruka. Bez oglasa, bez pratitelja i bez nadzora.";
@@ -1946,7 +1943,7 @@
 "DONATION_RECEIPT_FOOTER" = "Hvala vam što podržavate Signal. Vaš doprinos pomaže potaknuti misiju razvoja tehnologije privatnosti otvorenog koda koja štiti slobodno izražavanje i omogućuje sigurnu globalnu komunikaciju za milijune ljudi diljem svijeta. Ako ste rezident Sjedinjenih Država, zadržite ovu potvrdu za svoju poreznu evidenciju. Signal Technology Foundation je neprofitna organizacija oslobođena poreza u Sjedinjenim Državama prema odjeljku 501c3 Zakona o internim prihodima. Naš savezni porezni broj je 82-4506840.";
 
 /* Title for receipts for donations given on a friend's behalf */
-"DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Donation for a Friend";
+"DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Donacija u ime prijatelja";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "Jednokratno";
@@ -1979,7 +1976,7 @@
 "DONATION_SCREENS_HEADER_TITLE" = "Privatnost prije profita";
 
 /* Title for the \"donate for a friend\" button on the donation view. */
-"DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Donate for a Friend";
+"DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Doniraj u ime prijatelja";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Donacija za Signal";
@@ -2091,9 +2088,6 @@
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Poziv nije uspio.";
-
-/* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "Nije moguće pristupiti kontaktima.";
 
 /* Error indicating that a message could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_1" = "Nije moguće proslijediti ovu poruku.";
@@ -2225,10 +2219,10 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Vaš sigurnosni broj s %1$@ je nedavno promijenjen. Možda želite potvrditi prije nego što ponovo pošaljete poruku.";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Your badge couldn’t be redeemed. Check your connection and try again.";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Nije moguće preuzeti značku. Provjerite internetsku vezu i pokušajte ponovno.";
 
 /* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Couldn’t Redeem Badge";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Nije moguće preuzeti značku";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Provjera sigurnosnog broja nije uspjela!";
@@ -3320,10 +3314,10 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Još nema razgovora.\nZapočnite slanjem poruke prijatelju.";
 
 /* info message text in conversation view */
-"INCOMING_AUDIO_CALL" = "Incoming voice call";
+"INCOMING_AUDIO_CALL" = "Dolazni glasovni poziv";
 
 /* info message text in conversation view */
-"INCOMING_VIDEO_CALL" = "Incoming video call";
+"INCOMING_VIDEO_CALL" = "Dolazni videopoziv";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
@@ -3462,6 +3456,15 @@
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Povezani uređaji";
+
+/* Label for the 'give access' button in the 'onboarding permissions' view. */
+"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Allow Notifications";
+
+/* Explanation in the 'onboarding permissions' view. */
+"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications lets you know when you receive messages, calls or updates about new conversation activity.";
+
+/* Title of the 'onboarding permissions' view. */
+"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Allow Notifications";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Povezivanje uređaja nije uspjelo";
@@ -3848,7 +3851,7 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Nove poruke";
 
 /* info message text in conversation view */
-"MISSED_AUDIO_CALL" = "Missed voice call";
+"MISSED_AUDIO_CALL" = "Propušteni glasovni poziv";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
 "MISSED_CALL_DO_NOT_DISTURB" = "Propušteni poziv dok je bilo uključeno \"Ne uznemiravaj\"";
@@ -3857,7 +3860,7 @@
 "MISSED_CALL_FOCUS_MODE" = "Propušteni poziv dok ste koristili Focus";
 
 /* info message text in conversation view */
-"MISSED_VIDEO_CALL" = "Missed video call";
+"MISSED_VIDEO_CALL" = "Propušteni videopoziv";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Za upućivanje video poziva u Signalu, možete omogućiti pristup kameri u postavkama iOS-a.";
@@ -4268,16 +4271,16 @@
 "OUTDATED_PAYMENT_CLIENT_REMINDER_TEXT" = "Ažurirajte Signal da biste nastavili koristiti uslugu plaćanja. Vaše stanje računa možda nije ažurno.";
 
 /* info message text in conversation view */
-"OUTGOING_AUDIO_CALL" = "Outgoing voice call";
+"OUTGOING_AUDIO_CALL" = "Odlazni glasovni poziv";
 
 /* info message text in conversation view */
-"OUTGOING_MISSED_AUDIO_CALL" = "Unanswered voice call";
+"OUTGOING_MISSED_AUDIO_CALL" = "Propušteni glasovni poziv";
 
 /* info message text in conversation view */
-"OUTGOING_MISSED_VIDEO_CALL" = "Unanswered video call";
+"OUTGOING_MISSED_VIDEO_CALL" = "Propušteni videopoziv";
 
 /* info message text in conversation view */
-"OUTGOING_VIDEO_CALL" = "Outgoing video call";
+"OUTGOING_VIDEO_CALL" = "Odlazni videopoziv";
 
 /* Button used to decline a payment request. */
 "PAYMENTS_ACTION_DECLINE_REQUEST" = "Odbij zahtjev";
