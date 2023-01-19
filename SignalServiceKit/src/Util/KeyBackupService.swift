@@ -976,8 +976,7 @@ public class KeyBackupService: NSObject {
                 let urlSession = Self.signalService.urlSessionForKBS()
                 guard let requestUrl = request.url else {
                     owsFailDebug("Missing requestUrl.")
-                    let url: URL = urlSession.baseUrl ?? URL(string: TSConstants.keyBackupURL)!
-                    throw OWSHTTPError.missingRequest(requestUrl: url)
+                    throw OWSHTTPError.missingRequest
                 }
                 return firstly {
                     urlSession.promiseForTSRequest(request)
@@ -1289,8 +1288,7 @@ public class KeyBackupService: NSObject {
             let urlSession = Self.signalService.urlSessionForKBS()
             guard let requestUrl = request.url else {
                 owsFailDebug("Missing requestUrl.")
-                let url: URL = urlSession.baseUrl ?? URL(string: TSConstants.keyBackupURL)!
-                throw OWSHTTPError.missingRequest(requestUrl: url)
+                throw OWSHTTPError.missingRequest
             }
             return firstly {
                 urlSession.promiseForTSRequest(request)

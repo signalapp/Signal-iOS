@@ -28,7 +28,7 @@ public protocol HTTPResponse {
 
 // A common protocol for errors from OWSUrlSession, NetworkManager, SocketManager, etc.
 public protocol HTTPError {
-    var requestUrl: URL { get }
+    var requestUrl: URL? { get }
     // status is zero by default, if request never made or failed.
     var responseStatusCode: Int { get }
     var responseHeaders: OWSHttpHeaders? { get }
@@ -56,7 +56,7 @@ public struct HTTPErrorServiceResponse {
 // MARK: -
 
 public enum OWSHTTPError: Error, IsRetryableProvider, UserErrorDescriptionProvider {
-    case missingRequest(requestUrl: URL)
+    case missingRequest
     case invalidAppState(requestUrl: URL)
     case invalidRequest(requestUrl: URL)
     case invalidResponse(requestUrl: URL)
@@ -148,10 +148,10 @@ public enum OWSHTTPError: Error, IsRetryableProvider, UserErrorDescriptionProvid
 
 extension OWSHTTPError: HTTPError {
 
-    public var requestUrl: URL {
+    public var requestUrl: URL? {
         switch self {
-        case .missingRequest(let requestUrl):
-            return requestUrl
+        case .missingRequest:
+            return nil
         case .invalidAppState(let requestUrl):
             return requestUrl
         case .invalidRequest(let requestUrl):

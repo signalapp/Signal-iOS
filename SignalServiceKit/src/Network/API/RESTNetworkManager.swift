@@ -50,8 +50,7 @@ public class RESTSessionManager: NSObject {
 
         guard let requestUrl = request.url else {
             owsFailDebug("Missing requestUrl.")
-            let url: URL = urlSession.baseUrl ?? URL(string: TSConstants.mainServiceURL)!
-            failure(OWSHTTPErrorWrapper(error: .missingRequest(requestUrl: url)))
+            failure(OWSHTTPErrorWrapper(error: .missingRequest))
             return
         }
 
@@ -78,11 +77,9 @@ public class RESTSessionManager: NSObject {
 
 extension OWSURLSessionProtocol {
     public func promiseForTSRequest(_ rawRequest: TSRequest) -> Promise<HTTPResponse> {
-
         guard let rawRequestUrl = rawRequest.url else {
             owsFailDebug("Missing requestUrl.")
-            let url: URL = self.baseUrl ?? URL(string: TSConstants.mainServiceURL)!
-            return Promise(error: OWSHTTPError.missingRequest(requestUrl: url))
+            return Promise(error: OWSHTTPError.missingRequest)
         }
         guard !appExpiry.isExpired else {
             owsFailDebug("App is expired.")

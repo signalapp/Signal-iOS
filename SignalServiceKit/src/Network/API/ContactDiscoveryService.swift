@@ -56,8 +56,7 @@ public struct ContactDiscoveryService: Dependencies {
             )
             guard let requestUrl = request.url else {
                 owsFailDebug("Missing requestUrl.")
-                let url: URL = urlSession.baseUrl ?? URL(string: TSConstants.contactDiscoverySGXURL)!
-                throw OWSHTTPError.missingRequest(requestUrl: url)
+                throw OWSHTTPError.missingRequest
             }
             return firstly {
                 urlSession.promiseForTSRequest(request)

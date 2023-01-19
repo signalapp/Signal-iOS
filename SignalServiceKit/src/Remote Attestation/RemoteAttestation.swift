@@ -308,8 +308,7 @@ fileprivate extension RemoteAttestation {
                     censorshipCircumventionPrefix: config.censorshipCircumventionPrefix)
                 guard let requestUrl = request.url else {
                     owsFailDebug("Missing requestUrl.")
-                    let url: URL = urlSession.baseUrl ?? URL(string: config.host) ?? URL(string: TSConstants.mainServiceURL)!
-                    throw OWSHTTPError.missingRequest(requestUrl: url)
+                    throw OWSHTTPError.missingRequest
                 }
                 return firstly {
                     urlSession.promiseForTSRequest(request)
