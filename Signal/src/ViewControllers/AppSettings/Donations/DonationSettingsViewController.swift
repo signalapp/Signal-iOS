@@ -319,7 +319,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
     ) -> [OWSTableSection] {
         [
             mySupportSection(subscriptionStatus: subscriptionStatus, hasAnyBadges: hasAnyBadges),
-            otherWaysToGiveSection(),
+            otherWaysToDonateSection(),
             moreSection(
                 subscriptionStatus: subscriptionStatus,
                 profileBadgeLookup: profileBadgeLookup,
@@ -381,11 +381,13 @@ class DonationSettingsViewController: OWSTableViewController2 {
         return section
     }
 
-    private func otherWaysToGiveSection() -> OWSTableSection? {
+    private func otherWaysToDonateSection() -> OWSTableSection? {
         guard Self.canSendGiftBadges else { return nil }
 
-        let title = NSLocalizedString("DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE",
-                                                         comment: "Title for the 'other ways to give' section on the donation view")
+        let title = OWSLocalizedString(
+            "DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE",
+            comment: "Title for the \"other ways to donate\" section on the donation view."
+        )
         let section = OWSTableSection(title: title)
 
         section.add(.disclosureItem(
