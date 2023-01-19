@@ -1,3 +1,2 @@
-• We improved the way that information about incoming, outgoing, and missed calls is displayed and synchronized across linked devices. Now you can make the right call about all of the calls you didn't answer in time.
-• The "All Media" view has been optimized to let you scroll through the past much faster in the future.
-• Performance enhancements for audio calls in low-bandwidth environments will help you stay connected to a great conversation even when your connection isn't great.
+• If you routinely miss calls when your phone is in another room, you'll be happy to hear that unread missed call events in individual (non-group) chats will be automatically marked as read when you answer or decline on the 2nd, or 3rd, or 27th attempt. Sometimes persistence pays off for everyone involved, especially if one of your friends is accidentally going for the pocket-dial world record.
+• We fixed a few bugs, including one that occasionally made part of the interface look transparent while browsing through your contact list. Now you can only metaphorically see right through some of the people you know. 
