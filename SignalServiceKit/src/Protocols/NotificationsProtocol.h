@@ -48,6 +48,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)notifyTestPopulationOfErrorMessage:(NSString *)errorString;
 
+/// Notify user of an auth error that has caused their device to be logged out (e.g. a 403 from the chat server).
+- (void)notifyUserOfDeregistration:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(notifyUserOfDeregistration(transaction:));
+
 - (void)clearAllNotifications;
 
 - (void)cancelNotificationsForThreadId:(NSString *)uniqueMessageId NS_SWIFT_NAME(cancelNotifications(threadId:));

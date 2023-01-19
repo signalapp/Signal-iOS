@@ -774,11 +774,15 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         @synchronized(self) {
+            if ([self getOrLoadAccountStateWithTransaction:transaction].isDeregistered == isDeregistered) {
+                return;
+            }
             [self.keyValueStore setObject:@(isDeregistered)
                                       key:TSAccountManager_IsDeregisteredKey
                               transaction:transaction];
 
             [self loadAccountStateWithTransaction:transaction];
+            [self.notificationPresenter notifyUserOfDeregistration:transaction];
         }
     });
 

@@ -668,7 +668,7 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         refresh().done(on: .global()) {
             self.cacheCurrent()
         }.catch { error in
-            owsFailDebug("Failed to update remote config after registration change \(error)")
+            Logger.error("Failed to update remote config after registration change \(error)")
         }
     }
 

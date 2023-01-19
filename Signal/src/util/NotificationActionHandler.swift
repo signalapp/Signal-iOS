@@ -76,6 +76,8 @@ public class NotificationActionHandler: NSObject {
             return try showCallLobby(userInfo: userInfo)
         case .submitDebugLogs:
             return submitDebugLogs()
+        case .reregister:
+            return reregister()
         }
     }
 
@@ -279,6 +281,20 @@ public class NotificationActionHandler: NSObject {
     private class func submitDebugLogs() -> Promise<Void> {
         Promise { future in
             Pastelog.submitLogs(withSupportTag: nil) {
+                future.resolve()
+            }
+        }
+    }
+
+    private class func reregister() -> Promise<Void> {
+        Promise { future in
+            AppReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
+                guard let viewController = CurrentAppContext().frontmostViewController() else {
+                    Logger.error("Responding to reregister notification action without a view controller!")
+                    future.resolve()
+                    return
+                }
+                RegistrationUtils.reregister(fromViewController: viewController)
                 future.resolve()
             }
         }

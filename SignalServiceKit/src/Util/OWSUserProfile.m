@@ -216,7 +216,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     if ([address.phoneNumber isEqualToString:kLocalProfileInvariantPhoneNumber]) {
         return YES;
     } else {
-        OWSAssertDebug(self.tsAccountManager.localAddress);
         return address.isLocalAddress;
     }
 }

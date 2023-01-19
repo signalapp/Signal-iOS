@@ -43,6 +43,10 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
         Logger.warn("Skipping internal error notification: \(errorString)")
     }
 
+    public func notifyUserOfDeregistration(transaction: SDSAnyWriteTransaction) {
+        Logger.warn("skipping deregistration notification")
+    }
+
     public func clearAllNotifications() {
         Logger.warn("clearAllNotifications")
     }

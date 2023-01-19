@@ -34,6 +34,7 @@ public enum AppNotificationCategory: CaseIterable {
     case internalError
     case incomingMessageGeneric
     case incomingGroupStoryReply
+    case deregistration
 }
 
 public enum AppNotificationAction: String, CaseIterable {
@@ -46,6 +47,7 @@ public enum AppNotificationAction: String, CaseIterable {
     case reactWithThumbsUp
     case showCallLobby
     case submitDebugLogs
+    case reregister
 }
 
 public struct AppNotificationUserInfoKey {
@@ -93,6 +95,8 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.incomingMessageGeneric"
         case .incomingGroupStoryReply:
             return "Signal.AppNotificationCategory.incomingGroupStoryReply"
+        case .deregistration:
+            return "Signal.AppNotificationCategory.authErrorLogout"
         }
     }
 
@@ -131,6 +135,8 @@ extension AppNotificationCategory {
             return []
         case .incomingGroupStoryReply:
             return [.reply]
+        case .deregistration:
+            return []
         }
     }
 }
@@ -156,6 +162,8 @@ extension AppNotificationAction {
             return "Signal.AppNotifications.Action.showCallLobby"
         case .submitDebugLogs:
             return "Signal.AppNotifications.Action.submitDebugLogs"
+        case .reregister:
+            return "Signal.AppNotifications.Action.reregister"
         }
     }
 }
@@ -960,6 +968,27 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 interaction: nil,
                                 sound: self.requestGlobalSound(),
                                 completion: completion)
+        }
+    }
+
+    public func notifyUserOfDeregistration(transaction: SDSAnyWriteTransaction) {
+        let notificationBody = OWSLocalizedString(
+            "DEREGISTRATION_NOTIFICATION",
+            comment: "Notification warning the user that they have been de-registered."
+        )
+        performNotificationActionInAsyncCompletion(transaction: transaction) { completion in
+            self.presenter.notify(
+                category: .deregistration,
+                title: nil,
+                body: notificationBody,
+                threadIdentifier: nil,
+                userInfo: [
+                    AppNotificationUserInfoKey.defaultAction: AppNotificationAction.reregister.rawValue
+                ],
+                interaction: nil,
+                sound: self.requestGlobalSound(),
+                completion: completion
+            )
         }
     }
 

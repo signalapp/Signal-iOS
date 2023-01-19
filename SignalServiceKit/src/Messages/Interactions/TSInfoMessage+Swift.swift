@@ -133,7 +133,7 @@ extension TSInfoMessage {
         transaction: SDSAnyReadTransaction
     ) -> GroupUpdateCopy? {
         guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("missing local address")
+            Logger.warn("missing local address")
             return nil
         }
 

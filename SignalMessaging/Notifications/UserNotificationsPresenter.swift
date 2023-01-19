@@ -73,6 +73,10 @@ public class UserNotificationConfig {
             // Currently, .submitDebugLogs is only used as a default action.
             owsFailDebug("Show submit debug logs not supported as a UNNotificationAction")
             return nil
+        case .reregister:
+            // Currently, .reregister is only used as a default action.
+            owsFailDebug("Reregister is not supported as a UNNotificationAction")
+            return nil
         }
     }
 
@@ -305,7 +309,8 @@ class UserNotificationPresenter: Dependencies {
              .incomingCall,
              .missedCallWithActions,
              .missedCallWithoutActions,
-             .missedCallFromNoLongerVerifiedIdentity:
+             .missedCallFromNoLongerVerifiedIdentity,
+             .deregistration:
             // Always show these notifications
             return true
         case .internalError:
@@ -357,6 +362,7 @@ class UserNotificationPresenter: Dependencies {
         case .incomingMessageGeneric:
             owsFailDebug(".incomingMessageGeneric should never check shouldPresentNotification().")
             return true
+
         }
     }
 

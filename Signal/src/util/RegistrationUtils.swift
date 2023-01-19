@@ -13,6 +13,12 @@ public extension RegistrationUtils {
     static func reregister(fromViewController: UIViewController) {
         AssertIsOnMainThread()
 
+        // If this is not the primary device, jump directly to the re-linking flow.
+        guard self.tsAccountManager.isPrimaryDevice else {
+            Self.showRelinkingUI()
+            return
+        }
+
         guard tsAccountManager.resetForReregistration(),
               let phoneNumber = Self.tsAccountManager.reregistrationPhoneNumber()?.nilIfEmpty else {
             owsFailDebug("could not reset for re-registration.")
