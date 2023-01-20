@@ -86,6 +86,8 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
         XCTAssertEqual(request.httpBody, ciphertext)
     }
 
+    // MARK: - Donations
+
     func testBoostStripeCreatePaymentIntentWithAmount() {
         let request = OWSRequestFactory.boostStripeCreatePaymentIntent(
             integerMoneyValue: 123,
@@ -123,5 +125,33 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
         XCTAssertEqual(request.parameters["returnUrl"] as? String, "https://example.com/approved")
         XCTAssertEqual(request.parameters["cancelUrl"] as? String, "https://example.com/canceled")
         XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
+    }
+
+    // MARK: - Spam
+
+    func testReportSpamFromUuid() {
+        let request = OWSRequestFactory.reportSpam(
+            from: UUID(uuidString: "37EBAFB5-91D6-4C63-BFF7-82F540856386")!,
+            withServerGuid: "abc 123"
+        )
+
+        XCTAssertEqual(
+            request.url?.relativeString,
+            "v1/messages/report/37EBAFB5-91D6-4C63-BFF7-82F540856386/abc%20123"
+        )
+        XCTAssertEqual(request.httpMethod, "POST")
+        XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
+    }
+
+    func testReportSpamFromUuidWithEmptyServerGuid() {
+        // This will probably never happen, but if the server wants, this should be allowed.
+        let request = OWSRequestFactory.reportSpam(
+            from: UUID(uuidString: "EB7B0432-BE7F-4A62-9859-4D7835D0D724")!, withServerGuid: ""
+        )
+
+        XCTAssertEqual(
+            request.url?.relativeString,
+            "v1/messages/report/EB7B0432-BE7F-4A62-9859-4D7835D0D724/"
+        )
     }
 }

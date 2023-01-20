@@ -914,15 +914,6 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
                           parameters:@{ @"type" : @"recaptcha", @"token" : serverToken, @"captcha" : captchaToken }];
 }
 
-+ (TSRequest *)reportSpamFromUuid:(NSUUID *)senderUuid withServerGuid:(NSString *)serverGuid
-{
-    OWSAssertDebug(senderUuid != nil);
-    OWSAssertDebug(serverGuid.length > 0);
-
-    NSString *path = [NSString stringWithFormat:@"/v1/messages/report/%@/%@", senderUuid.UUIDString, serverGuid];
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"POST" parameters:@{}];
-}
-
 #pragma mark - Subscriptions
 
 + (TSRequest *)setSubscriptionIDRequest:(NSString *)base64SubscriberID

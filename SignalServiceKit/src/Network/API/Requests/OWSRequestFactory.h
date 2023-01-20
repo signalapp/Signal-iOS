@@ -232,7 +232,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 + (TSRequest *)pushChallengeRequest;
 + (TSRequest *)pushChallengeResponseWithToken:(NSString *)challengeToken;
 + (TSRequest *)recaptchChallengeResponseWithToken:(NSString *)serverToken captchaToken:(NSString *)captchaToken;
-+ (TSRequest *)reportSpamFromUuid:(NSUUID *)senderUuid withServerGuid:(NSString *)serverGuid;
 
 @end
 
