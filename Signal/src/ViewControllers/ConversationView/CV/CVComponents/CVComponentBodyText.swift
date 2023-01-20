@@ -337,7 +337,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                                     url: url)
                 let item: CVTextLabel.Item = .dataItem(dataItem: dataItem)
                 guard !hasItemOverlap(item) else {
-                    owsFailDebug("Item overlap.")
                     continue
                 }
                 items.append(item)
