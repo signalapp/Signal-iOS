@@ -913,12 +913,17 @@ public extension MessageSender {
                                         eventId: "sendMessagePostNetwork-\(message.timestamp)")
             }
 
-            // If we've just delivered a message to a user, we know they
-            // have a valid Signal account. This is low trust, because we
-            // don't actually know for sure the fully qualified address is
-            // valid.
-            let recipient = SignalRecipient.fetchOrCreate(for: address, trustLevel: .low, transaction: transaction)
-            recipient.markAsRegistered(transaction: transaction)
+            // If we've just delivered a message to a user, we know they have a valid
+            // Signal account. However, if we're sending a story, the server will
+            // always tell us the recipient is registered, so we can't use this as an
+            // affirmate indication for the existence of an account.
+            //
+            // This is low trust because we don't actually know for sure the fully
+            // qualified address is valid.
+            if !message.isStorySend {
+                let recipient = SignalRecipient.fetchOrCreate(for: address, trustLevel: .low, transaction: transaction)
+                recipient.markAsRegistered(transaction: transaction)
+            }
 
             Self.profileManager.didSendOrReceiveMessage(from: address, transaction: transaction)
         }

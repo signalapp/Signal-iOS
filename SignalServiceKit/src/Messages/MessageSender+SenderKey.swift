@@ -293,8 +293,14 @@ extension MessageSender {
                         }
 
                         message.update(withSentRecipient: recipient.address, wasSentByUD: true, transaction: writeTx)
-                        SignalRecipient.fetchOrCreate(for: recipient.address, trustLevel: .low, transaction: writeTx)
-                            .markAsRegistered(transaction: writeTx)
+
+                        // If we're sending a story, we generally get a 200, even if the account
+                        // doesn't exist. Therefore, don't use this to mark accounts as registered.
+                        if !message.isStorySend {
+                            SignalRecipient.fetchOrCreate(for: recipient.address, trustLevel: .low, transaction: writeTx)
+                                .markAsRegistered(transaction: writeTx)
+                        }
+
                         self.profileManager.didSendOrReceiveMessage(from: recipient.address, transaction: writeTx)
 
                         guard let payloadId = payloadId else { return }
@@ -666,7 +672,7 @@ extension MessageSender {
         }
     }
 
-    func senderKeyMessageBody(
+    private func senderKeyMessageBody(
         plaintext: Data,
         message: TSOutgoingMessage,
         thread: TSThread,
@@ -715,7 +721,7 @@ extension MessageSender {
         return ciphertext
     }
 
-    func performSenderKeySend(
+    private func performSenderKeySend(
         ciphertext: Data,
         timestamp: UInt64,
         isOnline: Bool,
