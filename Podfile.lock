@@ -58,10 +58,10 @@ PODS:
   - SignalCoreKit/Tests (1.0.0):
     - CocoaLumberjack
     - OpenSSL-Universal
-  - SignalRingRTC (2.23.0):
+  - SignalRingRTC (2.23.1):
     - SignalCoreKit
-    - SignalRingRTC/WebRTC (= 2.23.0)
-  - SignalRingRTC/WebRTC (2.23.0):
+    - SignalRingRTC/WebRTC (= 2.23.1)
+  - SignalRingRTC/WebRTC (2.23.1):
     - SignalCoreKit
   - SQLCipher (4.5.2):
     - SQLCipher/standard (= 4.5.2)
@@ -229,7 +229,7 @@ SPEC CHECKSUMS:
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalArgon2: 1c24183835ca861e6af06631c18b1671cdf35571
   SignalCoreKit: 9febad2d82f80c5b2f446740c68f1fba6d4cd9b2
-  SignalRingRTC: f0eaa835f80bff51d580f1dd61dd748515940f99
+  SignalRingRTC: 629bf23f6cf2f6cd6c366b6a9b84bf2d4b428ba8
   SQLCipher: f5b4857434158b571a3ed3b10b3b43cd18ef5f67
   SSZipArchive: 8c3485528a87fa6f90afdbfc33682eb61d985ae5
   Starscream: 4bb2f9942274833f7b4d296a55504dcfc7edb7b0
