@@ -149,7 +149,7 @@ public final class CallService: LightweightCallManager {
 
     public override init() {
         super.init()
-        callManager = CallManager(httpClient: httpClient)
+        callManager = CallManager(httpClient: httpClient, fieldTrials: Self.ringRtcFieldTrials)
         callManager.delegate = self
         SwiftSingletons.register(self)
 
@@ -206,6 +206,17 @@ public final class CallService: LightweightCallManager {
             SDSDatabaseStorage.shared.appendDatabaseChangeDelegate(self)
         }
     }
+
+    private static var ringRtcFieldTrials: [String: String] = {
+        var result = [String: String]()
+
+        if FeatureFlags.ringRtcUseNwPathMonitorFieldTrial {
+            Logger.info("Enabling WebRTC-Network-UseNWPathMonitor field trial")
+            result["WebRTC-Network-UseNWPathMonitor"] = "Enabled"
+        }
+
+        return result
+    }()
 
     /**
      * Choose whether to use CallKit or a Notification backed interface for calling.
