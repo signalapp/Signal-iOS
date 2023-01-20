@@ -26,8 +26,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (TSRequest *)enable2FARequestWithPin:(NSString *)pin;
-
 + (TSRequest *)disable2FARequest;
 
 + (TSRequest *)acknowledgeMessageDeliveryRequestWithServerGuid:(NSString *)serverGuid;

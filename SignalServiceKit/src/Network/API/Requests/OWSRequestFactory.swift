@@ -28,6 +28,11 @@ public extension OWSRequestFactory {
 
     // MARK: -
 
+    static func enable2FARequest(withPin pin: String) -> TSRequest {
+        owsAssertBeta(!pin.isEmpty)
+        return .init(url: URL(string: textSecure2FAAPI)!, method: "PUT", parameters: ["pin": pin])
+    }
+
     static func changePhoneNumberRequest(newPhoneNumberE164: String,
                                          verificationCode: String,
                                          registrationLock: String?) -> TSRequest {

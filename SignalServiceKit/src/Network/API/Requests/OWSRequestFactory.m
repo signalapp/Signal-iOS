@@ -34,17 +34,6 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
 
 @implementation OWSRequestFactory
 
-+ (TSRequest *)enable2FARequestWithPin:(NSString *)pin
-{
-    OWSAssertDebug(pin.length > 0);
-
-    return [TSRequest requestWithUrl:[NSURL URLWithString:self.textSecure2FAAPI]
-                              method:@"PUT"
-                          parameters:@{
-                              @"pin" : pin,
-                          }];
-}
-
 + (TSRequest *)disable2FARequest
 {
     return [TSRequest requestWithUrl:[NSURL URLWithString:self.textSecure2FAAPI] method:@"DELETE" parameters:@{}];
