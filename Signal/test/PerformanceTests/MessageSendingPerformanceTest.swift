@@ -209,9 +209,7 @@ class StubbableNetworkManager: NetworkManager {
         success(response)
     }
 
-    public override func makePromise(request: TSRequest,
-                                     websocketSupportsRequest: Bool = false,
-                                     remainingRetryCount: Int = 0) -> Promise<HTTPResponse> {
+    public override func makePromise(request: TSRequest, canTryWebSocket: Bool = false) -> Promise<HTTPResponse> {
         Logger.info("Ignoring request: \(request)")
 
         // This latency is optimistic because I didn't want to slow

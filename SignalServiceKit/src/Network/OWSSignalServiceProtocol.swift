@@ -26,13 +26,6 @@ public protocol OWSSignalServiceProtocol: AnyObject {
     @objc
     var manualCensorshipCircumventionCountryCode: String? { get set }
 
-    /// should only be accessed if censorship circumvention is active.
-    @objc
-    var domainFrontBaseURL: URL { get }
-
-    @objc
-    func buildCensorshipConfiguration() -> OWSCensorshipConfiguration
-
     // The _real types here can't be exposed to objc, but this protocol must be exposed,
     // so do a not-type-safe thing to enforce that all implemetors must implement this.
     func typeUnsafe_buildUrlSession(for signalServiceType: Any) -> Any

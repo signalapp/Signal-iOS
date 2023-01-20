@@ -18,31 +18,21 @@ public class NetworkManager: NSObject {
     }
 
     // This method can be called from any thread.
-    public func makePromise(request: TSRequest,
-                            websocketSupportsRequest: Bool = false,
-                            remainingRetryCount: Int = 0) -> Promise<HTTPResponse> {
-        firstly { () -> Promise<HTTPResponse> in
-            // Fail over to REST if websocket attempt fails.
-            let shouldUseWebsocket: Bool = {
-                guard !signalService.isCensorshipCircumventionActive else {
-                    return false
-                }
-                return (remainingRetryCount > 0 &&
-                        OWSWebSocket.canAppUseSocketsToMakeRequests &&
-                        websocketSupportsRequest)
-            }()
-            return (shouldUseWebsocket
-                        ? websocketRequestPromise(request: request)
-                        : restRequestPromise(request: request))
+    public func makePromise(request: TSRequest, canTryWebSocket: Bool = false) -> Promise<HTTPResponse> {
+        // If REST is deprecated, don't bother trying it.
+        if FeatureFlags.deprecateREST {
+            return websocketRequestPromise(request: request)
+        }
+
+        // Otherwise, try the web socket first if it's allowed for this request.
+        let useWebSocket = canTryWebSocket && OWSWebSocket.canAppUseSocketsToMakeRequests
+        return firstly { () -> Promise<HTTPResponse> in
+            useWebSocket ? websocketRequestPromise(request: request) : restRequestPromise(request: request)
         }.recover(on: .global()) { error -> Promise<HTTPResponse> in
-            if error.isRetryable,
-               remainingRetryCount > 0 {
-                // TODO: Backoff?
-                return self.makePromise(request: request,
-                                        remainingRetryCount: remainingRetryCount - 1)
-            } else {
+            guard useWebSocket, error.isRetryable else {
                 throw error
             }
+            return self.makePromise(request: request, canTryWebSocket: false)
         }
     }
 
@@ -78,9 +68,7 @@ public class NetworkManager: NSObject {
 @objc
 public class OWSFakeNetworkManager: NetworkManager {
 
-    public override func makePromise(request: TSRequest,
-                                     websocketSupportsRequest: Bool = false,
-                                     remainingRetryCount: Int = 0) -> Promise<HTTPResponse> {
+    public override func makePromise(request: TSRequest, canTryWebSocket: Bool = false) -> Promise<HTTPResponse> {
         Logger.info("Ignoring request: \(request)")
         // Never resolve.
         let (promise, _) = Promise<HTTPResponse>.pending()

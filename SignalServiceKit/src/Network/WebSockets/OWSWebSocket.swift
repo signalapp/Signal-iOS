@@ -690,15 +690,15 @@ public class OWSWebSocket: NSObject {
     public static var canAppUseSocketsToMakeRequests: Bool {
         if signalService.isCensorshipCircumventionActive {
             return false
-        } else if CurrentAppContext().isMainApp {
+        }
+        if FeatureFlags.deprecateREST {
+            // When we deprecate REST, we will use web sockets in app extensions.
             return true
-        } else if FeatureFlags.deprecateREST {
-            // When we deprecated REST, we _do_ want to open
-            // both websockets in the app extensions.
-            return true
-        } else {
+        }
+        if !CurrentAppContext().isMainApp {
             return false
         }
+        return true
     }
 
     // This var is thread-safe.
@@ -730,17 +730,6 @@ public class OWSWebSocket: NSObject {
         }
         #endif
 
-        // Don't open socket in app extensions
-        // until we deprecate REST.
-        if !CurrentAppContext().isMainApp {
-            if FeatureFlags.deprecateREST {
-                // When we deprecated REST, we _do_ want to open
-                // both websockets in the app extensions.
-            } else {
-                return .closed(reason: "Not main app, REST not deprecated")
-            }
-        }
-
         guard AppReadiness.isAppReady else {
             return .closed(reason: "!isAppReady")
         }
@@ -753,9 +742,8 @@ public class OWSWebSocket: NSObject {
             return .closed(reason: "appExpiry.isExpired")
         }
 
-        guard !signalService.isCensorshipCircumventionActive else {
-            Logger.warn("\(logPrefix) Skipping opening of websocket due to censorship circumvention.")
-            return .closed(reason: "isCensorshipCircumventionActive")
+        guard Self.canAppUseSocketsToMakeRequests else {
+            return .closed(reason: "!canAppUseSocketsToMakeRequests")
         }
 
         // Starscream doesn't support the proxy

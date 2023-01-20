@@ -37,13 +37,8 @@ public class OWSUpload: NSObject {
 // MARK: -
 
 fileprivate extension OWSUpload {
-
     static func cdnUrlSession(forCdnNumber cdnNumber: UInt32) -> OWSURLSessionProtocol {
         signalService.urlSessionForCdn(cdnNumber: cdnNumber)
-    }
-
-    static func cdn0UrlSession() -> OWSURLSessionProtocol {
-        signalService.urlSessionForCdn(cdnNumber: 0)
     }
 }
 
@@ -141,39 +136,15 @@ public class OWSAttachmentUploadV2: NSObject {
                 : uploadV2(progressBlock: progressBlock))
     }
 
-    // Performs a request, trying to use the websocket
-    // and failing over to REST.
-    //
-    // TODO: Remove skipWebsocket.
-    private func performRequest(skipWebsocket: Bool = false,
-                                requestBlock: @escaping () -> TSRequest) -> Promise<HTTPResponse> {
-        firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
-            let formRequest = requestBlock()
-            let shouldUseWebsocket: Bool
-            if Self.signalService.isCensorshipCircumventionActive {
-                shouldUseWebsocket = false
-            } else if FeatureFlags.deprecateREST {
-                shouldUseWebsocket = true
-            } else {
-                shouldUseWebsocket = (Self.socketManager.canMakeRequests(webSocketType: .identified) &&
-                                      !skipWebsocket)
-            }
-            if shouldUseWebsocket {
-                return firstly(on: Self.serialQueue) { () -> Promise<HTTPResponse> in
-                    owsAssertDebug(!formRequest.isUDRequest)
-                    return Self.socketManager.makeRequestPromise(request: formRequest)
-                }.recover(on: Self.serialQueue) { error -> Promise<HTTPResponse> in
-                    if FeatureFlags.deprecateREST {
-                        throw error
-                    } else {
-                        // Failover to REST request.
-                        return self.performRequest(skipWebsocket: true, requestBlock: requestBlock)
-                    }
-                }
-            } else {
-                return Self.networkManager.makePromise(request: formRequest)
-            }
-        }
+    /// Performs a request, trying to use the websocket and failing over to REST.
+    private func performRequest(_ request: TSRequest) -> Promise<HTTPResponse> {
+        networkManager.makePromise(
+            request: request,
+            canTryWebSocket: (
+                OWSWebSocket.canAppUseSocketsToMakeRequests
+                && socketManager.canMakeRequests(webSocketType: .identified)
+            )
+        )
     }
 
     // MARK: - V2
@@ -181,9 +152,7 @@ public class OWSAttachmentUploadV2: NSObject {
     public func uploadV2(progressBlock: ProgressBlock? = nil) -> Promise<Void> {
         firstly(on: Self.serialQueue) {
             // Fetch attachment upload form.
-            self.performRequest {
-                return OWSRequestFactory.allocAttachmentRequestV2()
-            }
+            self.performRequest(OWSRequestFactory.allocAttachmentRequestV2())
         }.then(on: Self.serialQueue) { [weak self] (response: HTTPResponse) -> Promise<OWSUploadFormV2> in
             guard let self = self else {
                 throw OWSAssertionError("Upload deallocated")
@@ -241,9 +210,7 @@ public class OWSAttachmentUploadV2: NSObject {
 
         return firstly(on: Self.serialQueue) {
             // Fetch attachment upload form.
-            return self.performRequest {
-                return OWSRequestFactory.allocAttachmentRequestV3()
-            }
+            self.performRequest(OWSRequestFactory.allocAttachmentRequestV3())
         }.map(on: Self.serialQueue) { [weak self] (response: HTTPResponse) -> Void in
             guard let self = self else {
                 throw OWSAssertionError("Upload deallocated")

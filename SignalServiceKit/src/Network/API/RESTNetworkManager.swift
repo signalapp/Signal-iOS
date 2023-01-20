@@ -91,11 +91,6 @@ extension OWSURLSessionProtocol {
         // Set User-Agent and Accept-Language headers.
         httpHeaders.addDefaultHeaders()
 
-        // TODO: This is with the extraHeaders set in OWSSignalService.
-        if signalService.isCensorshipCircumventionActive {
-            httpHeaders.addHeader("Host", value: TSConstants.censorshipReflectorHost, overwriteOnConflict: true)
-        }
-
         // Then apply any custom headers for the request
         httpHeaders.addHeaderMap(rawRequest.allHTTPHeaderFields, overwriteOnConflict: true)
 

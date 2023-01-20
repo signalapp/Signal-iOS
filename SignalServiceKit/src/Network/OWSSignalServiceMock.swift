@@ -26,12 +26,6 @@ public class OWSSignalServiceMock: NSObject, OWSSignalServiceProtocol {
 
     public var manualCensorshipCircumventionCountryCode: String?
 
-    public var domainFrontBaseURL: URL = OWSCensorshipConfiguration.default().domainFrontBaseURL
-
-    public func buildCensorshipConfiguration() -> OWSCensorshipConfiguration {
-        return .default()
-    }
-
     public var mockUrlSessionBuilder: ((SignalServiceType) -> OWSURLSessionMock)?
 
     public func typeUnsafe_buildUrlSession(for signalServiceType: Any) -> Any {

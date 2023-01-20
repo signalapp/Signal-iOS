@@ -75,17 +75,11 @@ public class TSConstants: NSObject {
     @objc
     public static var censorshipReflectorHost: String { shared.censorshipReflectorHost }
 
-    @objc
     public static var serviceCensorshipPrefix: String { shared.serviceCensorshipPrefix }
-    @objc
     public static var cdn0CensorshipPrefix: String { shared.cdn0CensorshipPrefix }
-    @objc
     public static var cdn2CensorshipPrefix: String { shared.cdn2CensorshipPrefix }
-    @objc
     public static var contactDiscoveryCensorshipPrefix: String { shared.contactDiscoveryCensorshipPrefix }
-    @objc
     public static var keyBackupCensorshipPrefix: String { shared.keyBackupCensorshipPrefix }
-    @objc
     public static var storageServiceCensorshipPrefix: String { shared.storageServiceCensorshipPrefix }
 
     @objc

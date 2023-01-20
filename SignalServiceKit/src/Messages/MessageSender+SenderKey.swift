@@ -752,14 +752,7 @@ extension MessageSender {
             isStory: isStory
         )
 
-        // If we can use the websocket, try that and fail over to REST.
-        // If not, go straight to REST.
-        let remainingRetryCount: Int = (OWSWebSocket.canAppUseSocketsToMakeRequests
-                                            ? 1
-                                            : 0)
-        return networkManager.makePromise(request: request,
-                                          websocketSupportsRequest: true,
-                                          remainingRetryCount: remainingRetryCount)
+        return networkManager.makePromise(request: request, canTryWebSocket: true)
     }
 }
 

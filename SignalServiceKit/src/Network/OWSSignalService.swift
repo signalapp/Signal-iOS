@@ -94,14 +94,7 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
         }
     }
 
-    @objc
-    public var domainFrontBaseURL: URL {
-        owsAssertDebug(self.isCensorshipCircumventionActive)
-        return self.buildCensorshipConfiguration().domainFrontBaseURL
-    }
-
-    @objc
-    public func buildCensorshipConfiguration() -> OWSCensorshipConfiguration {
+    private func buildCensorshipConfiguration() -> OWSCensorshipConfiguration {
         owsAssertDebug(self.isCensorshipCircumventionActive)
 
         if self.isCensorshipCircumventionManuallyActivated {

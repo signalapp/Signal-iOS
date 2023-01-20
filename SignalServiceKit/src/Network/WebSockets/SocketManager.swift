@@ -56,7 +56,7 @@ public class SocketManager: NSObject {
         assertOnQueue(OWSWebSocket.serialQueue)
 
         let webSocket = self.webSocket(ofType: webSocketType)
-       if webSocket.canMakeRequests {
+        if webSocket.canMakeRequests {
             // The socket is open; proceed.
             return Promise.value(())
         }

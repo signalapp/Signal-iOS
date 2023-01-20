@@ -102,15 +102,17 @@ public final class RequestMaker: Dependencies {
             return Promise(error: RequestMakerError.requestCreationFailed)
         }
         owsAssertDebug(isUDRequest == request.isUDRequest)
-        let webSocketType: OWSWebSocketType = (isUDRequest ? .unidentified : .identified)
+
         let shouldUseWebsocket: Bool
-        if signalService.isCensorshipCircumventionActive {
-            shouldUseWebsocket = false
-        } else if FeatureFlags.deprecateREST {
+        if FeatureFlags.deprecateREST {
             shouldUseWebsocket = true
         } else {
-            shouldUseWebsocket = (socketManager.canMakeRequests(webSocketType: webSocketType) &&
-                                    !skipWebsocket)
+            let webSocketType: OWSWebSocketType = (isUDRequest ? .unidentified : .identified)
+            shouldUseWebsocket = (
+                !skipWebsocket
+                && OWSWebSocket.canAppUseSocketsToMakeRequests
+                && socketManager.canMakeRequests(webSocketType: webSocketType)
+            )
         }
 
         if shouldUseWebsocket {
