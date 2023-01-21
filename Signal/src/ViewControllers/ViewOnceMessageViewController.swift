@@ -158,7 +158,7 @@ class ViewOnceMessageViewController: OWSViewController {
                 return
             }
             guard OWSFileSystem.fileOrFolderExists(atPath: originalFilePath) else {
-                owsFailDebug("Missing temp file.")
+                owsFailDebug("Missing attachment file.")
                 return
             }
             guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: contentType) else {
@@ -166,10 +166,6 @@ class ViewOnceMessageViewController: OWSViewController {
                 return
             }
             let tempFilePath = OWSFileSystem.temporaryFilePath(fileExtension: fileExtension)
-            guard OWSFileSystem.fileOrFolderExists(atPath: originalFilePath) else {
-                owsFailDebug("Missing attachment file.")
-                return
-            }
             guard !OWSFileSystem.fileOrFolderExists(atPath: tempFilePath) else {
                 owsFailDebug("Temp file unexpectedly already exists.")
                 return
