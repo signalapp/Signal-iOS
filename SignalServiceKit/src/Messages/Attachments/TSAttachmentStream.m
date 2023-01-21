@@ -404,28 +404,19 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 - (void)removeFile
 {
-    NSString *thumbnailsDirPath = self.thumbnailsDirPath;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:thumbnailsDirPath]) {
-        NSError *error;
-        BOOL success = [[NSFileManager defaultManager] removeItemAtPath:thumbnailsDirPath error:&error];
-        if (error || !success) {
-            OWSLogError(@"remove thumbnails dir failed with: %@", error);
-        }
+    NSString *_Nullable thumbnailsDirPath = self.thumbnailsDirPath;
+    if (thumbnailsDirPath && ![OWSFileSystem deleteFileIfExists:thumbnailsDirPath]) {
+        OWSLogError(@"remove thumbnails dir failed.");
     }
 
     NSString *_Nullable legacyThumbnailPath = self.legacyThumbnailPath;
-    if (legacyThumbnailPath) {
-        if (![OWSFileSystem deleteFileIfExists:legacyThumbnailPath]) {
-            OWSLogError(@"remove legacy thumbnail failed.");
-        }
+    if (legacyThumbnailPath && ![OWSFileSystem deleteFileIfExists:legacyThumbnailPath]) {
+        OWSLogError(@"remove legacy thumbnail failed.");
     }
 
     NSString *_Nullable filePath = self.originalFilePath;
-    if (!filePath) {
-        OWSFailDebug(@"Missing path for attachment.");
-        return;
-    }
-    if (![OWSFileSystem deleteFileIfExists:filePath]) {
+    OWSAssertDebug(filePath);
+    if (filePath && ![OWSFileSystem deleteFileIfExists:filePath]) {
         OWSLogError(@"remove file failed");
     }
 
