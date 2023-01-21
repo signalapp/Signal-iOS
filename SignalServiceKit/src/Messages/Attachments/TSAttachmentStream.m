@@ -1006,11 +1006,6 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
         }
     }
 
-    NSString *_Nullable legacyThumbnailPath = self.legacyThumbnailPath;
-    if (legacyThumbnailPath != nil && [[NSFileManager defaultManager] fileExistsAtPath:legacyThumbnailPath]) {
-        [result addObject:legacyThumbnailPath];
-    }
-
     NSString *_Nullable audioWaveformPath = self.audioWaveformPath;
     if (audioWaveformPath != nil && [[NSFileManager defaultManager] fileExistsAtPath:audioWaveformPath]) {
         [result addObject:audioWaveformPath];
