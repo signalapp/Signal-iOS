@@ -332,8 +332,9 @@ public class SubscriptionManager: NSObject {
                 self.setSubscriberCurrencyCode(currencyCode, transaction: transaction)
                 self.setMostRecentlyExpiredBadgeID(badgeID: nil, transaction: transaction)
                 self.setShowExpirySheetOnHomeScreenKey(show: false, transaction: transaction)
-                self.storageServiceManager.recordPendingLocalAccountUpdates()
             }
+
+            self.storageServiceManager.recordPendingLocalAccountUpdates()
 
             return subscriberID
         }
@@ -406,8 +407,9 @@ public class SubscriptionManager: NSObject {
                     self.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
                     self.setMostRecentSubscriptionPaymentMethod(paymentMethod: nil, transaction: transaction)
                     self.setUserManuallyCancelledSubscription(true, transaction: transaction)
-                    self.storageServiceManager.recordPendingLocalAccountUpdates()
                 }
+
+                self.storageServiceManager.recordPendingLocalAccountUpdates()
             }
         }
     }
@@ -495,10 +497,10 @@ public class SubscriptionManager: NSObject {
 
             databaseStorage.write { transaction in
                 self.setSubscriberCurrencyCode(currencyCode, transaction: transaction)
-                self.storageServiceManager.recordPendingLocalAccountUpdates()
-
                 self.setLastSubscriptionExpirationDate(Date(timeIntervalSince1970: subscription.endOfCurrentPeriod), transaction: transaction)
             }
+
+            self.storageServiceManager.recordPendingLocalAccountUpdates()
 
             return subscription
         }
