@@ -811,7 +811,7 @@ private enum ForwardMessageContent {
         allItems.allSatisfy { $0.textAttachment == nil }
     }
 
-    static func build(items: [Item]) -> ForwardMessageContent {
+    private static func build(items: [Item]) -> ForwardMessageContent {
         if items.count == 1, let item = items.first {
             return .single(item: item)
         } else {
@@ -819,8 +819,10 @@ private enum ForwardMessageContent {
         }
     }
 
-    static func build(itemViewModels: [CVItemViewModelImpl],
-                      transaction: SDSAnyReadTransaction) throws -> ForwardMessageContent {
+    fileprivate static func build(
+        itemViewModels: [CVItemViewModelImpl],
+        transaction: SDSAnyReadTransaction
+    ) throws -> ForwardMessageContent {
         let items: [Item] = try itemViewModels.map { itemViewModel in
             try Item.build(interaction: itemViewModel.interaction,
                            componentState: itemViewModel.renderItem.componentState,
@@ -830,8 +832,10 @@ private enum ForwardMessageContent {
         return build(items: items)
     }
 
-    static func build(selectionItems: [CVSelectionItem],
-                      transaction: SDSAnyReadTransaction) throws -> ForwardMessageContent {
+    fileprivate static func build(
+        selectionItems: [CVSelectionItem],
+        transaction: SDSAnyReadTransaction
+    ) throws -> ForwardMessageContent {
         let items: [Item] = try selectionItems.map { selectionItem in
             let interactionId = selectionItem.interactionId
             guard let interaction = TSInteraction.anyFetch(uniqueId: interactionId,
