@@ -89,7 +89,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 ) { modalActivityIndicator in
                     DispatchQueue.main.async {
                         OWSOrphanDataCleaner.auditAndCleanup(true) {
-                            DispatchQueue.main.async { modalActivityIndicator.dismiss {} }
+                            DispatchQueue.main.async { modalActivityIndicator.dismiss() }
                         }
                     }
                 }

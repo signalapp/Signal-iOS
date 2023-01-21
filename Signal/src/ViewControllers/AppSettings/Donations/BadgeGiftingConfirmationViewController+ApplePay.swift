@@ -82,7 +82,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                         modalActivityIndicatorViewController = modal
                         // Depending on how things are dispatched, we could need the modal closed immediately.
                         if shouldDismissActivityIndicator {
-                            modal.dismiss {}
+                            modal.dismiss()
                         }
                     }
                 }
@@ -96,7 +96,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
 
             func finish() {
                 if let modalActivityIndicatorViewController = modalActivityIndicatorViewController {
-                    modalActivityIndicatorViewController.dismiss {}
+                    modalActivityIndicatorViewController.dismiss()
                 } else {
                     shouldDismissActivityIndicator = true
                 }

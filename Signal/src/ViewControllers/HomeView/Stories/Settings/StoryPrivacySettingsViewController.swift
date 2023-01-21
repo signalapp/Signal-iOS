@@ -214,7 +214,7 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
                 StoryManager.setAreStoriesEnabled(false, transaction: transaction)
 
                 transaction.addAsyncCompletionOnMain {
-                    modal.dismiss {}
+                    modal.dismiss()
                 }
             }
         }

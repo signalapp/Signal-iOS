@@ -51,7 +51,7 @@ public class ContactSupportAlert: NSObject {
                 firstly {
                     operation.perform(on: .sharedUserInitiated)
                 }.done {
-                    modal.dismiss {}
+                    modal.dismiss()
                 }.catch { error in
                     guard !modal.wasCancelled else { return }
                     showError(error, emailSupportFilter: emailSupportFilter, fromViewController: fromViewController)

@@ -58,7 +58,7 @@ public extension PaymentsUI {
             firstly(on: .global()) {
                 declinePaymentRequestPromise(paymentRequestModel: paymentRequestModel)
             }.done(on: .main) { _ in
-                modalActivityIndicator.dismiss {}
+                modalActivityIndicator.dismiss()
             }.catch { error in
                 owsFailDebug("Error: \(error)")
 
@@ -107,7 +107,7 @@ public extension PaymentsUI {
             firstly(on: .global()) {
                 cancelPaymentRequestPromise(paymentRequestModel: paymentRequestModel)
             }.done(on: .main) { _ in
-                modalActivityIndicator.dismiss {}
+                modalActivityIndicator.dismiss()
             }.catch { error in
                 owsFailDebug("Error: \(error)")
 

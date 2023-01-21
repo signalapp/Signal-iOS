@@ -123,7 +123,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
 
     private func updateState() {
         // If we're presenting a modal because the user tapped install, dismiss it.
-        pendingModalVC?.dismiss {}
+        pendingModalVC?.dismiss()
         pendingModalVC = nil
 
         // We need to recycle data sources to maintain continuity.

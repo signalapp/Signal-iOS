@@ -224,7 +224,7 @@ class VideoEditorView: UIView {
                 firstly {
                     self.saveVideoPromise()
                 }.done(on: .main) {
-                    modalVC.dismiss {}
+                    modalVC.dismiss()
                 }.catch { _ in
                     modalVC.dismiss {
                         OWSActionSheets.showErrorAlert(message: OWSLocalizedString("ERROR_COULD_NOT_SAVE_VIDEO", comment: "Error indicating that 'save video' failed."))

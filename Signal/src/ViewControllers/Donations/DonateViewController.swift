@@ -509,7 +509,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                     ))
                 }
             }.catch { error in
-                modal.dismiss {}
+                modal.dismiss()
                 owsFailDebug("[Donations] Failed to cancel subscription \(error)")
             }
         }

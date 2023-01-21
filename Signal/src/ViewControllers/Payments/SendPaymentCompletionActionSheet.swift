@@ -628,14 +628,14 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
                 self.didSucceedPayment(paymentInfo: paymentInfo)
 
-                modalActivityIndicator.dismiss {}
+                modalActivityIndicator.dismiss()
             }.catch { error in
                 AssertIsOnMainThread()
                 owsFailDebugUnlessMCNetworkFailure(error)
 
                 self.didFailPayment(paymentInfo: paymentInfo, error: error)
 
-                modalActivityIndicator.dismiss {}
+                modalActivityIndicator.dismiss()
             }
         }
     }
@@ -689,7 +689,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 // TODO: Add support for requests.
                 // self.currentStep = .failureRequest
 
-                modalActivityIndicator.dismiss {}
+                modalActivityIndicator.dismiss()
             }
         }
     }
