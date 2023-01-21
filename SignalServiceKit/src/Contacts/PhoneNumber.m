@@ -20,7 +20,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
 @interface PhoneNumber ()
 
-@property (nonatomic, readonly) NBPhoneNumber *phoneNumber;
+@property (nonatomic, readonly) NBPhoneNumber *nbPhoneNumber;
 @property (nonatomic, readonly) NSString *e164;
 
 @end
@@ -29,13 +29,13 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
 @implementation PhoneNumber
 
-- (instancetype)initWithPhoneNumber:(NBPhoneNumber *)phoneNumber e164:(NSString *)e164
+- (instancetype)initWithNbPhoneNumber:(NBPhoneNumber *)nbPhoneNumber e164:(NSString *)e164
 {
     if (self = [self init]) {
-        OWSAssertDebug(phoneNumber);
+        OWSAssertDebug(nbPhoneNumber);
         OWSAssertDebug(e164.length > 0);
 
-        _phoneNumber = phoneNumber;
+        _nbPhoneNumber = nbPhoneNumber;
         _e164 = e164;
     }
     return self;
@@ -46,25 +46,27 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     OWSAssertDebug(regionCode != nil);
 
     NSError *parseError   = nil;
-    NBPhoneNumber *number = [self.phoneNumberUtil parse:text defaultRegion:regionCode error:&parseError];
+    NBPhoneNumber *nbPhoneNumber = [self.phoneNumberUtil parse:text defaultRegion:regionCode error:&parseError];
 
     if (parseError) {
         OWSLogVerbose(@"parseError: %@", parseError);
         return nil;
     }
 
-    if (![self.phoneNumberUtil isPossibleNumber:number]) {
+    if (![self.phoneNumberUtil isPossibleNumber:nbPhoneNumber]) {
         return nil;
     }
 
     NSError *toE164Error;
-    NSString *e164 = [self.phoneNumberUtil format:number numberFormat:NBEPhoneNumberFormatE164 error:&toE164Error];
+    NSString *e164 = [self.phoneNumberUtil format:nbPhoneNumber
+                                     numberFormat:NBEPhoneNumberFormatE164
+                                            error:&toE164Error];
     if (toE164Error) {
         OWSLogDebug(@"Issue while formatting number: %@", [toE164Error description]);
         return nil;
     }
 
-    return [[PhoneNumber alloc] initWithPhoneNumber:number e164:e164];
+    return [[PhoneNumber alloc] initWithNbPhoneNumber:nbPhoneNumber e164:e164];
 }
 
 + (nullable PhoneNumber *)phoneNumberFromUserSpecifiedText:(NSString *)text {
@@ -596,13 +598,13 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 - (nullable NSNumber *)getCountryCode {
-    return self.phoneNumber.countryCode;
+    return self.nbPhoneNumber.countryCode;
 }
 
 - (nullable NSString *)nationalNumber
 {
     NSError *error;
-    NSString *nationalNumber = [self.phoneNumberUtil format:self.phoneNumber
+    NSString *nationalNumber = [self.phoneNumberUtil format:self.nbPhoneNumber
                                                numberFormat:NBEPhoneNumberFormatNATIONAL
                                                       error:&error];
     if (error) {
@@ -615,7 +617,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
 - (BOOL)isValid
 {
-    return [self.phoneNumberUtil isValidNumber:self.phoneNumber];
+    return [self.phoneNumberUtil isValidNumber:self.nbPhoneNumber];
 }
 
 - (NSString *)description {
@@ -623,13 +625,13 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 - (void)encodeWithCoder:(NSCoder *)encoder {
-    [encoder encodeObject:self.phoneNumber forKey:RPDefaultsKeyPhoneNumberString];
+    [encoder encodeObject:self.nbPhoneNumber forKey:RPDefaultsKeyPhoneNumberString];
     [encoder encodeObject:self.e164 forKey:RPDefaultsKeyPhoneNumberCanonical];
 }
 
 - (id)initWithCoder:(NSCoder *)decoder {
     if ((self = [super init])) {
-        _phoneNumber = [decoder decodeObjectForKey:RPDefaultsKeyPhoneNumberString];
+        _nbPhoneNumber = [decoder decodeObjectForKey:RPDefaultsKeyPhoneNumberString];
         _e164 = [decoder decodeObjectForKey:RPDefaultsKeyPhoneNumberCanonical];
     }
     return self;
