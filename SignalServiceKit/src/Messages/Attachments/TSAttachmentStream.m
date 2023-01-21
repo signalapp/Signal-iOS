@@ -586,19 +586,22 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     if ([self isVideo]) {
         return [self videoStillImage];
     } else if ([self isImage] || [self isAnimated]) {
-        NSURL *_Nullable mediaUrl = self.originalMediaURL;
-        if (!mediaUrl) {
+        NSString *_Nullable originalFilePath = self.originalFilePath;
+        if (!originalFilePath) {
             return nil;
         }
         if (![self isValidImage]) {
             return nil;
         }
-
-        Class imageClass = self.isWebpImage ? [YYImage class] : [UIImage class];
-        UIImage *_Nullable image = [[imageClass alloc] initWithContentsOfFile:self.originalFilePath];
+        UIImage *_Nullable image;
+        if (self.isWebpImage) {
+            image = [[YYImage alloc] initWithContentsOfFile:originalFilePath];
+        } else {
+            image = [[UIImage alloc] initWithContentsOfFile:originalFilePath];
+        }
         if (image == nil) {
             OWSFailDebug(
-                @"Couldn't load original image: %d.", [OWSFileSystem fileOrFolderExistsAtPath:self.originalFilePath]);
+                @"Couldn't load original image: %d.", [OWSFileSystem fileOrFolderExistsAtPath:originalFilePath]);
         }
         return image;
     } else {
