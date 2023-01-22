@@ -52,10 +52,11 @@ your own. You will need to do that for all the listed targets, for ex.
 Signal, SignalShareExtension, and SignalMessaging. You will need an Apple
 Developer account for this. 
 
-On the Capabilities tab, turn off Push Notifications and Data Protection,
-while keeping Background Modes on. The App Groups capability will need to
-remain on in order to access the shared data storage. The App ID needs to
-match the `applicationGroup` string set (both Production and Staging) in TSConstants.swift. 
+On the Capabilities tab, turn off Push Notifications, Apple Pay,
+Communication Notifications, and Data Protection, while keeping Background Modes
+on. The App Groups capability will need to remain on in order to access the
+shared data storage. The best way to change the bundle ID for the app groups is
+setting `SIGNAL_BUNDLEID_PREFIX` in the project's settings.
 
 If you wish to test the Documents API, the iCloud capability will need to
 be on with the iCloud Documents option selected.
