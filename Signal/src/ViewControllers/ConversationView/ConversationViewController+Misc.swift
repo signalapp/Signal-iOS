@@ -247,7 +247,7 @@ public extension ConversationViewController {
                 viewControllers.append(view)
             }
         case .showAllMedia:
-            viewControllers.append(MediaTileViewController(thread: thread))
+            viewControllers.append(AllMediaViewController(thread: thread, name: title))
         }
 
         navigationController?.setViewControllers(viewControllers, animated: true)

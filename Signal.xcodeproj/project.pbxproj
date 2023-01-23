@@ -661,6 +661,7 @@
 		45C845AF291467F7005F6EA5 /* JournalingOrderedDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C845AE291467F7005F6EA5 /* JournalingOrderedDictionaryTests.swift */; };
 		45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */; };
 		45D062F527D7F49800BD505E /* OWSContactsManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D062F427D7F49800BD505E /* OWSContactsManagerTest.swift */; };
+		45D49115296F69AA00B92BB1 /* AllMediaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D49114296F69AA00B92BB1 /* AllMediaViewController.swift */; };
 		45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DDA6232090CEB500DE97F8 /* ConversationHeaderView.swift */; };
 		45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */; };
 		45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */; };
@@ -2970,6 +2971,7 @@
 		45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = "Launch Screen.storyboard"; path = "Signal/src/util/Launch Screen.storyboard"; sourceTree = SOURCE_ROOT; };
 		45D062F427D7F49800BD505E /* OWSContactsManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactsManagerTest.swift; sourceTree = "<group>"; };
 		45D231761DC7E8F10034FA89 /* SessionResetJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionResetJob.swift; sourceTree = "<group>"; };
+		45D49114296F69AA00B92BB1 /* AllMediaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllMediaViewController.swift; sourceTree = "<group>"; };
 		45DDA6232090CEB500DE97F8 /* ConversationHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationHeaderView.swift; sourceTree = "<group>"; };
 		45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompareSafetyNumbersActivity.swift; sourceTree = "<group>"; };
 		45E282DF1D08E6CC00ADD4C8 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = translations/id.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -5998,6 +6000,7 @@
 			isa = PBXGroup;
 			children = (
 				4CD675BF22E7BE47008010D2 /* Transitions */,
+				45D49114296F69AA00B92BB1 /* AllMediaViewController.swift */,
 				45C845AC291466C0005F6EA5 /* JournalingOrderedDictionary.swift */,
 				45B9EE9A200E91FB005D2F2D /* MediaDetailViewController.h */,
 				45B9EE9B200E91FB005D2F2D /* MediaDetailViewController.m */,
@@ -10181,6 +10184,7 @@
 				882BDAAE249050F000C14587 /* AddToGroupViewController.swift in Sources */,
 				88C7597324B7EAA600DB03EA /* AdvancedPinSettingsTableViewController.swift in Sources */,
 				887B381325F0681400685845 /* AdvancedPrivacySettingsViewController.swift in Sources */,
+				45D49115296F69AA00B92BB1 /* AllMediaViewController.swift in Sources */,
 				32E958AA25C12B3800BF12AD /* AnimatedProgressView.swift in Sources */,
 				F909E27C293D0F78003B41D1 /* AppDelegate+Lifecycle.swift in Sources */,
 				F990FAD2293800EE006FB21B /* AppDelegate+Orientation.swift in Sources */,
