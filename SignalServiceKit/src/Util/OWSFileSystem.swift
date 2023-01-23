@@ -139,7 +139,7 @@ public extension OWSFileSystem {
                 owsAssertDebug(knownNoWritePermissionUrls.contains(attemptedUrl))
                 return false
             } else {
-                owsFailDebug("Error: \(error)")
+                owsFailDebug("Error: \(nsError.shortDescription)")
             }
             return false
         }

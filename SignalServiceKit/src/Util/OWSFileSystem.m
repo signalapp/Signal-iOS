@@ -34,7 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
         success = success && [self protectFileOrFolderAtPath:filePath];
     }
 
-    OWSLogInfo(@"protected contents at path: %@", path);
     return success;
 }
 
@@ -61,28 +60,28 @@ NS_ASSUME_NONNULL_BEGIN
             && (error.code == NSFileReadNoSuchFileError || error.code == NSFileNoSuchFileError)) {
             // We sometimes protect files async, so races around short-lived
             // temporarily files can cause these errors.
-            OWSLogWarn(@"Could not protect file or folder: %@", error);
+            OWSLogWarn(@"Could not protect file or folder: %@", error.shortDescription);
             return NO;
         }
-        OWSFailDebug(@"Could not protect file or folder: %@", error);
+        OWSFailDebug(@"Could not protect file or folder: %@", error.shortDescription);
         OWSProdCritical([OWSAnalyticsEvents storageErrorFileProtection]);
         return NO;
     }
 
     NSDictionary *resourcesAttrs = @{ NSURLIsExcludedFromBackupKey : @YES };
 
-    NSURL *ressourceURL = [NSURL fileURLWithPath:path];
-    success = [ressourceURL setResourceValues:resourcesAttrs error:&error];
+    NSURL *resourceURL = [NSURL fileURLWithPath:path];
+    success = [resourceURL setResourceValues:resourcesAttrs error:&error];
 
     if (error || !success) {
         if (error != nil && [error.domain isEqualToString:NSCocoaErrorDomain]
             && (error.code == NSFileReadNoSuchFileError || error.code == NSFileNoSuchFileError)) {
             // We sometimes protect files async, so races around short-lived
             // temporarily files can cause these errors.
-            OWSLogWarn(@"Could not protect file or folder: %@", error);
+            OWSLogWarn(@"Could not protect file or folder: %@", error.shortDescription);
             return NO;
         }
-        OWSFailDebug(@"Could not protect file or folder: %@", error);
+        OWSFailDebug(@"Could not protect file or folder: %@", error.shortDescription);
         OWSProdCritical([OWSAnalyticsEvents storageErrorFileProtection]);
         return NO;
     }
@@ -233,8 +232,6 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    OWSLogInfo(@"Moving file or directory from: %@ to: %@", oldFilePath, newFilePath);
-
     if ([fileManager fileExistsAtPath:newFilePath]) {
         OWSFailDebug(@"Can't move file or directory; destination already exists.");
         return NO;
@@ -243,7 +240,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSError *_Nullable error;
     BOOL success = [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
     if (!success || error) {
-        OWSFailDebug(@"Could not move file or directory with error: %@", error);
+        OWSFailDebug(@"Could not move file or directory with error: %@", error.shortDescription);
         return NO;
     }
 
@@ -320,7 +317,7 @@ NS_ASSUME_NONNULL_BEGIN
     unsigned long long fileSize =
         [[fileManager attributesOfItemAtPath:filePath error:&error][NSFileSize] unsignedLongLongValue];
     if (error) {
-        OWSLogError(@"Couldn't fetch file size[%@]: %@", filePath, error);
+        OWSLogError(@"Couldn't fetch file size: %@", error.shortDescription);
         return nil;
     } else {
         return @(fileSize);
