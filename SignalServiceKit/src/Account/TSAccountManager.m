@@ -782,7 +782,10 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
                               transaction:transaction];
 
             [self loadAccountStateWithTransaction:transaction];
-            [self.notificationPresenter notifyUserOfDeregistration:transaction];
+
+            if (isDeregistered) {
+                [self.notificationPresenter notifyUserOfDeregistration:transaction];
+            }
         }
     });
 
