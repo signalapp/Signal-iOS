@@ -467,10 +467,10 @@ extension MediaGalleryFinder {
                                    block: block)
     }
 
-    public func mediaIndex(of attachment: TSAttachmentStream,
-                           in interval: DateInterval,
-                           excluding deletedAttachmentIds: Set<String>,
-                           transaction: GRDBReadTransaction) -> Int? {
+    public func rowid(of attachment: TSAttachmentStream,
+                      in interval: DateInterval,
+                      excluding deletedAttachmentIds: Set<String>,
+                      transaction: GRDBReadTransaction) -> Int64? {
         guard let attachmentRowId = attachment.grdbId else {
             owsFailDebug("attachment.grdbId was unexpectedly nil")
             return nil
@@ -478,17 +478,13 @@ extension MediaGalleryFinder {
 
         let queryParts = QueryParts(in: interval, excluding: deletedAttachmentIds)
         let sql = """
-        SELECT mediaIndex
-        FROM (
             SELECT
-                ROW_NUMBER() OVER (\(queryParts.orderClauses)) - 1 as mediaIndex,
-                media_gallery_items.attachmentId
+                media_gallery_items.rowid
             \(queryParts.fromTableClauses)
-        )
-        WHERE attachmentId = ?
+                AND media_gallery_items.attachmentId = ?
         """
 
-        return try! Int.fetchOne(transaction.database, sql: sql, arguments: [threadId, attachmentRowId])
+        return try! Int64.fetchOne(transaction.database, sql: sql, arguments: [threadId, attachmentRowId])
     }
 
     /// Returns the number of attachments attached to `interaction`, whether or not they are media attachments.

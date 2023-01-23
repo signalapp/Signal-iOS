@@ -765,11 +765,11 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         Logger.debug("")
     }
 
-    func mediaGallery(_ mediaGallery: MediaGallery, deletedSections: IndexSet, deletedItems: [IndexPath]) {
-        Logger.debug("with deletedSections: \(deletedSections) deletedItems: \(deletedItems)")
+    func mediaGalleryDidDeleteItem(_ mediaGallery: MediaGallery) {
+        Logger.debug("")
     }
 
-    func mediaGallery(_ mediaGallery: MediaGallery, didReloadItemsInSections sections: IndexSet) {
+    func mediaGalleryDidReloadItems(_ mediaGallery: MediaGallery) {
     }
 
     func didAddSectionInMediaGallery(_ mediaGallery: MediaGallery) {

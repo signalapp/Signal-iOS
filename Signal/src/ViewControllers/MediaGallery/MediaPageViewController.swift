@@ -482,12 +482,12 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         return !showingSingleMessage || currentItem.message == item.message
     }
 
-    func mediaGallery(_ mediaGallery: MediaGallery, deletedSections: IndexSet, deletedItems: [IndexPath]) {
+    func mediaGalleryDidDeleteItem(_ mediaGallery: MediaGallery) {
         // Either this is an internal deletion, in which case willDelete would have been called already,
-        // or it's an external deletion, in which case didReloadItemsInSection would have been called already.
+        // or it's an external deletion, in which case mediaGalleryDidReloadItems would have been called already.
     }
 
-    func mediaGallery(_ mediaGallery: MediaGallery, didReloadItemsInSections sections: IndexSet) {
+    func mediaGalleryDidReloadItems(_ mediaGallery: MediaGallery) {
         self.didReloadAllSectionsInMediaGallery(mediaGallery)
     }
 

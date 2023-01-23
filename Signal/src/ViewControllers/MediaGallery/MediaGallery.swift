@@ -169,9 +169,9 @@ struct GalleryDate: Hashable, Comparable, Equatable {
 
 protocol MediaGalleryDelegate: AnyObject {
     func mediaGallery(_ mediaGallery: MediaGallery, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject)
-    func mediaGallery(_ mediaGallery: MediaGallery, deletedSections: IndexSet, deletedItems: [IndexPath])
+    func mediaGalleryDidDeleteItem(_ mediaGallery: MediaGallery)
 
-    func mediaGallery(_ mediaGallery: MediaGallery, didReloadItemsInSections sections: IndexSet)
+    func mediaGalleryDidReloadItems(_ mediaGallery: MediaGallery)
     /// `mediaGallery` has added one or more new sections at the end.
     func didAddSectionInMediaGallery(_ mediaGallery: MediaGallery)
     func didReloadAllSectionsInMediaGallery(_ mediaGallery: MediaGallery)
@@ -322,23 +322,11 @@ class MediaGallery: Dependencies {
             return
         }
 
-        let sectionsToDelete = mutate { sections in
-            let (sectionIndexesNeedingUpdate, sectionsToDelete) = sections.reloadSections(for: sectionsNeedingUpdate)
-
-            delegates.forEach {
-                $0.mediaGallery(self, didReloadItemsInSections: sectionIndexesNeedingUpdate)
-            }
-
-            if !sectionsToDelete.isEmpty {
-                sections.removeEmptySections(atIndexes: sectionsToDelete)
-            }
-            return sectionsToDelete
+        mutate { sections in
+            _ = sections.reloadSections(for: sectionsNeedingUpdate)
         }
-
-        if !sectionsToDelete.isEmpty {
-            delegates.forEach {
-                $0.mediaGallery(self, deletedSections: sectionsToDelete, deletedItems: [])
-            }
+        delegates.forEach {
+            $0.mediaGalleryDidReloadItems(self)
         }
     }
 
@@ -363,7 +351,7 @@ class MediaGallery: Dependencies {
             delegates.forEach { $0.didReloadAllSectionsInMediaGallery(self) }
         } else {
             if !newAttachmentResult.update.isEmpty {
-                delegates.forEach { $0.mediaGallery(self, didReloadItemsInSections: newAttachmentResult.update) }
+                delegates.forEach { $0.mediaGalleryDidReloadItems(self) }
             }
             if newAttachmentResult.didAddAtEnd {
                 delegates.forEach { $0.didAddSectionInMediaGallery(self) }
@@ -501,15 +489,15 @@ class MediaGallery: Dependencies {
 
     internal func ensureLoadedForDetailView(focusedAttachment: TSAttachment) -> MediaGalleryItem? {
         Logger.info("")
-        let newItem: MediaGalleryItem? = databaseStorage.read { transaction in
+        let newItem: MediaGalleryItem? = databaseStorage.read { transaction -> MediaGalleryItem? in
             guard let focusedItem = buildGalleryItem(attachment: focusedAttachment, transaction: transaction) else {
                 return nil
             }
 
-            guard let offsetInSection = mediaGalleryFinder.mediaIndex(of: focusedItem.attachmentStream,
-                                                                      in: focusedItem.galleryDate.interval,
-                                                                      excluding: deletedAttachmentIds,
-                                                                      transaction: transaction.unwrapGrdbRead) else {
+            guard let rowid = mediaGalleryFinder.rowid(of: focusedItem.attachmentStream,
+                                                       in: focusedItem.galleryDate.interval,
+                                                       excluding: deletedAttachmentIds,
+                                                       transaction: transaction.unwrapGrdbRead) else {
                 // The item may have just been deleted.
                 Logger.warn("showing detail for item not in the database")
                 return nil
@@ -518,10 +506,13 @@ class MediaGallery: Dependencies {
             return mutate { sections in
                 if sections.isEmpty {
                     // Set up the current section only.
-                    sections.loadInitialSection(for: focusedItem.galleryDate)
+                    return sections.loadInitialSection(for: focusedItem.galleryDate,
+                                                       replacement: (item: focusedItem,
+                                                                     rowid: rowid),
+                                                       transaction: transaction)
+                } else {
+                    return sections.getOrReplaceItem(focusedItem, rowid: rowid)
                 }
-
-                return sections.getOrReplaceItem(focusedItem, offsetInSection: offsetInSection)
             }
         }
 
@@ -663,13 +654,12 @@ class MediaGallery: Dependencies {
             deletedIndexPaths = items.compactMap { sections.indexPath(for: $0) }
             owsAssertDebug(deletedIndexPaths.count == items.count, "removing an item that wasn't loaded")
         }
-        deletedIndexPaths.sort()
 
-        let deletedSections = mutate { sections in
+        _ = mutate { sections in
             sections.removeLoadedItems(atIndexPaths: deletedIndexPaths)
         }
 
-        delegates.forEach { $0.mediaGallery(self, deletedSections: deletedSections, deletedItems: deletedIndexPaths) }
+        delegates.forEach { $0.mediaGalleryDidDeleteItem(self) }
     }
 
     // MARK: -
@@ -765,45 +755,57 @@ extension MediaGallery {
         typealias EnumerationCompletion = MediaGalleryFinder.EnumerationCompletion
         typealias Item = MediaGalleryItem
 
-        fileprivate unowned var mediaGallery: MediaGallery
+        fileprivate weak var mediaGallery: MediaGallery?
 
         func rowIdsOfItemsInSection(for date: GalleryDate,
                                     offset: Int,
                                     ascending: Bool,
                                     transaction: SDSAnyReadTransaction) -> [Int64] {
-            mediaGallery.mediaGalleryFinder.rowIds(in: date.interval,
-                                                   excluding: mediaGallery.deletedAttachmentIds,
-                                                   offset: offset,
-                                                   ascending: ascending,
-                                                   transaction: transaction.unwrapGrdbRead)
+            guard let mediaGallery else {
+                return []
+            }
+            return mediaGallery.mediaGalleryFinder.rowIds(in: date.interval,
+                                                          excluding: mediaGallery.deletedAttachmentIds,
+                                                          offset: offset,
+                                                          ascending: ascending,
+                                                          transaction: transaction.unwrapGrdbRead)
         }
 
         func enumerateTimestamps(before date: Date,
                                  count: Int,
                                  transaction: SDSAnyReadTransaction,
                                  block: (Date, Int64) -> Void) -> EnumerationCompletion {
-            mediaGallery.mediaGalleryFinder.enumerateTimestamps(before: date,
-                                                                excluding: mediaGallery.deletedAttachmentIds,
-                                                                count: count,
-                                                                transaction: transaction.unwrapGrdbRead,
-                                                                block: block)
+            guard let mediaGallery else {
+                return .reachedEnd
+            }
+            return mediaGallery.mediaGalleryFinder.enumerateTimestamps(before: date,
+                                                                       excluding: mediaGallery.deletedAttachmentIds,
+                                                                       count: count,
+                                                                       transaction: transaction.unwrapGrdbRead,
+                                                                       block: block)
         }
 
         func enumerateTimestamps(after date: Date,
                                  count: Int,
                                  transaction: SDSAnyReadTransaction,
                                  block: (Date, Int64) -> Void) -> EnumerationCompletion {
-            mediaGallery.mediaGalleryFinder.enumerateTimestamps(after: date,
-                                                                excluding: mediaGallery.deletedAttachmentIds,
-                                                                count: count,
-                                                                transaction: transaction.unwrapGrdbRead,
-                                                                block: block)
+            guard let mediaGallery else {
+                return .reachedEnd
+            }
+            return mediaGallery.mediaGalleryFinder.enumerateTimestamps(after: date,
+                                                                       excluding: mediaGallery.deletedAttachmentIds,
+                                                                       count: count,
+                                                                       transaction: transaction.unwrapGrdbRead,
+                                                                       block: block)
         }
 
         func enumerateItems(in interval: DateInterval,
                             range: Range<Int>,
                             transaction: SDSAnyReadTransaction,
                             block: (_ offset: Int, _ uniqueId: String, _ buildItem: () -> MediaGalleryItem) -> Void) {
+            guard let mediaGallery else {
+                return
+            }
             mediaGallery.mediaGalleryFinder.enumerateMediaAttachments(
                 in: interval,
                 excluding: mediaGallery.deletedAttachmentIds,

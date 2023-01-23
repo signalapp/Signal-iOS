@@ -650,7 +650,7 @@ extension MessageDetailViewController: MediaGalleryDelegate {
         self.wasDeleted = true
     }
 
-    func mediaGallery(_ mediaGallery: MediaGallery, deletedSections: IndexSet, deletedItems: [IndexPath]) {
+    func mediaGalleryDidDeleteItem(_ mediaGallery: MediaGallery) {
         guard self.wasDeleted else {
             return
         }
@@ -659,7 +659,7 @@ extension MessageDetailViewController: MediaGalleryDelegate {
         }
     }
 
-    func mediaGallery(_ mediaGallery: MediaGallery, didReloadItemsInSections sections: IndexSet) {
+    func mediaGalleryDidReloadItems(_ mediaGallery: MediaGallery) {
         self.didReloadAllSectionsInMediaGallery(mediaGallery)
     }
 

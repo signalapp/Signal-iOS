@@ -62,7 +62,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         var item: Item?
     }
 
-    private struct State {
+    struct State {
         /// All sections we know about.
         ///
         /// Each section contains an array of possibly-fetched items.
@@ -258,6 +258,18 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
             while !hasFetchedMostRecent, itemsBySection.orderedKeys.last! < newestLoadedSection {
                 _ = self.loadLaterSections(batchSize: 10, transaction: transaction)
             }
+        }
+
+        internal mutating func resolveNaiveStartIndex(request: LoadItemsRequest,
+                                                      batchSize: Int,
+                                                      transaction: SDSAnyReadTransaction?) -> (path: IndexPath?, numberOfSectionsLoaded: Int) {
+            guard let naiveRange = resolveLoadItemsRequest(request) else {
+                return (path: nil, numberOfSectionsLoaded: 0)
+            }
+            return resolveNaiveStartIndex(naiveRange.range.lowerBound,
+                                          relativeToSection: naiveRange.sectionIndex,
+                                          batchSize: batchSize,
+                                          transaction: transaction)
         }
 
         /// Given `naiveIndex` that refers to an item in or before `initialSectionIndex`, find the actual item and section
@@ -702,16 +714,20 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         }
     }
 
-    private class SnapshotManager: Dependencies {
+    class SnapshotManager: Dependencies {
         private var mutableState: State
         private var snapshot: State
         private(set) var pendingUpdate = AtomicValue(Update.noop, lock: AtomicLock())
         private var highPriorityStack: AtomicArray<() -> Void> = AtomicArray()
         private var lowPriorityStack: AtomicArray<() -> Void> = AtomicArray()
-
-        // We use an operation queue because we need to prioritize user-initiated actions over others,
-        // such as eager fetching. OperationQueue gives us this for free.
-        private let operationQueue = OperationQueue()
+        // We tried to use an OperationQueue for this. It was a good fit because it can prioritize
+        // synchronous operations ahead of async ones. We ended up getting weird crashes in the Swift
+        // runtime. The best theory was that OperationQueue is missing a memory barrier, but that isn't
+        // much more than speculation. This queue is essentially a background thread that performs async
+        // operations and all mutations are guarded by `lock` to do synchronization.
+        private let queue = DispatchQueue(label: "org.signal.mgs-snapshot")
+        // It's important that this lock be fair so that synchronous mutations run as soon as possible.
+        private let lock = NSLock()
 
         var state: State {
             dispatchPrecondition(condition: .onQueue(.main))
@@ -719,13 +735,16 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         }
 
         init(state: State) {
-            operationQueue.maxConcurrentOperationCount = 1
             self.mutableState = state
             self.snapshot = state
         }
 
-        // Runs on the operation queue.
+        // Runs on the mutation queue.
         private func _mutate<T>(userData: UpdateUserData?, _ block: (inout State) -> (T)) -> T {
+            self.lock.lock()
+            defer {
+                self.lock.unlock()
+            }
             let result = block(&mutableState)
             let updatedState = mutableState
             let changes = mutableState.itemsBySection.takeJournal()
@@ -744,22 +763,9 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         }
 
         func mutate<T>(userData: UpdateUserData?, _ block: (inout State) -> (T)) -> T {
+            dispatchPrecondition(condition: .onQueue(.main))
             return Bench(title: "Sync mutation [\(depthReport)]", logInProduction: true) {
-                dispatchPrecondition(condition: .onQueue(.main))
-                var result: T!
-                withoutActuallyEscaping(block) { escapingClosure in
-                    // This is used to trick Swift into believing that escapingClosure doesn't escape.
-                    var sneakyClosure: ((inout State) -> T)?
-                    sneakyClosure = escapingClosure
-                    let operation = BlockOperation {
-                        result = self._mutate(userData: userData, sneakyClosure!)
-                    }
-                    operation.queuePriority = .veryHigh
-                    operationQueue.addOperation(operation)
-                    operation.waitUntilFinished()
-                    sneakyClosure = nil
-                }
-                return result
+                return self._mutate(userData: userData, block)
             }
         }
 
@@ -771,7 +777,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
             }
         }
 
-        /// Runs `block` on the operation queue and then runs `completion` on the main queue, but the main queue is not
+        /// Runs `block` on the mutation queue and then runs `completion` on the main queue, but the main queue is not
         /// blocked while waiting for `block` to complete.
         ///
         /// Note that mutations go on a stack rather than a queue. The last call to `mutateAsync` will be the first one to run after any current operation completes.
@@ -787,6 +793,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
                 guard let self else {
                     return
                 }
+                dispatchPrecondition(condition: .onQueue(self.queue))
                 Bench(title: "Async mutation of \(title ?? "untitled") [\(self.depthReport)]", logInProduction: true) {
                     let result = self._mutate(userData: userData, block)
                     DispatchQueue.main.async {
@@ -795,14 +802,10 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
                 }
             }
             (highPriority ? highPriorityStack : lowPriorityStack).pushTail(closure)
-            let operation = BlockOperation { [weak self] in
-                if let self {
-                    let closure = self.highPriorityStack.popTail() ?? self.lowPriorityStack.popTail()
-                    closure?()
-                }
+            queue.async { [weak self] in
+                let closure = self?.highPriorityStack.popTail() ?? self?.lowPriorityStack.popTail()
+                closure?()
             }
-            operation.queuePriority = .normal
-            operationQueue.addOperation(operation)
         }
 
         func mutateAsync<T>(userData: UpdateUserData?,
@@ -822,6 +825,9 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
 
     private var snapshotManager: SnapshotManager
     private var state: State { snapshotManager.state }
+
+    var stateForTesting: State { state }
+    var snapshotManagerForTesting: SnapshotManager { snapshotManager }
 
     internal init(loader: Loader) {
         snapshotManager = SnapshotManager(state: State(loader: loader))
@@ -877,12 +883,24 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
 
     }
 
-    internal mutating func loadInitialSection(for date: GalleryDate, userData: UpdateUserData? = nil) {
-        return snapshotManager.mutate(userData: userData) { state, transaction in
-            return state.loadInitialSection(for: date, transaction: transaction)
+    /// If `replacement` is specified then this acts as an atomic
+    /// `loadInitialSection` followed by `getOrReplace`, provided the `rowid` is
+    /// valid.
+    internal mutating func loadInitialSection(for date: GalleryDate,
+                                              replacement: (item: Item, rowid: Int64)? = nil,
+                                              userData: UpdateUserData? = nil,
+                                              transaction: SDSAnyReadTransaction) -> Item? {
+        return snapshotManager.mutate(userData: userData) { state in
+            state.loadInitialSection(for: date, transaction: transaction)
+            if let (item, rowid) = replacement,
+                let offset = state.itemsBySection[date]?.firstIndex(where: { $0.rowid == rowid }) {
+                return state.getOrReplaceItem(item, offsetInSection: offset)
+            }
+            return nil
         }
     }
 
+    @discardableResult
     internal mutating func reloadSections(for dates: Set<GalleryDate>,
                                           userData: UpdateUserData? = nil) -> (update: IndexSet, delete: IndexSet) {
         return snapshotManager.mutate(userData: userData) { state, transaction in
@@ -903,6 +921,7 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
                     sectionsToDelete.insert(sectionIndex)
                 }
             }
+            state.removeEmptySections(atIndexes: sectionsToDelete)
             return (update: sectionIndexesNeedingUpdate, delete: sectionsToDelete)
         }
     }
@@ -912,13 +931,6 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
                                          userData: UpdateUserData? = nil) -> Int {
         return snapshotManager.mutate(userData: userData) { state, transaction in
             return state.reloadSection(for: date, transaction: transaction)
-        }
-    }
-
-    internal mutating func removeEmptySections(atIndexes indexesToDelete: IndexSet,
-                                               userData: UpdateUserData? = nil) {
-        return snapshotManager.mutate(userData: userData) { state in
-            state.removeEmptySections(atIndexes: indexesToDelete)
         }
     }
 
@@ -1064,30 +1076,6 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
         return nil
     }
 
-    internal func resolveNaiveStartIndex(_ naiveIndex: Int,
-                                         relativeToSection initialSectionIndex: Int) -> IndexPath? {
-        return state.resolveNaiveStartIndex(naiveIndex, relativeToSection: initialSectionIndex)
-    }
-
-    internal mutating func resolveNaiveStartIndex(
-        _ naiveIndex: Int,
-        relativeToSection initialSectionIndex: Int,
-        batchSize: Int,
-        userData: UpdateUserData? = nil
-    ) -> (path: IndexPath?, numberOfSectionsLoaded: Int) {
-        return snapshotManager.mutate(userData: userData) { state, transaction in
-            return state.resolveNaiveStartIndex(naiveIndex,
-                                                relativeToSection: initialSectionIndex,
-                                                batchSize: batchSize,
-                                                transaction: transaction)
-        }
-    }
-
-    internal func resolveNaiveEndIndex(_ naiveIndex: Int,
-                                       relativeToSection initialSectionIndex: Int) -> IndexPath? {
-        return state.resolveNaiveEndIndex(naiveIndex, relativeToSection: initialSectionIndex)
-    }
-
     internal func trimLoadedItemsAtStart(from naiveRange: inout Range<Int>,
                                          relativeToSection sectionIndex: Int) {
         state.trimLoadedItemsAtStart(from: &naiveRange,
@@ -1102,10 +1090,10 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
     internal mutating func ensureItemsLoaded(in naiveRange: Range<Int>,
                                              relativeToSection sectionIndex: Int,
                                              userData: UpdateUserData? = nil) -> IndexSet {
+        guard let request = state.loadItemsRequest(in: State.NaiveRange(sectionIndex: sectionIndex, range: naiveRange)) else {
+            return IndexSet()
+        }
         return snapshotManager.mutate(userData: userData) { state in
-            guard let request = state.loadItemsRequest(in: State.NaiveRange(sectionIndex: sectionIndex, range: naiveRange)) else {
-                return IndexSet()
-            }
             return Self.databaseStorage.read { transaction in
                 return state.ensureItemsLoaded(request: request,
                                                transaction: transaction)
@@ -1133,17 +1121,44 @@ internal struct MediaGallerySections<Loader: MediaGallerySectionLoader, UpdateUs
     }
 
     internal mutating func getOrReplaceItem(_ newItem: Item,
-                                            offsetInSection: Int,
+                                            rowid: Int64,
                                             userData: UpdateUserData? = nil) -> Item? {
-        return snapshotManager.mutate(userData: userData) { state  in
-            return state.getOrReplaceItem(newItem, offsetInSection: offsetInSection)
+        return snapshotManager.mutate(userData: userData) { state in
+            guard let i = state.itemsBySection[newItem.galleryDate]?.firstIndex(where: { $0.rowid == rowid}) else {
+                return nil
+            }
+            return state.getOrReplaceItem(newItem, offsetInSection: i)
         }
+    }
+
+    private struct Location {
+        var date: GalleryDate
+        var rowid: Int64
     }
 
     internal mutating func removeLoadedItems(atIndexPaths paths: [IndexPath],
                                              userData: UpdateUserData? = nil) -> IndexSet {
-        return snapshotManager.mutate(userData: userData) { state in
-            state.removeLoadedItems(atIndexPaths: paths)
+        let locations = paths.map {
+            let entry = state.itemsBySection[$0.section]
+            return Location(date: entry.key, rowid: entry.value[$0.item].rowid)
+        }
+        return snapshotManager.mutate(userData: userData) { state -> IndexSet in
+            // [date: [rowid, …]]
+            let sectionIndexToRowIDs = Dictionary(grouping: locations) {
+                $0.date
+            }.mapValues {
+                Set($0.lazy.map { $0.rowid })
+            }
+            let paths = sectionIndexToRowIDs.flatMap { keyAndValue -> [IndexPath] in
+                let (date, desiredRowIDs) = keyAndValue
+                guard let sectionIndex = state.itemsBySection.orderedKeys.firstIndex(of: date) else {
+                    return []
+                }
+                let slots = state.itemsBySection[sectionIndex].value
+                let itemIndexes = slots.indices.lazy.filter { desiredRowIDs.contains(slots[$0].rowid) }
+                return itemIndexes.lazy.map { IndexPath(item: $0, section: sectionIndex )}
+            }
+            return state.removeLoadedItems(atIndexPaths: Array(paths))
         }
     }
 

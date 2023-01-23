@@ -856,6 +856,10 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     func showMediaPageView(for attachmentStream: TSAttachmentStream) {
         let vc = MediaPageViewController(initialMediaAttachment: attachmentStream, thread: thread)
+        if vc.viewControllers?.isEmpty ?? true {
+            // Failed to load the item. Could be because it was deleted just as we tried to show it.
+            return
+        }
         present(vc, animated: true)
     }
 
