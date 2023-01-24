@@ -647,7 +647,7 @@ public extension OWSUpload {
             let dataFileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
             try data.write(to: dataFileUrl)
 
-            let request = try cdn0UrlSession.buildRequest(uploadUrlPath, method: .post)
+            let request = try cdn0UrlSession.endpoint.buildRequest(uploadUrlPath, method: .post)
 
             // We have to build up the form manually vs. simply passing in a parameters dict
             // because AWS is sensitive to the order of the form params (at least the "key"

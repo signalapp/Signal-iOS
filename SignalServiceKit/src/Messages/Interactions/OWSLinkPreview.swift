@@ -417,7 +417,6 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
         let extraHeaders: [String: String] = [OWSHttpHeaders.userAgentHeaderKey: userAgentString]
 
         let urlSession = OWSURLSession(
-            baseUrl: nil,
             securityPolicy: OWSURLSession.defaultSecurityPolicy,
             configuration: sessionConfig,
             extraHeaders: extraHeaders,

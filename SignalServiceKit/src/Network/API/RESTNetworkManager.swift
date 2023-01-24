@@ -142,10 +142,12 @@ extension OWSURLSessionProtocol {
         let urlSession = self
         let request: URLRequest
         do {
-            request = try urlSession.buildRequest(rawRequestUrl.absoluteString,
-                                                  method: method,
-                                                  headers: httpHeaders.headers,
-                                                  body: requestBody)
+            request = try urlSession.endpoint.buildRequest(
+                rawRequestUrl.absoluteString,
+                method: method,
+                headers: httpHeaders.headers,
+                body: requestBody
+            )
         } catch {
             owsFailDebug("Missing or invalid request: \(rawRequestUrl).")
             return Promise(error: OWSHTTPError.invalidRequest(requestUrl: rawRequestUrl))

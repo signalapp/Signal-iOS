@@ -10,9 +10,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
     // MARK: - OWSURLSessionProtocol conformance
 
-    public let baseUrl: URL?
-
-    public let frontingInfo: OWSUrlFrontingInfo?
+    public let endpoint: OWSURLSessionEndpoint
 
     public var failOnError: Bool {
         get {
@@ -98,19 +96,13 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
     // MARK: Initializers
 
     required public init(
-        baseUrl: URL?,
-        frontingInfo: OWSUrlFrontingInfo?,
-        securityPolicy: OWSHTTPSecurityPolicy,
+        endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration,
-        extraHeaders: [String: String],
         maxResponseSize: Int?,
         canUseSignalProxy: Bool
     ) {
-        self.baseUrl = baseUrl
-        self.frontingInfo = frontingInfo
-        self.securityPolicy = securityPolicy
+        self.endpoint = endpoint
         self.configuration = configuration
-        self.extraHeaders = extraHeaders
         self.maxResponseSize = maxResponseSize
         self.canUseSignalProxy = canUseSignalProxy
 
@@ -131,21 +123,40 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
     }
 
     @objc
-    public convenience init(
+    convenience public init(
+        securityPolicy: OWSHTTPSecurityPolicy,
+        configuration: URLSessionConfiguration
+    ) {
+        self.init(
+            endpoint: OWSURLSessionEndpoint(
+                baseUrl: nil,
+                frontingInfo: nil,
+                securityPolicy: securityPolicy,
+                extraHeaders: [:]
+            ),
+            configuration: configuration,
+            maxResponseSize: nil,
+            canUseSignalProxy: false
+        )
+    }
+
+    convenience public init(
         baseUrl: URL? = nil,
-        frontingInfo: OWSUrlFrontingInfo? = nil,
         securityPolicy: OWSHTTPSecurityPolicy,
         configuration: URLSessionConfiguration,
         extraHeaders: [String: String] = [:],
+        maxResponseSize: Int? = nil,
         canUseSignalProxy: Bool = false
     ) {
         self.init(
-            baseUrl: baseUrl,
-            frontingInfo: frontingInfo,
-            securityPolicy: securityPolicy,
+            endpoint: OWSURLSessionEndpoint(
+                baseUrl: baseUrl,
+                frontingInfo: nil,
+                securityPolicy: securityPolicy,
+                extraHeaders: extraHeaders
+            ),
             configuration: configuration,
-            extraHeaders: extraHeaders,
-            maxResponseSize: nil,
+            maxResponseSize: maxResponseSize,
             canUseSignalProxy: canUseSignalProxy
         )
     }
@@ -154,31 +165,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
     private func isSignalProxyReadyDidChange() {
         configuration.connectionProxyDictionary = SignalProxy.connectionProxyDictionary
         session.getAllTasks { $0.forEach { $0.cancel() } }
-    }
-
-    // MARK: Request Building
-
-    public func buildRequest(
-        _ urlString: String,
-        method: HTTPMethod,
-        headers: [String: String]?,
-        body: Data?
-    ) throws -> URLRequest {
-        guard let url = buildUrl(urlString) else {
-            throw OWSAssertionError("Invalid url.")
-        }
-        var request = URLRequest(url: url)
-        request.httpMethod = method.methodName
-
-        let httpHeaders = OWSHttpHeaders()
-        httpHeaders.addHeaderMap(headers, overwriteOnConflict: false)
-        httpHeaders.addDefaultHeaders()
-        httpHeaders.addHeaderMap(extraHeaders, overwriteOnConflict: true)
-        request.set(httpHeaders: httpHeaders)
-
-        request.httpBody = body
-        request.httpShouldHandleCookies = httpShouldHandleCookies.get()
-        return request
     }
 
     // MARK: Tasks
@@ -319,12 +305,6 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
     // MARK: Internal vars
 
     private let configuration: URLSessionConfiguration
-
-    private let securityPolicy: OWSHTTPSecurityPolicy
-
-    private let extraHeaders: [String: String]
-
-    private let httpShouldHandleCookies = AtomicBool(false)
 
     private lazy var session: URLSession = {
         URLSession(configuration: configuration, delegate: delegateBox, delegateQueue: Self.operationQueue)
@@ -502,67 +482,17 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
         var request = request
 
-        request.httpShouldHandleCookies = httpShouldHandleCookies.get()
+        request.httpShouldHandleCookies = false
 
         request = OWSHttpHeaders.fillInMissingDefaultHeaders(request: request)
 
-        if let frontingInfo = self.frontingInfo,
-           signalService.isCensorshipCircumventionActive,
-           let urlString = request.url?.absoluteString.nilIfEmpty {
-            // Only requests to Signal services require CC.
-            // If frontingHost is nil, this instance of OWSURLSession does not perform CC.
-            if !Self.isFrontedUrl(urlString, frontingInfo: frontingInfo) {
-                owsFailDebug("Unfronted URL: \(urlString), frontingInfo: \(frontingInfo.logDescription)")
-            }
+        // Only requests to Signal services require CC.
+        // If frontingHost is nil, this instance of OWSURLSession does not perform CC.
+        if let frontingInfo = endpoint.frontingInfo, let urlString = request.url?.absoluteString.nilIfEmpty {
+            owsAssertDebug(frontingInfo.isFrontedUrl(urlString), "Unfronted URL: \(urlString)")
         }
 
         return request
-    }
-
-    // Resolve the absolute URL for the HTTP request.
-    //
-    // * If urlString is already absolute, no resolution is necessary.
-    //   * We might verify that the CC is valid for CC is applicable.
-    // * If urlString is relative, we resolve using a base URL.
-    //   * If CC is active and enabled for this OWSURLSession, we
-    //     resolve using a baseUrl which is the frontingUrl.
-    //   * For some requests (CDS, KBS, remote attestation) we target a
-    //     "custom host" baseUrl.
-    //   * Otherwise we resolve using the baseUrl for this OWSURLSession.
-    private func buildUrl(_ urlString: String) -> URL? {
-
-        let baseUrl: URL? = {
-            if let frontingInfo = self.frontingInfo,
-               signalService.isCensorshipCircumventionActive {
-
-                // Never apply fronting twice; if urlString already contains a fronted
-                // URL, baseUrl should be nil.
-                if Self.isFrontedUrl(urlString, frontingInfo: frontingInfo) {
-                    Logger.info("URL is already fronted.")
-                    return nil
-                }
-
-                // Only requests to Signal services require CC.
-                // If frontingHost is nil, this instance of OWSURLSession does not perform CC.
-                let frontingUrl = frontingInfo.frontingURLWithPathPrefix
-                return frontingUrl
-            }
-
-            return self.baseUrl
-        }()
-
-        guard let requestUrl = OWSURLBuilderUtil.joinUrl(urlString: urlString, baseUrl: baseUrl) else {
-            owsFailDebug("Could not build URL.")
-            return nil
-        }
-        return requestUrl
-    }
-
-    private static func isFrontedUrl(_ urlString: String, frontingInfo: OWSUrlFrontingInfo) -> Bool {
-        owsAssertDebug(signalService.isCensorshipCircumventionActive)
-
-        let frontingUrl = frontingInfo.frontingURLWithoutPathPrefix
-        return urlString.lowercased().hasPrefix(frontingUrl.absoluteString)
     }
 
     // MARK: - Issuing Requests
@@ -728,7 +658,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
            let serverTrust = challenge.protectionSpace.serverTrust {
-            if securityPolicy.evaluateServerTrust(serverTrust, forDomain: challenge.protectionSpace.host) {
+            if endpoint.securityPolicy.evaluateServerTrust(serverTrust, forDomain: challenge.protectionSpace.host) {
                 credential = URLCredential(trust: serverTrust)
                 disposition = .useCredential
             } else {

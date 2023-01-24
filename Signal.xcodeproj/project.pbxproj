@@ -757,6 +757,7 @@
 		502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502B1B54297B28AF00FDB3AE /* ErrorTest.swift */; };
 		503614CF282AF657008128B4 /* GiftBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503614CE282AF657008128B4 /* GiftBadgeView.swift */; };
 		503BDDB4296F3E2C00FED3B2 /* ContactsManagerCacheTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503BDDB3296F3E2C00FED3B2 /* ContactsManagerCacheTest.swift */; };
+		503C2F432977752B00217527 /* OWSURLSessionEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C2F422977752B00217527 /* OWSURLSessionEndpoint.swift */; };
 		5042EAA3287F96FB00C9B19F /* VisibleBadgeResolverTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5042EAA2287F96FB00C9B19F /* VisibleBadgeResolverTest.swift */; };
 		5049FA2F28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA2D28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift */; };
 		5049FA3028BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA2E28BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift */; };
@@ -3082,6 +3083,7 @@
 		503614D2282C572F008128B4 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = id; path = translations/id.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D6282C7B76008128B4 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = zh_CN; path = translations/zh_CN.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503BDDB3296F3E2C00FED3B2 /* ContactsManagerCacheTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsManagerCacheTest.swift; sourceTree = "<group>"; };
+		503C2F422977752B00217527 /* OWSURLSessionEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSURLSessionEndpoint.swift; sourceTree = "<group>"; };
 		5042EAA2287F96FB00C9B19F /* VisibleBadgeResolverTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisibleBadgeResolverTest.swift; sourceTree = "<group>"; };
 		5049FA2D28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryV2Operation.swift; sourceTree = "<group>"; };
 		5049FA2E28BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryV2Connection.swift; sourceTree = "<group>"; };
@@ -8184,6 +8186,7 @@
 				F9C5CAB3289453B200548EEE /* OWSSignalServiceProtocol.swift */,
 				669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */,
 				669E8FE728B4153B00043D28 /* OWSUrlSession.swift */,
+				503C2F422977752B00217527 /* OWSURLSessionEndpoint.swift */,
 				669E8FE528B4149200043D28 /* OWSURLSessionMock.swift */,
 				F9C5CAF3289453B200548EEE /* OWSURLSessionProtocol.swift */,
 				F9C5CABF289453B200548EEE /* ProxiedContentDownloader.swift */,
@@ -11144,6 +11147,7 @@
 				F9C5CDBF289453B400548EEE /* OWSUploadOperation.m in Sources */,
 				669E8FE928B415C000043D28 /* OWSURLBuilderUtil.swift in Sources */,
 				669E8FE828B4153C00043D28 /* OWSUrlSession.swift in Sources */,
+				503C2F432977752B00217527 /* OWSURLSessionEndpoint.swift in Sources */,
 				669E8FF028B4185300043D28 /* OWSURLSessionMock.swift in Sources */,
 				F9C5CDC6289453B400548EEE /* OWSURLSessionProtocol.swift in Sources */,
 				F9C5CE41289453B400548EEE /* OWSUserProfile+SDS.swift in Sources */,

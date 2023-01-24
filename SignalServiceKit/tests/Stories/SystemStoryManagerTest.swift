@@ -25,7 +25,7 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
     // MARK: - Downloading
 
     func testDownloadStory() throws {
-        mockSignalService.mockUrlSessionBuilder = { _ in
+        mockSignalService.mockUrlSessionBuilder = { _, _, _ in
             let mockSession = MockDownloadSession()
             var dataCount = 0
             mockSession.dataPromiseSource = { url in
@@ -95,7 +95,7 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
     }
 
     func testDownloadStory_multipleTimes() throws {
-        mockSignalService.mockUrlSessionBuilder = { _ in
+        mockSignalService.mockUrlSessionBuilder = { _, _, _ in
             let mockSession = MockDownloadSession()
             var dataCount = 0
             mockSession.dataPromiseSource = { url in
@@ -178,7 +178,7 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
 
         // After we've fulfilled, try again, which should't redownload.
 
-        mockSignalService.mockUrlSessionBuilder = { _ in
+        mockSignalService.mockUrlSessionBuilder = { _, _, _ in
             XCTFail("Should not be issuing another network request.")
             return .init()
         }
@@ -201,7 +201,7 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
     // MARK: - Viewed state
 
     func testCleanUpViewedStory() throws {
-        mockSignalService.mockUrlSessionBuilder = { _ in
+        mockSignalService.mockUrlSessionBuilder = { _, _, _ in
             let mockSession = MockDownloadSession()
             var dataCount = 0
             mockSession.dataPromiseSource = { url in
@@ -353,7 +353,7 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
     #if BROKEN_TESTS
 
     func testCleanUpViewedStory_notTimedOut() throws {
-        mockSignalService.mockUrlSessionBuilder = { _ in
+        mockSignalService.mockUrlSessionBuilder = { _, _, _ in
             let mockSession = MockDownloadSession()
             var dataCount = 0
             mockSession.dataPromiseSource = { url in

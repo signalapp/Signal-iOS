@@ -57,7 +57,7 @@ public class GiphyAPI: NSObject {
 
         let urlSession = buildURLSession()
         return firstly(on: .global()) { () -> Promise<HTTPResponse> in
-            var request = try urlSession.buildRequest(urlString, method: .get)
+            var request = try urlSession.endpoint.buildRequest(urlString, method: .get)
             guard ContentProxy.configureProxiedRequest(request: &request) else {
                 throw OWSAssertionError("Invalid URL")
             }

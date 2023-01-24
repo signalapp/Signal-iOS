@@ -93,6 +93,10 @@ public class OWSUrlFrontingInfo: NSObject, Dependencies {
         self.unfrontedBaseUrl = unfrontedBaseUrl
     }
 
+    func isFrontedUrl(_ urlString: String) -> Bool {
+        urlString.lowercased().hasPrefix(frontingURLWithoutPathPrefix.absoluteString)
+    }
+
     var logDescription: String {
         "[frontingURLWithoutPathPrefix: \(frontingURLWithoutPathPrefix), frontingURLWithPathPrefix: \(frontingURLWithPathPrefix), unfrontedBaseUrl: \(unfrontedBaseUrl)]"
     }
@@ -109,13 +113,11 @@ public protocol OWSURLSessionProtocol: AnyObject, Dependencies {
 
     typealias ProgressBlock = (URLSessionTask, Progress) -> Void
 
-    var baseUrl: URL? { get }
-    var frontingInfo: OWSUrlFrontingInfo? { get }
+    var endpoint: OWSURLSessionEndpoint { get }
 
     var failOnError: Bool { get set }
     // By default OWSURLSession treats 4xx and 5xx responses as errors.
     var require2xxOr3xx: Bool { get set }
-    var shouldHandleRemoteDeprecation: Bool { get set }
     var allowRedirects: Bool { get set }
 
     var customRedirectHandler: ((URLRequest) -> URLRequest?)? { get set }
@@ -133,23 +135,11 @@ public protocol OWSURLSessionProtocol: AnyObject, Dependencies {
     // MARK: Initializer
 
     init(
-        baseUrl: URL?,
-        frontingInfo: OWSUrlFrontingInfo?,
-        securityPolicy: OWSHTTPSecurityPolicy,
+        endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration,
-        extraHeaders: [String: String],
         maxResponseSize: Int?,
         canUseSignalProxy: Bool
     )
-
-    // MARK: Request Building
-
-    func buildRequest(
-        _ urlString: String,
-        method: HTTPMethod,
-        headers: [String: String]?,
-        body: Data?
-    ) throws -> URLRequest
 
     // MARK: Tasks
 
@@ -185,46 +175,22 @@ public protocol OWSURLSessionProtocol: AnyObject, Dependencies {
 
 extension OWSURLSessionProtocol {
     public var unfrontedBaseUrl: URL? {
-        frontingInfo?.unfrontedBaseUrl ?? baseUrl
-    }
-
-    public var isUsingCensorshipCircumvention: Bool {
-        frontingInfo != nil
+        endpoint.frontingInfo?.unfrontedBaseUrl ?? endpoint.baseUrl
     }
 
     // MARK: Convenience Methods
 
     public init(
-        baseUrl: URL? = nil,
-        frontingInfo: OWSUrlFrontingInfo? = nil,
-        securityPolicy: OWSHTTPSecurityPolicy,
+        endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration,
-        extraHeaders: [String: String] = [:],
         maxResponseSize: Int? = nil,
         canUseSignalProxy: Bool = false
     ) {
         self.init(
-            baseUrl: baseUrl,
-            frontingInfo: frontingInfo,
-            securityPolicy: securityPolicy,
+            endpoint: endpoint,
             configuration: configuration,
-            extraHeaders: extraHeaders,
             maxResponseSize: maxResponseSize,
             canUseSignalProxy: canUseSignalProxy
-        )
-    }
-
-    func buildRequest(
-        _ urlString: String,
-        method: HTTPMethod,
-        headers: [String: String]? = nil,
-        body: Data? = nil
-    ) throws -> URLRequest {
-        try self.buildRequest(
-            urlString,
-            method: method,
-            headers: headers,
-            body: body
         )
     }
 }
@@ -251,7 +217,7 @@ public extension OWSURLSessionProtocol {
         progress progressBlock: ProgressBlock? = nil
     ) -> Promise<HTTPResponse> {
         firstly(on: .global()) { () -> Promise<HTTPResponse> in
-            let request = try self.buildRequest(urlString, method: method, headers: headers, body: requestData)
+            let request = try self.endpoint.buildRequest(urlString, method: method, headers: headers, body: requestData)
             return self.uploadTaskPromise(request: request, data: requestData, progress: progressBlock)
         }
     }
@@ -278,7 +244,7 @@ public extension OWSURLSessionProtocol {
         progress progressBlock: ProgressBlock? = nil
     ) -> Promise<HTTPResponse> {
         firstly(on: .global()) { () -> Promise<HTTPResponse> in
-            let request = try self.buildRequest(urlString, method: method, headers: headers)
+            let request = try self.endpoint.buildRequest(urlString, method: method, headers: headers)
             return self.uploadTaskPromise(request: request, fileUrl: fileUrl, progress: progressBlock)
         }
     }
@@ -300,7 +266,7 @@ public extension OWSURLSessionProtocol {
         ignoreAppExpiry: Bool = false
     ) -> Promise<HTTPResponse> {
         firstly(on: .global()) { () -> Promise<HTTPResponse> in
-            let request = try self.buildRequest(urlString, method: method, headers: headers, body: body)
+            let request = try self.endpoint.buildRequest(urlString, method: method, headers: headers, body: body)
             return self.dataTaskPromise(request: request, ignoreAppExpiry: ignoreAppExpiry)
         }
     }
@@ -330,7 +296,7 @@ public extension OWSURLSessionProtocol {
         progress progressBlock: ProgressBlock? = nil
     ) -> Promise<OWSUrlDownloadResponse> {
         firstly(on: .global()) { () -> Promise<OWSUrlDownloadResponse> in
-            let request = try self.buildRequest(urlString, method: method, headers: headers, body: body)
+            let request = try self.endpoint.buildRequest(urlString, method: method, headers: headers, body: body)
             return self.downloadTaskPromise(request: request, progress: progressBlock)
         }
     }

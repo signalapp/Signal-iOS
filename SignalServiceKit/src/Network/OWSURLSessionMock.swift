@@ -9,15 +9,11 @@ public class OWSURLSessionMock: OWSURLSessionProtocol {
 
     // MARK: - OWSURLSessionProtocol conformance
 
-    public var baseUrl: URL?
-
-    public var frontingInfo: OWSUrlFrontingInfo?
+    public var endpoint: OWSURLSessionEndpoint
 
     public var failOnError: Bool = true
 
     public var require2xxOr3xx: Bool = true
-
-    public var shouldHandleRemoteDeprecation: Bool = false
 
     public var allowRedirects: Bool = true
 
@@ -45,34 +41,30 @@ public class OWSURLSessionMock: OWSURLSessionProtocol {
     // MARK: Initializers
 
     private let configuration: URLSessionConfiguration
-    private let securityPolicy: OWSHTTPSecurityPolicy
-    private let extraHeaders: [String: String]
     private let maxResponseSize: Int?
 
     public required init(
-        baseUrl: URL?,
-        frontingInfo: OWSUrlFrontingInfo?,
-        securityPolicy: OWSHTTPSecurityPolicy,
+        endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration,
-        extraHeaders: [String: String],
-        maxResponseSize: Int?
+        maxResponseSize: Int?,
+        canUseSignalProxy: Bool
     ) {
-        self.baseUrl = baseUrl
-        self.frontingInfo = frontingInfo
-        self.securityPolicy = securityPolicy
+        self.endpoint = endpoint
         self.configuration = configuration
-        self.extraHeaders = extraHeaders
         self.maxResponseSize = maxResponseSize
     }
 
     public convenience init() {
         self.init(
-            baseUrl: nil,
-            frontingInfo: nil,
-            securityPolicy: .systemDefault(),
+            endpoint: OWSURLSessionEndpoint(
+                baseUrl: nil,
+                frontingInfo: nil,
+                securityPolicy: .systemDefault(),
+                extraHeaders: [:]
+            ),
             configuration: .default,
-            extraHeaders: [:],
-            maxResponseSize: nil
+            maxResponseSize: nil,
+            canUseSignalProxy: false
         )
     }
 

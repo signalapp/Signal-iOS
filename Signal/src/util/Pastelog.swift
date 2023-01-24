@@ -19,15 +19,10 @@ private enum DebugLogUploader {
     }
 
     private static func buildOWSURLSession() -> OWSURLSessionProtocol {
-        let sessionConfig = URLSessionConfiguration.ephemeral
-        sessionConfig.urlCache = nil
-        sessionConfig.requestCachePolicy = .reloadIgnoringLocalCacheData
-        let urlSession = OWSURLSession(
-            baseUrl: nil,
+        OWSURLSession(
             securityPolicy: OWSURLSession.defaultSecurityPolicy,
-            configuration: sessionConfig
+            configuration: OWSURLSession.defaultConfigurationWithoutCaching
         )
-        return urlSession
     }
 
     private static func getUploadParameters(fileUrl: URL) -> Promise<UploadParameters> {

@@ -26,16 +26,26 @@ public class OWSSignalServiceMock: NSObject, OWSSignalServiceProtocol {
 
     public var manualCensorshipCircumventionCountryCode: String?
 
-    public var mockUrlSessionBuilder: ((SignalServiceType) -> OWSURLSessionMock)?
+    public var urlEndpointBuilder: ((SignalServiceInfo) -> OWSURLSessionEndpoint)?
 
-    public func typeUnsafe_buildUrlSession(for signalServiceType: Any) -> Any {
-        let signalServiceType = signalServiceType as! SignalServiceType
-        return mockUrlSessionBuilder?(signalServiceType) ?? OWSURLSessionMock(
-            baseUrl: signalServiceType.signalServiceInfo().baseUrl,
+    public func typeUnsafe_buildUrlEndpoint(for signalServiceInfo: Any) -> Any {
+        let signalServiceInfo = signalServiceInfo as! SignalServiceInfo
+        return urlEndpointBuilder?(signalServiceInfo) ?? OWSURLSessionEndpoint(
+            baseUrl: signalServiceInfo.baseUrl,
             frontingInfo: nil,
             securityPolicy: .systemDefault(),
+            extraHeaders: [:]
+        )
+    }
+
+    public var mockUrlSessionBuilder: ((SignalServiceInfo, OWSURLSessionEndpoint, URLSessionConfiguration?) -> OWSURLSessionMock)?
+
+    public func typeUnsafe_buildUrlSession(for signalServiceInfo: Any, endpoint: OWSURLSessionEndpoint, configuration: URLSessionConfiguration?) -> Any {
+        let signalServiceInfo = signalServiceInfo as! SignalServiceInfo
+        return mockUrlSessionBuilder?(signalServiceInfo, endpoint, configuration) ?? OWSURLSessionMock(
+            endpoint: endpoint,
             configuration: .default,
-            extraHeaders: [:], maxResponseSize: nil
+            maxResponseSize: nil
         )
     }
 }

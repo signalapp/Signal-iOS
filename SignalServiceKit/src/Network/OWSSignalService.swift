@@ -120,8 +120,11 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
         return configuration
     }
 
-    @objc
-    public func typeUnsafe_buildUrlSession(for signalServiceType: Any) -> Any {
+    public func typeUnsafe_buildUrlEndpoint(for signalServiceInfo: Any) -> Any {
+        typeSafe_buildUrlEndpoint(for: signalServiceInfo as! SignalServiceInfo)
+    }
+
+    private func typeSafe_buildUrlEndpoint(for signalServiceInfo: SignalServiceInfo) -> OWSURLSessionEndpoint {
         // If there's an open transaction when this is called, and if censorship
         // circumvention is enabled, `buildCensorshipConfiguration()` will crash.
         // Add a database read here so that we crash in both `if` branches.
@@ -130,9 +133,7 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
             return true
         }(), "Must not have open transaction.")
 
-        let signalServiceInfo = (signalServiceType as! SignalServiceType).signalServiceInfo()
         let isCensorshipCircumventionActive = self.isCensorshipCircumventionActive
-        let urlSession: OWSURLSessionProtocol
         if isCensorshipCircumventionActive {
             let censorshipConfiguration = buildCensorshipConfiguration()
             let frontingURLWithoutPathPrefix = censorshipConfiguration.domainFrontBaseURL
@@ -147,31 +148,49 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
             let baseUrl = frontingURLWithPathPrefix
             let securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy
             let extraHeaders = ["Host": TSConstants.censorshipReflectorHost]
-            urlSession = OWSURLSession(
+            return OWSURLSessionEndpoint(
                 baseUrl: baseUrl,
                 frontingInfo: frontingInfo,
                 securityPolicy: securityPolicy,
-                configuration: OWSURLSession.defaultConfigurationWithoutCaching,
                 extraHeaders: extraHeaders
             )
         } else {
             let baseUrl = signalServiceInfo.baseUrl
             let securityPolicy: OWSHTTPSecurityPolicy
-            switch signalServiceType as! SignalServiceType {
-            case .updates:
-                securityPolicy = OWSURLSession.defaultSecurityPolicy
-            default:
+            if signalServiceInfo.shouldUseSignalCertificate {
                 securityPolicy = OWSURLSession.signalServiceSecurityPolicy
+            } else {
+                securityPolicy = OWSURLSession.defaultSecurityPolicy
             }
-
-            urlSession = OWSURLSession(
+            return OWSURLSessionEndpoint(
                 baseUrl: baseUrl,
+                frontingInfo: nil,
                 securityPolicy: securityPolicy,
-                configuration: OWSURLSession.defaultConfigurationWithoutCaching,
-                extraHeaders: [:],
-                canUseSignalProxy: true
+                extraHeaders: [:]
             )
         }
+    }
+
+    public func typeUnsafe_buildUrlSession(
+        for signalServiceInfo: Any,
+        endpoint: OWSURLSessionEndpoint,
+        configuration: URLSessionConfiguration?
+    ) -> Any {
+        let signalServiceInfo = signalServiceInfo as! SignalServiceInfo
+        return typeSafe_buildUrlSession(for: signalServiceInfo, endpoint: endpoint, configuration: configuration)
+    }
+
+    private func typeSafe_buildUrlSession(
+        for signalServiceInfo: SignalServiceInfo,
+        endpoint: OWSURLSessionEndpoint,
+        configuration: URLSessionConfiguration?
+    ) -> OWSURLSessionProtocol {
+        let urlSession = OWSURLSession(
+            endpoint: endpoint,
+            configuration: configuration ?? OWSURLSession.defaultConfigurationWithoutCaching,
+            maxResponseSize: nil,
+            canUseSignalProxy: endpoint.frontingInfo == nil
+        )
         urlSession.shouldHandleRemoteDeprecation = signalServiceInfo.shouldHandleRemoteDeprecation
         return urlSession
     }
