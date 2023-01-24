@@ -36,22 +36,6 @@ public class NetworkManager: NSObject {
         }
     }
 
-    private func isRESTOnlyEndpoint(request: TSRequest) -> Bool {
-        guard let url = request.url else {
-            owsFailDebug("Missing url.")
-            return true
-        }
-        guard let urlComponents = URLComponents(string: url.absoluteString) else {
-            owsFailDebug("Missing urlComponents.")
-            return true
-        }
-        let path: String = urlComponents.path
-        let missingEndpoints = [
-            "/v1/payments/auth"
-        ]
-        return missingEndpoints.contains(path)
-    }
-
     private func restRequestPromise(request: TSRequest) -> Promise<HTTPResponse> {
         restNetworkManager.makePromise(request: request)
     }
