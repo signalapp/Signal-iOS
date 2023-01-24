@@ -81,6 +81,8 @@ public class OutageDetection: NSObject {
                     // Do nothing.
                 } else if addressString == kOutageAddress {
                     isOutageDetected = true
+                } else if addressString == "0.0.0.0" {
+                    Logger.warn("unexpected address: \(addressString)")
                 } else {
                     owsFailDebug("unexpected address: \(addressString)")
                 }

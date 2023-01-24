@@ -305,7 +305,8 @@ fileprivate extension HTTPUtils {
                     .cfurlErrorNotConnectedToInternet,
                     .cfurlErrorSecureConnectionFailed,
                     .cfurlErrorCannotLoadFromNetwork,
-                    .cfurlErrorCannotFindHost:
+                    .cfurlErrorCannotFindHost,
+                    .cfurlErrorBadURL:
                 return true
             default:
                 return false
