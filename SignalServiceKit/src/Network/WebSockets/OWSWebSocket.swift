@@ -7,24 +7,47 @@ import Foundation
 import SignalCoreKit
 
 @objc
-public enum OWSWebSocketType: Int, CaseIterable {
+public enum OWSWebSocketType: Int, CaseIterable, CustomDebugStringConvertible {
     case identified = 0
     case unidentified = 1
+
+    public var debugDescription: String {
+        switch self {
+        case .identified:
+            return "[type: identified]"
+        case .unidentified:
+            return "[type: unidentified]"
+        }
+    }
 }
 
 // MARK: -
 
 @objc
-public enum OWSWebSocketState: Int {
+public enum OWSWebSocketState: Int, CustomDebugStringConvertible {
     case closed = 0
     case connecting = 1
     case open = 2
+
+    public var debugDescription: String {
+        switch self {
+        case .closed:
+            return "closed"
+        case .connecting:
+            return "connecting"
+        case .open:
+            return "open"
+        }
+    }
 }
 
 // MARK: -
 
 @objc
 public class OWSWebSocket: NSObject {
+    // Track where Dependencies are used throughout this class.
+    private struct GlobalDependencies: Dependencies {}
+
     @objc
     public static let webSocketStateDidChange = Notification.Name("webSocketStateDidChange")
 
@@ -671,26 +694,26 @@ public class OWSWebSocket: NSObject {
     }
 
     // This method is thread-safe.
-    private var webSocketAuthenticationString: String {
+    private var webSocketAuthenticationQueryItems: [URLQueryItem]? {
         switch webSocketType {
         case .unidentified:
             // UD socket is unauthenticated.
-            return ""
+            return nil
         case .identified:
-            let login = tsAccountManager.storedServerUsername?.replacingOccurrences(of: "+", with: "%2B") ?? ""
+            let login = tsAccountManager.storedServerUsername ?? ""
             let password = tsAccountManager.storedServerAuthToken() ?? ""
             owsAssertDebug(login.nilIfEmpty != nil)
             owsAssertDebug(password.nilIfEmpty != nil)
-            return "?login=\(login)&password=\(password)"
+            return [
+                URLQueryItem(name: "login", value: login),
+                URLQueryItem(name: "password", value: password)
+            ]
         }
     }
 
     // MARK: - Socket LifeCycle
 
     public static var canAppUseSocketsToMakeRequests: Bool {
-        if signalService.isCensorshipCircumventionActive {
-            return false
-        }
         if FeatureFlags.deprecateREST {
             // When we deprecate REST, we will use web sockets in app extensions.
             return true
@@ -760,7 +783,7 @@ public class OWSWebSocket: NSObject {
             return .open(reason: "unsubmittedRequestTokens")
         }
 
-        guard webSocketFactory.canBuildWebSocket else {
+        guard GlobalDependencies.webSocketFactory.canBuildWebSocket else {
             owsFailDebug("\(logPrefix) Could not build webSocket.")
             return .closed(reason: "couldNotBuildWebSocket")
         }
@@ -942,30 +965,26 @@ public class OWSWebSocket: NSObject {
 
         Logger.info("Creating new websocket: \(webSocketType)")
 
-        let mainServiceWebSocketAPI: String = {
-            switch webSocketType {
-            case .identified:
-                return TSConstants.mainServiceWebSocketAPI_identified
-            case .unidentified:
-                return TSConstants.mainServiceWebSocketAPI_unidentified
-            }
-        }()
-        let webSocketConnectUrlString = mainServiceWebSocketAPI.appending(webSocketAuthenticationString)
-        guard let webSocketConnectURL = URL(string: webSocketConnectUrlString) else {
-            owsFailDebug("Invalid URL.")
-            return
+        let signalServiceType: SignalServiceType
+        switch webSocketType {
+        case .identified:
+            signalServiceType = .mainSignalServiceIdentified
+        case .unidentified:
+            signalServiceType = .mainSignalServiceUnidentified
         }
 
-        self.lastNewWebsocketDate.set(Date())
-        var request = URLRequest(url: webSocketConnectURL)
-        request.setValue(
-            OWSURLSession.userAgentHeaderValueSignalIos,
-            forHTTPHeaderField: OWSURLSession.userAgentHeaderKey
+        let request = WebSocketRequest(
+            signalService: signalServiceType,
+            urlPath: "v1/websocket/",
+            urlQueryItems: webSocketAuthenticationQueryItems,
+            extraHeaders: StoryManager.buildStoryHeaders()
         )
-        StoryManager.appendStoryHeaders(to: &request)
-        owsAssertDebug(webSocketFactory.canBuildWebSocket)
-        guard let webSocket = webSocketFactory.buildSocket(request: request,
-                                                           callbackQueue: OWSWebSocket.serialQueue) else {
+
+        self.lastNewWebsocketDate.set(Date())
+        guard let webSocket = GlobalDependencies.webSocketFactory.buildSocket(
+            request: request,
+            callbackQueue: OWSWebSocket.serialQueue
+        ) else {
             owsFailDebug("Missing webSocket.")
             return
         }
@@ -1083,7 +1102,7 @@ public class OWSWebSocket: NSObject {
             Logger.info("\(self.logPrefix)")
         }
 
-        applyDesiredSocketState()
+        cycleSocket()
     }
 
     @objc
@@ -1451,7 +1470,7 @@ private class WebSocketConnection {
 
     private let webSocketType: OWSWebSocketType
 
-    private var webSocket: SSKWebSocket
+    private let webSocket: SSKWebSocket
 
     private let unfairLock = UnfairLock()
 

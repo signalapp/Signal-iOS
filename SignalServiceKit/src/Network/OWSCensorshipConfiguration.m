@@ -139,13 +139,11 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
         return self.googlePinningPolicy;
     } else if ([domain isEqualToString:OWSFrontingHost_GoogleUzbekistan]) {
         return self.googlePinningPolicy;
+    } else if ([domain isEqualToString:OWSFrontingHost_Default]) {
+        return self.googlePinningPolicy;
     } else {
         OWSLogVerbose(@"domain: %@", domain);
-        if ([domain containsString:@".google."]) {
-            OWSLogWarn(@"Unknown pinning domain.");
-        } else {
-            OWSFailDebug(@"Unknown pinning domain.");
-        }
+        OWSFailDebug(@"Unknown pinning domain.");
         return self.googlePinningPolicy;
     }
 }
@@ -200,30 +198,6 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
 
     OWSLogVerbose(@"read cert data with name: %@ length: %lu", name, (unsigned long)certData.length);
     return certData;
-}
-
-+ (OWSHTTPSecurityPolicy *)yahooViewPinningPolicy_deprecated
-{
-    static OWSHTTPSecurityPolicy *securityPolicy = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        // DigiCertGlobalRootG2 - view.yahoo.com
-        NSArray<NSString *> *certNames = @[ @"DigiCertSHA2HighAssuranceServerCA" ];
-        securityPolicy = [self pinningPolicyWithCertNames:certNames];
-    });
-    return securityPolicy;
-}
-
-+ (OWSHTTPSecurityPolicy *)souqPinningPolicy_deprecated
-{
-    static OWSHTTPSecurityPolicy *securityPolicy = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        // SFSRootCAG2 - cms.souqcdn.com
-        NSArray<NSString *> *certNames = @[ @"SFSRootCAG2" ];
-        securityPolicy = [self pinningPolicyWithCertNames:certNames];
-    });
-    return securityPolicy;
 }
 
 + (OWSHTTPSecurityPolicy *)googlePinningPolicy

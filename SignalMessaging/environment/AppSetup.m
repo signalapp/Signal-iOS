@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)setupEnvironmentWithPaymentsEvents:(id<PaymentsEvents>)paymentsEvents
                           mobileCoinHelper:(id<MobileCoinHelper>)mobileCoinHelper
-                          webSocketFactory:(id<WebSocketFactory>)webSocketFactory
+                          webSocketFactory:(id)webSocketFactory
                  appSpecificSingletonBlock:(NS_NOESCAPE dispatch_block_t)appSpecificSingletonBlock
                        migrationCompletion:(void (^)(NSError *_Nullable error))migrationCompletion
 {

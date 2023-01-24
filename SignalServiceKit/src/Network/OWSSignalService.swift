@@ -349,8 +349,3 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
         static let manualCensorshipCircumventionCountryCodeKey = "kTSStorageManager_ManualCensorshipCircumventionCountryCode"
     }
 }
-
-private enum SerializerType {
-    case json
-    case binary
-}

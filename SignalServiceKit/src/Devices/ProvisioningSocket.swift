@@ -13,25 +13,26 @@ public protocol ProvisioningSocketDelegate: AnyObject {
 
 // MARK: -
 
-// TODO: Do we still need the ProvisioningSocket if we have the unidentified websocket?
 public class ProvisioningSocket {
     let socket: SSKWebSocket
     public weak var delegate: ProvisioningSocketDelegate?
 
-    public init() {
-        // TODO: Will this work with censorship circumvention?
+    public init(webSocketFactory: WebSocketFactory) {
         // TODO: Should we (sometimes?) use the unidentified service?
-        let serviceBaseURL = URL(string: TSConstants.mainServiceWebSocketAPI_identified)!
-        let socketURL = URL(string: "/v1/websocket/provisioning/?agent=\(OWSDeviceProvisioner.userAgent)",
-                            relativeTo: serviceBaseURL)!
-
-        let request = URLRequest(url: socketURL)
-        let websocketFactory = SSKEnvironment.shared.webSocketFactoryRef
-        owsAssert(websocketFactory.canBuildWebSocket)
-        let webSocket = websocketFactory.buildSocket(request: request,
-                                                     callbackQueue: .main)!
+        let request = WebSocketRequest(
+            signalService: .mainSignalServiceIdentified,
+            urlPath: "v1/websocket/provisioning/",
+            urlQueryItems: [URLQueryItem(name: "agent", value: OWSDeviceProvisioner.userAgent)],
+            extraHeaders: [:]
+        )
+        let webSocket = webSocketFactory.buildSocket(request: request, callbackQueue: .main)!
         self.socket = webSocket
         webSocket.delegate = self
+    }
+
+    public convenience init() {
+        struct GlobalDependencies: Dependencies {}
+        self.init(webSocketFactory: GlobalDependencies.webSocketFactory)
     }
 
     public var state: SSKWebSocketState {

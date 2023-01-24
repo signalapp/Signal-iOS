@@ -171,6 +171,13 @@ public protocol OWSURLSessionProtocol: AnyObject, Dependencies {
         request: URLRequest,
         progress progressBlock: ProgressBlock?
     ) -> Promise<OWSUrlDownloadResponse>
+
+    @available(iOS 13, *)
+    func webSocketTask(
+        requestUrl: URL,
+        didOpenBlock: @escaping (String?) -> Void,
+        didCloseBlock: @escaping (Error) -> Void
+    ) -> URLSessionWebSocketTask
 }
 
 extension OWSURLSessionProtocol {

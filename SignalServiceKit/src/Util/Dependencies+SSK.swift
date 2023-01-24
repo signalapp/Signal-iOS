@@ -461,14 +461,6 @@ public extension NSObject {
         SSKEnvironment.shared.phoneNumberUtilRef
     }
 
-    final var webSocketFactory: WebSocketFactory {
-        SSKEnvironment.shared.webSocketFactoryRef
-    }
-
-    static var webSocketFactory: WebSocketFactory {
-        SSKEnvironment.shared.webSocketFactoryRef
-    }
-
     var changePhoneNumber: ChangePhoneNumber {
         SSKEnvironment.shared.changePhoneNumberRef
     }
@@ -963,11 +955,11 @@ public extension Dependencies {
     }
 
     var webSocketFactory: WebSocketFactory {
-        SSKEnvironment.shared.webSocketFactoryRef
+        SSKEnvironment.shared.webSocketFactoryRef as! WebSocketFactory
     }
 
     static var webSocketFactory: WebSocketFactory {
-        SSKEnvironment.shared.webSocketFactoryRef
+        SSKEnvironment.shared.webSocketFactoryRef as! WebSocketFactory
     }
 
     var changePhoneNumber: ChangePhoneNumber {

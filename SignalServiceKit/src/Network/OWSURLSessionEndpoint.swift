@@ -36,11 +36,12 @@ public class OWSURLSessionEndpoint: NSObject {
 
     func buildRequest(
         _ urlString: String,
+        overrideUrlScheme: String? = nil,
         method: HTTPMethod,
         headers: [String: String]? = nil,
         body: Data? = nil
     ) throws -> URLRequest {
-        guard let url = buildUrl(urlString) else {
+        guard let url = buildUrl(urlString, overrideUrlScheme: overrideUrlScheme) else {
             throw OWSAssertionError("Invalid url.")
         }
         var request = URLRequest(url: url)
@@ -61,12 +62,15 @@ public class OWSURLSessionEndpoint: NSObject {
     ///
     /// - Parameters:
     ///   - urlString: Typically, this is only the path & query components.
+    ///   - overrideUrlScheme: A scheme to use in place of `baseUrl`'s scheme.
     ///
     /// - Returns:
     ///     An absolute URL that works with this endpoint. The returned URL's
-    ///     scheme & host are replaced by the scheme & host of `baseUrl`. In
-    ///     some cases, the URL's path may have a component prepended to it.
-    private func buildUrl(_ urlString: String) -> URL? {
+    ///     host is replaced by the host of `baseUrl`. In some cases, the URL's
+    ///     path may have a component prepended to it. The scheme is set to
+    ///     `overrideUrlScheme`; if that value is `nil`, the scheme set to
+    ///     `baseUrl`'s scheme.
+    private func buildUrl(_ urlString: String, overrideUrlScheme: String?) -> URL? {
         let baseUrl: URL? = {
             if let frontingInfo {
                 // Never apply fronting twice; if urlString already contains a fronted URL,
@@ -81,10 +85,10 @@ public class OWSURLSessionEndpoint: NSObject {
             return self.baseUrl
         }()
 
-        guard let requestUrl = OWSURLBuilderUtil.joinUrl(urlString: urlString, baseUrl: baseUrl) else {
-            owsFailDebug("Could not build URL.")
-            return nil
-        }
-        return requestUrl
+        return OWSURLBuilderUtil.joinUrl(
+            urlString: urlString,
+            overrideUrlScheme: overrideUrlScheme,
+            baseUrl: baseUrl
+        )
     }
 }

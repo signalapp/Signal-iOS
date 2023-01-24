@@ -39,12 +39,9 @@ public class TSConstants: NSObject {
     public static let donateUrl = URL(string: "https://signal.org/donate/")!
     public static var appStoreUpdateURL = URL(string: "https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8")!
 
-    @objc
-    public static var mainServiceWebSocketAPI_identified: String { shared.mainServiceWebSocketAPI_identified }
-    @objc
-    public static var mainServiceWebSocketAPI_unidentified: String { shared.mainServiceWebSocketAPI_unidentified }
-    @objc
-    public static var mainServiceURL: String { shared.mainServiceURL }
+    public static var mainServiceIdentifiedURL: String { shared.mainServiceIdentifiedURL }
+    public static var mainServiceUnidentifiedURL: String { shared.mainServiceUnidentifiedURL }
+
     @objc
     public static var textSecureCDN0ServerURL: String { shared.textSecureCDN0ServerURL }
     @objc
@@ -81,6 +78,7 @@ public class TSConstants: NSObject {
     public static var contactDiscoveryCensorshipPrefix: String { shared.contactDiscoveryCensorshipPrefix }
     public static var keyBackupCensorshipPrefix: String { shared.keyBackupCensorshipPrefix }
     public static var storageServiceCensorshipPrefix: String { shared.storageServiceCensorshipPrefix }
+    public static var contactDiscoveryV2CensorshipPrefix: String { shared.contactDiscoveryV2CensorshipPrefix }
 
     @objc
     public static var contactDiscoveryEnclaveName: String { shared.contactDiscoveryMrEnclave.stringValue }
@@ -109,9 +107,8 @@ public class TSConstants: NSObject {
 // MARK: -
 
 private protocol TSConstantsProtocol: AnyObject {
-    var mainServiceWebSocketAPI_identified: String { get }
-    var mainServiceWebSocketAPI_unidentified: String { get }
-    var mainServiceURL: String { get }
+    var mainServiceIdentifiedURL: String { get }
+    var mainServiceUnidentifiedURL: String { get }
     var textSecureCDN0ServerURL: String { get }
     var textSecureCDN2ServerURL: String { get }
     var contactDiscoverySGXURL: String { get }
@@ -134,6 +131,7 @@ private protocol TSConstantsProtocol: AnyObject {
     var contactDiscoveryCensorshipPrefix: String { get }
     var keyBackupCensorshipPrefix: String { get }
     var storageServiceCensorshipPrefix: String { get }
+    var contactDiscoveryV2CensorshipPrefix: String { get }
 
     // SGX Backed Contact Discovery
     var contactDiscoveryMrEnclave: MrEnclave { get }
@@ -174,9 +172,8 @@ public struct MrEnclave: Equatable {
 
 private class TSConstantsProduction: TSConstantsProtocol {
 
-    public let mainServiceWebSocketAPI_identified = "wss://chat.signal.org/v1/websocket/"
-    public let mainServiceWebSocketAPI_unidentified = "wss://ud-chat.signal.org/v1/websocket/"
-    public let mainServiceURL = "https://chat.signal.org/"
+    public let mainServiceIdentifiedURL = "https://chat.signal.org"
+    public let mainServiceUnidentifiedURL = "https://ud-chat.signal.org"
     public let textSecureCDN0ServerURL = "https://cdn.signal.org"
     public let textSecureCDN2ServerURL = "https://cdn2.signal.org"
     public let contactDiscoverySGXURL = "https://api.directory.signal.org"
@@ -191,7 +188,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let updatesURL = "https://updates.signal.org"
     public let updates2URL = "https://updates2.signal.org"
 
-    public let censorshipReflectorHost = "europe-west1-signal-cdn-reflector.cloudfunctions.net"
+    public let censorshipReflectorHost = "reflector-nrgwuv7kwq-uc.a.run.app"
 
     public let serviceCensorshipPrefix = "service"
     public let cdn0CensorshipPrefix = "cdn"
@@ -199,6 +196,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let contactDiscoveryCensorshipPrefix = "directory"
     public let keyBackupCensorshipPrefix = "backup"
     public let storageServiceCensorshipPrefix = "storage"
+    public let contactDiscoveryV2CensorshipPrefix = "cdsi"
 
     public var contactDiscoveryMrEnclave = MrEnclave("74778bb0f93ae1f78c26e67152bab0bbeb693cd56d1bb9b4e9244157acc58081")
     public let contactDiscoveryV2MrEnclave = MrEnclave("ef4787a56a154ac6d009138cac17155acd23cfe4329281252365dd7c252e7fbf")
@@ -228,9 +226,8 @@ private class TSConstantsProduction: TSConstantsProtocol {
 
 private class TSConstantsStaging: TSConstantsProtocol {
 
-    public let mainServiceWebSocketAPI_identified = "wss://chat.staging.signal.org/v1/websocket/"
-    public let mainServiceWebSocketAPI_unidentified = "wss://ud-chat.staging.signal.org/v1/websocket/"
-    public let mainServiceURL = "https://chat.staging.signal.org/"
+    public let mainServiceIdentifiedURL = "https://chat.staging.signal.org"
+    public let mainServiceUnidentifiedURL = "https://ud-chat.staging.signal.org"
     public let textSecureCDN0ServerURL = "https://cdn-staging.signal.org"
     public let textSecureCDN2ServerURL = "https://cdn2-staging.signal.org"
     public let contactDiscoverySGXURL = "https://api-staging.directory.signal.org"
@@ -255,6 +252,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let contactDiscoveryCensorshipPrefix = "directory-staging"
     public let keyBackupCensorshipPrefix = "backup-staging"
     public let storageServiceCensorshipPrefix = "storage-staging"
+    public let contactDiscoveryV2CensorshipPrefix = "cdsi-staging"
 
     // CDS uses the same EnclaveName and MrEnclave
     public var contactDiscoveryMrEnclave = MrEnclave("74778bb0f93ae1f78c26e67152bab0bbeb693cd56d1bb9b4e9244157acc58081")

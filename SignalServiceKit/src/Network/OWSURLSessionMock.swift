@@ -145,4 +145,14 @@ public class OWSURLSessionMock: OWSURLSessionProtocol {
             downloadUrl: URL(fileURLWithPath: requestUrl.lastPathComponent)
         ))
     }
+
+    @available(iOS 13.0, *)
+    public func webSocketTask(
+        requestUrl: URL,
+        didOpenBlock: @escaping (String?) -> Void,
+        didCloseBlock: @escaping (Error) -> Void
+    ) -> URLSessionWebSocketTask {
+        // Want different behavior? Write a custom mock class
+        fatalError("Not implemented.")
+    }
 }

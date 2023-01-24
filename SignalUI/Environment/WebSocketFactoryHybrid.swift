@@ -8,17 +8,20 @@ import SignalServiceKit
 import SignalMessaging
 import Starscream
 
-@objc
-public class WebSocketFactoryHybrid: NSObject, WebSocketFactory {
+public class WebSocketFactoryHybrid: WebSocketFactory, Dependencies {
+    public init() {
+    }
 
     public var canBuildWebSocket: Bool { true }
 
-    public func buildSocket(request: URLRequest, callbackQueue: DispatchQueue) -> SSKWebSocket? {
+    public func buildSocket(request: WebSocketRequest, callbackQueue: DispatchQueue) -> SSKWebSocket? {
+        let webSocketType: SSKWebSocket.Type
         if FeatureFlags.canUseNativeWebsocket, #available(iOS 13, *) {
-            return SSKWebSocketNative(request: request, callbackQueue: callbackQueue)
+            webSocketType = SSKWebSocketNative.self
         } else {
-            return SSKWebSocketStarScream(request: request, callbackQueue: callbackQueue)
+            webSocketType = SSKWebSocketStarScream.self
         }
+        return webSocketType.init(request: request, signalService: signalService, callbackQueue: callbackQueue)
     }
 }
 
@@ -35,12 +38,25 @@ class SSKWebSocketStarScream: SSKWebSocket {
 
     fileprivate let httpResponseHeaders = AtomicOptional<[String: String]>(nil)
 
-    init(request: URLRequest, callbackQueue: DispatchQueue) {
-        let socket = WebSocket(request: request)
+    required init?(
+        request: WebSocketRequest,
+        signalService: OWSSignalServiceProtocol,
+        callbackQueue: DispatchQueue
+    ) {
+        let endpoint = signalService.buildUrlEndpoint(for: request.signalService.signalServiceInfo())
+
+        guard let urlRequest = request.build(for: endpoint) else {
+            return nil
+        }
+
+        let socket = WebSocket(request: urlRequest)
         socket.callbackQueue = callbackQueue
         socket.disableSSLCertValidation = true
         socket.socketSecurityLevel = StreamSocketSecurityLevel.tlSv1_2
-        let security = SSLSecurity(certs: [SignalMessengerCertificate()], usePublicKeys: false)
+        let security = SSLSecurity(
+            certs: endpoint.securityPolicy.pinnedCertificates.map { SSLCert(data: $0) },
+            usePublicKeys: false
+        )
         security.validateEntireChain = false
         socket.security = security
 
@@ -151,13 +167,6 @@ extension SSKWebSocketStarScream: WebSocketDelegate {
         assertOnQueue(callbackQueue)
         delegate?.websocket(self, didReceiveData: data)
     }
-}
-
-// MARK: -
-
-private func SignalMessengerCertificate() -> SSLCert {
-    let data = SSKSignalMessengerCertificateData()
-    return SSLCert(data: data)
 }
 
 // MARK: -

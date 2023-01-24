@@ -1336,13 +1336,11 @@
 		F9B0DC4F28948656004E07B7 /* schema.sql in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC3C28948656004E07B7 /* schema.sql */; };
 		F9B0DC5028948656004E07B7 /* signal-mainnet.der in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC3E28948656004E07B7 /* signal-mainnet.der */; };
 		F9B0DC5128948656004E07B7 /* ias-root.cer in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC3F28948656004E07B7 /* ias-root.cer */; };
-		F9B0DC5228948656004E07B7 /* SFSRootCAG2.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4028948656004E07B7 /* SFSRootCAG2.crt */; };
 		F9B0DC5328948656004E07B7 /* isrgrootx1.der in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4128948656004E07B7 /* isrgrootx1.der */; };
 		F9B0DC5428948656004E07B7 /* DigiCertGlobalRootG2.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4228948656004E07B7 /* DigiCertGlobalRootG2.crt */; };
 		F9B0DC5528948656004E07B7 /* GSR2.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4328948656004E07B7 /* GSR2.crt */; };
 		F9B0DC5628948656004E07B7 /* authority-signal-testnet.pem in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4428948656004E07B7 /* authority-signal-testnet.pem */; };
 		F9B0DC5728948656004E07B7 /* GSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4528948656004E07B7 /* GSR4.crt */; };
-		F9B0DC5828948656004E07B7 /* DigiCertSHA2HighAssuranceServerCA.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4628948656004E07B7 /* DigiCertSHA2HighAssuranceServerCA.crt */; };
 		F9B0DC5928948656004E07B7 /* signal-messenger.cer in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4728948656004E07B7 /* signal-messenger.cer */; };
 		F9B0DC5A28948656004E07B7 /* GIAG2.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4828948656004E07B7 /* GIAG2.crt */; };
 		F9B0DC5B28948656004E07B7 /* authority-mobilecoin-testnet.pem in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4928948656004E07B7 /* authority-mobilecoin-testnet.pem */; };
@@ -3748,13 +3746,11 @@
 		F9B0DC3C28948656004E07B7 /* schema.sql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = schema.sql; sourceTree = "<group>"; };
 		F9B0DC3E28948656004E07B7 /* signal-mainnet.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = "signal-mainnet.der"; sourceTree = "<group>"; };
 		F9B0DC3F28948656004E07B7 /* ias-root.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ias-root.cer"; sourceTree = "<group>"; };
-		F9B0DC4028948656004E07B7 /* SFSRootCAG2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = SFSRootCAG2.crt; sourceTree = "<group>"; };
 		F9B0DC4128948656004E07B7 /* isrgrootx1.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = isrgrootx1.der; sourceTree = "<group>"; };
 		F9B0DC4228948656004E07B7 /* DigiCertGlobalRootG2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = DigiCertGlobalRootG2.crt; sourceTree = "<group>"; };
 		F9B0DC4328948656004E07B7 /* GSR2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GSR2.crt; sourceTree = "<group>"; };
 		F9B0DC4428948656004E07B7 /* authority-signal-testnet.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "authority-signal-testnet.pem"; sourceTree = "<group>"; };
 		F9B0DC4528948656004E07B7 /* GSR4.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GSR4.crt; sourceTree = "<group>"; };
-		F9B0DC4628948656004E07B7 /* DigiCertSHA2HighAssuranceServerCA.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = DigiCertSHA2HighAssuranceServerCA.crt; sourceTree = "<group>"; };
 		F9B0DC4728948656004E07B7 /* signal-messenger.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = "signal-messenger.cer"; sourceTree = "<group>"; };
 		F9B0DC4828948656004E07B7 /* GIAG2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GIAG2.crt; sourceTree = "<group>"; };
 		F9B0DC4928948656004E07B7 /* authority-mobilecoin-testnet.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "authority-mobilecoin-testnet.pem"; sourceTree = "<group>"; };
@@ -7349,7 +7345,6 @@
 				F9B0DC4928948656004E07B7 /* authority-mobilecoin-testnet.pem */,
 				F9B0DC4428948656004E07B7 /* authority-signal-testnet.pem */,
 				F9B0DC4228948656004E07B7 /* DigiCertGlobalRootG2.crt */,
-				F9B0DC4628948656004E07B7 /* DigiCertSHA2HighAssuranceServerCA.crt */,
 				F9B0DC4828948656004E07B7 /* GIAG2.crt */,
 				F9B0DC4328948656004E07B7 /* GSR2.crt */,
 				F9B0DC4528948656004E07B7 /* GSR4.crt */,
@@ -7359,7 +7354,6 @@
 				F9B0DC4D28948656004E07B7 /* GTSR4.crt */,
 				F9B0DC3F28948656004E07B7 /* ias-root.cer */,
 				F9B0DC4128948656004E07B7 /* isrgrootx1.der */,
-				F9B0DC4028948656004E07B7 /* SFSRootCAG2.crt */,
 				F9B0DC3E28948656004E07B7 /* signal-mainnet.der */,
 				F9B0DC4728948656004E07B7 /* signal-messenger.cer */,
 			);
@@ -9358,7 +9352,6 @@
 				F9B0DC5B28948656004E07B7 /* authority-mobilecoin-testnet.pem in Resources */,
 				F9B0DC5628948656004E07B7 /* authority-signal-testnet.pem in Resources */,
 				F9B0DC5428948656004E07B7 /* DigiCertGlobalRootG2.crt in Resources */,
-				F9B0DC5828948656004E07B7 /* DigiCertSHA2HighAssuranceServerCA.crt in Resources */,
 				F9B0DC5A28948656004E07B7 /* GIAG2.crt in Resources */,
 				F9B0DC5528948656004E07B7 /* GSR2.crt in Resources */,
 				F9B0DC5728948656004E07B7 /* GSR4.crt in Resources */,
@@ -9369,7 +9362,6 @@
 				F9B0DC5128948656004E07B7 /* ias-root.cer in Resources */,
 				F9B0DC5328948656004E07B7 /* isrgrootx1.der in Resources */,
 				F9B0DC4F28948656004E07B7 /* schema.sql in Resources */,
-				F9B0DC5228948656004E07B7 /* SFSRootCAG2.crt in Resources */,
 				F9B0DC5028948656004E07B7 /* signal-mainnet.der in Resources */,
 				F9B0DC5928948656004E07B7 /* signal-messenger.cer in Resources */,
 			);

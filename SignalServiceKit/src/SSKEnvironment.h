@@ -66,7 +66,6 @@ extern NSNotificationName const WarmCachesNotification;
 @protocol SyncManagerProtocol;
 @protocol SystemStoryManagerProtocolObjc;
 @protocol VersionedProfiles;
-@protocol WebSocketFactory;
 
 typedef NS_ENUM(uint8_t, OWSIdentity);
 
@@ -125,7 +124,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                   spamChallengeResolver:(SpamChallengeResolver *)spamResolver
                          senderKeyStore:(SenderKeyStore *)senderKeyStore
                         phoneNumberUtil:(PhoneNumberUtil *)phoneNumberUtil
-                       webSocketFactory:(id<WebSocketFactory>)webSocketFactory
+                       webSocketFactory:(id)webSocketFactory
                       changePhoneNumber:(ChangePhoneNumber *)changePhoneNumber
                     subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager
                      systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager
@@ -187,7 +186,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 @property (nonatomic, readonly) SpamChallengeResolver *spamChallengeResolverRef;
 @property (nonatomic, readonly) SenderKeyStore *senderKeyStoreRef;
 @property (nonatomic, readonly) PhoneNumberUtil *phoneNumberUtilRef;
-@property (nonatomic, readonly) id<WebSocketFactory> webSocketFactoryRef;
+@property (nonatomic, readonly) id webSocketFactoryRef;
 @property (nonatomic, readonly) ChangePhoneNumber *changePhoneNumberRef;
 @property (nonatomic, readonly) id<SubscriptionManagerProtocol> subscriptionManagerRef;
 @property (nonatomic, readonly) id<SystemStoryManagerProtocolObjc> systemStoryManagerRef;

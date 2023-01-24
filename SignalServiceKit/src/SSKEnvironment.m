@@ -59,7 +59,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) SpamChallengeResolver *spamChallengeResolverRef;
 @property (nonatomic) SenderKeyStore *senderKeyStoreRef;
 @property (nonatomic) PhoneNumberUtil *phoneNumberUtilRef;
-@property (nonatomic) id<WebSocketFactory> webSocketFactoryRef;
+@property (nonatomic) id webSocketFactoryRef;
 @property (nonatomic) ChangePhoneNumber *changePhoneNumberRef;
 @property (nonatomic) id<SubscriptionManagerProtocol> subscriptionManagerRef;
 @property (nonatomic) id<SystemStoryManagerProtocolObjc> systemStoryManagerRef;
@@ -127,7 +127,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                   spamChallengeResolver:(SpamChallengeResolver *)spamResolver
                          senderKeyStore:(SenderKeyStore *)senderKeyStore
                         phoneNumberUtil:(PhoneNumberUtil *)phoneNumberUtil
-                       webSocketFactory:(id<WebSocketFactory>)webSocketFactory
+                       webSocketFactory:(id)webSocketFactory
                       changePhoneNumber:(ChangePhoneNumber *)changePhoneNumber
                     subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager
                      systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager

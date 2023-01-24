@@ -42,11 +42,11 @@ public class RESTSessionManager: NSObject {
                                success: @escaping RESTNetworkManagerSuccess,
                                failure: @escaping RESTNetworkManagerFailure) {
         assertOnQueue(NetworkManagerQueue())
-        owsAssertDebug(!FeatureFlags.deprecateREST || signalService.isCensorshipCircumventionActive)
+        owsAssertDebug(!FeatureFlags.deprecateREST)
 
         // We should only use the RESTSessionManager for requests to the Signal main service.
         let urlSession = self.urlSession
-        owsAssertDebug(urlSession.unfrontedBaseUrl == URL(string: TSConstants.mainServiceURL))
+        owsAssertDebug(urlSession.unfrontedBaseUrl == URL(string: TSConstants.mainServiceIdentifiedURL))
 
         guard let requestUrl = request.url else {
             owsFailDebug("Missing requestUrl.")

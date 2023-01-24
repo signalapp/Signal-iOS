@@ -8,10 +8,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSHTTPSecurityPolicy ()
-@property (readonly) NSSet<NSData *> *pinnedCertificates;
-@end
-
 @implementation OWSHTTPSecurityPolicy
 
 + (instancetype)sharedPolicy {
@@ -104,10 +100,6 @@ static BOOL AFServerTrustIsValid(SecTrustRef serverTrust) {
 
 _out:
     return isValid;
-}
-
-NSData *SSKSignalMessengerCertificateData() {
-    return [OWSHTTPSecurityPolicy dataFromCertificateFileForService:@"signal-messenger"];
 }
 
 @end

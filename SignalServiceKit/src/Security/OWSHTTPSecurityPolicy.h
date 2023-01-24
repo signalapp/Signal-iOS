@@ -8,8 +8,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSData *SSKSignalMessengerCertificateData(void);
-
 /// A simplified version of AFNetworking's AFSecurityPolicy.
 @interface OWSHTTPSecurityPolicy : NSObject
 
@@ -17,6 +15,7 @@ extern NSData *SSKSignalMessengerCertificateData(void);
 + (instancetype)systemDefault;
 
 - (instancetype)initWithPinnedCertificates:(NSSet<NSData *> *)certificates;
+@property (nonatomic, readonly) NSSet<NSData *> *pinnedCertificates;
 
 - (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust forDomain:(nullable NSString *)domain;
 

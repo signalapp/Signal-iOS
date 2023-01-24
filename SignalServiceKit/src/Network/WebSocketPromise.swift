@@ -7,8 +7,12 @@ import Foundation
 import Network
 
 extension WebSocketFactory {
-    func webSocketPromise(request: URLRequest, queue: DispatchQueue) -> WebSocketPromise? {
-        guard let webSocket = buildSocket(request: request, callbackQueue: queue) else {
+    func webSocketPromise(
+        request: WebSocketRequest,
+        callbackQueue: DispatchQueue
+    ) -> WebSocketPromise? {
+        // TODO: This is optional to support iOS 12. It's non-optional on iOS 13+.
+        guard let webSocket = buildSocket(request: request, callbackQueue: callbackQueue) else {
             return nil
         }
         return WebSocketPromise(webSocket: webSocket)

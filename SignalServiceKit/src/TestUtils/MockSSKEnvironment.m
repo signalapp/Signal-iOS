@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
     SpamChallengeResolver *spamChallengeResolver = [SpamChallengeResolver new];
     SenderKeyStore *senderKeyStore = [SenderKeyStore new];
     PhoneNumberUtil *phoneNumberUtil = [PhoneNumberUtil new];
-    id<WebSocketFactory> webSocketFactory = [WebSocketFactoryMock new];
+    id webSocketFactory = [WebSocketFactoryMock new];
     ChangePhoneNumber *changePhoneNumber = [ChangePhoneNumber new];
     id<SubscriptionManagerProtocol> subscriptionManager = [MockSubscriptionManager new];
     SystemStoryManagerMock *systemStoryManager = [SystemStoryManagerMock new];

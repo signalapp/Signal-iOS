@@ -322,7 +322,13 @@ extension StoryManager {
     }
 
     public static func appendStoryHeaders(to request: inout URLRequest) {
-        request.setValue(areStoriesEnabled ? "true" : "false", forHTTPHeaderField: "X-Signal-Receive-Stories")
+        for (key, value) in buildStoryHeaders() {
+            request.setValue(value, forHTTPHeaderField: key)
+        }
+    }
+
+    public static func buildStoryHeaders() -> [String: String] {
+        ["X-Signal-Receive-Stories": areStoriesEnabled ? "true" : "false"]
     }
 }
 

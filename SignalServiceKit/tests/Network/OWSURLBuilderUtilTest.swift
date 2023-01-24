@@ -42,6 +42,13 @@ class OWSURLBuilderUtilTest: SSKBaseTestSwift {
             )
         )
         XCTAssertEqual(
+            URL(string: "https://e.f.com/a/b/c/")!,
+            OWSURLBuilderUtil.joinUrl(
+                urlString: "a/b/c/",
+                baseUrl: URL(string: "https://e.f.com")
+            )
+        )
+        XCTAssertEqual(
             URL(string: "https://e.f.com/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "/a/b/c",
@@ -61,6 +68,13 @@ class OWSURLBuilderUtilTest: SSKBaseTestSwift {
             URL(string: "https://e.f.com/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "a/b/c",
+                baseUrl: URL(string: "https://e.f.com/")
+            )
+        )
+        XCTAssertEqual(
+            URL(string: "https://e.f.com/a/b/c/")!,
+            OWSURLBuilderUtil.joinUrl(
+                urlString: "a/b/c/",
                 baseUrl: URL(string: "https://e.f.com/")
             )
         )
@@ -88,6 +102,13 @@ class OWSURLBuilderUtilTest: SSKBaseTestSwift {
             )
         )
         XCTAssertEqual(
+            URL(string: "https://e.f.com/x/a/b/c/")!,
+            OWSURLBuilderUtil.joinUrl(
+                urlString: "a/b/c/",
+                baseUrl: URL(string: "https://e.f.com/x")
+            )
+        )
+        XCTAssertEqual(
             URL(string: "https://e.f.com/x/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "/a/b/c",
@@ -107,6 +128,13 @@ class OWSURLBuilderUtilTest: SSKBaseTestSwift {
             URL(string: "https://e.f.com/x/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "a/b/c",
+                baseUrl: URL(string: "https://e.f.com/x/")
+            )
+        )
+        XCTAssertEqual(
+            URL(string: "https://e.f.com/x/a/b/c/")!,
+            OWSURLBuilderUtil.joinUrl(
+                urlString: "a/b/c/",
                 baseUrl: URL(string: "https://e.f.com/x/")
             )
         )
@@ -168,6 +196,24 @@ class OWSURLBuilderUtilTest: SSKBaseTestSwift {
             OWSURLBuilderUtil.joinUrl(
                 urlString: "http://g.h.com/a/b/c",
                 baseUrl: URL(string: "https://e.f.com/x/#ppp")
+            )
+        )
+
+        // Override scheme
+        XCTAssertEqual(
+            URL(string: "wss://e.f.com/a/b/c?d=e#f")!,
+            OWSURLBuilderUtil.joinUrl(
+                urlString: "http://e.f.com/a/b/c?d=e#f",
+                overrideUrlScheme: "wss",
+                baseUrl: nil
+            )
+        )
+        XCTAssertEqual(
+            URL(string: "wss://g.h.com/x/a/b/c?d=e#f")!,
+            OWSURLBuilderUtil.joinUrl(
+                urlString: "http://e.f.com/a/b/c?d=e#f",
+                overrideUrlScheme: "wss",
+                baseUrl: URL(string: "https://g.h.com/x")!
             )
         )
     }

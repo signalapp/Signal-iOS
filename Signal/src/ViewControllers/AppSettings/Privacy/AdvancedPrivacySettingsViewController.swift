@@ -54,20 +54,12 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
     func updateTableContents() {
         let contents = OWSTableContents()
 
-        // Censorship circumvention has certain disadvantages so it should only be
-        // used if necessary.  Therefore:
-        //
-        // * We disable this setting if the user has a phone number from a censored region -
-        //   censorship circumvention will be auto-activated for this user.
-        // * We disable this setting if the user is already connected; they're not being
-        //   censored.
-        // * We continue to show this setting so long as it is set to allow users to disable
-        //   it, for example when they leave a censored region.
         let censorshipCircumventionSection = OWSTableSection()
+        let isCensorshipCircumventionSwitchEnabled: Bool
 
-        let isAnySocketOpen = socketManager.isAnySocketOpen
-        if self.signalService.hasCensoredPhoneNumber {
-            if self.signalService.isCensorshipCircumventionManuallyDisabled {
+        if signalService.hasCensoredPhoneNumber {
+            isCensorshipCircumventionSwitchEnabled = true
+            if signalService.isCensorshipCircumventionManuallyDisabled {
                 censorshipCircumventionSection.footerTitle = NSLocalizedString(
                     "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED",
                     comment: "Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled."
@@ -78,17 +70,20 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                     comment: "Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number."
                 )
             }
-        } else if isAnySocketOpen {
+        } else if !signalService.isCensorshipCircumventionActive, socketManager.isAnySocketOpen {
+            isCensorshipCircumventionSwitchEnabled = false
             censorshipCircumventionSection.footerTitle = NSLocalizedString(
                 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED",
                 comment: "Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service."
             )
-        } else if !reachabilityManager.isReachable {
+        } else if !signalService.isCensorshipCircumventionActive, !reachabilityManager.isReachable {
+            isCensorshipCircumventionSwitchEnabled = false
             censorshipCircumventionSection.footerTitle = NSLocalizedString(
                 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION",
                 comment: "Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet."
             )
         } else {
+            isCensorshipCircumventionSwitchEnabled = true
             censorshipCircumventionSection.footerTitle = NSLocalizedString(
                 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER",
                 comment: "Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled."
@@ -98,34 +93,10 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
         censorshipCircumventionSection.add(.switch(
             withText: NSLocalizedString(
                 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION",
-                comment: "Label for the  'manual censorship circumvention' switch."
+                comment: "Label for the 'manual censorship circumvention' switch."
             ),
             isOn: { self.signalService.isCensorshipCircumventionActive },
-            isEnabledBlock: {
-                // Do enable if :
-                //
-                // * ...Censorship circumvention is already manually enabled (to allow users to disable it).
-                //
-                // Otherwise, don't enable if:
-                //
-                // * ...Censorship circumvention is already enabled based on the local phone number.
-                // * ...The websocket is connected, since that demonstrates that no censorship is in effect.
-                // * ...The internet is not reachable, since we don't want to let users to activate
-                //      censorship circumvention unnecessarily, e.g. if they just don't have a valid
-                //      internet connection.
-                if DebugFlags.exposeCensorshipCircumvention {
-                    return true
-                } else if self.signalService.isCensorshipCircumventionActive {
-                    return true
-                } else if self.signalService.hasCensoredPhoneNumber,
-                          self.signalService.isCensorshipCircumventionManuallyDisabled {
-                    return true
-                } else if Self.socketManager.isAnySocketOpen {
-                    return false
-                } else {
-                    return Self.reachabilityManager.isReachable
-                }
-            },
+            isEnabledBlock: { isCensorshipCircumventionSwitchEnabled || DebugFlags.exposeCensorshipCircumvention },
             target: self,
             selector: #selector(didToggleEnableCensorshipCircumventionSwitch)
         ))

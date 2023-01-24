@@ -93,21 +93,17 @@ private class ContactDiscoveryV2ConnectionImpl: ContactDiscoveryV2Connection, De
         mrenclave: MrEnclave,
         queue: DispatchQueue
     ) throws -> WebSocketPromise {
-        let headers = OWSHttpHeaders()
-        headers.addDefaultHeaders()
-        try headers.addAuthHeader(username: auth.username, password: auth.password)
-
-        var request = URLRequest(url: Self.webSocketURL(for: mrenclave))
-        request.set(httpHeaders: headers)
-
-        return webSocketFactory.webSocketPromise(request: request, queue: queue)!
-    }
-
-    private static func webSocketURL(for mrenclave: MrEnclave) -> URL {
-        return URL(string: TSConstants.contactDiscoveryV2URL)!
-            .appendingPathComponent("v1")
-            .appendingPathComponent(mrenclave.dataValue.hexadecimalString)
-            .appendingPathComponent("discovery")
+        let authHeaderValue = try OWSHttpHeaders.authHeaderValue(username: auth.username, password: auth.password)
+        let request = WebSocketRequest(
+            signalService: .contactDiscoveryV2,
+            urlPath: "v1/\(mrenclave.dataValue.hexadecimalString)/discovery",
+            urlQueryItems: nil,
+            extraHeaders: [OWSHttpHeaders.authHeaderKey: authHeaderValue]
+        )
+        guard let webSocketPromise = webSocketFactory.webSocketPromise(request: request, callbackQueue: queue) else {
+            throw OWSAssertionError("We should always be able to get a web socket from this API.")
+        }
+        return webSocketPromise
     }
 
     func sendRequestAndReadResponse(_ request: Data) -> Promise<Data> {

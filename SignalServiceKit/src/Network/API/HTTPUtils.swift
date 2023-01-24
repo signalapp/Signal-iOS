@@ -148,7 +148,7 @@ extension HTTPUtils {
         // * etc.
         //
         // TODO: Will this work with censorship circumvention?
-        if requestUrl.absoluteString.hasPrefix(TSConstants.mainServiceURL),
+        if requestUrl.absoluteString.hasPrefix(TSConstants.mainServiceIdentifiedURL),
            request.shouldHaveAuthorizationHeaders {
             DispatchQueue.main.async {
                 if Self.tsAccountManager.isRegisteredAndReady {
