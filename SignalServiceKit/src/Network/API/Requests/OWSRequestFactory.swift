@@ -16,7 +16,6 @@ public extension OWSRequestFactory {
     static let textSecureSignedKeysAPI  = "v2/keys/signed"
     static let textSecureDirectoryAPI  = "v1/directory"
     static let textSecureDeviceProvisioningCodeAPI  = "v1/devices/provisioning/code"
-    static let textSecureDeviceProvisioningAPIFormat  = "v1/provisioning/%@"
     static let textSecureDevicesAPIFormat  = "v1/devices/%@"
     static let textSecureVersionedProfileAPI  = "v1/profile/"
     static let textSecureProfileAvatarFormAPI  = "v1/profile/form/avatar"
@@ -75,5 +74,18 @@ public extension OWSRequestFactory {
     static func batchIdentityCheckRequest(elements: [[String: String]]) -> TSRequest {
         precondition(elements.count <= batchIdentityCheckElementsLimit)
         return .init(url: .init(string: "v1/profile/identity_check/batch")!, method: HTTPMethod.post.methodName, parameters: ["elements": elements])
+    }
+
+    // MARK: - Devices
+
+    static func provisionDevice(withMessageBody messageBody: Data, ephemeralDeviceId: String) -> TSRequest {
+        owsAssertDebug(!messageBody.isEmpty)
+        owsAssertDebug(!ephemeralDeviceId.isEmpty)
+
+        return .init(
+            url: .init(pathComponents: ["v1", "provisioning", ephemeralDeviceId])!,
+            method: "PUT",
+            parameters: ["body": messageBody.base64EncodedString()]
+        )
     }
 }

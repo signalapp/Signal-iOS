@@ -34,8 +34,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 + (TSRequest *)deviceProvisioningCodeRequest;
 
-+ (TSRequest *)deviceProvisioningRequestWithMessageBody:(NSData *)messageBody ephemeralDeviceId:(NSString *)deviceId;
-
 + (TSRequest *)getDevicesRequest;
 
 + (TSRequest *)getMessagesRequest;

@@ -35,6 +35,20 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
         XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
     }
 
+    // MARK: - Devices
+
+    func testDeviceProvisioning() {
+        let request = OWSRequestFactory.provisionDevice(
+            withMessageBody: .init([1, 2, 3]),
+            ephemeralDeviceId: "foo bar"
+        )
+
+        XCTAssertEqual(request.url?.relativeString, "v1/provisioning/foo%20bar")
+        XCTAssertEqual(request.httpMethod, "PUT")
+        XCTAssertEqual(request.parameters as! [String: String], ["body": "AQID"])
+        XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
+    }
+
     // MARK: - Message requests
 
     func testSubmitMessageRequest() throws {

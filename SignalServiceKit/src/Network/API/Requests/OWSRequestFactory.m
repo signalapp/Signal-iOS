@@ -64,19 +64,6 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
                           parameters:@{}];
 }
 
-+ (TSRequest *)deviceProvisioningRequestWithMessageBody:(NSData *)messageBody ephemeralDeviceId:(NSString *)deviceId
-{
-    OWSAssertDebug(messageBody.length > 0);
-    OWSAssertDebug(deviceId.length > 0);
-
-    NSString *path = [NSString stringWithFormat:self.textSecureDeviceProvisioningAPIFormat, deviceId];
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path]
-                              method:@"PUT"
-                          parameters:@{
-                              @"body" : [messageBody base64EncodedString],
-                          }];
-}
-
 + (TSRequest *)getDevicesRequest
 {
     NSString *path = [NSString stringWithFormat:self.textSecureDevicesAPIFormat, @""];

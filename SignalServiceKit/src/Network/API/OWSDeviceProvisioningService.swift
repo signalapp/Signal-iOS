@@ -13,8 +13,10 @@ open class OWSDeviceProvisioningService: NSObject {
                           ephemeralDeviceId: String,
                           success: @escaping () -> Void,
                           failure: @escaping (Error) -> Void) {
-        let request = OWSRequestFactory.deviceProvisioningRequest(withMessageBody: messageBody,
-                                                                  ephemeralDeviceId: ephemeralDeviceId)
+        let request = OWSRequestFactory.provisionDevice(
+            withMessageBody: messageBody,
+            ephemeralDeviceId: ephemeralDeviceId
+        )
         firstly {
             Self.networkManager.makePromise(request: request)
         }.done(on: .main) { _ in
