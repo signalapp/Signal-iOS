@@ -1,2 +1,2 @@
-• If you routinely miss calls when your phone is in another room, you'll be happy to hear that unread missed call events in individual (non-group) chats will be automatically marked as read when you answer or decline on the 2nd, or 3rd, or 27th attempt. Sometimes persistence pays off for everyone involved, especially if one of your friends is accidentally going for the pocket-dial world record.
-• We fixed a few bugs, including one that occasionally made part of the interface look transparent while browsing through your contact list. Now you can only metaphorically see right through some of the people you know. 
+• 携帯電話が別の部屋にあって着信時に出られないことがよくある場合、2回目、3回目、あるいは27回目の着信で応答または拒否した時に、個別の (グループではない) チャットの未読不在着信が自動的に既読になると便利ですよね。友達の一人が、誤発信で世界記録並みに発信している場合は尚更です。
+• 連絡先リストを閲覧中にインターフェースの一部が透けて見えることがある、などのいくつかのバグを修正しました。ですからもう、知った相手のことが透けて見えるというのは、たとえの上だけの話になりました。 

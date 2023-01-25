@@ -1814,7 +1814,7 @@
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "সাবস্ক্রিপশন আপডেট করুন";
 
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
-"DONATION_FOR_A_FRIEND_ROW_DURATION" = "Lasts %1$@";
+"DONATION_FOR_A_FRIEND_ROW_DURATION" = "স্থায়িত্ব %1$@";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
 "DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "আপনার ব্যাজের মেয়াদ শেষ হয়ে গেছে এবং আপনার প্রোফাইলে তা আর দেখা যাবে না৷";
@@ -1838,7 +1838,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "বন্ধুর জন্য ডোনেট করুন";
 
 /* Title on the screen where you choose who you're going to donate on behalf of. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Choose Recipient";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "প্রাপক নির্বাচন করুন";
 
 /* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "ডোনেশন নিশ্চিত করুন";
@@ -1892,7 +1892,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "ছাড় করুন";
 
 /* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "You can redeem your badge later";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "আপনি আপনার ব্যাজ পরে ছাড় করতে পারবেন";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ আপনার জন্য একটি ডোনেশন দিয়েছেন";
@@ -3458,13 +3458,13 @@
 "LINKED_DEVICES_TITLE" = "সংযুক্ত ডিভাইসগুলি";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Allow Notifications";
+"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "নোটিফিকেশন অনুমোদন করুন";
 
 /* Explanation in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications lets you know when you receive messages, calls or updates about new conversation activity.";
+"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "নোটিফিকেশনের অনুমোদন দেওয়া হলে, আপনার যখন ম্যাসেজ, কল বা নতুন কথোপকথন কার্যক্রম সংক্রান্ত আপডেট আসে তা আপনি জানতে পারবেন।";
 
 /* Title of the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Allow Notifications";
+"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "নোটিফিকেশন অনুমোদন করুন";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "ডিভাইস সংযুক্তি ব্যর্থ";

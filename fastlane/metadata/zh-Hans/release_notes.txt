@@ -1,2 +1,2 @@
-• If you routinely miss calls when your phone is in another room, you'll be happy to hear that unread missed call events in individual (non-group) chats will be automatically marked as read when you answer or decline on the 2nd, or 3rd, or 27th attempt. Sometimes persistence pays off for everyone involved, especially if one of your friends is accidentally going for the pocket-dial world record.
-• We fixed a few bugs, including one that occasionally made part of the interface look transparent while browsing through your contact list. Now you can only metaphorically see right through some of the people you know. 
+• 如果您经常因为手机放在另一个房间而未能接听电话，那么您一定会很高兴地了解到，单独（非群组）聊天中未读的未接来电将在您之后接听或者拒绝后，自动被标为已读，无论这是在第 2 次，第 3 次还是第 27 次。有时，坚持不懈对所有人都有好处，尤其是当您的某位好友在无意间冲击了口袋误拨的世界纪录。
+• 部分漏洞已修复，包括浏览通讯录时界面偶尔呈现透明状态的异常。从此告别“看透”联系人的尴尬。 

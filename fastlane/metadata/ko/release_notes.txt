@@ -1,2 +1,2 @@
-• If you routinely miss calls when your phone is in another room, you'll be happy to hear that unread missed call events in individual (non-group) chats will be automatically marked as read when you answer or decline on the 2nd, or 3rd, or 27th attempt. Sometimes persistence pays off for everyone involved, especially if one of your friends is accidentally going for the pocket-dial world record.
-• We fixed a few bugs, including one that occasionally made part of the interface look transparent while browsing through your contact list. Now you can only metaphorically see right through some of the people you know. 
+• 휴대전화를 다른 방에 두고 와서 자주 전화를 놓치는 편이신가요? 이런 분들을 위한 반가운 소식입니다. Signal에서는 두 번째, 세 번째, 또는 스물일곱 번째 전화가 걸려 왔을 때 전화를 받거나 거절하면 개인 채팅(그룹 채팅은 해당 안 됨)의 읽지 않은 부재중 통화 이벤트가 자동으로 읽음으로 표시됩니다. 때로 포기할 줄 모르는 근성은 전화를 거는 사람이나 받는 사람 모두에게 도움이 되죠. 특히 툭하면 엉덩이로 전화를 받는 친구를 뒀다면 말이에요.
+• 연락처 목록을 탐색할 때 때때로 인터페이스 일부가 투명해졌던 오류를 비롯해 몇 가지 버그를 수정했습니다. 이제 비유적인 표현으로만 지인들의 속을 뚫어볼 수 있습니다. 
