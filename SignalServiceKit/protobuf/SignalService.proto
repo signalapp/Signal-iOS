@@ -25,24 +25,25 @@ message Envelope {
     PLAINTEXT_CONTENT   = 8;
   }
 
-  optional Type   type            = 1;
-  reserved /* sourceE164 */         2;
-  optional uint32 sourceDevice    = 7;
-  optional string destinationUuid = 13;
-  reserved /* relay */              3;
+  optional Type   type               = 1;
+  reserved /* sourceE164 */            2;
+  optional uint32 sourceDevice       = 7;
+  optional string destinationUuid    = 13;
+  reserved /* relay */                 3;
   // @required
-  optional uint64 timestamp       = 5;
-  optional bytes  legacyMessage   = 6; // Contains an encrypted DataMessage
-  optional bytes  content         = 8; // Contains an encrypted Content
+  optional uint64 timestamp          = 5;
+  optional bytes  legacyMessage      = 6; // Contains an encrypted DataMessage
+  optional bytes  content            = 8; // Contains an encrypted Content
   // We may eventually want to make this required.
-  optional string serverGuid      = 9;
+  optional string serverGuid         = 9;
   // We may eventually want to make this required.
-  optional uint64 serverTimestamp = 10;
+  optional uint64 serverTimestamp    = 10;
   // @trustedMapping
-  optional string sourceUuid      = 11;
-  reserved /* urgent */             14;
-  reserved /* update_pni */         15;
-  optional bool   story           = 16;
+  optional string sourceUuid         = 11;
+  reserved /* urgent */                14;
+  reserved /* update_pni */            15;
+  optional bool   story              = 16;
+  optional bytes  spamReportingToken = 17;
 }
 
 message TypingMessage {

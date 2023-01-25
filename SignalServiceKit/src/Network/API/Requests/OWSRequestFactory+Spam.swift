@@ -6,7 +6,11 @@
 import Foundation
 
 public extension OWSRequestFactory {
-    static func reportSpam(from sender: UUID, withServerGuid serverGuid: String) -> TSRequest {
+    static func reportSpam(
+        from sender: UUID,
+        withServerGuid serverGuid: String,
+        reportingToken: SpamReportingToken?
+    ) -> TSRequest {
         let url: URL = {
             let pathComponents = ["v1", "messages", "report", sender.uuidString, serverGuid]
             let urlWithGuid = URL(pathComponents: pathComponents)!
@@ -19,6 +23,13 @@ public extension OWSRequestFactory {
             }
         }()
 
-        return .init(url: url, method: "POST", parameters: nil)
+        let parameters: [String: String]?
+        if let reportingTokenString = reportingToken?.base64EncodedString().nilIfEmpty {
+            parameters = ["token": reportingTokenString]
+        } else {
+            parameters = nil
+        }
+
+        return .init(url: url, method: "POST", parameters: parameters)
     }
 }

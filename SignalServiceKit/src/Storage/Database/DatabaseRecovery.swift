@@ -409,6 +409,7 @@ public extension DatabaseRecovery {
             TestModel.table.tableName,
             CancelledGroupRing.databaseTableName,
             CdsPreviousE164.databaseTableName,
+            SpamReportingTokenRecord.databaseTableName,
             // Used to update data for active calls, useless retroactively.
             CallRecord.databaseTableName
         ]

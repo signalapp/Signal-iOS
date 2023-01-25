@@ -1279,6 +1279,9 @@
 		F94262A0289B1B5600460798 /* SMKSecretSessionCipherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426238289B1B5500460798 /* SMKSecretSessionCipherTest.swift */; };
 		F94262A1289B1B5600460798 /* SignalServiceAddressTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426239289B1B5500460798 /* SignalServiceAddressTest.swift */; };
 		F94262A2289B1B5600460798 /* SSKBaseTestSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942623A289B1B5500460798 /* SSKBaseTestSwift.swift */; };
+		F9427EAB297F1E88008EF0AC /* SpamReportingToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9427EAA297F1E88008EF0AC /* SpamReportingToken.swift */; };
+		F9427EAE297F1EE3008EF0AC /* SpamReportingTokenTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9427EAD297F1EE3008EF0AC /* SpamReportingTokenTest.swift */; };
+		F9427EB0297F24AB008EF0AC /* SpamReportingTokenRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9427EAF297F24AB008EF0AC /* SpamReportingTokenRecord.swift */; };
 		F94360F12910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94360F02910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift */; };
 		F9479EF8293D212C003B3503 /* StickerPackInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9479EF7293D212C003B3503 /* StickerPackInfo.swift */; };
 		F94BFA9528EBB0D800A5F34E /* FakeMessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */; };
@@ -1333,6 +1336,7 @@
 		F9A042C8289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A042C7289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift */; };
 		F9A335CA282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A335C9282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift */; };
 		F9A335CC282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A335CB282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift */; };
+		F9A392B9297F2ED5007964E5 /* SpamReportingTokenRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A392B8297F2ED5007964E5 /* SpamReportingTokenRecordTest.swift */; };
 		F9A8ACC7280A175E00AFC6A7 /* DonationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A8ACC6280A175E00AFC6A7 /* DonationSettingsViewController.swift */; };
 		F9AE695328F046E40012E9C9 /* OWSFingerprintTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9AE695228F046E40012E9C9 /* OWSFingerprintTest.swift */; };
 		F9B0DC4F28948656004E07B7 /* schema.sql in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC3C28948656004E07B7 /* schema.sql */; };
@@ -3691,6 +3695,9 @@
 		F9426238289B1B5500460798 /* SMKSecretSessionCipherTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SMKSecretSessionCipherTest.swift; sourceTree = "<group>"; };
 		F9426239289B1B5500460798 /* SignalServiceAddressTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceAddressTest.swift; sourceTree = "<group>"; };
 		F942623A289B1B5500460798 /* SSKBaseTestSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SSKBaseTestSwift.swift; path = SignalServiceKit/tests/SSKBaseTestSwift.swift; sourceTree = SOURCE_ROOT; };
+		F9427EAA297F1E88008EF0AC /* SpamReportingToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingToken.swift; sourceTree = "<group>"; };
+		F9427EAD297F1EE3008EF0AC /* SpamReportingTokenTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingTokenTest.swift; sourceTree = "<group>"; };
+		F9427EAF297F24AB008EF0AC /* SpamReportingTokenRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingTokenRecord.swift; sourceTree = "<group>"; };
 		F94360F02910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditOrDebitCardDonationViewController.swift; sourceTree = "<group>"; };
 		F9479EF7293D212C003B3503 /* StickerPackInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPackInfo.swift; sourceTree = "<group>"; };
 		F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeMessageSender.swift; sourceTree = "<group>"; };
@@ -3745,6 +3752,7 @@
 		F9A042C7289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GroupManager+GroupUpdateInfoMessages.swift"; sourceTree = "<group>"; };
 		F9A335C9282F0BF700B5F5FA /* BadgeGiftingChooseBadgeViewControllerStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingChooseBadgeViewControllerStateTest.swift; sourceTree = "<group>"; };
 		F9A335CB282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingChooseRecipientViewController.swift; sourceTree = "<group>"; };
+		F9A392B8297F2ED5007964E5 /* SpamReportingTokenRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingTokenRecordTest.swift; sourceTree = "<group>"; };
 		F9A8ACC6280A175E00AFC6A7 /* DonationSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationSettingsViewController.swift; sourceTree = "<group>"; };
 		F9AE695228F046E40012E9C9 /* OWSFingerprintTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFingerprintTest.swift; sourceTree = "<group>"; };
 		F9B0DC3C28948656004E07B7 /* schema.sql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = schema.sql; sourceTree = "<group>"; };
@@ -7134,6 +7142,7 @@
 		F94261CF289B1B5400460798 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				F9427EAC297F1EA5008EF0AC /* Spam */,
 				F94261D4289B1B5400460798 /* HTMLMetadataTests.swift */,
 				F94261D0289B1B5400460798 /* MessageSenderJobRecordTest.swift */,
 				F94261D5289B1B5400460798 /* MessageSendJobQueueTest.swift */,
@@ -7297,6 +7306,15 @@
 				F9426226289B1B5500460798 /* StickerPackInfoTest.swift */,
 			);
 			path = Stickers;
+			sourceTree = "<group>";
+		};
+		F9427EAC297F1EA5008EF0AC /* Spam */ = {
+			isa = PBXGroup;
+			children = (
+				F9A392B8297F2ED5007964E5 /* SpamReportingTokenRecordTest.swift */,
+				F9427EAD297F1EE3008EF0AC /* SpamReportingTokenTest.swift */,
+			);
+			path = Spam;
 			sourceTree = "<group>";
 		};
 		F94D12FD28BD0DD900B2C478 /* Accessibility */ = {
@@ -8205,6 +8223,8 @@
 				F9C5CAB9289453B200548EEE /* PushChallenge.swift */,
 				F9C5CAB7289453B200548EEE /* SpamChallenge.swift */,
 				F9C5CAB6289453B200548EEE /* SpamChallengeResolver.swift */,
+				F9427EAA297F1E88008EF0AC /* SpamReportingToken.swift */,
+				F9427EAF297F24AB008EF0AC /* SpamReportingTokenRecord.swift */,
 				F9C5CAB8289453B200548EEE /* TimeElapsedChallenge.swift */,
 			);
 			path = Spam;
@@ -11250,6 +11270,8 @@
 				F9C5CD9B289453B400548EEE /* SocketManager.swift in Sources */,
 				F9C5CD8F289453B300548EEE /* SpamChallenge.swift in Sources */,
 				F9C5CD8E289453B300548EEE /* SpamChallengeResolver.swift in Sources */,
+				F9427EAB297F1E88008EF0AC /* SpamReportingToken.swift in Sources */,
+				F9427EB0297F24AB008EF0AC /* SpamReportingTokenRecord.swift in Sources */,
 				F9C5CCAF289453B300548EEE /* SSKEnvironment.m in Sources */,
 				D9668B2F291AF63500665298 /* SSKJobQueues.swift in Sources */,
 				F9C5CD68289453B300548EEE /* SSKJobRecord+SDS.swift in Sources */,
@@ -11477,6 +11499,8 @@
 				F94262A0289B1B5600460798 /* SMKSecretSessionCipherTest.swift in Sources */,
 				F9426296289B1B5600460798 /* SMKTestUtils.swift in Sources */,
 				F9426298289B1B5600460798 /* SMKUDAccessKeyTest.swift in Sources */,
+				F9A392B9297F2ED5007964E5 /* SpamReportingTokenRecordTest.swift in Sources */,
+				F9427EAE297F1EE3008EF0AC /* SpamReportingTokenTest.swift in Sources */,
 				F942626F289B1B5500460798 /* SSKBaseTestObjC.m in Sources */,
 				F94262A2289B1B5600460798 /* SSKBaseTestSwift.swift in Sources */,
 				F942624F289B1B5500460798 /* SSKPreKeyStoreTests.m in Sources */,

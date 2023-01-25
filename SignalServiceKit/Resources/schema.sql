@@ -1438,3 +1438,11 @@ CREATE
         ON "model_CallRecord"("interactionUniqueId"
 )
 ;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "spamReportingTokenRecords" (
+            "sourceUuid" BLOB PRIMARY KEY NOT NULL
+            ,"spamReportingToken" BLOB NOT NULL
+        )
+;

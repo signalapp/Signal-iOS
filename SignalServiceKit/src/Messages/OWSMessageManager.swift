@@ -153,6 +153,42 @@ extension OWSMessageManager {
         }
     }
 
+    @objc(saveSpamReportingTokenForEnvelope:transaction:)
+    func saveSpamReportingToken(
+        for envelope: SSKProtoEnvelope,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        guard
+            let rawSourceUuid = envelope.sourceUuid,
+            let sourceUuid = UUID(uuidString: rawSourceUuid)
+        else {
+            Logger.warn(
+                "Received an envelope without a valid source UUID. Did the server send bad data?"
+            )
+            return
+        }
+
+        guard
+            let rawSpamReportingToken = envelope.spamReportingToken,
+            let spamReportingToken = SpamReportingToken(data: rawSpamReportingToken)
+        else {
+            Logger.debug("Received an envelope without a spam reporting token. Doing nothing")
+            return
+        }
+
+        Logger.info("Saving spam reporting token. Envelope timestamp: \(envelope.timestamp)")
+        do {
+            try SpamReportingTokenRecord(
+                sourceUuid: sourceUuid,
+                spamReportingToken: spamReportingToken
+            ).upsert(transaction.unwrapGrdbWrite.database)
+        } catch {
+            owsFailBeta(
+                "Couldn't save spam reporting token record. Continuing on, to avoid interrupting message processing. Error: \(error)"
+            )
+        }
+    }
+
     @objc
     func handleIncomingEnvelope(
         _ envelope: SSKProtoEnvelope,

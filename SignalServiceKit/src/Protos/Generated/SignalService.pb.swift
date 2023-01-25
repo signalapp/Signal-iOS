@@ -133,6 +133,15 @@ struct SignalServiceProtos_Envelope {
   /// Clears the value of `story`. Subsequent reads from it will return its default value.
   mutating func clearStory() {self._story = nil}
 
+  var spamReportingToken: Data {
+    get {return _spamReportingToken ?? Data()}
+    set {_spamReportingToken = newValue}
+  }
+  /// Returns true if `spamReportingToken` has been explicitly set.
+  var hasSpamReportingToken: Bool {return self._spamReportingToken != nil}
+  /// Clears the value of `spamReportingToken`. Subsequent reads from it will return its default value.
+  mutating func clearSpamReportingToken() {self._spamReportingToken = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum TypeEnum: SwiftProtobuf.Enum {
@@ -191,6 +200,7 @@ struct SignalServiceProtos_Envelope {
   fileprivate var _serverTimestamp: UInt64? = nil
   fileprivate var _sourceUuid: String? = nil
   fileprivate var _story: Bool? = nil
+  fileprivate var _spamReportingToken: Data? = nil
 }
 
 #if swift(>=4.2)
@@ -4886,6 +4896,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     10: .same(proto: "serverTimestamp"),
     11: .same(proto: "sourceUuid"),
     16: .same(proto: "story"),
+    17: .same(proto: "spamReportingToken"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4904,6 +4915,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
       case 11: try { try decoder.decodeSingularStringField(value: &self._sourceUuid) }()
       case 13: try { try decoder.decodeSingularStringField(value: &self._destinationUuid) }()
       case 16: try { try decoder.decodeSingularBoolField(value: &self._story) }()
+      case 17: try { try decoder.decodeSingularBytesField(value: &self._spamReportingToken) }()
       default: break
       }
     }
@@ -4944,6 +4956,9 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     try { if let v = self._story {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 16)
     } }()
+    try { if let v = self._spamReportingToken {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 17)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -4958,6 +4973,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     if lhs._serverTimestamp != rhs._serverTimestamp {return false}
     if lhs._sourceUuid != rhs._sourceUuid {return false}
     if lhs._story != rhs._story {return false}
+    if lhs._spamReportingToken != rhs._spamReportingToken {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

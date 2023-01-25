@@ -130,7 +130,7 @@ extension ConversationViewController: MessageRequestDelegate {
         // in the conversation.
         let maxMessagesToReport = 3
 
-        let guidsToReport: [String] = databaseStorage.read { transaction in
+        let (guidsToReport, reportingToken) = databaseStorage.read { transaction -> ([String], SpamReportingToken?) in
             var guidsToReport = [String]()
             do {
                 try InteractionFinder(
@@ -150,7 +150,18 @@ extension ConversationViewController: MessageRequestDelegate {
             } catch {
                 owsFailDebug("Failed to lookup guids to report \(error)")
             }
-            return guidsToReport
+
+            var reportingToken: SpamReportingToken?
+            do {
+                reportingToken = try SpamReportingTokenRecord.reportingToken(
+                    for: senderUuid,
+                    database: transaction.unwrapGrdbRead.database
+                )
+            } catch {
+                owsFailBeta("Failed to look up spam reporting token. Continuing on, as the parameter is optional. Error: \(error)")
+            }
+
+            return (guidsToReport, reportingToken)
         }
 
         guard !guidsToReport.isEmpty else {
@@ -158,11 +169,17 @@ extension ConversationViewController: MessageRequestDelegate {
             return
         }
 
-        Logger.info("Reporting \(guidsToReport.count) message(s) from \(senderUuid) as spam.")
+        Logger.info(
+            "Reporting \(guidsToReport.count) message(s) from \(senderUuid) as spam. We \(reportingToken == nil ? "do not have" : "have") a reporting token"
+        )
 
         var promises = [Promise<Void>]()
         for guid in guidsToReport {
-            let request = OWSRequestFactory.reportSpam(from: senderUuid, withServerGuid: guid)
+            let request = OWSRequestFactory.reportSpam(
+                from: senderUuid,
+                withServerGuid: guid,
+                reportingToken: reportingToken
+            )
             promises.append(networkManager.makePromise(request: request).asVoid())
         }
 

@@ -455,6 +455,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
     OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
 
+    [self saveSpamReportingTokenForEnvelope:request.envelope transaction:transaction];
+
     switch (request.messageType) {
         case OWSMessageManagerMessageTypeSyncMessage:
             [self throws_handleIncomingEnvelope:request.envelope

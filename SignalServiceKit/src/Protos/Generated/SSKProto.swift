@@ -171,6 +171,18 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
+    public var spamReportingToken: Data? {
+        guard hasSpamReportingToken else {
+            return nil
+        }
+        return proto.spamReportingToken
+    }
+    @objc
+    public var hasSpamReportingToken: Bool {
+        return proto.hasSpamReportingToken
+    }
+
+    @objc
     public var hasValidSource: Bool {
         return sourceAddress != nil
     }
@@ -316,6 +328,9 @@ extension SSKProtoEnvelope {
         if hasStory {
             builder.setStory(story)
         }
+        if let _value = spamReportingToken {
+            builder.setSpamReportingToken(_value)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -416,6 +431,17 @@ public class SSKProtoEnvelopeBuilder: NSObject {
     @objc
     public func setStory(_ valueParam: Bool) {
         proto.story = valueParam
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func setSpamReportingToken(_ valueParam: Data?) {
+        guard let valueParam = valueParam else { return }
+        proto.spamReportingToken = valueParam
+    }
+
+    public func setSpamReportingToken(_ valueParam: Data) {
+        proto.spamReportingToken = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

@@ -214,6 +214,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addCdsPreviousE164
         case addCallRecordTable
         case addColumnsForGiftingWithPaypalToJobRecords
+        case addSpamReportingTokenRecordTable
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2092,6 +2093,14 @@ public class GRDBSchemaMigrator: NSObject {
                 table.add(column: "paypalPayerId", .text)
                 table.add(column: "paypalPaymentId", .text)
                 table.add(column: "paypalPaymentToken", .text)
+            }
+            return .success(())
+        }
+
+        migrator.registerMigration(.addSpamReportingTokenRecordTable) { transaction in
+            try transaction.database.create(table: SpamReportingTokenRecord.databaseTableName) { table in
+                table.column("sourceUuid").primaryKey().notNull()
+                table.column("spamReportingToken", .blob).notNull()
             }
             return .success(())
         }
