@@ -190,31 +190,35 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap = [NSMutableDictionary new];
     NSMutableDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap = [NSMutableDictionary new];
 
-    __block NSArray<SignalAccount *> *allSignalAccounts;
-    __block NSArray<SignalServiceAddress *> *whitelistedAddresses;
-    __block ContactsMaps *contactsMaps;
-    
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        allSignalAccounts = [self.contactsManagerImpl unsortedSignalAccountsWithTransaction:transaction];
-        whitelistedAddresses = [self.profileManagerImpl allWhitelistedRegisteredAddressesWithTransaction:transaction];
-        contactsMaps = [self.contactsManagerImpl contactsMapsWithTransaction:transaction];
-    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
+    __block NSArray<SignalAccount *> *systemContactSignalAccounts;
+    __block NSArray<SignalServiceAddress *> *signalConnectionAddresses;
 
-    NSMutableArray<SignalAccount *> *accountsToProcess = [allSignalAccounts mutableCopy];
-    for (SignalServiceAddress *address in whitelistedAddresses) {
-        if ([contactsMaps isSystemContactWithAddress:address]) {
-            continue;
+    [self.databaseStorage
+        readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            // All "System Contact"s that we believe are registered.
+            systemContactSignalAccounts = [self.contactsManagerImpl unsortedSignalAccountsWithTransaction:transaction];
+
+            // All Signal Connections that we believe are registered. In theory, this
+            // should include your system contacts and the people you chat with.
+            signalConnectionAddresses =
+                [self.profileManagerImpl allWhitelistedRegisteredAddressesWithTransaction:transaction];
         }
+                 file:__FILE__
+             function:__FUNCTION__
+                 line:__LINE__];
+
+    NSMutableArray<SignalAccount *> *accountsToProcess = [systemContactSignalAccounts mutableCopy];
+    for (SignalServiceAddress *address in signalConnectionAddresses) {
         [accountsToProcess addObject:[[SignalAccount alloc] initWithSignalServiceAddress:address]];
     }
 
-    NSMutableSet<SignalServiceAddress *> *addressSet = [NSMutableSet new];
     NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
+    NSMutableSet<SignalServiceAddress *> *addressSet = [NSMutableSet new];
     for (SignalAccount *signalAccount in accountsToProcess) {
         if ([addressSet containsObject:signalAccount.recipientAddress]) {
             OWSLogVerbose(@"Ignoring duplicate: %@", signalAccount.recipientAddress);
-            // We prefer the copy from contactsManager which will appear first
-            // in accountsToProcess; don't overwrite it.
+            // We prefer the copy from contactsManager which will appear first in
+            // accountsToProcess; don't overwrite it.
             continue;
         }
         [addressSet addObject:signalAccount.recipientAddress];
