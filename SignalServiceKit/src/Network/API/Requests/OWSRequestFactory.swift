@@ -88,4 +88,16 @@ public extension OWSRequestFactory {
             parameters: ["body": messageBody.base64EncodedString()]
         )
     }
+
+    // MARK: - Donations
+
+    static func donationConfiguration() -> TSRequest {
+        let result = TSRequest(
+            url: .init(string: "v1/subscription/configuration")!,
+            method: "GET",
+            parameters: nil
+        )
+        result.shouldHaveAuthorizationHeaders = false
+        return result
+    }
 }

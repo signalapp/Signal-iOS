@@ -60,7 +60,7 @@ extension SubscriptionManager {
 
     /// Fetch donation configuration from the service.
     public static func fetchDonationConfiguration() -> Promise<DonationConfiguration> {
-        let request = OWSRequestFactory.donationConfigurationRequest()
+        let request = OWSRequestFactory.donationConfiguration()
 
         return firstly {
             networkManager.makePromise(request: request)

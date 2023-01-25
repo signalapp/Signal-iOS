@@ -1024,13 +1024,6 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return request;
 }
 
-+ (TSRequest *)donationConfigurationRequest
-{
-    return [TSRequest requestWithUrl:[NSURL URLWithString:@"/v1/subscription/configuration"]
-                              method:@"GET"
-                          parameters:@{}];
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

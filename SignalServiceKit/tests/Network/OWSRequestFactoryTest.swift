@@ -102,6 +102,14 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
 
     // MARK: - Donations
 
+    func testDonationConfiguration() {
+        let request = OWSRequestFactory.donationConfiguration()
+
+        XCTAssertEqual(request.url?.path, "v1/subscription/configuration")
+        XCTAssertEqual(request.httpMethod, "GET")
+        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
+    }
+
     func testBoostStripeCreatePaymentIntentWithAmount() {
         let request = OWSRequestFactory.boostStripeCreatePaymentIntent(
             integerMoneyValue: 123,

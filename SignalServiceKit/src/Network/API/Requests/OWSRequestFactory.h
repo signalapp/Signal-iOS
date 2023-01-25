@@ -223,7 +223,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 + (TSRequest *)boostReceiptCredentialsWithPaymentIntentId:(NSString *)paymentIntentId
                                                andRequest:(NSString *)base64ReceiptCredentialRequest
                                       forPaymentProcessor:(NSString *)processor;
-+ (TSRequest *)donationConfigurationRequest;
 
 #pragma mark - Spam
 
