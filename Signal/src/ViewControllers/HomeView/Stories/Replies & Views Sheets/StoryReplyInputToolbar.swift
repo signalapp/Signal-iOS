@@ -98,7 +98,8 @@ class StoryReplyInputToolbar: UIView {
 
         let containerView = UIView.container()
         addSubview(containerView)
-        containerView.autoPinEdgesToSuperviewEdges()
+        containerView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
+        containerView.autoPinEdge(toSuperviewSafeArea: .bottom)
 
         containerView.addSubview(textContainer)
         textContainer.autoPinEdge(toSuperviewMargin: .left, withInset: OWSTableViewController2.defaultHOuterMargin)
@@ -207,8 +208,7 @@ class StoryReplyInputToolbar: UIView {
         textAndPlaceholderContainer.addSubview(placeholderTextView)
         textAndPlaceholderContainer.addSubview(textView)
 
-        textView.autoPinWidthToSuperview()
-        textView.autoPinHeightToSuperview(withMargin: 4)
+        textView.autoPinEdgesToSuperviewEdges()
         placeholderTextView.autoPinEdges(toEdgesOf: textView)
 
         return textContainer
