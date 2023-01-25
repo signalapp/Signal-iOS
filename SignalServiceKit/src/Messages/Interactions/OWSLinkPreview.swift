@@ -117,6 +117,10 @@ public class OWSLinkPreview: MTLModel, Codable {
             Logger.error("Url not present in body")
             throw LinkPreviewError.invalidPreview
         }
+        guard LinkValidator.canParseURLs(in: body) else {
+            Logger.error("Discarding link preview; can't parse URLs in message.")
+            throw LinkPreviewError.invalidPreview
+        }
 
        return try buildValidatedLinkPreview(proto: previewProto, transaction: transaction)
     }
@@ -316,6 +320,10 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
         guard bypassSettingsCheck || areLinkPreviewsEnabledWithSneakyTransaction() else { return nil }
         guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
             owsFailDebug("Could not create NSDataDetector")
+            return nil
+        }
+
+        guard LinkValidator.canParseURLs(in: searchString) else {
             return nil
         }
 

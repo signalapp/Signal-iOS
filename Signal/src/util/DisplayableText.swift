@@ -183,19 +183,6 @@ public class DisplayableText: NSObject {
             return false
         }
 
-        func isProblematicCodepoint(_ scalar: UnicodeScalar) -> Bool {
-            switch scalar {
-            case "\u{202C}", // POP DIRECTIONAL FORMATTING
-                "\u{202D}", // LEFT-TO-RIGHT OVERRIDE
-                "\u{202E}": // RIGHT-TO-LEFT OVERRIDE
-                return true
-            case "\u{2500}"..."\u{25FF}": // Box Drawing, Block Elements, Geometric Shapes
-                return true
-            default:
-                return false
-            }
-        }
-
         func isValidLink(linkText: String) -> Bool {
             guard let hostRegex = DisplayableText.hostRegex else {
                 owsFailDebug("hostRegex was unexpectedly nil")
@@ -222,7 +209,7 @@ public class DisplayableText: NSObject {
 
         let rawText = fullContent.stringValue
 
-        if rawText.unicodeScalars.contains(where: isProblematicCodepoint) {
+        guard LinkValidator.canParseURLs(in: rawText) else {
             return false
         }
 
