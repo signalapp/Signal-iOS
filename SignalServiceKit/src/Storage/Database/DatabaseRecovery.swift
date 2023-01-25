@@ -444,7 +444,7 @@ public extension DatabaseRecovery {
             from: SDSDatabaseStorage,
             to: SDSDatabaseStorage
         ) -> TableCopyResult {
-            owsAssert(isSafe(sqlName: tableName))
+            owsAssert(SqliteUtil.isSafe(sqlName: tableName))
 
             return from.read { fromTransaction -> TableCopyResult in
                 let fromDb = fromTransaction.unwrapGrdbRead.database
@@ -504,40 +504,15 @@ public extension DatabaseRecovery {
         /// Determine whether a table name *could* lead to SQL injection.
         ///
         /// This is unlikely to happen, and should always return `true`.
-        /// See documentation for `isSafe` for more.
+        /// See documentation for ``SqliteUtil.isSafe`` for more.
         private static func allTableNamesAreSafe() -> Bool {
             (tablesToCopyWithBestEffort + tablesThatMustBeCopiedFlawlessly).allSatisfy {
-                isSafe(sqlName: $0)
+                SqliteUtil.isSafe(sqlName: $0)
             }
         }
 
-        /// Determine whether a name *could* lead to SQL injection.
-        ///
-        /// This is unlikely to happen, and should always return `true`.
-        ///
-        /// GRDB (perhaps because of SQLite) doesn't allow table names to be passed as arguments,
-        /// to help us avoid SQL injection. We'd like to do something like this, but can't:
-        ///
-        ///     let sql = "SELECT * FROM ?"
-        ///     try Row.fetchAll(db, sql: sql, arguments: ["my_table_name"])
-        ///
-        /// We have similar issues with column names.
-        ///
-        /// Instead, we just interpolate the name into the raw SQL string. It's unlikely that we'll
-        /// we'll have a table/column name that causes SQL injection, but this method helps ensure
-        /// that. There should also be unit tests that do something similar, further protecting us
-        /// from this unlikely (but costly, if it happens) mistake.
-        private static func isSafe(sqlName: String) -> Bool {
-            return (
-                !sqlName.isEmpty &&
-                sqlName.utf8ByteCount < 1000 &&
-                !sqlName.lowercased().starts(with: "sqlite") &&
-                sqlName.range(of: "^[a-zA-Z][a-zA-Z0-9_]*$", options: .regularExpression) != nil
-            )
-        }
-
         private static func getColumnNames(db: Database, tableName: String) throws -> [String] {
-            owsAssert(isSafe(sqlName: tableName))
+            owsAssert(SqliteUtil.isSafe(sqlName: tableName))
 
             var result = [String]()
             let cursor = try Row.fetchCursor(db, sql: "PRAGMA table_info(\(tableName))")
@@ -551,9 +526,9 @@ public extension DatabaseRecovery {
         }
 
         private static func insertSql(tableName: String, columnNames: [String]) -> String {
-            owsAssert(isSafe(sqlName: tableName))
+            owsAssert(SqliteUtil.isSafe(sqlName: tableName))
             for columnName in columnNames {
-                owsAssert(isSafe(sqlName: columnName))
+                owsAssert(SqliteUtil.isSafe(sqlName: columnName))
             }
 
             let columnNamesSql = columnNames.joined(separator: ", ")

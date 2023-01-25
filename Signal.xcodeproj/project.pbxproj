@@ -1291,6 +1291,8 @@
 		F94D12FF28BD0DD900B2C478 /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */; };
 		F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */; };
 		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
+		F9613CDC2981F11400894B55 /* SqliteUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9613CDB2981F11400894B55 /* SqliteUtil.swift */; };
+		F9613CDE2981F15700894B55 /* SqliteUtilTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9613CDD2981F15700894B55 /* SqliteUtilTest.swift */; };
 		F962B38A293F9F1F00765BD8 /* CRC32.swift in Sources */ = {isa = PBXBuildFile; fileRef = F962B389293F9F1F00765BD8 /* CRC32.swift */; };
 		F962B38C293F9F9F00765BD8 /* CRC32Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = F962B38B293F9F9F00765BD8 /* CRC32Test.swift */; };
 		F963164B291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F963164A291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift */; };
@@ -3707,6 +3709,8 @@
 		F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechManager.swift; sourceTree = "<group>"; };
 		F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseRecoveryTest.swift; sourceTree = "<group>"; };
 		F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingThanksSheet.swift; sourceTree = "<group>"; };
+		F9613CDB2981F11400894B55 /* SqliteUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SqliteUtil.swift; sourceTree = "<group>"; };
+		F9613CDD2981F15700894B55 /* SqliteUtilTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SqliteUtilTest.swift; sourceTree = "<group>"; };
 		F962B389293F9F1F00765BD8 /* CRC32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRC32.swift; sourceTree = "<group>"; };
 		F962B38B293F9F9F00765BD8 /* CRC32Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRC32Test.swift; sourceTree = "<group>"; };
 		F963164A291AE06C00218FB7 /* OWSScrubbingLogFormatterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSScrubbingLogFormatterTest.swift; sourceTree = "<group>"; };
@@ -7213,6 +7217,7 @@
 				F908AA7728CB894400472E68 /* PngChunkerTest.swift */,
 				F94261F0289B1B5400460798 /* RefineryTest.swift */,
 				F94261EC289B1B5400460798 /* RemoteConfigManagerTests.swift */,
+				F9613CDD2981F15700894B55 /* SqliteUtilTest.swift */,
 				F9CAC77E29199B9200EEC1DE /* StringTest.swift */,
 				F94261EB289B1B5400460798 /* TSMessageStorageTests.m */,
 				F94261E8289B1B5400460798 /* UnfairLockTest.swift */,
@@ -8432,6 +8437,7 @@
 				F9C5CB1C289453B200548EEE /* SDS+SSK.swift */,
 				F9C5CB7B289453B200548EEE /* Sequence+OWS.swift */,
 				1700E34028BD41140073D949 /* SetAlgebra+SSK.swift */,
+				F9613CDB2981F11400894B55 /* SqliteUtil.swift */,
 				F9C5CB71289453B200548EEE /* SSKAsserts.h */,
 				F9C5CB47289453B200548EEE /* SSKPreferences.swift */,
 				F9C5CB12289453B200548EEE /* StorageService.swift */,
@@ -11272,6 +11278,7 @@
 				F9C5CD8E289453B300548EEE /* SpamChallengeResolver.swift in Sources */,
 				F9427EAB297F1E88008EF0AC /* SpamReportingToken.swift in Sources */,
 				F9427EB0297F24AB008EF0AC /* SpamReportingTokenRecord.swift in Sources */,
+				F9613CDC2981F11400894B55 /* SqliteUtil.swift in Sources */,
 				F9C5CCAF289453B300548EEE /* SSKEnvironment.m in Sources */,
 				D9668B2F291AF63500665298 /* SSKJobQueues.swift in Sources */,
 				F9C5CD68289453B300548EEE /* SSKJobRecord+SDS.swift in Sources */,
@@ -11501,6 +11508,7 @@
 				F9426298289B1B5600460798 /* SMKUDAccessKeyTest.swift in Sources */,
 				F9A392B9297F2ED5007964E5 /* SpamReportingTokenRecordTest.swift in Sources */,
 				F9427EAE297F1EE3008EF0AC /* SpamReportingTokenTest.swift in Sources */,
+				F9613CDE2981F15700894B55 /* SqliteUtilTest.swift in Sources */,
 				F942626F289B1B5500460798 /* SSKBaseTestObjC.m in Sources */,
 				F94262A2289B1B5600460798 /* SSKBaseTestSwift.swift in Sources */,
 				F942624F289B1B5500460798 /* SSKPreKeyStoreTests.m in Sources */,
