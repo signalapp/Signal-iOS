@@ -763,12 +763,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self comparableNameForSignalAccount:signalAccount transaction:transaction];
 }
 
-- (nullable NSString *)comparableNameForContact:(nullable Contact *)contact
+- (NSString *)comparableNameForContact:(Contact *)contact
 {
-    if (contact == nil) {
-        return nil;
-    }
-    
     if (self.shouldSortByGivenName) {
         return contact.comparableNameFirstLast;
     }
@@ -779,18 +775,24 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
                                  transaction:(SDSAnyReadTransaction *)transaction
 {
-    NSString *_Nullable name = [self comparableNameForContact:signalAccount.contact];
-    
-    if (name.length > 0) {
-        return name;
+    {
+        Contact *_Nullable contact = signalAccount.contact;
+        if (contact != nil) {
+            NSString *_Nullable name = [self comparableNameForContact:contact];
+            if (name.length > 0) {
+                return name;
+            }
+        }
     }
-    
+
     NSString *_Nullable phoneNumber = signalAccount.recipientPhoneNumber;
     if (phoneNumber != nil) {
         Contact *_Nullable contact = [self contactForPhoneNumber:phoneNumber transaction:transaction];
-        NSString *_Nullable comparableContactName = [self comparableNameForContact:contact];
-        if (comparableContactName.length > 0) {
-            return comparableContactName;
+        if (contact != nil) {
+            NSString *_Nullable name = [self comparableNameForContact:contact];
+            if (name.length > 0) {
+                return name;
+            }
         }
     }
     

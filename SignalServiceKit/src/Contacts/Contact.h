@@ -64,7 +64,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #endif // TARGET_OS_IOS
 
-+ (NSComparator)comparatorSortingNamesByFirstThenLast:(BOOL)firstNameOrdering;
 + (NSString *)formattedFullNameWithCNContact:(CNContact *)cnContact NS_SWIFT_NAME(formattedFullName(cnContact:));
 + (nullable NSString *)localizedStringForCNLabel:(nullable NSString *)cnLabel;
 

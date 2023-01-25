@@ -433,7 +433,7 @@ public class ContactsManagerCacheInMemory: NSObject, ContactsManagerCache {
             guard let contactsMaps = contactsMapsCache else {
                 return contactsManagerCacheInDatabase.allContacts(transaction: transaction)
             }
-            return Array(contactsMaps.phoneNumberToContactMap.values)
+            return contactsMaps.allContacts
         }
     }
 

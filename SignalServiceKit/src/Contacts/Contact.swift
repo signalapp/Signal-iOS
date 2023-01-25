@@ -50,6 +50,19 @@ public extension Contact {
     }
 }
 
+// MARK: - Phone Numbers
+
+public extension Contact {
+    func hasPhoneNumber(_ phoneNumber: String?) -> Bool {
+        for parsedPhoneNumber in parsedPhoneNumbers {
+            if parsedPhoneNumber.toE164() == phoneNumber {
+                return true
+            }
+        }
+        return false
+    }
+}
+
 // MARK: - Convenience init
 
 public extension Contact {

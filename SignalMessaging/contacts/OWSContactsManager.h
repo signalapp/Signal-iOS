@@ -98,6 +98,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, ContactAuthorizationForSharing) {
 
 #pragma mark - Util
 
+- (NSString *)comparableNameForContact:(Contact *)contact;
+
 /**
  * Used for sorting, respects system contacts name sort order preference.
  */

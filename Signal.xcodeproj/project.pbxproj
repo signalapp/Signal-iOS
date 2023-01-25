@@ -1268,7 +1268,6 @@
 		F9426280289B1B5600460798 /* PhoneNumberTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F9426215289B1B5500460798 /* PhoneNumberTest.m */; };
 		F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426218289B1B5500460798 /* BlockingManagerTests.swift */; };
 		F9426284289B1B5600460798 /* UUIDBackfillTaskTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426219289B1B5500460798 /* UUIDBackfillTaskTest.swift */; };
-		F9426286289B1B5600460798 /* ContactSortingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F942621B289B1B5500460798 /* ContactSortingTest.m */; };
 		F9426288289B1B5600460798 /* TestProtocolRunnerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942621E289B1B5500460798 /* TestProtocolRunnerTest.swift */; };
 		F9426289289B1B5600460798 /* TSOutgoingMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426220289B1B5500460798 /* TSOutgoingMessageTest.swift */; };
 		F942628A289B1B5600460798 /* TSMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426221289B1B5500460798 /* TSMessageTest.swift */; };
@@ -3699,7 +3698,6 @@
 		F9426215289B1B5500460798 /* PhoneNumberTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberTest.m; sourceTree = "<group>"; };
 		F9426218289B1B5500460798 /* BlockingManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockingManagerTests.swift; sourceTree = "<group>"; };
 		F9426219289B1B5500460798 /* UUIDBackfillTaskTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UUIDBackfillTaskTest.swift; sourceTree = "<group>"; };
-		F942621B289B1B5500460798 /* ContactSortingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactSortingTest.m; sourceTree = "<group>"; };
 		F942621E289B1B5500460798 /* TestProtocolRunnerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestProtocolRunnerTest.swift; sourceTree = "<group>"; };
 		F9426220289B1B5500460798 /* TSOutgoingMessageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSOutgoingMessageTest.swift; sourceTree = "<group>"; };
 		F9426221289B1B5500460798 /* TSMessageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSMessageTest.swift; sourceTree = "<group>"; };
@@ -7298,7 +7296,6 @@
 				5075004528B09CCC001922C9 /* Discovery */,
 				F9426208289B1B5500460798 /* BlockingManagerStateTests.swift */,
 				F9426218289B1B5500460798 /* BlockingManagerTests.swift */,
-				F942621B289B1B5500460798 /* ContactSortingTest.m */,
 				F9426210289B1B5500460798 /* OWSDisappearingMessagesConfigurationTest.m */,
 				F942620F289B1B5500460798 /* OWSRecipientIdentityTest.swift */,
 				F9426215289B1B5500460798 /* PhoneNumberTest.m */,
@@ -11502,7 +11499,6 @@
 				50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */,
 				5075004628B09CE6001922C9 /* ContactDiscoveryOperationTest.swift in Sources */,
 				500824D0292741D5005A5DC0 /* ContactDiscoveryV2OperationTest.swift in Sources */,
-				F9426286289B1B5600460798 /* ContactSortingTest.m in Sources */,
 				F962B38C293F9F9F00765BD8 /* CRC32Test.swift in Sources */,
 				509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */,
 				F97217FB28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift in Sources */,

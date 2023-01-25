@@ -1054,44 +1054,17 @@ extension OWSContactsManager {
         }
     }
 
-    private static func removeLocalContact(contacts: [Contact],
-                                           transaction: SDSAnyReadTransaction) -> [Contact] {
-        let localNumber: String? = tsAccountManager.localNumber(with: transaction)
+    private func allUnsortedContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
+        let localNumber = tsAccountManager.localNumber(with: transaction)
 
-        var contactIdSet = Set<String>()
-        return contacts.compactMap { contact in
-            // Skip local contacts.
-            func isLocalContact() -> Bool {
-                for phoneNumber in contact.parsedPhoneNumbers {
-                    if phoneNumber.toE164() == localNumber {
-                        return true
-                    }
-                }
-                return false
-            }
-            guard !isLocalContact() else {
-                return nil
-            }
-            // De-deduplicate.
-            guard !contactIdSet.contains(contact.uniqueId) else {
-                return nil
-            }
-            contactIdSet.insert(contact.uniqueId)
-            return contact
-        }
-    }
-
-    @objc
-    public func allUnsortedContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
-        Self.removeLocalContact(contacts: contactsManagerCache.allContacts(transaction: transaction),
-                                transaction: transaction)
+        return contactsManagerCache.allContacts(transaction: transaction)
+            .filter { !$0.hasPhoneNumber(localNumber) }
     }
 
     @objc
     public func allSortedContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
-        let contacts = (allUnsortedContacts(transaction: transaction) as NSArray)
-        let comparator = Contact.comparatorSortingNames(byFirstThenLast: self.shouldSortByGivenName)
-        return contacts.sortedArray(options: [], usingComparator: comparator) as! [Contact]
+        allUnsortedContacts(transaction: transaction)
+            .sorted { comparableName(for: $0).caseInsensitiveCompare(comparableName(for: $1)) == .orderedAscending }
     }
 
     @objc

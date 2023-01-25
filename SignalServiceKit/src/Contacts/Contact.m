@@ -243,19 +243,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [NSString stringWithFormat:@"%@: %@", self.fullName, self.userTextPhoneNumbers];
 }
 
-+ (NSComparator)comparatorSortingNamesByFirstThenLast:(BOOL)firstNameOrdering {
-    return ^NSComparisonResult(id obj1, id obj2) {
-        Contact *contact1 = (Contact *)obj1;
-        Contact *contact2 = (Contact *)obj2;
-        
-        if (firstNameOrdering) {
-            return [contact1.comparableNameFirstLast caseInsensitiveCompare:contact2.comparableNameFirstLast];
-        } else {
-            return [contact1.comparableNameLastFirst caseInsensitiveCompare:contact2.comparableNameLastFirst];
-        }
-    };
-}
-
 + (NSString *)formattedFullNameWithCNContact:(CNContact *)cnContact
 {
     return [CNContactFormatter stringFromContact:cnContact style:CNContactFormatterStyleFullName].ows_stripped;
