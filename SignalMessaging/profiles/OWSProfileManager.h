@@ -115,8 +115,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
          userProfileWriter:(UserProfileWriter)userProfileWriter
                transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)setContactAddresses:(NSArray<SignalServiceAddress *> *)contactAddresses;
-
 #pragma mark - Other User's Profiles
 
 // This method is for debugging.

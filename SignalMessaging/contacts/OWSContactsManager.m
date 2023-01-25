@@ -459,16 +459,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     
     NSArray<SignalAccount *> *sortedSignalAccounts = [self sortSignalAccountsWithSneakyTransaction:newSignalAccounts];
     [self.contactsManagerCache setSortedSignalAccounts:sortedSignalAccounts];
-    
-    if (CurrentAppContext().isMainApp) {
-        // Ensure all system contacts are in the profile whitelist.
-        NSMutableArray<SignalServiceAddress *> *allAddresses = [NSMutableArray new];
-        for (SignalAccount *signalAccount in newSignalAccounts) {
-            [allAddresses addObject:signalAccount.recipientAddress];
-        }
-        [self.profileManagerImpl setContactAddresses:allAddresses];
-    }
-    
+
     [[NSNotificationCenter defaultCenter]
      postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification
      object:nil];

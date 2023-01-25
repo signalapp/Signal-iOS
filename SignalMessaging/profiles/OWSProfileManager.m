@@ -1184,13 +1184,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     }
 }
 
-- (void)setContactAddresses:(NSArray<SignalServiceAddress *> *)contactAddresses
-{
-    OWSAssertDebug(contactAddresses);
-
-    [self addUsersToProfileWhitelist:contactAddresses];
-}
-
 #pragma mark - Other User's Profiles
 
 - (void)logUserProfiles

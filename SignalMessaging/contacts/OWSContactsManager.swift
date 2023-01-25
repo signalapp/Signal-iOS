@@ -834,11 +834,13 @@ extension OWSContactsManager {
                 let signalAccountCount = SignalAccount.anyCount(transaction: transaction)
                 Logger.info("SignalAccount cache size: \(signalAccountCount).")
 
-                // Add system contacts to the profile whitelist immediately
-                // so that they do not see the "message request" UI.
-                Self.profileManager.addUsers(toProfileWhitelist: Array(seenAddresses),
-                                             userProfileWriter: UserProfileWriter.systemContactsFetch,
-                                             transaction: transaction)
+                // Add system contacts to the profile whitelist immediately so that they do
+                // not see the "message request" UI.
+                Self.profileManager.addUsers(
+                    toProfileWhitelist: Array(seenAddresses.union(signalAccountsToKeep.keys)),
+                    userProfileWriter: UserProfileWriter.systemContactsFetch,
+                    transaction: transaction
+                )
 
 #if DEBUG
                 let persistedAddresses = SignalAccount.anyFetchAll(transaction: transaction).map {
