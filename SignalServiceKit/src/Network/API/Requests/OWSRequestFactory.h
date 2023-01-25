@@ -65,11 +65,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 + (TSRequest *)unregisterAccountRequest;
 
-+ (TSRequest *)requestPreauthChallengeRequestWithE164:(NSString *)recipientId
-                                            pushToken:(NSString *)pushToken
-                                          isVoipToken:(BOOL)isVoipToken
-    NS_SWIFT_NAME(requestPreauthChallengeRequest(e164:pushToken:isVoipToken:));
-
 + (TSRequest *)requestVerificationCodeRequestWithE164:(NSString *)e164
                                      preauthChallenge:(nullable NSString *)preauthChallenge
                                          captchaToken:(nullable NSString *)captchaToken

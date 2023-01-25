@@ -25,7 +25,28 @@ public extension OWSRequestFactory {
 
     static let textSecureHTTPTimeOut: TimeInterval = 10
 
-    // MARK: -
+    // MARK: - Registration
+
+    static func requestPreauthChallenge(
+        e164: String,
+        pushToken: String,
+        isVoipToken: Bool
+    ) -> TSRequest {
+        owsAssertDebug(!e164.isEmpty)
+        owsAssertDebug(!pushToken.isEmpty)
+
+        let urlPathComponents = URLPathComponents(
+            ["v1", "accounts", "apn", "preauth", pushToken, e164]
+        )
+        var urlComponents = URLComponents()
+        urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
+        urlComponents.queryItems = [.init(name: "voip", value: isVoipToken ? "true" : "false")]
+        let url = urlComponents.url!
+
+        let result = TSRequest(url: url, method: "GET", parameters: nil)
+        result.shouldHaveAuthorizationHeaders = false
+        return result
+    }
 
     static func enable2FARequest(withPin pin: String) -> TSRequest {
         owsAssertBeta(!pin.isEmpty)

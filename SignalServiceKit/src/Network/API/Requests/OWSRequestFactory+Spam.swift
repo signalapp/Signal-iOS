@@ -12,8 +12,9 @@ public extension OWSRequestFactory {
         reportingToken: SpamReportingToken?
     ) -> TSRequest {
         let url: URL = {
-            let pathComponents = ["v1", "messages", "report", sender.uuidString, serverGuid]
-            let urlWithGuid = URL(pathComponents: pathComponents)!
+            let urlWithGuid = URL(
+                pathComponents: ["v1", "messages", "report", sender.uuidString, serverGuid]
+            )!
             if serverGuid.isEmpty {
                 // This will probably never happen, but the server should be allowed to provide an
                 // empty message ID.

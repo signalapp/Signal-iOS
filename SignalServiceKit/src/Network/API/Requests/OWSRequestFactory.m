@@ -235,23 +235,6 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"DELETE" parameters:@{}];
 }
 
-+ (TSRequest *)requestPreauthChallengeRequestWithE164:(NSString *)e164
-                                            pushToken:(NSString *)pushToken
-                                          isVoipToken:(BOOL)isVoipToken
-{
-    OWSAssertDebug(e164.length > 0);
-    OWSAssertDebug(pushToken.length > 0);
-
-    NSString *path = [NSString
-        stringWithFormat:@"v1/accounts/apn/preauth/%@/%@?voip=%@", pushToken, e164, isVoipToken ? @"true" : @"false"];
-    NSURL *url = [NSURL URLWithString:path];
-
-    TSRequest *request = [TSRequest requestWithUrl:url method:@"GET" parameters:@{}];
-    request.shouldHaveAuthorizationHeaders = NO;
-
-    return request;
-}
-
 + (TSRequest *)requestVerificationCodeRequestWithE164:(NSString *)e164
                                      preauthChallenge:(nullable NSString *)preauthChallenge
                                          captchaToken:(nullable NSString *)captchaToken

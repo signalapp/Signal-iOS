@@ -48,9 +48,11 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
     // MARK: - Public
 
     public func requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
-        let request = OWSRequestFactory.requestPreauthChallengeRequest(e164: e164,
-                                                                       pushToken: pushToken,
-                                                                       isVoipToken: isVoipToken)
+        let request = OWSRequestFactory.requestPreauthChallenge(
+            e164: e164,
+            pushToken: pushToken,
+            isVoipToken: isVoipToken
+        )
         return networkManager.makePromise(request: request).asVoid()
     }
 
