@@ -425,7 +425,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "ماہانہ عطیہ منسوخ ہو گیا";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "آپ کا متواتر ماہانہ عطیہ منسوخ ہو گیا تھا۔ %1$@ آپ کا بیج آپ کی پروفائل پر مزید نظر نہیں آئے گا۔\n\nSignal کی سپورٹ جاری رکھنے اور اپنے بیج کو دوبارہ فعال کرنے کے لیے، اپنی ادائیگی کی تفصیلات کو اپ ڈیٹ کریں اور دوبارہ عطیہ کریں۔";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. %1$@ donation badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment details and donate again.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "آپ کا ماہانہ متواتر عطیہ خودکار طور پر منسوخ ہو گیا تھا کیونکہ آپ کافی عرصے سے غیر فعال تھے۔ آپ کا %1$@ بیج آپ کی پروفائل پر مزید نظر نہیں آئے گا۔\n\nآپ Signal استعمال کرنا جاری رکھ سکتے ہیں لیکن ایپ کی سپورٹ اور اپنے بیج کو دوبارہ فعال کرنے کے لیے، ابھی عطیہ کریں۔";
@@ -1588,6 +1588,9 @@
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "تمام پیغامات کو حذف کریں";
 
+/* Notification warning the user that they have been de-registered. */
+"DEREGISTRATION_NOTIFICATION" = "You have been logged out of Signal on this device.";
+
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "اس فون نمبر کو دوبارہ رجسٹر کریں";
 
@@ -1814,19 +1817,19 @@
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "سبسکرپشن اپ ڈیٹ کریں";
 
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
-"DONATION_FOR_A_FRIEND_ROW_DURATION" = "Lasts %1$@";
+"DONATION_FOR_A_FRIEND_ROW_DURATION" = "%1$@ تک برقرار رہتا ہے";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "آپ کا بیج زائد المیعاد ہو گیا ہے اور آپ کی پروفائل پر ڈسپلے کرنے کے لیے مزید دستیاب نہیں ہے۔";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Your donation has expired and is no longer available to be displayed on your profile.";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "آپ کا بیج زائد المیعاد ہو گیا ہے";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Your Donation Has Expired";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "%1$@ سے آپ کا بیج زائد المیعاد ہو گیا ہے اور مزید ریڈیم نہیں ہو سکتا۔";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Your donation from %1$@ has expired and can no longer be redeemed.";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "آپ کا بیج زائد المیعاد ہو گیا ہے";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Your Donation Has Expired";
 
 /* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "ریڈیم ہو گیا";
@@ -1838,7 +1841,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "دوست کی طرف سے عطیہ کریں";
 
 /* Title on the screen where you choose who you're going to donate on behalf of. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Choose Recipient";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "وصول کنندہ کا انتخاب کریں";
 
 /* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "عطیہ کی تصدیق کریں";
@@ -1892,7 +1895,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "ریڈیم";
 
 /* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "You can redeem your badge later";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "You can redeem your donation later";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ نے آپ کی طرف سے عطیہ کیا ہے";
@@ -1999,8 +2002,8 @@
 /* Title for the 'my support' section in the donation view */
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "میری معاونت";
 
-/* Title for the 'other ways to give' section on the donation view */
-"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "عطیہ دینے کے دیگر طریقے";
+/* Title for the \"other ways to donate\" section on the donation view. */
+"DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Other Ways to Donate";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "سبسکرپشن کے اکثر پوچھے جانے والے سوالات";
@@ -2219,10 +2222,10 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "آپ کا حفاظتی نمبر ابھی %1$@کیساتھ تبدیل ہو چکا ہے۔ یہ پیغام دوبارہ بھیجنے سے پہلے آپ تصدیق کرنا چاہتے ہیں۔";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "آپ کا بیج ریڈیم نہیں کیا جا سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Your donation couldn’t be redeemed. Check your connection and try again.";
 
 /* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "بیج ریڈیم نہیں کیا جا سکا";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Couldn’t Redeem Donation";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "حفاظتی نمبر کی تصدیق میں ناکامی!";
@@ -3458,13 +3461,13 @@
 "LINKED_DEVICES_TITLE" = "منسلک ڈیوائسز";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Allow Notifications";
+"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "اطلاعات کی اجازت دیں";
 
 /* Explanation in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications lets you know when you receive messages, calls or updates about new conversation activity.";
+"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "جب آپ گفتگو کی نئی سرگرمی سے متعلق پیغامات، کالز، یا اپ ڈیٹس وصول کرتے ہیں تو اطلاعات کی اجازت دے کر آپ کو باخبر ہونے میں مدد ملتی ہے۔";
 
 /* Title of the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Allow Notifications";
+"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "اطلاعات کی اجازت دیں";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "مشین لنک کرنے میں ناکامی";
@@ -5401,7 +5404,7 @@
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "بلاک";
 
-/* Label for the  'manual censorship circumvention' switch. */
+/* Label for the 'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "بائی پاس کرنے کیلئے سنسر شِپ";
 
 /* Label for the 'manual censorship circumvention' country. */

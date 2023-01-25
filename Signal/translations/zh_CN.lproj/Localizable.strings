@@ -425,7 +425,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "每月捐款已取消";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "您的每月捐款已取消。%1$@ 您的个人资料将不再显示您的徽章。\n\n如要继续支持我们的应用并重新激活您的徽章，请更新您的付款信息并继续给我们捐款吧。";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. %1$@ donation badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment details and donate again.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "由于您长期不活跃，您的每月定期捐款已被自动取消。您的个人资料将不再显示您的%1$@徽章。\n\n您可以继续使用 Signal，但如果您要支持我们的应用并重新激活您的徽章，请立即给我们捐款吧。";
@@ -1588,6 +1588,9 @@
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "删除所有消息";
 
+/* Notification warning the user that they have been de-registered. */
+"DEREGISTRATION_NOTIFICATION" = "You have been logged out of Signal on this device.";
+
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "重新注册此手机号码";
 
@@ -1814,19 +1817,19 @@
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "更新定期捐款";
 
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
-"DONATION_FOR_A_FRIEND_ROW_DURATION" = "Lasts %1$@";
+"DONATION_FOR_A_FRIEND_ROW_DURATION" = "有效期为 %1$@";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "您的徽章已到期，无法显示在您的个人资料中向大家展示。";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Your donation has expired and is no longer available to be displayed on your profile.";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "您的徽章已到期";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Your Donation Has Expired";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "%1$@给您赠送的徽章已到期，因此无法领取。";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Your donation from %1$@ has expired and can no longer be redeemed.";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "您的徽章已到期";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Your Donation Has Expired";
 
 /* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "已领取";
@@ -1838,7 +1841,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "代朋友捐款";
 
 /* Title on the screen where you choose who you're going to donate on behalf of. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Choose Recipient";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "选择接收人";
 
 /* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "确认捐款";
@@ -1892,7 +1895,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "领取";
 
 /* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "You can redeem your badge later";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "You can redeem your donation later";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@代您捐了款";
@@ -1999,8 +2002,8 @@
 /* Title for the 'my support' section in the donation view */
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "我的赞助";
 
-/* Title for the 'other ways to give' section on the donation view */
-"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "其他赞助方式";
+/* Title for the \"other ways to donate\" section on the donation view. */
+"DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Other Ways to Donate";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "定期捐款常见问题解答";
@@ -2219,10 +2222,10 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "您与%1$@的安全码已改变，建议您验证新安全码后再发送此消息。";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "无法领取您的徽章。请检查您的网络连接并重试。";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Your donation couldn’t be redeemed. Check your connection and try again.";
 
 /* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "无法领取徽章";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Couldn’t Redeem Donation";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "验证安全码失败!";
@@ -3458,13 +3461,13 @@
 "LINKED_DEVICES_TITLE" = "已关联设备";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Allow Notifications";
+"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "允许通知";
 
 /* Explanation in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications lets you know when you receive messages, calls or updates about new conversation activity.";
+"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "允许通知，在收到消息、电话与聊天新动态时及时通知您。";
 
 /* Title of the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Allow Notifications";
+"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "允许通知";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "绑定设备失败";
@@ -5401,7 +5404,7 @@
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "加入黑名单";
 
-/* Label for the  'manual censorship circumvention' switch. */
+/* Label for the 'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "审查规避";
 
 /* Label for the 'manual censorship circumvention' country. */

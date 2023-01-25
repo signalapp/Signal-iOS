@@ -425,7 +425,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "毎月の寄付がキャンセルされました";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "毎月の定期的な寄付がキャンセルされました。%1$@ バッジはプロフィールに表示されなくなりました。\n\nSignalへのサポートを継続してバッジを再び有効にするために、決済詳細を更新して再度寄付をお願いします。";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. %1$@ donation badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment details and donate again.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "長い間ご利用がなかったため、毎月の定期的な寄付が自動的にキャンセルされました。%1$@ バッジはプロフィールに表示されなくなっています。\n\nSignalは今後もご利用いただけますが、アプリのサポートやバッジを再び有効にするには、今すぐ寄付をお願いします。";
@@ -1588,6 +1588,9 @@
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "すべてのメッセージを削除する";
 
+/* Notification warning the user that they have been de-registered. */
+"DEREGISTRATION_NOTIFICATION" = "You have been logged out of Signal on this device.";
+
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "この電話番号を再登録する";
 
@@ -1814,19 +1817,19 @@
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "サブスクリプションを更新する";
 
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
-"DONATION_FOR_A_FRIEND_ROW_DURATION" = "Lasts %1$@";
+"DONATION_FOR_A_FRIEND_ROW_DURATION" = "掲載期間：%1$@";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "あなたのバッジは有効期限が切れたため、プロフィールには表示されません。";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Your donation has expired and is no longer available to be displayed on your profile.";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "バッジの有効期限が切れました";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Your Donation Has Expired";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "%1$@からのバッジは有効期限が切れているため引換えができません。";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Your donation from %1$@ has expired and can no longer be redeemed.";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "バッジの有効期限が切れました";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Your Donation Has Expired";
 
 /* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "引換え済";
@@ -1838,7 +1841,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "友達に代わって寄付する";
 
 /* Title on the screen where you choose who you're going to donate on behalf of. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Choose Recipient";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "送信先の選択";
 
 /* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "寄付の確認";
@@ -1892,7 +1895,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "引換え";
 
 /* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "You can redeem your badge later";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "You can redeem your donation later";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ があなたに代わって寄付しました";
@@ -1999,8 +2002,8 @@
 /* Title for the 'my support' section in the donation view */
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "マイサポート";
 
-/* Title for the 'other ways to give' section on the donation view */
-"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "別の方法";
+/* Title for the \"other ways to donate\" section on the donation view. */
+"DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Other Ways to Donate";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "サブスクリプションのよくある質問";
@@ -2219,10 +2222,10 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "%1$@ に対する安全番号が変更されました。このメッセージを再送する前に、検証した方が良いかもしれません。";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "バッジを引き換えることができませんでした。インターネット接続を確認して再度試してください。";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Your donation couldn’t be redeemed. Check your connection and try again.";
 
 /* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "バッジを引き換えることができませんでした";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Couldn’t Redeem Donation";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "安全番号を検証できませんでした！";
@@ -3458,13 +3461,13 @@
 "LINKED_DEVICES_TITLE" = "リンク済み端末";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Allow Notifications";
+"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "通知許可";
 
 /* Explanation in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications lets you know when you receive messages, calls or updates about new conversation activity.";
+"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "通知を許可すると、メッセージ受信、着信、会話の新しいアクティビティに関する更新を受信したときに通知されます。";
 
 /* Title of the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Allow Notifications";
+"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "通知許可";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "端末のリンクに失敗しました";
@@ -5401,7 +5404,7 @@
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "ブロック";
 
-/* Label for the  'manual censorship circumvention' switch. */
+/* Label for the 'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "検閲回避";
 
 /* Label for the 'manual censorship circumvention' country. */

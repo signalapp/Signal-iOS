@@ -425,7 +425,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Mjesečna donacija je otkazana";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Vaša obnavljajuća mjesečna donacija je otkazana. %1$@ Vaša značka više nije vidljiva na vašem profilu.\n\nDa biste nastavili podržavati Signal i ponovno aktivirali svoju značku, ažurirajte podatke o plaćanju i ponovno donirajte.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. %1$@ donation badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment details and donate again.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Vaša pretplata je automatski otkazana zbog toga što ste dugo bili neaktivni. Vaša značka %1$@ više nije vidljiva na vašem profilu.\n\nMožete nastaviti koristiti Signal, ali ako želite podržati aplikaciju i ponovno aktivirati svoju značku, bit će potrebno ponoviti donaciju.";
@@ -1588,6 +1588,9 @@
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Izbriši sve poruke";
 
+/* Notification warning the user that they have been de-registered. */
+"DEREGISTRATION_NOTIFICATION" = "You have been logged out of Signal on this device.";
+
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Ponovno registriraj ovaj broj telefona";
 
@@ -1814,19 +1817,19 @@
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Nadogradnja pretplate";
 
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
-"DONATION_FOR_A_FRIEND_ROW_DURATION" = "Lasts %1$@";
+"DONATION_FOR_A_FRIEND_ROW_DURATION" = "Traje %1$@";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Vaša značka je istekla i više nije dostupna za prikaz na vašem profilu.";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Your donation has expired and is no longer available to be displayed on your profile.";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Vaša značka je istekla";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Your Donation Has Expired";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Značka koju ste dobili od korisnika %1$@ istekla je i više se ne može preuzeti.";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Your donation from %1$@ has expired and can no longer be redeemed.";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Vaša značka je istekla";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Your Donation Has Expired";
 
 /* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Preuzeta";
@@ -1838,7 +1841,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Donirajte u ime prijatelja";
 
 /* Title on the screen where you choose who you're going to donate on behalf of. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Choose Recipient";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Odaberite primatelja";
 
 /* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Potvrdite donaciju";
@@ -1892,7 +1895,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "Preuzmi";
 
 /* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "You can redeem your badge later";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "You can redeem your donation later";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "Korisnik %1$@ izvršio je donaciju u vaše ime";
@@ -1999,8 +2002,8 @@
 /* Title for the 'my support' section in the donation view */
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "Moja podrška";
 
-/* Title for the 'other ways to give' section on the donation view */
-"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Drugi načini doniranja";
+/* Title for the \"other ways to donate\" section on the donation view. */
+"DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Other Ways to Donate";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "Najčešća pitanja u vezi pretplate";
@@ -2219,10 +2222,10 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Vaš sigurnosni broj s %1$@ je nedavno promijenjen. Možda želite potvrditi prije nego što ponovo pošaljete poruku.";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Nije moguće preuzeti značku. Provjerite internetsku vezu i pokušajte ponovno.";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Your donation couldn’t be redeemed. Check your connection and try again.";
 
 /* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Nije moguće preuzeti značku";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Couldn’t Redeem Donation";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Provjera sigurnosnog broja nije uspjela!";
@@ -3458,13 +3461,13 @@
 "LINKED_DEVICES_TITLE" = "Povezani uređaji";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Allow Notifications";
+"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Dopusti obavijesti";
 
 /* Explanation in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications lets you know when you receive messages, calls or updates about new conversation activity.";
+"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Obavijesti vam omogućuju da vidite kada vam stignu poruke, pozivi ili ažuriranja o novim aktivnostima u razgovorima.";
 
 /* Title of the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Allow Notifications";
+"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Dopusti obavijesti";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Povezivanje uređaja nije uspjelo";
@@ -5401,7 +5404,7 @@
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Blokiraj";
 
-/* Label for the  'manual censorship circumvention' switch. */
+/* Label for the 'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Zaobilaženje cenzure";
 
 /* Label for the 'manual censorship circumvention' country. */

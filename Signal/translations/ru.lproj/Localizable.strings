@@ -425,7 +425,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Ежемесячное пожертвование отменено";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Ваше пожертвование, повторяющееся ежемесячно, было отменено. %1$@ Ваш значок больше не виден в вашем профиле.\n\nЧтобы продолжить поддерживать Signal и заново активировать свой значок, обновите свой способ оплаты и сделайте пожертвование снова.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. %1$@ donation badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment details and donate again.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Ваше пожертвование, повторяющееся ежемесячно, было автоматически отменено, потому что вы были неактивны слишком долго. Ваш значок «%1$@» больше не виден в вашем профиле.\n\nВы можете продолжать использовать Signal, но чтобы поддержать приложение и заново активировать значок, сделайте пожертвование сейчас.";
@@ -1588,6 +1588,9 @@
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Удалить все сообщения";
 
+/* Notification warning the user that they have been de-registered. */
+"DEREGISTRATION_NOTIFICATION" = "You have been logged out of Signal on this device.";
+
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Повторно зарегистрировать этот номер";
 
@@ -1778,7 +1781,7 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Пожертвовать Signal %1$@";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message. */
-"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "Получатель будет уведомлён о пожертвовании в приватном сообщении. Добавьте своё сообщение ниже.";
+"DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "Получатель будет уведомлён о пожертвовании в индивидуальном сообщении. Добавьте свое сообщение ниже.";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is the placeholder in the text field for that additional message. */
 "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Добавьте сообщение";
@@ -1814,31 +1817,31 @@
 "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON" = "Обновить подписку";
 
 /* When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}. */
-"DONATION_FOR_A_FRIEND_ROW_DURATION" = "Lasts %1$@";
+"DONATION_FOR_A_FRIEND_ROW_DURATION" = "Действует %1$@";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Ваш значок, полученный в подарок, истёк и больше не может быть показан в вашем профиле.";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Your donation has expired and is no longer available to be displayed on your profile.";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Ваш значок истёк";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Your Donation Has Expired";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Ваш подарок от %1$@ истёк и больше не может быть использован.";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Your donation from %1$@ has expired and can no longer be redeemed.";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Ваш значок истёк";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Your Donation Has Expired";
 
 /* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Принят";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Поддержите Signal, сделав пожертвование за друга или члена семьи, которые пользуются Signal. Они смогут продемонстрировать свою поддержку в профиле.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Поддержите Signal, сделав пожертвование за друга или члена семьи, который пользуется Signal. Они смогут при желании продемонстрировать свою поддержку в профиле.";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Пожертвовать за друга";
 
 /* Title on the screen where you choose who you're going to donate on behalf of. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Choose Recipient";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Выберите получателя";
 
 /* Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Подтвердить пожертвование";
@@ -1877,7 +1880,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "%1$@ сделал(-а) пожертвование Signal от вашего имени";
 
 /* Users can donate on a friend's behalf. If the friend cannot receive these donations, this error message will be shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_BODY" = "Вы не сможете сделать пожертвование за этого пользователя, пока он не обновит Signal.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_BODY" = "Вы не сможете сделать пожертвование от имени этого пользователя, пока он не обновит Signal.";
 
 /* Users can donate on a friend's behalf. If the friend cannot receive these donations, an error dialog will be shown. This is the title of that error dialog. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_CANNOT_RECEIVE_DONATION_ERROR_TITLE" = "Не удалось сделать пожертвование";
@@ -1892,7 +1895,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "Принять";
 
 /* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "You can redeem your badge later";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "You can redeem your donation later";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ сделал(-а) пожертвование за вас";
@@ -1904,7 +1907,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "Пожертвование %1$@";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the text on that sheet. Embeds {{recipient name}}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Вы сделали пожертвование Signal от имени %1$@. Этот пользователь сможет продемонстрировать свою поддержку в профиле.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "Вы сделали пожертвование Signal от имени %1$@. Этот пользователь при желании сможет продемонстрировать свою поддержку в профиле.";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "Спасибо за вашу поддержку!";
@@ -1999,8 +2002,8 @@
 /* Title for the 'my support' section in the donation view */
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "Моя поддержка";
 
-/* Title for the 'other ways to give' section on the donation view */
-"DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Другие способы пожертвовать";
+/* Title for the \"other ways to donate\" section on the donation view. */
+"DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Other Ways to Donate";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "ЧаВо о подписке";
@@ -2219,10 +2222,10 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Ваш код безопасности с %1$@ недавно изменился. Возможно, вы захотите подтвердить его перед повторной отправкой этого сообщения.";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Ваш значок не удалось принять. Проверьте ваше подключение к интернету и попробуйте ещё раз.";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Your donation couldn’t be redeemed. Check your connection and try again.";
 
 /* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Не удалось принять значок";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Couldn’t Redeem Donation";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Не удалось подтвердить код безопасности!";
@@ -3458,13 +3461,13 @@
 "LINKED_DEVICES_TITLE" = "Привязанные устройства";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Allow Notifications";
+"LINKED_ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Разрешить уведомления";
 
 /* Explanation in the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Allowing notifications lets you know when you receive messages, calls or updates about new conversation activity.";
+"LINKED_ONBOARDING_PERMISSIONS_EXPLANATION" = "Разрешение уведомлений позволяет вам узнавать о получении сообщений, звонков или информации о новых действиях в разговорах.";
 
 /* Title of the 'onboarding permissions' view. */
-"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Allow Notifications";
+"LINKED_ONBOARDING_PERMISSIONS_TITLE" = "Разрешить уведомления";
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "Не удалось привязать устройство";
@@ -4277,7 +4280,7 @@
 "OUTGOING_MISSED_AUDIO_CALL" = "Неотвеченный голосовой звонок";
 
 /* info message text in conversation view */
-"OUTGOING_MISSED_VIDEO_CALL" = "Неотвеченный исходящий видеозвонок";
+"OUTGOING_MISSED_VIDEO_CALL" = "Неотвеченный видеозвонок";
 
 /* info message text in conversation view */
 "OUTGOING_VIDEO_CALL" = "Исходящий видеозвонок";
@@ -5401,7 +5404,7 @@
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Заблокировать";
 
-/* Label for the  'manual censorship circumvention' switch. */
+/* Label for the 'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Обход цензуры";
 
 /* Label for the 'manual censorship circumvention' country. */
