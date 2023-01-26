@@ -109,8 +109,18 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 ),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "username"),
                 actionBlock: { [weak self] in
-                    let vc = UsernameViewController(username: self?.username)
-                    self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+                    guard let self else { return }
+
+                    let vc = UsernameSelectionViewController(
+                        existingUsername: .init(rawUsername: self.username),
+                        context: .init(
+                            networkManager: self.networkManager,
+                            databaseStorage: self.databaseStorage,
+                            profileManager: self.profileManager
+                        )
+                    )
+
+                    self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
                 }
             ))
         }

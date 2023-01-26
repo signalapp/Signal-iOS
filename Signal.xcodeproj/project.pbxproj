@@ -1087,7 +1087,6 @@
 		88F5D78C2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5D78B2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift */; };
 		88F5FA9428EBD4CF007AA1BF /* StorySharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5FA9228EBD484007AA1BF /* StorySharing.swift */; };
 		88F67A0C24E5126D00435A71 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
-		88F7EE93230253C5003ADF7D /* UsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F7EE92230253C5003ADF7D /* UsernameViewController.swift */; };
 		88FE237E249C22080041670F /* ConversationViewController+Scroll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FE237D249C22080041670F /* ConversationViewController+Scroll.swift */; };
 		954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */; };
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
@@ -1137,6 +1136,9 @@
 		D9517ABE292C596B00DDD37E /* Paypal+WebAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */; };
 		D9517AC0292C5A3900DDD37E /* Paypal+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9517ABF292C5A3900DDD37E /* Paypal+API.swift */; };
 		D95C39E6296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */; };
+		D95C39E8296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39E7296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift */; };
+		D95C39EA296E108100A9DA23 /* UsernameSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39E9296E108100A9DA23 /* UsernameSelectionViewController.swift */; };
+		D95C39EC296E1BC600A9DA23 /* PrefixedLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95C39EB296E1BC600A9DA23 /* PrefixedLogger.swift */; };
 		D95DA7ED28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */; };
 		D9668B2F291AF63500665298 /* SSKJobQueues.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9668B2E291AF63500665298 /* SSKJobQueues.swift */; };
 		D9668B33291B03C200665298 /* SessionResetJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D231761DC7E8F10034FA89 /* SessionResetJob.swift */; };
@@ -1149,6 +1151,12 @@
 		D98DD85F28EE53B00089333E /* RemoteMegaphoneFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */; };
 		D98DD86028EE53B00089333E /* RemoteMegaphoneModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */; };
 		D997FA7628F8E3A2003C7B8B /* RemoteMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */; };
+		D99840B32976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */; };
+		D99840B829775A8300F7ED6D /* Usernames+NicknameValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840B629775A0400F7ED6D /* Usernames+NicknameValidatorTests.swift */; };
+		D99840BD297A04DA00F7ED6D /* Usernames+NicknameValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840BC297A04DA00F7ED6D /* Usernames+NicknameValidator.swift */; };
+		D99840BF297A04EB00F7ED6D /* Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840BE297A04EB00F7ED6D /* Usernames.swift */; };
+		D99840C4297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */; };
+		D99840C6297A0F9500F7ED6D /* Usernames+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C5297A0F9500F7ED6D /* Usernames+API.swift */; };
 		D99D960F292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */; };
 		D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */; };
 		D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */; };
@@ -3466,7 +3474,6 @@
 		88F5D78B2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPrivateStoryConfirmViewController.swift; sourceTree = "<group>"; };
 		88F5FA9228EBD484007AA1BF /* StorySharing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySharing.swift; sourceTree = "<group>"; };
 		88F5FA9528EF7E02007AA1BF /* StorySharingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySharingTests.swift; sourceTree = "<group>"; };
-		88F7EE92230253C5003ADF7D /* UsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameViewController.swift; sourceTree = "<group>"; };
 		88FE237D249C22080041670F /* ConversationViewController+Scroll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Scroll.swift"; sourceTree = "<group>"; };
 		89095AC0DD065D55A4A5F8C6 /* Pods_SignalServiceKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalServiceKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8981C8F64D94D3C52EB67A2C /* Pods-SignalTests.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.test.xcconfig"; sourceTree = "<group>"; };
@@ -3547,6 +3554,9 @@
 		D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+WebAuthentication.swift"; sourceTree = "<group>"; };
 		D9517ABF292C5A3900DDD37E /* Paypal+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+API.swift"; sourceTree = "<group>"; };
 		D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSRequestFactory+BoostPayments.swift"; sourceTree = "<group>"; };
+		D95C39E7296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSRequestFactory+Usernames.swift"; sourceTree = "<group>"; };
+		D95C39E9296E108100A9DA23 /* UsernameSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameSelectionViewController.swift; sourceTree = "<group>"; };
+		D95C39EB296E1BC600A9DA23 /* PrefixedLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrefixedLogger.swift; sourceTree = "<group>"; };
 		D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+SystemMessageItems.swift"; sourceTree = "<group>"; };
 		D9668B2E291AF63500665298 /* SSKJobQueues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKJobQueues.swift; sourceTree = "<group>"; };
 		D9668B34291B088200665298 /* SignalMessagingJobQueues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMessagingJobQueues.swift; sourceTree = "<group>"; };
@@ -3558,6 +3568,12 @@
 		D98DD85D28EE53B00089333E /* RemoteMegaphoneFetcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneFetcher.swift; sourceTree = "<group>"; };
 		D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteMegaphoneModel.swift; sourceTree = "<group>"; };
 		D997FA7528F8E3A2003C7B8B /* RemoteMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMegaphone.swift; sourceTree = "<group>"; };
+		D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UsernameSelectionViewController+UsernameTextField.swift"; sourceTree = "<group>"; };
+		D99840B629775A0400F7ED6D /* Usernames+NicknameValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+NicknameValidatorTests.swift"; sourceTree = "<group>"; };
+		D99840BC297A04DA00F7ED6D /* Usernames+NicknameValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+NicknameValidator.swift"; sourceTree = "<group>"; };
+		D99840BE297A04EB00F7ED6D /* Usernames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Usernames.swift; sourceTree = "<group>"; };
+		D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+ParsedUsername.swift"; sourceTree = "<group>"; };
+		D99840C5297A0F9500F7ED6D /* Usernames+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+API.swift"; sourceTree = "<group>"; };
 		D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+OneTimePaypalDonation.swift"; sourceTree = "<group>"; };
 		D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinderPerformanceTests.swift; sourceTree = "<group>"; };
 		D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift"; sourceTree = "<group>"; };
@@ -6076,6 +6092,7 @@
 				457F3AC01D14A0F700C51351 /* Models */,
 				45CD81A41DBFF8CF004C9430 /* Storyboards */,
 				450DF2061E0DD28D003D14BE /* UserInterface */,
+				D99840BB297A04A300F7ED6D /* Usernames */,
 				76EB04C818170B33006006FC /* util */,
 				F909E27B293D0F78003B41D1 /* AppDelegate+Lifecycle.swift */,
 				F990FAD1293800EE006FB21B /* AppDelegate+Orientation.swift */,
@@ -6398,7 +6415,6 @@
 				34798A8625AF965300EC89B4 /* ProfileBioViewController.swift */,
 				8871B17025F0139D00D4E070 /* ProfileNameViewController.swift */,
 				8871B16E25F007DE00D4E070 /* ProfileSettingsViewController.swift */,
-				88F7EE92230253C5003ADF7D /* UsernameViewController.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -6797,6 +6813,7 @@
 				4C3EF8002109184A0007EBF7 /* SSKTests */,
 				E75DD3DC2810CD3500E32C36 /* subscriptions */,
 				B660F69D1C29868000687D6E /* Supporting Files */,
+				D99840C2297A0DC400F7ED6D /* Usernames */,
 				B660F6A21C29868000687D6E /* util */,
 				34B3F8951E8DF1B90035BE1A /* ViewControllers */,
 				34BEDB0F21C41E71007B0EAE /* views */,
@@ -7027,6 +7044,27 @@
 				D98DD85E28EE53B00089333E /* RemoteMegaphoneModel.swift */,
 			);
 			path = "Remote Megaphone";
+			sourceTree = "<group>";
+		};
+		D99840BB297A04A300F7ED6D /* Usernames */ = {
+			isa = PBXGroup;
+			children = (
+				D99840C5297A0F9500F7ED6D /* Usernames+API.swift */,
+				D99840BC297A04DA00F7ED6D /* Usernames+NicknameValidator.swift */,
+				D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */,
+				D99840BE297A04EB00F7ED6D /* Usernames.swift */,
+				D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */,
+				D95C39E9296E108100A9DA23 /* UsernameSelectionViewController.swift */,
+			);
+			path = Usernames;
+			sourceTree = "<group>";
+		};
+		D99840C2297A0DC400F7ED6D /* Usernames */ = {
+			isa = PBXGroup;
+			children = (
+				D99840B629775A0400F7ED6D /* Usernames+NicknameValidatorTests.swift */,
+			);
+			path = Usernames;
 			sourceTree = "<group>";
 		};
 		E75DD3DC2810CD3500E32C36 /* subscriptions */ = {
@@ -8303,6 +8341,7 @@
 			children = (
 				D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */,
 				F9D5BFCC2979A017001737E5 /* OWSRequestFactory+Spam.swift */,
+				D95C39E7296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift */,
 				F9C5CAE4289453B200548EEE /* OWSRequestFactory.h */,
 				F9C5CAE6289453B200548EEE /* OWSRequestFactory.m */,
 				F9C5CAE2289453B200548EEE /* OWSRequestFactory.swift */,
@@ -8429,6 +8468,7 @@
 				F9C5CB1D289453B200548EEE /* PinnedThreadManager.swift */,
 				F9C5CB58289453B200548EEE /* Platform.swift */,
 				F908AA7928CB89CC00472E68 /* PngChunker.swift */,
+				D95C39EB296E1BC600A9DA23 /* PrefixedLogger.swift */,
 				F9C5CB4B289453B200548EEE /* Promise+OWS.swift */,
 				F9C5CB42289453B200548EEE /* ReadyFlag.swift */,
 				F9C5CB46289453B200548EEE /* Refinery.swift */,
@@ -10750,7 +10790,12 @@
 				342FFE7B271EF581000AC89F /* UIStoryboard+OWS.swift in Sources */,
 				346CD5C226306578004162D6 /* UnknownThreadWarningInteraction.swift in Sources */,
 				4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */,
-				88F7EE93230253C5003ADF7D /* UsernameViewController.swift in Sources */,
+				D99840C6297A0F9500F7ED6D /* Usernames+API.swift in Sources */,
+				D99840BF297A04EB00F7ED6D /* Usernames.swift in Sources */,
+				D99840BD297A04DA00F7ED6D /* Usernames+NicknameValidator.swift in Sources */,
+				D99840C4297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift in Sources */,
+				D99840B32976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift in Sources */,
+				D95C39EA296E108100A9DA23 /* UsernameSelectionViewController.swift in Sources */,
 				3434AE1C22AEDE7D002EE04E /* ViewOnceMessageViewController.swift in Sources */,
 				88928A7726419D6B009C9B30 /* VoiceMessageDraftView.swift in Sources */,
 				88928A7526418904009C9B30 /* VoiceMessageTooltip.swift in Sources */,
@@ -10824,6 +10869,7 @@
 				452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */,
 				F992ACC428F8C9D900906038 /* StripeTest.swift in Sources */,
 				E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */,
+				D99840B829775A8300F7ED6D /* Usernames+NicknameValidatorTests.swift in Sources */,
 				45A3579827DAAC6A0051CE8B /* UserProfileTest.swift in Sources */,
 				B660F6E01C29868000687D6E /* UtilTest.m in Sources */,
 				5042EAA3287F96FB00C9B19F /* VisibleBadgeResolverTest.swift in Sources */,
@@ -11139,6 +11185,7 @@
 				F9C5CC85289453B300548EEE /* OWSRecoverableDecryptionPlaceholder.m in Sources */,
 				D95C39E6296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift in Sources */,
 				F9D5BFCD2979A017001737E5 /* OWSRequestFactory+Spam.swift in Sources */,
+				D95C39E8296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift in Sources */,
 				F9C5CDB9289453B400548EEE /* OWSRequestFactory.m in Sources */,
 				F9C5CDB5289453B400548EEE /* OWSRequestFactory.swift in Sources */,
 				F9C5CC52289453B300548EEE /* OWSRequestMaker.swift in Sources */,
@@ -11200,6 +11247,7 @@
 				F9C5CDEF289453B400548EEE /* PinnedThreadManager.swift in Sources */,
 				F9C5CE2A289453B400548EEE /* Platform.swift in Sources */,
 				F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */,
+				D95C39EC296E1BC600A9DA23 /* PrefixedLogger.swift in Sources */,
 				F9C5CBCB289453B300548EEE /* PreKeyBundle+jsonDict.m in Sources */,
 				F9C5CD50289453B300548EEE /* PreKeyBundle.m in Sources */,
 				F9C5CD4D289453B300548EEE /* PreKeyRecord.m in Sources */,

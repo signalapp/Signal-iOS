@@ -205,4 +205,39 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
 
         XCTAssertEqual(request.parameters as! [String: String], ["token": "YWJj"])
     }
+
+    // MARK: - Usernames
+
+    func testReserveUsername() {
+        let request = OWSRequestFactory.reserveUsernameRequest(desiredNickname: "foobar")
+
+        XCTAssertEqual(request.url?.path, "v1/accounts/username/reserved")
+        XCTAssertEqual(request.httpMethod, "PUT")
+        XCTAssertEqual(request.parameters as! [String: String], ["nickname": "foobar"])
+        XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
+    }
+
+    func testConfirmReservedUsername() {
+        let request = OWSRequestFactory.confirmReservedUsernameRequest(
+            previouslyReservedUsername: "foobar",
+            reservationToken: "d4a0efe9-6ffc-488a-b33d-6aa340279175"
+        )
+
+        XCTAssertEqual(request.url?.path, "v1/accounts/username/confirm")
+        XCTAssertEqual(request.httpMethod, "PUT")
+        XCTAssertEqual(request.parameters as! [String: String], [
+            "usernameToConfirm": "foobar",
+            "reservationToken": "d4a0efe9-6ffc-488a-b33d-6aa340279175"
+        ])
+        XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
+    }
+
+    func testDeleteExistingUsername() {
+        let request = OWSRequestFactory.deleteExistingUsernameRequest()
+
+        XCTAssertEqual(request.url?.path, "v1/accounts/username")
+        XCTAssertEqual(request.httpMethod, "DELETE")
+        XCTAssertEqual(request.parameters as! [String: String], [:])
+        XCTAssertTrue(request.shouldHaveAuthorizationHeaders)
+    }
 }

@@ -183,13 +183,20 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 
 - (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size;
 
-- (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address
-                              transaction:(SDSAnyReadTransaction *)transaction;
-- (NSArray<id<SSKMaybeString>> *)usernamesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
-                                           transaction:(SDSAnyReadTransaction *)transaction;
-
 - (NSArray<SignalServiceAddress *> *)allWhitelistedRegisteredAddressesWithTransaction:
     (SDSAnyReadTransaction *)transaction;
+
+#pragma mark - Usernames
+
+- (void)updateLocalUsername:(nullable NSString *)username
+          userProfileWriter:(UserProfileWriter)userProfileWriter
+                transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address
+                              transaction:(SDSAnyReadTransaction *)transaction;
+
+- (NSArray<id<SSKMaybeString>> *)usernamesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
+                                           transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

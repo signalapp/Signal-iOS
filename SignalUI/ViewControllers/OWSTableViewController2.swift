@@ -56,6 +56,8 @@ open class OWSTableViewController2: OWSViewController {
         }
     }
 
+    /// Whether or not this table view should avoid being hidden behind the
+    /// keyboard.
     @objc
     public var shouldAvoidKeyboard = false
 

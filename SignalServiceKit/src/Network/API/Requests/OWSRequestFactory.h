@@ -162,8 +162,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 #pragma mark - Usernames
 
-+ (TSRequest *)usernameSetRequest:(NSString *)username;
-+ (TSRequest *)usernameDeleteRequest;
+// TODO: [Usernames] Probably going to delete this
 + (TSRequest *)getProfileRequestWithUsername:(NSString *)username;
 
 #pragma mark - Profiles

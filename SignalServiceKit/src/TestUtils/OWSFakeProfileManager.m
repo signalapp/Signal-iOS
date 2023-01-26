@@ -386,6 +386,21 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
+- (NSArray<SignalServiceAddress *> *)allWhitelistedRegisteredAddressesWithTransaction:
+    (SDSAnyReadTransaction *)transaction
+{
+    return @[];
+}
+
+#pragma mark - Usernames
+
+- (void)updateLocalUsername:(nullable NSString *)username
+          userProfileWriter:(UserProfileWriter)userProfileWriter
+                transaction:(SDSAnyWriteTransaction *)transaction
+{
+    // Do nothing.
+}
+
 - (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -396,12 +411,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                    transaction:(nonnull SDSAnyReadTransaction *)transaction
 {
     return [addresses map:^(SignalServiceAddress *address) { return self.fakeUsernames[address] ?: [NSNull null]; }];
-}
-
-- (NSArray<SignalServiceAddress *> *)allWhitelistedRegisteredAddressesWithTransaction:
-    (SDSAnyReadTransaction *)transaction
-{
-    return @[];
 }
 
 @end

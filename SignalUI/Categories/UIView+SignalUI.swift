@@ -727,8 +727,8 @@ public extension UIStackView {
 
 // MARK: -
 
-// This works around a UIStackView bug where hidden subviews
-// sometimes re-appear.
+/// This works around a UIStackView bug where hidden subviews
+/// sometimes re-appear.
 @objc
 public extension UIView {
     var isHiddenInStackView: Bool {

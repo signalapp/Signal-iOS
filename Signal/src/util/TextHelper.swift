@@ -23,16 +23,20 @@ public class TextFieldHelper: NSObject {
                        maxGlyphCount: nil)
     }
 
-    public class func textField(_ textField: UITextField,
-                                shouldChangeCharactersInRange editingRange: NSRange,
-                                replacementString: String,
-                                maxByteCount: Int? = nil,
-                                maxGlyphCount: Int? = nil) -> Bool {
+    public class func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersInRange editingRange: NSRange,
+        replacementString: String,
+        maxByteCount: Int? = nil,
+        maxUnicodeScalarCount: Int? = nil,
+        maxGlyphCount: Int? = nil
+    ) -> Bool {
         let (shouldChange, changedString) = TextHelper.shouldChangeCharactersInRange(
             with: textField.text,
             editingRange: editingRange,
             replacementString: replacementString,
             maxByteCount: maxByteCount,
+            maxUnicodeScalarCount: maxUnicodeScalarCount,
             maxGlyphCount: maxGlyphCount
         )
 
@@ -91,15 +95,22 @@ public enum TextHelper {
         editingRange: NSRange,
         replacementString: String,
         maxByteCount: Int? = nil,
+        maxUnicodeScalarCount: Int? = nil,
         maxGlyphCount: Int? = nil
     ) -> (shouldChange: Bool, changedString: String?) {
         // At least one must be set.
-        owsAssertDebug(maxByteCount != nil || maxGlyphCount != nil)
+        owsAssertDebug(maxByteCount != nil || maxGlyphCount != nil || maxUnicodeScalarCount != nil)
 
         func hasValidLength(_ string: String) -> Bool {
             if let maxByteCount = maxByteCount {
                 let byteCount = string.utf8.count
                 guard byteCount <= maxByteCount else {
+                    return false
+                }
+            }
+            if let maxUnicodeScalarCount {
+                let unicodeScalarCount = string.unicodeScalars.count
+                guard unicodeScalarCount <= maxUnicodeScalarCount else {
                     return false
                 }
             }
