@@ -621,16 +621,8 @@ public extension String {
         }
     }
 
-    var utf8ByteCount: Int {
-        guard let data = data(using: .utf8) else {
-            owsFailDebug("Could not convert to utf-8.")
-            return 0
-        }
-        return data.count
-    }
-
     func trimToUtf8ByteCount(_ maxByteCount: Int) -> String {
-        guard utf8ByteCount > maxByteCount else {
+        guard utf8.count > maxByteCount else {
             return self
         }
         // Binary search for longest substring with valid UTF-8 count.
@@ -642,11 +634,11 @@ public extension String {
                   mid != left,
                   mid != right else {
                 let result = substring(to: left)
-                owsAssertDebug(result.utf8ByteCount <= maxByteCount)
+                owsAssertDebug(result.utf8.count <= maxByteCount)
                 return result
             }
             let segment = substring(to: mid)
-            if segment.utf8ByteCount <= maxByteCount {
+            if segment.utf8.count <= maxByteCount {
                 left = mid
             } else {
                 right = mid
