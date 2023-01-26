@@ -33,11 +33,9 @@ public enum SqliteUtil {
     /// - Parameter sqlName: The table, column, or view name to be checked.
     /// - Returns: Whether the name is safe to use in SQL string interpolation.
     public static func isSafe(sqlName: String) -> Bool {
-        (
-            !sqlName.isEmpty &&
-            sqlName.utf8.count < 1000 &&
-            !sqlName.lowercased().starts(with: "sqlite") &&
-            sqlName.range(of: "^[a-zA-Z][a-zA-Z0-9_]*$", options: .regularExpression) != nil
-        )
+        !sqlName.isEmpty &&
+        sqlName.utf8.count < 1000 &&
+        !sqlName.lowercased().starts(with: "sqlite") &&
+        sqlName.range(of: "^[a-zA-Z][a-zA-Z0-9_]*$", options: .regularExpression) != nil
     }
 }
