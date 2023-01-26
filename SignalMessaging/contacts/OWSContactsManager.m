@@ -861,20 +861,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self displayNameForAddress:signalAccount.recipientAddress transaction:transaction];
 }
 
-// TODO: Remove?
-- (BOOL)isKnownRegisteredUserWithSneakyTransaction:(SignalServiceAddress *)address
-{
-    __block BOOL result;
-    [self.databaseStorage readWithBlock:^(
-                                          SDSAnyReadTransaction *transaction) { result = [self isKnownRegisteredUser:address transaction:transaction]; }];
-    return result;
-}
-
-- (BOOL)isKnownRegisteredUser:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
-{
-    return [SignalRecipient isRegisteredRecipient:address transaction:transaction];
-}
-
 - (nullable ModelReadCacheSizeLease *)leaseCacheSize:(NSInteger)size {
     return [self.modelReadCaches.signalAccountReadCache leaseCacheSize:size];
 }

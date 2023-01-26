@@ -197,8 +197,17 @@ extension ConversationViewController {
         }
         let address = SignalServiceAddress(phoneNumber: e164)
 
-        if address.isLocalAddress ||
-           Self.contactsManagerImpl.isKnownRegisteredUserWithSneakyTransaction(address: address) {
+        func isRegistered() -> Bool {
+            if address.isLocalAddress {
+                return true
+            }
+            if databaseStorage.read(block: { SignalRecipient.isRegisteredRecipient(address, transaction: $0) }) {
+                return true
+            }
+            return false
+        }
+
+        if isRegistered() {
             showMemberActionSheet(forAddress: address, withHapticFeedback: false)
             return
         }

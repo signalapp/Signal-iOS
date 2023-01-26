@@ -105,10 +105,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, ContactAuthorizationForSharing) {
 - (nullable NSString *)phoneNumberForAddress:(SignalServiceAddress *)address
                                  transaction:(SDSAnyReadTransaction *)transaction;
 
-- (BOOL)isKnownRegisteredUserWithSneakyTransaction:(SignalServiceAddress *)address
-    NS_SWIFT_NAME(isKnownRegisteredUserWithSneakyTransaction(address:));
-- (BOOL)isKnownRegisteredUser:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
-
 @end
 
 NS_ASSUME_NONNULL_END
