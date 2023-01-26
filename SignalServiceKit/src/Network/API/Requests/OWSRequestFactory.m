@@ -74,6 +74,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
 {
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/messages"] method:@"GET" parameters:@{}];
     [StoryManager appendStoryHeadersToRequest:request];
+    request.shouldMarkDeregisteredOn401 = YES;
     return request;
 }
 

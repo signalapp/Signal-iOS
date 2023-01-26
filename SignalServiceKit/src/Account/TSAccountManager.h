@@ -126,12 +126,14 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 
 #pragma mark - De-Registration
 
-// De-registration reflects whether or not the "last known contact"
-// with the service was:
-//
-// * A 403 from the service, indicating de-registration.
-// * A successful auth'd request _or_ websocket connection indicating
-//   valid registration.
+/// Checks if the account is "deregistered".
+///
+/// An account is deregistered if a device transfer is in progress, a device
+/// transfer was just completed to another device, or we received an HTTP
+/// 401/403 error that indicates we're no longer registered.
+///
+/// If an account is deregistered due to an HTTP 401/403 error, the user
+/// should complete re-registration to re-mark the account as "registered".
 - (BOOL)isDeregistered;
 - (void)setIsDeregistered:(BOOL)isDeregistered;
 

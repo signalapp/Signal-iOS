@@ -58,10 +58,15 @@ public class RESTSessionManager: NSObject {
             urlSession.promiseForTSRequest(request)
         }.done(on: .global()) { (response: HTTPResponse) in
             success(response)
-        }.catch(on: .global()) { error in
+        }.catch(on: .global()) { /* [tsAccountManager] */ error in
             // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
             if let httpError = error as? OWSHTTPError {
                 HTTPUtils.applyHTTPError(httpError)
+
+                if httpError.httpStatusCode == 401, request.shouldMarkDeregisteredOn401 {
+                    // TODO: (IOS-3479) Handle 401 errors on REST requests.
+                    // tsAccountManager.setIsDeregistered(true)
+                }
 
                 failure(OWSHTTPErrorWrapper(error: httpError))
             } else {

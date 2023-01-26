@@ -81,17 +81,11 @@ extension HTTPUtils {
             return buildServiceResponseError()
         case 401:
             Logger.warn("The server returned an error about the authorization header: \(errorDescription)")
-            deregisterAfterAuthErrorIfNecessary(request: request,
-                                                requestUrl: requestUrl,
-                                                statusCode: responseStatus)
             return buildServiceResponseError()
         case 402:
             return buildServiceResponseError()
         case 403:
             Logger.warn("The server returned an authentication failure: \(errorDescription)")
-            deregisterAfterAuthErrorIfNecessary(request: request,
-                                                requestUrl: requestUrl,
-                                                statusCode: responseStatus)
             return buildServiceResponseError()
         case 404:
             Logger.warn("The requested resource could not be found: \(errorDescription)")
@@ -126,39 +120,6 @@ extension HTTPUtils {
         default:
             Logger.warn("Unknown error: \(responseStatus), \(errorDescription)")
             return buildServiceResponseError()
-        }
-    }
-
-    private static func deregisterAfterAuthErrorIfNecessary(request: TSRequest,
-                                                            requestUrl: URL,
-                                                            statusCode: Int) {
-        let requestHeaders: [String: String] = request.allHTTPHeaderFields ?? [:]
-        Logger.verbose("Invalid auth: \(requestHeaders)")
-
-        // We only want to de-register for:
-        //
-        // * Auth errors...
-        // * ...received from Signal service...
-        // * ...that used standard authorization.
-        //
-        // * We don't want want to deregister for:
-        //
-        // * CDS requests.
-        // * Requests using UD auth.
-        // * etc.
-        //
-        // TODO: Will this work with censorship circumvention?
-        if requestUrl.absoluteString.hasPrefix(TSConstants.mainServiceIdentifiedURL),
-           request.shouldHaveAuthorizationHeaders {
-            DispatchQueue.main.async {
-                if Self.tsAccountManager.isRegisteredAndReady {
-                    Self.tsAccountManager.setIsDeregistered(true)
-                } else {
-                    Logger.warn("Ignoring auth failure not registered and ready: \(request.httpMethod) \(requestUrl.absoluteString).")
-                }
-            }
-        } else {
-            Logger.warn("Ignoring \(statusCode) for URL: \(request.httpMethod) \(requestUrl.absoluteString)")
         }
     }
 }

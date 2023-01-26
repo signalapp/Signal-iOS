@@ -18,6 +18,13 @@ static NSString *const kSenderKeySendRequestBodyContentType = @"application/vnd.
 @property (atomic, nullable) NSString *authUsername;
 @property (atomic, nullable) NSString *authPassword;
 
+/// If true, an HTTP 401 will mark the account as deregistered.
+///
+/// - Warning: This only applies to REST requests. We handle HTTP 403 errors
+/// (*not* HTTP 401) for web sockets during the initial handshake, not
+/// during the processing for individual requests.
+@property (nonatomic) BOOL shouldMarkDeregisteredOn401;
+
 @property (nonatomic, readonly) NSDictionary<NSString *, id> *parameters;
 
 + (instancetype)new NS_UNAVAILABLE;

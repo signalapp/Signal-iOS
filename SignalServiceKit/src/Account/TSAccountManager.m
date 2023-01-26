@@ -615,6 +615,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
                                                                    phoneNumber:localNumber
                                                                    transaction:transaction];
 
+        [self.keyValueStore removeValueForKey:TSAccountManager_IsDeregisteredKey transaction:transaction];
         [self.keyValueStore removeValueForKey:TSAccountManager_ReregisteringPhoneNumberKey transaction:transaction];
         [self.keyValueStore removeValueForKey:TSAccountManager_ReregisteringUUIDKey transaction:transaction];
 

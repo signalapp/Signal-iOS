@@ -481,26 +481,10 @@ public class OWSWebSocket: NSObject {
         }
         let hasSuccessStatus = 200 <= responseStatus && responseStatus <= 299
         if hasSuccessStatus {
-            tsAccountManager.setIsDeregistered(false)
             requestInfo.didSucceed(status: Int(responseStatus),
                                    headers: headers,
                                    bodyData: responseData)
         } else {
-            if webSocketType == .unidentified {
-                // We should never get 403 from the UD socket.
-                owsAssertDebug(responseStatus != 403)
-            }
-            if responseStatus == 403,
-               webSocketType == .identified {
-                // This should be redundant with our check for the socket
-                // failing due to 403, but let's be thorough.
-                if tsAccountManager.isRegisteredAndReady {
-                    tsAccountManager.setIsDeregistered(true)
-                } else {
-                    owsFailDebug("Ignoring auth failure not registered and ready.")
-                }
-            }
-
             requestInfo.didFail(responseStatus: Int(responseStatus),
                                 responseHeaders: headers,
                                 responseError: nil,
@@ -1183,17 +1167,11 @@ extension OWSWebSocket {
             return
         }
 
-        switch webSocketType {
-        case .identified:
-            owsAssertDebug(!request.isUDRequest)
-
-            owsAssertDebug(request.shouldHaveAuthorizationHeaders)
-        case .unidentified:
-            owsAssertDebug(request.isUDRequest || !request.shouldHaveAuthorizationHeaders)
-        }
-
         let webSocketType = self.webSocketType
-        let canUseAuth = webSocketType == .identified && !request.isUDRequest
+
+        let isIdentifiedSocket = webSocketType == .identified
+        let isIdentifiedRequest = request.shouldHaveAuthorizationHeaders && !request.isUDRequest
+        owsAssertDebug(isIdentifiedSocket == isIdentifiedRequest)
 
         self.makeRequestInternal(
             request,
@@ -1201,10 +1179,6 @@ extension OWSWebSocket {
             success: { (response: HTTPResponse, requestInfo: SocketRequestInfo) in
                 let label = Self.label(forRequest: request, webSocketType: webSocketType, requestInfo: requestInfo)
                 Logger.info("\(label): Request Succeeded (\(response.responseStatusCode))")
-
-                if canUseAuth, request.shouldHaveAuthorizationHeaders {
-                    Self.tsAccountManager.setIsDeregistered(false)
-                }
 
                 successParam(response)
 
@@ -1416,9 +1390,6 @@ extension OWSWebSocket: SSKWebSocketDelegate {
             // Ignore events from obsolete web sockets.
             return
         }
-
-        // If we receive a response, we know we're not de-registered.
-        tsAccountManager.setIsDeregistered(false)
 
         if !message.hasType {
             owsFailDebug("webSocket:didReceiveResponse: missing type.")
