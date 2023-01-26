@@ -200,7 +200,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
               updatedContacts:(NSArray<Contact *> *)contacts
               isUserRequested:(BOOL)isUserRequested
 {
-    [self updateWithContacts:contacts didLoad:YES isUserRequested:isUserRequested];
+    [self updateWithContacts:contacts isUserRequested:isUserRequested];
 }
 
 - (void)systemContactsFetcher:(SystemContactsFetcher *)systemContactsFetcher
@@ -210,7 +210,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         case RawContactAuthorizationStatusRestricted:
         case RawContactAuthorizationStatusDenied:
             // Clear the contacts cache if access to the system contacts is revoked.
-            [self updateWithContacts:@[] didLoad:NO isUserRequested:NO];
+            [self updateWithContacts:@[] isUserRequested:NO];
         case RawContactAuthorizationStatusNotDetermined:
         case RawContactAuthorizationStatusAuthorized:
             break;
@@ -387,7 +387,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     });
 }
 
-- (void)updateWithContacts:(NSArray<Contact *> *)contacts didLoad:(BOOL)didLoad isUserRequested:(BOOL)isUserRequested
+- (void)updateWithContacts:(NSArray<Contact *> *)contacts isUserRequested:(BOOL)isUserRequested
 {
     dispatch_async(self.intersectionQueue, ^{
         __block ContactsMaps *contactsMaps;
@@ -415,54 +415,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                 OWSFailDebug(@"Error: %@", error);
                 return;
             }
-            [OWSContactsManager
-                buildSignalAccountsAndUpdatePersistedStateForFetchedSystemContacts:contactsMaps.allContacts
-                                                                        completion:^(
-                                                                            NSArray<SignalAccount *> *signalAccounts) {
-                                                                            [self
-                                                                                updateSignalAccountsForSystemContactsFetch:
-                                                                                    signalAccounts
-                                                                                          shouldSetHasLoadedSystemContacts:
-                                                                                              didLoad];
-                                                                        }];
+            [self buildSignalAccountsAndUpdatePersistedStateForFetchedSystemContacts:contactsMaps.allContacts];
         }];
     });
-}
-
-- (void)updateSignalAccountsForSystemContactsFetch:(NSArray<SignalAccount *> *)newSignalAccounts
-                  shouldSetHasLoadedSystemContacts:(BOOL)shouldSetHasLoadedSystemContacts
-{
-    BOOL hadLoadedContacts = self.hasLoadedSystemContacts;
-    if (shouldSetHasLoadedSystemContacts) {
-        _hasLoadedSystemContacts = YES;
-    }
-    
-    __block NSArray<SignalAccount *> *oldSortedSignalAccounts;
-    __block NSArray<SignalAccount *> *newSortedSignalAccounts;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        oldSortedSignalAccounts = [self sortedSignalAccountsWithTransaction:transaction];
-        newSortedSignalAccounts = [self sortSignalAccounts:newSignalAccounts transaction:transaction];
-    } file:__FILE__ function:__FUNCTION__ line:__LINE__];
-    
-    if ([oldSortedSignalAccounts isEqual:newSortedSignalAccounts]) {
-        OWSLogDebug(@"SignalAccounts unchanged.");
-        self.isSetup = YES;
-        
-        if (hadLoadedContacts != self.hasLoadedSystemContacts) {
-            [[NSNotificationCenter defaultCenter]
-             postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification
-             object:nil];
-        }
-        
-        return;
-    }
-    
-    NSArray<SignalAccount *> *sortedSignalAccounts = [self sortSignalAccountsWithSneakyTransaction:newSignalAccounts];
-    [self.contactsManagerCache setSortedSignalAccounts:sortedSignalAccounts];
-
-    [[NSNotificationCenter defaultCenter]
-     postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification
-     object:nil];
 }
 
 - (nullable NSPersonNameComponents *)cachedContactNameComponentsForAddress:(SignalServiceAddress *)address

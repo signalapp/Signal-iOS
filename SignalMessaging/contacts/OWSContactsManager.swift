@@ -723,9 +723,8 @@ extension OWSContactsManager {
     }
 
     @objc
-    static func buildSignalAccountsAndUpdatePersistedState(
-        forFetchedSystemContacts localSystemContacts: [Contact],
-        completion: @escaping ([SignalAccount]) -> Void
+    func buildSignalAccountsAndUpdatePersistedState(
+        forFetchedSystemContacts localSystemContacts: [Contact]
     ) {
         intersectionQueue.async {
             var localSystemContactsSignalAccounts = [SignalAccount]()
@@ -734,8 +733,10 @@ extension OWSContactsManager {
             var persistedSignalAccountMap = [SignalServiceAddress: SignalAccount]()
             var signalAccountsToKeep = [SignalServiceAddress: SignalAccount]()
             Self.databaseStorage.read { transaction in
-                let systemContactsManagerCache = buildSystemContactsManagerCache(forLocalSystemContacts: localSystemContacts,
-                                                                                 transaction: transaction)
+                let systemContactsManagerCache = Self.buildSystemContactsManagerCache(
+                    forLocalSystemContacts: localSystemContacts,
+                    transaction: transaction
+                )
                 localSystemContactsSignalAccounts = systemContactsManagerCache.signalAccounts
                 seenAddresses = systemContactsManagerCache.seenAddresses
 
@@ -853,13 +854,22 @@ extension OWSContactsManager {
 
             // Once we've persisted new SignalAccount state, we should let
             // StorageService know.
-            updateStorageServiceForSystemContactsFetch(
+            Self.updateStorageServiceForSystemContactsFetch(
                 allSignalAccountsBeforeFetch: persistedSignalAccountMap,
                 allSignalAccountsAfterFetch: signalAccountsToKeep
             )
 
+            let didChangeAnySignalAccount = !signalAccountsToRemove.isEmpty || !signalAccountsToUpsert.isEmpty
             DispatchQueue.main.async {
-                completion(Array(signalAccountsToKeep.values))
+                // Post a notification if something changed or this is the first load since launch.
+                let shouldNotify = didChangeAnySignalAccount || !self.hasLoadedSystemContacts
+                self.hasLoadedSystemContacts = true
+                self.contactsManagerCache.setSortedSignalAccounts(
+                    self.sortSignalAccountsWithSneakyTransaction(Array(signalAccountsToKeep.values))
+                )
+                if shouldNotify {
+                    NotificationCenter.default.postNotificationNameAsync(.OWSContactsManagerSignalAccountsDidChange, object: nil)
+                }
             }
         }
     }

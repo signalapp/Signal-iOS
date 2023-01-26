@@ -73,9 +73,14 @@ typedef NS_CLOSED_ENUM(NSUInteger, ContactAuthorizationForSharing) {
 
 @property (atomic, readonly) BOOL isSetup;
 
-// Not set until a contact fetch has completed.
-// Set even if no contacts are found.
-@property (nonatomic, readonly) BOOL hasLoadedSystemContacts;
+/// Whether or not we've fetched system contacts on this launch.
+///
+/// This property is set to true even if the user doesn't have any system
+/// contacts.
+///
+/// This property is only valid if the user has granted contacts access.
+/// Otherwise, it's value is undefined.
+@property (nonatomic) BOOL hasLoadedSystemContacts;
 
 // Request systems contacts and start syncing changes. The user will see an alert
 // if they haven't previously.
