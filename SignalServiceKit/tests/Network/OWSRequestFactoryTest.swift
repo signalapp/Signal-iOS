@@ -164,6 +164,15 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
         XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
     }
 
+    func testSetSubscriberID() {
+        let request = OWSRequestFactory.setSubscriberID(.init([255, 128]))
+
+        XCTAssertEqual(request.url?.path, "v1/subscription/_4A")
+        XCTAssertEqual(request.httpMethod, "PUT")
+        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
+        XCTAssertTrue(request.shouldRedactUrlInLogs)
+    }
+
     // MARK: - Spam
 
     func testReportSpamFromUuid() {

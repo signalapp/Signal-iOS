@@ -121,4 +121,15 @@ public extension OWSRequestFactory {
         result.shouldHaveAuthorizationHeaders = false
         return result
     }
+
+    static func setSubscriberID(_ subscriberID: Data) -> TSRequest {
+        let result = TSRequest(
+            url: .init(pathComponents: ["v1", "subscription", subscriberID.asBase64Url])!,
+            method: "PUT",
+            parameters: nil
+        )
+        result.shouldHaveAuthorizationHeaders = false
+        result.shouldRedactUrlInLogs = true
+        return result
+    }
 }

@@ -426,7 +426,7 @@ public class SubscriptionManager: NSObject {
     }
 
     private class func postSubscriberID(subscriberID: Data) -> Promise<Void> {
-        let request = OWSRequestFactory.setSubscriptionIDRequest(subscriberID.asBase64Url)
+        let request = OWSRequestFactory.setSubscriberID(subscriberID)
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in

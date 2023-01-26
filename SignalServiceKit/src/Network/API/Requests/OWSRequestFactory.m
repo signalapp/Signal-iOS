@@ -849,16 +849,6 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
 
 #pragma mark - Subscriptions
 
-+ (TSRequest *)setSubscriptionIDRequest:(NSString *)base64SubscriberID
-{
-    TSRequest *request =  [TSRequest requestWithUrl:[NSURL URLWithString:[NSString stringWithFormat:@"/v1/subscription/%@", base64SubscriberID]]
-                                              method:@"PUT"
-                                         parameters:@{}];
-    request.shouldHaveAuthorizationHeaders = NO;
-    request.shouldRedactUrlInLogs = YES;
-    return request;
-}
-
 + (TSRequest *)deleteSubscriptionIDRequest:(NSString *)base64SubscriberID
 {
     TSRequest *request = [TSRequest
