@@ -138,11 +138,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 + (TSRequest *)remoteAttestationAuthRequestForContactDiscovery;
 + (TSRequest *)remoteAttestationAuthRequestForCDSI;
 
-#pragma mark - CDS
-
-+ (TSRequest *)cdsFeedbackRequestWithStatus:(NSString *)status
-                                     reason:(nullable NSString *)reason NS_SWIFT_NAME(cdsFeedbackRequest(status:reason:));
-
 #pragma mark - KBS
 
 + (TSRequest *)kbsEnclaveTokenRequestWithEnclaveName:(NSString *)enclaveName
