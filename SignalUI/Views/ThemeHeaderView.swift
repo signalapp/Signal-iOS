@@ -6,16 +6,8 @@
 import Foundation
 
 public class ThemeHeaderView: UIView {
-    // HACK: scrollbar incorrectly appears *behind* section headers
-    // in collection view on iOS11 =(
-    private class AlwaysOnTopLayer: CALayer {
-        override var zPosition: CGFloat {
-            get { return 0 }
-            set {}
-        }
-    }
-
     let label: UILabel
+    private let blurEffectView: UIVisualEffectView?
 
     static var labelFont: UIFont {
         return UIFont.ows_dynamicTypeBodyClamped.ows_semibold
@@ -25,28 +17,37 @@ public class ThemeHeaderView: UIView {
         return labelFont.pointSize / 17 * 28
     }
 
-    init(alwaysDark: Bool = false) {
+    private static var textColor: UIColor {
+        if #available(iOS 14, *) {
+            return UIColor(dynamicProvider: { _ in
+                Theme.isDarkThemeEnabled ? UIColor.ows_gray10 : UIColor.ows_gray90
+            })
+        } else {
+            return Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
+        }
+    }
+
+    init() {
         label = UILabel()
-        label.textColor = alwaysDark
-            ? Theme.darkThemeSecondaryTextAndIconColor
-            : (Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90)
         label.font = Self.labelFont
 
-        let blurEffect = alwaysDark ? Theme.darkThemeBarBlurEffect : Theme.barBlurEffect
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
+        if #available(iOS 14, *) {
+            blurEffectView = nil
+        } else {
+            blurEffectView = UIVisualEffectView(effect: Theme.barBlurEffect)
+            blurEffectView!.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        }
         super.init(frame: .zero)
         self.preservesSuperviewLayoutMargins = true
 
-        self.backgroundColor = (alwaysDark ? Theme.darkThemeNavbarBackgroundColor : Theme.navbarBackgroundColor)
-            .withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+        if let blurEffectView {
+            self.addSubview(blurEffectView)
+            blurEffectView.autoPinEdgesToSuperviewEdges()
+        }
+        updateColors()
 
-        self.addSubview(blurEffectView)
         self.addSubview(label)
 
-        blurEffectView.autoPinEdgesToSuperviewEdges()
         label.autoPinEdge(toSuperviewMargin: .trailing)
         label.autoPinEdge(toSuperviewMargin: .leading)
         label.autoVCenterInSuperview()
@@ -63,6 +64,20 @@ public class ThemeHeaderView: UIView {
 
     public func prepareForReuse() {
         self.label.text = nil
+    }
+
+    override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        updateColors()
+    }
+
+    private func updateColors() {
+        if blurEffectView != nil {
+            self.backgroundColor = Theme.navbarBackgroundColor
+                .withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+        } else {
+            self.backgroundColor = .clear
+        }
+        label.textColor = Self.textColor
     }
 }
 

@@ -6,7 +6,7 @@
 import Foundation
 
 @objc
-class AllMediaViewController: UIViewController {
+class AllMediaViewController: OWSViewController {
     private let tileViewController: MediaTileViewController
     private let name: String?
 
@@ -17,7 +17,7 @@ class AllMediaViewController: UIViewController {
     init(thread: TSThread, name: String?) {
         self.name = name
         tileViewController = MediaTileViewController(thread: thread)
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
 
     override func viewDidLoad() {
@@ -29,10 +29,33 @@ class AllMediaViewController: UIViewController {
         if let name {
             navigationItem.title = name
         }
+        if #available(iOS 14.0, *) {
+            tileViewController.collectionView.backgroundColor = dynamicDesiredBackgroundColor
+        } else {
+            tileViewController.collectionView.backgroundColor = desiredBackgroundColor
+        }
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func themeDidChange() {
+        if #unavailable(iOS 14.0) {
+            tileViewController.collectionView.backgroundColor = desiredBackgroundColor
+        }
+        owsNavigationController?.updateNavbarAppearance()
+    }
+
+    @available(iOS 14, *)
+    private var dynamicDesiredBackgroundColor: UIColor {
+        return UIColor(dynamicProvider: { _ in
+            return Theme.tableView2PresentedBackgroundColor
+        })
+    }
+
+    private var desiredBackgroundColor: UIColor {
+        Theme.tableView2PresentedBackgroundColor
     }
 }
 
@@ -43,5 +66,15 @@ extension AllMediaViewController: MediaPresentationContextProvider {
 
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
         return tileViewController.snapshotOverlayView(in: coordinateSpace)
+    }
+}
+
+extension AllMediaViewController: OWSNavigationChildController {
+    var navbarBackgroundColorOverride: UIColor? {
+        if #available(iOS 14.0, *) {
+            return dynamicDesiredBackgroundColor
+        } else {
+            return desiredBackgroundColor
+        }
     }
 }
