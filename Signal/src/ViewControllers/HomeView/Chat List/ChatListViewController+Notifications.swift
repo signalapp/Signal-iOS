@@ -92,6 +92,8 @@ extension ChatListViewController {
             object: nil
         )
 
+        contactsViewHelper.addObserver(self)
+
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
 
@@ -110,10 +112,6 @@ extension ChatListViewController {
 
         // This is wasteful but this event is very rare.
         reloadTableDataAndResetCellContentCache()
-
-        if !firstConversationCueView.isHidden {
-            updateFirstConversationLabel()
-        }
     }
 
     @objc
@@ -277,5 +275,13 @@ extension ChatListViewController: DatabaseChangeDelegate {
         // but when it does we need to rebuild everything.  This is expensive,
         // but there's no alternative.
         self.loadCoordinator.scheduleHardReset()
+    }
+}
+
+extension ChatListViewController: ContactsViewHelperObserver {
+    public func contactsViewHelperDidUpdateContacts() {
+        if !firstConversationCueView.isHidden {
+            updateFirstConversationLabel()
+        }
     }
 }

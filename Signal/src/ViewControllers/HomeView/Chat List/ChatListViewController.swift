@@ -618,25 +618,7 @@ extension ChatListViewController {
         firstConversationLabel.attributedText = attributedString
     }
 
-    private func suggestedAccountsForFirstContact(maxCount: UInt) -> [SignalAccount] {
-        // Load all signal accounts even though we only need the first N;
-        // we want the returned value to be stable so we need to sort.
-        let sortedSignalAccounts = contactsManagerImpl.sortedSignalAccountsWithSneakyTransaction()
-
-        // Get up to 3 accounts to suggest, excluding ourselves.
-        var suggestedAccounts = [SignalAccount]()
-        for account in sortedSignalAccounts {
-            guard suggestedAccounts.count < maxCount else {
-                break
-            }
-
-            guard !account.recipientAddress.isLocalAddress else {
-                continue
-            }
-
-            suggestedAccounts.append(account)
-        }
-
-        return suggestedAccounts
+    private func suggestedAccountsForFirstContact(maxCount: Int) -> [SignalAccount] {
+        return Array(contactsViewHelper.signalAccounts(includingLocalUser: false).prefix(maxCount))
     }
 }

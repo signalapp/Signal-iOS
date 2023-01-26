@@ -862,8 +862,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     if (self.shouldShowEmptyInboxView) {
         [self.tableView setHidden:YES];
         [self.emptyInboxView setHidden:NO];
-        [self.firstConversationCueView setHidden:!self.shouldShowFirstConversationCue];
-        [self updateFirstConversationLabel];
+        if (self.shouldShowFirstConversationCue) {
+            [self.firstConversationCueView setHidden:NO];
+            [self updateFirstConversationLabel];
+        } else {
+            [self.firstConversationCueView setHidden:YES];
+        }
     } else {
         [self.tableView setHidden:NO];
         [self.emptyInboxView setHidden:YES];
