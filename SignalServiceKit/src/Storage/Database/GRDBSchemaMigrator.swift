@@ -363,21 +363,17 @@ public class GRDBSchemaMigrator: NSObject {
                 }
 
                 Logger.info("Running migration: \(identifier)")
-                do {
-                    let transaction = GRDBWriteTransaction(database: database)
-                    let result = try migrate(transaction)
-                    switch result {
-                    case .success:
-                        let timeElapsed = CACurrentMediaTime() - startTime
-                        let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
-                        Logger.info("Migration completed: \(identifier), duration: \(formattedTime)")
-                    case .failure(let error):
-                        owsFail("Migration \(identifier) failed with returned error: \(error)")
-                    }
-                    transaction.finalizeTransaction()
-                } catch {
-                    owsFail("Migration \(identifier) failed with thrown error: \(error)")
+                let transaction = GRDBWriteTransaction(database: database)
+                let result = try migrate(transaction)
+                switch result {
+                case .success:
+                    let timeElapsed = CACurrentMediaTime() - startTime
+                    let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
+                    Logger.info("Migration completed: \(identifier), duration: \(formattedTime)")
+                case .failure(let error):
+                    throw error
                 }
+                transaction.finalizeTransaction()
             }
         }
 
