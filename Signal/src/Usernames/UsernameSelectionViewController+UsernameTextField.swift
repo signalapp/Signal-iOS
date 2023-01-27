@@ -164,8 +164,8 @@ extension UsernameSelectionViewController {
             }
 
             placeholder = OWSLocalizedString(
-                "USERNAME_PLACEHOLDER",
-                comment: "The placeholder for the username text entry in the username view."
+                "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER",
+                comment: "The placeholder for a text field into which users can type their desired username."
             )
 
             returnKeyType = .default

@@ -180,23 +180,23 @@ class UsernameSelectionViewController: OWSTableViewController2 {
                     .reservationSuccessful:
                 return nil
             case .reservationRejected:
-                // TODO: [Usernames] Verify copy
-                return "This username is not available"
+                return OWSLocalizedString(
+                    "USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE",
+                    comment: "An error message shown when the user wants to set their username to an unavailable value."
+                )
             case .reservationFailed:
-                // TODO: [Usernames] Verify copy
-                return "Unable to reserve username. Please try again later."
+                return CommonStrings.somethingWentWrongTryAgainLaterError
             case .tooShort:
                 return OWSLocalizedString(
-                    "USERNAME_TOO_SHORT_ERROR",
-                    comment: "An error indicating that the supplied username is too short."
+                    "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE",
+                    comment: "An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}."
                 )
             case .tooLong:
                 owsFail("This should be impossible from the UI, as we limit the text field length.")
             case .invalidCharacters:
-                // TODO: [Usernames] Verify copy
                 return OWSLocalizedString(
-                    "USERNAME_INVALID_CHARACTERS_ERROR",
-                    comment: "An error indicating that the supplied username contains disallowed characters."
+                    "USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE",
+                    comment: "An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal."
                 )
             }
         }()
@@ -206,9 +206,10 @@ class UsernameSelectionViewController: OWSTableViewController2 {
             components.append("\n\n")
         }
 
+        // TODO: [Usernames] Add "learn more" link.
         components.append(OWSLocalizedString(
-            "USERNAME_DESCRIPTION",
-            comment: "An explanation of how usernames work on the username view."
+            "USERNAME_SELECTION_EXPLANATION_FOOTER",
+            comment: "Footer text below a text field in which users type their desired username, which explains how usernames work."
         ))
 
         return NSAttributedString
@@ -238,8 +239,8 @@ class UsernameSelectionViewController: OWSTableViewController2 {
         super.viewDidLoad()
 
         title = OWSLocalizedString(
-            "USERNAME_TITLE",
-            comment: "The title for the username view."
+            "USERNAME_SELECTION_TITLE",
+            comment: "The title for the username selection view."
         )
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(
@@ -295,8 +296,10 @@ private extension UsernameSelectionViewController {
 
                             fallthrough
                         case .shouldDelete:
-                            // TODO: [Usernames] Verify copy
-                            return "Choose your username"
+                            return OWSLocalizedString(
+                                "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER",
+                                comment: "When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty."
+                            )
                         case let .reservationSuccessful(reservation):
                             return reservation.username.reassembled
                         case
@@ -475,30 +478,24 @@ private extension UsernameSelectionViewController {
                 case .rejected:
                     UsernameLogger.shared.error("Failed to confirm the username, server rejected.")
 
-                    // TODO: [Usernames] Verify copy
-                    let errorMessage = "Failed to set the username."
                     self.dismiss(
                         modalActivityIndicator: modal,
-                        andPresentErrorMessage: errorMessage
+                        andPresentErrorMessage: CommonStrings.somethingWentWrongError
                     )
                 case .rateLimited:
                     UsernameLogger.shared.error("Failed to confirm the username, rate-limited.")
 
-                    // TODO: [Usernames] Verify copy
-                    let errorMessage = "Failed to set the username. Please try again later."
                     self.dismiss(
                         modalActivityIndicator: modal,
-                        andPresentErrorMessage: errorMessage
+                        andPresentErrorMessage: CommonStrings.somethingWentWrongTryAgainLaterError
                     )
                 }
             }.catch(on: .main) { error in
                 UsernameLogger.shared.error("Error while confirming username: \(error)")
 
-                // TODO: [Usernames] Verify copy
-                let errorMessage = "Something went wrong, unable to set username."
                 self.dismiss(
                     modalActivityIndicator: modal,
-                    andPresentErrorMessage: errorMessage
+                    andPresentErrorMessage: CommonStrings.somethingWentWrongTryAgainLaterError
                 )
             }
         }
@@ -507,13 +504,20 @@ private extension UsernameSelectionViewController {
     /// Delete the user's existing username, with an activity indicator
     /// blocking the UI. Prompts the user first to confirm deletion.
     private func deleteCurrentUsernameBehindActivityIndicator() {
-        // TODO: [Usernames] Verify copy
         let confirmDeletionActionSheet = ActionSheetController(
-            title: "Are you sure you want to delete your username?"
+            title: OWSLocalizedString(
+                "USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE",
+                comment: "A message asking the user if they are sure they want to remove their username."
+            )
         )
 
-        // TODO: [Usernames] Verify copy
-        let confirmAction = ActionSheetAction(title: "Delete", style: .destructive) { _ in
+        let confirmAction = ActionSheetAction(
+            title: OWSLocalizedString(
+                "USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE",
+                comment: "The title of an action sheet button that will delete a user's username."
+            ),
+            style: .destructive
+        ) { _ in
             ModalActivityIndicatorViewController.present(
                 fromViewController: self,
                 canCancel: false
@@ -532,11 +536,9 @@ private extension UsernameSelectionViewController {
                 }.catch(on: .main) { error in
                     UsernameLogger.shared.error("Error while deleting username: \(error)")
 
-                    // TODO: [Usernames] Verify copy
-                    let errorMessage = "Something went wrong, unable to delete username."
                     self.dismiss(
                         modalActivityIndicator: modal,
-                        andPresentErrorMessage: errorMessage
+                        andPresentErrorMessage: CommonStrings.somethingWentWrongTryAgainLaterError
                     )
                 }
             }

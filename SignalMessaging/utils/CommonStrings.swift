@@ -289,6 +289,24 @@ public class CommonStrings: NSObject {
     static public var you: String {
         OWSLocalizedString("YOU", comment: "Second person pronoun to represent the local user.")
     }
+
+    @objc
+    static public var somethingWentWrongError: String {
+        OWSLocalizedString(
+            "SOMETHING_WENT_WRONG_ERROR",
+            value: "Something went wrong.",
+            comment: "An error message generically indicating that something went wrong."
+        )
+    }
+
+    @objc
+    static public var somethingWentWrongTryAgainLaterError: String {
+        OWSLocalizedString(
+            "SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR",
+            value: "Something went wrong. Please try again later.",
+            comment: "An error message generically indicating that something went wrong, and that the user should try again later."
+        )
+    }
 }
 
 // MARK: -

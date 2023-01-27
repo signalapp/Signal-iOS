@@ -6271,6 +6271,12 @@
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "I'm inviting you to install Signal! Here is the link:";
 
+/* An error message generically indicating that something went wrong. */
+"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+
+/* An error message generically indicating that something went wrong, and that the user should try again later. */
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "Sounds & Notifications";
 
@@ -6919,12 +6925,6 @@
 /* Explanation of when you should use a signal proxy */
 "USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
 
-/* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Usernames on Signal are optional. If you choose to create a username other Signal users will be able to find you by this username and contact you without knowing your phone number.";
-
-/* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "Usernames may only contain a-z, 0-9, and _";
-
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
 
@@ -6934,17 +6934,35 @@
 /* A message indicating that the given username was not registered with signal. */
 "USERNAME_NOT_FOUND_TITLE" = "User Not Found";
 
-/* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "Enter a username";
-
 /* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
-/* The title for the username view. */
-"USERNAME_TITLE" = "Username";
+/* The title of an action sheet button that will delete a user's username. */
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
 
-/* An error indicating that the supplied username is too short. */
-"USERNAME_TOO_SHORT_ERROR" = "Usernames must have at least 4 characters.";
+/* A message asking the user if they are sure they want to remove their username. */
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
+
+/* Footer text below a text field in which users type their desired username, which explains how usernames work. */
+"USERNAME_SELECTION_EXPLANATION_FOOTER" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private.";
+
+/* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
+
+/* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+
+/* An error message shown when the user wants to set their username to an unavailable value. */
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+
+/* The placeholder for a text field into which users can type their desired username. */
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+
+/* The title for the username selection view. */
+"USERNAME_SELECTION_TITLE" = "Username";
+
+/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
