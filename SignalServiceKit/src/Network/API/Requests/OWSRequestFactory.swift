@@ -132,4 +132,15 @@ public extension OWSRequestFactory {
         result.shouldRedactUrlInLogs = true
         return result
     }
+
+    static func deleteSubscriberID(_ subscriberID: Data) -> TSRequest {
+        let result = TSRequest(
+            url: .init(pathComponents: ["v1", "subscription", subscriberID.asBase64Url])!,
+            method: "DELETE",
+            parameters: nil
+        )
+        result.shouldHaveAuthorizationHeaders = false
+        result.shouldRedactUrlInLogs = true
+        return result
+    }
 }

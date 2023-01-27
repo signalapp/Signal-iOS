@@ -173,6 +173,15 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
         XCTAssertTrue(request.shouldRedactUrlInLogs)
     }
 
+    func testDeleteSubscriberID() {
+        let request = OWSRequestFactory.deleteSubscriberID(.init([255, 128]))
+
+        XCTAssertEqual(request.url?.path, "v1/subscription/_4A")
+        XCTAssertEqual(request.httpMethod, "DELETE")
+        XCTAssertFalse(request.shouldHaveAuthorizationHeaders)
+        XCTAssertTrue(request.shouldRedactUrlInLogs)
+    }
+
     // MARK: - Spam
 
     func testReportSpamFromUuid() {

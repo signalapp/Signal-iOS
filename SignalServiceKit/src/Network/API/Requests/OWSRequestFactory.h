@@ -194,7 +194,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 #pragma mark - Subscriptions
 
-+ (TSRequest *)deleteSubscriptionIDRequest:(NSString *)base64SubscriberID;
 + (TSRequest *)subscriptionGetCurrentSubscriptionLevelRequest:(NSString *)base64SubscriberID;
 + (TSRequest *)subscriptionCreateStripePaymentMethodRequest:(NSString *)base64SubscriberID;
 + (TSRequest *)subscriptionCreatePaypalPaymentMethodRequest:(NSString *)base64SubscriberID

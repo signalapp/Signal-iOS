@@ -389,7 +389,7 @@ public class SubscriptionManager: NSObject {
     public class func cancelSubscription(for subscriberID: Data) -> Promise<Void> {
         Logger.info("[Donations] Cancelling subscription")
 
-        let request = OWSRequestFactory.deleteSubscriptionIDRequest(subscriberID.asBase64Url)
+        let request = OWSRequestFactory.deleteSubscriberID(subscriberID)
         return firstly {
             networkManager.makePromise(request: request)
         }.map(on: .global()) { response in
