@@ -1157,6 +1157,7 @@
 		D99840BF297A04EB00F7ED6D /* Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840BE297A04EB00F7ED6D /* Usernames.swift */; };
 		D99840C4297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */; };
 		D99840C6297A0F9500F7ED6D /* Usernames+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C5297A0F9500F7ED6D /* Usernames+API.swift */; };
+		D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */; };
 		D99D960F292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */; };
 		D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */; };
 		D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */; };
@@ -3574,6 +3575,7 @@
 		D99840BE297A04EB00F7ED6D /* Usernames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Usernames.swift; sourceTree = "<group>"; };
 		D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+ParsedUsername.swift"; sourceTree = "<group>"; };
 		D99840C5297A0F9500F7ED6D /* Usernames+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+API.swift"; sourceTree = "<group>"; };
+		D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UsernameSelectionViewController+HeaderView.swift"; sourceTree = "<group>"; };
 		D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+OneTimePaypalDonation.swift"; sourceTree = "<group>"; };
 		D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinderPerformanceTests.swift; sourceTree = "<group>"; };
 		D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift"; sourceTree = "<group>"; };
@@ -7053,6 +7055,7 @@
 				D99840BC297A04DA00F7ED6D /* Usernames+NicknameValidator.swift */,
 				D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */,
 				D99840BE297A04EB00F7ED6D /* Usernames.swift */,
+				D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */,
 				D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */,
 				D95C39E9296E108100A9DA23 /* UsernameSelectionViewController.swift */,
 			);
@@ -10794,6 +10797,7 @@
 				D99840BD297A04DA00F7ED6D /* Usernames+NicknameValidator.swift in Sources */,
 				D99840C4297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift in Sources */,
 				D99840BF297A04EB00F7ED6D /* Usernames.swift in Sources */,
+				D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */,
 				D99840B32976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift in Sources */,
 				D95C39EA296E108100A9DA23 /* UsernameSelectionViewController.swift in Sources */,
 				3434AE1C22AEDE7D002EE04E /* ViewOnceMessageViewController.swift in Sources */,

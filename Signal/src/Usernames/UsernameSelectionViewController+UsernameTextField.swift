@@ -22,6 +22,8 @@ extension UsernameSelectionViewController {
                 case discriminator(value: String)
             }
 
+            // MARK: Init
+
             /// The mode for which this view should be configured.
             var mode: Mode {
                 didSet {
@@ -78,9 +80,7 @@ extension UsernameSelectionViewController {
 
                 lineView.backgroundColor = .ows_gray15
                 lineView.layer.cornerRadius = Constants.separatorWidth / 2
-                lineView.widthAnchor.constraint(
-                    equalToConstant: Constants.separatorWidth
-                ).isActive = true
+                lineView.autoSetDimension(.width, toSize: Constants.separatorWidth)
 
                 return lineView
             }()
@@ -88,13 +88,21 @@ extension UsernameSelectionViewController {
             private lazy var discriminatorLabel: UILabel = {
                 let label = UILabel()
 
-                label.textColor = Theme.primaryTextColor
-                label.font = .ows_dynamicTypeBodyClamped
+                label.numberOfLines = 1
 
                 return label
             }()
 
             // MARK: Configure views
+
+            func setColorsForCurrentTheme() {
+                separatorView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray45 : .ows_gray15
+                discriminatorLabel.textColor = Theme.primaryTextColor
+            }
+
+            func updateFontsForCurrentPreferredContentSize() {
+                discriminatorLabel.font = .ows_dynamicTypeBodyClamped
+            }
 
             /// Configure which subviews to present based on the current mode.
             private func configureForCurrentMode() {
@@ -126,6 +134,12 @@ extension UsernameSelectionViewController {
             private func setDiscriminatorValue(to value: String) {
                 discriminatorLabel.text = "\(ParsedUsername.separator)\(value)"
             }
+
+            // MARK: Getters
+
+            var currentDiscriminatorString: String? {
+                discriminatorLabel.text
+            }
         }
 
         /// The last-known reserved/confirmed discriminator. While showing a
@@ -149,20 +163,22 @@ extension UsernameSelectionViewController {
                 text = username.nickname
             }
 
-            font = .ows_dynamicTypeBodyClamped
-            textColor = Theme.primaryTextColor
             placeholder = OWSLocalizedString(
                 "USERNAME_PLACEHOLDER",
                 comment: "The placeholder for the username text entry in the username view."
             )
 
             returnKeyType = .default
+            autocapitalizationType = .none
             autocorrectionType = .no
             spellCheckingType = .no
             accessibilityIdentifier = "username_textfield"
 
             rightView = discriminatorView
             rightViewMode = .always
+
+            setColorsForCurrentTheme()
+            updateFontsForCurrentPreferredContentSize()
         }
 
         @available(*, unavailable, message: "Use other constructor")
@@ -170,7 +186,17 @@ extension UsernameSelectionViewController {
             fatalError("Use other constructor!")
         }
 
-        // MARK: - Configure
+        // MARK: - Configure views
+
+        func updateFontsForCurrentPreferredContentSize() {
+            font = .ows_dynamicTypeBodyClamped
+            discriminatorView.updateFontsForCurrentPreferredContentSize()
+        }
+
+        func setColorsForCurrentTheme() {
+            textColor = Theme.primaryTextColor
+            discriminatorView.setColorsForCurrentTheme()
+        }
 
         /// Configure the text field for an in-progress reservation.
         func configureForReservationInProgress() {
@@ -213,6 +239,13 @@ extension UsernameSelectionViewController {
         /// would be empty, returns `nil` instead.
         var normalizedNickname: String? {
             return text?.lowercased().nilIfEmpty
+        }
+
+        /// Returns the current user-visible discriminator value. This value is
+        /// for display purposes only, and cannot be assumed to be valid or
+        /// confirmed.
+        var currentDiscriminatorString: String? {
+            discriminatorView.currentDiscriminatorString
         }
     }
 }

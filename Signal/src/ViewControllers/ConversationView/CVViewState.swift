@@ -101,7 +101,7 @@ public class CVViewState: NSObject {
 
     public let scrollDownButton = ConversationScrollButton(iconName: "chevron-down-20")
     public var isHidingScrollDownButton = false
-    public let scrollToNextMentionButton = ConversationScrollButton(iconName: "mention-24")
+    public let scrollToNextMentionButton = ConversationScrollButton(iconName: "at-icon")
     public var isHidingScrollToNextMentionButton = false
     public var scrollUpdateTimer: Timer?
     public var isWaitingForDeceleration = false

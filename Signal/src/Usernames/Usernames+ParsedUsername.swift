@@ -37,5 +37,9 @@ extension Usernames {
             self.nickname = nickname
             self.discriminator = discriminator
         }
+
+        var reassembled: String {
+            "\(nickname)\(Self.separator)\(discriminator)"
+        }
     }
 }

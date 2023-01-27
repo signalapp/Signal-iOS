@@ -251,7 +251,7 @@ public extension Theme {
         case .settingsAddToGroup:
             return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
         case .settingsMention:
-            return "mention-24"
+            return "at-icon"
         case .settingsLink:
             return "link-24"
         case .settingsWallpaper:

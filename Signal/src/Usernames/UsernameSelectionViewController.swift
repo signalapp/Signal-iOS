@@ -31,6 +31,9 @@ class UsernameSelectionViewController: OWSTableViewController2 {
         /// Amount of time to wait after the username text field is edited
         /// before kicking off a reservation attempt.
         static let reservationDebounceTimeInternal: TimeInterval = 0.5
+
+        /// Size of the header view's icon.
+        static let headerViewIconSize: CGFloat = 64
     }
 
     /// A logger for username-selection-related events.
@@ -76,7 +79,7 @@ class UsernameSelectionViewController: OWSTableViewController2 {
             AssertIsOnMainThread()
 
             guard
-                oldValue != currentUsernameState,
+                oldValue != _currentUsernameState,
                 isViewLoaded
             else {
                 return
@@ -150,6 +153,10 @@ class UsernameSelectionViewController: OWSTableViewController2 {
             action: #selector(didTapDone),
             accessibilityIdentifier: "done_button"
         )
+    }()
+
+    private lazy var headerView: HeaderView = {
+        .init(withIconSize: Constants.headerViewIconSize)
     }()
 
     /// Manages editing of the nickname and presents additional visual state
@@ -260,6 +267,65 @@ private extension UsernameSelectionViewController {
     private func updateTableContents() {
         let contents = OWSTableContents()
 
+        // Holds a header image, and text displaying the entered username with
+        // its discriminator.
+        let headerSection: OWSTableSection = {
+            let section = OWSTableSection()
+
+            section.add(.init(
+                customCellBlock: { [weak self] in
+                    guard let self else { return UITableViewCell() }
+                    let cell = OWSTableItem.newCell()
+
+                    cell.selectionStyle = .none
+                    cell.addSubview(self.headerView)
+                    self.headerView.autoPinEdgesToSuperviewMargins()
+
+                    self.headerView.setColorsForCurrentTheme()
+                    self.headerView.updateFontsForCurrentPreferredContentSize()
+
+                    // If we are able to finalize a username (i.e., have a
+                    // reservation or deletion primed), we should display it.
+                    let usernameDisplayText: String? = {
+                        switch self.currentUsernameState {
+                        case .noChangesToExisting:
+                            if let existingUsername = self.existingUsername {
+                                return existingUsername.reassembled
+                            }
+
+                            fallthrough
+                        case .shouldDelete:
+                            // TODO: [Usernames] Verify copy
+                            return "Choose your username"
+                        case let .reservationSuccessful(reservation):
+                            return reservation.username.reassembled
+                        case
+                                .reservationPending,
+                                .reservationRejected,
+                                .reservationFailed,
+                                .tooShort,
+                                .tooLong,
+                                .invalidCharacters:
+                            return nil
+                        }
+                    }()
+
+                    if let usernameDisplayText {
+                        self.headerView.setUsernameText(to: usernameDisplayText)
+                    }
+
+                    return cell
+                },
+                actionBlock: nil
+            ))
+
+            section.hasBackground = false
+
+            return section
+        }()
+
+        // Holds the text field for entering the username, as well as
+        // descriptive text underneath.
         let usernameTextFieldSection: OWSTableSection = {
             let section = OWSTableSection()
 
@@ -270,8 +336,11 @@ private extension UsernameSelectionViewController {
 
                     cell.selectionStyle = .none
                     cell.addSubview(self.usernameTextField)
-
                     self.usernameTextField.autoPinEdgesToSuperviewMargins()
+
+                    self.usernameTextField.setColorsForCurrentTheme()
+                    self.usernameTextField.updateFontsForCurrentPreferredContentSize()
+
                     switch self.currentUsernameState {
                     case .noChangesToExisting:
                         self.usernameTextField.configure(forConfirmedUsername: self.existingUsername)
@@ -300,7 +369,10 @@ private extension UsernameSelectionViewController {
             return section
         }()
 
-        contents.addSection(usernameTextFieldSection)
+        contents.addSections([
+            headerSection,
+            usernameTextFieldSection
+        ])
 
         let usernameTextFieldIsFirstResponder = usernameTextField.isFirstResponder
 
