@@ -699,11 +699,21 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
                   !headerTitle.isEmpty {
             let textView = buildTextView()
             textView.text = headerTitle
+
+            if let textViewConfigBlock = section.headerTextViewConfigBlock {
+                textViewConfigBlock(textView)
+            }
+
             return textView
         } else if let headerAttributedTitle = section.headerAttributedTitle,
                   !headerAttributedTitle.isEmpty {
             let textView = buildTextView()
             textView.attributedText = headerAttributedTitle
+
+            if let textViewConfigBlock = section.headerTextViewConfigBlock {
+                textViewConfigBlock(textView)
+            }
+
             return textView
         } else if let customHeaderHeight = section.customHeaderHeight,
                   customHeaderHeight.floatValue > 0 {
@@ -755,11 +765,21 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
                   !footerTitle.isEmpty {
             let textView = buildTextView()
             textView.text = footerTitle
+
+            if let textViewConfigBlock = section.footerTextViewConfigBlock {
+                textViewConfigBlock(textView)
+            }
+
             return textView
         } else if let footerAttributedTitle = section.footerAttributedTitle,
                   !footerAttributedTitle.isEmpty {
             let textView = buildTextView()
             textView.attributedText = footerAttributedTitle
+
+            if let textViewConfigBlock = section.footerTextViewConfigBlock {
+                textViewConfigBlock(textView)
+            }
+
             return textView
         } else if let customFooterHeight = section.customFooterHeight,
                   customFooterHeight.floatValue > 0 {

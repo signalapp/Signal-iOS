@@ -34,6 +34,11 @@ class UsernameSelectionViewController: OWSTableViewController2 {
 
         /// Size of the header view's icon.
         static let headerViewIconSize: CGFloat = 64
+
+        /// A well-known URL associated with a "learn more" string in the
+        /// explanation footer. Can be any value - we will intercept this
+        /// locally rather than actually open it.
+        static let learnMoreLink: URL = URL(string: "sgnl://username-selection-learn-more")!
     }
 
     /// A logger for username-selection-related events.
@@ -167,7 +172,8 @@ class UsernameSelectionViewController: OWSTableViewController2 {
 
     /// An ``NSAttributedString`` containing styled text to use as the footer
     /// for the username text field. Dynamically assembled as appropriate for
-    /// the current internal state.
+    /// the current internal state. Contains a "learn more" link that we should
+    /// intercept locally.
     private var usernameFooterStyled: NSAttributedString {
         var components = [Composable]()
 
@@ -206,10 +212,17 @@ class UsernameSelectionViewController: OWSTableViewController2 {
             components.append("\n\n")
         }
 
-        // TODO: [Usernames] Add "learn more" link.
-        components.append(OWSLocalizedString(
-            "USERNAME_SELECTION_EXPLANATION_FOOTER",
-            comment: "Footer text below a text field in which users type their desired username, which explains how usernames work."
+        components.append(NSAttributedString.make(
+            fromFormat: OWSLocalizedString(
+                "USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT",
+                comment: "Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}."
+            ),
+            attributedFormatArgs: [
+                .string(
+                    CommonStrings.learnMore,
+                    attributes: [.link: Constants.learnMoreLink]
+                )
+            ]
         ))
 
         return NSAttributedString
@@ -367,7 +380,11 @@ private extension UsernameSelectionViewController {
                 actionBlock: nil
             ))
 
+            // The footer text will have a "learn more" link in it. By making
+            // ourselves the delegate for the footer text view, we can
+            // intercept taps on that link.
             section.footerAttributedTitle = usernameFooterStyled
+            section.footerTextViewConfigBlock = { $0.delegate = self }
 
             return section
         }()
@@ -416,7 +433,7 @@ private extension UsernameSelectionViewController {
     /// Called when the user cancels editing. Dismisses the view, discarding
     /// unsaved changes.
     @objc
-    private func didTapCancel() {
+    func didTapCancel() {
         guard hasUnsavedEdits else {
             dismiss(animated: true)
             return
@@ -431,7 +448,7 @@ private extension UsernameSelectionViewController {
     /// Called when the user taps "Done". Attempts to finalize the new chosen
     /// username.
     @objc
-    private func didTapDone() {
+    func didTapDone() {
         let usernameState = self.currentUsernameState
 
         switch usernameState {
@@ -725,6 +742,47 @@ extension UsernameSelectionViewController: UITextFieldDelegate {
             shouldChangeCharactersInRange: range,
             replacementString: string,
             maxUnicodeScalarCount: Int(Constants.maxNicknameCodepointLength)
+        )
+    }
+}
+
+// MARK: - UITextViewDelegate and Learn More
+
+extension UsernameSelectionViewController: UITextViewDelegate {
+    func textView(
+        _ textView: UITextView,
+        shouldInteractWith url: URL,
+        in characterRange: NSRange,
+        interaction: UITextItemInteraction
+    ) -> Bool {
+        guard url == Constants.learnMoreLink else {
+            owsFail("Unexpected URL in text view!")
+        }
+
+        UsernameLogger.shared.debug("Tapped the Learn More link.")
+        presentLearnMoreActionSheet()
+
+        return false
+    }
+
+    /// Present an action sheet to the user with a detailed explanation of the
+    /// username discriminator.
+    private func presentLearnMoreActionSheet() {
+        let title = OWSLocalizedString(
+            "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE",
+            value: "What is this number?",
+            comment: "The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix."
+        )
+
+        let message = OWSLocalizedString(
+            "USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE",
+            value: "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.",
+            comment: "The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted."
+        )
+
+        OWSActionSheets.showActionSheet(
+            title: title,
+            message: message
         )
     }
 }

@@ -764,6 +764,11 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
             CGFloat tableEdgeInsets = UIDevice.currentDevice.isPlusSizePhone ? 20 : 16;
             textView.textContainerInset = UIEdgeInsetsMake(16, tableEdgeInsets, 6, tableEdgeInsets);
         }
+
+        if (section.headerTextViewConfigBlock) {
+            section.headerTextViewConfigBlock(textView);
+        }
+
         return sectionView;
     }
 
@@ -805,6 +810,11 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
             CGFloat tableEdgeInsets = UIDevice.currentDevice.isPlusSizePhone ? 20 : 16;
             textView.textContainerInset = UIEdgeInsetsMake(6, tableEdgeInsets, 12, tableEdgeInsets);
         }
+
+        if (section.footerTextViewConfigBlock) {
+            section.footerTextViewConfigBlock(textView);
+        }
+
         return sectionView;
     }
 
