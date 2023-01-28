@@ -4924,7 +4924,7 @@
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Name";
 
-/* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
+/* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Username";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
@@ -6969,6 +6969,9 @@
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
 "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+
+/* A header describing buttons that allow the user to copy or share their username. */
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";

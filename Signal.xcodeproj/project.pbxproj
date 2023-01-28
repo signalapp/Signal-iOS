@@ -1131,6 +1131,9 @@
 		D925938028B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925937D28B42B3D00D5D437 /* OWSLocalUserLeaveGroupJobRecord+SDS.swift */; };
 		D925938128B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.h in Headers */ = {isa = PBXBuildFile; fileRef = D925937E28B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D925938228B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = D925937F28B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.m */; };
+		D925F5512983399D00158EE4 /* CircleButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F5502983399D00158EE4 /* CircleButton.swift */; };
+		D925F553298349EF00158EE4 /* Usernames+ShareableUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F552298349EF00158EE4 /* Usernames+ShareableUsername.swift */; };
+		D925F55629834FAC00158EE4 /* Usernames+ShareableUsernameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D925F55429834BC900158EE4 /* Usernames+ShareableUsernameTests.swift */; };
 		D938CD6029283402006FB16A /* Paypal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D938CD5F29283402006FB16A /* Paypal.swift */; };
 		D943F3EF2892F89B008C0C8B /* NSELogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D943F3EE2892F89B008C0C8B /* NSELogger.swift */; };
 		D9517ABE292C596B00DDD37E /* Paypal+WebAuthentication.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */; };
@@ -1157,6 +1160,7 @@
 		D99840BF297A04EB00F7ED6D /* Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840BE297A04EB00F7ED6D /* Usernames.swift */; };
 		D99840C4297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */; };
 		D99840C6297A0F9500F7ED6D /* Usernames+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C5297A0F9500F7ED6D /* Usernames+API.swift */; };
+		D99840CE2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840CD2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift */; };
 		D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */; };
 		D99D960F292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */; };
 		D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */; };
@@ -3550,6 +3554,9 @@
 		D925937D28B42B3D00D5D437 /* OWSLocalUserLeaveGroupJobRecord+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSLocalUserLeaveGroupJobRecord+SDS.swift"; sourceTree = "<group>"; };
 		D925937E28B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLocalUserLeaveGroupJobRecord.h; sourceTree = "<group>"; };
 		D925937F28B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLocalUserLeaveGroupJobRecord.m; sourceTree = "<group>"; };
+		D925F5502983399D00158EE4 /* CircleButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleButton.swift; sourceTree = "<group>"; };
+		D925F552298349EF00158EE4 /* Usernames+ShareableUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+ShareableUsername.swift"; sourceTree = "<group>"; };
+		D925F55429834BC900158EE4 /* Usernames+ShareableUsernameTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+ShareableUsernameTests.swift"; sourceTree = "<group>"; };
 		D938CD5F29283402006FB16A /* Paypal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paypal.swift; sourceTree = "<group>"; };
 		D943F3EE2892F89B008C0C8B /* NSELogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSELogger.swift; sourceTree = "<group>"; };
 		D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+WebAuthentication.swift"; sourceTree = "<group>"; };
@@ -3575,6 +3582,7 @@
 		D99840BE297A04EB00F7ED6D /* Usernames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Usernames.swift; sourceTree = "<group>"; };
 		D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+ParsedUsername.swift"; sourceTree = "<group>"; };
 		D99840C5297A0F9500F7ED6D /* Usernames+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+API.swift"; sourceTree = "<group>"; };
+		D99840CD2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareMyUsernameSheetViewController.swift; sourceTree = "<group>"; };
 		D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UsernameSelectionViewController+HeaderView.swift"; sourceTree = "<group>"; };
 		D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+OneTimePaypalDonation.swift"; sourceTree = "<group>"; };
 		D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinderPerformanceTests.swift; sourceTree = "<group>"; };
@@ -5364,6 +5372,7 @@
 				34A95545271B510400B05242 /* AvatarImageView.swift */,
 				760981872936DE90008F8300 /* BezierPathView.swift */,
 				83B9573827C9A1FA00A678FD /* CaptchaView.swift */,
+				D925F5502983399D00158EE4 /* CircleButton.swift */,
 				34A9553F271B510400B05242 /* CircleView.swift */,
 				76A2EB1128B57AEE00A29C24 /* ColorPickerBar.swift */,
 				451764291DE939FD00EDB8B9 /* ContactCell.swift */,
@@ -7051,9 +7060,11 @@
 		D99840BB297A04A300F7ED6D /* Usernames */ = {
 			isa = PBXGroup;
 			children = (
+				D99840CD2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift */,
 				D99840C5297A0F9500F7ED6D /* Usernames+API.swift */,
 				D99840BC297A04DA00F7ED6D /* Usernames+NicknameValidator.swift */,
 				D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */,
+				D925F552298349EF00158EE4 /* Usernames+ShareableUsername.swift */,
 				D99840BE297A04EB00F7ED6D /* Usernames.swift */,
 				D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */,
 				D99840B22976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift */,
@@ -7066,6 +7077,7 @@
 			isa = PBXGroup;
 			children = (
 				D99840B629775A0400F7ED6D /* Usernames+NicknameValidatorTests.swift */,
+				D925F55429834BC900158EE4 /* Usernames+ShareableUsernameTests.swift */,
 			);
 			path = Usernames;
 			sourceTree = "<group>";
@@ -9909,6 +9921,7 @@
 				34A955B3271B53F600B05242 /* BlockListUIUtils.m in Sources */,
 				83B9573927C9A1FA00A678FD /* CaptchaView.swift in Sources */,
 				34A954DE271B4F3E00B05242 /* ChatColors.swift in Sources */,
+				D925F5512983399D00158EE4 /* CircleButton.swift in Sources */,
 				3402AA9D271D9E180084CBAE /* CircleView.swift in Sources */,
 				34A954E0271B4F3E00B05242 /* ColorOrGradient.swift in Sources */,
 				34A954E2271B4F3E00B05242 /* ColorOrGradientSwatchView.swift in Sources */,
@@ -10741,6 +10754,7 @@
 				3497972125DAA86100E99FA4 /* SendPaymentViewController.swift in Sources */,
 				8876CE4A26A914B8002217ED /* SentMediaQualitySettingsViewController.swift in Sources */,
 				886BB3D325BA0CA400079781 /* SetWallpaperViewController.swift in Sources */,
+				D99840CE2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift in Sources */,
 				346129991FD1E4DA00532771 /* SignalApp.m in Sources */,
 				880D90302481E617003D2B14 /* SignalApp.swift in Sources */,
 				8841584C252F9F1C0078903D /* SignalCall.swift in Sources */,
@@ -10796,6 +10810,7 @@
 				D99840C6297A0F9500F7ED6D /* Usernames+API.swift in Sources */,
 				D99840BD297A04DA00F7ED6D /* Usernames+NicknameValidator.swift in Sources */,
 				D99840C4297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift in Sources */,
+				D925F553298349EF00158EE4 /* Usernames+ShareableUsername.swift in Sources */,
 				D99840BF297A04EB00F7ED6D /* Usernames.swift in Sources */,
 				D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */,
 				D99840B32976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift in Sources */,
@@ -10874,6 +10889,7 @@
 				F992ACC428F8C9D900906038 /* StripeTest.swift in Sources */,
 				E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */,
 				D99840B829775A8300F7ED6D /* Usernames+NicknameValidatorTests.swift in Sources */,
+				D925F55629834FAC00158EE4 /* Usernames+ShareableUsernameTests.swift in Sources */,
 				45A3579827DAAC6A0051CE8B /* UserProfileTest.swift in Sources */,
 				B660F6E01C29868000687D6E /* UtilTest.m in Sources */,
 				5042EAA3287F96FB00C9B19F /* VisibleBadgeResolverTest.swift in Sources */,

@@ -7,7 +7,7 @@ import UIKit
 import SignalMessaging
 
 @objc
-public class OWSButton: UIButton {
+open class OWSButton: UIButton {
 
     @objc
     public var block: () -> Void = { }
