@@ -187,6 +187,8 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                         )
                     )
 
+                    vc.usernameSelectionDelegate = self
+
                     self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
                 }
             ))
@@ -505,5 +507,13 @@ extension ProfileSettingsViewController: BadgeConfigurationDelegate {
 
     func badgeConfirmationDidCancel(_ vc: BadgeConfigurationViewController) {
         vc.dismiss(animated: true)
+    }
+}
+
+extension ProfileSettingsViewController: UsernameSelectionDelegate {
+    func usernameDidChange(to newValue: String?) {
+        username = newValue
+
+        updateTableContents()
     }
 }

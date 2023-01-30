@@ -7,6 +7,10 @@ import BonMot
 import Foundation
 import SignalMessaging
 
+protocol UsernameSelectionDelegate: AnyObject {
+    func usernameDidChange(to newValue: String?)
+}
+
 /// Provides UX allowing a user to select or delete a username for their
 /// account.
 ///
@@ -76,7 +80,7 @@ class UsernameSelectionViewController: OWSTableViewController2 {
     typealias ParsedUsername = Usernames.ParsedUsername
     typealias API = Usernames.API
 
-    // MARK: - Init
+    // MARK: Private members
 
     /// Backing value for ``currentUsernameState``. Do not access directly!
     private var _currentUsernameState: UsernameSelectionState = .noChangesToExisting {
@@ -125,6 +129,12 @@ class UsernameSelectionViewController: OWSTableViewController2 {
         .init(networkManager: context.networkManager)
     }()
 
+    // MARK: Public members
+
+    weak var usernameSelectionDelegate: UsernameSelectionDelegate?
+
+    // MARK: Init
+
     init(existingUsername: ParsedUsername?, context: Context) {
         self.existingUsername = existingUsername
         self.context = context
@@ -137,9 +147,11 @@ class UsernameSelectionViewController: OWSTableViewController2 {
         shouldAvoidKeyboard = true
     }
 
+    // MARK: Getters
+
     /// Whether the user has edited the username to a value other than what we
     /// started with.
-    var hasUnsavedEdits: Bool {
+    private var hasUnsavedEdits: Bool {
         if case .noChangesToExisting = currentUsernameState {
             return false
         }
@@ -582,6 +594,8 @@ private extension UsernameSelectionViewController {
                 transaction: transaction
             )
         }
+
+        usernameSelectionDelegate?.usernameDidChange(to: usernameValue)
 
         modal.dismiss(animated: false) {
             self.dismiss(animated: true)
