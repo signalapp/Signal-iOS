@@ -21,7 +21,6 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
 @interface SignalApp ()
 
 @property (nonatomic, nullable, weak) ConversationSplitViewController *conversationSplitViewController;
-@property (nonatomic) BOOL hasInitialRootViewController;
 
 @end
 
@@ -295,35 +294,6 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
 - (void)submitOnboardingLogs
 {
     [Pastelog submitLogsWithSupportTag:@"Onboarding" completion:nil];
-}
-
-- (void)ensureRootViewController:(NSTimeInterval)launchStartedAt
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogInfo(@"ensureRootViewController");
-
-    if (!AppReadiness.isAppReady || self.hasInitialRootViewController) {
-        return;
-    }
-    self.hasInitialRootViewController = YES;
-
-    NSTimeInterval startupDuration = CACurrentMediaTime() - launchStartedAt;
-    OWSLogInfo(@"Presenting app %.2f seconds after launch started.", startupDuration);
-
-    OnboardingController *onboarding = [OnboardingController new];
-    if (onboarding.isComplete) {
-        [onboarding markAsOnboarded];
-
-        [self showConversationSplitView];
-    } else {
-        [self showOnboardingView:onboarding];
-        [AppReadiness setUIIsReady];
-    }
-
-    [AppUpdateNag.shared showAppUpgradeNagIfNecessary];
-
-    [UIViewController attemptRotationToDeviceOrientation];
 }
 
 - (void)showNewConversationView

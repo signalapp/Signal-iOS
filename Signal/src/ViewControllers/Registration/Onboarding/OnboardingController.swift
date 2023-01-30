@@ -109,7 +109,6 @@ public class OnboardingController: NSObject {
         }
     }
 
-    @objc
     var isComplete: Bool {
         guard !tsAccountManager.isOnboarded() else {
             Logger.debug("previously completed onboarding")

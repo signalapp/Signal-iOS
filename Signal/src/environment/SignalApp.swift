@@ -39,6 +39,33 @@ extension SignalApp {
         }
     }
 
+    func ensureRootViewController(launchStartedAt: TimeInterval) {
+        AssertIsOnMainThread()
+
+        Logger.info("ensureRootViewController")
+
+        guard AppReadiness.isAppReady, !hasInitialRootViewController else {
+            return
+        }
+        hasInitialRootViewController = true
+
+        let startupDuration = CACurrentMediaTime() - launchStartedAt
+        Logger.info("Presenting app \(startupDuration) seconds after launch started.")
+
+        let onboardingController = OnboardingController()
+        if onboardingController.isComplete {
+            onboardingController.markAsOnboarded()
+            showConversationSplitView()
+        } else {
+            showOnboardingView(onboardingController)
+            AppReadiness.setUIIsReady()
+        }
+
+        AppUpdateNag.shared.showAppUpgradeNagIfNecessary()
+
+        UIViewController.attemptRotationToDeviceOrientation()
+    }
+
     func showAppSettings(mode: ShowAppSettingsMode) {
         guard let conversationSplitViewController = self.conversationSplitViewControllerForSwift else {
             owsFailDebug("Missing conversationSplitViewController.")
