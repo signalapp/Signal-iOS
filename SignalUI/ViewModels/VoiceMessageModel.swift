@@ -124,8 +124,8 @@ public class VoiceMessageModel: NSObject {
                 settings: [
                     AVFormatIDKey: kAudioFormatMPEG4AAC,
                     AVSampleRateKey: 44100,
-                    AVNumberOfChannelsKey: 2,
-                    AVEncoderBitRateKey: 128 * 1024
+                    AVNumberOfChannelsKey: 1,
+                    AVEncoderBitRateKey: 32000
                 ]
             )
             self.audioRecorder = audioRecorder
