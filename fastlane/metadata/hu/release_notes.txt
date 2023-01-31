@@ -1,1 +1,1 @@
-• We heard that it was sometimes difficult to search for and share a location in a chat, so we searched for the bug and we're happy to share that it's fixed.
+• Tudomásunkra jutott, hogy néha nehéz volt megkeresni és megosztani egy helyet a csevegésben, ezért megkerestük a hibát, és örömmel tájékoztatunk róla, hogy kijavítottuk.

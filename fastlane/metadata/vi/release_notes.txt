@@ -1,1 +1,1 @@
-• We heard that it was sometimes difficult to search for and share a location in a chat, so we searched for the bug and we're happy to share that it's fixed.
+• Chúng tôi nhận thấy rằng đôi khi người dùng gặp khó khăn trong việc tìm và chia sẻ vị trí trong một cuộc trò chuyện, nên chúng tôi đã tìm lỗi và hiện lỗi đó đã được sửa.

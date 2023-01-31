@@ -1,1 +1,1 @@
-• We heard that it was sometimes difficult to search for and share a location in a chat, so we searched for the bug and we're happy to share that it's fixed.
+• Nous avons entendu dire qu’il était parfois difficile de rechercher et partager un lieu dans une conversation. Nous avons analysé le problème et nous sommes ravis d’annoncer que nous avons pu le résoudre.

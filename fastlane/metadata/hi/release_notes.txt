@@ -1,1 +1,1 @@
-• We heard that it was sometimes difficult to search for and share a location in a chat, so we searched for the bug and we're happy to share that it's fixed.
+• हमारी जानकारी में आया कि चैट में कुछ खोजना और लोकेशन शेयर करना कभी-कभी मुश्किल होता है, इसलिए हमने बग को खोजा और हमें यह बताते हुए खुशी हो रही है कि अब समस्या ठीक हो गई है।

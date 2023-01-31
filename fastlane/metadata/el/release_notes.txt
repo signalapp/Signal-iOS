@@ -1,1 +1,1 @@
-• We heard that it was sometimes difficult to search for and share a location in a chat, so we searched for the bug and we're happy to share that it's fixed.
+• Μάθαμε από τα σχόλιά σας ότι μερικές φορές ήταν δύσκολη η αναζήτηση και η κοινοποίηση μιας τοποθεσίας σε μια συνομιλία, οπότε αναζητήσαμε το σφάλμα και είμαστε στην ευχάριστη θέση να σε ενημερώσουμε ότι διορθώθηκε.

@@ -1,1 +1,1 @@
-• We heard that it was sometimes difficult to search for and share a location in a chat, so we searched for the bug and we're happy to share that it's fixed.
+• Bir sohbette konum aramanın ve paylaşmanın bazen zor olduğunu duyduk, bu nedenle bu sorunu araştırdık ve hatanın düzeltildiğini paylaşmaktan mutluluk duyuyoruz.

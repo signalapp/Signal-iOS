@@ -1,1 +1,1 @@
-• We heard that it was sometimes difficult to search for and share a location in a chat, so we searched for the bug and we're happy to share that it's fixed.
+• Am auzit că uneori era dificil de căutat și împărtășit o locație în chat, așa că am căutat bug-ul și ne bucurăm să vă spunem că l-am rezolvat.

@@ -1,1 +1,1 @@
-• We heard that it was sometimes difficult to search for and share a location in a chat, so we searched for the bug and we're happy to share that it's fixed.
+• 때때로 채팅에서 위치를 검색하고 공유하기가 어렵다는 의견을 접수했습니다. 해당 버그를 찾아 문제를 해결했다는 기쁜 소식을 전합니다.

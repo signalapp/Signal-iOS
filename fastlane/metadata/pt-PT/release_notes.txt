@@ -1,1 +1,1 @@
-• We heard that it was sometimes difficult to search for and share a location in a chat, so we searched for the bug and we're happy to share that it's fixed.
+• Disseram-nos que por vezes era difícil pesquisar e partilhar um local num chat. É com satisfação que reportamos ter encontrado e corrigido o erro.
