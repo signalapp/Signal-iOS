@@ -179,11 +179,7 @@ public class OnboardingController: NSObject {
         Logger.info("milestone: \(milestone)")
         switch milestone {
         case .verifiedPhoneNumber, .verifiedLinkedDevice:
-            if SSKPreferences.didDropYdb() {
-                return OnboardingDroppedYdbViewController(onboardingController: self)
-            } else {
-                return OnboardingSplashViewController(onboardingController: self)
-            }
+            return OnboardingSplashViewController(onboardingController: self)
         case .setupProfile:
             return OnboardingProfileCreationViewController(onboardingController: self)
         case .restorePin:

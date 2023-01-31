@@ -493,7 +493,6 @@
 		34ACA7D72733159600E47AD4 /* OnboardingTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7BE2733159600E47AD4 /* OnboardingTransferProgressViewController.swift */; };
 		34ACA7D82733159600E47AD4 /* OnboardingModeSwitchConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C02733159600E47AD4 /* OnboardingModeSwitchConfirmationViewController.swift */; };
 		34ACA7D92733159600E47AD4 /* OnboardingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C12733159600E47AD4 /* OnboardingController.swift */; };
-		34ACA7DA2733159600E47AD4 /* OnboardingDroppedYdbViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C22733159600E47AD4 /* OnboardingDroppedYdbViewController.swift */; };
 		34ACA7DB2733159600E47AD4 /* OnboardingSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C32733159600E47AD4 /* OnboardingSplashViewController.swift */; };
 		34ACA7DC2733159600E47AD4 /* OnboardingCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C42733159600E47AD4 /* OnboardingCaptchaViewController.swift */; };
 		34ACA7DD2733159600E47AD4 /* OnboardingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C52733159600E47AD4 /* OnboardingBaseViewController.swift */; };
@@ -1160,8 +1159,8 @@
 		D99840BF297A04EB00F7ED6D /* Usernames.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840BE297A04EB00F7ED6D /* Usernames.swift */; };
 		D99840C4297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */; };
 		D99840C6297A0F9500F7ED6D /* Usernames+API.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C5297A0F9500F7ED6D /* Usernames+API.swift */; };
-		D99840CE2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840CD2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift */; };
 		D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */; };
+		D99840CE2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99840CD2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift */; };
 		D99D960F292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */; };
 		D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */; };
 		D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */; };
@@ -2790,7 +2789,6 @@
 		34ACA7BE2733159600E47AD4 /* OnboardingTransferProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingTransferProgressViewController.swift; sourceTree = "<group>"; };
 		34ACA7C02733159600E47AD4 /* OnboardingModeSwitchConfirmationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingModeSwitchConfirmationViewController.swift; sourceTree = "<group>"; };
 		34ACA7C12733159600E47AD4 /* OnboardingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingController.swift; sourceTree = "<group>"; };
-		34ACA7C22733159600E47AD4 /* OnboardingDroppedYdbViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingDroppedYdbViewController.swift; sourceTree = "<group>"; };
 		34ACA7C32733159600E47AD4 /* OnboardingSplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingSplashViewController.swift; sourceTree = "<group>"; };
 		34ACA7C42733159600E47AD4 /* OnboardingCaptchaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingCaptchaViewController.swift; sourceTree = "<group>"; };
 		34ACA7C52733159600E47AD4 /* OnboardingBaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingBaseViewController.swift; sourceTree = "<group>"; };
@@ -3581,8 +3579,8 @@
 		D99840BE297A04EB00F7ED6D /* Usernames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Usernames.swift; sourceTree = "<group>"; };
 		D99840C3297A0ECE00F7ED6D /* Usernames+ParsedUsername.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+ParsedUsername.swift"; sourceTree = "<group>"; };
 		D99840C5297A0F9500F7ED6D /* Usernames+API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Usernames+API.swift"; sourceTree = "<group>"; };
-		D99840CD2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareMyUsernameSheetViewController.swift; sourceTree = "<group>"; };
 		D99840C729809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UsernameSelectionViewController+HeaderView.swift"; sourceTree = "<group>"; };
+		D99840CD2981A09900F7ED6D /* ShareMyUsernameSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareMyUsernameSheetViewController.swift; sourceTree = "<group>"; };
 		D99D960E292871C600D5028B /* DonateViewController+OneTimePaypalDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DonateViewController+OneTimePaypalDonation.swift"; sourceTree = "<group>"; };
 		D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinderPerformanceTests.swift; sourceTree = "<group>"; };
 		D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift"; sourceTree = "<group>"; };
@@ -5647,7 +5645,6 @@
 				34ACA7C52733159600E47AD4 /* OnboardingBaseViewController.swift */,
 				34ACA7C42733159600E47AD4 /* OnboardingCaptchaViewController.swift */,
 				34ACA7C12733159600E47AD4 /* OnboardingController.swift */,
-				34ACA7C22733159600E47AD4 /* OnboardingDroppedYdbViewController.swift */,
 				34ACA7C02733159600E47AD4 /* OnboardingModeSwitchConfirmationViewController.swift */,
 				34ACA7CC2733159600E47AD4 /* OnboardingPermissionsViewController.swift */,
 				34ACA7C62733159600E47AD4 /* OnboardingPhoneNumberDiscoverabilityViewController.swift */,
@@ -10654,7 +10651,6 @@
 				34ACA7DD2733159600E47AD4 /* OnboardingBaseViewController.swift in Sources */,
 				34ACA7DC2733159600E47AD4 /* OnboardingCaptchaViewController.swift in Sources */,
 				34ACA7D92733159600E47AD4 /* OnboardingController.swift in Sources */,
-				34ACA7DA2733159600E47AD4 /* OnboardingDroppedYdbViewController.swift in Sources */,
 				34ACA7D82733159600E47AD4 /* OnboardingModeSwitchConfirmationViewController.swift in Sources */,
 				34ACA7E42733159600E47AD4 /* OnboardingPermissionsViewController.swift in Sources */,
 				34ACA7DE2733159600E47AD4 /* OnboardingPhoneNumberDiscoverabilityViewController.swift in Sources */,

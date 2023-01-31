@@ -441,9 +441,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         [self storeLocalNumber:phoneNumber aci:aci pni:pni transaction:transaction];
     });
 
-    // Clear this flag so we don't show the "dropped ydb" ui during future re-registrations.
-    [SSKPreferences setDidDropYdb:NO];
-
     [self postRegistrationStateDidChangeNotification];
 }
 

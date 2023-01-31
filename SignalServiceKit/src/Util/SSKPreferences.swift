@@ -94,40 +94,13 @@ public class SSKPreferences: NSObject {
 
     // MARK: -
 
+    private static var didDropYdbKey: String { "didDropYdb" }
     private static var didEverUseYdbKey: String { "didEverUseYdb" }
 
     @objc
-    public static func didEverUseYdb() -> Bool {
-        let appUserDefaults = CurrentAppContext().appUserDefaults()
-        guard let preference = appUserDefaults.object(forKey: didEverUseYdbKey) as? NSNumber else {
-            return false
-        }
-        return preference.boolValue
-    }
-
-    @objc
-    public static func setDidEverUseYdb(_ value: Bool) {
-        let appUserDefaults = CurrentAppContext().appUserDefaults()
-        appUserDefaults.set(value, forKey: didEverUseYdbKey)
-        appUserDefaults.synchronize()
-    }
-
-    private static var didDropYdbKey: String { "didDropYdb" }
-
-    @objc
-    public static func didDropYdb() -> Bool {
-        let appUserDefaults = CurrentAppContext().appUserDefaults()
-        guard let preference = appUserDefaults.object(forKey: didDropYdbKey) as? NSNumber else {
-            return false
-        }
-        return preference.boolValue
-    }
-
-    @objc
-    public static func setDidDropYdb(_ value: Bool) {
-        let appUserDefaults = CurrentAppContext().appUserDefaults()
-        appUserDefaults.set(value, forKey: didDropYdbKey)
-        appUserDefaults.synchronize()
+    public static func clearLegacyDatabaseFlags(from userDefaults: UserDefaults) {
+        userDefaults.removeObject(forKey: didDropYdbKey)
+        userDefaults.removeObject(forKey: didEverUseYdbKey)
     }
 
     // MARK: - messageRequestInteractionIdEpoch

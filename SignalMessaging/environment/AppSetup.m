@@ -201,8 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
         [NSKeyedUnarchiver setClass:[TSGroupModelV2 class] forClassName:@"TSGroupModelV2"];
 
         // Prevent device from sleeping during migrations.
-        // This protects long migrations (e.g. the YDB-to-GRDB migration)
-        // from the iOS 13 background crash.
+        // This protects long migrations from the iOS 13 background crash.
         //
         // We can use any object.
         NSObject *sleepBlockObject = [NSObject new];

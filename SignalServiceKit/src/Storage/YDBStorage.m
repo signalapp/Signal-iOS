@@ -93,16 +93,6 @@ static NSString *keychainDBCipherKeySpec = @"OWSDatabaseCipherKeySpec";
     [OWSFileSystem deleteContentsOfDirectory:self.sharedDataDatabaseDirPath];
 }
 
-+ (BOOL)hasAnyYdbFile
-{
-    return ([OWSFileSystem fileOrFolderExistsAtPath:self.legacyDatabaseFilePath] ||
-        [OWSFileSystem fileOrFolderExistsAtPath:self.legacyDatabaseFilePath_SHM] ||
-        [OWSFileSystem fileOrFolderExistsAtPath:self.legacyDatabaseFilePath_WAL] ||
-        [OWSFileSystem fileOrFolderExistsAtPath:self.sharedDataDatabaseFilePath] ||
-        [OWSFileSystem fileOrFolderExistsAtPath:self.sharedDataDatabaseFilePath_SHM] ||
-        [OWSFileSystem fileOrFolderExistsAtPath:self.sharedDataDatabaseFilePath_WAL]);
-}
-
 #pragma mark - Keychain
 
 + (void)deleteDBKeys

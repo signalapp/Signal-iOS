@@ -12,8 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)deleteYDBStorage NS_SWIFT_NAME(deleteYDBStorage());
 
-+ (BOOL)hasAnyYdbFile;
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -61,17 +61,6 @@ NSString *NSStringForDataStore(DataStore value)
     return self;
 }
 
-+ (BOOL)hasYdbFile
-{
-    BOOL hasYdbFile = YDBStorage.hasAnyYdbFile;
-
-    if (hasYdbFile && !SSKPreferences.didEverUseYdb) {
-        [SSKPreferences setDidEverUseYdb:YES];
-    }
-
-    return hasYdbFile;
-}
-
 + (BOOL)hasGrdbFile
 {
     NSString *grdbFilePath = SDSDatabaseStorage.grdbDatabaseFileUrl.path;
@@ -97,31 +86,20 @@ NSString *NSStringForDataStore(DataStore value)
 {
     OWSLogInfo(@"storageMode: %@", SSKFeatureFlags.storageModeDescription);
 
-    // NOTE: By now, any move of YDB from the "app container"
-    //       to the "shared container" should be complete, so
-    //       we can ignore the "legacy" database files.
-    BOOL hasYdbFile = self.class.hasYdbFile;
-    OWSLogInfo(@"hasYdbFile: %d", hasYdbFile);
-
     BOOL hasGrdbFile = self.class.hasGrdbFile;
     OWSLogInfo(@"hasGrdbFile: %d", hasGrdbFile);
-
-    OWSLogInfo(@"didEverUseYdb: %d", SSKPreferences.didEverUseYdb);
 
     switch (SSKFeatureFlags.storageMode) {
         case StorageModeGrdb:
             self.state = StorageCoordinatorStateGRDB;
 
-            if (hasYdbFile) {
-                [SSKPreferences setDidEverUseYdb:YES];
-                [SSKPreferences setDidDropYdb:YES];
-            }
-
             if (CurrentAppContext().isMainApp) {
                 [AppReadiness
                     runNowOrWhenAppDidBecomeReadyAsync:^{
-                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                            ^{ [YDBStorage deleteYDBStorage]; });
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                            [YDBStorage deleteYDBStorage];
+                            [SSKPreferences clearLegacyDatabaseFlagsFrom:CurrentAppContext().appUserDefaults];
+                        });
                     }
                                                  label:@"StorageCoordinator.configure"];
             }
