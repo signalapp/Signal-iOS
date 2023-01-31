@@ -237,7 +237,7 @@ public class LinkPreviewSent: LinkPreviewState {
         return displayDomain
     }
 
-    public var title: String? { linkPreview.title?.filterForDisplay?.nilIfEmpty }
+    public var title: String? { linkPreview.title?.filterForDisplay.nilIfEmpty }
 
     public var imageState: LinkPreviewImageState {
         guard linkPreview.imageAttachmentId != nil else {

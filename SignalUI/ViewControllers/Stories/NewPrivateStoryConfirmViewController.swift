@@ -163,7 +163,7 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
     func didTapCreate() {
         AssertIsOnMainThread()
 
-        guard let name = nameTextField.text?.filterForDisplay?.nilIfEmpty else {
+        guard let name = nameTextField.text?.filterForDisplay.nilIfEmpty else {
             return showMissingNameAlert()
         }
 

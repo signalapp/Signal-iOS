@@ -51,7 +51,7 @@ public class LinkPreviewGroupLink: LinkPreviewState {
     }
 
     public var title: String? {
-        groupInviteLinkPreview?.title.filterForDisplay?.nilIfEmpty
+        groupInviteLinkPreview?.title.filterForDisplay.nilIfEmpty
     }
 
     public var imageState: LinkPreviewImageState {

@@ -744,7 +744,7 @@ class ImageEditorCanvasView: UIView {
         let fontSize = item.fontSize * imageFrame.size.width / item.fontReferenceImageWidth
         let font = MediaTextView.font(for: item.textStyle, withPointSize: fontSize)
 
-        let text = item.text.filterForDisplay ?? ""
+        let text = item.text.filterForDisplay
         let textStorage = NSTextStorage(
             string: text,
             attributes: [ .font: font, .foregroundColor: item.textForegroundColor ]

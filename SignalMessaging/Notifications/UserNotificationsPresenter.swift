@@ -218,9 +218,7 @@ class UserNotificationPresenter: Dependencies {
             if let displayableTitle = title?.filterForDisplay {
                 content.title = displayableTitle
             }
-            if let displayableBody = body.filterForDisplay {
-                content.body = displayableBody
-            }
+            content.body = body.filterForDisplay
         } else {
             // Play sound and vibrate, but without a `body` no banner will show.
             Logger.debug("suppressing notification body")

@@ -750,7 +750,7 @@ extension RecipientPickerViewController {
                                     "USERNAME_NOT_FOUND_FORMAT",
                                     comment: "A message indicating that the given username is not a registered signal account. Embeds {{username}}"
                                 ),
-                                CommonFormats.formatUsername(username) ?? ""
+                                CommonFormats.formatUsername(username)
                             )
                         )
                     }

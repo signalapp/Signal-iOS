@@ -296,7 +296,8 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
             if let username = Self.profileManagerImpl.username(for: contactThread.contactAddress,
                                                                transaction: transaction) {
-                if let formattedUsername = CommonFormats.formatUsername(username), threadName != formattedUsername {
+                let formattedUsername = CommonFormats.formatUsername(username)
+                if threadName != formattedUsername {
                     if let existingDetails = details {
                         details = existingDetails + "\n" + formattedUsername
                     } else {

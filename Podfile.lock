@@ -199,7 +199,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/Argon2.git
     :submodules: true
   SignalCoreKit:
-    :commit: 5ae90e076c516a4b025045e38017f49353cf3f76
+    :commit: 0f7a3c7416e860409c45498c24b49f0280a22012
     :git: "git@github.com:signalapp/SignalCoreKit"
   Starscream:
     :commit: 71ebc08f248256497a237ece262e42e7ad05c4a5

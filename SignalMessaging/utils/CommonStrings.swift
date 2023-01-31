@@ -314,11 +314,14 @@ public class CommonStrings: NSObject {
 @objc
 public class CommonFormats: NSObject {
     @objc
-    static public func formatUsername(_ username: String) -> String? {
-        guard let username = username.filterForDisplay else { return nil }
-        return (OWSLocalizedString("USERNAME_PREFIX",
-                                  comment: "A prefix appended to all usernames when displayed")
-                + username)
+    static public func formatUsername(_ username: String) -> String {
+        return (
+            OWSLocalizedString(
+                "USERNAME_PREFIX",
+                comment: "A prefix appended to all usernames when displayed"
+            )
+            + username.filterForDisplay
+        )
     }
 }
 

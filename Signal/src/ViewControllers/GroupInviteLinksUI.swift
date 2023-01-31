@@ -262,13 +262,12 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
 
         self.groupInviteLinkPreview = groupInviteLinkPreview
 
-        let groupName = groupInviteLinkPreview.title.filterForDisplay?.nilIfEmpty
-            ?? TSGroupThread.defaultGroupName
+        let groupName = groupInviteLinkPreview.title.filterForDisplay.nilIfEmpty ?? TSGroupThread.defaultGroupName
         groupTitleLabel.text = groupName
         groupSubtitleLabel.text = GroupViewUtils.formatGroupMembersLabel(
             memberCount: Int(groupInviteLinkPreview.memberCount)
         )
-        if let descriptionText = groupInviteLinkPreview.descriptionText?.filterForDisplay?.nilIfEmpty {
+        if let descriptionText = groupInviteLinkPreview.descriptionText?.filterForDisplay.nilIfEmpty {
             groupDescriptionPreview.descriptionText = descriptionText
             groupDescriptionPreview.groupName = groupName
             groupDescriptionPreview.isHidden = false
