@@ -681,10 +681,6 @@ public class ProfileFetcherJob: NSObject {
                                         transaction: SDSAnyWriteTransaction) {
         if self.identityManager.saveRemoteIdentity(latestIdentityKey, address: address, transaction: transaction) {
             Logger.info("updated identity key with fetched profile for recipient: \(address)")
-            // PNI TODO: clear PNI sessions too...but doesn't OWSIdentityManager.saveRemoteIdentity(...) already do this?
-            self.signalProtocolStore(for: .aci).sessionStore.archiveAllSessions(for: address, transaction: transaction)
-        } else {
-            // no change in identity.
         }
     }
 
