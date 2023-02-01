@@ -404,8 +404,26 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             return
         }
 
-        cell.backgroundView = buildCellBackgroundView(indexPath: indexPath, section: section)
-        cell.selectedBackgroundView = buildCellSelectedBackgroundView(indexPath: indexPath, section: section)
+        let cellBackgroundColor: UIColor
+        let cellSelectedBackgroundColor: UIColor
+        if let customCell = cell as? CustomBackgroundColorCell {
+            cellBackgroundColor = customCell.customBackgroundColor(forceDarkMode: forceDarkMode)
+            cellSelectedBackgroundColor = customCell.customSelectedBackgroundColor(forceDarkMode: forceDarkMode)
+        } else {
+            cellBackgroundColor = self.cellBackgroundColor
+            cellSelectedBackgroundColor = self.cellSelectedBackgroundColor
+        }
+
+        cell.backgroundView = buildCellBackgroundView(
+            indexPath: indexPath,
+            section: section,
+            backgroundColor: cellBackgroundColor
+        )
+        cell.selectedBackgroundView = buildCellSelectedBackgroundView(
+            indexPath: indexPath,
+            section: section,
+            backgroundColor: cellSelectedBackgroundColor
+        )
 
         // We use cellHOuterMargin _outside_ the background and cellHInnerMargin
         // _inside_.
@@ -429,8 +447,11 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         cell.contentView.layoutMargins = contentMargins
     }
 
-    private func buildCellBackgroundView(indexPath: IndexPath,
-                                         section: OWSTableSection) -> UIView {
+    private func buildCellBackgroundView(
+        indexPath: IndexPath,
+        section: OWSTableSection,
+        backgroundColor: UIColor
+    ) -> UIView {
 
         let isFirstInSection = indexPath.row == 0
         let isLastInSection = indexPath.row == tableView(tableView, numberOfRowsInSection: indexPath.section) - 1
@@ -493,7 +514,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             }
         }
 
-        pillLayer.fillColor = cellBackgroundColor.cgColor
+        pillLayer.fillColor = backgroundColor.cgColor
         backgroundView.layer.addSublayer(pillLayer)
 
         if section.hasSeparators,
@@ -507,8 +528,11 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         return backgroundView
     }
 
-    private func buildCellSelectedBackgroundView(indexPath: IndexPath,
-                                                 section: OWSTableSection) -> UIView {
+    private func buildCellSelectedBackgroundView(
+        indexPath: IndexPath,
+        section: OWSTableSection,
+        backgroundColor: UIColor
+    ) -> UIView {
 
         let isFirstInSection = indexPath.row == 0
         let isLastInSection = indexPath.row == tableView(tableView, numberOfRowsInSection: indexPath.section) - 1
@@ -541,7 +565,7 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
             }
         }
 
-        pillLayer.fillColor = cellSelectedBackgroundColor.cgColor
+        pillLayer.fillColor = backgroundColor.cgColor
         backgroundView.layer.addSublayer(pillLayer)
 
         return backgroundView

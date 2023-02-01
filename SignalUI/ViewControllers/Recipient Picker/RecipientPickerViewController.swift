@@ -156,10 +156,13 @@ extension RecipientPickerViewController {
         case .denied, .restricted:
             // Return false so `contactAccessReminderSection` is invoked.
             return false
+        case .notAllowed where shouldShowContactAccessNotAllowedReminderItemWithSneakyTransaction():
+            // Return false so `contactAccessReminderSection` is invoked.
+            return false
         case .authorized where !contactsViewHelper.hasUpdatedContactsAtLeastOnce:
             // Return false so `noContactsTableSection` can show a spinner.
             return false
-        case .authorized:
+        case .authorized, .notAllowed:
             if !lazyFilteredSignalAccounts().isEmpty {
                 // Return false if we have any contacts; we want to show them!
                 return false
@@ -183,7 +186,7 @@ extension RecipientPickerViewController {
             return OWSTableSection()
         case .authorized where !contactsViewHelper.hasUpdatedContactsAtLeastOnce:
             return OWSTableSection(items: [loadingContactsTableItem()])
-        case .authorized:
+        case .authorized, .notAllowed:
             return OWSTableSection(items: [noContactsTableItem()])
         }
     }
@@ -203,6 +206,11 @@ extension RecipientPickerViewController {
             return nil
         case .authorized:
             return nil
+        case .notAllowed:
+            guard shouldShowContactAccessNotAllowedReminderItemWithSneakyTransaction() else {
+                return nil
+            }
+            tableItem = contactAccessNotAllowedReminderItem()
         }
         return OWSTableSection(items: [tableItem])
     }
@@ -250,6 +258,36 @@ extension RecipientPickerViewController {
             reminderView.autoPinEdgesToSuperviewEdges()
 
             return cell
+        })
+    }
+
+    private static let keyValueStore = SDSKeyValueStore(collection: "RecipientPicker.contactAccess")
+    private static let showNotAllowedReminderKey = "shouldShowNotAllowedReminder"
+
+    private func shouldShowContactAccessNotAllowedReminderItemWithSneakyTransaction() -> Bool {
+        databaseStorage.read {
+            Self.keyValueStore.getBool(Self.showNotAllowedReminderKey, defaultValue: true, transaction: $0)
+        }
+    }
+
+    private func hideShowContactAccessNotAllowedReminderItem() {
+        databaseStorage.write {
+            Self.keyValueStore.setBool(false, key: Self.showNotAllowedReminderKey, transaction: $0)
+        }
+        reloadContent()
+    }
+
+    private func contactAccessNotAllowedReminderItem() -> OWSTableItem {
+        return OWSTableItem(customCellBlock: {
+            ContactReminderTableViewCell(
+                learnMoreAction: { [weak self] in
+                    guard let self else { return }
+                    ContactsViewHelper.presentContactAccessNotAllowedLearnMore(from: self)
+                },
+                dismissAction: { [weak self] in
+                    self?.hideShowContactAccessNotAllowedReminderItem()
+                }
+            )
         })
     }
 }

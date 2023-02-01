@@ -5,6 +5,8 @@
 
 import Contacts
 import Foundation
+import SafariServices
+import SignalMessaging
 
 @objc
 public extension ContactsViewHelper {
@@ -25,6 +27,10 @@ public extension ContactsViewHelper {
 // MARK: - Presenting Permission-Gated Views
 
 public extension ContactsViewHelper {
+
+    private enum Constant {
+        static let contactsAccessNotAllowedLearnMoreURL = URL(string: "https://support.signal.org/hc/articles/360007319011#ipad_contacts")!
+    }
 
     private enum Purpose {
         case edit
@@ -54,10 +60,17 @@ public extension ContactsViewHelper {
         case presentError(from: UIViewController)
     }
 
-    private func perform(unauthorizedBehavior: UnauthorizedBehavior, purpose: Purpose) {
+    private func performWhenDenied(unauthorizedBehavior: UnauthorizedBehavior, purpose: Purpose) {
         switch unauthorizedBehavior {
         case .presentError(from: let viewController):
             Self.presentContactAccessDeniedAlert(from: viewController, purpose: purpose)
+        }
+    }
+
+    private func performWhenNotAllowed(unauthorizedBehavior: UnauthorizedBehavior) {
+        switch unauthorizedBehavior {
+        case .presentError(from: let viewController):
+            Self.presentContactAccessNotAllowedAlert(from: viewController)
         }
     }
 
@@ -65,8 +78,10 @@ public extension ContactsViewHelper {
         AssertIsOnMainThread()
 
         switch contactsManagerImpl.editingAuthorization {
+        case .notAllowed:
+            performWhenNotAllowed(unauthorizedBehavior: unauthorizedBehavior)
         case .denied, .restricted:
-            perform(unauthorizedBehavior: unauthorizedBehavior, purpose: .edit)
+            performWhenDenied(unauthorizedBehavior: unauthorizedBehavior, purpose: .edit)
         case .authorized:
             perform(authorizedBehavior: authorizedBehavior)
         }
@@ -90,7 +105,7 @@ public extension ContactsViewHelper {
             case .invite:
                 internalPurpose = .invite
             }
-            self.perform(unauthorizedBehavior: unauthorizedBehavior, purpose: internalPurpose)
+            self.performWhenDenied(unauthorizedBehavior: unauthorizedBehavior, purpose: internalPurpose)
         }
 
         switch contactsManagerImpl.sharingAuthorization {
@@ -156,5 +171,30 @@ public extension ContactsViewHelper {
         }
 
         viewController.presentActionSheet(actionSheet)
+    }
+
+    private static func presentContactAccessNotAllowedAlert(from viewController: UIViewController) {
+        let actionSheet = ActionSheetController(
+            message: OWSLocalizedString(
+                "LINKED_DEVICE_CONTACTS_NOT_ALLOWED",
+                comment: "Shown in an alert when trying to edit a contact."
+            )
+        )
+
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.learnMore) { [weak viewController] _ in
+            guard let viewController else { return }
+            presentContactAccessNotAllowedLearnMore(from: viewController)
+        })
+
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.okButton, style: .cancel))
+
+        viewController.presentActionSheet(actionSheet)
+    }
+
+    static func presentContactAccessNotAllowedLearnMore(from viewController: UIViewController) {
+        viewController.present(
+            SFSafariViewController(url: Constant.contactsAccessNotAllowedLearnMoreURL),
+            animated: true
+        )
     }
 }

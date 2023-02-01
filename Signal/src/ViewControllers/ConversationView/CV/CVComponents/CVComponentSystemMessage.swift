@@ -1162,6 +1162,10 @@ extension CVComponentSystemMessage {
                 owsFailDebug("Missing profileChangeAddress.")
                 return nil
             }
+            // Don't show the button on linked devices -- they can't use it.
+            guard contactsManagerImpl.isEditingAllowed else {
+                return nil
+            }
             guard let profileChangeNewNameComponents = infoMessage.profileChangeNewNameComponents else {
                 return nil
             }
@@ -1201,6 +1205,11 @@ extension CVComponentSystemMessage {
                 let phoneNumberNew = userInfo[.changePhoneNumberNew] as? String
             else {
                 owsFailDebug("Invalid info message.")
+                return nil
+            }
+
+            // Don't show the button on linked devices -- they can't use it.
+            guard contactsManagerImpl.isEditingAllowed else {
                 return nil
             }
 

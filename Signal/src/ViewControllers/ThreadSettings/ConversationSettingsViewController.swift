@@ -191,6 +191,8 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             return true
         }
         switch contactsManagerImpl.editingAuthorization {
+        case .notAllowed:
+            return false
         case .denied, .restricted:
             return false
         case .authorized:

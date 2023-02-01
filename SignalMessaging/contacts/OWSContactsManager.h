@@ -28,6 +28,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, RawContactAuthorizationStatus) {
 };
 
 typedef NS_CLOSED_ENUM(NSUInteger, ContactAuthorizationForEditing) {
+    ContactAuthorizationForEditingNotAllowed,
     ContactAuthorizationForEditingDenied,
     ContactAuthorizationForEditingRestricted,
     ContactAuthorizationForEditingAuthorized,
@@ -65,6 +66,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, ContactAuthorizationForSharing) {
 - (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address;
 
 #pragma mark - System Contact Fetching
+
+@property (nonatomic, readonly) BOOL isEditingAllowed;
 
 // Must call `requestSystemContactsOnce` before accessing this method
 @property (nonatomic, readonly) ContactAuthorizationForEditing editingAuthorization;

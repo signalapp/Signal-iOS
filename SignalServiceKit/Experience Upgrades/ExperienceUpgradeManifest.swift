@@ -399,9 +399,11 @@ extension ExperienceUpgradeManifest {
                 .unrecognized:
             return false
         case
-                .notificationPermissionReminder,
-                .contactPermissionReminder:
+                .notificationPermissionReminder:
             return true
+        case
+                .contactPermissionReminder:
+            return !FeatureFlags.contactDiscoveryV2
         case
                 .remoteMegaphone:
             // Controlled by conditional check

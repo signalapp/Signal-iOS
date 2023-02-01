@@ -301,7 +301,10 @@ class NameCollisionResolutionViewController: OWSTableViewController2 {
 extension NameCollisionResolutionViewController: CNContactViewControllerDelegate, ContactsViewHelperObserver {
 
     func shouldShowContactUpdateAction(for address: SignalServiceAddress) -> Bool {
-        databaseStorage.read { transaction in
+        guard contactsManagerImpl.isEditingAllowed else {
+            return false
+        }
+        return databaseStorage.read { transaction in
             contactsManager.isSystemContact(address: address, transaction: transaction)
         }
     }

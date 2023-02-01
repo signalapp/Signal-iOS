@@ -100,8 +100,16 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 #pragma mark - Editing/Syncing Contacts
 
+- (BOOL)isEditingAllowed
+{
+    return !SSKFeatureFlags.contactDiscoveryV2 || self.tsAccountManager.isPrimaryDevice;
+}
+
 - (ContactAuthorizationForEditing)editingAuthorization
 {
+    if (![self isEditingAllowed]) {
+        return ContactAuthorizationForEditingNotAllowed;
+    }
     switch (self.systemContactsFetcher.rawAuthorizationStatus) {
         case RawContactAuthorizationStatusNotDetermined:
             OWSFailDebug(@"should have called `requestOnce` before checking authorization status.");
@@ -125,16 +133,31 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (void)requestSystemContactsOnceWithCompletion:(void (^_Nullable)(NSError *_Nullable error))completion
 {
+    OWSAssertIsOnMainThread();
+
+    if (![self isEditingAllowed]) {
+        if (completion != nil) {
+            completion(OWSErrorMakeGenericError(@"Editing contacts isn't available on linked devices."));
+        }
+        return;
+    }
     [self.systemContactsFetcher requestOnceWithCompletion:completion];
 }
 
 - (void)fetchSystemContactsOnceIfAlreadyAuthorized
 {
+    if (![self isEditingAllowed]) {
+        return;
+    }
     [self.systemContactsFetcher fetchOnceIfAlreadyAuthorized];
 }
 
 - (AnyPromise *)userRequestedSystemContactsRefresh
 {
+    if (![self isEditingAllowed]) {
+        return [AnyPromise
+            promiseWithError:OWSErrorMakeAssertionError(@"Editing contacts isn't available on linked devices.")];
+    }
     return AnyPromise.withFuture(^(AnyFuture *future) {
         [self.systemContactsFetcher userRequestedRefreshWithCompletion:^(NSError *error) {
             if (error) {
@@ -200,12 +223,20 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
               updatedContacts:(NSArray<Contact *> *)contacts
               isUserRequested:(BOOL)isUserRequested
 {
+    if (![self isEditingAllowed]) {
+        OWSFailDebug(@"Syncing contacts isn't available on linked devices.");
+        return;
+    }
     [self updateWithContacts:contacts isUserRequested:isUserRequested];
 }
 
 - (void)systemContactsFetcher:(SystemContactsFetcher *)systemContactsFetcher
        hasAuthorizationStatus:(RawContactAuthorizationStatus)authorizationStatus
 {
+    if (![self isEditingAllowed]) {
+        OWSFailDebug(@"Syncing contacts isn't available on linked devices.");
+        return;
+    }
     switch (authorizationStatus) {
         case RawContactAuthorizationStatusRestricted:
         case RawContactAuthorizationStatusDenied:
