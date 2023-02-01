@@ -157,6 +157,12 @@ class DatabaseRecoveryViewController: OWSViewController {
     }
 
     @objc
+    private func didTapToExportDatabase() {
+        owsAssert(DebugFlags.internalSettings, "Only internal users can export databases")
+        SignalApp.showExportDatabaseUI(from: self)
+    }
+
+    @objc
     private func didTapContinueToBypassStorageWarning() {
         switch state {
         case .showingDeviceSpaceWarning:
@@ -326,29 +332,36 @@ class DatabaseRecoveryViewController: OWSViewController {
     private func renderAwaitingUserConfirmation() {
         guard previouslyRenderedState != .awaitingUserConfirmation else { return }
 
+        stackView.removeAllSubviews()
+
         headlineLabel.text = NSLocalizedString(
             "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE",
             comment: "In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue."
         )
+        stackView.addArrangedSubview(headlineLabel)
 
         descriptionLabel.text = NSLocalizedString(
             "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION",
             comment: "In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue."
         )
+        stackView.addArrangedSubview(descriptionLabel)
+
+        stackView.addArrangedSubview(databaseCorruptedImage)
+
+        if DebugFlags.internalSettings {
+            let exportDatabaseButton = button(
+                title: "Export Database (internal)",
+                selector: #selector(didTapToExportDatabase)
+            )
+            stackView.addArrangedSubview(exportDatabaseButton)
+            exportDatabaseButton.autoPinWidthToSuperviewMargins()
+        }
 
         let continueButton = button(
             title: CommonStrings.continueButton,
             selector: #selector(didTapContinueToStartRecovery)
         )
-
-        stackView.removeAllSubviews()
-        stackView.addArrangedSubviews([
-            headlineLabel,
-            descriptionLabel,
-            databaseCorruptedImage,
-            continueButton
-        ])
-
+        stackView.addArrangedSubview(continueButton)
         continueButton.autoPinWidthToSuperviewMargins()
 
         UIApplication.shared.isIdleTimerDisabled = false
