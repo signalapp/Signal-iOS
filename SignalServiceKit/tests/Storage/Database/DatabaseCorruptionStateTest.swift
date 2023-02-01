@@ -7,15 +7,8 @@ import XCTest
 @testable import SignalServiceKit
 
 class DatabaseCorruptionStateTest: XCTestCase {
-    private func userDefaults() -> UserDefaults {
-        let suiteName = UUID().uuidString
-        let userDefaults = UserDefaults(suiteName: suiteName)!
-        userDefaults.removePersistentDomain(forName: suiteName)
-        return userDefaults
-    }
-
     func testCorruptionChanges() throws {
-        let defaults = userDefaults()
+        let defaults = TestUtils.userDefaults()
         func fetch() -> DatabaseCorruptionState {
             DatabaseCorruptionState(userDefaults: defaults)
         }
@@ -47,7 +40,7 @@ class DatabaseCorruptionStateTest: XCTestCase {
     }
 
     func testLegacyFalseValueWithoutCount() throws {
-        let defaults = userDefaults()
+        let defaults = TestUtils.userDefaults()
         defaults.set(false, forKey: DatabaseCorruptionState.databaseCorruptionStatusKey)
 
         let expected = DatabaseCorruptionState(status: .notCorrupted, count: 0)
@@ -56,7 +49,7 @@ class DatabaseCorruptionStateTest: XCTestCase {
     }
 
     func testLegacyTrueValueWithoutCount() throws {
-        let defaults = userDefaults()
+        let defaults = TestUtils.userDefaults()
         defaults.set(true, forKey: DatabaseCorruptionState.databaseCorruptionStatusKey)
 
         let expected = DatabaseCorruptionState(status: .corrupted, count: 1)
@@ -65,7 +58,7 @@ class DatabaseCorruptionStateTest: XCTestCase {
     }
 
     func testInvalidData() throws {
-        let defaults = userDefaults()
+        let defaults = TestUtils.userDefaults()
         defaults.set("garbage", forKey: DatabaseCorruptionState.databaseCorruptionStatusKey)
         defaults.set("garbage", forKey: DatabaseCorruptionState.databaseCorruptionCountKey)
 

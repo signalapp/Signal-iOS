@@ -1296,6 +1296,9 @@
 		F9427EAE297F1EE3008EF0AC /* SpamReportingTokenTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9427EAD297F1EE3008EF0AC /* SpamReportingTokenTest.swift */; };
 		F9427EB0297F24AB008EF0AC /* SpamReportingTokenRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9427EAF297F24AB008EF0AC /* SpamReportingTokenRecord.swift */; };
 		F94360F12910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94360F02910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift */; };
+		F945FE4A2984796D00C835C7 /* RingrtcFieldTrials.swift in Sources */ = {isa = PBXBuildFile; fileRef = F945FE492984796D00C835C7 /* RingrtcFieldTrials.swift */; };
+		F945FE4D298481EA00C835C7 /* RingrtcFieldTrialsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F945FE4C298481EA00C835C7 /* RingrtcFieldTrialsTest.swift */; };
+		F945FE502984822D00C835C7 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = F945FE4F2984822D00C835C7 /* UserDefaults.swift */; };
 		F9479EF8293D212C003B3503 /* StickerPackInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9479EF7293D212C003B3503 /* StickerPackInfo.swift */; };
 		F94BFA9528EBB0D800A5F34E /* FakeMessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */; };
 		F94C912028FDEA2E0065DF75 /* Decimal+Rounded.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94C911F28FDEA2E0065DF75 /* Decimal+Rounded.swift */; };
@@ -3727,6 +3730,9 @@
 		F9427EAD297F1EE3008EF0AC /* SpamReportingTokenTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingTokenTest.swift; sourceTree = "<group>"; };
 		F9427EAF297F24AB008EF0AC /* SpamReportingTokenRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingTokenRecord.swift; sourceTree = "<group>"; };
 		F94360F02910154C007EE6A7 /* CreditOrDebitCardDonationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreditOrDebitCardDonationViewController.swift; sourceTree = "<group>"; };
+		F945FE492984796D00C835C7 /* RingrtcFieldTrials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingrtcFieldTrials.swift; sourceTree = "<group>"; };
+		F945FE4C298481EA00C835C7 /* RingrtcFieldTrialsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingrtcFieldTrialsTest.swift; sourceTree = "<group>"; };
+		F945FE4F2984822D00C835C7 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		F9479EF7293D212C003B3503 /* StickerPackInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickerPackInfo.swift; sourceTree = "<group>"; };
 		F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeMessageSender.swift; sourceTree = "<group>"; };
 		F94C911F28FDEA2E0065DF75 /* Decimal+Rounded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Decimal+Rounded.swift"; sourceTree = "<group>"; };
@@ -7375,6 +7381,30 @@
 			path = Spam;
 			sourceTree = "<group>";
 		};
+		F945FE482984795A00C835C7 /* Calls */ = {
+			isa = PBXGroup;
+			children = (
+				F945FE492984796D00C835C7 /* RingrtcFieldTrials.swift */,
+			);
+			path = Calls;
+			sourceTree = "<group>";
+		};
+		F945FE4B298481D800C835C7 /* Calls */ = {
+			isa = PBXGroup;
+			children = (
+				F945FE4C298481EA00C835C7 /* RingrtcFieldTrialsTest.swift */,
+			);
+			path = Calls;
+			sourceTree = "<group>";
+		};
+		F945FE4E2984820B00C835C7 /* TestUtils */ = {
+			isa = PBXGroup;
+			children = (
+				F945FE4F2984822D00C835C7 /* UserDefaults.swift */,
+			);
+			path = TestUtils;
+			sourceTree = "<group>";
+		};
 		F94D12FD28BD0DD900B2C478 /* Accessibility */ = {
 			isa = PBXGroup;
 			children = (
@@ -7463,6 +7493,7 @@
 			isa = PBXGroup;
 			children = (
 				F9C5C9BA289453B100548EEE /* Account */,
+				F945FE482984795A00C835C7 /* Calls */,
 				F9C5C9CC289453B100548EEE /* Contacts */,
 				F9C5CA09289453B100548EEE /* Devices */,
 				D920487D28EB8201003F5371 /* Experience Upgrades */,
@@ -7492,6 +7523,7 @@
 			isa = PBXGroup;
 			children = (
 				F94261FF289B1B5400460798 /* Account */,
+				F945FE4B298481D800C835C7 /* Calls */,
 				F9426205289B1B5500460798 /* Contacts */,
 				F94261C7289B1B5300460798 /* Devices */,
 				F908AA7B28CE628700472E68 /* Fixtures */,
@@ -7502,6 +7534,7 @@
 				F94261CB289B1B5300460798 /* Security */,
 				F94261D7289B1B5400460798 /* Storage */,
 				884BF73A28D37D5F00D94636 /* Stories */,
+				F945FE4E2984820B00C835C7 /* TestUtils */,
 				F94261E4289B1B5400460798 /* Util */,
 				F94261D6289B1B5400460798 /* SSKBaseTestObjC.h */,
 				F9426203289B1B5500460798 /* SSKBaseTestObjC.m */,
@@ -11296,6 +11329,7 @@
 				F9C5CDC0289453B400548EEE /* RESTNetworkManager.m in Sources */,
 				F9C5CDBE289453B400548EEE /* RESTNetworkManager.swift in Sources */,
 				F9C5CDF8289453B400548EEE /* ReverseDispatchQueue.swift in Sources */,
+				F945FE4A2984796D00C835C7 /* RingrtcFieldTrials.swift in Sources */,
 				F9C5CCA6289453B300548EEE /* RotateSignedKeyOperation.swift in Sources */,
 				F9C5CDEE289453B400548EEE /* SDS+SSK.swift in Sources */,
 				F9C5CD2D289453B300548EEE /* SDSCodableModel.swift in Sources */,
@@ -11563,6 +11597,7 @@
 				F97391A328EF0B20002DDE5D /* ProtoParsingTest.swift in Sources */,
 				F942625D289B1B5500460798 /* RefineryTest.swift in Sources */,
 				F9426259289B1B5500460798 /* RemoteConfigManagerTests.swift in Sources */,
+				F945FE4D298481EA00C835C7 /* RingrtcFieldTrialsTest.swift in Sources */,
 				F942624E289B1B5500460798 /* SDSDatabaseStorageObservationTest.swift in Sources */,
 				F942624B289B1B5500460798 /* SDSDatabaseStorageTest.swift in Sources */,
 				F942624A289B1B5500460798 /* SDSKeyValueStoreTest.swift in Sources */,
@@ -11600,6 +11635,7 @@
 				F942628F289B1B5600460798 /* TypingIndicatorMessageTest.swift in Sources */,
 				F9426255289B1B5500460798 /* UnfairLockTest.swift in Sources */,
 				F9D5BFD12979B027001737E5 /* URLPathComponentsTest.swift in Sources */,
+				F945FE502984822D00C835C7 /* UserDefaults.swift in Sources */,
 				F9426284289B1B5600460798 /* UUIDBackfillTaskTest.swift in Sources */,
 				F942626A289B1B5500460798 /* ViewOnceMessagesTest.swift in Sources */,
 			);

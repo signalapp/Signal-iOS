@@ -516,6 +516,7 @@ private struct Flags {
         case paypalMonthlyDonationKillSwitch
         case contactDiscoveryV2
         case enableAutoAPNSRotation
+        case ringrtcNwPathMonitorTrialKillSwitch
     }
 
     // Values defined in this array remain set once they are
@@ -822,6 +823,17 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
                 self.keyValueStore.setLastFetched(Date(), transaction: transaction)
                 self.checkClientExpiration(valueFlags: valueFlags)
             }
+
+            // As a special case, persist RingRTC field trials. See comments in
+            // ``RingrtcFieldTrials`` for details.
+            RingrtcFieldTrials.saveNwPathMonitorTrialState(
+                isEnabled: {
+                    let flag = Flags.SupportedIsEnabledFlags.ringrtcNwPathMonitorTrialKillSwitch
+                    let isKilled = isEnabledFlags[flag.rawValue] ?? false
+                    return !isKilled
+                }(),
+                in: CurrentAppContext().appUserDefaults()
+            )
 
             self.consecutiveFailures = 0
             Logger.info("Stored new remoteConfig. isEnabledFlags: \(isEnabledFlags), valueFlags: \(valueFlags)")
