@@ -126,6 +126,17 @@ class DatabaseRecoveryViewController: OWSViewController {
         view.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
 
+        // Users can submit logs if an error occurs during recovery. Unfortunately, some users
+        // experience crashes and never get to this stage. This lightweight solution lets users
+        // submit debug logs in those situations. (We do something similar during onboarding.)
+        let submitLogsGesture = UITapGestureRecognizer(
+            target: self,
+            action: #selector(didRequestToSubmitDebugLogs)
+        )
+        submitLogsGesture.numberOfTapsRequired = 8
+        submitLogsGesture.delaysTouchesEnded = false
+        stackView.addGestureRecognizer(submitLogsGesture)
+
         render()
     }
 
@@ -177,7 +188,7 @@ class DatabaseRecoveryViewController: OWSViewController {
     }
 
     @objc
-    private func didTapToSubmitDebugLogs() {
+    private func didRequestToSubmitDebugLogs() {
         self.dismiss(animated: true) {
             let supportTag = String(describing: LaunchFailure.databaseCorruptedAndMightBeRecoverable)
             Pastelog.submitLogs(withSupportTag: supportTag)
@@ -445,7 +456,7 @@ class DatabaseRecoveryViewController: OWSViewController {
                 "DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON",
                 comment: "The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log."
             ),
-            selector: #selector(didTapToSubmitDebugLogs)
+            selector: #selector(didRequestToSubmitDebugLogs)
         )
 
         stackView.removeAllSubviews()
