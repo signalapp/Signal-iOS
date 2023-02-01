@@ -80,13 +80,11 @@ class EmojiPickerSheet: InteractiveSheetViewController {
 
         contentView.addSubview(topStackView)
 
-        topStackView.autoPinWidthToSuperview()
-        topStackView.autoPinEdge(toSuperviewEdge: .top)
+        topStackView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
 
         contentView.addSubview(collectionView)
         collectionView.autoPinEdge(.top, to: .bottom, of: searchBar)
-        collectionView.autoPinEdge(.bottom, to: .bottom, of: contentView)
-        collectionView.autoPinWidthToSuperview()
+        collectionView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
         collectionView.pickerDelegate = self
         collectionView.alwaysBounceVertical = true
 
@@ -95,7 +93,8 @@ class EmojiPickerSheet: InteractiveSheetViewController {
         // cancels those animations and makes it pop into place which looks bad.
         // might be worth ripping apart at some point.
         keyboardLayoutGuideView.addSubview(sectionToolbar)
-        sectionToolbar.autoPinWidth(toWidthOf: contentView)
+        sectionToolbar.autoPinEdge(.leading, to: .leading, of: contentView)
+        sectionToolbar.autoPinEdge(.trailing, to: .trailing, of: contentView)
         sectionToolbar.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideView)
     }
 
