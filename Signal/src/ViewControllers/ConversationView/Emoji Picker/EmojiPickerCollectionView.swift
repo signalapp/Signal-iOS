@@ -486,8 +486,7 @@ private class EmojiSearchIndex: NSObject {
                 throw OWSAssertionError("Unable to parse emoji manifest from response body.")
             }
 
-            let remoteVersionString: String = try parser.required(key: "version")
-            let remoteVersion = Int(remoteVersionString) ?? 0
+            let remoteVersion: Int = try parser.required(key: "version")
             let remoteLocalizations: [String] = try parser.required(key: "languages")
             if remoteVersion != searchIndexVersion {
                 Logger.info("[Emoji Search] Invalidating search index, old version \(searchIndexVersion), new version \(remoteVersion)")
