@@ -80,6 +80,16 @@ public class OWSURLSessionMock: OWSURLSessionProtocol {
         return URLRequest(url: URL(string: urlString)!)
     }
 
+    public func promiseForTSRequest(_ rawRequest: TSRequest) -> Promise<HTTPResponse> {
+        // Want different behavior? Write a custom mock class
+        return .value(HTTPResponseImpl(
+            requestUrl: rawRequest.url!,
+            status: 200,
+            headers: OWSHttpHeaders(),
+            bodyData: nil
+        ))
+    }
+
     // MARK: Tasks
 
     public func uploadTaskPromise(

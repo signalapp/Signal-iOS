@@ -13,6 +13,8 @@ extension KBS {
         public typealias TSAccountManager = _KeyBackupService_TSAccountManagerTestMock
         public typealias StorageServiceManager = _KeyBackupService_StorageServiceManagerTestMock
         public typealias OWS2FAManager = _KeyBackupService_OWS2FAManagerTestMock
+        public typealias RemoteAttestation = _KeyBackupService_RemoteAttestationMock
+        public typealias URLSession = _KeyBackupService_OWSURLSessionMock
     }
 }
 
@@ -58,4 +60,35 @@ public class _KeyBackupService_OWS2FAManagerTestMock: KBS.Shims.OWS2FAManager {
     }
 
     public func markDisabled(transaction: DBWriteTransaction) {}
+}
+
+// MARK: - RemoteAttestation
+
+public class _KeyBackupService_RemoteAttestationMock: KBS.Shims.RemoteAttestation {
+    public init() {}
+
+    var authCredentialInputs = [KBSAuthCredential?]()
+    var enclaveInputs = [KeyBackupEnclave]()
+
+    var promisesToReturn = [Promise<RemoteAttestation>]()
+
+    public func performForKeyBackup(
+        auth: KBSAuthCredential?,
+        enclave: KeyBackupEnclave
+    ) -> Promise<RemoteAttestation> {
+        authCredentialInputs.append(auth)
+        enclaveInputs.append(enclave)
+        return promisesToReturn.remove(at: 0)
+    }
+}
+
+// MARK: - OWSURLSession
+
+public class _KeyBackupService_OWSURLSessionMock: OWSURLSessionMock {
+
+    public var promiseForTSRequestBlock: ((TSRequest) -> Promise<HTTPResponse>)?
+
+    public override func promiseForTSRequest(_ rawRequest: TSRequest) -> Promise<HTTPResponse> {
+        return promiseForTSRequestBlock!(rawRequest)
+    }
 }

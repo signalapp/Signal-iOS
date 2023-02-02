@@ -25,12 +25,14 @@ extension KBS {
         public typealias TSAccountManager = _KeyBackupService_TSAccountManagerShim
         public typealias StorageServiceManager = _KeyBackupService_StorageServiceManagerShim
         public typealias OWS2FAManager = _KeyBackupService_OWS2FAManagerShim
+        public typealias RemoteAttestation = _KeyBackupService_RemoteAttestationShim
     }
 
     public enum Wrappers {
         public typealias TSAccountManager = _KeyBackupService_TSAccountManagerWrapper
         public typealias StorageServiceManager = _KeyBackupService_StorageServiceManagerWrapper
         public typealias OWS2FAManager = _KeyBackupService_OWS2FAManagerWrapper
+        public typealias RemoteAttestation = _KeyBackupService_RemoteAttestationWrapper
     }
 }
 
@@ -92,5 +94,26 @@ public class _KeyBackupService_OWS2FAManagerWrapper: KBS.Shims.OWS2FAManager {
 
     public func markDisabled(transaction: DBWriteTransaction) {
         manager.markDisabled(transaction: SDSDB.shimOnlyBridge(transaction))
+    }
+}
+
+// MARK: - RemoteAttestation
+
+public protocol _KeyBackupService_RemoteAttestationShim {
+    func performForKeyBackup(
+        auth: KBSAuthCredential?,
+        enclave: KeyBackupEnclave
+    ) -> Promise<RemoteAttestation>
+}
+
+public class _KeyBackupService_RemoteAttestationWrapper: _KeyBackupService_RemoteAttestationShim {
+    public func performForKeyBackup(
+        auth: KBSAuthCredential?,
+        enclave: KeyBackupEnclave
+    ) -> Promise<RemoteAttestation> {
+        return RemoteAttestation.performForKeyBackup(
+            auth: auth?.credential,
+            enclave: enclave
+        )
     }
 }

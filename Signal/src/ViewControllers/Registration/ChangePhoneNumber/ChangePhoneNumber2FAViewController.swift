@@ -59,13 +59,13 @@ public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController 
     private let changePhoneNumberController: ChangePhoneNumberController
     private let oldPhoneNumber: PhoneNumber
     private let newPhoneNumber: PhoneNumber
-    private let kbsAuth: RemoteAttestation.Auth
+    private let kbsAuth: KBSAuthCredential
 
     init(
         changePhoneNumberController: ChangePhoneNumberController,
         oldPhoneNumber: PhoneNumber,
         newPhoneNumber: PhoneNumber,
-        kbsAuth: RemoteAttestation.Auth
+        kbsAuth: KBSAuthCredential
     ) {
         // TODO[ViewContextPiping]
         self.context = ViewControllerContext.shared

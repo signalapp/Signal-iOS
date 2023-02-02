@@ -791,6 +791,9 @@
 		66586D3929005A1B00DDA9B9 /* story_viewer_onboarding_3.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3629005A1B00DDA9B9 /* story_viewer_onboarding_3.json */; };
 		66586D4129009C0000DDA9B9 /* TextAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66586D4029009C0000DDA9B9 /* TextAttachment.swift */; };
 		665EF86D290C385B00F490D2 /* OWSNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EF86C290C385B00F490D2 /* OWSNavigationController.swift */; };
+		6673FF702978C40300F96CFD /* KBSAuthCredentialStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF6F2978C40300F96CFD /* KBSAuthCredentialStorage.swift */; };
+		6673FF722979B33800F96CFD /* KBSAuthCredentialStorageImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF712979B33800F96CFD /* KBSAuthCredentialStorageImpl.swift */; };
+		6673FF752979F87500F96CFD /* KBSAuthCredentialStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF742979F87500F96CFD /* KBSAuthCredentialStorageTests.swift */; };
 		6673FF81297B3A5000F96CFD /* KeyBackupServiceShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF80297B3A5000F96CFD /* KeyBackupServiceShims.swift */; };
 		6673FF87297B694C00F96CFD /* DB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF86297B694C00F96CFD /* DB.swift */; };
 		6673FF89297B6AF800F96CFD /* DBTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF88297B6AF800F96CFD /* DBTransaction.swift */; };
@@ -819,8 +822,10 @@
 		669E900028B42B7A00043D28 /* SystemStoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */; };
 		669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */; };
 		669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */; };
+		66A1DF6E298C2AFE00C4E4A7 /* KBSAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF6D298C2AFE00C4E4A7 /* KBSAuthCredential.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
 		66AE5779298440A100E40CFA /* ViewControllerContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC13297F38BB004EFC30 /* ViewControllerContext.swift */; };
+		66AE577B298496EA00E40CFA /* KBSAuthCredentialStorageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AE577A298496EA00E40CFA /* KBSAuthCredentialStorageMock.swift */; };
 		66AE57802984AB9F00E40CFA /* ToyExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AE577E2984AB8700E40CFA /* ToyExample.swift */; };
 		66AF4D7328D1377E008A156E /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */; };
@@ -3156,6 +3161,9 @@
 		66586D3629005A1B00DDA9B9 /* story_viewer_onboarding_3.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = story_viewer_onboarding_3.json; sourceTree = "<group>"; };
 		66586D4029009C0000DDA9B9 /* TextAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAttachment.swift; sourceTree = "<group>"; };
 		665EF86C290C385B00F490D2 /* OWSNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSNavigationController.swift; sourceTree = "<group>"; };
+		6673FF6F2978C40300F96CFD /* KBSAuthCredentialStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSAuthCredentialStorage.swift; sourceTree = "<group>"; };
+		6673FF712979B33800F96CFD /* KBSAuthCredentialStorageImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSAuthCredentialStorageImpl.swift; sourceTree = "<group>"; };
+		6673FF742979F87500F96CFD /* KBSAuthCredentialStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSAuthCredentialStorageTests.swift; sourceTree = "<group>"; };
 		6673FF80297B3A5000F96CFD /* KeyBackupServiceShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceShims.swift; sourceTree = "<group>"; };
 		6673FF86297B694C00F96CFD /* DB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DB.swift; sourceTree = "<group>"; };
 		6673FF88297B6AF800F96CFD /* DBTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBTransaction.swift; sourceTree = "<group>"; };
@@ -3185,7 +3193,9 @@
 		669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemStoryManager.swift; sourceTree = "<group>"; };
 		669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerProtocol.swift; sourceTree = "<group>"; };
 		669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerMock.swift; sourceTree = "<group>"; };
+		66A1DF6D298C2AFE00C4E4A7 /* KBSAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSAuthCredential.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
+		66AE577A298496EA00E40CFA /* KBSAuthCredentialStorageMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSAuthCredentialStorageMock.swift; sourceTree = "<group>"; };
 		66AE577E2984AB8700E40CFA /* ToyExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToyExample.swift; sourceTree = "<group>"; };
 		66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalAttachment+VideoSegmenting.swift"; sourceTree = "<group>"; };
 		66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatingContextMenuButton.swift; sourceTree = "<group>"; };
@@ -6171,6 +6181,9 @@
 		6673FF6A2978B5B900F96CFD /* KeyBackupService */ = {
 			isa = PBXGroup;
 			children = (
+				66A1DF6D298C2AFE00C4E4A7 /* KBSAuthCredential.swift */,
+				6673FF6F2978C40300F96CFD /* KBSAuthCredentialStorage.swift */,
+				6673FF712979B33800F96CFD /* KBSAuthCredentialStorageImpl.swift */,
 				F9C5CB1B289453B200548EEE /* KeyBackupService.swift */,
 				6698FC1B2980AE00004EFC30 /* KeyBackupServiceObjcBridge.swift */,
 				66138FB5298326C7002E0CFE /* KeyBackupServiceProtocol.swift */,
@@ -6185,6 +6198,8 @@
 				F94261F9289B1B5400460798 /* kbs_pin_sanitation_vectors.json */,
 				F94261F3289B1B5400460798 /* kbs_storage_service_encryption_vectors.json */,
 				F94261E5289B1B5400460798 /* kbs_vectors.json */,
+				66AE577A298496EA00E40CFA /* KBSAuthCredentialStorageMock.swift */,
+				6673FF742979F87500F96CFD /* KBSAuthCredentialStorageTests.swift */,
 				F94261EA289B1B5400460798 /* KeyBackupServiceTests.swift */,
 				66138FAA2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift */,
 			);
@@ -11196,6 +11211,9 @@
 				F9C5CE0F289453B400548EEE /* Int+SSK.swift in Sources */,
 				F9C5CD18289453B300548EEE /* InteractionFinder.swift in Sources */,
 				F9C5CDEB289453B400548EEE /* JobQueue.swift in Sources */,
+				66A1DF6E298C2AFE00C4E4A7 /* KBSAuthCredential.swift in Sources */,
+				6673FF702978C40300F96CFD /* KBSAuthCredentialStorage.swift in Sources */,
+				6673FF722979B33800F96CFD /* KBSAuthCredentialStorageImpl.swift in Sources */,
 				F9C5CC93289453B300548EEE /* KeyBackup.pb.swift in Sources */,
 				F9C5CC9B289453B300548EEE /* KeyBackupProto.swift in Sources */,
 				F9C5CDED289453B400548EEE /* KeyBackupService.swift in Sources */,
@@ -11697,6 +11715,8 @@
 				66138FB429831AB0002E0CFE /* InMemoryKeyValueStore.swift in Sources */,
 				F942624D289B1B5500460798 /* InteractionFinderTest.swift in Sources */,
 				F942625E289B1B5500460798 /* JobQueueTest.swift in Sources */,
+				66AE577B298496EA00E40CFA /* KBSAuthCredentialStorageMock.swift in Sources */,
+				6673FF752979F87500F96CFD /* KBSAuthCredentialStorageTests.swift in Sources */,
 				F9426257289B1B5500460798 /* KeyBackupServiceTests.swift in Sources */,
 				66138FAB2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift in Sources */,
 				50D5E2432980B53000899660 /* LinkValidatorTest.swift in Sources */,

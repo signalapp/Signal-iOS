@@ -132,7 +132,7 @@ private func attestationError(reason: String) -> RemoteAttestation.Error {
 // MARK: - Auth
 
 public extension RemoteAttestation {
-    struct Auth: Dependencies {
+    struct Auth: Dependencies, Equatable {
         public let username: String
         public let password: String
 
@@ -149,8 +149,12 @@ public extension RemoteAttestation {
                 throw attestationError(reason: "missing or empty username")
             }
 
-            self.password = password
+            self.init(username: username, password: password)
+        }
+
+        public init(username: String, password: String) {
             self.username = username
+            self.password = password
         }
     }
 }

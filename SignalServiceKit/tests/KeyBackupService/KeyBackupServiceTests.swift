@@ -13,17 +13,28 @@ class KeyBackupServiceTests: XCTestCase {
     private var db: MockDB!
     private var keyBackupService: KeyBackupService!
 
+    private var credentialStorage: KBSAuthCredentialStorageMock!
+    private var remoteAttestation: KBS.TestMocks.RemoteAttestation!
+    private var mockSignalService: OWSSignalServiceMock!
+    private var tsConstants: TSConstantsProtocol!
+
     override func setUp() {
         self.db = MockDB()
+        self.credentialStorage = KBSAuthCredentialStorageMock()
+        self.remoteAttestation = KBS.TestMocks.RemoteAttestation()
+        self.mockSignalService = OWSSignalServiceMock()
+        self.tsConstants = TSConstants.shared
         self.keyBackupService = KeyBackupService(
-            tsConstants: TSConstants.shared, // Doesn't matter if this is the real one
             accountManager: KBS.TestMocks.TSAccountManager(),
-            signalService: OWSSignalServiceMock(),
             appContext: TestAppContext(),
-            storageServiceManager: KBS.TestMocks.StorageServiceManager(),
-            syncManager: OWSMockSyncManager(),
+            credentialStorage: credentialStorage,
             databaseStorage: db,
             keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
+            remoteAttestation: remoteAttestation,
+            signalService: mockSignalService,
+            storageServiceManager: KBS.TestMocks.StorageServiceManager(),
+            syncManager: OWSMockSyncManager(),
+            tsConstants: tsConstants,
             twoFAManager: KBS.TestMocks.OWS2FAManager()
         )
     }
@@ -201,6 +212,92 @@ class KeyBackupServiceTests: XCTestCase {
         }
     }
 
+    func test_kbsCredentialStorage() throws {
+        let firstCredential = KBSAuthCredential(credential: .init(username: "abc", password: "123"))
+        remoteAttestation.promisesToReturn.append(.value(fakeRemoteAttestation(firstCredential)))
+
+        // Try once without auth, and with a success response.
+        var promise: Promise<RemoteAttestation> = keyBackupService.performRemoteAttestation(auth: nil, enclave: tsConstants.keyBackupEnclave)
+        var expectation = self.expectation(description: "noAuth")
+        promise.observe {
+            expectation.fulfill()
+            switch $0 {
+            case .success:
+                break
+            case .failure(let error):
+                XCTFail("\(error)")
+            }
+        }
+        wait(for: [expectation], timeout: 0.1)
+
+        // Input should be empty.
+        XCTAssertEqual(remoteAttestation.authCredentialInputs, [nil])
+
+        // Check that auth has been stored.
+        XCTAssertEqual(credentialStorage.dict[firstCredential.username], firstCredential)
+        XCTAssertEqual(credentialStorage.currentUsername, firstCredential.username)
+
+        // Reset for a second round, which should reuse the existing auth credential.
+        // Note that as of time of writing, the real RemoteAttestation just hands back whatever
+        // auth you gave it in the response, but we don't need to assume that and should be able to
+        // handle situations where it gets a fresh auth credential for whatever reason, in which
+        // case we should overwrite the credential we have. This tests for that.
+        let secondCredential = KBSAuthCredential(credential: .init(username: "abc", password: "456"))
+        remoteAttestation.authCredentialInputs = []
+        remoteAttestation.promisesToReturn.append(.value(fakeRemoteAttestation(secondCredential)))
+
+        promise = keyBackupService.performRemoteAttestation(auth: nil, enclave: tsConstants.keyBackupEnclave)
+        expectation = self.expectation(description: "existingAuth")
+        promise.observe {
+            expectation.fulfill()
+            switch $0 {
+            case .success:
+                break
+            case .failure(let error):
+                XCTFail("\(error)")
+            }
+        }
+        wait(for: [expectation], timeout: 0.1)
+
+        // Should have used existing auth.
+        XCTAssertEqual(remoteAttestation.authCredentialInputs, [firstCredential])
+
+        // The new credential should've been stored.
+        XCTAssertEqual(credentialStorage.dict[secondCredential.username], secondCredential)
+        XCTAssertEqual(credentialStorage.currentUsername, secondCredential.username)
+
+        // Reset for a third round, which should reuse the existing auth credential.
+        let thirdCredential = KBSAuthCredential(credential: .init(username: "def", password: "789"))
+        remoteAttestation.authCredentialInputs = []
+        // Fail one request then accept the next
+        remoteAttestation.promisesToReturn.append(.init(error: FakeError()))
+        remoteAttestation.promisesToReturn.append(.value(fakeRemoteAttestation(thirdCredential)))
+
+        promise = keyBackupService.performRemoteAttestation(auth: nil, enclave: tsConstants.keyBackupEnclave)
+        expectation = self.expectation(description: "failedRequest")
+        promise.observe {
+            expectation.fulfill()
+            switch $0 {
+            case .success:
+                break
+            case .failure(let error):
+                XCTFail("\(error)")
+            }
+        }
+        wait(for: [expectation], timeout: 0.1)
+
+        // Should have used existing auth.
+        XCTAssertEqual(remoteAttestation.authCredentialInputs, [secondCredential, nil])
+
+        // The new credential should've been stored.
+        XCTAssertEqual(credentialStorage.dict[thirdCredential.username], thirdCredential)
+        // The previous credential should've been wiped.
+        XCTAssertNil(credentialStorage.dict[secondCredential.username])
+        XCTAssertEqual(credentialStorage.currentUsername, thirdCredential.username)
+    }
+
+    // MARK: - Helpers
+
     func AssertPin(
         _ pin: String,
         isValid expectedResult: Bool,
@@ -215,4 +312,20 @@ class KeyBackupServiceTests: XCTestCase {
         }
         wait(for: [expectation], timeout: 5)
     }
+
+    func fakeRemoteAttestation(_ credential: KBSAuthCredential) -> RemoteAttestation {
+        return RemoteAttestation(
+            cookies: [],
+            keys: try! .init(
+                clientEphemeralKeyPair: Curve25519.generateKeyPair(),
+                serverEphemeralPublic: try! Curve25519.generateKeyPair().ecPublicKey().keyData,
+                serverStaticPublic: try! Curve25519.generateKeyPair().ecPublicKey().keyData
+            ),
+            requestId: Data(repeating: 1, count: 10),
+            enclaveName: tsConstants.keyBackupEnclave.name,
+            auth: .init(username: credential.username, password: credential.credential.password)
+        )
+    }
 }
+
+struct FakeError: Error {}

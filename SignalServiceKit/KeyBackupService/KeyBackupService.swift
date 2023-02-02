@@ -11,35 +11,41 @@ public class KeyBackupService: KeyBackupServiceProtocol {
 
     // MARK: - Init
 
-    private let tsConstants: TSConstantsProtocol
-    private let accountManager: KBS.Shims.TSAccountManager
-    private let signalService: OWSSignalServiceProtocol
     private let appContext: AppContext
+    private let accountManager: KBS.Shims.TSAccountManager
+    private let credentialStorage: KBSAuthCredentialStorage
+    private let db: DB
+    private let keyValueStoreFactory: KeyValueStoreFactory
+    private let remoteAttestation: KBS.Shims.RemoteAttestation
+    private let signalService: OWSSignalServiceProtocol
     private let storageServiceManager: KBS.Shims.StorageServiceManager
     private let syncManager: SyncManagerProtocolSwift
-    private let databaseStorage: DB
-    private let keyValueStoreFactory: KeyValueStoreFactory
+    private let tsConstants: TSConstantsProtocol
     private let twoFAManager: KBS.Shims.OWS2FAManager
 
     public init(
-        tsConstants: TSConstantsProtocol,
         accountManager: KBS.Shims.TSAccountManager,
-        signalService: OWSSignalServiceProtocol,
         appContext: AppContext,
-        storageServiceManager: KBS.Shims.StorageServiceManager,
-        syncManager: SyncManagerProtocolSwift,
+        credentialStorage: KBSAuthCredentialStorage,
         databaseStorage: DB,
         keyValueStoreFactory: KeyValueStoreFactory,
+        remoteAttestation: KBS.Shims.RemoteAttestation,
+        signalService: OWSSignalServiceProtocol,
+        storageServiceManager: KBS.Shims.StorageServiceManager,
+        syncManager: SyncManagerProtocolSwift,
+        tsConstants: TSConstantsProtocol,
         twoFAManager: KBS.Shims.OWS2FAManager
     ) {
-        self.tsConstants = tsConstants
         self.accountManager = accountManager
-        self.signalService = signalService
         self.appContext = appContext
+        self.credentialStorage = credentialStorage
+        self.db = databaseStorage
+        self.keyValueStoreFactory = keyValueStoreFactory
+        self.remoteAttestation = remoteAttestation
+        self.signalService = signalService
         self.storageServiceManager = storageServiceManager
         self.syncManager = syncManager
-        self.databaseStorage = databaseStorage
-        self.keyValueStoreFactory = keyValueStoreFactory
+        self.tsConstants = tsConstants
         self.twoFAManager = twoFAManager
     }
 
@@ -97,7 +103,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     // When changing number, we need to verify the PIN against the new number's KBS
     // record in order to generate a registration lock token. It's important that this
     // happens without touching any of the state we maintain around our account.
-    public func acquireRegistrationLockForNewNumber(with pin: String, and auth: RemoteAttestation.Auth) -> Promise<String> {
+    public func acquireRegistrationLockForNewNumber(with pin: String, and auth: KBSAuthCredential) -> Promise<String> {
         // When restoring your backup we want to check the current enclave first,
         // and then fallback to previous enclaves if the current enclave has no
         // record of you. It's important that these are ordered from neweset enclave
@@ -109,7 +115,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
 
     private func acquireRegistrationLockForNewNumber(
         pin: String,
-        auth: RemoteAttestation.Auth,
+        auth: KBSAuthCredential,
         enclavesToCheck: [KeyBackupEnclave]
     ) -> Promise<String> {
         guard let enclave = enclavesToCheck.first else {
@@ -132,7 +138,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
 
     private func acquireRegistrationLockForNewNumber(
         pin: String,
-        auth: RemoteAttestation.Auth,
+        auth: KBSAuthCredential,
         enclave: KeyBackupEnclave
     ) -> Promise<String> {
         Logger.info("Attempting to acquire registration lock from enclave \(enclave.name)")
@@ -155,7 +161,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     }
 
     /// Loads the users key, if any, from the KBS into the database.
-    public func restoreKeysAndBackup(with pin: String, and auth: RemoteAttestation.Auth? = nil) -> Promise<Void> {
+    public func restoreKeysAndBackup(with pin: String, and auth: KBSAuthCredential? = nil) -> Promise<Void> {
         // When restoring your backup we want to check the current enclave first,
         // and then fallback to previous enclaves if the current enclave has no
         // record of you. It's important that these are ordered from neweset enclave
@@ -167,7 +173,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
 
     private func restoreKeysAndBackup(
         pin: String,
-        auth: RemoteAttestation.Auth?,
+        auth: KBSAuthCredential?,
         enclavesToCheck: [KeyBackupEnclave]
     ) -> Promise<Void> {
         guard let enclave = enclavesToCheck.first else {
@@ -190,7 +196,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
 
     private func restoreKeysAndBackup(
         pin: String,
-        auth: RemoteAttestation.Auth?,
+        auth: KBSAuthCredential?,
         enclave: KeyBackupEnclave
     ) -> Promise<Void> {
         Logger.info("Attempting KBS restore from enclave \(enclave.name)")
@@ -244,7 +250,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 // We successfully stored the new keys in KBS, save them in the database.
                 // Since the backup request is always for the current enclave, we want to
                 // record the current enclave's name.
-                self.databaseStorage.write { transaction in
+                self.db.write { transaction in
                     self.store(
                         masterKey: masterKey,
                         isMasterKeyBackedUp: true,
@@ -286,7 +292,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
 
     private func restoreKeys(
         pin: String,
-        auth: RemoteAttestation.Auth?,
+        auth: KBSAuthCredential?,
         enclave: KeyBackupEnclave,
         ignoreCachedToken: Bool = false
     ) -> Promise<RestoredKeys> {
@@ -406,7 +412,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 let encodedVerificationString = try self.deriveEncodedVerificationString(pin: pin)
 
                 // We successfully stored the new keys in KBS, save them in the database
-                self.databaseStorage.write { transaction in
+                self.db.write { transaction in
                     self.store(
                         masterKey: masterKey,
                         isMasterKeyBackedUp: true,
@@ -420,7 +426,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         }.recover(on: .global()) { error in
             Logger.error("recording backupKeyRequest errored: \(error)")
 
-            self.databaseStorage.write { transaction in
+            self.db.write { transaction in
                 self.keyValueStore.setBool(true, key: Self.hasBackupKeyRequestFailedIdentifier, transaction: transaction)
 
                 self.reloadState(transaction: transaction)
@@ -445,7 +451,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         return deleteKeyRequest(enclave: currentEnclave).ensure {
             // Even if the request to delete our keys from KBS failed,
             // purge them from the database.
-            self.databaseStorage.write { self.clearKeys(transaction: $0) }
+            self.db.write { self.clearKeys(transaction: $0) }
         }.asVoid()
     }
 
@@ -468,7 +474,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         // This should only happen if we're a linked device and received
         // the derived key via a sync message, since we won't know about
         // the master key.
-        let isPrimaryDevice = databaseStorage.read { accountManager.isPrimaryDevice(transaction: $0) }
+        let isPrimaryDevice = db.read { accountManager.isPrimaryDevice(transaction: $0) }
         if (!isPrimaryDevice || appContext.isRunningTests),
             let cachedData = getOrLoadStateWithSneakyTransaction().syncedDerivedKeys[key] {
             return cachedData
@@ -694,7 +700,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
 
     private func getOrLoadStateWithSneakyTransaction() -> State {
         if let cachedState = cacheQueue.sync(execute: { cachedState }) { return cachedState }
-        return databaseStorage.read { loadState(transaction: $0) }
+        return db.read { loadState(transaction: $0) }
     }
 
     @discardableResult
@@ -716,7 +722,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     }
 
     private func migrateEnclavesIfNecessary(state: State) {
-        let (isRegisteredAndReady, pinCode) = databaseStorage.read {
+        let (isRegisteredAndReady, pinCode) = db.read {
             return (
                 accountManager.isRegisteredAndReady(transaction: $0),
                 self.twoFAManager.pinCode(transaction: $0)
@@ -916,12 +922,12 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     // MARK: - Requests
 
     private func enclaveRequest<RequestType: KBSRequestOption>(
-        auth: RemoteAttestation.Auth? = nil,
+        auth: KBSAuthCredential? = nil,
         enclave: KeyBackupEnclave,
         ignoreCachedToken: Bool = false,
         requestOptionBuilder: @escaping (Token) throws -> RequestType
     ) -> Promise<RequestType.ResponseOptionType> {
-        return RemoteAttestation.performForKeyBackup(
+        return performRemoteAttestation(
             auth: auth,
             enclave: enclave
         ).then { remoteAttestation -> Promise<RequestType.ResponseOptionType> in
@@ -1025,7 +1031,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         accessKey: Data,
         encryptedMasterKey: Data,
         enclave: KeyBackupEnclave,
-        auth: RemoteAttestation.Auth? = nil
+        auth: KBSAuthCredential? = nil
     ) -> Promise<KeyBackupProtoBackupResponse> {
         return enclaveRequest(auth: auth, enclave: enclave) { token -> KeyBackupProtoBackupRequest in
             guard let serviceId = Data.data(fromHex: enclave.serviceId) else {
@@ -1057,7 +1063,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     private func restoreKeyRequest(
         accessKey: Data,
         enclave: KeyBackupEnclave,
-        auth: RemoteAttestation.Auth? = nil,
+        auth: KBSAuthCredential? = nil,
         ignoreCachedToken: Bool = false
     ) -> Promise<KeyBackupProtoRestoreResponse> {
         return enclaveRequest(auth: auth, enclave: enclave, ignoreCachedToken: ignoreCachedToken) { token -> KeyBackupProtoRestoreRequest in
@@ -1159,14 +1165,14 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     /// If we don't have a cached value (we've never stored a token before), an error is thrown.
     @discardableResult
     private func updateNextToken(backupId: Data? = nil, data: Data, tries: UInt32? = nil, enclaveName: String) throws -> Token {
-        guard let backupId = backupId ?? databaseStorage.read(block: { transaction in
+        guard let backupId = backupId ?? db.read(block: { transaction in
             tokenStore.getData(Token.backupIdKey, transaction: transaction)
         }) else {
             owsFailDebug("missing backupId")
             throw KBS.KBSError.assertion
         }
 
-        guard let tries = tries ?? databaseStorage.read(block: { transaction in
+        guard let tries = tries ?? db.read(block: { transaction in
             tokenStore.getUInt32(Token.triesKey, transaction: transaction)
         }) else {
             owsFailDebug("missing tries")
@@ -1187,7 +1193,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     }
 
     private func clearNext() {
-        databaseStorage.write { clearNextToken(transaction: $0) }
+        db.write { clearNextToken(transaction: $0) }
     }
 
     private func clearNextToken(transaction: DBWriteTransaction) {
@@ -1199,7 +1205,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
 
     /// The token to use when making the next enclave request.
     private func nextToken(enclaveName: String) -> Token? {
-        return databaseStorage.read { transaction in
+        return db.read { transaction in
             // If the cached token is for another enclave, we can't use it. This
             // can happen when migrating from one enclave to another.
             guard tokenStore.getString(Token.enclaveNameKey, transaction: transaction) == enclaveName else {
@@ -1227,7 +1233,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     }
 
     private func recordAsCurrentToken(_ token: Token) {
-        databaseStorage.write { transaction in
+        db.write { transaction in
             tokenStore.setData(token.backupId, key: Token.backupIdKey, transaction: transaction)
             tokenStore.setData(token.data, key: Token.dataKey, transaction: transaction)
             tokenStore.setUInt32(token.tries, key: Token.triesKey, transaction: transaction)
@@ -1235,12 +1241,12 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         }
     }
 
-    private func fetchBackupId(auth: RemoteAttestation.Auth?, enclave: KeyBackupEnclave, ignoreCachedToken: Bool = false) -> Promise<Data> {
+    private func fetchBackupId(auth: KBSAuthCredential?, enclave: KeyBackupEnclave, ignoreCachedToken: Bool = false) -> Promise<Data> {
         if !ignoreCachedToken, let currentToken = nextToken(
             enclaveName: enclave.name
         ) { return Promise.value(currentToken.backupId) }
 
-        return RemoteAttestation.performForKeyBackup(
+        return performRemoteAttestation(
             auth: auth,
             enclave: enclave
         ).then { remoteAttestation in
@@ -1290,6 +1296,38 @@ public class KeyBackupService: KeyBackupServiceProtocol {
             if !ignoreCachedToken { self.recordAsCurrentToken(token) }
             return token
         }
+    }
+
+    // MARK: Auth
+
+    /// Calls `RemoteAttestation.performForKeyBackup(auth: enclave:)` with either the provided credential,
+    /// or any we have stored locally.
+    /// Stores the resulting credential to disk for reuse in the future.
+    internal func performRemoteAttestation(auth: KBSAuthCredential?, enclave: KeyBackupEnclave) -> Promise<RemoteAttestation> {
+        let auth = auth ?? self.db.read { credentialStorage.getAuthCredentialForCurrentUser($0) }
+        return remoteAttestation
+            .performForKeyBackup(
+                auth: auth,
+                enclave: enclave
+            )
+            .recover(on: .sharedBackground) { [credentialStorage, remoteAttestation, db] error in
+                Logger.warn("KBS attestation failed, rotating auth credential.")
+                // If we fail for any reason, be aggressive and clear our auth
+                // credential and retry so we fetch a new one. It's cheap to do so.
+                if let auth {
+                    db.asyncWrite { credentialStorage.deleteInvalidCredentials([auth], $0) }
+                }
+                return remoteAttestation
+                    .performForKeyBackup(
+                        auth: nil,
+                        enclave: enclave
+                    )
+            }
+            .map(on: .sharedBackground) { [credentialStorage, db] attestation in
+                let credential = attestation.auth
+                db.write { credentialStorage.storeAuthCredentialForCurrentUsername(KBSAuthCredential(credential: credential), $0) }
+                return attestation
+            }
     }
 }
 // MARK: -

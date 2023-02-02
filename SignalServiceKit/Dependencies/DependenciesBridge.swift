@@ -29,20 +29,24 @@ public class DependenciesBridge {
     public let db: DB
     public let keyValueStoreFactory: KeyValueStoreFactory
 
+    public let kbsCredentialStorage: KBSAuthCredentialStorage
     public let keyBackupService: KeyBackupServiceProtocol
 
     private init() {
         self.db = SDSDB(databaseStorage: GlobalDependencies.databaseStorage)
         self.keyValueStoreFactory = SDSKeyValueStoreFactory()
+        self.kbsCredentialStorage = KBSAuthCredentialStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
         self.keyBackupService = KeyBackupService(
-            tsConstants: TSConstants.shared,
             accountManager: KBS.Wrappers.TSAccountManager(GlobalDependencies.tsAccountManager),
-            signalService: GlobalDependencies.signalService,
             appContext: CurrentAppContext(),
-            storageServiceManager: KBS.Wrappers.StorageServiceManager(GlobalDependencies.storageServiceManager),
-            syncManager: GlobalDependencies.syncManager,
+            credentialStorage: kbsCredentialStorage,
             databaseStorage: db,
             keyValueStoreFactory: keyValueStoreFactory,
+            remoteAttestation: KBS.Wrappers.RemoteAttestation(),
+            signalService: GlobalDependencies.signalService,
+            storageServiceManager: KBS.Wrappers.StorageServiceManager(GlobalDependencies.storageServiceManager),
+            syncManager: GlobalDependencies.syncManager,
+            tsConstants: TSConstants.shared,
             twoFAManager: KBS.Wrappers.OWS2FAManager(OWS2FAManager.shared)
         )
     }

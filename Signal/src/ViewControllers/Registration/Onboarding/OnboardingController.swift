@@ -431,7 +431,7 @@ public class OnboardingController: NSObject {
 
     public private(set) var twoFAPin: String?
 
-    private var kbsAuth: RemoteAttestation.Auth?
+    private var kbsAuth: KBSAuthCredential?
 
     public private(set) var verificationRequestCount: UInt = 0
 
@@ -736,7 +736,7 @@ public class OnboardingController: NSObject {
 
             // If we were provided KBS auth, we'll need to re-register using reg lock v2,
             // store this for that path.
-            kbsAuth = registrationMissing2FAPinError.remoteAttestationAuth
+            kbsAuth = KBSAuthCredential(credential: registrationMissing2FAPinError.remoteAttestationAuth)
 
             // Since we were told we need 2fa, clear out any stored KBS keys so we can
             // do a fresh verification.

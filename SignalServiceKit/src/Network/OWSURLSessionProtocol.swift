@@ -143,6 +143,8 @@ public protocol OWSURLSessionProtocol: AnyObject, Dependencies {
 
     // MARK: Tasks
 
+    func promiseForTSRequest(_ rawRequest: TSRequest) -> Promise<HTTPResponse>
+
     func uploadTaskPromise(
         request: URLRequest,
         data requestData: Data,

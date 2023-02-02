@@ -164,7 +164,7 @@ class ChangePhoneNumberController: Dependencies {
             Logger.info("Missing 2FA PIN.")
 
             verificationDidRequire2FAPin(viewController: fromViewController,
-                                         kbsAuth: registrationMissing2FAPinError.remoteAttestationAuth)
+                                         kbsAuth: KBSAuthCredential(credential: registrationMissing2FAPinError.remoteAttestationAuth))
         } else {
             let nsError = error as NSError
             if nsError.domain == OWSSignalServiceKitErrorDomain &&
@@ -186,7 +186,7 @@ class ChangePhoneNumberController: Dependencies {
     }
 
     public func verificationDidRequire2FAPin(viewController: UIViewController,
-                                             kbsAuth: RemoteAttestation.Auth) {
+                                             kbsAuth: KBSAuthCredential) {
         AssertIsOnMainThread()
 
         Logger.info("")

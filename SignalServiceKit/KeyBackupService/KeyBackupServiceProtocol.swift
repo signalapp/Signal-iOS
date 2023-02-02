@@ -81,10 +81,10 @@ public protocol KeyBackupServiceProtocol {
     // When changing number, we need to verify the PIN against the new number's KBS
     // record in order to generate a registration lock token. It's important that this
     // happens without touching any of the state we maintain around our account.
-    func acquireRegistrationLockForNewNumber(with pin: String, and auth: RemoteAttestation.Auth) -> Promise<String>
+    func acquireRegistrationLockForNewNumber(with pin: String, and auth: KBSAuthCredential) -> Promise<String>
 
     /// Loads the users key, if any, from the KBS into the database.
-    func restoreKeysAndBackup(with pin: String, and auth: RemoteAttestation.Auth?) -> Promise<Void>
+    func restoreKeysAndBackup(with pin: String, and auth: KBSAuthCredential?) -> Promise<Void>
 
     func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> AnyPromise
 
