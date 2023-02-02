@@ -53,7 +53,7 @@ public extension RegistrationUtils {
                         let viewController = OnboardingVerificationViewController(onboardingController: onboardingController)
                         viewController.hideBackLink()
                         let navigationController = OnboardingNavigationController(onboardingController: onboardingController)
-                        navigationController.setViewControllers([ viewController ], animated: false)
+                        navigationController.setViewControllers([viewController], animated: false)
                         let window: UIWindow = CurrentAppContext().mainWindow!
                         window.rootViewController = navigationController
                     }
@@ -65,17 +65,32 @@ public extension RegistrationUtils {
                     modalActivityIndicator.dismiss {
                         AssertIsOnMainThread()
 
-                        // TODO: Handle AccountServiceClientError.captchaRequired.
                         if error.httpStatusCode == 400 {
                             OWSActionSheets.showActionSheet(
                                 title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
                                 message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: "")
-                                )
+                            )
                         } else if let error = error as? UserErrorDescriptionProvider {
                             OWSActionSheets.showActionSheet(
                                 title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
                                 message: error.localizedDescription
-                                )
+                            )
+                        } else if let error = error as? AccountServiceClientError {
+                            switch error {
+                            case .captchaRequired:
+                                // TODO[ViewContextPiping]
+                                let context = ViewControllerContext.shared
+                                let onboardingController = OnboardingController(context: context, onboardingMode: .registering)
+                                let registrationPhoneNumber = RegistrationPhoneNumber(e164: phoneNumber, userInput: phoneNumber)
+                                onboardingController.update(phoneNumber: registrationPhoneNumber)
+
+                                let viewController = OnboardingCaptchaViewController(onboardingController: onboardingController)
+                                let navigationController = OnboardingNavigationController(onboardingController: onboardingController)
+                                navigationController.setViewControllers([viewController], animated: false)
+                                let window: UIWindow = CurrentAppContext().mainWindow!
+                                window.rootViewController = navigationController
+                            }
+
                         } else {
                             OWSActionSheets.showActionSheet(
                                 title: NSLocalizedString("REGISTRATION_ERROR", comment: "")

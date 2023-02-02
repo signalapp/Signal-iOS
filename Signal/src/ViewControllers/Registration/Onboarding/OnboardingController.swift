@@ -362,7 +362,7 @@ public class OnboardingController: NSObject {
         }
     }
 
-    public func onboardingDidRequire2FAPin(viewController: UIViewController) {
+    private func onboardingDidRequire2FAPin(viewController: UIViewController) {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -432,6 +432,7 @@ public class OnboardingController: NSObject {
     public private(set) var twoFAPin: String?
 
     private var kbsAuth: KBSAuthCredential?
+    private var hasBackedUpKBS = false
 
     public private(set) var verificationRequestCount: UInt = 0
 
@@ -616,6 +617,8 @@ public class OnboardingController: NSObject {
                 // If we restored successfully clear out KBS auth, the server will give it
                 // to us again if we still need to do KBS operations.
                 self.kbsAuth = nil
+                // The above operation already does a backup; don't bother doing another one later.
+                self.hasBackedUpKBS = true
 
                 if self.hasPendingRestoration {
                     firstly {
@@ -673,7 +676,19 @@ public class OnboardingController: NSObject {
         // TODO: We could skip this in production.
         tsAccountManager.phoneNumberAwaitingVerification = phoneNumber.e164
 
-        let twoFAPin = self.twoFAPin
+        let twoFAPin = self.twoFAPin ?? {
+            // Initially set the value to any stored PIN code so we try that before asking the user to
+            // enter their PIN.
+            if
+                Self.tsAccountManager.isReregistering,
+                self.phoneNumber != nil,
+                self.phoneNumber?.e164 == Self.tsAccountManager.reregistrationPhoneNumber()
+            {
+                return Self.ows2FAManager.pinCode
+            } else {
+                return nil
+            }
+        }()
 
         let promise = firstly {
             self.accountManager.register(
@@ -692,6 +707,13 @@ public class OnboardingController: NSObject {
                 }
             }
             return Promise.value(())
+        }.then { [weak self] in
+            // Do best effort to back up to KBS once we complete registration; this resets
+            // the PIN guesses.
+            guard let self = self, !self.hasBackedUpKBS, let twoFAPin = self.twoFAPin else {
+                return Promise.value(())
+            }
+            return self.context.keyBackupService.restoreKeysAndBackup(with: twoFAPin)
         }
 
         if showModal {
@@ -743,6 +765,7 @@ public class OnboardingController: NSObject {
             SDSDatabaseStorage.shared.write { transaction in
                 context.keyBackupService.clearKeys(transaction: transaction.asV2Write)
                 self.ows2FAManager.markRegistrationLockV2Disabled(transaction: transaction)
+                self.ows2FAManager.setPinCode(nil, transaction: transaction)
             }
 
             completion(.invalid2FAPin)

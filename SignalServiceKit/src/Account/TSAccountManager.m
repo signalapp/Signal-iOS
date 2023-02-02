@@ -864,9 +864,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
             }
 
             [self loadAccountStateWithTransaction:transaction];
-
-            [self clearKBSKeysWithTransaction:transaction];
-            [OWS2FAManager.shared setPinCode:nil transaction:transaction];
         }
     });
 
