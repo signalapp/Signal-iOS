@@ -14,8 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SignalBaseTest : XCTestCase
 
-- (void)readWithBlock:(void (^)(SDSAnyReadTransaction *transaction))block;
-- (void)writeWithBlock:(void (^)(SDSAnyWriteTransaction *transaction))block;
+- (void)readWithBlock:(void (^NS_NOESCAPE)(SDSAnyReadTransaction *transaction))block;
+- (void)writeWithBlock:(void (^NS_NOESCAPE)(SDSAnyWriteTransaction *transaction))block;
 
 @end
 

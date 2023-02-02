@@ -34,12 +34,12 @@ NS_ASSUME_NONNULL_BEGIN
     [super tearDown];
 }
 
--(void)readWithBlock:(void (^)(SDSAnyReadTransaction *))block
+- (void)readWithBlock:(void (^NS_NOESCAPE)(SDSAnyReadTransaction *))block
 {
     [SDSDatabaseStorage.shared readWithBlock:block];
 }
 
--(void)writeWithBlock:(void (^)(SDSAnyWriteTransaction *))block
+- (void)writeWithBlock:(void (^NS_NOESCAPE)(SDSAnyWriteTransaction *))block
 {
     DatabaseStorageWrite(SDSDatabaseStorage.shared, block);
 }

@@ -295,6 +295,8 @@ extension StorageServiceProtoContactRecord: Dependencies {
             return
         }
 
+        var didModifySignalAccount = false
+
         let maybeExistingAccount = contactsManagerImpl.fetchSignalAccount(for: address, transaction: transaction)
 
         if
@@ -340,6 +342,7 @@ extension StorageServiceProtoContactRecord: Dependencies {
             )
 
             newAccount.anyInsert(transaction: transaction)
+            didModifySignalAccount = true
         } else if
             let existingAccount = maybeExistingAccount,
             let existingContact = existingAccount.contact
@@ -364,9 +367,14 @@ extension StorageServiceProtoContactRecord: Dependencies {
                 // load.
 
                 existingAccount.anyRemove(transaction: transaction)
+                didModifySignalAccount = true
             } else {
                 Logger.debug("No system contact found in contact record, keeping existing local address book contact!")
             }
+        }
+
+        if didModifySignalAccount {
+            contactsManagerImpl.didUpdateSignalAccounts(transaction: transaction)
         }
     }
 }

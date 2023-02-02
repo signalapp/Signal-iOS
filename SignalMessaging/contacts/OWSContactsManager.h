@@ -12,6 +12,7 @@ extern NSNotificationName const OWSContactsManagerSignalAccountsDidChangeNotific
 extern NSNotificationName const OWSContactsManagerContactsDidChangeNotification;
 
 @class AnyPromise;
+@class OWSContactsManagerSwiftValues;
 @class SDSAnyReadTransaction;
 @class SDSKeyValueStore;
 @class SignalAccount;
@@ -47,7 +48,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, ContactAuthorizationForSharing) {
 
 @property (nonatomic, readonly) BOOL shouldSortByGivenName;
 
-@property (nonatomic, readonly) id<ContactsManagerCache> contactsManagerCache;
+@property (nonatomic, readonly) OWSContactsManagerSwiftValues *swiftValues;
 
 #pragma mark - Accessors
 

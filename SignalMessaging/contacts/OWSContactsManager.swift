@@ -6,6 +6,20 @@
 import Foundation
 import SignalServiceKit
 
+@objc
+class OWSContactsManagerSwiftValues: NSObject {
+
+    fileprivate var systemContactsCache: SystemContactsCache?
+
+    fileprivate let systemContactsDataProvider = AtomicOptional<SystemContactsDataProvider>(nil)
+
+    fileprivate var primaryDeviceSystemContactsDataProvider: PrimaryDeviceSystemContactsDataProvider? {
+        systemContactsDataProvider.get() as? PrimaryDeviceSystemContactsDataProvider
+    }
+
+    override init() {}
+}
+
 // TODO: Should we use these caches in NSE?
 fileprivate extension OWSContactsManager {
     static let skipContactAvatarBlurByUuidStore = SDSKeyValueStore(collection: "OWSContactsManager.skipContactAvatarBlurByUuidStore")
@@ -572,7 +586,7 @@ extension OWSContactsManager {
         }
 
         if let phoneNumber = self.phoneNumber(for: address, transaction: transaction),
-           let contact = contactsManagerCache.contact(forPhoneNumber: phoneNumber, transaction: transaction),
+           let contact = contact(forPhoneNumber: phoneNumber, transaction: transaction),
            let cnContactId = contact.cnContactId,
            let avatarData = self.avatarData(forCNContactId: cnContactId),
            let validData = validateIfNecessary(avatarData) {
@@ -864,12 +878,8 @@ extension OWSContactsManager {
                 // Post a notification if something changed or this is the first load since launch.
                 let shouldNotify = didChangeAnySignalAccount || !self.hasLoadedSystemContacts
                 self.hasLoadedSystemContacts = true
-                self.contactsManagerCache.setSortedSignalAccounts(
-                    self.sortSignalAccountsWithSneakyTransaction(Array(signalAccountsToKeep.values))
-                )
-                if shouldNotify {
-                    NotificationCenter.default.postNotificationNameAsync(.OWSContactsManagerSignalAccountsDidChange, object: nil)
-                }
+                self.swiftValues.systemContactsCache?.unsortedSignalAccounts.set(Array(signalAccountsToKeep.values))
+                self.didUpdateSignalAccounts(shouldClearCache: false, shouldNotify: shouldNotify)
             }
         }
     }
@@ -944,6 +954,21 @@ extension OWSContactsManager {
         }
 
         storageServiceManager.recordPendingUpdates(updatedAddresses: Array(addressesToUpdateInStorageService))
+    }
+
+    func didUpdateSignalAccounts(transaction: SDSAnyWriteTransaction) {
+        transaction.addTransactionFinalizationBlock(forKey: "OWSContactsManager.didUpdateSignalAccounts") { _ in
+            self.didUpdateSignalAccounts(shouldClearCache: true, shouldNotify: true)
+        }
+    }
+
+    private func didUpdateSignalAccounts(shouldClearCache: Bool, shouldNotify: Bool) {
+        if shouldClearCache {
+            swiftValues.systemContactsCache?.unsortedSignalAccounts.set(nil)
+        }
+        if shouldNotify {
+            NotificationCenter.default.postNotificationNameAsync(.OWSContactsManagerSignalAccountsDidChange, object: nil)
+        }
     }
 }
 
@@ -1032,32 +1057,128 @@ public extension Array where Element == SignalAccount {
     }
 }
 
-// MARK: -
+// MARK: System Contacts
+
+private class SystemContactsCache {
+    let unsortedSignalAccounts = AtomicOptional<[SignalAccount]>(nil)
+    let contactsMaps = AtomicOptional<ContactsMaps>(nil)
+}
 
 extension OWSContactsManager {
-
     @objc
-    public func unsortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
-        contactsManagerCache.unsortedSignalAccounts(transaction: transaction)
-    }
-
-    // Order respects the systems contact sorting preference.
-    @objc
-    public func sortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
-        contactsManagerCache.sortedSignalAccounts(transaction: transaction)
-    }
-
-    @objc
-    public func sortedSignalAccountsWithSneakyTransaction() -> [SignalAccount] {
-        databaseStorage.read { transaction in
-            sortedSignalAccounts(transaction: transaction)
+    func setUpSystemContacts() {
+        updateSystemContactsDataProvider()
+        registerForRegistrationStateNotification()
+        if CurrentAppContext().isMainApp {
+            warmSystemContactsCache()
         }
     }
 
-    private func allUnsortedContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
-        let localNumber = tsAccountManager.localNumber(with: transaction)
+    private func registerForRegistrationStateNotification() {
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(registrationStateDidChange),
+            name: .registrationStateDidChange,
+            object: nil
+        )
+    }
 
-        return contactsManagerCache.allContacts(transaction: transaction)
+    @objc
+    private func registrationStateDidChange() {
+        updateSystemContactsDataProvider()
+    }
+
+    private func updateSystemContactsDataProvider() {
+        let dataProvider: SystemContactsDataProvider?
+        if !tsAccountManager.isRegistered {
+            dataProvider = nil
+        } else if tsAccountManager.isPrimaryDevice {
+            dataProvider = PrimaryDeviceSystemContactsDataProvider()
+        } else {
+            dataProvider = LinkedDeviceSystemContactsDataProvider()
+        }
+        swiftValues.systemContactsDataProvider.set(dataProvider)
+    }
+
+    private func warmSystemContactsCache() {
+        let systemContactsCache = SystemContactsCache()
+        swiftValues.systemContactsCache = systemContactsCache
+
+        InstrumentsMonitor.measure(category: "appstart", parent: "caches", name: "warmSystemContactsCache") {
+            databaseStorage.read {
+                var phoneNumberCount = 0
+                if let dataProvider = swiftValues.systemContactsDataProvider.get() {
+                    let contactsMaps = buildContactsMaps(using: dataProvider, transaction: $0)
+                    systemContactsCache.contactsMaps.set(contactsMaps)
+                    phoneNumberCount = contactsMaps.phoneNumberToContactMap.count
+                }
+
+                let unsortedSignalAccounts = fetchUnsortedSignalAccounts(transaction: $0)
+                systemContactsCache.unsortedSignalAccounts.set(unsortedSignalAccounts)
+                let signalAccountCount = unsortedSignalAccounts.count
+
+                Logger.info("There are \(phoneNumberCount) phone numbers and \(signalAccountCount) SignalAccounts.")
+            }
+        }
+    }
+
+    @objc
+    public func contact(forPhoneNumber phoneNumber: String, transaction: SDSAnyReadTransaction) -> Contact? {
+        if let cachedValue = swiftValues.systemContactsCache?.contactsMaps.get() {
+            return cachedValue.phoneNumberToContactMap[phoneNumber]
+        }
+        guard let dataProvider = swiftValues.systemContactsDataProvider.get() else {
+            owsFailDebug("Can't access contacts until registration is finished.")
+            return nil
+        }
+        return dataProvider.fetchSystemContact(for: phoneNumber, transaction: transaction)
+    }
+
+    private func buildContactsMaps(
+        using dataProvider: SystemContactsDataProvider,
+        transaction: SDSAnyReadTransaction
+    ) -> ContactsMaps {
+        let systemContacts = dataProvider.fetchAllSystemContacts(transaction: transaction)
+        let localNumber = tsAccountManager.localNumber(with: transaction)
+        return ContactsMaps.build(contacts: systemContacts, localNumber: localNumber)
+    }
+
+    @objc
+    func setContactsMaps(_ contactsMaps: ContactsMaps, localNumber: String?, transaction: SDSAnyWriteTransaction) {
+        guard let dataProvider = swiftValues.primaryDeviceSystemContactsDataProvider else {
+            return owsFailDebug("Can't modify contacts maps on linked devices.")
+        }
+        let oldContactsMaps = swiftValues.systemContactsCache?.contactsMaps.swap(contactsMaps)
+        dataProvider.setContactsMaps(
+            contactsMaps,
+            oldContactsMaps: { oldContactsMaps ?? buildContactsMaps(using: dataProvider, transaction: transaction) },
+            localNumber: localNumber,
+            transaction: transaction
+        )
+    }
+
+    private func fetchUnsortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
+        SignalAccount.anyFetchAll(transaction: transaction)
+    }
+
+    @objc
+    public func unsortedSignalAccounts(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
+        if let cachedValue = swiftValues.systemContactsCache?.unsortedSignalAccounts.get() {
+            return cachedValue
+        }
+        let uncachedValue = fetchUnsortedSignalAccounts(transaction: transaction)
+        swiftValues.systemContactsCache?.unsortedSignalAccounts.set(uncachedValue)
+        return uncachedValue
+    }
+
+    private func allUnsortedContacts(transaction: SDSAnyReadTransaction) -> [Contact] {
+        guard let dataProvider = swiftValues.systemContactsDataProvider.get() else {
+            owsFailDebug("Can't access contacts until registration is finished.")
+            return []
+        }
+        let localNumber = tsAccountManager.localNumber(with: transaction)
+        return dataProvider.fetchAllSystemContacts(transaction: transaction)
             .filter { !$0.hasPhoneNumber(localNumber) }
     }
 
@@ -1066,7 +1187,11 @@ extension OWSContactsManager {
         allUnsortedContacts(transaction: transaction)
             .sorted { comparableName(for: $0).caseInsensitiveCompare(comparableName(for: $1)) == .orderedAscending }
     }
+}
 
+// MARK: - Contact Names
+
+extension OWSContactsManager {
     @objc
     public func comparableNameForSignalAccountWithSneakyTransaction(_ signalAccount: SignalAccount) -> String {
         databaseStorage.read { transaction in

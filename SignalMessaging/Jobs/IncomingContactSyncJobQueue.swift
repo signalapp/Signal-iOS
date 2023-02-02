@@ -318,6 +318,9 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
                     signalAccount.anyRemove(transaction: transaction)
                 }
             }
+            if !uniqueIdsToRemove.isEmpty {
+                contactsManagerImpl.didUpdateSignalAccounts(transaction: transaction)
+            }
         }
     }
 }
