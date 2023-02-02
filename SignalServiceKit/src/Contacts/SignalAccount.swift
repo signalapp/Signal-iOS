@@ -32,4 +32,22 @@ extension SignalAccount {
         SignalServiceAddress.addressComponentsDescription(uuidString: recipientUUID,
                                                           phoneNumber: recipientPhoneNumber)
     }
+
+    public func hasSameContent(_ otherAccount: SignalAccount) -> Bool {
+        // NOTE: We don't want to compare contactAvatarJpegData. It can't change
+        // without contactAvatarHash changing as well.
+        recipientPhoneNumber == otherAccount.recipientPhoneNumber
+        && recipientUUID == otherAccount.recipientUUID
+        && multipleAccountLabelText == otherAccount.multipleAccountLabelText
+        && contactAvatarHash == otherAccount.contactAvatarHash
+        && contactHasSameContent(otherAccount.contact)
+    }
+
+    private func contactHasSameContent(_ otherContact: Contact?) -> Bool {
+        if let contact, let otherContact {
+            return contact.hasSameContent(otherContact)
+        } else {
+            return contact == nil && otherContact == nil
+        }
+    }
 }

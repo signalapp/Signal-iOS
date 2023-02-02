@@ -270,20 +270,6 @@ static NSString *kSignalPreferNicknamesPreference = @"NSPersonNameDefaultShouldP
     return [[SignalServiceAddress alloc] initWithUuidString:self.recipientUUID phoneNumber:self.recipientPhoneNumber];
 }
 
-- (BOOL)hasSameContent:(SignalAccount *)other
-{
-    OWSAssertDebug(other != nil);
-
-    // NOTE: We don't want to compare contactAvatarJpegData.
-    //       It can't change without contactAvatarHash changing
-    //       as well.
-    return ([NSObject isNullableObject:self.recipientPhoneNumber equalTo:other.recipientPhoneNumber] &&
-        [NSObject isNullableObject:self.recipientUUID equalTo:other.recipientUUID] &&
-        [NSObject isNullableObject:self.contact equalTo:other.contact] &&
-        [NSObject isNullableObject:self.multipleAccountLabelText equalTo:other.multipleAccountLabelText] &&
-        [NSObject isNullableObject:self.contactAvatarHash equalTo:other.contactAvatarHash]);
-}
-
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidInsertWithTransaction:transaction];

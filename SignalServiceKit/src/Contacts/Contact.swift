@@ -9,32 +9,20 @@ import SignalCoreKit
 // MARK: - Equality
 
 public extension Contact {
-    func isEqualForCache(_ other: Contact) -> Bool {
-        guard namesAreEqual(toOther: other),
-              self.comparableNameFirstLast == other.comparableNameFirstLast,
-              self.comparableNameLastFirst == other.comparableNameLastFirst,
-              self.uniqueId == other.uniqueId,
-              self.cnContactId == other.cnContactId,
-              self.isFromLocalAddressBook == other.isFromLocalAddressBook,
-              self.phoneNumberNameMap == other.phoneNumberNameMap else {
-                  return false
-              }
+    func isEqualForCache(_ otherContact: Contact) -> Bool {
+        uniqueId == otherContact.uniqueId
+        && hasSameContent(otherContact)
+    }
 
+    func hasSameContent(_ otherContact: Contact) -> Bool {
+        namesAreEqual(toOther: otherContact)
+        && cnContactId == otherContact.cnContactId
+        && phoneNumberNameMap == otherContact.phoneNumberNameMap
         // Ignore ordering of these properties.
-        guard Set(self.userTextPhoneNumbers) == Set(other.userTextPhoneNumbers),
-              Set(self.emails) == Set(other.emails) else {
-                  return false
-              }
-
-        // Ignore ordering of this property,
+        && Set(userTextPhoneNumbers) == Set(otherContact.userTextPhoneNumbers)
+        && Set(emails) == Set(otherContact.emails)
         // Don't rely on equality of PhoneNumber.
-        let parsedPhoneNumbersSelf = Set(self.parsedPhoneNumbers.compactMap { $0.toE164() })
-        let parsedPhoneNumbersOther = Set(other.parsedPhoneNumbers.compactMap { $0.toE164() })
-        guard parsedPhoneNumbersSelf == parsedPhoneNumbersOther else {
-            return false
-        }
-
-        return true
+        && Set(parsedPhoneNumbers.map { $0.toE164() }) == Set(otherContact.parsedPhoneNumbers.map { $0.toE164() })
     }
 
     func namesAreEqual(toOther other: Contact) -> Bool {

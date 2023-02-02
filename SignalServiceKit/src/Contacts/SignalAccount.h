@@ -111,8 +111,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:contact:contactAvat
 
 // --- CODE GENERATION MARKER
 
-- (BOOL)hasSameContent:(SignalAccount *)other;
-
 - (void)updateWithContact:(nullable Contact *)contact
               transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(updateWithContact(_:transaction:));
 
