@@ -33,7 +33,7 @@ The form and manner of this distribution makes it eligible for export under the 
 
 ## License
 
-Licensed under [GPLv3](http://www.gnu.org/licenses/gpl-3.0.html)
+Licensed under [AGPLv3](https://www.gnu.org/licenses/agpl-3.0.html)
 
 Copyright 2014-2023 Open Whisper Systems
 
