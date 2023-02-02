@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 // MARK: - Equality
 
@@ -60,6 +61,51 @@ public extension Contact {
             }
         }
         return false
+    }
+
+    private func phoneNumberLabel(for address: SignalServiceAddress) -> String {
+        if let phoneNumber = address.phoneNumber, let phoneNumberLabel = phoneNumberNameMap[phoneNumber] {
+            return phoneNumberLabel
+        }
+        return OWSLocalizedString(
+            "PHONE_NUMBER_TYPE_UNKNOWN",
+            comment: "Label used when we don't what kind of phone number it is (e.g. mobile/work/home)."
+        )
+    }
+
+    func uniquePhoneNumberLabel(for address: SignalServiceAddress, relatedAddresses: [SignalServiceAddress]) -> String? {
+        owsAssertDebug(address.isValid)
+
+        owsAssertDebug(relatedAddresses.contains(address))
+        guard relatedAddresses.count > 1 else {
+            return nil
+        }
+
+        // 1. Find the address type of this account.
+        let addressLabel = phoneNumberLabel(for: address).filterForDisplay
+
+        // 2. Find all addresses for this contact of the same type.
+        let addressesWithTheSameLabel = relatedAddresses.filter {
+            addressLabel == phoneNumberLabel(for: $0).filterForDisplay
+        }.stableSort()
+
+        // 3. Figure out if this is "Mobile 0" or "Mobile 1".
+        guard let thisAddressIndex = addressesWithTheSameLabel.firstIndex(of: address) else {
+            owsFailDebug("Couldn't find the address we were trying to match.")
+            return addressLabel
+        }
+
+        // 4. If there's only one "Mobile", don't add the " 0" or " 1" suffix.
+        guard addressesWithTheSameLabel.count > 1 else {
+            return addressLabel
+        }
+
+        // 5. If there's two or more "Mobile" numbers, specify which this is.
+        let format = OWSLocalizedString(
+            "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT",
+            comment: "Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}."
+        )
+        return String(format: format, addressLabel, OWSFormat.formatInt(thisAddressIndex)).filterForDisplay
     }
 }
 

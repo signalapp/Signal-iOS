@@ -248,25 +248,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [CNContactFormatter stringFromContact:cnContact style:CNContactFormatterStyleFullName].ows_stripped;
 }
 
-- (NSString *)nameForAddress:(SignalServiceAddress *)address
-         registeredAddresses:(NSArray<SignalServiceAddress *> *)registeredAddresses
-{
-    OWSAssertDebug(address.isValid);
-    OWSAssertDebug([registeredAddresses containsObject:address]);
-
-    // We don't have contacts entries for addresses without phone numbers
-    if (!address.phoneNumber) {
-        return nil;
-    }
-
-    NSString *value = self.phoneNumberNameMap[address.phoneNumber];
-    if (!value) {
-        return OWSLocalizedString(@"PHONE_NUMBER_TYPE_UNKNOWN",
-            @"Label used when we don't what kind of phone number it is (e.g. mobile/work/home).");
-    }
-    return value;
-}
-
 + (nullable NSData *)avatarDataForCNContact:(nullable CNContact *)cnContact
 {
     NSData *imageData = cnContact.thumbnailImageData;

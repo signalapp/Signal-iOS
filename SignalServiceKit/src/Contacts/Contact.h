@@ -59,9 +59,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable Contact *)contactWithVCardData:(NSData *)data;
 + (nullable CNContact *)cnContactWithVCardData:(NSData *)data;
 
-- (NSString *)nameForAddress:(SignalServiceAddress *)address
-         registeredAddresses:(NSArray<SignalServiceAddress *> *)registeredAddresses;
-
 #endif // TARGET_OS_IOS
 
 + (NSString *)formattedFullNameWithCNContact:(CNContact *)cnContact NS_SWIFT_NAME(formattedFullName(cnContact:));

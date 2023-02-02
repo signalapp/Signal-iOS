@@ -619,42 +619,6 @@ extension OWSContactsManager {
     @objc
     var intersectionQueue: DispatchQueue { Self.intersectionQueue }
 
-    // TODO: Move to Contact class?
-    private static func accountLabel(forFetchedContact fetchedContact: FetchedContact,
-                                     address: SignalServiceAddress) -> String? {
-
-        owsAssertDebug(address.isValid)
-        let registeredAddresses = fetchedContact.registeredAddresses
-        owsAssertDebug(registeredAddresses.contains(address))
-        let contact = fetchedContact.contact
-
-        guard registeredAddresses.count > 1 else {
-            return nil
-        }
-
-        // 1. Find the address type of this account.
-        let addressLabel: String = contact.name(for: address,
-                                                   registeredAddresses: registeredAddresses).filterStringForDisplay()
-
-        // 2. Find all addresses for this contact of the same type.
-        let addressesWithTheSameName = registeredAddresses.filter {
-            addressLabel == contact.name(for: $0,
-                                            registeredAddresses: registeredAddresses).filterStringForDisplay()
-        }.stableSort()
-
-        owsAssertDebug(addressesWithTheSameName.contains(address))
-        if addressesWithTheSameName.count > 1,
-           let index = addressesWithTheSameName.firstIndex(of: address) {
-            let format = OWSLocalizedString("PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT",
-                                           comment: "Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}.")
-            return String(format: format,
-                          addressLabel,
-                          OWSFormat.formatUInt(UInt(index))).filterStringForDisplay()
-        } else {
-            return addressLabel
-        }
-    }
-
     private static func buildContactAvatarHash(contact: Contact) -> Data? {
         func buildHash() -> Data? {
             guard let cnContactId: String = contact.cnContactId else {
@@ -679,33 +643,14 @@ extension OWSContactsManager {
         }
     }
 
-    private struct SystemContactsManagerCache {
-        let signalAccounts: [SignalAccount]
-        let seenAddresses: Set<SignalServiceAddress>
-    }
-
-    private struct FetchedContact {
-        let contact: Contact
-        let signalRecipients: [SignalRecipient]
-        let registeredAddresses: [SignalServiceAddress]
-    }
-
-    private static func buildSystemContactsManagerCache(forLocalSystemContacts contacts: [Contact],
-                                                        transaction: SDSAnyReadTransaction) -> SystemContactsManagerCache {
-
-        let fetchedContacts: [FetchedContact] = contacts.map { contact in
-            let signalRecipients = contact.signalRecipients(transaction: transaction)
-            let registeredAddresses = contact.registeredAddresses(transaction: transaction)
-            return FetchedContact(contact: contact,
-                                  signalRecipients: signalRecipients,
-                                  registeredAddresses: registeredAddresses)
-        }
-        var seenAddresses = Set<SignalServiceAddress>()
+    private static func buildSignalAccounts(
+        for systemContacts: [Contact],
+        transaction: SDSAnyReadTransaction
+    ) -> [SignalAccount] {
         var signalAccounts = [SignalAccount]()
-        for fetchedContact in fetchedContacts {
-            let contact = fetchedContact.contact
-
-            var signalRecipients = fetchedContact.signalRecipients
+        var seenAddresses = Set<SignalServiceAddress>()
+        for contact in systemContacts {
+            var signalRecipients = contact.signalRecipients(transaction: transaction)
             guard !signalRecipients.isEmpty else {
                 continue
             }
@@ -719,21 +664,21 @@ extension OWSContactsManager {
                 }
                 seenAddresses.insert(signalRecipient.address)
 
-                var multipleAccountLabelText: String?
-                if signalRecipients.count > 1 {
-                    multipleAccountLabelText = Self.accountLabel(forFetchedContact: fetchedContact,
-                                                                 address: signalRecipient.address)
-                }
+                let multipleAccountLabelText = contact.uniquePhoneNumberLabel(
+                    for: signalRecipient.address,
+                    relatedAddresses: signalRecipients.map { $0.address }
+                )
                 let contactAvatarHash = Self.buildContactAvatarHash(contact: contact)
-                let signalAccount = SignalAccount(signalRecipient: signalRecipient,
-                                                  contact: contact,
-                                                  contactAvatarHash: contactAvatarHash,
-                                                  multipleAccountLabelText: multipleAccountLabelText)
+                let signalAccount = SignalAccount(
+                    signalRecipient: signalRecipient,
+                    contact: contact,
+                    contactAvatarHash: contactAvatarHash,
+                    multipleAccountLabelText: multipleAccountLabelText
+                )
                 signalAccounts.append(signalAccount)
             }
         }
-        return SystemContactsManagerCache(signalAccounts: signalAccounts.stableSort(),
-                                          seenAddresses: seenAddresses)
+        return signalAccounts.stableSort()
     }
 
     @objc
@@ -741,90 +686,74 @@ extension OWSContactsManager {
         forFetchedSystemContacts localSystemContacts: [Contact]
     ) {
         intersectionQueue.async {
-            var localSystemContactsSignalAccounts = [SignalAccount]()
-            var seenAddresses = Set<SignalServiceAddress>()
-            var persistedSignalAccounts = [SignalAccount]()
-            var persistedSignalAccountMap = [SignalServiceAddress: SignalAccount]()
-            var signalAccountsToKeep = [SignalServiceAddress: SignalAccount]()
-            Self.databaseStorage.read { transaction in
-                let systemContactsManagerCache = Self.buildSystemContactsManagerCache(
-                    forLocalSystemContacts: localSystemContacts,
-                    transaction: transaction
-                )
-                localSystemContactsSignalAccounts = systemContactsManagerCache.signalAccounts
-                seenAddresses = systemContactsManagerCache.seenAddresses
+            let (oldSignalAccounts, newSignalAccounts) = Self.databaseStorage.read { transaction in
+                let oldSignalAccounts = SignalAccount.anyFetchAll(transaction: transaction)
+                let newSignalAccounts = Self.buildSignalAccounts(for: localSystemContacts, transaction: transaction)
+                return (oldSignalAccounts, newSignalAccounts)
+            }
+            let oldSignalAccountsMap: [SignalServiceAddress: SignalAccount] = Dictionary(
+                oldSignalAccounts.lazy.map { ($0.recipientAddress, $0) },
+                uniquingKeysWith: { _, new in new }
+            )
+            var newSignalAccountsMap = [SignalServiceAddress: SignalAccount]()
 
-                SignalAccount.anyEnumerate(transaction: transaction) { (signalAccount, _) in
-                    persistedSignalAccountMap[signalAccount.recipientAddress] = signalAccount
-                    persistedSignalAccounts.append(signalAccount)
-
-                    // If we find a persisted contact that is not from the
-                    // local address book, it represents a contact from the
-                    // address book on the primary device that was synced to
-                    // this (linked) device. We should keep it, and not
-                    // overwrite it since the primary device's system contacts
-                    // always take precendence.
-                    if
-                        let contact = signalAccount.contact,
-                        !contact.isFromLocalAddressBook
-                    {
-                        signalAccountsToKeep[signalAccount.recipientAddress] = signalAccount
-                    }
+            // If we find a persisted contact that is not from the local address book,
+            // it represents a contact from the address book on the primary device that
+            // was synced to this (linked) device. We should keep it, and not overwrite
+            // it since the primary device's system contacts always take precendence.
+            for signalAccount in oldSignalAccounts {
+                if signalAccount.contact?.isFromLocalAddressBook == false {
+                    newSignalAccountsMap[signalAccount.recipientAddress] = signalAccount
                 }
             }
 
-            var signalAccountsToUpsert = [SignalAccount]()
-            for signalAccount in localSystemContactsSignalAccounts {
+            var signalAccountsToInsert = [SignalAccount]()
+            for newSignalAccount in newSignalAccounts {
+                let address = newSignalAccount.recipientAddress
+
                 // The user might have multiple entries in their address book with the same phone number.
-                if
-                    let otherSignalAccount = signalAccountsToKeep[signalAccount.recipientAddress],
-                    let contact = otherSignalAccount.contact,
-                    contact.isFromLocalAddressBook
-                {
-                    Logger.warn("Ignoring redundant signal account: \(signalAccount.recipientAddress)")
+                if newSignalAccountsMap[address]?.contact?.isFromLocalAddressBook == true {
+                    Logger.warn("Ignoring redundant signal account: \(address)")
                     continue
                 }
 
-                if let persistedSignalAccount = persistedSignalAccountMap[signalAccount.recipientAddress] {
-                    let keepPersistedAccount: Bool
+                let oldSignalAccountToKeep: SignalAccount?
+                switch oldSignalAccountsMap[address] {
+                case .none:
+                    oldSignalAccountToKeep = nil
 
-                    if persistedSignalAccount.hasSameContent(signalAccount) {
-                        // Same content, no need to update.
-                        keepPersistedAccount = true
-                    } else if
-                        let contact = persistedSignalAccount.contact,
-                        !contact.isFromLocalAddressBook
-                    {
-                        // If the contact is not local to this device, then we are
-                        // a linked device and have synced this from the primary.
-                        // We should not overwrite the synced primary-device system
-                        // contact.
-                        keepPersistedAccount = true
-                    } else {
-                        keepPersistedAccount = false
-                    }
+                case .some(let oldSignalAccount) where oldSignalAccount.hasSameContent(newSignalAccount):
+                    // Same content, no need to update.
+                    oldSignalAccountToKeep = oldSignalAccount
 
-                    if keepPersistedAccount {
-                        signalAccountsToKeep[signalAccount.recipientAddress] = persistedSignalAccount
-                        continue
-                    }
+                case .some(let oldSignalAccount) where oldSignalAccount.contact?.isFromLocalAddressBook == false:
+                    // If the contact is not local to this device, then we are a linked device
+                    // and have synced this from the primary. We should not overwrite the
+                    // synced primary-device system contact.
+                    oldSignalAccountToKeep = oldSignalAccount
+
+                case .some:
+                    oldSignalAccountToKeep = nil
                 }
 
-                signalAccountsToKeep[signalAccount.recipientAddress] = signalAccount
-                signalAccountsToUpsert.append(signalAccount)
+                if let oldSignalAccount = oldSignalAccountToKeep {
+                    newSignalAccountsMap[address] = oldSignalAccount
+                } else {
+                    newSignalAccountsMap[address] = newSignalAccount
+                    signalAccountsToInsert.append(newSignalAccount)
+                }
             }
 
             // Clean up orphans.
             var signalAccountsToRemove = [SignalAccount]()
-            for signalAccount in persistedSignalAccounts {
-                if let signalAccountToKeep = signalAccountsToKeep[signalAccount.recipientAddress],
-                   signalAccountToKeep.uniqueId == signalAccount.uniqueId {
-                    // If the SignalAccount is going to be inserted or updated,
-                    // it doesn't need to be cleaned up.
+            for signalAccount in oldSignalAccounts {
+                if newSignalAccountsMap[signalAccount.recipientAddress]?.uniqueId == signalAccount.uniqueId {
+                    // If the SignalAccount is going to be inserted or updated, it doesn't need
+                    // to be cleaned up.
                     continue
                 }
-                // Clean up instances that have been replaced by another instance
-                // or are no longer in the system contacts.
+                // Clean up instances that have been replaced by another instance or are no
+                // longer in the system contacts.
                 signalAccountsToRemove.append(signalAccount)
             }
 
@@ -838,22 +767,21 @@ extension OWSContactsManager {
                     }
                 }
 
-                if signalAccountsToUpsert.count > 0 {
-                    Logger.info("Saving \(signalAccountsToUpsert.count) SignalAccounts.")
-                    for signalAccount in signalAccountsToUpsert {
+                if signalAccountsToInsert.count > 0 {
+                    Logger.info("Saving \(signalAccountsToInsert.count) SignalAccounts.")
+                    for signalAccount in signalAccountsToInsert {
                         Logger.verbose("Saving SignalAccount: \(signalAccount.recipientAddress)")
-                        signalAccount.anyUpsert(transaction: transaction)
+                        signalAccount.anyInsert(transaction: transaction)
                     }
                 }
 
-                let signalAccountCount = SignalAccount.anyCount(transaction: transaction)
-                Logger.info("SignalAccount cache size: \(signalAccountCount).")
+                Logger.info("SignalAccount count: \(newSignalAccountsMap.count).")
 
                 // Add system contacts to the profile whitelist immediately so that they do
                 // not see the "message request" UI.
                 Self.profileManager.addUsers(
-                    toProfileWhitelist: Array(seenAddresses.union(signalAccountsToKeep.keys)),
-                    userProfileWriter: UserProfileWriter.systemContactsFetch,
+                    toProfileWhitelist: Array(newSignalAccountsMap.keys),
+                    userProfileWriter: .systemContactsFetch,
                     transaction: transaction
                 )
 
@@ -869,16 +797,16 @@ extension OWSContactsManager {
             // Once we've persisted new SignalAccount state, we should let
             // StorageService know.
             Self.updateStorageServiceForSystemContactsFetch(
-                allSignalAccountsBeforeFetch: persistedSignalAccountMap,
-                allSignalAccountsAfterFetch: signalAccountsToKeep
+                allSignalAccountsBeforeFetch: oldSignalAccountsMap,
+                allSignalAccountsAfterFetch: newSignalAccountsMap
             )
 
-            let didChangeAnySignalAccount = !signalAccountsToRemove.isEmpty || !signalAccountsToUpsert.isEmpty
+            let didChangeAnySignalAccount = !signalAccountsToRemove.isEmpty || !signalAccountsToInsert.isEmpty
             DispatchQueue.main.async {
                 // Post a notification if something changed or this is the first load since launch.
                 let shouldNotify = didChangeAnySignalAccount || !self.hasLoadedSystemContacts
                 self.hasLoadedSystemContacts = true
-                self.swiftValues.systemContactsCache?.unsortedSignalAccounts.set(Array(signalAccountsToKeep.values))
+                self.swiftValues.systemContactsCache?.unsortedSignalAccounts.set(Array(newSignalAccountsMap.values))
                 self.didUpdateSignalAccounts(shouldClearCache: false, shouldNotify: shouldNotify)
             }
         }
