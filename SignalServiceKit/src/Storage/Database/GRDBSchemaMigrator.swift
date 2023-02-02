@@ -268,6 +268,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_populateStoryContextAssociatedDataLastReadTimestamp
         case dataMigration_indexPrivateStoryThreadNames
         case dataMigration_scheduleStorageServiceUpdateForSystemContacts
+        case dataMigration_removeLinkedDeviceSystemContacts
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -2504,6 +2505,26 @@ public class GRDBSchemaMigrator: NSObject {
 
             storageServiceManager.recordPendingUpdates(updatedAddresses: accountsToRemove.map { $0.recipientAddress })
             return .success(())
+        }
+
+        if FeatureFlags.contactDiscoveryV2 {
+            migrator.registerMigration(.dataMigration_removeLinkedDeviceSystemContacts) { transaction in
+                guard !tsAccountManager.isPrimaryDevice else {
+                    return .success(())
+                }
+
+                let keyValueCollections = [
+                    "ContactsManagerCache.uniqueIdStore",
+                    "ContactsManagerCache.phoneNumberStore",
+                    "ContactsManagerCache.allContacts"
+                ]
+
+                for collection in keyValueCollections {
+                    SDSKeyValueStore(collection: collection).removeAll(transaction: transaction.asAnyWrite)
+                }
+
+                return .success(())
+            }
         }
 
         // MARK: - Data Migration Insertion Point

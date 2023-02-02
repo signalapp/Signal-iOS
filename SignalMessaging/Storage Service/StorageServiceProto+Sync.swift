@@ -351,7 +351,7 @@ extension StorageServiceProtoContactRecord: Dependencies {
         }
 
         switch (localAccount, newAccount) {
-        case (.some(let oldAccount), nil) where oldAccount.contact?.isFromLocalAddressBook == true:
+        case (.some(let oldAccount), nil) where !FeatureFlags.contactDiscoveryV2 && oldAccount.contact?.isFromLocalAddressBook == true:
             // There's nothing in storage service, but we have a contact from the
             // address book on the local device. Don't make any changes.
             Logger.debug("No system contact found in contact record, keeping existing local address book contact!")

@@ -283,14 +283,18 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
         }
     }
 
-    /// Clear all persisted ``SignalAccount``s other than the given set,
-    /// received during a complete sync.
+    /// Clear ``SignalAccount``s that weren't part of a complete sync.
     ///
     /// Although "system contact" details (represented by a ``SignalAccount``)
     /// are synced via StorageService rather than contact sync messages, any
     /// contacts not included in a complete contact sync are not present on the
-    /// primary device and therefore should be in neither StorageService nor on
-    /// this linked device.
+    /// primary device and should there be removed from this linked device.
+    ///
+    /// In theory, StorageService updates should handle removing these contacts.
+    /// However, there's no periodic sync check our state against
+    /// StorageService, so this job continues to fulfill that role. In the
+    /// future, if you're removing this method, you should first ensure that
+    /// periodic full syncs of contact details happen with StorageService.
     private func pruneContacts(exceptThoseReceivedFromCompleteSync addresses: [SignalServiceAddress]) {
         let setOfAddresses = Set(addresses)
         self.databaseStorage.write { transaction in
@@ -299,9 +303,11 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             // bit of speed to save memory.
             var uniqueIdsToRemove = [String]()
             SignalAccount.anyEnumerate(transaction: transaction, batchSize: 8) { signalAccount, _ in
-                guard let contact = signalAccount.contact, !contact.isFromLocalAddressBook else {
-                    // This only cleans up contacts from a contact sync.
-                    return
+                if !FeatureFlags.contactDiscoveryV2 {
+                    guard let contact = signalAccount.contact, !contact.isFromLocalAddressBook else {
+                        // This only cleans up contacts from a contact sync.
+                        return
+                    }
                 }
                 guard !setOfAddresses.contains(signalAccount.recipientAddress) else {
                     // This contact was received in this batch, so don't remove it.
