@@ -11,9 +11,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSOutgoingMessage;
 @class TSThread;
 
-// DEPRECATED - we no longer create new instances of this class (as of  mid-2017); However, existing instances may
-// exist, so we should keep this class around to honor their old behavior.
-__attribute__((deprecated)) @interface TSInvalidIdentityKeySendingErrorMessage : TSInvalidIdentityKeyErrorMessage
+// We no longer create new instances of this class (as of mid-2017).
+// However, existing instances may exist, so we should keep this class
+// around to honor their old behavior.
+/* DEPRECATED */ @interface TSInvalidIdentityKeySendingErrorMessage : TSInvalidIdentityKeyErrorMessage
 
 @property (nonatomic, readonly) NSString *messageId;
 

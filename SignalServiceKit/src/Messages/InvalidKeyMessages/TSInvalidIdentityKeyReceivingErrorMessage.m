@@ -15,7 +15,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-__attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage()
+/* DEPRECATED */ @interface TSInvalidIdentityKeyReceivingErrorMessage ()
 
 @property (nonatomic, readonly, copy) NSString *authorId;
 

@@ -7,9 +7,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// This is a deprecated class, we're keeping it around to avoid YapDB serialization errors
-// TODO - remove this class, clean up existing instances, ensure any missed ones don't explode (UnknownDBObject)
-__attribute__((deprecated)) @interface OWSUnknownContactBlockOfferMessage : TSErrorMessage
+// TODO: Remove this class, clean up existing instances, and ensure any
+// missed ones don't explode (UnknownDBObject).
+
+// This is a deprecated class. We're keeping it around to avoid YapDB
+// serialization errors.
+/* DEPRECATED */ @interface OWSUnknownContactBlockOfferMessage : TSErrorMessage
 
 // --- CODE GENERATION MARKER
 

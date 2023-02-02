@@ -9,9 +9,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SSKProtoEnvelope;
 
-// DEPRECATED - we no longer create new instances of this class (as of  mid-2017); However, existing instances may
-// exist, so we should keep this class around to honor their old behavior.
-__attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage : TSInvalidIdentityKeyErrorMessage
+// We no longer create new instances of this class (as of mid-2017).
+// However, existing instances may exist, so we should keep this class
+// around to honor their old behavior.
+/* DEPRECATED */ @interface TSInvalidIdentityKeyReceivingErrorMessage : TSInvalidIdentityKeyErrorMessage
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
