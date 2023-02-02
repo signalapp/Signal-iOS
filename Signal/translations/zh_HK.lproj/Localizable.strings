@@ -425,7 +425,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "已取消每月捐款";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. %1$@ donation badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment details and donate again.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "你的每月定期捐款已取消。%1$@ 捐款徽章不再在你的個人檔案中顯示。\n\n如要繼續支持 Signal 並重新啟動徽章，請更新你的付款詳情並再次捐款。";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "由於你太長時間沒有使用，因此你的每月定期捐款已被自動取消。你的 %1$@ 徽章不會再顯示在你的個人檔案中。\n\n你可如常使用 Signal，但如果想支持應用程式並重新啟動你的徽章，請立即捐款贊助。";
@@ -1589,7 +1589,7 @@
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "刪除所有訊息";
 
 /* Notification warning the user that they have been de-registered. */
-"DEREGISTRATION_NOTIFICATION" = "You have been logged out of Signal on this device.";
+"DEREGISTRATION_NOTIFICATION" = "你已在此裝置上登出 Signal。";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "重新注冊此電話號碼";
@@ -1820,16 +1820,16 @@
 "DONATION_FOR_A_FRIEND_ROW_DURATION" = "為期 %1$@";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Your donation has expired and is no longer available to be displayed on your profile.";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "你的捐款已過期，且不再在你的個人檔案中顯示。";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Your Donation Has Expired";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "你的捐款已過期";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Your donation from %1$@ has expired and can no longer be redeemed.";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "來自 %1$@ 的捐款已過期，且無法再兌換。";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Your Donation Has Expired";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "你的捐款已過期";
 
 /* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "已兌換";
@@ -1895,7 +1895,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "兌換";
 
 /* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "You can redeem your donation later";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "你可以稍後再兌換捐款";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ 已為你捐款";
@@ -2003,7 +2003,7 @@
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "我的支持";
 
 /* Title for the \"other ways to donate\" section on the donation view. */
-"DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Other Ways to Donate";
+"DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "其他捐款方法";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "訂閱常見問答";
@@ -2222,10 +2222,10 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "您與 %1$@ 的安全碼近期已更改。建議您驗證新安全碼後，再傳送此訊息。";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Your donation couldn’t be redeemed. Check your connection and try again.";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "無法兌換你的捐款。請檢查網路連線，然後再試一次。";
 
 /* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Couldn’t Redeem Donation";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "無法兌換捐款";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "無法驗證安全碼！";
@@ -3457,6 +3457,15 @@
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "連結預覽";
 
+/* Shown in an alert when trying to edit a contact. */
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+
+/* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+
+/* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "已登記設備";
 
@@ -4128,12 +4137,6 @@
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "為您的訊息加添人性化";
-
-/* Explanation on the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_EXPLANATION" = "由於長期沒有使用 Signal，故需重新登記才可使用。";
-
-/* Title of the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_TITLE" = "註冊 Signal";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "登記 iPad";
@@ -4924,7 +4927,7 @@
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "名稱";
 
-/* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
+/* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "使用者名稱";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
@@ -6271,6 +6274,12 @@
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "我誠邀你裝Signal！網址係：";
 
+/* An error message generically indicating that something went wrong. */
+"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+
+/* An error message generically indicating that something went wrong, and that the user should try again later. */
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "聲音與通知";
 
@@ -6919,12 +6928,6 @@
 /* Explanation of when you should use a signal proxy */
 "USE_PROXY_EXPLANATION" = "僅在無法透過行動數據或 Wi-Fi 連接 Signal 時才使用代理伺服器。";
 
-/* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Signal 上的使用者名稱為選用。若您選擇建立使用者名稱，其他 Signal 使用者將可使用此使用者名稱找到您並與您聯絡，而不需知道您的電話號碼。";
-
-/* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "使用者名稱僅可包括英文字母 (a-z)、數字 (0-9) 及底線 (_)";
-
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR" = "搜尋使用者名稱時發生錯誤。請稍後再試。";
 
@@ -6934,26 +6937,44 @@
 /* A message indicating that the given username was not registered with signal. */
 "USERNAME_NOT_FOUND_TITLE" = "找不到該使用者";
 
-/* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "輸入使用者名稱";
-
 /* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
-/* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "使用者名稱不能以數字開首。";
+/* The title of an action sheet button that will delete a user's username. */
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
 
-/* The title for the username view. */
-"USERNAME_TITLE" = "使用者名稱";
+/* A message asking the user if they are sure they want to remove their username. */
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
 
-/* An error indicating that the supplied username is too short. */
-"USERNAME_TOO_SHORT_ERROR" = "使用者名稱須至少為 4 個字元。";
+/* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
 
-/* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%1$@ 已存在。";
+/* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
 
-/* Error message shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "使用者名稱更新失敗。";
+/* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+
+/* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+
+/* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+
+/* An error message shown when the user wants to set their username to an unavailable value. */
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+
+/* The placeholder for a text field into which users can type their desired username. */
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+
+/* The title for the username selection view. */
+"USERNAME_SELECTION_TITLE" = "Username";
+
+/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+
+/* A header describing buttons that allow the user to copy or share their username. */
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "裝置名稱不得留空";

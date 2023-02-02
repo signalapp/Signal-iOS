@@ -425,7 +425,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "월간 기부를 취소함";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. %1$@ donation badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment details and donate again.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "월간 기부를 취소했습니다. %1$@ 배지가 더는 프로필에 표시되지 않습니다.\n\nSignal을 계속 지지하고 배지를 재활성화하려면 결제 정보를 업데이트하고 기부를 다시 시작해 주세요.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "오랫동안 활동이 없어 자동으로 월간 기부가 취소되었습니다. %1$@ 배지가 더는 프로필에 표시되지 않습니다.\n\nSignal을 계속 사용할 수는 있지만 앱을 지원하고 배지를 재활성화하려면 지금 기부를 시작하세요.";
@@ -1589,7 +1589,7 @@
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "모든 메시지 삭제";
 
 /* Notification warning the user that they have been de-registered. */
-"DEREGISTRATION_NOTIFICATION" = "You have been logged out of Signal on this device.";
+"DEREGISTRATION_NOTIFICATION" = "이 기기의 Signal에서 로그아웃했습니다.";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "이 전화번호 재등록";
@@ -1820,16 +1820,16 @@
 "DONATION_FOR_A_FRIEND_ROW_DURATION" = "지속 기간: %1$@";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Your donation has expired and is no longer available to be displayed on your profile.";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "기부가 만료되어 더 이상 프로필에 표시되지 않습니다.";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Your Donation Has Expired";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "기부가 만료되었습니다.";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Your donation from %1$@ has expired and can no longer be redeemed.";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "%1$@ 님의 기부가 만료되어 더 이상 사용할 수 없습니다.";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Your Donation Has Expired";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "기부가 만료되었습니다.";
 
 /* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "사용함";
@@ -1895,7 +1895,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "사용";
 
 /* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "You can redeem your donation later";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "나중에 기부를 사용할 수 있습니다.";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ 님이 귀하를 대신해 기부했습니다.";
@@ -2003,7 +2003,7 @@
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "내 지원";
 
 /* Title for the \"other ways to donate\" section on the donation view. */
-"DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Other Ways to Donate";
+"DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "다른 기부 방법";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "구독 관련 FAQ";
@@ -2222,10 +2222,10 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "%1$@ 님과의 안전 번호가 최근 변경되었습니다. 메시지를 보내기 전 안전 번호를 검증해보세요.";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Your donation couldn’t be redeemed. Check your connection and try again.";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "기부를 사용할 수 없습니다. 연결을 확인하고 다시 시도하세요.";
 
 /* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Couldn’t Redeem Donation";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "기부를 사용할 수 없습니다.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "안전 번호 검증 실패!";
@@ -3457,6 +3457,15 @@
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "링크 미리보기";
 
+/* Shown in an alert when trying to edit a contact. */
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+
+/* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+
+/* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "연결된 기기";
 
@@ -4128,12 +4137,6 @@
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "메시지에 인간다움을 담아보세요";
-
-/* Explanation on the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_EXPLANATION" = "장기간 비활성 상태였기 때문에 Signal을 사용하려면 다시 등록해야 합니다.";
-
-/* Title of the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_TITLE" = "신호 등록";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "iPad 등록하기";
@@ -4924,7 +4927,7 @@
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "이름";
 
-/* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
+/* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "사용자 이름";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
@@ -6271,6 +6274,12 @@
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "당신을 Signal로 초대합니다! 여기에 링크가 있습니다:";
 
+/* An error message generically indicating that something went wrong. */
+"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+
+/* An error message generically indicating that something went wrong, and that the user should try again later. */
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "소리 및 알림";
 
@@ -6919,12 +6928,6 @@
 /* Explanation of when you should use a signal proxy */
 "USE_PROXY_EXPLANATION" = "모바일 데이터 또는 Wi-Fi에서 Signal에 연결할 수 없는 경우에만 프록시를 사용하세요.";
 
-/* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Signal 사용자 이름은 선택 사항입니다. 사용자 이름을 만든다면 다른 Signal 사용자들이 사용자 이름으로 나를 찾을 수 있으며, 전화번호를 몰라도 연락할 수 있습니다.";
-
-/* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "사용자 이름은 오직 a-z, 0-9, _만 등록할 수 있습니다";
-
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR" = "사용자 이름 검색 중 오류가 발생했습니다. 나중에 다시 시도하세요.";
 
@@ -6934,26 +6937,44 @@
 /* A message indicating that the given username was not registered with signal. */
 "USERNAME_NOT_FOUND_TITLE" = "사용자 찾을 수 없음";
 
-/* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "사용자 이름 입력";
-
 /* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
-/* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "사용자 이름은 숫자로 시작할 수 없습니다.";
+/* The title of an action sheet button that will delete a user's username. */
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
 
-/* The title for the username view. */
-"USERNAME_TITLE" = "사용자 이름";
+/* A message asking the user if they are sure they want to remove their username. */
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
 
-/* An error indicating that the supplied username is too short. */
-"USERNAME_TOO_SHORT_ERROR" = "사용자 이름은 최소 4자리 이상이어야 합니다.";
+/* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
 
-/* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%1$@은(는) 이미 사용 중입니다.";
+/* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
 
-/* Error message shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "사용자 이름 업데이트에 실패했습니다.";
+/* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+
+/* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+
+/* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+
+/* An error message shown when the user wants to set their username to an unavailable value. */
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+
+/* The placeholder for a text field into which users can type their desired username. */
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+
+/* The title for the username selection view. */
+"USERNAME_SELECTION_TITLE" = "Username";
+
+/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+
+/* A header describing buttons that allow the user to copy or share their username. */
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "기기 이름은 비워둘 수 없습니다";

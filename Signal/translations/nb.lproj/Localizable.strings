@@ -425,7 +425,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Det månedlige pengebeløpet er stoppet";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. %1$@ donation badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment details and donate again.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Den månedlige pengegaven har blitt stoppet. %1$@-merket vises ikke lenger på profilen din.\n\nOppdater betalingsinformasjonen din for å fortsette å støtte Signal og aktivere merket ditt på nytt.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Det månedlige pengebeløpet ble stoppet automatisk fordi du har vært inaktiv for lenge. %1$@-merket ditt er ikke lenger synlig på profilen din.\n\nDu kan fortsatt bruke Signal, men hvis du vil støtte appen og beholde merket ditt, må du gi et pengebeløp nå.";
@@ -1589,7 +1589,7 @@
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Slett alle meldinger";
 
 /* Notification warning the user that they have been de-registered. */
-"DEREGISTRATION_NOTIFICATION" = "You have been logged out of Signal on this device.";
+"DEREGISTRATION_NOTIFICATION" = "Du har blitt logget av Signal på denne enheten.";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Registrer dette telefonnummeret på nytt";
@@ -1820,16 +1820,16 @@
 "DONATION_FOR_A_FRIEND_ROW_DURATION" = "Varer i %1$@";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Your donation has expired and is no longer available to be displayed on your profile.";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Pengegaven er utløpt og vises ikke lenger på profilen din.";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Your Donation Has Expired";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Pengegaven din er utløpt";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Your donation from %1$@ has expired and can no longer be redeemed.";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Pengegaven som %1$@ ga på dine vegne, er utløpt og kan derfor ikke løses inn.";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Your Donation Has Expired";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Pengegaven din er utløpt";
 
 /* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "Innløst";
@@ -1895,7 +1895,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "Løs inn";
 
 /* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "You can redeem your donation later";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "Du kan løse inn pengegaven senere";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ ga penger for deg";
@@ -2003,7 +2003,7 @@
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "Mine bidrag";
 
 /* Title for the \"other ways to donate\" section on the donation view. */
-"DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Other Ways to Donate";
+"DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Andre måter å bidra på";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "Vanlige spørsmål om abonnement";
@@ -2222,10 +2222,10 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Ditt sikkerhetsnummer med %1$@ har endret seg. Du kan ha lyst til å verifisere før du sender meldingen igjen.";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Your donation couldn’t be redeemed. Check your connection and try again.";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Pengegaven kunne ikke løses inn. Sjekk internettilkoblingen og prøv igjen.";
 
 /* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Couldn’t Redeem Donation";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Kunne ikke løse inn pengegaven";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Verifisering av sikkerhetsnummer mislyktes!";
@@ -3457,6 +3457,15 @@
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Lenkeforhåndsvisning";
 
+/* Shown in an alert when trying to edit a contact. */
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+
+/* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+
+/* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Koblede enheter";
 
@@ -4128,12 +4137,6 @@
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Legg til til menneskelighet i dine meldinger";
-
-/* Explanation on the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_EXPLANATION" = "Fordi du har vært inaktiv i lang tid må du registrere deg på nytt for å bruke Signal.";
-
-/* Title of the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_TITLE" = "Registrer deg for Signal";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Registrer iPad";
@@ -4924,7 +4927,7 @@
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "Navn";
 
-/* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
+/* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "Brukernavn";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
@@ -6271,6 +6274,12 @@
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "Jeg inviterer deg til å installere Signal! Her er lenken:";
 
+/* An error message generically indicating that something went wrong. */
+"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+
+/* An error message generically indicating that something went wrong, and that the user should try again later. */
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "Lyder og varslinger";
 
@@ -6919,12 +6928,6 @@
 /* Explanation of when you should use a signal proxy */
 "USE_PROXY_EXPLANATION" = "Bruk en proxy kun hvis du ikke kan koble til Signal med mobildata eller Wi-Fi.";
 
-/* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Brukernavn på Signal er valgfri. Hvis du velger å opprette et brukernavn, vil andre Signal-brukere kunne finne deg ved dette brukernavnet og kontakte deg uten å vite telefonnummeret ditt.";
-
-/* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "Brukernavn kan bare inneholde a-z, 0-9, og _";
-
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR" = "Det oppstod en feil under oppslag av brukernavnet. Vennligst prøv igjen senere.";
 
@@ -6934,26 +6937,44 @@
 /* A message indicating that the given username was not registered with signal. */
 "USERNAME_NOT_FOUND_TITLE" = "Bruker ikke funnet";
 
-/* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "Skriv inn et brukernavn";
-
 /* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
-/* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Brukernavn kan ikke begynne med et nummer.";
+/* The title of an action sheet button that will delete a user's username. */
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
 
-/* The title for the username view. */
-"USERNAME_TITLE" = "Brukernavn";
+/* A message asking the user if they are sure they want to remove their username. */
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
 
-/* An error indicating that the supplied username is too short. */
-"USERNAME_TOO_SHORT_ERROR" = "Brukernavn må ha minst 4 tegn.";
+/* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
 
-/* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%1$@ er tatt.";
+/* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
 
-/* Error message shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Oppdatering av brukernavn mislyktes.";
+/* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+
+/* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+
+/* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+
+/* An error message shown when the user wants to set their username to an unavailable value. */
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+
+/* The placeholder for a text field into which users can type their desired username. */
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+
+/* The title for the username selection view. */
+"USERNAME_SELECTION_TITLE" = "Username";
+
+/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+
+/* A header describing buttons that allow the user to copy or share their username. */
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Enhetsnavnet kan ikke være tomt";

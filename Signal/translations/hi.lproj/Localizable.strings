@@ -425,7 +425,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "मासिक दान रद्द किया गया";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was canceled. %1$@ donation badge is no longer visible on your profile.\n\nTo continue supporting Signal and to reactivate your badge, update your payment details and donate again.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "आपका आवर्ती मासिक दान रद्द कर दिया गया था। %1$@ दान बैज अब आपकी प्रोफ़ाइल पर नहीं दिख रहा है।\n\nSignal को सपोर्ट करना जारी रखने के लिए और आपका बैज फिर से सक्रीय करने के लिए अपना भुगतान विवरण अपडेट करें और फिर से दान दें।";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "आपका आवर्ती मासिक दान अपने आप रद्द कर दिया गया क्योंकि आप बहुत समय से निष्क्रीय थे। आपका %1$@ बैज अब आपकी प्रोफ़ाइल पर नहीं दिख रहा है।\n\nआप Signal का इस्तेमाल करना जारी रख सकते हैं लेकिन ऐप को सपोर्ट करने और अपने बैज को फिर से सक्रीय करने के लिए, अभी नवीकृत दान दें।";
@@ -1589,7 +1589,7 @@
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "सभी संदेश डिलीट करें";
 
 /* Notification warning the user that they have been de-registered. */
-"DEREGISTRATION_NOTIFICATION" = "You have been logged out of Signal on this device.";
+"DEREGISTRATION_NOTIFICATION" = "आपको इस डिवाइस पर Signal से लॉग आउट कर दिया गया है।";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "इस फ़ोन नंबर को पुनः पंजीकृत करें";
@@ -1820,16 +1820,16 @@
 "DONATION_FOR_A_FRIEND_ROW_DURATION" = "%1$@ तक रहेगा";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "Your donation has expired and is no longer available to be displayed on your profile.";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "आपका दान समाप्त हो गया है और आपकी प्रोफ़ाइल पर दर्शाए जाने के लिए अब उपलब्ध नहीं है।";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "Your Donation Has Expired";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "आपका दान समाप्त हो गया है";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "Your donation from %1$@ has expired and can no longer be redeemed.";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "आपको %1$@ से मिला दान समाप्त हो गया है और अब रिडीम नहीं किया जा सकता।";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "Your Donation Has Expired";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "आपका दान समाप्त हो गया है";
 
 /* Label for a button to see details about a badge you've already redeemed, received as a result of a donation from a friend. This text is shown next to a check mark. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_BADGE_REDEEMED" = "रिडीम किया गया";
@@ -1895,7 +1895,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "रिडीम करें";
 
 /* When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "You can redeem your donation later";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER" = "आप अपना दान बाद में भुना सकते हैं";
 
 /* A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ ने आपके लिए एक दान दिया";
@@ -2003,7 +2003,7 @@
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "मेरा समर्थन";
 
 /* Title for the \"other ways to donate\" section on the donation view. */
-"DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "Other Ways to Donate";
+"DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE" = "दान करने के अन्य तरीके";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
 "DONATION_VIEW_SUBSCRIPTION_FAQ" = "सब्सक्रिप्शन के अक्सर पूछे जाने वाले प्रश्न";
@@ -2222,10 +2222,10 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "आपका सुरक्षा नंबर %1$@ के साथ बदल गया है। आप मेसेज भेजने से पेहले एक बार सत्यापित करें।";
 
 /* Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "Your donation couldn’t be redeemed. Check your connection and try again.";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY" = "आपका दान रिडीम नहीं किया जा सका। अपना कनेक्शन जाँचें और फिर से प्रयास करें।";
 
 /* Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf. */
-"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "Couldn’t Redeem Donation";
+"FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE" = "दान रिडीम नहीं किया जा सका";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "सुरक्षा नंबर सत्यापित करना असफल रहा।";
@@ -3457,6 +3457,15 @@
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "लिंक पूर्वावलोकन";
 
+/* Shown in an alert when trying to edit a contact. */
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+
+/* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+
+/* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "लिंक की गईं डिवाइसें";
 
@@ -4128,12 +4137,6 @@
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "हम देखना चाहते हैं कि आप रोबोट तो नहीं हैं";
-
-/* Explanation on the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_EXPLANATION" = "चूँकि आप लंबे समय से सक्रिय नहीं थे, इसलिए आपको Signal का उपयोग करने के लिए दोबारा रजिस्टर करना होगा।";
-
-/* Title of the 'onboarding after dropped YDB' view. */
-"ONBOARDING_DROPPED_YDB_TITLE" = "Signal के लिए रजिस्टर करें";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "iPad पंजीकृत करें";
@@ -4924,7 +4927,7 @@
 /* Placeholder when the user doesn't have a 'name' defined for profile settings screen. */
 "PROFILE_SETTINGS_NAME_PLACEHOLDER" = "नाम";
 
-/* Placeholder when the user doesn't have a 'username' defined for profile settings screen. */
+/* A placeholder value shown in the profile settings screen on a tappable item leading to a username selection flow, for when the user doesn't have a username. */
 "PROFILE_SETTINGS_USERNAME_PLACEHOLDER" = "उपयोगकर्ता नाम";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
@@ -6271,6 +6274,12 @@
 /* body sent to contacts when inviting to Install Signal */
 "SMS_INVITE_BODY" = "मैं आपको Signal स्थापिेत करने का निमंत्रण देता हुँ, ये रही लिंक:";
 
+/* An error message generically indicating that something went wrong. */
+"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+
+/* An error message generically indicating that something went wrong, and that the user should try again later. */
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "ध्वनियाँ और सूचनाएँ";
 
@@ -6919,12 +6928,6 @@
 /* Explanation of when you should use a signal proxy */
 "USE_PROXY_EXPLANATION" = "प्रॉक्सी का उपयोग केवल तभी करें जब आप मोबाइल डेटा या वाई-फाई पर Signal से कनेक्ट करने में सक्षम न हों।";
 
-/* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "उपयोगकर्ता नाम Signal में वैकल्पिक हैं। अगर आप अपना उपयोगकर्ता नाम बनाते हैं तो अन्य Signal उपयोगकर्ता आपको आपके उपयोगकर्ता नाम से खोज ा तथा बिना आपके फोन नंबर के आपसे संपर्क कर पाएंगे।";
-
-/* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "उपयोगकर्ता नाम में केवल a-z, 0-9, और _ आ सकते हैं";
-
 /* A message indicating that username lookup failed. */
 "USERNAME_LOOKUP_ERROR" = "उपभोगकर्ता नाम खोजते समय त्रुटि हुई है। कृपया कुछ देर बाद कोशिश करें।";
 
@@ -6934,26 +6937,44 @@
 /* A message indicating that the given username was not registered with signal. */
 "USERNAME_NOT_FOUND_TITLE" = "उपयोगकर्ता नहीं मिला";
 
-/* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "उपयोगकर्ता नाम दर्ज़ करें";
-
 /* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
-/* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "उपयोगकर्ता का नाम नंबर से शुरु नहीं हो सकता।";
+/* The title of an action sheet button that will delete a user's username. */
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
 
-/* The title for the username view. */
-"USERNAME_TITLE" = "उपयोगकर्ता नाम";
+/* A message asking the user if they are sure they want to remove their username. */
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
 
-/* An error indicating that the supplied username is too short. */
-"USERNAME_TOO_SHORT_ERROR" = "उपयोगकर्ता नाम में कम से कम 4 अक्षर होने चाहिये।";
+/* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
 
-/* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%1$@ पहले से इस्तमाल में है।";
+/* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
 
-/* Error message shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "उपयोगकर्ता नाम अपडेट असफल रहा।";
+/* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+
+/* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+
+/* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+
+/* An error message shown when the user wants to set their username to an unavailable value. */
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+
+/* The placeholder for a text field into which users can type their desired username. */
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+
+/* The title for the username selection view. */
+"USERNAME_SELECTION_TITLE" = "Username";
+
+/* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+
+/* A header describing buttons that allow the user to copy or share their username. */
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "डिवाइस का नाम ख़ाली नहीं हो सकता";
