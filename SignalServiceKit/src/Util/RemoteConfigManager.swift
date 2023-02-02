@@ -294,9 +294,8 @@ public class RemoteConfig: BaseFlags {
         return uintValue
     }
 
-    public static var contactDiscoveryV2: Bool {
-        // Use a hardcoded value. When this is ready to ship, switch to the remote config.
-        FeatureFlags.contactDiscoveryV2
+    public static var contactDiscoveryV2KillSwitch: Bool {
+        isEnabled(.contactDiscoveryV2KillSwitch)
     }
 
     public static var enableAutoAPNSRotation: Bool {
@@ -514,7 +513,7 @@ private struct Flags {
         case paypalOneTimeDonationKillSwitch
         case paypalGiftDonationKillSwitch
         case paypalMonthlyDonationKillSwitch
-        case contactDiscoveryV2
+        case contactDiscoveryV2KillSwitch
         case enableAutoAPNSRotation
         case ringrtcNwPathMonitorTrialKillSwitch
     }
