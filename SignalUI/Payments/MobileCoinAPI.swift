@@ -683,6 +683,10 @@ extension MobileCoinAPI {
             case .missingMemo:
                 Logger.warn("Error: \(error)")
                 return PaymentsError.missingMemo
+            case .outputAlreadyExists:
+                // Transaction with same public key already exists (idempotence)
+                Logger.warn("Error: \(error)")
+                return PaymentsError.invalidTransaction
             }
         case let error as MobileCoin.DefragTransactionPreparationError:
             switch error {
