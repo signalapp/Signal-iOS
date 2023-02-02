@@ -254,13 +254,11 @@ public class RemoteConfig: BaseFlags {
     public static var canSendGiftBadges: Bool {
         if DebugFlags.internalSettings {
             return true
-        }
-
-        if FeatureFlags.isPrerelease {
+        } else if FeatureFlags.isPrerelease {
             return isEnabled(.canSendGiftBadgesInPrerelease, defaultValue: false)
+        } else {
+            return isEnabled(.canSendGiftBadgesInProduction, defaultValue: false)
         }
-
-        return false
     }
 
     public static var inboundGroupRings: Bool {
@@ -497,6 +495,7 @@ private struct Flags {
         case donorBadgeDisplayKillSwitch
         case changePhoneNumberUI
         case canSendGiftBadgesInPrerelease
+        case canSendGiftBadgesInProduction
         case canReceiveGiftBadges
         case groupRings2
         case inboundGroupRingsKillSwitch
