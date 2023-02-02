@@ -973,35 +973,7 @@ public class FullTextSearcher: NSObject {
         return ConversationScreenSearchResultSet(searchText: searchText, messages: sortedMessages)
     }
 
-    @objc(filterThreads:withSearchText:transaction:)
-    public func filterThreads(_ threads: [TSThread], searchText: String, transaction: SDSAnyReadTransaction) -> [TSThread] {
-        if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return threads
-        }
-
-        return threads.filter { thread in
-            switch thread {
-            case let groupThread as TSGroupThread:
-                return self.groupThreadSearcher.matches(item: groupThread, query: searchText, transaction: transaction)
-            case let contactThread as TSContactThread:
-                return self.contactThreadSearcher.matches(item: contactThread, query: searchText, transaction: transaction)
-            default:
-                owsFailDebug("Unexpected thread type: \(thread.uniqueId)")
-                return false
-            }
-        }
-    }
-
-    @objc(filterGroupThreads:withSearchText:transaction:)
-    public func filterGroupThreads(_ groupThreads: [TSGroupThread], searchText: String, transaction: SDSAnyReadTransaction) -> [TSGroupThread] {
-        if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return groupThreads
-        }
-
-        return groupThreads.filter { groupThread in
-            return self.groupThreadSearcher.matches(item: groupThread, query: searchText, transaction: transaction)
-        }
-    }
+    // MARK: Filtering Signal accounts
 
     @objc(filterSignalAccounts:withSearchText:transaction:)
     public func filterSignalAccounts(_ signalAccounts: [SignalAccount], searchText: String, transaction: SDSAnyReadTransaction) -> [SignalAccount] {
@@ -1012,22 +984,6 @@ public class FullTextSearcher: NSObject {
         return signalAccounts.filter { signalAccount in
             self.signalAccountSearcher.matches(item: signalAccount, query: searchText, transaction: transaction)
         }
-    }
-
-    // MARK: Searchers
-
-    private lazy var groupThreadSearcher: Searcher<TSGroupThread> = Searcher { (groupThread: TSGroupThread, transaction: SDSAnyReadTransaction) in
-        let groupName = groupThread.groupModel.groupName
-        let memberStrings = groupThread.groupModel.groupMembers.map { address in
-            self.indexingString(address: address, transaction: transaction)
-        }.joined(separator: " ")
-
-        return "\(memberStrings) \(groupName ?? "")"
-    }
-
-    private lazy var contactThreadSearcher: Searcher<TSContactThread> = Searcher { (contactThread: TSContactThread, transaction: SDSAnyReadTransaction) in
-        let recipientAddress = contactThread.contactAddress
-        return self.conversationIndexingString(address: recipientAddress, transaction: transaction)
     }
 
     private lazy var signalAccountSearcher: Searcher<SignalAccount> = Searcher { (signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) in
