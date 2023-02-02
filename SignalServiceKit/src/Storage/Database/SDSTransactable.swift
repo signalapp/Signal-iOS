@@ -44,11 +44,13 @@ public extension SDSTransactable {
                    line: Int = #line,
                    block: @escaping (SDSAnyReadTransaction) -> Void,
                    completionQueue: DispatchQueue = .main,
-                   completion: @escaping () -> Void = {}) {
+                   completion: (() -> Void)? = nil) {
         DispatchQueue.global().async {
             self.read(file: file, function: function, line: line, block: block)
 
-            completionQueue.async(execute: completion)
+            if let completion = completion {
+                completionQueue.async(execute: completion)
+            }
         }
     }
 }
@@ -65,14 +67,14 @@ public extension SDSTransactable {
                    function: function,
                    line: line,
                    block: block,
-                   completion: { })
+                   completion: nil)
     }
 
     func asyncWrite(file: String = #file,
                     function: String = #function,
                     line: Int = #line,
                     block: @escaping (SDSAnyWriteTransaction) -> Void,
-                    completion: @escaping () -> Void) {
+                    completion: (() -> Void)?) {
         asyncWrite(file: file,
                    function: function,
                    line: line,
@@ -86,14 +88,16 @@ public extension SDSTransactable {
                     line: Int = #line,
                     block: @escaping (SDSAnyWriteTransaction) -> Void,
                     completionQueue: DispatchQueue,
-                    completion: @escaping () -> Void) {
+                    completion: (() -> Void)?) {
         self.asyncWriteQueue.async {
             self.write(file: file,
                        function: function,
                        line: line,
                        block: block)
 
-            completionQueue.async(execute: completion)
+            if let completion = completion {
+                completionQueue.async(execute: completion)
+            }
         }
     }
 }
@@ -277,6 +281,6 @@ public extension SDSTransactable {
                    function: function,
                    line: line,
                    block: block,
-                   completion: { })
+                   completion: nil)
     }
 }

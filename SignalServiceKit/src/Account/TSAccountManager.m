@@ -336,10 +336,22 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
 - (OWSRegistrationState)registrationState
 {
-    if (!self.isRegistered) {
+    TSAccountState *state = [self getOrLoadAccountStateWithSneakyTransaction];
+    return [self registrationStateWithState:state];
+}
+
+- (OWSRegistrationState)registrationStateWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    TSAccountState *state = [self loadAccountStateWithTransaction:transaction];
+    return [self registrationStateWithState:state];
+}
+
+- (OWSRegistrationState)registrationStateWithState:(TSAccountState *)state
+{
+    if (!state.isRegistered) {
         return OWSRegistrationState_Unregistered;
-    } else if (self.isDeregistered) {
-        if (self.isReregistering) {
+    } else if ([self isDeregisteredWithState:state]) {
+        if (state.isReregistering) {
             return OWSRegistrationState_Reregistering;
         } else {
             return OWSRegistrationState_Deregistered;
@@ -413,6 +425,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 - (BOOL)isRegisteredAndReady
 {
     return self.registrationState == OWSRegistrationState_Registered;
+}
+
+- (BOOL)isRegisteredAndReadyWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self registrationStateWithTransaction:transaction] == OWSRegistrationState_Registered;
 }
 
 - (void)didRegister
@@ -752,6 +769,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 - (BOOL)isDeregistered
 {
     TSAccountState *state = [self getOrLoadAccountStateWithSneakyTransaction];
+    return [self isDeregisteredWithState:state];
+}
+
+- (BOOL)isDeregisteredWithState:(TSAccountState *)state
+{
     // An in progress transfer is treated as being deregistered.
     return state.isTransferInProgress || state.wasTransferred || state.isDeregistered;
 }
@@ -843,7 +865,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
 
             [self loadAccountStateWithTransaction:transaction];
 
-            [OWSKeyBackupService clearKeysWithTransaction:transaction];
+            [self clearKBSKeysWithTransaction:transaction];
             [OWS2FAManager.shared setPinCode:nil transaction:transaction];
         }
     });

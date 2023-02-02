@@ -32,9 +32,6 @@ public class RemoteConfig: BaseFlags {
 
     @objc
     public static var kbs: Bool {
-        // This feature latches "on" – once they have a master key in KBS,
-        // even if we turn it off on the server they will keep using KBS.
-        guard !KeyBackupService.hasMasterKey else { return true }
         return isEnabled(.kbs)
     }
 

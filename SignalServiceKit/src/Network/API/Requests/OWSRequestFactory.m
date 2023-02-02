@@ -409,7 +409,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
         @"unrestrictedUnidentifiedAccess" : @(allowUnrestrictedUD),
     } mutableCopy];
 
-    NSString *_Nullable registrationLockToken = [OWSKeyBackupService deriveRegistrationLockToken];
+    NSString *_Nullable registrationLockToken = [KeyBackupServiceObjcBridge deriveRegistrationLockToken];
     if (registrationLockToken.length > 0 && OWS2FAManager.shared.isRegistrationLockV2Enabled) {
         accountAttributes[@"registrationLock"] = registrationLockToken;
     } else if (pin.length > 0 && self.ows2FAManager.mode != OWS2FAMode_V2) {
@@ -471,7 +471,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     // to have a capability in order to be linked, we might need to always
     // set that capability here if isSecondaryDevice is true.
 
-    if (OWSKeyBackupService.hasBackedUpMasterKey) {
+    if (KeyBackupServiceObjcBridge.hasBackedUpMasterKey) {
         capabilities[@"storage"] = @(YES);
     }
 

@@ -45,25 +45,30 @@ public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController 
         }
     }
 
-    private var pinType: KeyBackupService.PinType = .numeric {
+    private var pinType: KBS.PinType = .numeric {
         didSet {
             updatePinType()
         }
     }
 
     private var hasPendingRestoration: Bool {
-        databaseStorage.read { KeyBackupService.hasPendingRestoration(transaction: $0) }
+        context.db.read { context.keyBackupService.hasPendingRestoration(transaction: $0) }
     }
 
+    private let context: ViewControllerContext
     private let changePhoneNumberController: ChangePhoneNumberController
     private let oldPhoneNumber: PhoneNumber
     private let newPhoneNumber: PhoneNumber
     private let kbsAuth: RemoteAttestation.Auth
 
-    init(changePhoneNumberController: ChangePhoneNumberController,
-         oldPhoneNumber: PhoneNumber,
-         newPhoneNumber: PhoneNumber,
-         kbsAuth: RemoteAttestation.Auth) {
+    init(
+        changePhoneNumberController: ChangePhoneNumberController,
+        oldPhoneNumber: PhoneNumber,
+        newPhoneNumber: PhoneNumber,
+        kbsAuth: RemoteAttestation.Auth
+    ) {
+        // TODO[ViewContextPiping]
+        self.context = ViewControllerContext.shared
         self.changePhoneNumberController = changePhoneNumberController
         self.oldPhoneNumber = oldPhoneNumber
         self.newPhoneNumber = newPhoneNumber
@@ -332,7 +337,7 @@ public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController 
             }
             return promise
         }.recover { error -> Promise<VerificationOutcome> in
-            guard let error = error as? KeyBackupService.KBSError else {
+            guard let error = error as? KBS.KBSError else {
                 owsFailDebug("unexpected response from KBS")
                 return Promise.value(.invalid2FAPin)
             }
@@ -360,7 +365,7 @@ public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController 
         }
 
         return firstly {
-            KeyBackupService.acquireRegistrationLockForNewNumber(with: pin, and: kbsAuth)
+            self.context.keyBackupService.acquireRegistrationLockForNewNumber(with: pin, and: kbsAuth)
         }.map(on: .global()) { registrationLockToken -> String in
             self.changePhoneNumberController.registrationLockToken = registrationLockToken
             return registrationLockToken

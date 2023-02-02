@@ -43,6 +43,7 @@ public class OnboardingController: NSObject {
 
     public static let defaultOnboardingMode: OnboardingMode = UIDevice.current.isIPad ? .provisioning : .registering
     public var onboardingMode: OnboardingMode
+    private let context: ViewControllerContext
 
     public class func ascertainOnboardingMode() -> OnboardingMode {
         if tsAccountManager.isRegisteredPrimaryDevice {
@@ -55,12 +56,15 @@ public class OnboardingController: NSObject {
     }
 
     convenience override init() {
+        // TODO[ViewContextPiping]
+        let context = ViewControllerContext.shared
         let onboardingMode = OnboardingController.ascertainOnboardingMode()
-        self.init(onboardingMode: onboardingMode)
+        self.init(context: context, onboardingMode: onboardingMode)
     }
 
-    init(onboardingMode: OnboardingMode) {
+    init(context: ViewControllerContext, onboardingMode: OnboardingMode) {
         self.onboardingMode = onboardingMode
+        self.context = context
         super.init()
         Logger.info("onboardingMode: \(onboardingMode), requiredMilestones: \(requiredMilestones), completedMilestones: \(completedMilestones), nextMilestone: \(nextMilestone as Optional)")
     }
@@ -83,8 +87,8 @@ public class OnboardingController: NSObject {
         case .registering:
             var milestones: [OnboardingMilestone] = [.verifiedPhoneNumber, .phoneNumberDiscoverability, .setupProfile]
 
-            let hasPendingPinRestoration = databaseStorage.read {
-                KeyBackupService.hasPendingRestoration(transaction: $0)
+            let hasPendingPinRestoration = context.db.read {
+                context.keyBackupService.hasPendingRestoration(transaction: $0)
             }
 
             if hasPendingPinRestoration {
@@ -92,8 +96,8 @@ public class OnboardingController: NSObject {
             }
 
             if FeatureFlags.pinsForNewUsers || hasPendingPinRestoration {
-                let hasBackupKeyRequestFailed = databaseStorage.read {
-                    KeyBackupService.hasBackupKeyRequestFailed(transaction: $0)
+                let hasBackupKeyRequestFailed = context.db.read {
+                    context.keyBackupService.hasBackupKeyRequestFailed(transaction: $0)
                 }
 
                 if hasBackupKeyRequestFailed {
@@ -144,7 +148,7 @@ public class OnboardingController: NSObject {
             milestones.append(.setupProfile)
         }
 
-        if KeyBackupService.hasMasterKey {
+        if context.keyBackupService.hasMasterKey {
             milestones.append(.restorePin)
             milestones.append(.setupPin)
         }
@@ -587,7 +591,7 @@ public class OnboardingController: NSObject {
     }
 
     internal var hasPendingRestoration: Bool {
-        databaseStorage.read { KeyBackupService.hasPendingRestoration(transaction: $0) }
+        context.db.read { context.keyBackupService.hasPendingRestoration(transaction: $0) }
     }
 
     public func submitVerification(fromViewController: UIViewController,
@@ -606,9 +610,9 @@ public class OnboardingController: NSObject {
 
             // Clear all cached values before doing restores during onboarding,
             // they could be stale from previous registrations.
-            databaseStorage.write { KeyBackupService.clearKeys(transaction: $0) }
+            context.db.write { context.keyBackupService.clearKeys(transaction: $0) }
 
-            KeyBackupService.restoreKeysAndBackup(with: twoFAPin, and: self.kbsAuth).done {
+            context.keyBackupService.restoreKeysAndBackup(with: twoFAPin, and: self.kbsAuth).done {
                 // If we restored successfully clear out KBS auth, the server will give it
                 // to us again if we still need to do KBS operations.
                 self.kbsAuth = nil
@@ -631,7 +635,7 @@ public class OnboardingController: NSObject {
                     self.submitVerification(fromViewController: fromViewController, completion: completion)
                 }
             }.catch { error in
-                guard let error = error as? KeyBackupService.KBSError else {
+                guard let error = error as? KBS.KBSError else {
                     owsFailDebug("unexpected response from KBS")
                     return completion(.invalid2FAPin)
                 }
@@ -737,7 +741,7 @@ public class OnboardingController: NSObject {
             // Since we were told we need 2fa, clear out any stored KBS keys so we can
             // do a fresh verification.
             SDSDatabaseStorage.shared.write { transaction in
-                KeyBackupService.clearKeys(transaction: transaction)
+                context.keyBackupService.clearKeys(transaction: transaction.asV2Write)
                 self.ows2FAManager.markRegistrationLockV2Disabled(transaction: transaction)
             }
 
@@ -810,8 +814,8 @@ extension OnboardingController: RegistrationPinAttemptsExhaustedViewDelegate {
         }
 
         if hasPendingRestoration {
-            SDSDatabaseStorage.shared.write { transaction in
-                KeyBackupService.clearPendingRestoration(transaction: transaction)
+            context.db.write { transaction in
+                context.keyBackupService.clearPendingRestoration(transaction: transaction)
             }
             showNextMilestone(navigationController: navigationController)
         } else {

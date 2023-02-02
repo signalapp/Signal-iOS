@@ -8,7 +8,26 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class KeyBackupServiceTests: SSKBaseTestSwift {
+class KeyBackupServiceTests: XCTestCase {
+
+    private var db: MockDB!
+    private var keyBackupService: KeyBackupService!
+
+    override func setUp() {
+        self.db = MockDB()
+        self.keyBackupService = KeyBackupService(
+            tsConstants: TSConstants.shared, // Doesn't matter if this is the real one
+            accountManager: KBS.TestMocks.TSAccountManager(),
+            signalService: OWSSignalServiceMock(),
+            appContext: TestAppContext(),
+            storageServiceManager: KBS.TestMocks.StorageServiceManager(),
+            syncManager: OWSMockSyncManager(),
+            databaseStorage: db,
+            keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
+            twoFAManager: KBS.TestMocks.OWS2FAManager()
+        )
+    }
+
     lazy var decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -37,21 +56,21 @@ class KeyBackupServiceTests: SSKBaseTestSwift {
         let vectors = try decoder.decode([Vector].self, from: jsonData)
 
         for vector in vectors {
-            let (encryptionKey, accessKey) = try KeyBackupService.deriveEncryptionKeyAndAccessKey(pin: vector.pin, backupId: vector.backupId)
+            let (encryptionKey, accessKey) = try keyBackupService.deriveEncryptionKeyAndAccessKey(pin: vector.pin, backupId: vector.backupId)
 
             XCTAssertEqual(vector.argon2Hash, encryptionKey + accessKey)
             XCTAssertEqual(vector.kbsAccessKey, accessKey)
 
-            let ivAndCipher = try KeyBackupService.encryptMasterKey(vector.masterKey, encryptionKey: encryptionKey)
+            let ivAndCipher = try keyBackupService.encryptMasterKey(vector.masterKey, encryptionKey: encryptionKey)
 
             XCTAssertEqual(vector.ivAndCipher, ivAndCipher)
 
-            let decryptedMasterKey = try KeyBackupService.decryptMasterKey(ivAndCipher, encryptionKey: encryptionKey)
+            let decryptedMasterKey = try keyBackupService.decryptMasterKey(ivAndCipher, encryptionKey: encryptionKey)
 
             XCTAssertEqual(vector.masterKey, decryptedMasterKey)
 
-            databaseStorage.write { transaction in
-                KeyBackupService.store(
+            db.write { transaction in
+                keyBackupService.store(
                     masterKey: vector.masterKey,
                     isMasterKeyBackedUp: true,
                     pinType: .init(forPin: vector.pin),
@@ -61,7 +80,7 @@ class KeyBackupServiceTests: SSKBaseTestSwift {
                 )
             }
 
-            let registrationLockToken = KeyBackupService.deriveRegistrationLockToken()
+            let registrationLockToken = keyBackupService.deriveRegistrationLockToken()
 
             XCTAssertEqual(vector.registrationLock, registrationLockToken)
         }
@@ -91,12 +110,12 @@ class KeyBackupServiceTests: SSKBaseTestSwift {
         )!
         let expectedEncodedVerificationString = "$argon2i$v=19$m=512,t=64,p=1$ICEiIyQlJicoKSorLC0uLw$NeZzhiNv4cRmRMct9scf7d838bzmHJvrZtU/0BH0v/U"
 
-        let encodedVerificationString = try KeyBackupService.deriveEncodedVerificationString(pin: pin, salt: salt)
+        let encodedVerificationString = try keyBackupService.deriveEncodedVerificationString(pin: pin, salt: salt)
 
         XCTAssertEqual(expectedEncodedVerificationString, encodedVerificationString)
 
-        databaseStorage.write { transaction in
-            KeyBackupService.store(
+        db.write { transaction in
+            keyBackupService.store(
                 masterKey: Data(repeating: 0x00, count: 32),
                 isMasterKeyBackedUp: true,
                 pinType: .init(forPin: pin),
@@ -134,7 +153,7 @@ class KeyBackupServiceTests: SSKBaseTestSwift {
             let rawData: Data
             let encryptedData: Data
 
-            var derivedKey: KeyBackupService.DerivedKey {
+            var derivedKey: KBS.DerivedKey {
                 switch type {
                 case .storageServiceRecord:
                     return .storageServiceRecord(identifier: StorageService.StorageIdentifier(data: associatedValueData, type: .contact))
@@ -143,11 +162,11 @@ class KeyBackupServiceTests: SSKBaseTestSwift {
                 }
             }
 
-            func storeKey(transaction: SDSAnyWriteTransaction) {
-                KeyBackupService.clearKeys(transaction: transaction)
+            func storeKey(keyBackupService: KeyBackupService, transaction: DBWriteTransaction) {
+                keyBackupService.clearKeys(transaction: transaction)
                 switch mode {
                 case .local:
-                    KeyBackupService.store(
+                    keyBackupService.store(
                         masterKey: masterKeyData!,
                         isMasterKeyBackedUp: true,
                         pinType: .numeric,
@@ -156,7 +175,7 @@ class KeyBackupServiceTests: SSKBaseTestSwift {
                         transaction: transaction
                     )
                 case .synced:
-                    KeyBackupService.storeSyncedKey(type: .storageService, data: storageServiceKeyData, transaction: transaction)
+                    keyBackupService.storeSyncedKey(type: .storageService, data: storageServiceKeyData, transaction: transaction)
                 }
             }
         }
@@ -166,18 +185,18 @@ class KeyBackupServiceTests: SSKBaseTestSwift {
         let vectors = try decoder.decode([Vector].self, from: jsonData)
 
         for vector in vectors {
-            databaseStorage.write { vector.storeKey(transaction: $0) }
+            db.write { vector.storeKey(keyBackupService: keyBackupService, transaction: $0) }
 
-            XCTAssertEqual(KeyBackupService.hasMasterKey, vector.masterKeyData != nil)
+            XCTAssertEqual(keyBackupService.hasMasterKey, vector.masterKeyData != nil)
 
-            XCTAssertEqual(vector.derivedKeyData, vector.derivedKey.data)
-            XCTAssertEqual(vector.storageServiceKeyData, KeyBackupService.DerivedKey.storageService.data)
+            XCTAssertEqual(vector.derivedKeyData, keyBackupService.data(for: vector.derivedKey))
+            XCTAssertEqual(vector.storageServiceKeyData, keyBackupService.data(for: .storageService))
 
-            let encryptedData = try KeyBackupService.encrypt(keyType: vector.derivedKey, data: vector.rawData)
-            let decryptedData = try KeyBackupService.decrypt(keyType: vector.derivedKey, encryptedData: encryptedData)
+            let encryptedData = try keyBackupService.encrypt(keyType: vector.derivedKey, data: vector.rawData)
+            let decryptedData = try keyBackupService.decrypt(keyType: vector.derivedKey, encryptedData: encryptedData)
             XCTAssertEqual(vector.rawData, decryptedData)
 
-            let decryptedVectorData = try KeyBackupService.decrypt(keyType: vector.derivedKey, encryptedData: vector.encryptedData)
+            let decryptedVectorData = try keyBackupService.decrypt(keyType: vector.derivedKey, encryptedData: vector.encryptedData)
             XCTAssertEqual(vector.rawData, decryptedVectorData)
         }
     }
@@ -190,7 +209,7 @@ class KeyBackupServiceTests: SSKBaseTestSwift {
         line: UInt = #line
     ) {
         let expectation = XCTestExpectation(description: "Verify Pin")
-        KeyBackupService.verifyPin(pin) { isValid in
+        keyBackupService.verifyPin(pin) { isValid in
             XCTAssertEqual(isValid, expectedResult, message, file: file, line: line)
             expectation.fulfill()
         }

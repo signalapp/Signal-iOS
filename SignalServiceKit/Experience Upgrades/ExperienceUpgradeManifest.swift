@@ -462,7 +462,7 @@ extension ExperienceUpgradeManifest {
         if
             RemoteConfig.kbs,
             reachabilityManager.isReachable,
-            !KeyBackupService.hasMasterKey(transaction: transaction)
+            !DependenciesBridge.shared.keyBackupService.hasMasterKey(transaction: transaction.asV2Read)
         {
             return true
         }

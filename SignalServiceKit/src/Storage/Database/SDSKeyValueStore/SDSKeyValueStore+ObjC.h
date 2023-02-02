@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// Swift bridges generics vs. return AnyObject. Essentially, methods which we'd want
 /// to sometimes return nil, will instead return NSNull.
 /// https://github.com/apple/swift-evolution/blob/master/proposals/0140-bridge-optional-to-nsnull.md
-@interface SDSKeyValueStoreObjC: NSObject
+@interface SDSKeyValueStoreObjC : NSObject
 
 - (instancetype)initWithSDSKeyValueStore:(SDSKeyValueStore *)keyValueStore;
 

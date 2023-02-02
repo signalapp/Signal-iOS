@@ -59,7 +59,7 @@ extension OWS2FAManager {
 
     public func enableRegistrationLockV2() -> Promise<Void> {
         return DispatchQueue.global().async(.promise) { () -> String in
-            guard let token = KeyBackupService.deriveRegistrationLockToken() else {
+            guard let token = DependenciesBridge.shared.keyBackupService.deriveRegistrationLockToken() else {
                 throw OWSAssertionError("Cannot enable registration lock without an existing PIN")
             }
             return token
@@ -183,5 +183,28 @@ extension OWS2FAManager {
             owsFailDebugUnlessNetworkFailure(error)
             failure?(error)
         }
+    }
+
+    // MARK: - KeyBackupService Wrappers/Helpers
+
+    @objc
+    public var hasBackedUpMasterKey: Bool {
+        DependenciesBridge.shared.keyBackupService.hasBackedUpMasterKey
+    }
+
+    @objc(generateAndBackupKeysWithPin:rotateMasterKey:)
+    @available(swift, obsoleted: 1.0)
+    public func generateAndBackupKeys(with pin: String, rotateMasterKey: Bool) -> AnyPromise {
+        return DependenciesBridge.shared.keyBackupService.generateAndBackupKeys(with: pin, rotateMasterKey: rotateMasterKey)
+    }
+
+    @objc
+    public func verifyKBSPin(_ pin: String, resultHandler: @escaping (Bool) -> Void) {
+        DependenciesBridge.shared.keyBackupService.verifyPin(pin, resultHandler: resultHandler)
+    }
+
+    @objc(deleteKeys)
+    public func deleteKBSKeys() -> AnyPromise {
+        return AnyPromise(DependenciesBridge.shared.keyBackupService.deleteKeys())
     }
 }

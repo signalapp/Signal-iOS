@@ -149,8 +149,8 @@ public class AccountManager: NSObject {
                 // If the user previously had a PIN, but we don't have record of it,
                 // mark them as pending restoration during onboarding. Reg lock users
                 // will have already restored their PIN by this point.
-                if response.hasPreviouslyUsedKBS, !KeyBackupService.hasMasterKey {
-                    KeyBackupService.recordPendingRestoration(transaction: transaction)
+                if response.hasPreviouslyUsedKBS, !DependenciesBridge.shared.keyBackupService.hasMasterKey {
+                    DependenciesBridge.shared.keyBackupService.recordPendingRestoration(transaction: transaction.asV2Write)
                 }
             }
 

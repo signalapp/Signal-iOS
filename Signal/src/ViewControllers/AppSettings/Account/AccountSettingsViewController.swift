@@ -9,6 +9,15 @@ import SignalServiceKit
 
 @objc
 class AccountSettingsViewController: OWSTableViewController2 {
+
+    private let context: ViewControllerContext
+
+    override init() {
+        // TODO[ViewContextPiping]
+        self.context = ViewControllerContext.shared
+        super.init()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 

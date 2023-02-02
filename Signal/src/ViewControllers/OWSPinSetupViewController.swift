@@ -194,7 +194,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         }
     }
 
-    private var pinType: KeyBackupService.PinType {
+    private var pinType: KBS.PinType {
         didSet {
             updatePinType()
         }
@@ -205,10 +205,12 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
 
     private let enableRegistrationLock: Bool
 
+    private let context: ViewControllerContext
+
     init(
         mode: Mode,
         initialMode: Mode? = nil,
-        pinType: KeyBackupService.PinType = .numeric,
+        pinType: KBS.PinType = .numeric,
         enableRegistrationLock: Bool = OWS2FAManager.shared.isRegistrationLockEnabled,
         completionHandler: @escaping (PinSetupViewController, Error?) -> Void
     ) {
@@ -218,6 +220,8 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         self.pinType = pinType
         self.enableRegistrationLock = enableRegistrationLock
         self.completionHandler = completionHandler
+        // TODO[ViewContextPiping]
+        self.context = ViewControllerContext.shared
         super.init()
 
         if case .confirming = self.initialMode {
@@ -811,7 +815,8 @@ extension PinSetupViewController {
                 canCancel: false
             ) { modal in
                 SDSDatabaseStorage.shared.asyncWrite { transaction in
-                    KeyBackupService.useDeviceLocalMasterKey(transaction: transaction)
+                    // TODO[ViewContextPiping]
+                    ViewControllerContext.shared.keyBackupService.useDeviceLocalMasterKey(transaction: transaction.asV2Write)
 
                     transaction.addAsyncCompletionOnMain {
                         modal.dismiss { future.resolve(true) }

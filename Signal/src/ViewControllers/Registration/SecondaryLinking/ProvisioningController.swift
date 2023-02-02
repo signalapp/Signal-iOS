@@ -43,7 +43,9 @@ public class ProvisioningController: NSObject {
 
     @objc
     public static func presentRelinkingFlow() {
-        let onboardingController = OnboardingController(onboardingMode: .provisioning)
+        // TODO[ViewContextPiping]
+        let context = ViewControllerContext.shared
+        let onboardingController = OnboardingController(context: context, onboardingMode: .provisioning)
         let navController = OnboardingNavigationController(onboardingController: onboardingController)
 
         let provisioningController = ProvisioningController(onboardingController: onboardingController)

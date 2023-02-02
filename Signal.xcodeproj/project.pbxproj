@@ -774,6 +774,10 @@
 		50D5E2412980AD6F00899660 /* LinkValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D5E2402980AD6F00899660 /* LinkValidator.swift */; };
 		50D5E2432980B53000899660 /* LinkValidatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D5E2422980B53000899660 /* LinkValidatorTest.swift */; };
 		641CECC436F5F3EE2AC07EE9 /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */; };
+		66138FAB2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FAA2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift */; };
+		66138FB02982F4CA002E0CFE /* MockDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FAE2982F4C4002E0CFE /* MockDB.swift */; };
+		66138FB429831AB0002E0CFE /* InMemoryKeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FB22983010D002E0CFE /* InMemoryKeyValueStore.swift */; };
+		66138FB6298326C7002E0CFE /* KeyBackupServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FB5298326C7002E0CFE /* KeyBackupServiceProtocol.swift */; };
 		661396AB28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */; };
 		661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */; };
 		661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */; };
@@ -787,6 +791,10 @@
 		66586D3929005A1B00DDA9B9 /* story_viewer_onboarding_3.json in Resources */ = {isa = PBXBuildFile; fileRef = 66586D3629005A1B00DDA9B9 /* story_viewer_onboarding_3.json */; };
 		66586D4129009C0000DDA9B9 /* TextAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66586D4029009C0000DDA9B9 /* TextAttachment.swift */; };
 		665EF86D290C385B00F490D2 /* OWSNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EF86C290C385B00F490D2 /* OWSNavigationController.swift */; };
+		6673FF81297B3A5000F96CFD /* KeyBackupServiceShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF80297B3A5000F96CFD /* KeyBackupServiceShims.swift */; };
+		6673FF87297B694C00F96CFD /* DB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF86297B694C00F96CFD /* DB.swift */; };
+		6673FF89297B6AF800F96CFD /* DBTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF88297B6AF800F96CFD /* DBTransaction.swift */; };
+		6673FF8B297B6FA800F96CFD /* SDSDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673FF8A297B6FA800F96CFD /* SDSDB.swift */; };
 		6675F64929258CA4007A311E /* CallRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64829258CA4007A311E /* CallRecord.swift */; };
 		6675F64D2925C012007A311E /* APNSRotationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64C2925C012007A311E /* APNSRotationStore.swift */; };
 		6675F64F29261C39007A311E /* SyncPushTokensJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6675F64E29261C39007A311E /* SyncPushTokensJob.swift */; };
@@ -797,6 +805,11 @@
 		668CAB3E289983520085A2C3 /* AudioMessagePlaybackRateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */; };
 		668FE09B28B923A4008B9071 /* Bool+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668FE09A28B923A4008B9071 /* Bool+SSK.swift */; };
 		668FE09F28B947ED008B9071 /* StoryContextMenuGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668FE09E28B947ED008B9071 /* StoryContextMenuGenerator.swift */; };
+		6698FC0D297EFE21004EFC30 /* KeyValueStoreProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC0C297EFE21004EFC30 /* KeyValueStoreProtocol.swift */; };
+		6698FC0F297F03FE004EFC30 /* KeyValueStoreFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */; };
+		6698FC11297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStoreProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStoreProtocol.swift */; };
+		6698FC1A2980AB45004EFC30 /* DependenciesBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC192980AB45004EFC30 /* DependenciesBridge.swift */; };
+		6698FC1C2980AE00004EFC30 /* KeyBackupServiceObjcBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC1B2980AE00004EFC30 /* KeyBackupServiceObjcBridge.swift */; };
 		669E8FE828B4153C00043D28 /* OWSUrlSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FE728B4153B00043D28 /* OWSUrlSession.swift */; };
 		669E8FE928B415C000043D28 /* OWSURLBuilderUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */; };
 		669E8FED28B4177900043D28 /* OWSSignalServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FEC28B4177800043D28 /* OWSSignalServiceMock.swift */; };
@@ -807,6 +820,8 @@
 		669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */; };
 		669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
+		66AE5779298440A100E40CFA /* ViewControllerContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC13297F38BB004EFC30 /* ViewControllerContext.swift */; };
+		66AE57802984AB9F00E40CFA /* ToyExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AE577E2984AB8700E40CFA /* ToyExample.swift */; };
 		66AF4D7328D1377E008A156E /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */; };
 		66BE544D28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */; };
@@ -3123,6 +3138,10 @@
 		50F96F3A28ECBC3200541EED /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = translations/ms.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		55D83291ED67EE1A7FC96E60 /* Pods-SignalNSE.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.testable release.xcconfig"; sourceTree = "<group>"; };
 		63BAA38DC365EE44110A6BD1 /* Pods-SignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.debug.xcconfig"; sourceTree = "<group>"; };
+		66138FAA2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceTestShims.swift; sourceTree = "<group>"; };
+		66138FAE2982F4C4002E0CFE /* MockDB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDB.swift; sourceTree = "<group>"; };
+		66138FB22983010D002E0CFE /* InMemoryKeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryKeyValueStore.swift; sourceTree = "<group>"; };
+		66138FB5298326C7002E0CFE /* KeyBackupServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceProtocol.swift; sourceTree = "<group>"; };
 		661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenStoryHeaderCell.swift; sourceTree = "<group>"; };
 		661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromise.swift; sourceTree = "<group>"; };
 		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
@@ -3137,6 +3156,10 @@
 		66586D3629005A1B00DDA9B9 /* story_viewer_onboarding_3.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = story_viewer_onboarding_3.json; sourceTree = "<group>"; };
 		66586D4029009C0000DDA9B9 /* TextAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAttachment.swift; sourceTree = "<group>"; };
 		665EF86C290C385B00F490D2 /* OWSNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSNavigationController.swift; sourceTree = "<group>"; };
+		6673FF80297B3A5000F96CFD /* KeyBackupServiceShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceShims.swift; sourceTree = "<group>"; };
+		6673FF86297B694C00F96CFD /* DB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DB.swift; sourceTree = "<group>"; };
+		6673FF88297B6AF800F96CFD /* DBTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBTransaction.swift; sourceTree = "<group>"; };
+		6673FF8A297B6FA800F96CFD /* SDSDB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDSDB.swift; sourceTree = "<group>"; };
 		6675F64829258CA4007A311E /* CallRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecord.swift; sourceTree = "<group>"; };
 		6675F64C2925C012007A311E /* APNSRotationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSRotationStore.swift; sourceTree = "<group>"; };
 		6675F64E29261C39007A311E /* SyncPushTokensJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncPushTokensJob.swift; sourceTree = "<group>"; };
@@ -3148,6 +3171,12 @@
 		668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessagePlaybackRateView.swift; sourceTree = "<group>"; };
 		668FE09A28B923A4008B9071 /* Bool+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bool+SSK.swift"; sourceTree = "<group>"; };
 		668FE09E28B947ED008B9071 /* StoryContextMenuGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextMenuGenerator.swift; sourceTree = "<group>"; };
+		6698FC0C297EFE21004EFC30 /* KeyValueStoreProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueStoreProtocol.swift; sourceTree = "<group>"; };
+		6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyValueStoreFactory.swift; sourceTree = "<group>"; };
+		6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStoreProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSKeyValueStore+KeyValueStoreProtocol.swift"; sourceTree = "<group>"; };
+		6698FC13297F38BB004EFC30 /* ViewControllerContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewControllerContext.swift; sourceTree = "<group>"; };
+		6698FC192980AB45004EFC30 /* DependenciesBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependenciesBridge.swift; sourceTree = "<group>"; };
+		6698FC1B2980AE00004EFC30 /* KeyBackupServiceObjcBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceObjcBridge.swift; sourceTree = "<group>"; };
 		669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSURLBuilderUtil.swift; sourceTree = "<group>"; };
 		669E8FE528B4149200043D28 /* OWSURLSessionMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLSessionMock.swift; sourceTree = "<group>"; };
 		669E8FE728B4153B00043D28 /* OWSUrlSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSUrlSession.swift; sourceTree = "<group>"; };
@@ -3157,6 +3186,7 @@
 		669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerProtocol.swift; sourceTree = "<group>"; };
 		669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerMock.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
+		66AE577E2984AB8700E40CFA /* ToyExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToyExample.swift; sourceTree = "<group>"; };
 		66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalAttachment+VideoSegmenting.swift"; sourceTree = "<group>"; };
 		66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatingContextMenuButton.swift; sourceTree = "<group>"; };
 		66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextOnboardingOverlayView.swift; sourceTree = "<group>"; };
@@ -6104,6 +6134,105 @@
 			path = Discovery;
 			sourceTree = "<group>";
 		};
+		66138FAC2982F4A7002E0CFE /* SDSDatabaseStorage */ = {
+			isa = PBXGroup;
+			children = (
+				66138FAD2982F4B3002E0CFE /* V2 */,
+			);
+			path = SDSDatabaseStorage;
+			sourceTree = "<group>";
+		};
+		66138FAD2982F4B3002E0CFE /* V2 */ = {
+			isa = PBXGroup;
+			children = (
+				66138FAE2982F4C4002E0CFE /* MockDB.swift */,
+				66AE577E2984AB8700E40CFA /* ToyExample.swift */,
+			);
+			path = V2;
+			sourceTree = "<group>";
+		};
+		66138FB129830066002E0CFE /* SDSKeyValueStore */ = {
+			isa = PBXGroup;
+			children = (
+				66138FB22983010D002E0CFE /* InMemoryKeyValueStore.swift */,
+			);
+			path = SDSKeyValueStore;
+			sourceTree = "<group>";
+		};
+		666BAB0E2980B76B00867196 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				F9C5CB2B289453B200548EEE /* Dependencies+SSK.swift */,
+				6698FC192980AB45004EFC30 /* DependenciesBridge.swift */,
+			);
+			path = Dependencies;
+			sourceTree = "<group>";
+		};
+		6673FF6A2978B5B900F96CFD /* KeyBackupService */ = {
+			isa = PBXGroup;
+			children = (
+				F9C5CB1B289453B200548EEE /* KeyBackupService.swift */,
+				6698FC1B2980AE00004EFC30 /* KeyBackupServiceObjcBridge.swift */,
+				66138FB5298326C7002E0CFE /* KeyBackupServiceProtocol.swift */,
+				6673FF80297B3A5000F96CFD /* KeyBackupServiceShims.swift */,
+			);
+			path = KeyBackupService;
+			sourceTree = "<group>";
+		};
+		6673FF732979F7A400F96CFD /* KeyBackupService */ = {
+			isa = PBXGroup;
+			children = (
+				F94261F9289B1B5400460798 /* kbs_pin_sanitation_vectors.json */,
+				F94261F3289B1B5400460798 /* kbs_storage_service_encryption_vectors.json */,
+				F94261E5289B1B5400460798 /* kbs_vectors.json */,
+				F94261EA289B1B5400460798 /* KeyBackupServiceTests.swift */,
+				66138FAA2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift */,
+			);
+			path = KeyBackupService;
+			sourceTree = "<group>";
+		};
+		6673FF82297B659D00F96CFD /* SDSKeyValueStore */ = {
+			isa = PBXGroup;
+			children = (
+				6698FC0E297F03FE004EFC30 /* KeyValueStoreFactory.swift */,
+				6698FC0C297EFE21004EFC30 /* KeyValueStoreProtocol.swift */,
+				6698FC10297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStoreProtocol.swift */,
+				F9C5CA49289453B100548EEE /* SDSKeyValueStore+ObjC.h */,
+				F9C5CA33289453B100548EEE /* SDSKeyValueStore+ObjC.m */,
+				F9C5CA4B289453B100548EEE /* SDSKeyValueStore.swift */,
+			);
+			path = SDSKeyValueStore;
+			sourceTree = "<group>";
+		};
+		6673FF83297B666500F96CFD /* SDSDatabaseStorage */ = {
+			isa = PBXGroup;
+			children = (
+				6673FF85297B690C00F96CFD /* V2 */,
+				F9C5CA41289453B100548EEE /* SDSDatabaseStorage+Objc.h */,
+				F9C5CA4C289453B100548EEE /* SDSDatabaseStorage+Objc.m */,
+				F9C5CA3A289453B100548EEE /* SDSDatabaseStorage.swift */,
+			);
+			path = SDSDatabaseStorage;
+			sourceTree = "<group>";
+		};
+		6673FF85297B690C00F96CFD /* V2 */ = {
+			isa = PBXGroup;
+			children = (
+				6673FF86297B694C00F96CFD /* DB.swift */,
+				6673FF88297B6AF800F96CFD /* DBTransaction.swift */,
+				6673FF8A297B6FA800F96CFD /* SDSDB.swift */,
+			);
+			path = V2;
+			sourceTree = "<group>";
+		};
+		6698FC12297F38AC004EFC30 /* ViewControllerContext */ = {
+			isa = PBXGroup;
+			children = (
+				6698FC13297F38BB004EFC30 /* ViewControllerContext.swift */,
+			);
+			path = ViewControllerContext;
+			sourceTree = "<group>";
+		};
 		76EB03C118170B33006006FC /* src */ = {
 			isa = PBXGroup;
 			children = (
@@ -6115,6 +6244,7 @@
 				450DF2061E0DD28D003D14BE /* UserInterface */,
 				D99840BB297A04A300F7ED6D /* Usernames */,
 				76EB04C818170B33006006FC /* util */,
+				6698FC12297F38AC004EFC30 /* ViewControllerContext */,
 				F909E27B293D0F78003B41D1 /* AppDelegate+Lifecycle.swift */,
 				F990FAD1293800EE006FB21B /* AppDelegate+Orientation.swift */,
 				76EB03C218170B33006006FC /* AppDelegate.h */,
@@ -7264,10 +7394,6 @@
 				502B1B54297B28AF00FDB3AE /* ErrorTest.swift */,
 				F94261E7289B1B5400460798 /* FeatureFlagsTests.swift */,
 				F94261F1289B1B5400460798 /* JobQueueTest.swift */,
-				F94261F9289B1B5400460798 /* kbs_pin_sanitation_vectors.json */,
-				F94261F3289B1B5400460798 /* kbs_storage_service_encryption_vectors.json */,
-				F94261E5289B1B5400460798 /* kbs_vectors.json */,
-				F94261EA289B1B5400460798 /* KeyBackupServiceTests.swift */,
 				50D5E2422980B53000899660 /* LinkValidatorTest.swift */,
 				F94261F2289B1B5400460798 /* LRUCacheTest.swift */,
 				F94261FC289B1B5400460798 /* MathOWSTests.swift */,
@@ -7419,6 +7545,8 @@
 		F97217F928DCA35F00113D9F /* Database */ = {
 			isa = PBXGroup;
 			children = (
+				66138FAC2982F4A7002E0CFE /* SDSDatabaseStorage */,
+				66138FB129830066002E0CFE /* SDSKeyValueStore */,
 				F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */,
 				F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */,
 				F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */,
@@ -7498,10 +7626,12 @@
 				F9C5C9BA289453B100548EEE /* Account */,
 				F945FE482984795A00C835C7 /* Calls */,
 				F9C5C9CC289453B100548EEE /* Contacts */,
+				666BAB0E2980B76B00867196 /* Dependencies */,
 				F9C5CA09289453B100548EEE /* Devices */,
 				D920487D28EB8201003F5371 /* Experience Upgrades */,
 				F9C5CBA3289453B200548EEE /* groups */,
 				D9668B30291B033800665298 /* Jobs */,
+				6673FF6A2978B5B900F96CFD /* KeyBackupService */,
 				F9C5C8B6289453B100548EEE /* Messages */,
 				F9C5CAB2289453B200548EEE /* Network */,
 				F9C5CA9F289453B200548EEE /* Payments */,
@@ -7531,6 +7661,7 @@
 				F94261C7289B1B5300460798 /* Devices */,
 				F908AA7B28CE628700472E68 /* Fixtures */,
 				F94261E2289B1B5400460798 /* Groups */,
+				6673FF732979F7A400F96CFD /* KeyBackupService */,
 				F942621C289B1B5500460798 /* Messages */,
 				F94261CF289B1B5400460798 /* Network */,
 				F97391A128EF0AFB002DDE5D /* Protos */,
@@ -8111,6 +8242,8 @@
 			isa = PBXGroup;
 			children = (
 				F9C5CA35289453B100548EEE /* Records */,
+				6673FF83297B666500F96CFD /* SDSDatabaseStorage */,
+				6673FF82297B659D00F96CFD /* SDSKeyValueStore */,
 				F9C5CA3C289453B100548EEE /* Snapshots */,
 				F97217F728DC9F3700113D9F /* DatabaseCorruptionState.swift */,
 				F9B652C228D8E3DF006914CA /* DatabaseRecovery.swift */,
@@ -8120,14 +8253,8 @@
 				F9C5CA4E289453B100548EEE /* SDSCodableModel.swift */,
 				F9C5CA45289453B100548EEE /* SDSCrossProcess.h */,
 				F9C5CA50289453B100548EEE /* SDSCrossProcess.m */,
-				F9C5CA41289453B100548EEE /* SDSDatabaseStorage+Objc.h */,
-				F9C5CA4C289453B100548EEE /* SDSDatabaseStorage+Objc.m */,
-				F9C5CA3A289453B100548EEE /* SDSDatabaseStorage.swift */,
 				F9C5CA3B289453B100548EEE /* SDSDeserialization.swift */,
 				F9C5CA32289453B100548EEE /* SDSError.swift */,
-				F9C5CA49289453B100548EEE /* SDSKeyValueStore+ObjC.h */,
-				F9C5CA33289453B100548EEE /* SDSKeyValueStore+ObjC.m */,
-				F9C5CA4B289453B100548EEE /* SDSKeyValueStore.swift */,
 				F9C5CA34289453B100548EEE /* SDSModel.swift */,
 				F9C5CA3F289453B100548EEE /* SDSRecord.swift */,
 				F9C5CA4A289453B100548EEE /* SDSRecordType.swift */,
@@ -8441,7 +8568,6 @@
 				F94C912128FDEAF50065DF75 /* Decimal+IsInteger.swift */,
 				F94C911F28FDEA2E0065DF75 /* Decimal+Rounded.swift */,
 				F9C5CB79289453B200548EEE /* DecodableDefaults.swift */,
-				F9C5CB2B289453B200548EEE /* Dependencies+SSK.swift */,
 				F9C5CB3A289453B200548EEE /* DeviceNames.swift */,
 				F9C5CB16289453B200548EEE /* DispatchQueue+OWS.swift */,
 				F9C5CB0B289453B200548EEE /* Error+ErrorLocalizedDescription.swift */,
@@ -8454,7 +8580,6 @@
 				F9C5CB0D289453B200548EEE /* ImageQuality.swift */,
 				F9C5CB75289453B200548EEE /* InstrumentsMonitor.swift */,
 				F9C5CB3D289453B200548EEE /* Int+SSK.swift */,
-				F9C5CB1B289453B200548EEE /* KeyBackupService.swift */,
 				50D5E2402980AD6F00899660 /* LinkValidator.swift */,
 				F9C5CB61289453B200548EEE /* LocalDevice.swift */,
 				F9C5CB15289453B200548EEE /* Locale+SSK.swift */,
@@ -10853,6 +10978,7 @@
 				D99840C829809E9C00F7ED6D /* UsernameSelectionViewController+HeaderView.swift in Sources */,
 				D99840B32976227100F7ED6D /* UsernameSelectionViewController+UsernameTextField.swift in Sources */,
 				D95C39EA296E108100A9DA23 /* UsernameSelectionViewController.swift in Sources */,
+				66AE5779298440A100E40CFA /* ViewControllerContext.swift in Sources */,
 				3434AE1C22AEDE7D002EE04E /* ViewOnceMessageViewController.swift in Sources */,
 				88928A7726419D6B009C9B30 /* VoiceMessageDraftView.swift in Sources */,
 				88928A7526418904009C9B30 /* VoiceMessageTooltip.swift in Sources */,
@@ -10996,6 +11122,8 @@
 				F9B652C328D8E3DF006914CA /* DatabaseRecovery.swift in Sources */,
 				F9C5CDD9289453B400548EEE /* DataSource.m in Sources */,
 				F9C5CE4D289453B400548EEE /* Date+SSK.swift in Sources */,
+				6673FF87297B694C00F96CFD /* DB.swift in Sources */,
+				6673FF89297B6AF800F96CFD /* DBTransaction.swift in Sources */,
 				F9C5CDD8289453B400548EEE /* DebouncedEvent.swift in Sources */,
 				F94C912228FDEAF50065DF75 /* Decimal+IsInteger.swift in Sources */,
 				F94C912028FDEA2E0065DF75 /* Decimal+Rounded.swift in Sources */,
@@ -11004,6 +11132,7 @@
 				F9C5CC11289453B300548EEE /* DefaultStickers.swift in Sources */,
 				F9C5CC34289453B300548EEE /* DeliveryReceiptContext.swift in Sources */,
 				F9C5CDFD289453B400548EEE /* Dependencies+SSK.swift in Sources */,
+				6698FC1A2980AB45004EFC30 /* DependenciesBridge.swift in Sources */,
 				F9C5CE0C289453B400548EEE /* DeviceNames.swift in Sources */,
 				F9C5CD05289453B300548EEE /* DeviceService.swift in Sources */,
 				F9C5CC94289453B300548EEE /* DeviceTransfer.pb.swift in Sources */,
@@ -11070,6 +11199,11 @@
 				F9C5CC93289453B300548EEE /* KeyBackup.pb.swift in Sources */,
 				F9C5CC9B289453B300548EEE /* KeyBackupProto.swift in Sources */,
 				F9C5CDED289453B400548EEE /* KeyBackupService.swift in Sources */,
+				6698FC1C2980AE00004EFC30 /* KeyBackupServiceObjcBridge.swift in Sources */,
+				66138FB6298326C7002E0CFE /* KeyBackupServiceProtocol.swift in Sources */,
+				6673FF81297B3A5000F96CFD /* KeyBackupServiceShims.swift in Sources */,
+				6698FC0F297F03FE004EFC30 /* KeyValueStoreFactory.swift in Sources */,
+				6698FC0D297EFE21004EFC30 /* KeyValueStoreProtocol.swift in Sources */,
 				F9C5CC1A289453B300548EEE /* KnownStickerPack+SDS.swift in Sources */,
 				F9C5CC10289453B300548EEE /* KnownStickerPack.m in Sources */,
 				F9C5CD47289453B300548EEE /* LegacyChainKey.m in Sources */,
@@ -11340,8 +11474,10 @@
 				F9C5CD2F289453B300548EEE /* SDSCrossProcess.m in Sources */,
 				F9C5CD2B289453B300548EEE /* SDSDatabaseStorage+Objc.m in Sources */,
 				F9C5CD1A289453B300548EEE /* SDSDatabaseStorage.swift in Sources */,
+				6673FF8B297B6FA800F96CFD /* SDSDB.swift in Sources */,
 				F9C5CD1B289453B300548EEE /* SDSDeserialization.swift in Sources */,
 				F9C5CD13289453B300548EEE /* SDSError.swift in Sources */,
+				6698FC11297F06ED004EFC30 /* SDSKeyValueStore+KeyValueStoreProtocol.swift in Sources */,
 				F9C5CD14289453B300548EEE /* SDSKeyValueStore+ObjC.m in Sources */,
 				F9C5CD2A289453B300548EEE /* SDSKeyValueStore.swift in Sources */,
 				F9C5CD15289453B300548EEE /* SDSModel.swift in Sources */,
@@ -11558,9 +11694,11 @@
 				F97217FE28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift in Sources */,
 				F9426251289B1B5500460798 /* GroupModelsTest.swift in Sources */,
 				F9426245289B1B5500460798 /* HTMLMetadataTests.swift in Sources */,
+				66138FB429831AB0002E0CFE /* InMemoryKeyValueStore.swift in Sources */,
 				F942624D289B1B5500460798 /* InteractionFinderTest.swift in Sources */,
 				F942625E289B1B5500460798 /* JobQueueTest.swift in Sources */,
 				F9426257289B1B5500460798 /* KeyBackupServiceTests.swift in Sources */,
+				66138FAB2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift in Sources */,
 				50D5E2432980B53000899660 /* LinkValidatorTest.swift in Sources */,
 				F942625F289B1B5500460798 /* LRUCacheTest.swift in Sources */,
 				F9426269289B1B5500460798 /* MathOWSTests.swift in Sources */,
@@ -11570,6 +11708,7 @@
 				F9426241289B1B5500460798 /* MessageSenderJobRecordTest.swift in Sources */,
 				F9426246289B1B5500460798 /* MessageSendJobQueueTest.swift in Sources */,
 				F9426293289B1B5600460798 /* MessageSendLogTests.swift in Sources */,
+				66138FB02982F4CA002E0CFE /* MockDB.swift in Sources */,
 				F942624C289B1B5500460798 /* ModelReadCacheTest.swift in Sources */,
 				F9426256289B1B5500460798 /* NSData+ImageTest.swift in Sources */,
 				F942623B289B1B5500460798 /* OWSDeviceProvisionerTest.swift in Sources */,
@@ -11628,6 +11767,7 @@
 				884BF73D28D37D5F00D94636 /* SystemStoryManagerTest.swift in Sources */,
 				F9426249289B1B5500460798 /* TestModelTests.swift in Sources */,
 				F9426288289B1B5600460798 /* TestProtocolRunnerTest.swift in Sources */,
+				66AE57802984AB9F00E40CFA /* ToyExample.swift in Sources */,
 				F903C29B28EC7AE60035B42B /* TSAccountManagerTest.swift in Sources */,
 				F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */,
 				F908AA8028CE7F8D00472E68 /* TSGroupThreadTest.swift in Sources */,

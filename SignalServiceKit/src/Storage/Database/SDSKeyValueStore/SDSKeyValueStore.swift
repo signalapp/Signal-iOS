@@ -43,7 +43,7 @@ public class SDSKeyValueStore: NSObject {
     )
 
     @objc
-    public init(collection: String) {
+    public required init(collection: String) {
         // TODO: Verify that collection is a valid table name _OR_ convert to valid name.
         self.collection = collection
 

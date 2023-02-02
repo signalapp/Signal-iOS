@@ -41,8 +41,12 @@ public class PinConfirmationViewController: OWSViewController {
     }
     private var hasGuessedWrong = false
 
+    private let context: ViewControllerContext
+
     @objc
     init(title: String, explanation: String, actionText: String, completionHandler: @escaping (Bool) -> Void) {
+        // TODO[ViewContextPiping]
+        self.context = ViewControllerContext.shared
         self.titleText = title
         self.explanationText = explanation
         self.actionText = actionText
@@ -124,7 +128,7 @@ public class PinConfirmationViewController: OWSViewController {
         // Pin text field
 
         pinTextField.delegate = self
-        pinTextField.keyboardType = KeyBackupService.currentPinType == .alphanumeric ? .default : .asciiCapableNumberPad
+        pinTextField.keyboardType = context.keyBackupService.currentPinType == .alphanumeric ? .default : .asciiCapableNumberPad
         pinTextField.textColor = Theme.primaryTextColor
         pinTextField.font = .ows_dynamicTypeBodyClamped
         pinTextField.textAlignment = .center
@@ -332,7 +336,7 @@ extension PinConfirmationViewController: UIViewControllerTransitioningDelegate {
 extension PinConfirmationViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let hasPendingChanges: Bool
-        if KeyBackupService.currentPinType == .alphanumeric {
+        if context.keyBackupService.currentPinType == .alphanumeric {
             hasPendingChanges = true
         } else {
             ViewControllerUtils.ows2FAPINTextField(textField, shouldChangeCharactersIn: range, replacementString: string)

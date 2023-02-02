@@ -472,3 +472,11 @@ public class RegistrationMissing2FAPinError: NSObject, Error, IsRetryableProvide
 
     public var isRetryableProvider: Bool { false }
 }
+
+public extension TSAccountManager {
+
+    @objc(clearKBSKeysWithTransaction:)
+    func clearKBSKeys(with transaction: SDSAnyWriteTransaction) {
+        DependenciesBridge.shared.keyBackupService.clearKeys(transaction: transaction.asV2Write)
+    }
+}

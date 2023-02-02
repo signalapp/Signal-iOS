@@ -7,6 +7,15 @@ import Foundation
 
 @objc
 class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
+
+    private let context: ViewControllerContext
+
+    public override init() {
+        // TODO[ViewContextPiping]
+        self.context = ViewControllerContext.shared
+        super.init()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -21,7 +30,7 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
         let pinsSection = OWSTableSection()
 
         pinsSection.add(OWSTableItem.actionItem(
-            withText: (KeyBackupService.hasMasterKey && !KeyBackupService.hasBackedUpMasterKey)
+            withText: (context.keyBackupService.hasMasterKey && !context.keyBackupService.hasBackedUpMasterKey)
                 ? NSLocalizedString("SETTINGS_ADVANCED_PINS_ENABLE_PIN_ACTION",
                                     comment: "")
                 : NSLocalizedString("SETTINGS_ADVANCED_PINS_DISABLE_PIN_ACTION",
@@ -37,7 +46,7 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
     }
 
     private func enableOrDisablePin() {
-        if KeyBackupService.hasMasterKey && !KeyBackupService.hasBackedUpMasterKey {
+        if context.keyBackupService.hasMasterKey && !context.keyBackupService.hasBackedUpMasterKey {
             enablePin()
         } else {
             if self.paymentsHelper.arePaymentsEnabled,

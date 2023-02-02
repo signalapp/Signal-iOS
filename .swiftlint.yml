@@ -35,8 +35,12 @@ large_tuple:
   warning: 4
   error: 4
 type_name:
+  min_length:
+    warning: 2
+    error: 2
   max_length:
     warning: 500
     error: 500
   excluded:
   - Id
+  allowed_symbols: ["_"]

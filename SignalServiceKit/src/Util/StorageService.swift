@@ -225,7 +225,7 @@ public struct StorageService: Dependencies {
                 let encryptedManifestContainer = try StorageServiceProtoStorageManifest(serializedData: response.data)
                 let manifestData: Data
                 do {
-                    manifestData = try KeyBackupService.decrypt(
+                    manifestData = try DependenciesBridge.shared.keyBackupService.decrypt(
                         keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
                         encryptedData: encryptedManifestContainer.value
                     )
@@ -262,7 +262,7 @@ public struct StorageService: Dependencies {
 
             // Encrypt the manifest
             let manifestData = try manifest.serializedData()
-            let encryptedManifestData = try KeyBackupService.encrypt(
+            let encryptedManifestData = try DependenciesBridge.shared.keyBackupService.encrypt(
                 keyType: .storageServiceManifest(version: manifest.version),
                 data: manifestData
             )
@@ -276,7 +276,7 @@ public struct StorageService: Dependencies {
             // Encrypt the new items
             builder.setInsertItem(try newItems.map { item in
                 let itemData = try item.record.serializedData()
-                let encryptedItemData = try KeyBackupService.encrypt(
+                let encryptedItemData = try DependenciesBridge.shared.keyBackupService.encrypt(
                     keyType: .storageServiceRecord(identifier: item.identifier),
                     data: itemData
                 )
@@ -303,7 +303,7 @@ public struct StorageService: Dependencies {
                 let encryptedManifestContainer = try StorageServiceProtoStorageManifest(serializedData: response.data)
                 let manifestData: Data
                 do {
-                    manifestData = try KeyBackupService.decrypt(
+                    manifestData = try DependenciesBridge.shared.keyBackupService.decrypt(
                         keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
                         encryptedData: encryptedManifestContainer.value
                     )
@@ -362,7 +362,7 @@ public struct StorageService: Dependencies {
                 }
                 let itemData: Data
                 do {
-                    itemData = try KeyBackupService.decrypt(
+                    itemData = try DependenciesBridge.shared.keyBackupService.decrypt(
                         keyType: .storageServiceRecord(identifier: itemIdentifier),
                         encryptedData: encryptedItemData
                     )

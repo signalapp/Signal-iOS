@@ -52,6 +52,8 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 // useful before account state has been cached, otherwise you should prefer `isRegistered`
 - (BOOL)isRegisteredWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(isRegistered(transaction:));
 
+- (BOOL)isRegisteredAndReadyWithTransaction:(SDSAnyReadTransaction *)transaction;
+
 /**
  *  Returns current phone number for this device, which may not yet have been registered.
  *

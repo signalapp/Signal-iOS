@@ -47,17 +47,21 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
     }
 
     private let isUsingKBS: Bool
-    private var pinType: KeyBackupService.PinType = .numeric {
+    private var pinType: KBS.PinType = .numeric {
         didSet {
             updatePinType()
         }
     }
 
     private var hasPendingRestoration: Bool {
-        databaseStorage.read { KeyBackupService.hasPendingRestoration(transaction: $0) }
+        context.db.read { context.keyBackupService.hasPendingRestoration(transaction: $0) }
     }
 
+    private let context: ViewControllerContext
+
     public init(onboardingController: OnboardingController, isUsingKBS: Bool) {
+        // TODO[ViewContextPiping]
+        self.context = ViewControllerContext.shared
         self.isUsingKBS = isUsingKBS
         super.init(onboardingController: onboardingController)
     }
@@ -365,7 +369,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         databaseStorage.write { transaction in
             // Clear any pending restoration before moving on. At this point we've either
             // successfully restored the user's PIN or the user chose to re-create their PIN.
-            KeyBackupService.clearPendingRestoration(transaction: transaction)
+            self.context.keyBackupService.clearPendingRestoration(transaction: transaction.asV2Write)
 
             // If we were successful, also mark the user as having a PIN
             // They're a returning user, so we can skip the welcome banner

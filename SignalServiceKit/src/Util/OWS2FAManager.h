@@ -33,6 +33,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWS2FAMode) {
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 @property (nullable, nonatomic, readonly) NSString *pinCode;
+- (nullable NSString *)pinCodeWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (void)setPinCode:(nullable NSString *)pin transaction:(SDSAnyWriteTransaction *)transaction;
 
 @property (nonatomic, readonly) OWS2FAMode mode;

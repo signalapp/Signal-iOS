@@ -93,8 +93,8 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         return;
     }
 
-    if (OWSKeyBackupService.hasBackedUpMasterKey) {
-        pin = [OWSKeyBackupService normalizePin:pin];
+    if (self.hasBackedUpMasterKey) {
+        pin = [KeyBackupServiceObjcBridge normalizePin:pin];
     } else {
         // Convert the pin to arabic numerals, we never want to
         // operate with pins in other numbering systems.
@@ -107,7 +107,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 - (OWS2FAMode)mode
 {
     // Identify what version of 2FA we're using
-    if (OWSKeyBackupService.hasBackedUpMasterKey) {
+    if (self.hasBackedUpMasterKey) {
         return OWS2FAMode_V2;
     } else if (self.pinCode != nil) {
         return OWS2FAMode_V1;
@@ -175,7 +175,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         case OWS2FAMode_V2: {
             // Enabling V2 2FA doesn't inherently enable registration lock,
             // it's managed by a separate setting.
-            [OWSKeyBackupService generateAndBackupKeysWithPin:pin rotateMasterKey:rotateMasterKey]
+            [self generateAndBackupKeysWithPin:pin rotateMasterKey:rotateMasterKey]
                 .done(^(id value) {
                     OWSAssertIsOnMainThread();
 
@@ -210,7 +210,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     switch (self.mode) {
         case OWS2FAMode_V2:
         {
-            [OWSKeyBackupService deleteKeys]
+            [self deleteKeys]
                 .then(^(id value) { return [self disableRegistrationLockV2]; })
                 .ensure(^{
                     OWSAssertIsOnMainThread();
@@ -264,7 +264,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         return NO;
     }
 
-    if (!OWSKeyBackupService.hasBackedUpMasterKey) {
+    if (!self.hasBackedUpMasterKey) {
         return NO;
     }
 
@@ -325,18 +325,17 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     switch (self.mode) {
     case OWS2FAMode_V2:
         if (pinToMatch.length > 0) {
-            result([pinToMatch isEqualToString:[OWSKeyBackupService normalizePin:pin]]);
+            result([pinToMatch isEqualToString:[KeyBackupServiceObjcBridge normalizePin:pin]]);
         } else {
-            [OWSKeyBackupService verifyPin:pin
-                             resultHandler:^(BOOL isValid) {
-                                 result(isValid);
+            [self verifyKBSPin:pin
+                 resultHandler:^(BOOL isValid) {
+                     result(isValid);
 
-                                 if (isValid) {
-                                     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                                         [self setPinCode:pin transaction:transaction];
-                                     });
-                                 }
-                             }];
+                     if (isValid) {
+                         DatabaseStorageWrite(self.databaseStorage,
+                             ^(SDSAnyWriteTransaction *transaction) { [self setPinCode:pin transaction:transaction]; });
+                     }
+                 }];
         }
         break;
     case OWS2FAMode_V1:

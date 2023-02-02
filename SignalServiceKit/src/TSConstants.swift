@@ -94,7 +94,7 @@ public class TSConstants: NSObject {
     @objc
     public static var serverPublicParamsBase64: String { shared.serverPublicParamsBase64 }
 
-    private static var shared: TSConstantsProtocol {
+    public static var shared: TSConstantsProtocol {
         switch environment {
         case .production:
             return TSConstantsProduction()
@@ -106,7 +106,7 @@ public class TSConstants: NSObject {
 
 // MARK: -
 
-private protocol TSConstantsProtocol: AnyObject {
+public protocol TSConstantsProtocol: AnyObject {
     var mainServiceIdentifiedURL: String { get }
     var mainServiceUnidentifiedURL: String { get }
     var textSecureCDN0ServerURL: String { get }

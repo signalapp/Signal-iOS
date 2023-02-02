@@ -298,7 +298,7 @@ static SSKEnvironment *sharedSSKEnvironment;
         @"receiptManager",
         ^{ [self.receiptManager prepareCachedValues]; },
         @"OWSKeyBackupService",
-        ^{ [OWSKeyBackupService warmCaches]; },
+        ^{ [KeyBackupServiceObjcBridge warmKBSCaches]; },
         @"PinnedThreadManager",
         ^{ [PinnedThreadManager warmCaches]; },
         @"typingIndicatorsImpl",
