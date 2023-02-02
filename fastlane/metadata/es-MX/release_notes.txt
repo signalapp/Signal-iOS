@@ -1,1 +1,2 @@
-• We heard that it was sometimes difficult to search for and share a location in a chat, so we searched for the bug and we're happy to share that it's fixed.
+• Even though the “Find by Phone Number” feature is now more than 4x faster, you can still take your time when you decide to start a new conversation.
+• We fixed a few bugs, including one that sometimes caused the text input field to be displayed incorrectly when replying to a story.
