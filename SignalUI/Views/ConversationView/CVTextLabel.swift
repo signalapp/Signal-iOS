@@ -324,14 +324,13 @@ public class CVTextLabel: NSObject {
         fileprivate static func formatAttributedString(config: Config) -> NSMutableAttributedString {
             let attributedString = NSMutableAttributedString(attributedString: config.attributedString)
 
-            // The original attributed string may not have an overall font
-            // assigned. Without it, measurement will not be correct. We
-            // assign a font here with "add" which will not override any
-            // ranges that already have a different font assigned.
-            attributedString.addAttributeToEntireString(.font, value: config.font)
+            // The original attributed string may not have an overall font assigned.
+            // Without it, measurement will not be correct. We assign the default font
+            // to any ranges that don't currently have a font assigned.
+            attributedString.addDefaultAttributeToEntireString(.font, value: config.font)
 
-            // Color needs to be set on the string.
-            attributedString.addAttributeToEntireString(.foregroundColor, value: config.textColor)
+            // Set a default text color based on the passed in config
+            attributedString.addDefaultAttributeToEntireString(.foregroundColor, value: config.textColor)
 
             var range = NSRange(location: 0, length: 0)
             var attributes = attributedString.attributes(at: 0, effectiveRange: &range)

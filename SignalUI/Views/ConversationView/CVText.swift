@@ -320,11 +320,7 @@ private extension NSTextContainer {
             // The original attributed string may not have an overall font assigned.
             // Without it, measurement will not be correct. We assign the default font
             // to any ranges that don't currently have a font assigned.
-            mutableText.enumerateAttribute(.font, in: mutableText.entireRange) { existingFont, subrange, stop in
-                if existingFont == nil {
-                    mutableText.addAttribute(.font, value: font, range: subrange)
-                }
-            }
+            mutableText.addDefaultAttributeToEntireString(.font, value: font)
             attributedString = mutableText
         case .text(let text):
             attributedString = NSAttributedString(string: text, attributes: [.font: font])

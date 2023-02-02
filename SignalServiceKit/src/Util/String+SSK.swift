@@ -198,6 +198,17 @@ public enum ImageAttachmentHeightReference: Int {
 // MARK: -
 
 public extension NSMutableAttributedString {
+
+    /// Set a default value for the given attribute.  Preserves any existing ranges where the attribute
+    /// is already defined.
+    func addDefaultAttributeToEntireString(_ name: NSAttributedString.Key, value: Any) {
+        enumerateAttribute(name, in: entireRange) { existing, subrange, stop in
+            if existing == nil {
+                addAttribute(name, value: value, range: subrange)
+            }
+        }
+    }
+
     func addAttributeToEntireString(_ name: NSAttributedString.Key, value: Any) {
         addAttribute(name, value: value, range: entireRange)
     }
