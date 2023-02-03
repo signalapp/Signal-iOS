@@ -52,16 +52,6 @@ NSString *NoSessionForTransientMessageException = @"NoSessionForTransientMessage
 
 const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
 
-NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSString *fallbackErrorDescription)
-{
-    if (error) {
-        return error;
-    }
-    OWSCFailDebug(@"Using fallback error.");
-    // TODO: Audit all of the places this is called and replace with more specific errors.
-    return [OWSError withError:fallbackCode description:fallbackErrorDescription isRetryable:true];
-}
-
 #pragma mark -
 
 @implementation OWSOutgoingAttachmentInfo
