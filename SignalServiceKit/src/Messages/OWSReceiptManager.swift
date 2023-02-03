@@ -481,7 +481,7 @@ public extension OWSReceiptManager {
                 sql += " AND \(interactionColumn: .id) <= ?"
                 arguments += [sqlId]
             }
-            transaction.unwrapGrdbWrite.executeUpdate(sql: sql, arguments: arguments)
+            transaction.unwrapGrdbWrite.execute(sql: sql, arguments: arguments)
         }
     }
 }

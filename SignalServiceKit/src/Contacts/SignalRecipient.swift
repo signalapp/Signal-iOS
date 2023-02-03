@@ -586,7 +586,7 @@ extension SignalRecipient {
                 """
 
             let arguments: StatementArguments = [newUuid, newPhoneNumber, newUuid, oldPhoneNumber]
-            transaction.executeUpdate(sql: sql, arguments: arguments)
+            transaction.execute(sql: sql, arguments: arguments)
         }
     }
 
@@ -613,7 +613,7 @@ extension SignalRecipient {
                     AND \(phoneNumberColumn) IS NOT NULL
                     """
                 let arguments: StatementArguments = [uuid.uuidString]
-                transaction.executeUpdate(sql: sql, arguments: arguments)
+                transaction.execute(sql: sql, arguments: arguments)
             }
 
             // If a record does _NOT_ have a valid phoneNumber, we apply a mock uuid.
@@ -624,7 +624,7 @@ extension SignalRecipient {
                 AND \(phoneNumberColumn) IS NULL
                 """
             let arguments: StatementArguments = [mockUuid, uuid.uuidString]
-            transaction.executeUpdate(sql: sql, arguments: arguments)
+            transaction.execute(sql: sql, arguments: arguments)
         }
     }
 
@@ -656,7 +656,7 @@ extension SignalRecipient {
                     AND \(uuidColumn) IS NOT NULL
                     """
                 let arguments: StatementArguments = [phoneNumber]
-                transaction.executeUpdate(sql: sql, arguments: arguments)
+                transaction.execute(sql: sql, arguments: arguments)
             }
 
             // If a record does _NOT_ have a valid uuid, we clear the phoneNumber and apply a mock uuid.
@@ -667,7 +667,7 @@ extension SignalRecipient {
                 AND \(uuidColumn) IS NULL
                 """
             let arguments: StatementArguments = [mockUuid, phoneNumber]
-            transaction.executeUpdate(sql: sql, arguments: arguments)
+            transaction.execute(sql: sql, arguments: arguments)
         }
     }
 

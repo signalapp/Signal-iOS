@@ -70,7 +70,7 @@ public class MentionFinder: NSObject {
             DELETE FROM \(TSMention.databaseTableName)
             WHERE \(TSMention.columnName(.uniqueMessageId)) = ?
         """
-        transaction.executeUpdate(sql: sql, arguments: [message.uniqueId])
+        transaction.execute(sql: sql, arguments: [message.uniqueId])
     }
 
     @objc

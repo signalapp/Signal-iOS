@@ -134,6 +134,6 @@ public class ReactionFinder: NSObject {
             DELETE FROM \(OWSReaction.databaseTableName)
             WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
         """
-        transaction.executeUpdate(sql: sql, arguments: [uniqueMessageId])
+        transaction.execute(sql: sql, arguments: [uniqueMessageId])
     }
 }

@@ -355,7 +355,7 @@ public class SDSKeyValueStore: NSObject {
                 FROM \(SDSKeyValueStore.table.tableName)
                 WHERE \(SDSKeyValueStore.collectionColumn.columnName) == ?
             """
-            grdbWrite.executeWithCachedStatement(sql: sql, arguments: [collection])
+            grdbWrite.executeAndCacheStatement(sql: sql, arguments: [collection])
         }
     }
 

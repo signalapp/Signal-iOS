@@ -252,7 +252,8 @@ public extension StoreContext {
 // MARK: - Convenience Methods
 
 public extension GRDBWriteTransaction {
-    func executeUpdate(sql: String, arguments: StatementArguments = StatementArguments()) {
+    /// Execute some SQL.
+    func execute(sql: String, arguments: StatementArguments = .init()) {
         do {
             let statement = try database.makeStatement(sql: sql)
             // TODO: We could use setArgumentsWithValidation for more safety.
@@ -263,10 +264,11 @@ public extension GRDBWriteTransaction {
         }
     }
 
-    // This has significant perf benefits over database.execute()
-    // for queries that we perform repeatedly.
-    func executeWithCachedStatement(sql: String,
-                                    arguments: StatementArguments = StatementArguments()) {
+    /// Execute some SQL and cache the statement.
+    ///
+    /// Caching the statement has significant performance benefits over ``execute`` for queries
+    /// that are performed repeatedly.
+    func executeAndCacheStatement(sql: String, arguments: StatementArguments = .init()) {
         do {
             let statement = try database.cachedStatement(sql: sql)
             // TODO: We could use setArgumentsWithValidation for more safety.

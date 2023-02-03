@@ -443,8 +443,10 @@ class GRDBFullTextSearchFinder: NSObject {
             return
         }
 
-        transaction.executeWithCachedStatement(sql: sql,
-                                               arguments: arguments)
+        transaction.executeAndCacheStatement(
+            sql: sql,
+            arguments: arguments
+        )
     }
 
     private class func modelForFTSMatch(collection: String,

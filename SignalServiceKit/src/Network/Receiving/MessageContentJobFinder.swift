@@ -107,6 +107,6 @@ class GRDBMessageContentJobFinder: MessageContentJobFinder {
             WHERE \(messageContentJobColumn: .uniqueId) in (\(commaSeparatedIds))
         """
 
-        transaction.executeUpdate(sql: sql)
+        transaction.execute(sql: sql)
     }
 }

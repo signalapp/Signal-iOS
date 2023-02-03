@@ -79,7 +79,7 @@ public extension SDSModel {
                 FROM \(sdsTableName)
                 WHERE uniqueId == ?
             """
-            grdbTransaction.executeWithCachedStatement(sql: sql, arguments: [uniqueId])
+            grdbTransaction.executeAndCacheStatement(sql: sql, arguments: [uniqueId])
         }
 
         anyDidRemove(with: transaction)

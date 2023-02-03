@@ -106,7 +106,7 @@ public class GRDBGroupsV2MessageJobFinder: NSObject {
             FROM \(IncomingGroupsV2MessageJobRecord.databaseTableName)
             WHERE \(incomingGroupsV2MessageJobColumn: .uniqueId) in (\(commaSeparatedIds))
         """
-        transaction.executeUpdate(sql: sql)
+        transaction.execute(sql: sql)
     }
 
     @objc

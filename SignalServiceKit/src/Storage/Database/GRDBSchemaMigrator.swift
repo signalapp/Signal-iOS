@@ -2299,7 +2299,10 @@ public class GRDBSchemaMigrator: NSObject {
                 DELETE FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .recordType) = ?
             """
-            transaction.executeUpdate(sql: sql, arguments: [SDSRecordType.invalidIdentityKeySendingErrorMessage.rawValue])
+            transaction.execute(
+                sql: sql,
+                arguments: [SDSRecordType.invalidIdentityKeySendingErrorMessage.rawValue]
+            )
             return .success(())
         }
 
