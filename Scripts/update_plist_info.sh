@@ -9,8 +9,6 @@ if [ "${PROJECT_DIR}" = "" ]; then
 fi
 
 # Capture project hashes that we want to add to the Info.plist
-cd $PROJECT_DIR/ThirdParty/WebRTC/
-_git_commit_webrtc=`git log --pretty=oneline --decorate=no | head -1`
 cd $PROJECT_DIR
 _git_commit_signal=`git log --pretty=oneline --decorate=no | head -1`
 
@@ -18,8 +16,6 @@ _git_commit_signal=`git log --pretty=oneline --decorate=no | head -1`
 /usr/libexec/PlistBuddy -c "Delete BuildDetails" Signal/Signal-Info.plist || true
 # Add new .plist entry.
 /usr/libexec/PlistBuddy -c "add BuildDetails dict" Signal/Signal-Info.plist
-
-/usr/libexec/PlistBuddy -c "add :BuildDetails:WebRTCCommit string '$_git_commit_webrtc'" Signal/Signal-Info.plist
 
 echo "CONFIGURATION: ${CONFIGURATION}"
 if [ "${CONFIGURATION}" = "App Store Release" ]; then

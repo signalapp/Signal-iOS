@@ -122,9 +122,6 @@ class InternalSettingsViewController: OWSTableViewController2 {
             if let signalCommit = (buildDetails["SignalCommit"] as? String)?.strippedOrNil?.prefix(12) {
                 infoSection.add(.copyableItem(label: "Signal Commit", value: String(signalCommit)))
             }
-            if let webRTCCommit = (buildDetails["WebRTCCommit"] as? String)?.strippedOrNil?.prefix(12) {
-                infoSection.add(.copyableItem(label: "WebRTC Commit", value: String(webRTCCommit)))
-            }
         }
 
         infoSection.add(.label(withText: "Memory Usage: \(LocalDevice.memoryUsageString)"))

@@ -22,7 +22,9 @@ pod 'Curve25519Kit', git: 'ssh://git@github.com/signalapp/Curve25519Kit', testsp
 pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-master'
 # pod 'blurhash', path: '../blurhash'
 
-pod 'SignalRingRTC', path: 'ThirdParty/SignalRingRTC.podspec', inhibit_warnings: true
+ENV['RINGRTC_PREBUILD_CHECKSUM'] = '513e68f96fef4ba48f63f0d857ba6619087bda1e308fe83233d07928bb4bdb79'
+pod 'SignalRingRTC', git: 'https://github.com/signalapp/ringrtc', tag: 'v2.24.0', inhibit_warnings: true
+# pod 'SignalRingRTC', path: '../ringrtc', testspecs: ["Tests"]
 
 pod 'SignalArgon2', git: 'https://github.com/signalapp/Argon2.git', submodules: true, testspecs: ["Tests"]
 # pod 'SignalArgon2', path: '../Argon2', testspecs: ["Tests"]
@@ -130,6 +132,7 @@ post_install do |installer|
   strip_valid_archs(installer)
   update_frameworks_script(installer)
   disable_non_development_pod_warnings(installer)
+  fix_ringrtc_project_symlink(installer)
   copy_acknowledgements
 end
 
@@ -275,6 +278,11 @@ def disable_non_development_pod_warnings(installer)
       build_configuration.build_settings['OTHER_SWIFT_FLAGS'] << ' -suppress-warnings'
     end
   end
+end
+
+# Workaround for RingRTC's weird cached artifacts, hopefully temporary
+def fix_ringrtc_project_symlink(installer)
+  installer.pods_project.reference_for_path(installer.sandbox.pod_dir('SignalRingRTC') + 'out/release/libringrtc/ringrtc.h').path = 'out/release/libringrtc/ringrtc.h'
 end
 
 def copy_acknowledgements

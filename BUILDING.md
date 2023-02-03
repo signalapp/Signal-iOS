@@ -33,12 +33,6 @@ To build and configure the libraries Signal uses, just run:
 make dependencies
 ```
 
-### Building RingRTC
-
-A prebuilt version of WebRTC.framework and the libringrtc static library reside
-in a sub-module and should be installed by the above steps.  However, if you'd 
-like to build it from source, see: https://github.com/signalapp/ringrtc
-
 ## 3. Xcode
 
 Open the `Signal.xcworkspace` in Xcode.

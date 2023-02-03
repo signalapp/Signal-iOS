@@ -3,10 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>BuildDetails</key>
-	<dict>
-		<key>WebRTCCommit</key>
-		<string>b6748ec862d2c74f0904ebc1a8cc4cd50ff3e90c Production build of v2.23.1</string>
-	</dict>
+	<dict/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
