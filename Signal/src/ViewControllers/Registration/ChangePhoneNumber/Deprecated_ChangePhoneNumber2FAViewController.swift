@@ -9,7 +9,7 @@ import SignalMessaging
 import UIKit
 
 @objc
-public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController {
+public class Deprecated_ChangePhoneNumber2FAViewController: Deprecated_RegistrationBaseViewController {
 
     // When the users attempts remaining falls below this number,
     // we will show an alert with more detail about the risks.
@@ -56,13 +56,13 @@ public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController 
     }
 
     private let context: ViewControllerContext
-    private let changePhoneNumberController: ChangePhoneNumberController
+    private let changePhoneNumberController: Deprecated_ChangePhoneNumberController
     private let oldPhoneNumber: PhoneNumber
     private let newPhoneNumber: PhoneNumber
     private let kbsAuth: KBSAuthCredential
 
     init(
-        changePhoneNumberController: ChangePhoneNumberController,
+        changePhoneNumberController: Deprecated_ChangePhoneNumberController,
         oldPhoneNumber: PhoneNumber,
         newPhoneNumber: PhoneNumber,
         kbsAuth: KBSAuthCredential
@@ -139,7 +139,7 @@ public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController 
         pinTypeToggle.accessibilityIdentifier = "onboarding.2fa." + "pinTypeToggle"
 
         nextButton.accessibilityIdentifier = "onboarding.2fa." + "nextButton"
-        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
+        let primaryButtonView = Deprecated_OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
 
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
@@ -325,7 +325,7 @@ public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController 
         }
     }
 
-    private typealias VerificationOutcome = ChangePhoneNumberController.VerificationOutcome
+    private typealias VerificationOutcome = Deprecated_ChangePhoneNumberController.VerificationOutcome
 
     private func getRegistrationLockTokenAndVerify(pin: String) -> Promise<VerificationOutcome> {
         firstly {
@@ -378,7 +378,7 @@ public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController 
             return
         }
 
-        let vc = RegistrationPinAttemptsExhaustedViewController(delegate: changePhoneNumberController)
+        let vc = Deprecated_RegistrationPinAttemptsExhaustedViewController(delegate: changePhoneNumberController)
         navigationController.pushViewController(vc, animated: true)
     }
 
@@ -459,7 +459,7 @@ public class ChangePhoneNumber2FAViewController: RegistrationBaseViewController 
 
 // MARK: -
 
-extension ChangePhoneNumber2FAViewController: UITextFieldDelegate {
+extension Deprecated_ChangePhoneNumber2FAViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let hasPendingChanges: Bool
         if pinType == .numeric {

@@ -7,15 +7,15 @@ import SignalCoreKit
 
 // Most of the logic for the verification views resides in RegistrationCaptchaViewController.
 @objc
-public class ChangePhoneNumberCaptchaViewController: RegistrationBaseViewController {
+public class Deprecated_ChangePhoneNumberCaptchaViewController: Deprecated_RegistrationBaseViewController {
 
-    private let changePhoneNumberController: ChangePhoneNumberController
+    private let changePhoneNumberController: Deprecated_ChangePhoneNumberController
     private let oldPhoneNumber: PhoneNumber
     private let newPhoneNumber: PhoneNumber
 
-    let viewModel = RegistrationCaptchaViewModel()
+    let viewModel = Deprecated_RegistrationCaptchaViewModel()
 
-    init(changePhoneNumberController: ChangePhoneNumberController,
+    init(changePhoneNumberController: Deprecated_ChangePhoneNumberController,
          oldPhoneNumber: PhoneNumber,
          newPhoneNumber: PhoneNumber) {
         self.changePhoneNumberController = changePhoneNumberController
@@ -44,7 +44,7 @@ public class ChangePhoneNumberCaptchaViewController: RegistrationBaseViewControl
 
 // MARK: -
 
-extension ChangePhoneNumberCaptchaViewController: RegistrationCaptchaViewController {
+extension Deprecated_ChangePhoneNumberCaptchaViewController: Deprecated_RegistrationCaptchaViewController {
 
     func requestCaptchaVerification(captchaToken: String) {
         AssertIsOnMainThread()

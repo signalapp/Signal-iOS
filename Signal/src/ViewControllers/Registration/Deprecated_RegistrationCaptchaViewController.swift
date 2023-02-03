@@ -7,9 +7,9 @@ import Foundation
 import UIKit
 
 @objc
-protocol RegistrationCaptchaViewController: AnyObject {
+protocol Deprecated_RegistrationCaptchaViewController: AnyObject {
 
-    var viewModel: RegistrationCaptchaViewModel { get }
+    var viewModel: Deprecated_RegistrationCaptchaViewModel { get }
     var primaryView: UIView { get }
 
     func requestCaptchaVerification(captchaToken: String)
@@ -18,14 +18,14 @@ protocol RegistrationCaptchaViewController: AnyObject {
 // MARK: -
 
 @objc
-class RegistrationCaptchaViewModel: NSObject {
-    weak var viewController: RegistrationCaptchaViewController?
+class Deprecated_RegistrationCaptchaViewModel: NSObject {
+    weak var viewController: Deprecated_RegistrationCaptchaViewController?
 
     let captchaView = CaptchaView(context: .registration)
 
     // MARK: - Methods
 
-    func createViews(vc: RegistrationBaseViewController) {
+    func createViews(vc: Deprecated_RegistrationBaseViewController) {
         AssertIsOnMainThread()
 
         let primaryView = vc.primaryView
@@ -101,7 +101,7 @@ class RegistrationCaptchaViewModel: NSObject {
 
 // MARK: -
 
-extension RegistrationCaptchaViewModel: CaptchaViewDelegate {
+extension Deprecated_RegistrationCaptchaViewModel: CaptchaViewDelegate {
 
     public func captchaView(_: CaptchaView, didCompleteCaptchaWithToken token: String) {
         requestCaptchaVerification(captchaToken: token)

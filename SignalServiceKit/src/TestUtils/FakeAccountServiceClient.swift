@@ -12,11 +12,11 @@ public class FakeAccountServiceClient: AccountServiceClient {
 
     // MARK: - Public
 
-    public override func requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
+    public override func deprecated_requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
         return Promise { $0.resolve() }
     }
 
-    public override func requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void> {
+    public override func deprecated_requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void> {
         return Promise { $0.resolve() }
     }
 

@@ -7,7 +7,7 @@ import Foundation
 import SignalServiceKit
 import SignalMessaging
 
-public protocol RegistrationHelperDelegate: AnyObject {
+public protocol Deprecated_RegistrationHelperDelegate: AnyObject {
     func registrationRequestVerificationDidSucceed(fromViewController: UIViewController)
     func registrationRequestVerificationDidRequireCaptcha(fromViewController: UIViewController)
     func registrationIncrementVerificationRequestCount()
@@ -15,7 +15,7 @@ public protocol RegistrationHelperDelegate: AnyObject {
 
 // MARK: -
 
-public class RegistrationHelper: Dependencies {
+public class Deprecated_RegistrationHelper: Dependencies {
 
     public typealias VerificationCompletion = (_ willTransition: Bool, _ error: Error?) -> Void
 
@@ -23,7 +23,7 @@ public class RegistrationHelper: Dependencies {
     private static let forceCaptcha = false
 #endif
 
-    public static func requestRegistrationVerification(delegate: RegistrationHelperDelegate,
+    public static func requestRegistrationVerification(delegate: Deprecated_RegistrationHelperDelegate,
                                                        fromViewController: UIViewController,
                                                        phoneNumber: RegistrationPhoneNumber?,
                                                        countryState: RegistrationCountryState,
@@ -41,7 +41,7 @@ public class RegistrationHelper: Dependencies {
 
     }
 
-    public static func requestChangePhoneNumberVerification(delegate: RegistrationHelperDelegate,
+    public static func requestChangePhoneNumberVerification(delegate: Deprecated_RegistrationHelperDelegate,
                                                             fromViewController: UIViewController,
                                                             phoneNumber: RegistrationPhoneNumber?,
                                                             countryState: RegistrationCountryState,
@@ -59,7 +59,7 @@ public class RegistrationHelper: Dependencies {
     }
 
     private static func requestVerification(mode: AccountManager.VerificationMode,
-                                            delegate: RegistrationHelperDelegate,
+                                            delegate: Deprecated_RegistrationHelperDelegate,
                                             fromViewController: UIViewController,
                                             phoneNumber: RegistrationPhoneNumber?,
                                             countryState: RegistrationCountryState,
@@ -98,10 +98,10 @@ public class RegistrationHelper: Dependencies {
         delegate.registrationIncrementVerificationRequestCount()
 
         firstly { () -> Promise<Void> in
-            self.accountManager.requestAccountVerification(e164: phoneNumber.e164,
-                                                           captchaToken: captchaToken,
-                                                           isSMS: isSMS,
-                                                           mode: mode)
+            self.accountManager.deprecated_requestAccountVerification(e164: phoneNumber.e164,
+                                                                      captchaToken: captchaToken,
+                                                                      isSMS: isSMS,
+                                                                      mode: mode)
         }.done { [weak delegate] in
             completion?(true, nil)
             delegate?.registrationRequestVerificationDidSucceed(fromViewController: fromViewController)
@@ -115,7 +115,7 @@ public class RegistrationHelper: Dependencies {
 
     private static func handleVerificationError(error: Error,
                                                 fromViewController: UIViewController,
-                                                delegate: RegistrationHelperDelegate?,
+                                                delegate: Deprecated_RegistrationHelperDelegate?,
                                                 completion: VerificationCompletion?) {
         AssertIsOnMainThread()
 

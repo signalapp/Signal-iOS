@@ -9,16 +9,16 @@ import UIKit
 import SignalMessaging
 import SignalUI
 
-protocol ChangePhoneNumberViewDelegate: AnyObject {
+protocol Deprecated_ChangePhoneNumberViewDelegate: AnyObject {
     var changePhoneNumberViewFromViewController: UIViewController { get }
 }
 
 // MARK: -
 
-class ChangePhoneNumberController: Dependencies {
-    public weak var delegate: ChangePhoneNumberViewDelegate?
+class Deprecated_ChangePhoneNumberController: Dependencies {
+    public weak var delegate: Deprecated_ChangePhoneNumberViewDelegate?
 
-    public init(delegate: ChangePhoneNumberViewDelegate) {
+    public init(delegate: Deprecated_ChangePhoneNumberViewDelegate) {
         self.delegate = delegate
     }
 
@@ -41,7 +41,7 @@ class ChangePhoneNumberController: Dependencies {
 
     public func requestVerification(fromViewController: UIViewController,
                                     isSMS: Bool,
-                                    completion: RegistrationHelper.VerificationCompletion?) {
+                                    completion: Deprecated_RegistrationHelper.VerificationCompletion?) {
         AssertIsOnMainThread()
 
         let countryState = self.newCountryState
@@ -55,7 +55,7 @@ class ChangePhoneNumberController: Dependencies {
             return
         }
 
-        RegistrationHelper.requestChangePhoneNumberVerification(delegate: self,
+        Deprecated_RegistrationHelper.requestChangePhoneNumberVerification(delegate: self,
                                                                 fromViewController: fromViewController,
                                                                 phoneNumber: phoneNumber,
                                                                 countryState: countryState,
@@ -182,7 +182,7 @@ class ChangePhoneNumberController: Dependencies {
     // MARK: -
 
     func firstViewController() -> UIViewController {
-        ChangePhoneNumberSplashViewController(changePhoneNumberController: self)
+        Deprecated_ChangePhoneNumberSplashViewController(changePhoneNumberController: self)
     }
 
     public func verificationDidRequire2FAPin(viewController: UIViewController,
@@ -196,7 +196,7 @@ class ChangePhoneNumberController: Dependencies {
             return
         }
 
-        guard !(navigationController.topViewController is ChangePhoneNumber2FAViewController) else {
+        guard !(navigationController.topViewController is Deprecated_ChangePhoneNumber2FAViewController) else {
             // 2fa view is already presented, we don't need to push it again.
             return
         }
@@ -206,7 +206,7 @@ class ChangePhoneNumberController: Dependencies {
                   return
               }
 
-        let view = ChangePhoneNumber2FAViewController(changePhoneNumberController: self,
+        let view = Deprecated_ChangePhoneNumber2FAViewController(changePhoneNumberController: self,
                                                       oldPhoneNumber: oldPhoneNumber,
                                                       newPhoneNumber: newPhoneNumber,
                                                       kbsAuth: kbsAuth)
@@ -249,7 +249,7 @@ class ChangePhoneNumberController: Dependencies {
             return
         }
 
-        let view = ChangePhoneNumberCaptchaViewController(changePhoneNumberController: self,
+        let view = Deprecated_ChangePhoneNumberCaptchaViewController(changePhoneNumberController: self,
                                                           oldPhoneNumber: oldPhoneNumber,
                                                           newPhoneNumber: newPhoneNumber)
         navigationController.pushViewController(view, animated: true)
@@ -258,7 +258,7 @@ class ChangePhoneNumberController: Dependencies {
 
 // MARK: -
 
-extension ChangePhoneNumberController: RegistrationHelperDelegate {
+extension Deprecated_ChangePhoneNumberController: Deprecated_RegistrationHelperDelegate {
 
     public func registrationRequestVerificationDidSucceed(fromViewController: UIViewController) {
         AssertIsOnMainThread()
@@ -276,7 +276,7 @@ extension ChangePhoneNumberController: RegistrationHelperDelegate {
             return
         }
 
-        let vc = ChangePhoneNumberVerificationViewController(changePhoneNumberController: self,
+        let vc = Deprecated_ChangePhoneNumberVerificationViewController(changePhoneNumberController: self,
                                                              oldPhoneNumber: oldPhoneNumber,
                                                              newPhoneNumber: newPhoneNumber)
         navigationController.pushViewController(vc, animated: true)
@@ -293,10 +293,10 @@ extension ChangePhoneNumberController: RegistrationHelperDelegate {
 
 // MARK: -
 
-extension ChangePhoneNumberController: RegistrationPinAttemptsExhaustedViewDelegate {
+extension Deprecated_ChangePhoneNumberController: Deprecated_RegistrationPinAttemptsExhaustedViewDelegate {
     var hasPendingRestoration: Bool { false }
 
-    func pinAttemptsExhaustedViewDidComplete(viewController: RegistrationPinAttemptsExhaustedViewController) {
+    func pinAttemptsExhaustedViewDidComplete(viewController: Deprecated_RegistrationPinAttemptsExhaustedViewController) {
         dismissFlow(didSucceed: false)
     }
 }

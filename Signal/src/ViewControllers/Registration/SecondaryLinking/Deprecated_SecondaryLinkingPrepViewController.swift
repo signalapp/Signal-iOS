@@ -8,12 +8,12 @@ import Lottie
 import SignalMessaging
 
 @objc
-public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
+public class Deprecated_SecondaryLinkingPrepViewController: Deprecated_OnboardingBaseViewController {
 
     lazy var animationView = AnimationView(name: isTransferring ? "launchApp-iPad" : "launchApp-iPhone")
     let isTransferring: Bool
 
-    public init(onboardingController: OnboardingController, isTransferring: Bool) {
+    public init(onboardingController: Deprecated_OnboardingController, isTransferring: Bool) {
         self.isTransferring = isTransferring
         super.init(onboardingController: onboardingController)
     }
@@ -60,7 +60,7 @@ public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
         let nextButton = self.primaryButton(title: CommonStrings.nextButton,
                                             selector: #selector(didPressNext))
         nextButton.accessibilityIdentifier = "onboarding.prelink.nextButton"
-        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
+        let primaryButtonView = Deprecated_OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
 
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
@@ -114,7 +114,7 @@ public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
         if isTransferring {
             onboardingController.transferAccount(fromViewController: self)
         } else {
-            let provisioningController = ProvisioningController(onboardingController: onboardingController)
+            let provisioningController = Deprecated_ProvisioningController(onboardingController: onboardingController)
             provisioningController.didConfirmSecondaryDevice(from: self)
         }
     }

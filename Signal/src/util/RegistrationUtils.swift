@@ -34,9 +34,9 @@ public extension RegistrationUtils {
             canCancel: false) { modalActivityIndicator in
 
                 firstly {
-                    Self.accountManager.requestRegistrationVerification(e164: phoneNumber,
-                                                                        captchaToken: nil,
-                                                                        isSMS: true)
+                    Self.accountManager.deprecated_requestRegistrationVerification(e164: phoneNumber,
+                                                                                   captchaToken: nil,
+                                                                                   isSMS: true)
                 }.done(on: .main) { _ in
 
                     Logger.info("re-registering: send verification code succeeded.")
@@ -46,13 +46,13 @@ public extension RegistrationUtils {
 
                         // TODO[ViewContextPiping]
                         let context = ViewControllerContext.shared
-                        let onboardingController = OnboardingController(context: context, onboardingMode: .registering)
+                        let onboardingController = Deprecated_OnboardingController(context: context, onboardingMode: .registering)
                         let registrationPhoneNumber = RegistrationPhoneNumber(e164: phoneNumber, userInput: phoneNumber)
                         onboardingController.update(phoneNumber: registrationPhoneNumber)
 
-                        let viewController = OnboardingVerificationViewController(onboardingController: onboardingController)
+                        let viewController = Deprecated_OnboardingVerificationViewController(onboardingController: onboardingController)
                         viewController.hideBackLink()
-                        let navigationController = OnboardingNavigationController(onboardingController: onboardingController)
+                        let navigationController = Deprecated_OnboardingNavigationController(onboardingController: onboardingController)
                         navigationController.setViewControllers([viewController], animated: false)
                         let window: UIWindow = CurrentAppContext().mainWindow!
                         window.rootViewController = navigationController
@@ -80,12 +80,12 @@ public extension RegistrationUtils {
                             case .captchaRequired:
                                 // TODO[ViewContextPiping]
                                 let context = ViewControllerContext.shared
-                                let onboardingController = OnboardingController(context: context, onboardingMode: .registering)
+                                let onboardingController = Deprecated_OnboardingController(context: context, onboardingMode: .registering)
                                 let registrationPhoneNumber = RegistrationPhoneNumber(e164: phoneNumber, userInput: phoneNumber)
                                 onboardingController.update(phoneNumber: registrationPhoneNumber)
 
-                                let viewController = OnboardingCaptchaViewController(onboardingController: onboardingController)
-                                let navigationController = OnboardingNavigationController(onboardingController: onboardingController)
+                                let viewController = Deprecated_OnboardingCaptchaViewController(onboardingController: onboardingController)
+                                let navigationController = Deprecated_OnboardingNavigationController(onboardingController: onboardingController)
                                 navigationController.setViewControllers([viewController], animated: false)
                                 let window: UIWindow = CurrentAppContext().mainWindow!
                                 window.rootViewController = navigationController

@@ -7,7 +7,7 @@ import SignalMessaging
 import UIKit
 
 @objc
-public class RegistrationPhoneNumberViewController: OnboardingBaseViewController {
+public class Deprecated_RegistrationPhoneNumberViewController: Deprecated_OnboardingBaseViewController {
 
     // MARK: - Properties
 
@@ -212,7 +212,7 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
             titleLabel, titleSpacer,
             countryRow, phoneNumberRow, phoneNumberSpacer,
             validationWarningLabel, warningLabelSpacer,
-            OnboardingBaseViewController.horizontallyWrap(primaryButton: continueButton), bottomSpacer
+            Deprecated_OnboardingBaseViewController.horizontallyWrap(primaryButton: continueButton), bottomSpacer
         ])
         stackView.axis = .vertical
         stackView.alignment = .fill
@@ -343,7 +343,7 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
             phoneNumber = reregistrationNumber
             isReregistering = true
 
-        } else if let lastRegisteredPhoneNumber = OnboardingController.lastRegisteredPhoneNumber(),
+        } else if let lastRegisteredPhoneNumber = Deprecated_OnboardingController.lastRegisteredPhoneNumber(),
                   !lastRegisteredPhoneNumber.isEmpty {
             phoneNumber = lastRegisteredPhoneNumber
 
@@ -653,7 +653,7 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
 
 // MARK: -
 
-extension RegistrationPhoneNumberViewController: UITextFieldDelegate {
+extension Deprecated_RegistrationPhoneNumberViewController: UITextFieldDelegate {
     public func textField(
         _ textField: UITextField,
         shouldChangeCharactersIn range: NSRange,
@@ -685,7 +685,7 @@ extension RegistrationPhoneNumberViewController: UITextFieldDelegate {
 
 // MARK: -
 
-extension RegistrationPhoneNumberViewController: CountryCodeViewControllerDelegate {
+extension Deprecated_RegistrationPhoneNumberViewController: CountryCodeViewControllerDelegate {
     public func countryCodeViewController(_ vc: CountryCodeViewController,
                                           didSelectCountry countryState: RegistrationCountryState) {
         onboardingController.update(countryState: countryState)

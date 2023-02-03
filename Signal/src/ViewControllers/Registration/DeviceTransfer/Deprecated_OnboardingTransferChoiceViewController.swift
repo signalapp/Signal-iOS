@@ -6,7 +6,7 @@
 import UIKit
 
 @objc
-public class OnboardingTransferChoiceViewController: OnboardingBaseViewController {
+public class Deprecated_OnboardingTransferChoiceViewController: Deprecated_OnboardingBaseViewController {
 
     public override var primaryLayoutMargins: UIEdgeInsets {
         var defaultMargins = super.primaryLayoutMargins
@@ -222,7 +222,7 @@ public class OnboardingTransferChoiceViewController: OnboardingBaseViewControlle
 
         switch onboardingController.onboardingMode {
         case .provisioning:
-            let prepViewController = SecondaryLinkingPrepViewController(onboardingController: onboardingController, isTransferring: true)
+            let prepViewController = Deprecated_SecondaryLinkingPrepViewController(onboardingController: onboardingController, isTransferring: true)
             navigationController?.pushViewController(prepViewController, animated: true)
         case .registering:
             onboardingController.transferAccount(fromViewController: self)
@@ -235,7 +235,7 @@ public class OnboardingTransferChoiceViewController: OnboardingBaseViewControlle
 
         switch onboardingController.onboardingMode {
         case .provisioning:
-            let prepViewController = SecondaryLinkingPrepViewController(onboardingController: onboardingController, isTransferring: false)
+            let prepViewController = Deprecated_SecondaryLinkingPrepViewController(onboardingController: onboardingController, isTransferring: false)
             navigationController?.pushViewController(prepViewController, animated: true)
         case .registering:
             onboardingController.submitVerification(fromViewController: self, checkForAvailableTransfer: false, completion: { outcome in

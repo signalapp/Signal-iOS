@@ -220,7 +220,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
     }
 
     private func changePhoneNumber() {
-        let changePhoneNumberController = ChangePhoneNumberController(delegate: self)
+        let changePhoneNumberController = Deprecated_ChangePhoneNumberController(delegate: self)
         let vc = changePhoneNumberController.firstViewController()
         navigationController?.pushViewController(vc, animated: true)
     }
@@ -361,6 +361,6 @@ class AccountSettingsViewController: OWSTableViewController2 {
 
 // MARK: -
 
-extension AccountSettingsViewController: ChangePhoneNumberViewDelegate {
+extension AccountSettingsViewController: Deprecated_ChangePhoneNumberViewDelegate {
     var changePhoneNumberViewFromViewController: UIViewController { self }
 }

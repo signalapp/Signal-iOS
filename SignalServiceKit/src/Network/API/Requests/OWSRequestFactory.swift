@@ -27,7 +27,7 @@ public extension OWSRequestFactory {
 
     // MARK: - Registration
 
-    static func requestPreauthChallenge(
+    static func deprecated_requestPreauthChallenge(
         e164: String,
         pushToken: String,
         isVoipToken: Bool

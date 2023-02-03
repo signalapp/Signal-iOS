@@ -6,20 +6,20 @@
 import UIKit
 
 @objc
-public class OnboardingBaseViewController: RegistrationBaseViewController {
+public class Deprecated_OnboardingBaseViewController: Deprecated_RegistrationBaseViewController {
 
     // Unlike a delegate, we can and should retain a strong reference to the OnboardingController.
-    let onboardingController: OnboardingController
+    let onboardingController: Deprecated_OnboardingController
 
     @objc
-    public init(onboardingController: OnboardingController) {
+    public init(onboardingController: Deprecated_OnboardingController) {
         self.onboardingController = onboardingController
 
         super.init()
     }
 
     func shouldShowBackButton() -> Bool {
-        return onboardingController.onboardingMode != OnboardingController.defaultOnboardingMode
+        return onboardingController.onboardingMode != Deprecated_OnboardingController.defaultOnboardingMode
     }
 
     // MARK: - View Lifecycle

@@ -6,22 +6,22 @@
 import UIKit
 import SafariServices
 
-protocol RegistrationPinAttemptsExhaustedViewDelegate: AnyObject {
+protocol Deprecated_RegistrationPinAttemptsExhaustedViewDelegate: AnyObject {
     var hasPendingRestoration: Bool { get }
 
-    func pinAttemptsExhaustedViewDidComplete(viewController: RegistrationPinAttemptsExhaustedViewController)
+    func pinAttemptsExhaustedViewDidComplete(viewController: Deprecated_RegistrationPinAttemptsExhaustedViewController)
 }
 
 // MARK: -
 
 @objc
-public class RegistrationPinAttemptsExhaustedViewController: RegistrationBaseViewController {
+public class Deprecated_RegistrationPinAttemptsExhaustedViewController: Deprecated_RegistrationBaseViewController {
 
-    private weak var delegate: RegistrationPinAttemptsExhaustedViewDelegate?
+    private weak var delegate: Deprecated_RegistrationPinAttemptsExhaustedViewDelegate?
 
     var hasPendingRestoration: Bool { delegate?.hasPendingRestoration ?? false }
 
-    required init(delegate: RegistrationPinAttemptsExhaustedViewDelegate) {
+    required init(delegate: Deprecated_RegistrationPinAttemptsExhaustedViewDelegate) {
         self.delegate = delegate
     }
 
@@ -70,7 +70,7 @@ public class RegistrationPinAttemptsExhaustedViewController: RegistrationBaseVie
             selector: #selector(primaryButtonPressed)
         )
         primaryButton.accessibilityIdentifier = "onboarding.pinAtttemptsExhausted." + "primaryButton"
-        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: primaryButton)
+        let primaryButtonView = Deprecated_OnboardingBaseViewController.horizontallyWrap(primaryButton: primaryButton)
 
         let linkButton = self.linkButton(
             title: linkButtonText,

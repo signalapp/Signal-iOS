@@ -6,7 +6,7 @@
 import Foundation
 import SignalMessaging
 
-class OnboardingModeSwitchConfirmationViewController: OnboardingBaseViewController {
+class Deprecated_OnboardingModeSwitchConfirmationViewController: Deprecated_OnboardingBaseViewController {
     var warningText: String?
 
     override func loadView() {
@@ -21,7 +21,7 @@ class OnboardingModeSwitchConfirmationViewController: OnboardingBaseViewControll
         let nextButtonText: String
         let image: UIImage?
 
-        switch OnboardingController.defaultOnboardingMode {
+        switch Deprecated_OnboardingController.defaultOnboardingMode {
         case .registering:
             titleText = NSLocalizedString("ONBOARDING_MODE_SWITCH_TITLE_REGISTERING",
                                           comment: "header text indicating to the user they're switching from registering to linking flow")
@@ -57,7 +57,7 @@ class OnboardingModeSwitchConfirmationViewController: OnboardingBaseViewControll
         let nextButton = self.primaryButton(title: nextButtonText,
                                             selector: #selector(didPressNext))
         nextButton.accessibilityIdentifier = "onboarding.modeSwitch.nextButton"
-        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
+        let primaryButtonView = Deprecated_OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
 
         let topSpacer = UIView.vStretchingSpacer(minHeight: 12)
         let bottomSpacer = UIView.vStretchingSpacer(minHeight: 12)

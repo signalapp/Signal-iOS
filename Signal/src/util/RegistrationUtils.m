@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [Environment.shared.preferences unsetRecordedAPNSTokens];
 
-    [ProvisioningController presentRelinkingFlow];
+    [Deprecated_ProvisioningController presentRelinkingFlow];
 }
 
 + (void)showReregistrationUIFromViewController:(UIViewController *)fromViewController

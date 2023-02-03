@@ -9,15 +9,15 @@ import UIKit
 import SignalMessaging
 import SignalUI
 
-class ChangePhoneNumberConfirmViewController: OWSViewController {
+class Deprecated_ChangePhoneNumberConfirmViewController: OWSViewController {
 
-    private let changePhoneNumberController: ChangePhoneNumberController
+    private let changePhoneNumberController: Deprecated_ChangePhoneNumberController
     private let oldPhoneNumber: PhoneNumber
     private let newPhoneNumber: PhoneNumber
 
     private let rootView = UIStackView()
 
-    public init(changePhoneNumberController: ChangePhoneNumberController,
+    public init(changePhoneNumberController: Deprecated_ChangePhoneNumberController,
                 oldPhoneNumber: PhoneNumber,
                 newPhoneNumber: PhoneNumber) {
         self.changePhoneNumberController = changePhoneNumberController

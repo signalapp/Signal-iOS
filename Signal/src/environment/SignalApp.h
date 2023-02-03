@@ -8,7 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ConversationSplitViewController;
-@class OnboardingController;
+@class Deprecated_OnboardingController;
 @class SignalServiceAddress;
 @class TSThread;
 
@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)resetAppData;
 + (void)resetAppDataWithUI;
 
-- (void)showOnboardingView:(OnboardingController *)onboardingController;
+- (void)showOnboardingView:(Deprecated_OnboardingController *)onboardingController;
 - (void)showConversationSplitView;
 - (void)applicationWillTerminate;
 

@@ -11,7 +11,7 @@ import GameController
 #endif
 
 @objc
-public class Onboarding2FAViewController: OnboardingBaseViewController {
+public class Deprecated_Onboarding2FAViewController: Deprecated_OnboardingBaseViewController {
 
     // When the users attempts remaining falls below this number,
     // we will show an alert with more detail about the risks.
@@ -59,7 +59,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
 
     private let context: ViewControllerContext
 
-    public init(onboardingController: OnboardingController, isUsingKBS: Bool) {
+    public init(onboardingController: Deprecated_OnboardingController, isUsingKBS: Bool) {
         // TODO[ViewContextPiping]
         self.context = ViewControllerContext.shared
         self.isUsingKBS = isUsingKBS
@@ -130,7 +130,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinTypeToggle.accessibilityIdentifier = "onboarding.2fa." + "pinTypeToggle"
 
         nextButton.accessibilityIdentifier = "onboarding.2fa." + "nextButton"
-        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
+        let primaryButtonView = Deprecated_OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
 
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
@@ -352,7 +352,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             return
         }
 
-        let vc = RegistrationPinAttemptsExhaustedViewController(delegate: onboardingController)
+        let vc = Deprecated_RegistrationPinAttemptsExhaustedViewController(delegate: onboardingController)
         navigationController.pushViewController(vc, animated: true)
     }
 
@@ -474,7 +474,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
 
 // MARK: -
 
-extension Onboarding2FAViewController: UITextFieldDelegate {
+extension Deprecated_Onboarding2FAViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let hasPendingChanges: Bool
         if pinType == .numeric {

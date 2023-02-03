@@ -332,7 +332,7 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
             bottomSpacer,
             pinTypeToggle,
             pinToggleSpacer,
-            OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton),
+            Deprecated_OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton),
             buttonSpacer
         ])
         stackView.axis = .vertical

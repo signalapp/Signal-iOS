@@ -8,11 +8,11 @@ import SignalMessaging
 import UIKit
 
 @objc
-public class OnboardingTransferProgressViewController: OnboardingBaseViewController {
+public class Deprecated_OnboardingTransferProgressViewController: Deprecated_OnboardingBaseViewController {
 
     let progressView: TransferProgressView
 
-    public init(onboardingController: OnboardingController, progress: Progress) {
+    public init(onboardingController: Deprecated_OnboardingController, progress: Progress) {
         self.progressView = TransferProgressView(progress: progress)
         super.init(onboardingController: onboardingController)
     }
@@ -114,7 +114,7 @@ public class OnboardingTransferProgressViewController: OnboardingBaseViewControl
     }
 }
 
-extension OnboardingTransferProgressViewController: DeviceTransferServiceObserver {
+extension Deprecated_OnboardingTransferProgressViewController: DeviceTransferServiceObserver {
     func deviceTransferServiceDiscoveredNewDevice(peerId: MCPeerID, discoveryInfo: [String: String]?) {}
 
     func deviceTransferServiceDidStartTransfer(progress: Progress) {}

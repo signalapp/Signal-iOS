@@ -7,7 +7,7 @@ import Foundation
 import MultipeerConnectivity
 import SignalMessaging
 
-public class OnboardingTransferQRCodeViewController: OnboardingBaseViewController {
+public class Deprecated_OnboardingTransferQRCodeViewController: Deprecated_OnboardingBaseViewController {
 
     private let qrCodeView = QRCodeView()
 
@@ -176,7 +176,7 @@ public class OnboardingTransferQRCodeViewController: OnboardingBaseViewControlle
     }
 }
 
-extension OnboardingTransferQRCodeViewController: DeviceTransferServiceObserver {
+extension Deprecated_OnboardingTransferQRCodeViewController: DeviceTransferServiceObserver {
     func deviceTransferServiceDiscoveredNewDevice(peerId: MCPeerID, discoveryInfo: [String: String]?) {}
 
     func deviceTransferServiceDidStartTransfer(progress: Progress) {

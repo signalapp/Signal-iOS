@@ -35,8 +35,8 @@ public class AccountManager: NSObject {
 
     // MARK: registration
 
-    func requestRegistrationVerification(e164: String, captchaToken: String?, isSMS: Bool) -> Promise<Void> {
-        requestAccountVerification(e164: e164,
+    func deprecated_requestRegistrationVerification(e164: String, captchaToken: String?, isSMS: Bool) -> Promise<Void> {
+        deprecated_requestAccountVerification(e164: e164,
                                    captchaToken: captchaToken,
                                    isSMS: isSMS,
                                    mode: .registration)
@@ -47,10 +47,10 @@ public class AccountManager: NSObject {
         case changePhoneNumber
     }
 
-    public func requestAccountVerification(e164: String,
-                                           captchaToken: String?,
-                                           isSMS: Bool,
-                                           mode: VerificationMode) -> Promise<Void> {
+    public func deprecated_requestAccountVerification(e164: String,
+                                                      captchaToken: String?,
+                                                      isSMS: Bool,
+                                                      mode: VerificationMode) -> Promise<Void> {
         let transport: TSVerificationTransport = isSMS ? .SMS : .voice
 
         return firstly { () -> Promise<String?> in
@@ -67,23 +67,23 @@ public class AccountManager: NSObject {
                 break
             }
 
-            return self.getPreauthChallenge(e164: e164)
+            return self.deprecated_getPreauthChallenge(e164: e164)
         }.then { (preauthChallenge: String?) -> Promise<Void> in
-            self.accountServiceClient.requestVerificationCode(e164: e164,
-                                                              preauthChallenge: preauthChallenge,
-                                                              captchaToken: captchaToken,
-                                                              transport: transport)
+            self.accountServiceClient.deprecated_requestVerificationCode(e164: e164,
+                                                                         preauthChallenge: preauthChallenge,
+                                                                         captchaToken: captchaToken,
+                                                                         transport: transport)
         }
     }
 
-    func getPreauthChallenge(e164: String) -> Promise<String?> {
+    func deprecated_getPreauthChallenge(e164: String) -> Promise<String?> {
         return firstly {
             return self.pushRegistrationManager.requestPushTokens(forceRotation: false)
         }.then { (vanillaToken: String, voipToken: String?) -> Promise<String?> in
             let (pushPromise, pushFuture) = Promise<String>.pending()
             self.pushRegistrationManager.preauthChallengeFuture = pushFuture
 
-            return self.accountServiceClient.requestPreauthChallenge(
+            return self.accountServiceClient.deprecated_requestPreauthChallenge(
                 e164: e164,
                 pushToken: voipToken?.nilIfEmpty ?? vanillaToken,
                 isVoipToken: !voipToken.isEmptyOrNil

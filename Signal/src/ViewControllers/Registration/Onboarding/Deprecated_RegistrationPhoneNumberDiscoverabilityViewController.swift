@@ -7,7 +7,7 @@ import SignalMessaging
 import UIKit
 
 @objc
-public class RegistrationPhoneNumberDiscoverabilityViewController: OnboardingBaseViewController {
+public class Deprecated_RegistrationPhoneNumberDiscoverabilityViewController: Deprecated_OnboardingBaseViewController {
 
     static let hInset: CGFloat = UIDevice.current.isPlusSizePhone ? 20 : 16
 
@@ -104,7 +104,7 @@ public class RegistrationPhoneNumberDiscoverabilityViewController: OnboardingBas
         let nextButton = self.primaryButton(title: CommonStrings.nextButton,
                                            selector: #selector(nextPressed))
         nextButton.accessibilityIdentifier = "onboarding.phoneNumberDiscoverability." + "nextButton"
-        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
+        let primaryButtonView = Deprecated_OnboardingBaseViewController.horizontallyWrap(primaryButton: nextButton)
 
         let compressableBottomMargin = UIView.vStretchingSpacer(minHeight: 16, maxHeight: primaryLayoutMargins.bottom)
 
@@ -158,7 +158,7 @@ private class ButtonRow: UIButton {
     private let selectedImageView = UIImageView()
 
     static let vInset: CGFloat = 11
-    static var hInset: CGFloat { RegistrationPhoneNumberDiscoverabilityViewController.hInset }
+    static var hInset: CGFloat { Deprecated_RegistrationPhoneNumberDiscoverabilityViewController.hInset }
 
     override var isSelected: Bool {
         didSet {

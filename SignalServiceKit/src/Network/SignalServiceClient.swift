@@ -13,8 +13,8 @@ public enum SignalServiceError: Int, Error {
 // MARK: -
 
 public protocol SignalServiceClient {
-    func requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void>
-    func requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void>
+    func deprecated_requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void>
+    func deprecated_requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void>
     func verifySecondaryDevice(verificationCode: String, phoneNumber: String, authKey: String, encryptedDeviceName: Data) -> Promise<VerifySecondaryDeviceResponse>
     func getAvailablePreKeys(for identity: OWSIdentity) -> Promise<Int>
     func registerPreKeys(for identity: OWSIdentity, identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void>
@@ -47,8 +47,8 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
     // MARK: - Public
 
-    public func requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
-        let request = OWSRequestFactory.requestPreauthChallenge(
+    public func deprecated_requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
+        let request = OWSRequestFactory.deprecated_requestPreauthChallenge(
             e164: e164,
             pushToken: pushToken,
             isVoipToken: isVoipToken
@@ -56,7 +56,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         return networkManager.makePromise(request: request).asVoid()
     }
 
-    public func requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void> {
+    public func deprecated_requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void> {
         let request = OWSRequestFactory.requestVerificationCodeRequest(e164: e164,
                                                                        preauthChallenge: preauthChallenge,
                                                                        captchaToken: captchaToken,

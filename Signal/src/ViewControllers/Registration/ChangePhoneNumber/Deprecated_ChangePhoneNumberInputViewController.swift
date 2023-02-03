@@ -6,13 +6,13 @@
 import Foundation
 import SignalServiceKit
 
-class ChangePhoneNumberInputViewController: OWSTableViewController2 {
+class Deprecated_ChangePhoneNumberInputViewController: OWSTableViewController2 {
 
-    private let changePhoneNumberController: ChangePhoneNumberController
+    private let changePhoneNumberController: Deprecated_ChangePhoneNumberController
     private let oldValueViews: ChangePhoneNumberValueViews
     private let newValueViews: ChangePhoneNumberValueViews
 
-    public init(changePhoneNumberController: ChangePhoneNumberController) {
+    public init(changePhoneNumberController: Deprecated_ChangePhoneNumberController) {
         self.changePhoneNumberController = changePhoneNumberController
 
         self.oldValueViews = ChangePhoneNumberValueViews(.oldValue,
@@ -186,7 +186,7 @@ class ChangePhoneNumberInputViewController: OWSTableViewController2 {
         oldValueViews.phoneNumberTextField.resignFirstResponder()
         newValueViews.phoneNumberTextField.resignFirstResponder()
 
-        let vc = ChangePhoneNumberConfirmViewController(changePhoneNumberController: changePhoneNumberController,
+        let vc = Deprecated_ChangePhoneNumberConfirmViewController(changePhoneNumberController: changePhoneNumberController,
                                                         oldPhoneNumber: phoneNumbers.oldPhoneNumber,
                                                         newPhoneNumber: phoneNumbers.newPhoneNumber)
         self.navigationController?.pushViewController(vc, animated: true)
@@ -236,7 +236,7 @@ class ChangePhoneNumberInputViewController: OWSTableViewController2 {
 
 // MARK: -
 
-extension ChangePhoneNumberInputViewController: ChangePhoneNumberValueViewsDelegate {
+extension Deprecated_ChangePhoneNumberInputViewController: ChangePhoneNumberValueViewsDelegate {
     fileprivate func valueDidChange(valueViews: ChangePhoneNumberValueViews) {
         AssertIsOnMainThread()
 
@@ -271,9 +271,9 @@ private class ChangePhoneNumberValueViews: NSObject {
     }
     let value: Value
 
-    private let changePhoneNumberController: ChangePhoneNumberController
+    private let changePhoneNumberController: Deprecated_ChangePhoneNumberController
 
-    public init(_ value: Value, changePhoneNumberController: ChangePhoneNumberController) {
+    public init(_ value: Value, changePhoneNumberController: Deprecated_ChangePhoneNumberController) {
         self.value = value
         self.changePhoneNumberController = changePhoneNumberController
 

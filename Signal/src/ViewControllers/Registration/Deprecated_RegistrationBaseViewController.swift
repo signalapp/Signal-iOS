@@ -6,7 +6,7 @@
 import UIKit
 
 @objc
-public class RegistrationBaseViewController: OWSViewController, OWSNavigationChildController {
+public class Deprecated_RegistrationBaseViewController: OWSViewController, OWSNavigationChildController {
 
     // MARK: - Factory Methods
 

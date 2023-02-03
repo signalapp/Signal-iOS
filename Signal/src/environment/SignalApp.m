@@ -274,10 +274,10 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
     self.conversationSplitViewController = splitViewController;
 }
 
-- (void)showOnboardingView:(OnboardingController *)onboardingController
+- (void)showOnboardingView:(Deprecated_OnboardingController *)onboardingController
 {
-    OnboardingNavigationController *navController =
-        [[OnboardingNavigationController alloc] initWithOnboardingController:onboardingController];
+    Deprecated_OnboardingNavigationController *navController =
+        [[Deprecated_OnboardingNavigationController alloc] initWithOnboardingController:onboardingController];
 
     UITapGestureRecognizer *submitLogGesture =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(submitOnboardingLogs)];

@@ -27,7 +27,7 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
     // MARK: - Account
 
     func testRequestPreauthChallenge() {
-        let request = OWSRequestFactory.requestPreauthChallenge(
+        let request = OWSRequestFactory.deprecated_requestPreauthChallenge(
             e164: "+19875550165",
             pushToken: "foo bar",
             isVoipToken: true

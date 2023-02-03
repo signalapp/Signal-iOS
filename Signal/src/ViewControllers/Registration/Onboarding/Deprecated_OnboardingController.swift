@@ -7,11 +7,11 @@ import UIKit
 import SignalServiceKit
 
 @objc
-public class OnboardingNavigationController: OWSNavigationController {
-    private(set) var onboardingController: OnboardingController!
+public class Deprecated_OnboardingNavigationController: OWSNavigationController {
+    private(set) var onboardingController: Deprecated_OnboardingController!
 
     @objc
-    public init(onboardingController: OnboardingController) {
+    public init(onboardingController: Deprecated_OnboardingController) {
         self.onboardingController = onboardingController
         super.init()
         if let nextMilestone = onboardingController.nextMilestone {
@@ -34,7 +34,7 @@ public class OnboardingNavigationController: OWSNavigationController {
 // MARK: -
 
 @objc
-public class OnboardingController: NSObject {
+public class Deprecated_OnboardingController: NSObject {
 
     public enum OnboardingMode {
         case provisioning
@@ -58,7 +58,7 @@ public class OnboardingController: NSObject {
     convenience override init() {
         // TODO[ViewContextPiping]
         let context = ViewControllerContext.shared
-        let onboardingMode = OnboardingController.ascertainOnboardingMode()
+        let onboardingMode = Deprecated_OnboardingController.ascertainOnboardingMode()
         self.init(context: context, onboardingMode: onboardingMode)
     }
 
@@ -182,15 +182,15 @@ public class OnboardingController: NSObject {
         Logger.info("milestone: \(milestone)")
         switch milestone {
         case .verifiedPhoneNumber, .verifiedLinkedDevice:
-            return OnboardingSplashViewController(onboardingController: self)
+            return Deprecated_OnboardingSplashViewController(onboardingController: self)
         case .setupProfile:
-            return OnboardingProfileCreationViewController(onboardingController: self)
+            return Deprecated_OnboardingProfileCreationViewController(onboardingController: self)
         case .restorePin:
-            return Onboarding2FAViewController(onboardingController: self, isUsingKBS: true)
+            return Deprecated_Onboarding2FAViewController(onboardingController: self, isUsingKBS: true)
         case .setupPin:
             return buildPinSetupViewController()
         case .phoneNumberDiscoverability:
-            return RegistrationPhoneNumberDiscoverabilityViewController(onboardingController: self)
+            return Deprecated_RegistrationPhoneNumberDiscoverabilityViewController(onboardingController: self)
         }
     }
 
@@ -209,7 +209,7 @@ public class OnboardingController: NSObject {
 
         Logger.info("")
 
-        let view = OnboardingModeSwitchConfirmationViewController(onboardingController: self)
+        let view = Deprecated_OnboardingModeSwitchConfirmationViewController(onboardingController: self)
         viewController.navigationController?.pushViewController(view, animated: true)
     }
 
@@ -245,10 +245,10 @@ public class OnboardingController: NSObject {
         AssertIsOnMainThread()
 
         if onboardingMode == .provisioning {
-            let view = OnboardingTransferChoiceViewController(onboardingController: self)
+            let view = Deprecated_OnboardingTransferChoiceViewController(onboardingController: self)
             navigationController.pushViewController(view, animated: true)
         } else {
-            let view = RegistrationPhoneNumberViewController(onboardingController: self)
+            let view = Deprecated_RegistrationPhoneNumberViewController(onboardingController: self)
             navigationController.pushViewController(view, animated: true)
         }
     }
@@ -259,7 +259,7 @@ public class OnboardingController: NSObject {
         // Disable interaction during the asynchronous operation.
         oldViewController.view.isUserInteractionEnabled = false
 
-        let newViewController = OnboardingPermissionsViewController(onboardingController: self)
+        let newViewController = Deprecated_OnboardingPermissionsViewController(onboardingController: self)
 
         firstly(on: .sharedUserInitiated) {
             newViewController.needsToAskForAnyPermissions()
@@ -295,7 +295,7 @@ public class OnboardingController: NSObject {
         // TODO: Once notification work is complete, uncomment this.
         // Self.notificationPresenter.cancelIncompleteRegistrationNotification()
 
-        let view = OnboardingVerificationViewController(onboardingController: self)
+        let view = Deprecated_OnboardingVerificationViewController(onboardingController: self)
         viewController.navigationController?.pushViewController(view, animated: true)
     }
 
@@ -313,11 +313,11 @@ public class OnboardingController: NSObject {
         // from the "code verification" view.  The "Captcha" view should always appear
         // immediately after the "phone number" view.
         while navigationController.viewControllers.count > 1 &&
-            !(navigationController.topViewController is RegistrationPhoneNumberViewController) {
+            !(navigationController.topViewController is Deprecated_RegistrationPhoneNumberViewController) {
                 navigationController.popViewController(animated: false)
         }
 
-        let view = OnboardingCaptchaViewController(onboardingController: self)
+        let view = Deprecated_OnboardingCaptchaViewController(onboardingController: self)
         navigationController.pushViewController(view, animated: true)
     }
 
@@ -372,12 +372,12 @@ public class OnboardingController: NSObject {
             return
         }
 
-        guard !(navigationController.topViewController is Onboarding2FAViewController) else {
+        guard !(navigationController.topViewController is Deprecated_Onboarding2FAViewController) else {
             // 2fa view is already presented, we don't need to push it again.
             return
         }
 
-        let view = Onboarding2FAViewController(onboardingController: self, isUsingKBS: kbsAuth != nil)
+        let view = Deprecated_Onboarding2FAViewController(onboardingController: self, isUsingKBS: kbsAuth != nil)
         navigationController.pushViewController(view, animated: true)
     }
 
@@ -492,13 +492,13 @@ public class OnboardingController: NSObject {
     // MARK: - Registration
 
     public func presentPhoneNumberConfirmationSheet(from vc: UIViewController, number: String, completion: @escaping (_ didApprove: Bool) -> Void) {
-        RegistrationHelper.presentPhoneNumberConfirmationSheet(from: vc, number: number, completion: completion)
+        Deprecated_RegistrationHelper.presentPhoneNumberConfirmationSheet(from: vc, number: number, completion: completion)
     }
 
     public func requestVerification(
         fromViewController: UIViewController,
         isSMS: Bool,
-        completion: RegistrationHelper.VerificationCompletion?) {
+        completion: Deprecated_RegistrationHelper.VerificationCompletion?) {
 
             AssertIsOnMainThread()
 
@@ -512,7 +512,7 @@ public class OnboardingController: NSObject {
                 return
             }
 
-            RegistrationHelper.requestRegistrationVerification(delegate: self,
+            Deprecated_RegistrationHelper.requestRegistrationVerification(delegate: self,
                                                                fromViewController: fromViewController,
                                                                phoneNumber: phoneNumber,
                                                                countryState: countryState,
@@ -533,12 +533,12 @@ public class OnboardingController: NSObject {
             return
         }
 
-        guard !(navigationController.topViewController is OnboardingTransferQRCodeViewController) else {
+        guard !(navigationController.topViewController is Deprecated_OnboardingTransferQRCodeViewController) else {
             // qr code view is already presented, we don't need to push it again.
             return
         }
 
-        let view = OnboardingTransferQRCodeViewController(onboardingController: self)
+        let view = Deprecated_OnboardingTransferQRCodeViewController(onboardingController: self)
         navigationController.pushViewController(view, animated: true)
     }
 
@@ -552,12 +552,12 @@ public class OnboardingController: NSObject {
             return
         }
 
-        guard !(navigationController.topViewController is OnboardingTransferProgressViewController) else {
+        guard !(navigationController.topViewController is Deprecated_OnboardingTransferProgressViewController) else {
             // qr code view is already presented, we don't need to push it again.
             return
         }
 
-        let view = OnboardingTransferProgressViewController(onboardingController: self, progress: progress)
+        let view = Deprecated_OnboardingTransferProgressViewController(onboardingController: self, progress: progress)
         navigationController.pushViewController(view, animated: true)
     }
 
@@ -571,12 +571,12 @@ public class OnboardingController: NSObject {
             return
         }
 
-        guard !(navigationController.topViewController is OnboardingTransferChoiceViewController) else {
+        guard !(navigationController.topViewController is Deprecated_OnboardingTransferChoiceViewController) else {
             // transfer view is already presented, we don't need to push it again.
             return
         }
 
-        let view = OnboardingTransferChoiceViewController(onboardingController: self)
+        let view = Deprecated_OnboardingTransferChoiceViewController(onboardingController: self)
         navigationController.pushViewController(view, animated: true)
     }
 
@@ -812,7 +812,7 @@ public extension UIView {
 
 // MARK: -
 
-extension OnboardingController: RegistrationHelperDelegate {
+extension Deprecated_OnboardingController: Deprecated_RegistrationHelperDelegate {
     public func registrationRequestVerificationDidSucceed(fromViewController: UIViewController) {
         requestingVerificationDidSucceed(viewController: fromViewController)
     }
@@ -828,9 +828,9 @@ extension OnboardingController: RegistrationHelperDelegate {
 
 // MARK: -
 
-extension OnboardingController: RegistrationPinAttemptsExhaustedViewDelegate {
+extension Deprecated_OnboardingController: Deprecated_RegistrationPinAttemptsExhaustedViewDelegate {
 
-    func pinAttemptsExhaustedViewDidComplete(viewController: RegistrationPinAttemptsExhaustedViewController) {
+    func pinAttemptsExhaustedViewDidComplete(viewController: Deprecated_RegistrationPinAttemptsExhaustedViewController) {
         guard let navigationController = viewController.navigationController else {
             owsFailDebug("Missing navigationController")
             return

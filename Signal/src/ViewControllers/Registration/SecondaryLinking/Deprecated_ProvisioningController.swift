@@ -8,9 +8,9 @@ import SignalMessaging
 import SignalServiceKit
 
 @objc
-public class ProvisioningController: NSObject {
+public class Deprecated_ProvisioningController: NSObject {
 
-    let onboardingController: OnboardingController
+    let onboardingController: Deprecated_OnboardingController
 
     private let provisioningCipher: ProvisioningCipher
     private let provisioningSocket: ProvisioningSocket
@@ -21,7 +21,7 @@ public class ProvisioningController: NSObject {
     private var provisionEnvelopePromise: Promise<ProvisioningProtoProvisionEnvelope>
     private var provisionEnvelopeFuture: Future<ProvisioningProtoProvisionEnvelope>
 
-    public init(onboardingController: OnboardingController) {
+    public init(onboardingController: Deprecated_OnboardingController) {
         self.onboardingController = onboardingController
         provisioningCipher = ProvisioningCipher.generate()
 
@@ -45,11 +45,11 @@ public class ProvisioningController: NSObject {
     public static func presentRelinkingFlow() {
         // TODO[ViewContextPiping]
         let context = ViewControllerContext.shared
-        let onboardingController = OnboardingController(context: context, onboardingMode: .provisioning)
-        let navController = OnboardingNavigationController(onboardingController: onboardingController)
+        let onboardingController = Deprecated_OnboardingController(context: context, onboardingMode: .provisioning)
+        let navController = Deprecated_OnboardingNavigationController(onboardingController: onboardingController)
 
-        let provisioningController = ProvisioningController(onboardingController: onboardingController)
-        let vc = SecondaryLinkingQRCodeViewController(provisioningController: provisioningController)
+        let provisioningController = Deprecated_ProvisioningController(onboardingController: onboardingController)
+        let vc = Deprecated_SecondaryLinkingQRCodeViewController(provisioningController: provisioningController)
         navController.setViewControllers([vc], animated: false)
 
         provisioningController.awaitProvisioning(from: vc, navigationController: navController)
@@ -58,19 +58,19 @@ public class ProvisioningController: NSObject {
 
     // MARK: -
 
-    func didConfirmSecondaryDevice(from viewController: SecondaryLinkingPrepViewController) {
+    func didConfirmSecondaryDevice(from viewController: Deprecated_SecondaryLinkingPrepViewController) {
         guard let navigationController = viewController.navigationController else {
             owsFailDebug("navigationController was unexpectedly nil")
             return
         }
 
-        let qrCodeViewController = SecondaryLinkingQRCodeViewController(provisioningController: self)
+        let qrCodeViewController = Deprecated_SecondaryLinkingQRCodeViewController(provisioningController: self)
         navigationController.pushViewController(qrCodeViewController, animated: true)
 
         awaitProvisioning(from: qrCodeViewController, navigationController: navigationController)
     }
 
-    private func awaitProvisioning(from viewController: SecondaryLinkingQRCodeViewController,
+    private func awaitProvisioning(from viewController: Deprecated_SecondaryLinkingQRCodeViewController,
                                    navigationController: UINavigationController) {
 
         awaitProvisionMessage.done { [weak self, weak navigationController] message in
@@ -95,7 +95,7 @@ public class ProvisioningController: NSObject {
                 return
             }
 
-            let confirmVC = SecondaryLinkingSetDeviceNameViewController(provisioningController: self)
+            let confirmVC = Deprecated_SecondaryLinkingSetDeviceNameViewController(provisioningController: self)
             navigationController.pushViewController(confirmVC, animated: true)
         }.catch { error in
             switch error {
@@ -245,7 +245,7 @@ public class ProvisioningController: NSObject {
     }
 }
 
-extension ProvisioningController: ProvisioningSocketDelegate {
+extension Deprecated_ProvisioningController: ProvisioningSocketDelegate {
     public func provisioningSocket(_ provisioningSocket: ProvisioningSocket, didReceiveDeviceId deviceId: String) {
         owsAssertDebug(!deviceIdPromise.isSealed)
         deviceIdFuture.resolve(deviceId)

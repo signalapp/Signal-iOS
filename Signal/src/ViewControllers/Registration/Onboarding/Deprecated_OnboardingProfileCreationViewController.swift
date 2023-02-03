@@ -7,7 +7,7 @@ import Foundation
 import SignalMessaging
 
 @objc
-public class OnboardingProfileCreationViewController: OnboardingBaseViewController {
+public class Deprecated_OnboardingProfileCreationViewController: Deprecated_OnboardingBaseViewController {
 
     // MARK: - Properties
 
@@ -403,7 +403,7 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
 
 // MARK: - <UITextFieldDelegate>
 
-extension OnboardingProfileCreationViewController: UITextFieldDelegate {
+extension Deprecated_OnboardingProfileCreationViewController: UITextFieldDelegate {
 
     public func textField(_ textField: UITextField,
                           shouldChangeCharactersIn range: NSRange,

@@ -8,15 +8,15 @@ import SignalCoreKit
 
 // Most of the logic for the verification views resides in RegistrationVerificationViewController.
 @objc
-public class ChangePhoneNumberVerificationViewController: RegistrationBaseViewController {
+public class Deprecated_ChangePhoneNumberVerificationViewController: Deprecated_RegistrationBaseViewController {
 
-    private let changePhoneNumberController: ChangePhoneNumberController
+    private let changePhoneNumberController: Deprecated_ChangePhoneNumberController
     private let oldPhoneNumber: PhoneNumber
     private let newPhoneNumber: PhoneNumber
 
-    let viewModel = RegistrationVerificationViewModel()
+    let viewModel = Deprecated_RegistrationVerificationViewModel()
 
-    init(changePhoneNumberController: ChangePhoneNumberController,
+    init(changePhoneNumberController: Deprecated_ChangePhoneNumberController,
          oldPhoneNumber: PhoneNumber,
          newPhoneNumber: PhoneNumber) {
         self.changePhoneNumberController = changePhoneNumberController
@@ -79,7 +79,7 @@ public class ChangePhoneNumberVerificationViewController: RegistrationBaseViewCo
 
 // MARK: -
 
-extension ChangePhoneNumberVerificationViewController: RegistrationVerificationViewController {
+extension Deprecated_ChangePhoneNumberVerificationViewController: Deprecated_RegistrationVerificationViewController {
     var phoneNumberE164: String? {
         newPhoneNumber.toE164()
     }
@@ -108,7 +108,7 @@ extension ChangePhoneNumberVerificationViewController: RegistrationVerificationV
 
         let viewModel = self.viewModel
         let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumberE164 ?? "")
-        RegistrationHelper.presentPhoneNumberConfirmationSheet(from: self,
+        Deprecated_RegistrationHelper.presentPhoneNumberConfirmationSheet(from: self,
                                                                number: formattedPhoneNumber) { [weak self] shouldContinue in
             guard let self = self else { return }
             guard shouldContinue else {
@@ -133,7 +133,7 @@ extension ChangePhoneNumberVerificationViewController: RegistrationVerificationV
         Logger.info("")
 
         let phoneNumberVC = navigationController?.viewControllers
-            .filter { $0 is ChangePhoneNumberSplashViewController }.last
+            .filter { $0 is Deprecated_ChangePhoneNumberSplashViewController }.last
 
         if let phoneNumberVC = phoneNumberVC {
             self.navigationController?.popToViewController(phoneNumberVC, animated: true)

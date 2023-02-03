@@ -18,12 +18,12 @@ public class AccountServiceClient: NSObject {
 
     // MARK: - Public
 
-    public func requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
-        serviceClient.requestPreauthChallenge(e164: e164, pushToken: pushToken, isVoipToken: isVoipToken)
+    public func deprecated_requestPreauthChallenge(e164: String, pushToken: String, isVoipToken: Bool) -> Promise<Void> {
+        serviceClient.deprecated_requestPreauthChallenge(e164: e164, pushToken: pushToken, isVoipToken: isVoipToken)
     }
 
-    public func requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void> {
-        serviceClient.requestVerificationCode(e164: e164,
+    public func deprecated_requestVerificationCode(e164: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void> {
+        serviceClient.deprecated_requestVerificationCode(e164: e164,
                                               preauthChallenge: preauthChallenge,
                                               captchaToken: captchaToken,
                                               transport: transport).recover { error -> Void in

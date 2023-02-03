@@ -7,9 +7,9 @@ import UIKit
 import SignalCoreKit
 
 @objc
-protocol RegistrationVerificationViewController: AnyObject {
+protocol Deprecated_RegistrationVerificationViewController: AnyObject {
 
-    var viewModel: RegistrationVerificationViewModel { get }
+    var viewModel: Deprecated_RegistrationVerificationViewModel { get }
     var primaryView: UIView { get }
     var phoneNumberE164: String? { get }
 
@@ -23,15 +23,15 @@ protocol RegistrationVerificationViewController: AnyObject {
 // MARK: -
 
 @objc
-class RegistrationVerificationViewModel: NSObject {
-    weak var viewController: RegistrationVerificationViewController?
+class Deprecated_RegistrationVerificationViewModel: NSObject {
+    weak var viewController: Deprecated_RegistrationVerificationViewController?
 
     var canResend = false
     var titleLabel: UILabel?
     var subtitleLabel: UILabel?
     var backLink: OWSFlatButton?
     var backButtonSpacer: UIView?
-    let verificationCodeView = RegistrationVerificationCodeView()
+    let verificationCodeView = Deprecated_RegistrationVerificationCodeView()
     var resendCodeButton: OWSFlatButton?
     var callMeButton: OWSFlatButton?
     let errorLabel = UILabel()
@@ -48,7 +48,7 @@ class RegistrationVerificationViewModel: NSObject {
 
     // MARK: - Methods
 
-    func createViews(vc: RegistrationBaseViewController) {
+    func createViews(vc: Deprecated_RegistrationBaseViewController) {
         AssertIsOnMainThread()
 
         guard let viewController = self.viewController else {
@@ -401,7 +401,7 @@ class RegistrationVerificationViewModel: NSObject {
 
 // MARK: -
 
-extension RegistrationVerificationViewModel: RegistrationVerificationCodeViewDelegate {
+extension Deprecated_RegistrationVerificationViewModel: RegistrationVerificationCodeViewDelegate {
     public func codeViewDidChange() {
         AssertIsOnMainThread()
 
@@ -413,13 +413,13 @@ extension RegistrationVerificationViewModel: RegistrationVerificationCodeViewDel
 
 // MARK: -
 
-extension RegistrationVerificationViewController {
+extension Deprecated_RegistrationVerificationViewController {
     var canResend: Bool { viewModel.canResend }
     var titleLabel: UILabel? { viewModel.titleLabel }
     var subtitleLabel: UILabel? { viewModel.subtitleLabel }
     var backLink: OWSFlatButton? { viewModel.backLink }
     var backButtonSpacer: UIView? { viewModel.backButtonSpacer }
-    var verificationCodeView: RegistrationVerificationCodeView { viewModel.verificationCodeView }
+    var verificationCodeView: Deprecated_RegistrationVerificationCodeView { viewModel.verificationCodeView }
     var resendCodeButton: OWSFlatButton? { viewModel.resendCodeButton }
     var callMeButton: OWSFlatButton? { viewModel.callMeButton }
     var errorLabel: UILabel { viewModel.errorLabel }
@@ -480,7 +480,7 @@ protocol RegistrationVerificationCodeViewDelegate: AnyObject {
 // We use a separate UILabel for each digit, and move
 // around a single UITextfield to let the user edit the
 // last/next digit.
-class RegistrationVerificationCodeView: UIView {
+class Deprecated_RegistrationVerificationCodeView: UIView {
 
     weak var delegate: RegistrationVerificationCodeViewDelegate?
 
@@ -646,7 +646,7 @@ class RegistrationVerificationCodeView: UIView {
 
 // MARK: -
 
-extension RegistrationVerificationCodeView: UITextFieldDelegate {
+extension Deprecated_RegistrationVerificationCodeView: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString newString: String) -> Bool {
         var oldText = ""
         if let textFieldText = textField.text {
@@ -679,7 +679,7 @@ extension RegistrationVerificationCodeView: UITextFieldDelegate {
 
 // MARK: -
 
-extension RegistrationVerificationCodeView: RegistrationVerificationCodeTextFieldDelegate {
+extension Deprecated_RegistrationVerificationCodeView: RegistrationVerificationCodeTextFieldDelegate {
     public func textFieldDidDeletePrevious() {
         if digitText.isEmpty { return }
         digitText = digitText.substring(to: currentDigitIndex - 1)

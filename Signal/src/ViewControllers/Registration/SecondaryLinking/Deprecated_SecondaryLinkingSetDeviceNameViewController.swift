@@ -5,11 +5,11 @@
 
 import Foundation
 
-class SecondaryLinkingSetDeviceNameViewController: OnboardingBaseViewController {
+class Deprecated_SecondaryLinkingSetDeviceNameViewController: Deprecated_OnboardingBaseViewController {
 
-    let provisioningController: ProvisioningController
+    let provisioningController: Deprecated_ProvisioningController
 
-    init(provisioningController: ProvisioningController) {
+    init(provisioningController: Deprecated_ProvisioningController) {
         self.provisioningController = provisioningController
         super.init(onboardingController: provisioningController.onboardingController)
     }
@@ -60,7 +60,7 @@ class SecondaryLinkingSetDeviceNameViewController: OnboardingBaseViewController 
         let primaryButton = self.primaryButton(title: NSLocalizedString("SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS", comment: "body text while displaying a QR code which, when scanned, will link this device."),
                                                selector: #selector(didTapFinalizeLinking))
         primaryButton.accessibilityIdentifier = "onboarding.confirmLink.confirmButton"
-        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: primaryButton)
+        let primaryButtonView = Deprecated_OnboardingBaseViewController.horizontallyWrap(primaryButton: primaryButton)
 
         let aboveTextFieldSpacer = UIView.vStretchingSpacer(maxHeight: 60)
         let belowTextFieldSpacer = UIView.vStretchingSpacer()

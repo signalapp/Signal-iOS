@@ -9,13 +9,13 @@ import SignalMessaging
 import UIKit
 
 @objc
-public class OnboardingPermissionsViewController: OnboardingBaseViewController {
+public class Deprecated_OnboardingPermissionsViewController: Deprecated_OnboardingBaseViewController {
 
     private let animationView = AnimationView(name: "notificationPermission")
 
     let shouldRequestAccessToContacts: Bool
 
-    override public init(onboardingController: OnboardingController) {
+    override public init(onboardingController: Deprecated_OnboardingController) {
         switch onboardingController.onboardingMode {
         case .registering: // primary
             shouldRequestAccessToContacts = true
@@ -87,7 +87,7 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
             UIView.spacer(withHeight: 60),
             animationView,
             UIView.vStretchingSpacer(minHeight: 80),
-            OnboardingBaseViewController.horizontallyWrap(primaryButton: giveAccessButton)
+            Deprecated_OnboardingBaseViewController.horizontallyWrap(primaryButton: giveAccessButton)
         ])
         stackView.axis = .vertical
         stackView.alignment = .fill

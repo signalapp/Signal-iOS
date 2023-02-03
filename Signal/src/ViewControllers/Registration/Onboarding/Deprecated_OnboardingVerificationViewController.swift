@@ -8,9 +8,9 @@ import SignalCoreKit
 
 // Most of the logic for the verification views resides in RegistrationVerificationViewController.
 @objc
-public class OnboardingVerificationViewController: OnboardingBaseViewController {
+public class Deprecated_OnboardingVerificationViewController: Deprecated_OnboardingBaseViewController {
 
-    let viewModel = RegistrationVerificationViewModel()
+    let viewModel = Deprecated_RegistrationVerificationViewModel()
 
     override public func loadView() {
         viewModel.viewController = self
@@ -25,7 +25,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
 
     // MARK: - View Lifecycle
 
-    public override init(onboardingController: OnboardingController) {
+    public override init(onboardingController: Deprecated_OnboardingController) {
         super.init(onboardingController: onboardingController)
 
         keyboardObservationBehavior = .whileLifecycleVisible
@@ -62,7 +62,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
 
 // MARK: -
 
-extension OnboardingVerificationViewController: RegistrationVerificationViewController {
+extension Deprecated_OnboardingVerificationViewController: Deprecated_RegistrationVerificationViewController {
     var phoneNumberE164: String? {
         onboardingController.phoneNumber?.e164
     }
@@ -111,7 +111,7 @@ extension OnboardingVerificationViewController: RegistrationVerificationViewCont
 
         Logger.info("")
         let phoneNumberVC = navigationController?.viewControllers
-            .filter { $0 is RegistrationPhoneNumberViewController }.last
+            .filter { $0 is Deprecated_RegistrationPhoneNumberViewController }.last
 
         if let phoneNumberVC = phoneNumberVC {
             self.navigationController?.popToViewController(phoneNumberVC, animated: true)

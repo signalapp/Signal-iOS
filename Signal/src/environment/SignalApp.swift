@@ -52,7 +52,7 @@ extension SignalApp {
         let startupDuration = CACurrentMediaTime() - launchStartedAt
         Logger.info("Presenting app \(startupDuration) seconds after launch started.")
 
-        let onboardingController = OnboardingController()
+        let onboardingController = Deprecated_OnboardingController()
         if onboardingController.isComplete {
             onboardingController.markAsOnboarded()
             showConversationSplitView()

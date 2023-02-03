@@ -8,14 +8,14 @@ import SignalServiceKit
 import UIKit
 import SignalMessaging
 
-class ChangePhoneNumberSplashViewController: OWSViewController, OWSNavigationChildController {
+class Deprecated_ChangePhoneNumberSplashViewController: OWSViewController, OWSNavigationChildController {
 
-    private let changePhoneNumberController: ChangePhoneNumberController
+    private let changePhoneNumberController: Deprecated_ChangePhoneNumberController
 
     private let bottomContainer = UIView()
     private let scrollingStack = UIStackView()
 
-    public init(changePhoneNumberController: ChangePhoneNumberController) {
+    public init(changePhoneNumberController: Deprecated_ChangePhoneNumberController) {
         self.changePhoneNumberController = changePhoneNumberController
         super.init()
     }
@@ -134,7 +134,7 @@ class ChangePhoneNumberSplashViewController: OWSViewController, OWSNavigationChi
 
     @objc
     private func didTapContinue(_ sender: UIButton) {
-        let view = ChangePhoneNumberInputViewController(changePhoneNumberController: changePhoneNumberController)
+        let view = Deprecated_ChangePhoneNumberInputViewController(changePhoneNumberController: changePhoneNumberController)
         self.navigationController?.pushViewController(view, animated: true)
     }
 }

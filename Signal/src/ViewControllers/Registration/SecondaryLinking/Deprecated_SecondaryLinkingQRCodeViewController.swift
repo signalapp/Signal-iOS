@@ -8,11 +8,11 @@ import SafariServices
 import SignalMessaging
 
 @objc
-public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController {
+public class Deprecated_SecondaryLinkingQRCodeViewController: Deprecated_OnboardingBaseViewController {
 
-    let provisioningController: ProvisioningController
+    let provisioningController: Deprecated_ProvisioningController
 
-    required init(provisioningController: ProvisioningController) {
+    required init(provisioningController: Deprecated_ProvisioningController) {
         self.provisioningController = provisioningController
         super.init(onboardingController: provisioningController.onboardingController)
     }

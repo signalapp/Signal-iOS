@@ -6,9 +6,9 @@
 import SignalCoreKit
 
 @objc
-public class OnboardingCaptchaViewController: OnboardingBaseViewController {
+public class Deprecated_OnboardingCaptchaViewController: Deprecated_OnboardingBaseViewController {
 
-    let viewModel = RegistrationCaptchaViewModel()
+    let viewModel = Deprecated_RegistrationCaptchaViewModel()
 
     override public func loadView() {
         viewModel.viewController = self
@@ -28,7 +28,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
 
 // MARK: -
 
-extension OnboardingCaptchaViewController: RegistrationCaptchaViewController {
+extension Deprecated_OnboardingCaptchaViewController: Deprecated_RegistrationCaptchaViewController {
 
     func requestCaptchaVerification(captchaToken: String) {
         AssertIsOnMainThread()

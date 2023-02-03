@@ -9,7 +9,7 @@ import SignalServiceKit
 import UIKit
 
 @objc
-public class OnboardingSplashViewController: OnboardingBaseViewController {
+public class Deprecated_OnboardingSplashViewController: Deprecated_OnboardingBaseViewController {
 
     let modeSwitchButton = UIButton()
 
@@ -28,7 +28,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
 
         view.addSubview(modeSwitchButton)
         modeSwitchButton.setTemplateImageName(
-            OnboardingController.defaultOnboardingMode == .registering ? "link-24" : "link-broken-24",
+            Deprecated_OnboardingController.defaultOnboardingMode == .registering ? "link-24" : "link-broken-24",
             tintColor: .ows_gray25
         )
         modeSwitchButton.autoSetDimensions(to: CGSize(square: 40))
@@ -73,7 +73,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         let continueButton = self.primaryButton(title: CommonStrings.continueButton,
                                                     selector: #selector(continuePressed))
         continueButton.accessibilityIdentifier = "onboarding.splash." + "continueButton"
-        let primaryButtonView = OnboardingBaseViewController.horizontallyWrap(primaryButton: continueButton)
+        let primaryButtonView = Deprecated_OnboardingBaseViewController.horizontallyWrap(primaryButton: continueButton)
 
         let stackView = UIStackView(arrangedSubviews: [
             heroImageView,
@@ -97,7 +97,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         // Whenever this view appears, we should switch back to the default
         // registration mode. If the user wants to use the other one, they need to
         // tap the link icon and confirm their selection.
-        onboardingController.onboardingMode = OnboardingController.defaultOnboardingMode
+        onboardingController.onboardingMode = Deprecated_OnboardingController.defaultOnboardingMode
     }
 
     // MARK: - Events

@@ -261,8 +261,8 @@
 		34386A51207D0C01009F5D9C /* ChatListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34386A4D207D0C01009F5D9C /* ChatListViewController.m */; };
 		343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 343A65941FC47D5E000477A1 /* DebugUISyncMessages.m */; };
 		3440426B273AB186008C9FA4 /* RegistrationUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3440426A273AB186008C9FA4 /* RegistrationUtils.swift */; };
-		34404271273AFBBE008C9FA4 /* ChangePhoneNumber2FAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34404270273AFBBE008C9FA4 /* ChangePhoneNumber2FAViewController.swift */; };
-		34404275273C0E41008C9FA4 /* RegistrationPinAttemptsExhaustedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34404274273C0E41008C9FA4 /* RegistrationPinAttemptsExhaustedViewController.swift */; };
+		34404271273AFBBE008C9FA4 /* Deprecated_ChangePhoneNumber2FAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34404270273AFBBE008C9FA4 /* Deprecated_ChangePhoneNumber2FAViewController.swift */; };
+		34404275273C0E41008C9FA4 /* Deprecated_RegistrationPinAttemptsExhaustedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34404274273C0E41008C9FA4 /* Deprecated_RegistrationPinAttemptsExhaustedViewController.swift */; };
 		34429B3D273440420050D3EA /* DebugUIMisc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34429B3C273440420050D3EA /* DebugUIMisc.swift */; };
 		3444E6BB264EDFF300B32E3B /* CVColorOrGradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3444E6BA264EDFF200B32E3B /* CVColorOrGradientView.swift */; };
 		34480B361FD0929200BC14EF /* ShareAppExtensionContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */; };
@@ -488,30 +488,30 @@
 		34A955B9271B553D00B05242 /* PaymentsFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955B8271B553D00B05242 /* PaymentsFormat.swift */; };
 		34A955BB271B55BA00B05242 /* PaymentsUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955BA271B55BA00B05242 /* PaymentsUI.swift */; };
 		34A955BD271B560000B05242 /* NameCollisionFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A955BC271B560000B05242 /* NameCollisionFinder.swift */; };
-		34ACA7D52733159600E47AD4 /* OnboardingTransferChoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7BC2733159600E47AD4 /* OnboardingTransferChoiceViewController.swift */; };
-		34ACA7D62733159600E47AD4 /* OnboardingTransferQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7BD2733159600E47AD4 /* OnboardingTransferQRCodeViewController.swift */; };
-		34ACA7D72733159600E47AD4 /* OnboardingTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7BE2733159600E47AD4 /* OnboardingTransferProgressViewController.swift */; };
-		34ACA7D82733159600E47AD4 /* OnboardingModeSwitchConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C02733159600E47AD4 /* OnboardingModeSwitchConfirmationViewController.swift */; };
-		34ACA7D92733159600E47AD4 /* OnboardingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C12733159600E47AD4 /* OnboardingController.swift */; };
-		34ACA7DB2733159600E47AD4 /* OnboardingSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C32733159600E47AD4 /* OnboardingSplashViewController.swift */; };
-		34ACA7DC2733159600E47AD4 /* OnboardingCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C42733159600E47AD4 /* OnboardingCaptchaViewController.swift */; };
-		34ACA7DD2733159600E47AD4 /* OnboardingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C52733159600E47AD4 /* OnboardingBaseViewController.swift */; };
-		34ACA7DE2733159600E47AD4 /* OnboardingPhoneNumberDiscoverabilityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C62733159600E47AD4 /* OnboardingPhoneNumberDiscoverabilityViewController.swift */; };
-		34ACA7DF2733159600E47AD4 /* Onboarding2FAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C72733159600E47AD4 /* Onboarding2FAViewController.swift */; };
-		34ACA7E02733159600E47AD4 /* OnboardingVerificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C82733159600E47AD4 /* OnboardingVerificationViewController.swift */; };
-		34ACA7E12733159600E47AD4 /* OnboardingProfileCreationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C92733159600E47AD4 /* OnboardingProfileCreationViewController.swift */; };
-		34ACA7E22733159600E47AD4 /* OnboardingPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7CA2733159600E47AD4 /* OnboardingPhoneNumberViewController.swift */; };
-		34ACA7E42733159600E47AD4 /* OnboardingPermissionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7CC2733159600E47AD4 /* OnboardingPermissionsViewController.swift */; };
-		34ACA7E52733159600E47AD4 /* ChangePhoneNumberVerificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7CE2733159600E47AD4 /* ChangePhoneNumberVerificationViewController.swift */; };
-		34ACA7E62733159600E47AD4 /* ChangePhoneNumberInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7CF2733159600E47AD4 /* ChangePhoneNumberInputViewController.swift */; };
-		34ACA7E72733159600E47AD4 /* ChangePhoneNumberConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7D02733159600E47AD4 /* ChangePhoneNumberConfirmViewController.swift */; };
-		34ACA7E82733159600E47AD4 /* ChangePhoneNumberController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7D12733159600E47AD4 /* ChangePhoneNumberController.swift */; };
-		34ACA7E92733159600E47AD4 /* ChangePhoneNumberSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7D22733159600E47AD4 /* ChangePhoneNumberSplashViewController.swift */; };
-		34ACA7EA2733159600E47AD4 /* ChangePhoneNumberCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7D32733159600E47AD4 /* ChangePhoneNumberCaptchaViewController.swift */; };
-		34ACA7F02733161000E47AD4 /* RegistrationVerificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7EC2733161000E47AD4 /* RegistrationVerificationViewController.swift */; };
-		34ACA7F12733161000E47AD4 /* RegistrationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7ED2733161000E47AD4 /* RegistrationHelper.swift */; };
-		34ACA7F22733161000E47AD4 /* RegistrationBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7EE2733161000E47AD4 /* RegistrationBaseViewController.swift */; };
-		34ACA7F32733161000E47AD4 /* RegistrationCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7EF2733161000E47AD4 /* RegistrationCaptchaViewController.swift */; };
+		34ACA7D52733159600E47AD4 /* Deprecated_OnboardingTransferChoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7BC2733159600E47AD4 /* Deprecated_OnboardingTransferChoiceViewController.swift */; };
+		34ACA7D62733159600E47AD4 /* Deprecated_OnboardingTransferQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7BD2733159600E47AD4 /* Deprecated_OnboardingTransferQRCodeViewController.swift */; };
+		34ACA7D72733159600E47AD4 /* Deprecated_OnboardingTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7BE2733159600E47AD4 /* Deprecated_OnboardingTransferProgressViewController.swift */; };
+		34ACA7D82733159600E47AD4 /* Deprecated_OnboardingModeSwitchConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C02733159600E47AD4 /* Deprecated_OnboardingModeSwitchConfirmationViewController.swift */; };
+		34ACA7D92733159600E47AD4 /* Deprecated_OnboardingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C12733159600E47AD4 /* Deprecated_OnboardingController.swift */; };
+		34ACA7DB2733159600E47AD4 /* Deprecated_OnboardingSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C32733159600E47AD4 /* Deprecated_OnboardingSplashViewController.swift */; };
+		34ACA7DC2733159600E47AD4 /* Deprecated_OnboardingCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C42733159600E47AD4 /* Deprecated_OnboardingCaptchaViewController.swift */; };
+		34ACA7DD2733159600E47AD4 /* Deprecated_OnboardingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C52733159600E47AD4 /* Deprecated_OnboardingBaseViewController.swift */; };
+		34ACA7DE2733159600E47AD4 /* Deprecated_RegistrationPhoneNumberDiscoverabilityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C62733159600E47AD4 /* Deprecated_RegistrationPhoneNumberDiscoverabilityViewController.swift */; };
+		34ACA7DF2733159600E47AD4 /* Deprecated_Onboarding2FAViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C72733159600E47AD4 /* Deprecated_Onboarding2FAViewController.swift */; };
+		34ACA7E02733159600E47AD4 /* Deprecated_OnboardingVerificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C82733159600E47AD4 /* Deprecated_OnboardingVerificationViewController.swift */; };
+		34ACA7E12733159600E47AD4 /* Deprecated_OnboardingProfileCreationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7C92733159600E47AD4 /* Deprecated_OnboardingProfileCreationViewController.swift */; };
+		34ACA7E22733159600E47AD4 /* Deprecated_RegistrationPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7CA2733159600E47AD4 /* Deprecated_RegistrationPhoneNumberViewController.swift */; };
+		34ACA7E42733159600E47AD4 /* Deprecated_OnboardingPermissionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7CC2733159600E47AD4 /* Deprecated_OnboardingPermissionsViewController.swift */; };
+		34ACA7E52733159600E47AD4 /* Deprecated_ChangePhoneNumberVerificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7CE2733159600E47AD4 /* Deprecated_ChangePhoneNumberVerificationViewController.swift */; };
+		34ACA7E62733159600E47AD4 /* Deprecated_ChangePhoneNumberInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7CF2733159600E47AD4 /* Deprecated_ChangePhoneNumberInputViewController.swift */; };
+		34ACA7E72733159600E47AD4 /* Deprecated_ChangePhoneNumberConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7D02733159600E47AD4 /* Deprecated_ChangePhoneNumberConfirmViewController.swift */; };
+		34ACA7E82733159600E47AD4 /* Deprecated_ChangePhoneNumberController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7D12733159600E47AD4 /* Deprecated_ChangePhoneNumberController.swift */; };
+		34ACA7E92733159600E47AD4 /* Deprecated_ChangePhoneNumberSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7D22733159600E47AD4 /* Deprecated_ChangePhoneNumberSplashViewController.swift */; };
+		34ACA7EA2733159600E47AD4 /* Deprecated_ChangePhoneNumberCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7D32733159600E47AD4 /* Deprecated_ChangePhoneNumberCaptchaViewController.swift */; };
+		34ACA7F02733161000E47AD4 /* Deprecated_RegistrationVerificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7EC2733161000E47AD4 /* Deprecated_RegistrationVerificationViewController.swift */; };
+		34ACA7F12733161000E47AD4 /* Deprecated_RegistrationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7ED2733161000E47AD4 /* Deprecated_RegistrationHelper.swift */; };
+		34ACA7F22733161000E47AD4 /* Deprecated_RegistrationBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7EE2733161000E47AD4 /* Deprecated_RegistrationBaseViewController.swift */; };
+		34ACA7F32733161000E47AD4 /* Deprecated_RegistrationCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7EF2733161000E47AD4 /* Deprecated_RegistrationCaptchaViewController.swift */; };
 		34ACA7F62733183000E47AD4 /* RegistrationValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7F42733183000E47AD4 /* RegistrationValues.swift */; };
 		34ACA7F72733183000E47AD4 /* CountryCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34ACA7F52733183000E47AD4 /* CountryCodeViewController.swift */; };
 		34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B0796B1FCF46B000E248C2 /* MainAppContext.m */; };
@@ -700,12 +700,12 @@
 		4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C21D5D7223AC60F00EF8A77 /* PhotoCapture.swift */; };
 		4C25768A23AD510800E0398D /* LoadMoreMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C25768923AD510800E0398D /* LoadMoreMessagesView.swift */; };
 		4C2A538C23C5462300D28CD8 /* CVMessageMappingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2A538B23C5462300D28CD8 /* CVMessageMappingTest.swift */; };
-		4C2EBB7F2356B2B900BBC171 /* SecondaryLinkingSetDeviceNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2EBB7E2356B2B900BBC171 /* SecondaryLinkingSetDeviceNameViewController.swift */; };
+		4C2EBB7F2356B2B900BBC171 /* Deprecated_SecondaryLinkingSetDeviceNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2EBB7E2356B2B900BBC171 /* Deprecated_SecondaryLinkingSetDeviceNameViewController.swift */; };
 		4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */; };
-		4C30E224234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30E223234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift */; };
-		4C30E226234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30E225234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift */; };
+		4C30E224234F9F34009558B7 /* Deprecated_SecondaryLinkingPrepViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30E223234F9F34009558B7 /* Deprecated_SecondaryLinkingPrepViewController.swift */; };
+		4C30E226234FB033009558B7 /* Deprecated_SecondaryLinkingQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C30E225234FB033009558B7 /* Deprecated_SecondaryLinkingQRCodeViewController.swift */; };
 		4C35B08A23F8A9D2003EB937 /* MessageRequestPendingReceipts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C35B08823F8A9A1003EB937 /* MessageRequestPendingReceipts.swift */; };
-		4C3A2BC72356620E004B3986 /* ProvisioningController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3A2BC62356620E004B3986 /* ProvisioningController.swift */; };
+		4C3A2BC72356620E004B3986 /* Deprecated_ProvisioningController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3A2BC62356620E004B3986 /* Deprecated_ProvisioningController.swift */; };
 		4C3EF7FD2107DDEE0007EBF7 /* ParamParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */; };
 		4C3EF802210918740007EBF7 /* SSKProtoEnvelopeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EF801210918740007EBF7 /* SSKProtoEnvelopeTest.swift */; };
 		4C42960E2318E5EB00D9D240 /* MessageProcessingPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C42960D2318E5EB00D9D240 /* MessageProcessingPerformanceTest.swift */; };
@@ -2459,8 +2459,8 @@
 		343A65931FC47D5D000477A1 /* DebugUISyncMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUISyncMessages.h; sourceTree = "<group>"; };
 		343A65941FC47D5E000477A1 /* DebugUISyncMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUISyncMessages.m; sourceTree = "<group>"; };
 		3440426A273AB186008C9FA4 /* RegistrationUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationUtils.swift; sourceTree = "<group>"; };
-		34404270273AFBBE008C9FA4 /* ChangePhoneNumber2FAViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumber2FAViewController.swift; sourceTree = "<group>"; };
-		34404274273C0E41008C9FA4 /* RegistrationPinAttemptsExhaustedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationPinAttemptsExhaustedViewController.swift; sourceTree = "<group>"; };
+		34404270273AFBBE008C9FA4 /* Deprecated_ChangePhoneNumber2FAViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_ChangePhoneNumber2FAViewController.swift; sourceTree = "<group>"; };
+		34404274273C0E41008C9FA4 /* Deprecated_RegistrationPinAttemptsExhaustedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_RegistrationPinAttemptsExhaustedViewController.swift; sourceTree = "<group>"; };
 		34429B3C273440420050D3EA /* DebugUIMisc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIMisc.swift; sourceTree = "<group>"; };
 		3444E6BA264EDFF200B32E3B /* CVColorOrGradientView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVColorOrGradientView.swift; sourceTree = "<group>"; };
 		34480B341FD0929200BC14EF /* ShareAppExtensionContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareAppExtensionContext.h; sourceTree = "<group>"; };
@@ -2815,30 +2815,30 @@
 		34A955B8271B553D00B05242 /* PaymentsFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsFormat.swift; sourceTree = "<group>"; };
 		34A955BA271B55BA00B05242 /* PaymentsUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsUI.swift; sourceTree = "<group>"; };
 		34A955BC271B560000B05242 /* NameCollisionFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NameCollisionFinder.swift; sourceTree = "<group>"; };
-		34ACA7BC2733159600E47AD4 /* OnboardingTransferChoiceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingTransferChoiceViewController.swift; sourceTree = "<group>"; };
-		34ACA7BD2733159600E47AD4 /* OnboardingTransferQRCodeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingTransferQRCodeViewController.swift; sourceTree = "<group>"; };
-		34ACA7BE2733159600E47AD4 /* OnboardingTransferProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingTransferProgressViewController.swift; sourceTree = "<group>"; };
-		34ACA7C02733159600E47AD4 /* OnboardingModeSwitchConfirmationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingModeSwitchConfirmationViewController.swift; sourceTree = "<group>"; };
-		34ACA7C12733159600E47AD4 /* OnboardingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingController.swift; sourceTree = "<group>"; };
-		34ACA7C32733159600E47AD4 /* OnboardingSplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingSplashViewController.swift; sourceTree = "<group>"; };
-		34ACA7C42733159600E47AD4 /* OnboardingCaptchaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingCaptchaViewController.swift; sourceTree = "<group>"; };
-		34ACA7C52733159600E47AD4 /* OnboardingBaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingBaseViewController.swift; sourceTree = "<group>"; };
-		34ACA7C62733159600E47AD4 /* OnboardingPhoneNumberDiscoverabilityViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingPhoneNumberDiscoverabilityViewController.swift; sourceTree = "<group>"; };
-		34ACA7C72733159600E47AD4 /* Onboarding2FAViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Onboarding2FAViewController.swift; sourceTree = "<group>"; };
-		34ACA7C82733159600E47AD4 /* OnboardingVerificationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingVerificationViewController.swift; sourceTree = "<group>"; };
-		34ACA7C92733159600E47AD4 /* OnboardingProfileCreationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingProfileCreationViewController.swift; sourceTree = "<group>"; };
-		34ACA7CA2733159600E47AD4 /* OnboardingPhoneNumberViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingPhoneNumberViewController.swift; sourceTree = "<group>"; };
-		34ACA7CC2733159600E47AD4 /* OnboardingPermissionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingPermissionsViewController.swift; sourceTree = "<group>"; };
-		34ACA7CE2733159600E47AD4 /* ChangePhoneNumberVerificationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberVerificationViewController.swift; sourceTree = "<group>"; };
-		34ACA7CF2733159600E47AD4 /* ChangePhoneNumberInputViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberInputViewController.swift; sourceTree = "<group>"; };
-		34ACA7D02733159600E47AD4 /* ChangePhoneNumberConfirmViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberConfirmViewController.swift; sourceTree = "<group>"; };
-		34ACA7D12733159600E47AD4 /* ChangePhoneNumberController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberController.swift; sourceTree = "<group>"; };
-		34ACA7D22733159600E47AD4 /* ChangePhoneNumberSplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberSplashViewController.swift; sourceTree = "<group>"; };
-		34ACA7D32733159600E47AD4 /* ChangePhoneNumberCaptchaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangePhoneNumberCaptchaViewController.swift; sourceTree = "<group>"; };
-		34ACA7EC2733161000E47AD4 /* RegistrationVerificationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationVerificationViewController.swift; sourceTree = "<group>"; };
-		34ACA7ED2733161000E47AD4 /* RegistrationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationHelper.swift; sourceTree = "<group>"; };
-		34ACA7EE2733161000E47AD4 /* RegistrationBaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationBaseViewController.swift; sourceTree = "<group>"; };
-		34ACA7EF2733161000E47AD4 /* RegistrationCaptchaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationCaptchaViewController.swift; sourceTree = "<group>"; };
+		34ACA7BC2733159600E47AD4 /* Deprecated_OnboardingTransferChoiceViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_OnboardingTransferChoiceViewController.swift; sourceTree = "<group>"; };
+		34ACA7BD2733159600E47AD4 /* Deprecated_OnboardingTransferQRCodeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_OnboardingTransferQRCodeViewController.swift; sourceTree = "<group>"; };
+		34ACA7BE2733159600E47AD4 /* Deprecated_OnboardingTransferProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_OnboardingTransferProgressViewController.swift; sourceTree = "<group>"; };
+		34ACA7C02733159600E47AD4 /* Deprecated_OnboardingModeSwitchConfirmationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_OnboardingModeSwitchConfirmationViewController.swift; sourceTree = "<group>"; };
+		34ACA7C12733159600E47AD4 /* Deprecated_OnboardingController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_OnboardingController.swift; sourceTree = "<group>"; };
+		34ACA7C32733159600E47AD4 /* Deprecated_OnboardingSplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_OnboardingSplashViewController.swift; sourceTree = "<group>"; };
+		34ACA7C42733159600E47AD4 /* Deprecated_OnboardingCaptchaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_OnboardingCaptchaViewController.swift; sourceTree = "<group>"; };
+		34ACA7C52733159600E47AD4 /* Deprecated_OnboardingBaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_OnboardingBaseViewController.swift; sourceTree = "<group>"; };
+		34ACA7C62733159600E47AD4 /* Deprecated_RegistrationPhoneNumberDiscoverabilityViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_RegistrationPhoneNumberDiscoverabilityViewController.swift; sourceTree = "<group>"; };
+		34ACA7C72733159600E47AD4 /* Deprecated_Onboarding2FAViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_Onboarding2FAViewController.swift; sourceTree = "<group>"; };
+		34ACA7C82733159600E47AD4 /* Deprecated_OnboardingVerificationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_OnboardingVerificationViewController.swift; sourceTree = "<group>"; };
+		34ACA7C92733159600E47AD4 /* Deprecated_OnboardingProfileCreationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_OnboardingProfileCreationViewController.swift; sourceTree = "<group>"; };
+		34ACA7CA2733159600E47AD4 /* Deprecated_RegistrationPhoneNumberViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_RegistrationPhoneNumberViewController.swift; sourceTree = "<group>"; };
+		34ACA7CC2733159600E47AD4 /* Deprecated_OnboardingPermissionsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_OnboardingPermissionsViewController.swift; sourceTree = "<group>"; };
+		34ACA7CE2733159600E47AD4 /* Deprecated_ChangePhoneNumberVerificationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_ChangePhoneNumberVerificationViewController.swift; sourceTree = "<group>"; };
+		34ACA7CF2733159600E47AD4 /* Deprecated_ChangePhoneNumberInputViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_ChangePhoneNumberInputViewController.swift; sourceTree = "<group>"; };
+		34ACA7D02733159600E47AD4 /* Deprecated_ChangePhoneNumberConfirmViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_ChangePhoneNumberConfirmViewController.swift; sourceTree = "<group>"; };
+		34ACA7D12733159600E47AD4 /* Deprecated_ChangePhoneNumberController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_ChangePhoneNumberController.swift; sourceTree = "<group>"; };
+		34ACA7D22733159600E47AD4 /* Deprecated_ChangePhoneNumberSplashViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_ChangePhoneNumberSplashViewController.swift; sourceTree = "<group>"; };
+		34ACA7D32733159600E47AD4 /* Deprecated_ChangePhoneNumberCaptchaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_ChangePhoneNumberCaptchaViewController.swift; sourceTree = "<group>"; };
+		34ACA7EC2733161000E47AD4 /* Deprecated_RegistrationVerificationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_RegistrationVerificationViewController.swift; sourceTree = "<group>"; };
+		34ACA7ED2733161000E47AD4 /* Deprecated_RegistrationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_RegistrationHelper.swift; sourceTree = "<group>"; };
+		34ACA7EE2733161000E47AD4 /* Deprecated_RegistrationBaseViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_RegistrationBaseViewController.swift; sourceTree = "<group>"; };
+		34ACA7EF2733161000E47AD4 /* Deprecated_RegistrationCaptchaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deprecated_RegistrationCaptchaViewController.swift; sourceTree = "<group>"; };
 		34ACA7F42733183000E47AD4 /* RegistrationValues.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegistrationValues.swift; sourceTree = "<group>"; };
 		34ACA7F52733183000E47AD4 /* CountryCodeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CountryCodeViewController.swift; sourceTree = "<group>"; };
 		34B0796B1FCF46B000E248C2 /* MainAppContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainAppContext.m; sourceTree = "<group>"; };
@@ -3047,12 +3047,12 @@
 		4C21D5D7223AC60F00EF8A77 /* PhotoCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCapture.swift; sourceTree = "<group>"; };
 		4C25768923AD510800E0398D /* LoadMoreMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadMoreMessagesView.swift; sourceTree = "<group>"; };
 		4C2A538B23C5462300D28CD8 /* CVMessageMappingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVMessageMappingTest.swift; sourceTree = "<group>"; };
-		4C2EBB7E2356B2B900BBC171 /* SecondaryLinkingSetDeviceNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryLinkingSetDeviceNameViewController.swift; sourceTree = "<group>"; };
+		4C2EBB7E2356B2B900BBC171 /* Deprecated_SecondaryLinkingSetDeviceNameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deprecated_SecondaryLinkingSetDeviceNameViewController.swift; sourceTree = "<group>"; };
 		4C2F454E214C00E1004871FF /* AvatarTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarTableViewCell.swift; sourceTree = "<group>"; };
-		4C30E223234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryLinkingPrepViewController.swift; sourceTree = "<group>"; };
-		4C30E225234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryLinkingQRCodeViewController.swift; sourceTree = "<group>"; };
+		4C30E223234F9F34009558B7 /* Deprecated_SecondaryLinkingPrepViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deprecated_SecondaryLinkingPrepViewController.swift; sourceTree = "<group>"; };
+		4C30E225234FB033009558B7 /* Deprecated_SecondaryLinkingQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deprecated_SecondaryLinkingQRCodeViewController.swift; sourceTree = "<group>"; };
 		4C35B08823F8A9A1003EB937 /* MessageRequestPendingReceipts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestPendingReceipts.swift; sourceTree = "<group>"; };
-		4C3A2BC62356620E004B3986 /* ProvisioningController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProvisioningController.swift; sourceTree = "<group>"; };
+		4C3A2BC62356620E004B3986 /* Deprecated_ProvisioningController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deprecated_ProvisioningController.swift; sourceTree = "<group>"; };
 		4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParamParserTest.swift; sourceTree = "<group>"; };
 		4C3EF801210918740007EBF7 /* SSKProtoEnvelopeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKProtoEnvelopeTest.swift; sourceTree = "<group>"; };
 		4C42960D2318E5EB00D9D240 /* MessageProcessingPerformanceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageProcessingPerformanceTest.swift; sourceTree = "<group>"; };
@@ -4848,11 +4848,11 @@
 				34ACA7BB2733159600E47AD4 /* DeviceTransfer */,
 				34ACA7BF2733159600E47AD4 /* Onboarding */,
 				4C3A2BC5235661AB004B3986 /* SecondaryLinking */,
-				34ACA7EE2733161000E47AD4 /* RegistrationBaseViewController.swift */,
-				34ACA7EF2733161000E47AD4 /* RegistrationCaptchaViewController.swift */,
-				34ACA7ED2733161000E47AD4 /* RegistrationHelper.swift */,
-				34404274273C0E41008C9FA4 /* RegistrationPinAttemptsExhaustedViewController.swift */,
-				34ACA7EC2733161000E47AD4 /* RegistrationVerificationViewController.swift */,
+				34ACA7EE2733161000E47AD4 /* Deprecated_RegistrationBaseViewController.swift */,
+				34ACA7EF2733161000E47AD4 /* Deprecated_RegistrationCaptchaViewController.swift */,
+				34ACA7ED2733161000E47AD4 /* Deprecated_RegistrationHelper.swift */,
+				34404274273C0E41008C9FA4 /* Deprecated_RegistrationPinAttemptsExhaustedViewController.swift */,
+				34ACA7EC2733161000E47AD4 /* Deprecated_RegistrationVerificationViewController.swift */,
 			);
 			path = Registration;
 			sourceTree = "<group>";
@@ -5701,9 +5701,9 @@
 		34ACA7BB2733159600E47AD4 /* DeviceTransfer */ = {
 			isa = PBXGroup;
 			children = (
-				34ACA7BC2733159600E47AD4 /* OnboardingTransferChoiceViewController.swift */,
-				34ACA7BE2733159600E47AD4 /* OnboardingTransferProgressViewController.swift */,
-				34ACA7BD2733159600E47AD4 /* OnboardingTransferQRCodeViewController.swift */,
+				34ACA7BC2733159600E47AD4 /* Deprecated_OnboardingTransferChoiceViewController.swift */,
+				34ACA7BE2733159600E47AD4 /* Deprecated_OnboardingTransferProgressViewController.swift */,
+				34ACA7BD2733159600E47AD4 /* Deprecated_OnboardingTransferQRCodeViewController.swift */,
 			);
 			path = DeviceTransfer;
 			sourceTree = "<group>";
@@ -5711,17 +5711,17 @@
 		34ACA7BF2733159600E47AD4 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
-				34ACA7C72733159600E47AD4 /* Onboarding2FAViewController.swift */,
-				34ACA7C52733159600E47AD4 /* OnboardingBaseViewController.swift */,
-				34ACA7C42733159600E47AD4 /* OnboardingCaptchaViewController.swift */,
-				34ACA7C12733159600E47AD4 /* OnboardingController.swift */,
-				34ACA7C02733159600E47AD4 /* OnboardingModeSwitchConfirmationViewController.swift */,
-				34ACA7CC2733159600E47AD4 /* OnboardingPermissionsViewController.swift */,
-				34ACA7C62733159600E47AD4 /* OnboardingPhoneNumberDiscoverabilityViewController.swift */,
-				34ACA7CA2733159600E47AD4 /* OnboardingPhoneNumberViewController.swift */,
-				34ACA7C92733159600E47AD4 /* OnboardingProfileCreationViewController.swift */,
-				34ACA7C32733159600E47AD4 /* OnboardingSplashViewController.swift */,
-				34ACA7C82733159600E47AD4 /* OnboardingVerificationViewController.swift */,
+				34ACA7C72733159600E47AD4 /* Deprecated_Onboarding2FAViewController.swift */,
+				34ACA7C52733159600E47AD4 /* Deprecated_OnboardingBaseViewController.swift */,
+				34ACA7C42733159600E47AD4 /* Deprecated_OnboardingCaptchaViewController.swift */,
+				34ACA7C12733159600E47AD4 /* Deprecated_OnboardingController.swift */,
+				34ACA7C02733159600E47AD4 /* Deprecated_OnboardingModeSwitchConfirmationViewController.swift */,
+				34ACA7CC2733159600E47AD4 /* Deprecated_OnboardingPermissionsViewController.swift */,
+				34ACA7C92733159600E47AD4 /* Deprecated_OnboardingProfileCreationViewController.swift */,
+				34ACA7C32733159600E47AD4 /* Deprecated_OnboardingSplashViewController.swift */,
+				34ACA7C82733159600E47AD4 /* Deprecated_OnboardingVerificationViewController.swift */,
+				34ACA7C62733159600E47AD4 /* Deprecated_RegistrationPhoneNumberDiscoverabilityViewController.swift */,
+				34ACA7CA2733159600E47AD4 /* Deprecated_RegistrationPhoneNumberViewController.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -5729,13 +5729,13 @@
 		34ACA7CD2733159600E47AD4 /* ChangePhoneNumber */ = {
 			isa = PBXGroup;
 			children = (
-				34404270273AFBBE008C9FA4 /* ChangePhoneNumber2FAViewController.swift */,
-				34ACA7D32733159600E47AD4 /* ChangePhoneNumberCaptchaViewController.swift */,
-				34ACA7D02733159600E47AD4 /* ChangePhoneNumberConfirmViewController.swift */,
-				34ACA7D12733159600E47AD4 /* ChangePhoneNumberController.swift */,
-				34ACA7CF2733159600E47AD4 /* ChangePhoneNumberInputViewController.swift */,
-				34ACA7D22733159600E47AD4 /* ChangePhoneNumberSplashViewController.swift */,
-				34ACA7CE2733159600E47AD4 /* ChangePhoneNumberVerificationViewController.swift */,
+				34404270273AFBBE008C9FA4 /* Deprecated_ChangePhoneNumber2FAViewController.swift */,
+				34ACA7D32733159600E47AD4 /* Deprecated_ChangePhoneNumberCaptchaViewController.swift */,
+				34ACA7D02733159600E47AD4 /* Deprecated_ChangePhoneNumberConfirmViewController.swift */,
+				34ACA7D12733159600E47AD4 /* Deprecated_ChangePhoneNumberController.swift */,
+				34ACA7CF2733159600E47AD4 /* Deprecated_ChangePhoneNumberInputViewController.swift */,
+				34ACA7D22733159600E47AD4 /* Deprecated_ChangePhoneNumberSplashViewController.swift */,
+				34ACA7CE2733159600E47AD4 /* Deprecated_ChangePhoneNumberVerificationViewController.swift */,
 			);
 			path = ChangePhoneNumber;
 			sourceTree = "<group>";
@@ -6085,10 +6085,10 @@
 		4C3A2BC5235661AB004B3986 /* SecondaryLinking */ = {
 			isa = PBXGroup;
 			children = (
-				4C3A2BC62356620E004B3986 /* ProvisioningController.swift */,
-				4C30E223234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift */,
-				4C30E225234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift */,
-				4C2EBB7E2356B2B900BBC171 /* SecondaryLinkingSetDeviceNameViewController.swift */,
+				4C3A2BC62356620E004B3986 /* Deprecated_ProvisioningController.swift */,
+				4C30E223234F9F34009558B7 /* Deprecated_SecondaryLinkingPrepViewController.swift */,
+				4C30E225234FB033009558B7 /* Deprecated_SecondaryLinkingQRCodeViewController.swift */,
+				4C2EBB7E2356B2B900BBC171 /* Deprecated_SecondaryLinkingSetDeviceNameViewController.swift */,
 			);
 			path = SecondaryLinking;
 			sourceTree = "<group>";
@@ -10520,13 +10520,6 @@
 				88D23D2623CEC0C700B0E74B /* CallUIAdapter.swift in Sources */,
 				4C46361122EB98EC00185951 /* CameraFirstCaptureSendFlow.swift in Sources */,
 				4CA46F4C219CCC630038ABDE /* CaptionView.swift in Sources */,
-				34404271273AFBBE008C9FA4 /* ChangePhoneNumber2FAViewController.swift in Sources */,
-				34ACA7EA2733159600E47AD4 /* ChangePhoneNumberCaptchaViewController.swift in Sources */,
-				34ACA7E72733159600E47AD4 /* ChangePhoneNumberConfirmViewController.swift in Sources */,
-				34ACA7E82733159600E47AD4 /* ChangePhoneNumberController.swift in Sources */,
-				34ACA7E62733159600E47AD4 /* ChangePhoneNumberInputViewController.swift in Sources */,
-				34ACA7E92733159600E47AD4 /* ChangePhoneNumberSplashViewController.swift in Sources */,
-				34ACA7E52733159600E47AD4 /* ChangePhoneNumberVerificationViewController.swift in Sources */,
 				34546F502649989D007C4958 /* ChatColorViewController.swift in Sources */,
 				346E09012662FBBE0042375E /* ChatListCell.swift in Sources */,
 				34E95C27269F6096004807EC /* ChatListViewController+Actions.swift in Sources */,
@@ -10695,6 +10688,36 @@
 				66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */,
 				887B6DC925F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift in Sources */,
 				3498AC892513896400B1F315 /* Dependencies+MainApp.swift in Sources */,
+				34404271273AFBBE008C9FA4 /* Deprecated_ChangePhoneNumber2FAViewController.swift in Sources */,
+				34ACA7EA2733159600E47AD4 /* Deprecated_ChangePhoneNumberCaptchaViewController.swift in Sources */,
+				34ACA7E72733159600E47AD4 /* Deprecated_ChangePhoneNumberConfirmViewController.swift in Sources */,
+				34ACA7E82733159600E47AD4 /* Deprecated_ChangePhoneNumberController.swift in Sources */,
+				34ACA7E62733159600E47AD4 /* Deprecated_ChangePhoneNumberInputViewController.swift in Sources */,
+				34ACA7E92733159600E47AD4 /* Deprecated_ChangePhoneNumberSplashViewController.swift in Sources */,
+				34ACA7E52733159600E47AD4 /* Deprecated_ChangePhoneNumberVerificationViewController.swift in Sources */,
+				34ACA7DF2733159600E47AD4 /* Deprecated_Onboarding2FAViewController.swift in Sources */,
+				34ACA7DD2733159600E47AD4 /* Deprecated_OnboardingBaseViewController.swift in Sources */,
+				34ACA7DC2733159600E47AD4 /* Deprecated_OnboardingCaptchaViewController.swift in Sources */,
+				34ACA7D92733159600E47AD4 /* Deprecated_OnboardingController.swift in Sources */,
+				34ACA7D82733159600E47AD4 /* Deprecated_OnboardingModeSwitchConfirmationViewController.swift in Sources */,
+				34ACA7E42733159600E47AD4 /* Deprecated_OnboardingPermissionsViewController.swift in Sources */,
+				34ACA7E12733159600E47AD4 /* Deprecated_OnboardingProfileCreationViewController.swift in Sources */,
+				34ACA7DB2733159600E47AD4 /* Deprecated_OnboardingSplashViewController.swift in Sources */,
+				34ACA7D52733159600E47AD4 /* Deprecated_OnboardingTransferChoiceViewController.swift in Sources */,
+				34ACA7D72733159600E47AD4 /* Deprecated_OnboardingTransferProgressViewController.swift in Sources */,
+				34ACA7D62733159600E47AD4 /* Deprecated_OnboardingTransferQRCodeViewController.swift in Sources */,
+				34ACA7E02733159600E47AD4 /* Deprecated_OnboardingVerificationViewController.swift in Sources */,
+				4C3A2BC72356620E004B3986 /* Deprecated_ProvisioningController.swift in Sources */,
+				34ACA7F22733161000E47AD4 /* Deprecated_RegistrationBaseViewController.swift in Sources */,
+				34ACA7F32733161000E47AD4 /* Deprecated_RegistrationCaptchaViewController.swift in Sources */,
+				34ACA7F12733161000E47AD4 /* Deprecated_RegistrationHelper.swift in Sources */,
+				34ACA7DE2733159600E47AD4 /* Deprecated_RegistrationPhoneNumberDiscoverabilityViewController.swift in Sources */,
+				34ACA7E22733159600E47AD4 /* Deprecated_RegistrationPhoneNumberViewController.swift in Sources */,
+				34404275273C0E41008C9FA4 /* Deprecated_RegistrationPinAttemptsExhaustedViewController.swift in Sources */,
+				34ACA7F02733161000E47AD4 /* Deprecated_RegistrationVerificationViewController.swift in Sources */,
+				4C30E224234F9F34009558B7 /* Deprecated_SecondaryLinkingPrepViewController.swift in Sources */,
+				4C30E226234FB033009558B7 /* Deprecated_SecondaryLinkingQRCodeViewController.swift in Sources */,
+				4C2EBB7F2356B2B900BBC171 /* Deprecated_SecondaryLinkingSetDeviceNameViewController.swift in Sources */,
 				5011D1CD29400E7300064098 /* DeviceProvisioningURL.swift in Sources */,
 				88A4CC19246CE6810082211F /* DeviceTransferInitialViewController.swift in Sources */,
 				88A4CC17246CE6190082211F /* DeviceTransferNavigationController.swift in Sources */,
@@ -10851,20 +10874,6 @@
 				887B380D25F042BE00685845 /* NotificationSettingsContentViewController.swift in Sources */,
 				887B380F25F056FD00685845 /* NotificationSettingsSoundViewController.swift in Sources */,
 				887B380A25F0427F00685845 /* NotificationSettingsViewController.swift in Sources */,
-				34ACA7DF2733159600E47AD4 /* Onboarding2FAViewController.swift in Sources */,
-				34ACA7DD2733159600E47AD4 /* OnboardingBaseViewController.swift in Sources */,
-				34ACA7DC2733159600E47AD4 /* OnboardingCaptchaViewController.swift in Sources */,
-				34ACA7D92733159600E47AD4 /* OnboardingController.swift in Sources */,
-				34ACA7D82733159600E47AD4 /* OnboardingModeSwitchConfirmationViewController.swift in Sources */,
-				34ACA7E42733159600E47AD4 /* OnboardingPermissionsViewController.swift in Sources */,
-				34ACA7DE2733159600E47AD4 /* OnboardingPhoneNumberDiscoverabilityViewController.swift in Sources */,
-				34ACA7E22733159600E47AD4 /* OnboardingPhoneNumberViewController.swift in Sources */,
-				34ACA7E12733159600E47AD4 /* OnboardingProfileCreationViewController.swift in Sources */,
-				34ACA7DB2733159600E47AD4 /* OnboardingSplashViewController.swift in Sources */,
-				34ACA7D52733159600E47AD4 /* OnboardingTransferChoiceViewController.swift in Sources */,
-				34ACA7D72733159600E47AD4 /* OnboardingTransferProgressViewController.swift in Sources */,
-				34ACA7D62733159600E47AD4 /* OnboardingTransferQRCodeViewController.swift in Sources */,
-				34ACA7E02733159600E47AD4 /* OnboardingVerificationViewController.swift in Sources */,
 				F9CA468828FF0CA600C074F6 /* OneTimeDonationCustomAmountTextField.swift in Sources */,
 				AC12B86D0DA4943DF1DE9CE6 /* OWSAddToContactViewController.swift in Sources */,
 				34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */,
@@ -10916,7 +10925,6 @@
 				34798A8725AF965300EC89B4 /* ProfileBioViewController.swift in Sources */,
 				8871B17125F0139D00D4E070 /* ProfileNameViewController.swift in Sources */,
 				8871B16F25F007DE00D4E070 /* ProfileSettingsViewController.swift in Sources */,
-				4C3A2BC72356620E004B3986 /* ProvisioningController.swift in Sources */,
 				888CC15928E3CE8100A13493 /* ProxyConnectionChecker.swift in Sources */,
 				88DF81A128E1538000F8BA80 /* ProxyLinkSheetViewController.swift in Sources */,
 				88DF81A328E15D1600F8BA80 /* ProxySettingsViewController.swift in Sources */,
@@ -10927,22 +10935,14 @@
 				88863A56280CD04B00977F69 /* ReactionFlybyAnimation.swift in Sources */,
 				88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */,
 				8809CE8A22F93C2200D38867 /* RecentPhotoCollectionView.swift in Sources */,
-				34ACA7F22733161000E47AD4 /* RegistrationBaseViewController.swift in Sources */,
-				34ACA7F32733161000E47AD4 /* RegistrationCaptchaViewController.swift in Sources */,
-				34ACA7F12733161000E47AD4 /* RegistrationHelper.swift in Sources */,
-				34404275273C0E41008C9FA4 /* RegistrationPinAttemptsExhaustedViewController.swift in Sources */,
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
 				3440426B273AB186008C9FA4 /* RegistrationUtils.swift in Sources */,
-				34ACA7F02733161000E47AD4 /* RegistrationVerificationViewController.swift in Sources */,
 				D997FA7628F8E3A2003C7B8B /* RemoteMegaphone.swift in Sources */,
 				450D19131F85236600970622 /* RemoteVideoView.m in Sources */,
 				348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */,
 				342FFE7E271EF5B2000AC89F /* ReturnToCallViewController.swift in Sources */,
 				348EE28F25B897BF00814FC2 /* ReusableMediaView.swift in Sources */,
 				66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */,
-				4C30E224234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift in Sources */,
-				4C30E226234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift in Sources */,
-				4C2EBB7F2356B2B900BBC171 /* SecondaryLinkingSetDeviceNameViewController.swift in Sources */,
 				88C659B024688335002AC115 /* SelfSignedIdentity.swift in Sources */,
 				4C4AE6A1224AF35700D4AF6F /* SendMediaNavigationController.swift in Sources */,
 				346EAA1225013CDF00E8AB6F /* SendMessageFlow.swift in Sources */,
