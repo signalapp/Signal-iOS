@@ -753,6 +753,7 @@
 		5011D1CB293FC7E000064098 /* DomainFrontingCountryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */; };
 		5011D1CD29400E7300064098 /* DeviceProvisioningURL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */; };
 		50169695291B0627007AD709 /* ContactDiscoveryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */; };
+		501D64FC28C027BA008D5993 /* OWSPaymentsLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */; };
 		502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502B1B54297B28AF00FDB3AE /* ErrorTest.swift */; };
 		503614CF282AF657008128B4 /* GiftBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503614CE282AF657008128B4 /* GiftBadgeView.swift */; };
 		503BDDB4296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503BDDB3296F3E2C00FED3B2 /* SystemContactsDataProviderTest.swift */; };
@@ -805,6 +806,7 @@
 		667E90D028E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667E90CF28E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift */; };
 		667EDE6428F8D6B7001FB487 /* YYAnimatedImage+Duration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */; };
 		667EDE6628FA0372001FB487 /* StoryBadgeCountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667EDE6528FA0372001FB487 /* StoryBadgeCountManager.swift */; };
+		6688E602298232A4004467C8 /* PaymentActionSheets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6688E601298232A4004467C8 /* PaymentActionSheets.swift */; };
 		668CAB3E289983520085A2C3 /* AudioMessagePlaybackRateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */; };
 		668FE09B28B923A4008B9071 /* Bool+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668FE09A28B923A4008B9071 /* Bool+SSK.swift */; };
 		668FE09F28B947ED008B9071 /* StoryContextMenuGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668FE09E28B947ED008B9071 /* StoryContextMenuGenerator.swift */; };
@@ -830,8 +832,11 @@
 		66AF4D7328D1377E008A156E /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */; };
 		66BE544D28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */; };
+		66CE755F28C332AF00D5FA79 /* PaymentOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CE755E28C332AF00D5FA79 /* PaymentOnboarding.swift */; };
 		66D709E928E3999400B5013A /* StoryContextAssociatedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D709E828E3999400B5013A /* StoryContextAssociatedData.swift */; };
 		66F44B4B2909EEDA004CF66C /* OWSViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F44B4A2909EEDA004CF66C /* OWSViewController.swift */; };
+		66FA2B1D28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */; };
+		66FA2B1F28CBA4A5006845CD /* BiometryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA2B1E28CBA4A5006845CD /* BiometryType.swift */; };
 		66FBC4E128DA820900BD9E8B /* MyStorySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */; };
 		66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */; };
 		760981882936DE90008F8300 /* BezierPathView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 760981872936DE90008F8300 /* BezierPathView.swift */; };
@@ -3118,6 +3123,7 @@
 		5011D1CA293FC7E000064098 /* DomainFrontingCountryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DomainFrontingCountryViewController.swift; sourceTree = "<group>"; };
 		5011D1CC29400E7300064098 /* DeviceProvisioningURL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceProvisioningURL.swift; sourceTree = "<group>"; };
 		50169694291B0627007AD709 /* ContactDiscoveryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManagerTest.swift; sourceTree = "<group>"; };
+		501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSPaymentsLock.swift; sourceTree = "<group>"; };
 		502B1B54297B28AF00FDB3AE /* ErrorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTest.swift; sourceTree = "<group>"; };
 		503614CE282AF657008128B4 /* GiftBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GiftBadgeView.swift; sourceTree = "<group>"; };
 		503614D0282C5703008128B4 /* ro */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = ro; path = translations/ro.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
@@ -3175,6 +3181,7 @@
 		667E90CF28E799D1005FE603 /* MyStorySettingsLearnMoreSheetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyStorySettingsLearnMoreSheetViewController.swift; sourceTree = "<group>"; };
 		667EDE6328F8D6B7001FB487 /* YYAnimatedImage+Duration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "YYAnimatedImage+Duration.swift"; sourceTree = "<group>"; };
 		667EDE6528FA0372001FB487 /* StoryBadgeCountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryBadgeCountManager.swift; sourceTree = "<group>"; };
+		6688E601298232A4004467C8 /* PaymentActionSheets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentActionSheets.swift; sourceTree = "<group>"; };
 		668AB0CB28AD610600B31984 /* StoryUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryUtil.swift; sourceTree = "<group>"; };
 		668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessagePlaybackRateView.swift; sourceTree = "<group>"; };
 		668FE09A28B923A4008B9071 /* Bool+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bool+SSK.swift"; sourceTree = "<group>"; };
@@ -3200,8 +3207,11 @@
 		66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalAttachment+VideoSegmenting.swift"; sourceTree = "<group>"; };
 		66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatingContextMenuButton.swift; sourceTree = "<group>"; };
 		66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextOnboardingOverlayView.swift; sourceTree = "<group>"; };
+		66CE755E28C332AF00D5FA79 /* PaymentOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentOnboarding.swift; sourceTree = "<group>"; };
 		66D709E828E3999400B5013A /* StoryContextAssociatedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextAssociatedData.swift; sourceTree = "<group>"; };
 		66F44B4A2909EEDA004CF66C /* OWSViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSViewController.swift; sourceTree = "<group>"; };
+		66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentsBiometryLockPromptViewController.swift; sourceTree = "<group>"; };
+		66FA2B1E28CBA4A5006845CD /* BiometryType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometryType.swift; sourceTree = "<group>"; };
 		66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStorySettingsViewController.swift; sourceTree = "<group>"; };
 		66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectMyStoryRecipientsViewController.swift; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -4984,6 +4994,7 @@
 				179E8C30276A711100AF640F /* AFQueryString.m */,
 				6675F64C2925C012007A311E /* APNSRotationStore.swift */,
 				349ED991221EE80D008045B0 /* AppPreferences.swift */,
+				66FA2B1E28CBA4A5006845CD /* BiometryType.swift */,
 				88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */,
 				34A955AB271B521500B05242 /* CommonStrings.swift */,
 				3464451022B7F97100A957B1 /* DateUtil.h */,
@@ -4998,6 +5009,7 @@
 				3464450C22B7F93600A957B1 /* OWSOrphanDataCleaner.h */,
 				3464450B22B7F93600A957B1 /* OWSOrphanDataCleaner.m */,
 				F9CC66C02937B71E002172D0 /* OWSOrphanDataCleaner.swift */,
+				501D64FA28C027BA008D5993 /* OWSPaymentsLock.swift */,
 				346129371FD1B47200532771 /* OWSPreferences.h */,
 				346129381FD1B47200532771 /* OWSPreferences.m */,
 				34641E172088D7E900E2EDE5 /* OWSScreenLock.swift */,
@@ -5256,6 +5268,7 @@
 			isa = PBXGroup;
 			children = (
 				34FB6A5425D2E17200E599B1 /* PaymentModelCell.swift */,
+				66FA2B1C28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift */,
 				347030C525F66C24006C3BF5 /* PaymentsDeactivateViewController.swift */,
 				34FB6A4E25D1C6AC00E599B1 /* PaymentsDetailViewController.swift */,
 				3498AC8E2518E92B00B1F315 /* PaymentsHistory.swift */,
@@ -5457,6 +5470,8 @@
 				34A9554E271B510400B05242 /* OWSStackView.swift */,
 				F9C8CFCF293580D00094469C /* OWSTextField.swift */,
 				760981892936EC8D008F8300 /* OWSTextView.swift */,
+				6688E601298232A4004467C8 /* PaymentActionSheets.swift */,
+				66CE755E28C332AF00D5FA79 /* PaymentOnboarding.swift */,
 				32FAB9292727A57100FB76A6 /* PrimaryImageView.swift */,
 				45A6DAD51EBBF85500893231 /* ReminderView.swift */,
 				34A95531271B510400B05242 /* ResizingScrollView.swift */,
@@ -10217,6 +10232,8 @@
 				66F44B4B2909EEDA004CF66C /* OWSViewController.swift in Sources */,
 				3402AA59271D9DCD0084CBAE /* OWSViewControllerObjc.m in Sources */,
 				3402AA3B271D9DCD0084CBAE /* OWSWindow.swift in Sources */,
+				6688E602298232A4004467C8 /* PaymentActionSheets.swift in Sources */,
+				66CE755F28C332AF00D5FA79 /* PaymentOnboarding.swift in Sources */,
 				3465F4DD2728812B001663AF /* Payments.swift in Sources */,
 				34A955B9271B553D00B05242 /* PaymentsFormat.swift in Sources */,
 				3465F4D827287677001663AF /* PaymentsImpl.swift in Sources */,
@@ -10326,6 +10343,7 @@
 				347850691FD9B78A007B8332 /* AppSetup.m in Sources */,
 				34FC7EEC265834F30046707A /* AvatarBuilder.swift in Sources */,
 				883A7FD2269F642F00841DF9 /* AvatarModel.swift in Sources */,
+				66FA2B1F28CBA4A5006845CD /* BiometryType.swift in Sources */,
 				88F15F9A25AD4AE0008ABD47 /* BroadcastMediaMessageJob.swift in Sources */,
 				500FE490288615BA00FA090C /* CachedBadge.swift in Sources */,
 				88D7BA9E266809F50088D1C2 /* CallMessageRelay.swift in Sources */,
@@ -10365,6 +10383,7 @@
 				4C046AA7236148880035B234 /* OWSGroupSyncProcessingJobQueue.swift in Sources */,
 				3464450D22B7F93600A957B1 /* OWSOrphanDataCleaner.m in Sources */,
 				F9CC66C12937B71E002172D0 /* OWSOrphanDataCleaner.swift in Sources */,
+				501D64FC28C027BA008D5993 /* OWSPaymentsLock.swift in Sources */,
 				3461293A1FD1B47300532771 /* OWSPreferences.m in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
 				3470249E2385B6360078D72C /* OWSProfileManager.swift in Sources */,
@@ -10860,6 +10879,7 @@
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,
 				34067EAB2710D61A000407C3 /* Pastelog.swift in Sources */,
 				34FB6A5525D2E17200E599B1 /* PaymentModelCell.swift in Sources */,
+				66FA2B1D28CB0DE1006845CD /* PaymentsBiometryLockPromptViewController.swift in Sources */,
 				347030C625F66C24006C3BF5 /* PaymentsDeactivateViewController.swift in Sources */,
 				34FB6A4F25D1C6AC00E599B1 /* PaymentsDetailViewController.swift in Sources */,
 				3498AC912518E92B00B1F315 /* PaymentsHistory.swift in Sources */,

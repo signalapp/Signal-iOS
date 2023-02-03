@@ -5,6 +5,11 @@
 
 import Foundation
 
+public enum PaymentsUIError: Error {
+    case paymentsLockFailed(reason: String)
+    case paymentsLockCancelled(reason: String)
+}
+
 public enum PaymentsError: Error {
     case notEnabled
     case userNotRegisteredOrAppNotReady

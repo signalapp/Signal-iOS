@@ -947,6 +947,7 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                                                 accessibilityIdentifier: "payments.settings.activate.agree",
                                                 style: .default) { [weak self] _ in
             self?.enablePayments()
+            self?.promptBiometryPaymentsLock()
         })
         actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS",
                                                                          comment: "Label for the 'view payments terms' button in the 'activate payments confirmation' UI in the payment settings."),
@@ -981,6 +982,19 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
                 self.showPaymentsActivatedToast()
             }
         }
+    }
+
+    private func promptBiometryPaymentsLock() {
+        AssertIsOnMainThread()
+
+        guard let validBiometryType = BiometryType.validBiometryType else {
+            owsFailDebug("Unknown biometry type, cannot enable payments lock")
+            return
+        }
+
+        let view = PaymentsBiometryLockPromptViewController(biometryType: validBiometryType, delegate: nil)
+        let navigationVC = OWSNavigationController(rootViewController: view)
+        present(navigationVC, animated: true)
     }
 
     private func showPaymentsActivatedToast() {

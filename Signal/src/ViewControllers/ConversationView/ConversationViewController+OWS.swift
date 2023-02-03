@@ -447,9 +447,23 @@ extension ConversationViewController: LongTextViewDelegate {
 // MARK: -
 
 extension ConversationViewController: SendPaymentViewDelegate {
-    public func didSendPayment() {
-        let paymentSettingsView = PaymentsSettingsViewController(mode: .standalone)
-        let navigationController = OWSNavigationController(rootViewController: paymentSettingsView)
-        presentFormSheet(navigationController, animated: true)
+    public func didSendPayment(success: Bool) {
+
+        func paymentSettingsNavigationController() -> OWSNavigationController {
+            let paymentSettingsView = PaymentsSettingsViewController(mode: .standalone)
+            return OWSNavigationController(rootViewController: paymentSettingsView)
+        }
+
+        // only prompt users to enable payments lock when successful.
+        guard success else {
+            // TODO - Remove when in-chat payment bubble implemented.
+            self.presentFormSheet(paymentSettingsNavigationController(), animated: true)
+            return
+        }
+
+        PaymentOnboarding.presentBiometricLockPromptIfNeeded { [weak self] in
+            // TODO - Remove when in-chat payment bubble implemented.
+            self?.presentFormSheet(paymentSettingsNavigationController(), animated: true)
+        }
     }
 }

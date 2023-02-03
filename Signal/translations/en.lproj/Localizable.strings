@@ -4333,6 +4333,60 @@
 /* Status indicator for outgoing payments which failed to verify. */
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Invalid";
 
+/* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
+"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Add an additional layer of security and require your passcode or Touch ID to send funds";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Add an additional layer of security and require Face ID to send funds.";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Add an additional layer of security and require passcode to send funds.";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "Add an additional layer of security and require Touch ID to send funds.";
+
+/* First time payments suggest payments lock title */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "Turn on Payment Lock for Future Sends?";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "Require Your Passcode or Touch ID to Send";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Require Face ID to Send";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Require Your Phone's Passcode to Send";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "Require Touch ID to Send";
+
+/* Message for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "Authentication did not succeed. Ensure that biometrics is enabled on your device and a passcode is set.";
+
+/* Title for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "Biometric Authentication Failed";
+
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'. */
+"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "Authenticate to confirm payment.";
+
 /* Label for the 'add memo' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Add Note";
 
@@ -4365,6 +4419,12 @@
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Payment not yet verified";
+
+/* Indicates that a payment failed because the payments lock attempt was cancelled. */
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Payments lock authentication cancelled.";
+
+/* Indicates that a payment failed because the payments lock failed to authenticate. */
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Payments lock authentication failure.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Couldn't complete payment. Check your connection and try again.";
@@ -5764,6 +5824,9 @@
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "Enable Payments";
 
+/* Title for the 'enable payments lock' view of the payments activation flow. */
+"SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "Payments Lock";
+
 /* Description for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin is a new privacy focused digital currency.";
 
@@ -5802,6 +5865,9 @@
 
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Invalid Wallet Address";
+
+/* Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase. */
+"SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "Payments Lock";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "No recent activity yet.";
@@ -5886,6 +5952,36 @@
 
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Payments deactivated.";
+
+/* Description for the 'double reminder' action sheet in the 'payments lock prompt' view in the payment settings. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "Skipping this step could allow anyone who has physical access to your phone to transfer funds or view your recovery phrase.";
+
+/* Double reminder action sheet title in Payments Lock Prompt view for Face ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Skip Enabling Face ID?";
+
+/* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Skip Enabling Passcode?";
+
+/* Double reminder action sheet title in Payments Lock Prompt view for Touch ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "Skip Enabling Touch ID?";
+
+/* Enable Button title in Payments Lock Prompt view for Face ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Use Face ID";
+
+/* Enable Button title in Payments Lock Prompt view for Passcode. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Use Passcode";
+
+/* Enable Button title in Payments Lock Prompt view for Touch ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "Use Touch ID";
+
+/* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Help prevent a person with your phone from accessing your funds by enabling Face ID. You can disable this option in Settings.";
+
+/* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Help prevent a person with your phone from accessing your funds by using your passcode. You can disable this option in Settings.";
+
+/* Explanation of 'payments lock' with Touch ID in the 'payments lock prompt' view shown after payments activation. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Help prevent a person with your phone from accessing your funds by enabling Touch ID. You can disable this option in Settings.";
 
 /* Button for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Update Signal";
@@ -5989,6 +6085,21 @@
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "Scan QR Code";
 
+/* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown. */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "Require your passcode or Touch ID to transfer funds.";
+
+/* Caption for footer label beneath the payments lock privacy toggle for faceid biometry. */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Require Face ID to transfer funds.";
+
+/* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Require your phone's passcode to transfer funds.";
+
+/* Caption for footer label beneath the payments lock privacy toggle for touchid biometry */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID" = "Require Touch ID to transfer funds.";
+
+/* Title for the payments section in the app’s privacy settings tableview */
+"SETTINGS_PAYMENTS_SECURITY_TITLE" = "Payments";
+
 /* Label for 'send payment' button in the payment settings. */
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "Send Payment";
 
@@ -6069,6 +6180,9 @@
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Do not screenshot or send by email.";
+
+/* Title for the content section of the  'payments lock prompt' view shown after payemts activation. */
+"SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE" = "Another Layer of Protection";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Recovery Phrase";

@@ -149,8 +149,26 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
             return
         }
 
-        let view = PaymentsViewPassphraseGridViewController(passphrase: passphrase,
-                                                            viewPassphraseDelegate: viewPassphraseDelegate)
-        navigationController?.pushViewController(view, animated: true)
+        if OWSPaymentsLock.shared.isPaymentsLockEnabled() {
+            OWSPaymentsLock.shared.tryToUnlock { [weak self] outcome in
+                guard let self = self else { return }
+                guard outcome == OWSPaymentsLock.LocalAuthOutcome.success else {
+                    PaymentActionSheets.showBiometryAuthFailedActionSheet { _ in
+                        self.dismiss(animated: false, completion: nil)
+                    }
+                    return
+                }
+
+                let view = PaymentsViewPassphraseGridViewController(
+                    passphrase: self.passphrase,
+                    viewPassphraseDelegate: viewPassphraseDelegate)
+                self.navigationController?.pushViewController(view, animated: true)
+            }
+        } else {
+            let view = PaymentsViewPassphraseGridViewController(
+                passphrase: passphrase,
+                viewPassphraseDelegate: viewPassphraseDelegate)
+            navigationController?.pushViewController(view, animated: true)
+        }
     }
 }

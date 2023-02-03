@@ -185,6 +185,32 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         }
         contents.addSection(appSecuritySection)
 
+        // Payments
+        let paymentsSection = OWSTableSection()
+        paymentsSection.headerTitle = NSLocalizedString("SETTINGS_PAYMENTS_SECURITY_TITLE", comment: "Title for the payments section in the app’s privacy settings tableview")
+
+        switch BiometryType.biometryType {
+        case .unknown:
+            paymentsSection.footerTitle = NSLocalizedString("SETTINGS_PAYMENTS_SECURITY_DETAIL", comment: "Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown.")
+        case .passcode:
+            paymentsSection.footerTitle = NSLocalizedString("SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE", comment: "Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode.")
+        case .faceId:
+            paymentsSection.footerTitle = NSLocalizedString("SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID", comment: "Caption for footer label beneath the payments lock privacy toggle for faceid biometry.")
+        case .touchId:
+            paymentsSection.footerTitle = NSLocalizedString("SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID", comment: "Caption for footer label beneath the payments lock privacy toggle for touchid biometry")
+        }
+
+        paymentsSection.add(.switch(
+            withText: NSLocalizedString(
+                "SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL",
+                comment: "Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase."
+            ),
+            isOn: { OWSPaymentsLock.shared.isPaymentsLockEnabled() },
+            target: self,
+            selector: #selector(didTogglePaymentsLockSwitch)
+        ))
+        contents.addSection(paymentsSection)
+
         if !CallUIAdapter.isCallkitDisabledForLocale {
             let callsSection = OWSTableSection()
             callsSection.headerTitle = NSLocalizedString(
@@ -246,6 +272,30 @@ class PrivacySettingsViewController: OWSTableViewController2 {
     func didToggleScreenLockSwitch(_ sender: UISwitch) {
         OWSScreenLock.shared.setIsScreenLockEnabled(sender.isOn)
         updateTableContents()
+    }
+
+    @objc
+    func didTogglePaymentsLockSwitch(_ sender: UISwitch) {
+        // Require unlock to disable payments lock
+        if OWSPaymentsLock.shared.isPaymentsLockEnabled() {
+            OWSPaymentsLock.shared.tryToUnlock { [weak self] outcome in
+                guard let self = self else { return }
+                guard case .success = outcome else {
+                    self.updateTableContents()
+                    PaymentActionSheets.showBiometryAuthFailedActionSheet()
+                    return
+                }
+                self.databaseStorage.write { transaction in
+                    OWSPaymentsLock.shared.setIsPaymentsLockEnabled(false, transaction: transaction)
+                }
+                self.updateTableContents()
+            }
+        } else {
+            databaseStorage.write { transaction in
+                OWSPaymentsLock.shared.setIsPaymentsLockEnabled(true, transaction: transaction)
+            }
+            self.updateTableContents()
+        }
     }
 
     private func showScreenLockTimeoutPicker() {

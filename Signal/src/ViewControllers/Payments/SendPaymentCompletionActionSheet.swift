@@ -10,7 +10,7 @@ import UIKit
 
 @objc
 public protocol SendPaymentCompletionDelegate {
-    func didSendPayment()
+    func didSendPayment(success: Bool)
 }
 
 // MARK: -
@@ -516,6 +516,15 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                     return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN",
                                              comment: "Indicates that an unknown error occurred while sending a payment or payment request.")
                 }
+            case let paymentsError as PaymentsUIError:
+                switch paymentsError {
+                case .paymentsLockFailed:
+                    return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE",
+                                             comment: "Indicates that a payment failed because the payments lock failed to authenticate.")
+                case .paymentsLockCancelled:
+                    return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED",
+                                             comment: "Indicates that a payment failed because the payments lock attempt was cancelled.")
+                }
             default:
                 return NSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN",
                                                      comment: "Indicates that an unknown error occurred while sending a payment or payment request.")
@@ -583,7 +592,20 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         ModalActivityIndicatorViewController.presentAsInvisible(fromViewController: self) { [weak self] modalActivityIndicator in
             guard let self = self else { return }
 
-            firstly(on: .global()) { () -> Promise<PreparedPayment> in
+            OWSPaymentsLock.shared.tryToUnlockPromise().then(on: .main) { (authOutcome: OWSPaymentsLock.LocalAuthOutcome) -> Promise<PreparedPayment> in
+                switch authOutcome {
+                case .failure(let error):
+                    throw PaymentsUIError.paymentsLockFailed(reason: "local authentication failed with error: \(error)")
+                case .unexpectedFailure(let error):
+                    throw PaymentsUIError.paymentsLockFailed(reason: "local authentication failed with unexpected error: \(error)")
+                case .success:
+                    Logger.verbose("payments lock local authentication succeeded.")
+                case .cancel:
+                    throw PaymentsUIError.paymentsLockCancelled(reason: "local authentication cancelled")
+                case .disabled:
+                    Logger.verbose("payments lock not enabled.")
+                }
+
                 guard let promise = self.preparedPaymentPromise.get() else {
                     throw OWSAssertionError("Missing preparedPaymentPromise.")
                 }
@@ -633,9 +655,8 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 AssertIsOnMainThread()
                 owsFailDebugUnlessMCNetworkFailure(error)
 
+                modalActivityIndicator.dismiss {}
                 self.didFailPayment(paymentInfo: paymentInfo, error: error)
-
-                modalActivityIndicator.dismiss()
             }
         }
     }
@@ -649,7 +670,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         DispatchQueue.main.asyncAfter(deadline: .now() + Self.autoDismissDelay) { [weak self] in
             guard let self = self else { return }
             self.dismiss(animated: true) {
-                delegate?.didSendPayment()
+                delegate?.didSendPayment(success: true)
             }
         }
     }
@@ -661,7 +682,9 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         DispatchQueue.main.asyncAfter(deadline: .now() + Self.autoDismissDelay) { [weak self] in
             guard let self = self else { return }
             self.dismiss(animated: true) {
-                delegate?.didSendPayment()
+                PaymentActionSheets.showBiometryAuthFailedActionSheet { _ in
+                    delegate?.didSendPayment(success: false)
+                }
             }
         }
     }

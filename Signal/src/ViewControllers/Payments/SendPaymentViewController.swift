@@ -9,7 +9,7 @@ import UIKit
 
 @objc
 public protocol SendPaymentViewDelegate {
-    func didSendPayment()
+    func didSendPayment(success: Bool)
 }
 
 // MARK: -
@@ -1178,10 +1178,10 @@ extension SendPaymentViewController: SendPaymentHelperDelegate {
 // MARK: -
 
 extension SendPaymentViewController: SendPaymentCompletionDelegate {
-    public func didSendPayment() {
+    public func didSendPayment(success: Bool) {
         let delegate = self.delegate
         self.dismiss(animated: true) {
-            delegate?.didSendPayment()
+            delegate?.didSendPayment(success: success)
         }
     }
 }

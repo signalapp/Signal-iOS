@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalUI
 
 @objc
 class PaymentsSendRecipientViewController: RecipientPickerContainerViewController {
@@ -136,7 +137,15 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
 
 extension PaymentsSendRecipientViewController: SendPaymentViewDelegate {
 
-    func didSendPayment() {
-        dismiss(animated: true, completion: nil)
+    func didSendPayment(success: Bool) {
+        dismiss(animated: true) {
+            guard success else {
+                // only prompt users to enable payments lock when successful.
+                return
+            }
+            PaymentOnboarding.presentBiometricLockPromptIfNeeded {
+                Logger.debug("Payments Lock Request Complete")
+            }
+        }
     }
 }
