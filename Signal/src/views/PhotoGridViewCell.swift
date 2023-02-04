@@ -250,10 +250,10 @@ public class PhotoGridViewCell: UICollectionViewCell {
             self.durationLabel = durationLabel
         }
         if durationLabelBackground == nil {
-            let gradientView = GradientView(from: .ows_blackAlpha40, to: .clear)
-            gradientView.gradientLayer.type = .radial
-            gradientView.gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.5)
-            gradientView.gradientLayer.endPoint = CGPoint(x: 0, y: 90/122) // 122 x 58 oval
+            let gradientView = GradientView(from: .clear, to: .ows_blackAlpha60)
+            gradientView.gradientLayer.type = .axial
+            gradientView.gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.0)
+            gradientView.gradientLayer.endPoint = CGPoint(x: 0.5, y: 1.0)
             self.durationLabelBackground = gradientView
         }
 
@@ -268,10 +268,10 @@ public class PhotoGridViewCell: UICollectionViewCell {
         }
         if durationLabelBackground.superview == nil {
             contentView.insertSubview(durationLabelBackground, belowSubview: durationLabel)
-            durationLabelBackground.autoPinEdge(.top, to: .top, of: durationLabel, withOffset: -10)
-            durationLabelBackground.autoPinEdge(.leading, to: .leading, of: durationLabel, withOffset: -24)
-            durationLabelBackground.centerXAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
-            durationLabelBackground.centerYAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
+            durationLabelBackground.topAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
+            durationLabelBackground.autoPinEdge(toSuperviewEdge: .leading)
+            durationLabelBackground.autoPinEdge(toSuperviewEdge: .trailing)
+            durationLabelBackground.autoPinEdge(toSuperviewEdge: .bottom)
         }
 
         durationLabel.isHidden = false

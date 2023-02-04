@@ -11018,6 +11018,7 @@
 				D95C39EA296E108100A9DA23 /* UsernameSelectionViewController.swift in Sources */,
 				45B821F92981F7D400BB08BE /* VideoDurationHelper.swift in Sources */,
 				66AE5779298440A100E40CFA /* ViewControllerContext.swift in Sources */,
+				45B821F92981F7D400BB08BE /* VideoDurationHelper.swift in Sources */,
 				3434AE1C22AEDE7D002EE04E /* ViewOnceMessageViewController.swift in Sources */,
 				88928A7726419D6B009C9B30 /* VoiceMessageDraftView.swift in Sources */,
 				88928A7526418904009C9B30 /* VoiceMessageTooltip.swift in Sources */,
