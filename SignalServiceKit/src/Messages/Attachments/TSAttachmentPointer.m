@@ -86,6 +86,7 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value)
                        mediaSize:(CGSize)mediaSize
                         blurHash:(nullable NSString *)blurHash
                  uploadTimestamp:(unsigned long long)uploadTimestamp
+                   videoDuration:(nullable NSNumber *)videoDuration
 {
     self = [super initWithServerId:serverId
                             cdnKey:cdnKey
@@ -97,7 +98,8 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value)
                            caption:caption
                     albumMessageId:albumMessageId
                           blurHash:blurHash
-                   uploadTimestamp:uploadTimestamp];
+                   uploadTimestamp:uploadTimestamp
+                     videoDuration:videoDuration];
     if (!self) {
         return self;
     }
@@ -153,6 +155,7 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value)
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
                  uploadTimestamp:(unsigned long long)uploadTimestamp
+                   videoDuration:(nullable NSNumber *)videoDuration
                           digest:(nullable NSData *)digest
            lazyRestoreFragmentId:(nullable NSString *)lazyRestoreFragmentId
                        mediaSize:(CGSize)mediaSize
@@ -173,7 +176,8 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value)
                      encryptionKey:encryptionKey
                           serverId:serverId
                     sourceFilename:sourceFilename
-                   uploadTimestamp:uploadTimestamp];
+                   uploadTimestamp:uploadTimestamp
+                     videoDuration:videoDuration];
 
     if (!self) {
         return self;
@@ -288,7 +292,8 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value)
                                                                   attachmentType:attachmentType
                                                                        mediaSize:mediaSize
                                                                         blurHash:blurHash
-                                                                 uploadTimestamp:uploadTimestamp];
+                                                                 uploadTimestamp:uploadTimestamp
+                                                                   videoDuration:nil];
     return pointer;
 }
 

@@ -4,6 +4,7 @@
 		"TSIncomingMessage.serverTimestamp": "UInt64",
 		"TSOutgoingMessageRecipientState.deliveryTimestamp": "UInt64",
 		"TSOutgoingMessageRecipientState.readTimestamp": "UInt64",
+		"TSAttachment.videoDuration": "Double",
 		"TSAttachmentStream.cachedAudioDurationSeconds": "Double",
 		"TSAttachmentStream.cachedImageWidth": "Double",
 		"TSAttachmentStream.cachedImageHeight": "Double",

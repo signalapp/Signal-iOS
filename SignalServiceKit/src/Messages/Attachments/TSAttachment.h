@@ -76,7 +76,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
                          caption:(nullable NSString *)caption
                   albumMessageId:(nullable NSString *)albumMessageId
                         blurHash:(nullable NSString *)blurHash
-                 uploadTimestamp:(unsigned long long)uploadTimestamp NS_DESIGNATED_INITIALIZER;
+                 uploadTimestamp:(unsigned long long)uploadTimestamp
+                   videoDuration:(nullable NSNumber *)videoDuration NS_DESIGNATED_INITIALIZER;
 
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded restoring attachments.
@@ -120,7 +121,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
                  uploadTimestamp:(unsigned long long)uploadTimestamp
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:));
+                   videoDuration:(nullable NSNumber *)videoDuration
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:videoDuration:));
 
 // clang-format on
 
@@ -140,6 +142,11 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 @property (nonatomic, readonly) BOOL isVisualMedia;
 @property (nonatomic, readonly) BOOL isOversizeText;
 
+// nil: no value cached
+// NaN: not a video, broken video, or duration otherwise impossible to ascertain.
+// Nonnegative number: Duration in seconds
+@property (nullable, nonatomic, readonly) NSNumber *videoDuration;
+
 + (NSString *)emojiForMimeType:(NSString *)contentType;
 
 // This should only ever be used before the attachment is saved,
@@ -153,6 +160,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 #pragma mark - Update With...
 
 - (void)updateWithBlurHash:(NSString *)blurHash transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithVideoDuration:(nullable NSNumber *)videoDuration transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

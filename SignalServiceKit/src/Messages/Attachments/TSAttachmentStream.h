@@ -40,7 +40,8 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
                          caption:(nullable NSString *)caption
                   albumMessageId:(nullable NSString *)albumMessageId
                         blurHash:(nullable NSString *)blurHash
-                 uploadTimestamp:(unsigned long long)uploadTimestamp NS_UNAVAILABLE;
+                 uploadTimestamp:(unsigned long long)uploadTimestamp
+                   videoDuration:(nullable NSNumber *)videoDuration NS_UNAVAILABLE;
 - (instancetype)initForRestoreWithUniqueId:(NSString *)uniqueId
                                contentType:(NSString *)contentType
                             sourceFilename:(nullable NSString *)sourceFilename
@@ -54,17 +55,19 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                 albumMessageId:(nullable NSString *)albumMessageId
+       attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                 attachmentType:(TSAttachmentType)attachmentType
                       blurHash:(nullable NSString *)blurHash
                      byteCount:(unsigned int)byteCount
                        caption:(nullable NSString *)caption
                         cdnKey:(NSString *)cdnKey
-                     cdnNumber:(UInt32)cdnNumber
+                     cdnNumber:(unsigned int)cdnNumber
                    contentType:(NSString *)contentType
                  encryptionKey:(nullable NSData *)encryptionKey
                       serverId:(unsigned long long)serverId
                 sourceFilename:(nullable NSString *)sourceFilename
-               uploadTimestamp:(unsigned long long)uploadTimestamp NS_UNAVAILABLE;
+               uploadTimestamp:(unsigned long long)uploadTimestamp
+                 videoDuration:(nullable NSNumber *)videoDuration NS_UNAVAILABLE;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
@@ -98,6 +101,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
                  uploadTimestamp:(unsigned long long)uploadTimestamp
+                   videoDuration:(nullable NSNumber *)videoDuration
       cachedAudioDurationSeconds:(nullable NSNumber *)cachedAudioDurationSeconds
                cachedImageHeight:(nullable NSNumber *)cachedImageHeight
                 cachedImageWidth:(nullable NSNumber *)cachedImageWidth
@@ -108,7 +112,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
               isValidImageCached:(nullable NSNumber *)isValidImageCached
               isValidVideoCached:(nullable NSNumber *)isValidVideoCached
            localRelativeFilePath:(nullable NSString *)localRelativeFilePath
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:cachedAudioDurationSeconds:cachedImageHeight:cachedImageWidth:creationTimestamp:digest:isAnimatedCached:isUploaded:isValidImageCached:isValidVideoCached:localRelativeFilePath:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:videoDuration:cachedAudioDurationSeconds:cachedImageHeight:cachedImageWidth:creationTimestamp:digest:isAnimatedCached:isUploaded:isValidImageCached:isValidVideoCached:localRelativeFilePath:));
 
 // clang-format on
 

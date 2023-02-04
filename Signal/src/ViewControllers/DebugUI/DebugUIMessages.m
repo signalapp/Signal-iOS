@@ -3812,7 +3812,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                    attachmentType:TSAttachmentTypeDefault
                                                         mediaSize:CGSizeZero
                                                          blurHash:nil
-                                                  uploadTimestamp:0];
+                                                  uploadTimestamp:0
+                                                    videoDuration:nil];
                 [pointer setAttachmentPointerStateDebug:TSAttachmentPointerStateFailed];
                 [pointer anyInsertWithTransaction:transaction];
                 TSIncomingMessageBuilder *incomingMessageBuilder =
@@ -4692,7 +4693,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                            attachmentType:TSAttachmentTypeDefault
                                                 mediaSize:CGSizeZero
                                                  blurHash:nil
-                                          uploadTimestamp:0];
+                                          uploadTimestamp:0
+                                            videoDuration:nil];
         [attachmentPointer setAttachmentPointerStateDebug:TSAttachmentPointerStateFailed];
         [attachmentPointer anyInsertWithTransaction:transaction];
         return attachmentPointer;

@@ -27,6 +27,7 @@
     "AttachmentRecord.sourceFilename": 9,
     "AttachmentRecord.state": 22,
     "AttachmentRecord.uploadTimestamp": 23,
+    "AttachmentRecord.videoDuration": 28,
     "BackupFragmentRecord.attachmentId": 1,
     "BackupFragmentRecord.downloadFilePath": 2,
     "BackupFragmentRecord.encryptionKey": 3,

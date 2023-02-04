@@ -40,7 +40,7 @@ class PhotoPickerAssetItem: PhotoGridItem {
 
     var type: PhotoGridItemType {
         if asset.mediaType == .video {
-            return .video(asset.duration)
+            return .video(Promise.value(asset.duration))
         } else if asset.playbackStyle == .imageAnimated {
             return .animated
         } else {

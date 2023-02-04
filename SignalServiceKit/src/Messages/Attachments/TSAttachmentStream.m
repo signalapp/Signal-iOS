@@ -145,6 +145,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
                  uploadTimestamp:(unsigned long long)uploadTimestamp
+                   videoDuration:(nullable NSNumber *)videoDuration
       cachedAudioDurationSeconds:(nullable NSNumber *)cachedAudioDurationSeconds
                cachedImageHeight:(nullable NSNumber *)cachedImageHeight
                 cachedImageWidth:(nullable NSNumber *)cachedImageWidth
@@ -170,7 +171,8 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
                      encryptionKey:encryptionKey
                           serverId:serverId
                     sourceFilename:sourceFilename
-                   uploadTimestamp:uploadTimestamp];
+                   uploadTimestamp:uploadTimestamp
+                     videoDuration:videoDuration];
 
     if (!self) {
         return self;

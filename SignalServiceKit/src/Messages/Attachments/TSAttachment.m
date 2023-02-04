@@ -22,6 +22,8 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
 
 @property (nonatomic, nullable) NSString *blurHash;
 
+@property (nonatomic, nullable) NSNumber *videoDuration;
+
 @end
 
 #pragma mark -
@@ -43,6 +45,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
                   albumMessageId:(nullable NSString *)albumMessageId
                         blurHash:(nullable NSString *)blurHash
                  uploadTimestamp:(unsigned long long)uploadTimestamp
+                   videoDuration:(nullable NSNumber *)videoDuration
 {
     OWSAssertDebug(serverId > 0 || cdnKey.length > 0);
     OWSAssertDebug(encryptionKey.length > 0);
@@ -73,6 +76,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     _albumMessageId = albumMessageId;
     _blurHash = blurHash;
     _uploadTimestamp = uploadTimestamp;
+    _videoDuration = videoDuration;
 
     _attachmentSchemaVersion = TSAttachmentSchemaVersion;
 
@@ -241,6 +245,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
                  uploadTimestamp:(unsigned long long)uploadTimestamp
+                   videoDuration:(nullable NSNumber *)videoDuration
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId];
@@ -262,6 +267,7 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
     _serverId = serverId;
     _sourceFilename = sourceFilename;
     _uploadTimestamp = uploadTimestamp;
+    _videoDuration = videoDuration;
 
     [self sdsFinalizeAttachment];
 
@@ -513,6 +519,12 @@ NSUInteger const TSAttachmentSchemaVersion = 1;
                              block:^(TSAttachment *attachment) {
                                  attachment.blurHash = blurHash;
                              }];
+}
+
+- (void)updateWithVideoDuration:(nullable NSNumber *)videoDuration transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSAttachment *_Nonnull attachment) { attachment.videoDuration = videoDuration; }];
 }
 
 #pragma mark - Relationships

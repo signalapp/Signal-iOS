@@ -64,7 +64,9 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
                          caption:(nullable NSString *)caption
                   albumMessageId:(nullable NSString *)albumMessageId
                         blurHash:(nullable NSString *)blurHash
-                 uploadTimestamp:(unsigned long long)uploadTimestamp NS_UNAVAILABLE;
+                 uploadTimestamp:(unsigned long long)uploadTimestamp
+                   videoDuration:(nullable NSNumber *)videoDuration NS_UNAVAILABLE;
+
 - (instancetype)initForRestoreWithUniqueId:(NSString *)uniqueId
                                contentType:(NSString *)contentType
                             sourceFilename:(nullable NSString *)sourceFilename
@@ -81,6 +83,7 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                 albumMessageId:(nullable NSString *)albumMessageId
+       attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                 attachmentType:(TSAttachmentType)attachmentType
                       blurHash:(nullable NSString *)blurHash
                      byteCount:(unsigned int)byteCount
@@ -91,7 +94,8 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
                  encryptionKey:(nullable NSData *)encryptionKey
                       serverId:(unsigned long long)serverId
                 sourceFilename:(nullable NSString *)sourceFilename
-               uploadTimestamp:(unsigned long long)uploadTimestamp NS_UNAVAILABLE;
+               uploadTimestamp:(unsigned long long)uploadTimestamp
+                 videoDuration:(nullable NSNumber *)videoDuration NS_UNAVAILABLE;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
@@ -108,7 +112,8 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
                   attachmentType:(TSAttachmentType)attachmentType
                        mediaSize:(CGSize)mediaSize
                         blurHash:(nullable NSString *)blurHash
-                 uploadTimestamp:(unsigned long long)uploadTimestamp NS_DESIGNATED_INITIALIZER;
+                 uploadTimestamp:(unsigned long long)uploadTimestamp
+                   videoDuration:(nullable NSNumber *)videoDuration NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initForRestoreWithAttachmentStream:(TSAttachmentStream *)attachmentStream NS_DESIGNATED_INITIALIZER;
 
@@ -133,12 +138,13 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
                  uploadTimestamp:(unsigned long long)uploadTimestamp
+                   videoDuration:(nullable NSNumber *)videoDuration
                           digest:(nullable NSData *)digest
            lazyRestoreFragmentId:(nullable NSString *)lazyRestoreFragmentId
                        mediaSize:(CGSize)mediaSize
                      pointerType:(TSAttachmentPointerType)pointerType
                            state:(TSAttachmentPointerState)state
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:digest:lazyRestoreFragmentId:mediaSize:pointerType:state:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:videoDuration:digest:lazyRestoreFragmentId:mediaSize:pointerType:state:));
 
 // clang-format on
 

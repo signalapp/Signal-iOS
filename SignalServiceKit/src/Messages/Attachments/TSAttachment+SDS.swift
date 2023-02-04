@@ -58,6 +58,7 @@ public struct AttachmentRecord: SDSRecord {
     public let cdnNumber: UInt32
     public let isAnimatedCached: Bool?
     public let attachmentSchemaVersion: UInt
+    public let videoDuration: Double?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -90,6 +91,7 @@ public struct AttachmentRecord: SDSRecord {
         case cdnNumber
         case isAnimatedCached
         case attachmentSchemaVersion
+        case videoDuration
     }
 
     public static func columnName(_ column: AttachmentRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -143,6 +145,7 @@ public extension AttachmentRecord {
         cdnNumber = row[27]
         isAnimatedCached = row[28]
         attachmentSchemaVersion = row[29]
+        videoDuration = row[30]
     }
 }
 
@@ -187,6 +190,7 @@ extension TSAttachment {
             let serverId: UInt64 = record.serverId
             let sourceFilename: String? = record.sourceFilename
             let uploadTimestamp: UInt64 = record.uploadTimestamp
+            let videoDuration: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.videoDuration, name: "videoDuration", conversion: { NSNumber(value: $0) })
 
             return TSAttachment(grdbId: recordId,
                                 uniqueId: uniqueId,
@@ -202,7 +206,8 @@ extension TSAttachment {
                                 encryptionKey: encryptionKey,
                                 serverId: serverId,
                                 sourceFilename: sourceFilename,
-                                uploadTimestamp: uploadTimestamp)
+                                uploadTimestamp: uploadTimestamp,
+                                videoDuration: videoDuration)
 
         case .attachmentPointer:
 
@@ -220,6 +225,7 @@ extension TSAttachment {
             let serverId: UInt64 = record.serverId
             let sourceFilename: String? = record.sourceFilename
             let uploadTimestamp: UInt64 = record.uploadTimestamp
+            let videoDuration: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.videoDuration, name: "videoDuration", conversion: { NSNumber(value: $0) })
             let digest: Data? = SDSDeserialization.optionalData(record.digest, name: "digest")
             let lazyRestoreFragmentId: String? = record.lazyRestoreFragmentId
             let mediaSizeSerialized: Data? = record.mediaSize
@@ -246,6 +252,7 @@ extension TSAttachment {
                                        serverId: serverId,
                                        sourceFilename: sourceFilename,
                                        uploadTimestamp: uploadTimestamp,
+                                       videoDuration: videoDuration,
                                        digest: digest,
                                        lazyRestoreFragmentId: lazyRestoreFragmentId,
                                        mediaSize: mediaSize,
@@ -268,6 +275,7 @@ extension TSAttachment {
             let serverId: UInt64 = record.serverId
             let sourceFilename: String? = record.sourceFilename
             let uploadTimestamp: UInt64 = record.uploadTimestamp
+            let videoDuration: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.videoDuration, name: "videoDuration", conversion: { NSNumber(value: $0) })
             let cachedAudioDurationSeconds: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedAudioDurationSeconds, name: "cachedAudioDurationSeconds", conversion: { NSNumber(value: $0) })
             let cachedImageHeight: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedImageHeight, name: "cachedImageHeight", conversion: { NSNumber(value: $0) })
             let cachedImageWidth: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.cachedImageWidth, name: "cachedImageWidth", conversion: { NSNumber(value: $0) })
@@ -297,6 +305,7 @@ extension TSAttachment {
                                       serverId: serverId,
                                       sourceFilename: sourceFilename,
                                       uploadTimestamp: uploadTimestamp,
+                                      videoDuration: videoDuration,
                                       cachedAudioDurationSeconds: cachedAudioDurationSeconds,
                                       cachedImageHeight: cachedImageHeight,
                                       cachedImageWidth: cachedImageWidth,
@@ -384,6 +393,7 @@ extension TSAttachment: DeepCopyable {
             let serverId: UInt64 = modelToCopy.serverId
             let sourceFilename: String? = modelToCopy.sourceFilename
             let uploadTimestamp: UInt64 = modelToCopy.uploadTimestamp
+            let videoDuration: NSNumber? = modelToCopy.videoDuration
             let cachedAudioDurationSeconds: NSNumber? = modelToCopy.cachedAudioDurationSeconds
             let cachedImageHeight: NSNumber? = modelToCopy.cachedImageHeight
             let cachedImageWidth: NSNumber? = modelToCopy.cachedImageWidth
@@ -410,6 +420,7 @@ extension TSAttachment: DeepCopyable {
                                       serverId: serverId,
                                       sourceFilename: sourceFilename,
                                       uploadTimestamp: uploadTimestamp,
+                                      videoDuration: videoDuration,
                                       cachedAudioDurationSeconds: cachedAudioDurationSeconds,
                                       cachedImageHeight: cachedImageHeight,
                                       cachedImageWidth: cachedImageWidth,
@@ -438,6 +449,7 @@ extension TSAttachment: DeepCopyable {
             let serverId: UInt64 = modelToCopy.serverId
             let sourceFilename: String? = modelToCopy.sourceFilename
             let uploadTimestamp: UInt64 = modelToCopy.uploadTimestamp
+            let videoDuration: NSNumber? = modelToCopy.videoDuration
             let digest: Data? = modelToCopy.digest
             let lazyRestoreFragmentId: String? = modelToCopy.lazyRestoreFragmentId
             let mediaSize: CGSize = modelToCopy.mediaSize
@@ -459,6 +471,7 @@ extension TSAttachment: DeepCopyable {
                                        serverId: serverId,
                                        sourceFilename: sourceFilename,
                                        uploadTimestamp: uploadTimestamp,
+                                       videoDuration: videoDuration,
                                        digest: digest,
                                        lazyRestoreFragmentId: lazyRestoreFragmentId,
                                        mediaSize: mediaSize,
@@ -483,6 +496,7 @@ extension TSAttachment: DeepCopyable {
             let serverId: UInt64 = modelToCopy.serverId
             let sourceFilename: String? = modelToCopy.sourceFilename
             let uploadTimestamp: UInt64 = modelToCopy.uploadTimestamp
+            let videoDuration: NSNumber? = modelToCopy.videoDuration
 
             return TSAttachment(grdbId: id,
                                 uniqueId: uniqueId,
@@ -498,7 +512,8 @@ extension TSAttachment: DeepCopyable {
                                 encryptionKey: encryptionKey,
                                 serverId: serverId,
                                 sourceFilename: sourceFilename,
-                                uploadTimestamp: uploadTimestamp)
+                                uploadTimestamp: uploadTimestamp,
+                                videoDuration: videoDuration)
         }
 
     }
@@ -541,6 +556,7 @@ extension TSAttachmentSerializer {
     static var cdnNumberColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "cdnNumber", columnType: .int64) }
     static var isAnimatedCachedColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isAnimatedCached", columnType: .int, isOptional: true) }
     static var attachmentSchemaVersionColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "attachmentSchemaVersion", columnType: .int64) }
+    static var videoDurationColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "videoDuration", columnType: .double, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -577,7 +593,8 @@ extension TSAttachmentSerializer {
         cdnKeyColumn,
         cdnNumberColumn,
         isAnimatedCachedColumn,
-        attachmentSchemaVersionColumn
+        attachmentSchemaVersionColumn,
+        videoDurationColumn
         ])
     }
 }
@@ -1013,8 +1030,9 @@ class TSAttachmentSerializer: SDSSerializer {
         let cdnNumber: UInt32 = model.cdnNumber
         let isAnimatedCached: Bool? = nil
         let attachmentSchemaVersion: UInt = model.attachmentSchemaVersion
+        let videoDuration: Double? = archiveOptionalNSNumber(model.videoDuration, conversion: { $0.doubleValue })
 
-        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, pointerType: pointerType, state: state, uploadTimestamp: uploadTimestamp, cdnKey: cdnKey, cdnNumber: cdnNumber, isAnimatedCached: isAnimatedCached, attachmentSchemaVersion: attachmentSchemaVersion)
+        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, pointerType: pointerType, state: state, uploadTimestamp: uploadTimestamp, cdnKey: cdnKey, cdnNumber: cdnNumber, isAnimatedCached: isAnimatedCached, attachmentSchemaVersion: attachmentSchemaVersion, videoDuration: videoDuration)
     }
 }
 

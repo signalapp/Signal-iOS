@@ -435,10 +435,14 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
             }
 
             let gridCellItem = GalleryGridCellItem(galleryItem: galleryItem)
-            cell.configure(item: gridCellItem)
+            VideoDurationHelper.shared.with(context: videoDurationContext) {
+                cell.configure(item: gridCellItem)
+            }
         }
         return cell
     }
+
+    private lazy var videoDurationContext = { VideoDurationHelper.Context() }()
 
     override public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let photoGridViewCell = cell as? PhotoGridViewCell else {
@@ -986,7 +990,7 @@ class GalleryGridCellItem: PhotoGridItem {
 
     var type: PhotoGridItemType {
         if galleryItem.isVideo {
-            return .video(0) // TODO: return video duration
+            return .video(videoDurationPromise)
         } else if galleryItem.isAnimated {
             return .animated
         } else {
@@ -998,5 +1002,10 @@ class GalleryGridCellItem: PhotoGridItem {
 
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
         return galleryItem.thumbnailImage(async: completion)
+    }
+
+    private var videoDurationPromise: Promise<TimeInterval> {
+        owsAssert(galleryItem.isVideo)
+        return VideoDurationHelper.shared.promisedDuration(attachment: galleryItem.attachmentStream)
     }
 }

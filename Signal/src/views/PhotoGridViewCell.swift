@@ -7,10 +7,10 @@ import SignalMessaging
 import SignalUI
 import UIKit
 
-public enum PhotoGridItemType: Equatable {
+public enum PhotoGridItemType {
     case photo
     case animated
-    case video(TimeInterval)
+    case video(Promise<TimeInterval>)
 
     var localizedString: String {
         switch self {
@@ -18,8 +18,13 @@ public enum PhotoGridItemType: Equatable {
             return CommonStrings.attachmentTypePhoto
         case .animated:
             return CommonStrings.attachmentTypeAnimated
-        case .video(let duration):
-            return "\(CommonStrings.attachmentTypeVideo) \(OWSFormat.localizedDurationString(from: duration))"
+        case .video(let promise):
+            switch promise.result {
+            case .failure, .none:
+                return "\(CommonStrings.attachmentTypeVideo)"
+            case .success(let value):
+                return "\(CommonStrings.attachmentTypeVideo) \(OWSFormat.localizedDurationString(from: value))"
+            }
         }
     }
 }
@@ -207,12 +212,31 @@ public class PhotoGridViewCell: UICollectionViewCell {
     }
 
     private func setMedia(itemType: PhotoGridItemType) {
-        guard case .video(let duration) = itemType, duration > 0 else {
-            durationLabel?.isHidden = true
-            durationLabelBackground?.isHidden = true
-            return
+        hideVideoDuration()
+        switch itemType {
+        case .video(let promisedDuration):
+            updateVideoDurationWhenPromiseFulfilled(promisedDuration)
+        case .animated, .photo:
+            break
         }
+    }
 
+    private func updateVideoDurationWhenPromiseFulfilled(_ promisedDuration: Promise<TimeInterval>) {
+        let originalItem = item
+        promisedDuration.observe { [weak self] result in
+            guard let self, self.item === originalItem, case .success(let duration) = result else {
+                return
+            }
+            self.setVideoDuration(duration)
+        }
+    }
+
+    private func hideVideoDuration() {
+        durationLabel?.isHidden = true
+        durationLabelBackground?.isHidden = true
+    }
+
+    private func setVideoDuration(_ duration: Double) {
         if durationLabel == nil {
             let durationLabel = UILabel()
             durationLabel.textColor = .white

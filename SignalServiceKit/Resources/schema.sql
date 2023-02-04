@@ -229,6 +229,7 @@ CREATE
             ,"cdnNumber" INTEGER NOT NULL DEFAULT 0
             ,"isAnimatedCached" INTEGER
             ,"attachmentSchemaVersion" INTEGER DEFAULT 0
+            ,"videoDuration" DOUBLE
         )
 ;
 

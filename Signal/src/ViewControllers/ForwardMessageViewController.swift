@@ -511,29 +511,58 @@ extension ForwardMessageViewController: ConversationPickerDelegate {
 // MARK: -
 
 extension TSAttachmentStream {
-    func cloneAsSignalAttachment() throws -> SignalAttachment {
+    /// The purpose of this request is to make it possible to cloneAsSignalAttachment without an instance of the original TSAttachmentStream.
+    /// See the note in VideoDurationHelper for why.
+    struct CloneAsSignalAttachmentRequest {
+        var uniqueId: String
+        fileprivate var sourceUrl: URL
+        fileprivate var dataUTI: String
+        fileprivate var sourceFilename: String?
+        fileprivate var isVoiceMessage: Bool
+        fileprivate var caption: String?
+        fileprivate var isBorderless: Bool
+        fileprivate var isLoopingVideo: Bool
+    }
+
+    func cloneAsSignalAttachmentRequest() throws -> CloneAsSignalAttachmentRequest {
         guard let sourceUrl = originalMediaURL else {
             throw OWSAssertionError("Missing originalMediaURL.")
         }
         guard let dataUTI = MIMETypeUtil.utiType(forMIMEType: contentType) else {
             throw OWSAssertionError("Missing dataUTI.")
         }
-        let newUrl = OWSFileSystem.temporaryFileUrl(fileExtension: sourceUrl.pathExtension)
-        try FileManager.default.copyItem(at: sourceUrl, to: newUrl)
+        return CloneAsSignalAttachmentRequest(uniqueId: self.uniqueId,
+                                              sourceUrl: sourceUrl,
+                                              dataUTI: dataUTI,
+                                              sourceFilename: sourceFilename,
+                                              isVoiceMessage: isVoiceMessage,
+                                              caption: caption,
+                                              isBorderless: isBorderless,
+                                              isLoopingVideo: isLoopingVideo)
+    }
+
+    func cloneAsSignalAttachment() throws -> SignalAttachment {
+        let request = try cloneAsSignalAttachmentRequest()
+        return try Self.cloneAsSignalAttachment(request: request)
+    }
+
+    static func cloneAsSignalAttachment(request: CloneAsSignalAttachmentRequest) throws -> SignalAttachment {
+        let newUrl = OWSFileSystem.temporaryFileUrl(fileExtension: request.sourceUrl.pathExtension)
+        try FileManager.default.copyItem(at: request.sourceUrl, to: newUrl)
 
         let clonedDataSource = try DataSourcePath.dataSource(with: newUrl,
                                                              shouldDeleteOnDeallocation: true)
-        clonedDataSource.sourceFilename = sourceFilename
+        clonedDataSource.sourceFilename = request.sourceFilename
 
         var signalAttachment: SignalAttachment
-        if isVoiceMessage {
-            signalAttachment = SignalAttachment.voiceMessageAttachment(dataSource: clonedDataSource, dataUTI: dataUTI)
+        if request.isVoiceMessage {
+            signalAttachment = SignalAttachment.voiceMessageAttachment(dataSource: clonedDataSource, dataUTI: request.dataUTI)
         } else {
-            signalAttachment = SignalAttachment.attachment(dataSource: clonedDataSource, dataUTI: dataUTI)
+            signalAttachment = SignalAttachment.attachment(dataSource: clonedDataSource, dataUTI: request.dataUTI)
         }
-        signalAttachment.captionText = caption
-        signalAttachment.isBorderless = isBorderless
-        signalAttachment.isLoopingVideo = isLoopingVideo
+        signalAttachment.captionText = request.caption
+        signalAttachment.isBorderless = request.isBorderless
+        signalAttachment.isLoopingVideo = request.isLoopingVideo
         return signalAttachment
     }
 }
