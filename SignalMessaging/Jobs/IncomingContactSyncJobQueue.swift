@@ -296,7 +296,12 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
     /// future, if you're removing this method, you should first ensure that
     /// periodic full syncs of contact details happen with StorageService.
     private func pruneContacts(exceptThoseReceivedFromCompleteSync addresses: [SignalServiceAddress]) {
-        let setOfAddresses = Set(addresses)
+        // Every contact sync includes your own address. However, we shouldn't
+        // create a SignalAccount for your own address. (If you're a primary, this
+        // is handled by ContactsMaps.phoneNumbers(…).)
+        let addressesToIgnore = [TSAccountManager.localAddress].compacted()
+
+        let setOfAddresses = Set(addresses).subtracting(addressesToIgnore)
         self.databaseStorage.write { transaction in
             // Rather than collecting SignalAccount objects, collect their unique IDs.
             // This operation can run in the memory-constrainted NSE, so trade off a
