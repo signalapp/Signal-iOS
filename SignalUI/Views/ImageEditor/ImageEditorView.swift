@@ -70,6 +70,11 @@ class ImageEditorView: UIView {
         addGestureRecognizer(tapGestureRecognizer)
         addGestureRecognizer(pinchGestureRecognizer)
         updateGestureRecognizers()
+
+        let doubleTapGesture = UITapGestureRecognizer(target: nil, action: nil)
+        doubleTapGesture.numberOfTapsRequired = 2
+        addGestureRecognizer(doubleTapGesture)
+        tapGestureRecognizer.require(toFail: doubleTapGesture)
     }
 
     private func updateGestureRecognizers() {
