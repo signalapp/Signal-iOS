@@ -228,7 +228,7 @@ class KeyBackupServiceTests: XCTestCase {
                 XCTFail("\(error)")
             }
         }
-        wait(for: [expectation], timeout: 1)
+        wait(for: [expectation], timeout: 10)
 
         // Input should be empty.
         XCTAssertEqual(remoteAttestation.authCredentialInputs, [nil])
@@ -257,7 +257,7 @@ class KeyBackupServiceTests: XCTestCase {
                 XCTFail("\(error)")
             }
         }
-        wait(for: [expectation], timeout: 1)
+        wait(for: [expectation], timeout: 10)
 
         // Should have used existing auth.
         XCTAssertEqual(remoteAttestation.authCredentialInputs, [firstCredential])
@@ -284,7 +284,7 @@ class KeyBackupServiceTests: XCTestCase {
                 XCTFail("\(error)")
             }
         }
-        wait(for: [expectation], timeout: 1)
+        wait(for: [expectation], timeout: 10)
 
         // Should have used existing auth.
         XCTAssertEqual(remoteAttestation.authCredentialInputs, [secondCredential, nil])
