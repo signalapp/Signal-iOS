@@ -82,7 +82,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             currentStep = .confirmPay(paymentInfo: paymentInfo)
         }
 
-        super.init(theme: .default)
+        super.init(theme: .grouped)
 
         helper = SendPaymentHelper(delegate: self)
     }
@@ -142,7 +142,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
         outerStack.axis = .vertical
         outerStack.alignment = .fill
-        outerBackgroundView = outerStack.addBackgroundView(withBackgroundColor: Theme.actionSheetBackgroundColor)
+        outerBackgroundView = outerStack.addBackgroundView(withBackgroundColor: self.theme.backgroundColor)
 
         innerStack.axis = .vertical
         innerStack.alignment = .fill
@@ -161,7 +161,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
     private func updateContentsForMode() {
 
-        outerBackgroundView?.backgroundColor = Theme.actionSheetBackgroundColor
+        outerBackgroundView?.backgroundColor = self.theme.backgroundColor
 
         switch currentStep {
         case .confirmPay(let paymentInfo):
@@ -347,12 +347,17 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
     private func buildConfirmPaymentRows(paymentInfo: PaymentInfo) -> UIView {
 
-        var rows = [UIView]()
+        var topGroup = [UIView]()
+        var bottomGroup = [UIView]()
 
         @discardableResult
-        func addRow(titleView: UIView,
-                    valueView: UIView,
-                    titleIconView: UIView? = nil) -> UIView {
+        func addRow(
+            to group: inout [UIView],
+            titleView: UILabel,
+            valueView: UILabel,
+            titleIconView: UIView? = nil,
+            addSeparator: Bool = false
+        ) -> UIView {
 
             valueView.setCompressionResistanceHorizontalHigh()
             valueView.setContentHuggingHorizontalHigh()
@@ -368,16 +373,31 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             row.axis = .horizontal
             row.alignment = .center
             row.spacing = 8
+            row.backgroundColor = Theme.tableCell2BackgroundColor
 
-            rows.append(row)
+            let margin: CGFloat = 18
+            row.translatesAutoresizingMaskIntoConstraints = false
+            row.isLayoutMarginsRelativeArrangement = true
+            row.directionalLayoutMargins = NSDirectionalEdgeInsets(
+                top: margin,
+                leading: margin,
+                bottom: margin,
+                trailing: margin
+            )
+
+            group.append(row)
             return row
         }
 
         @discardableResult
-        func addRow(title: String,
-                    value: String,
-                    titleIconView: UIView? = nil,
-                    isTotal: Bool = false) -> UIView {
+        func addRow(
+            to group: inout [UIView],
+            title: String,
+            value: String,
+            titleIconView: UIView? = nil,
+            isTotal: Bool = false,
+            addSeparator: Bool = false
+        ) -> UIView {
 
             let titleLabel = UILabel()
             titleLabel.text = title
@@ -395,14 +415,20 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 valueLabel.textColor = Theme.secondaryTextAndIconColor
             }
 
-            return addRow(titleView: titleLabel,
-                          valueView: valueLabel,
-                          titleIconView: titleIconView)
+            return addRow(
+                to: &group,
+                titleView: titleLabel,
+                valueView: valueLabel,
+                titleIconView: titleIconView,
+                addSeparator: addSeparator
+            )
         }
 
         let recipientDescription = recipientDescriptionWithSneakyTransaction(paymentInfo: paymentInfo)
-        addRow(title: recipientDescription,
-               value: formatMobileCoinAmount(paymentInfo.paymentAmount))
+        addRow(to: &topGroup,
+               title: recipientDescription,
+               value: formatMobileCoinAmount(paymentInfo.paymentAmount),
+               addSeparator: true)
 
         if let currencyConversion = paymentInfo.currencyConversion {
             if let fiatAmountString = PaymentsFormat.formatAsFiatCurrency(paymentAmount: paymentInfo.paymentAmount,
@@ -415,9 +441,13 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 currencyConversionInfoView.autoSetDimensions(to: .square(16))
                 currencyConversionInfoView.setCompressionResistanceHigh()
 
-                let row = addRow(title: String(format: fiatFormat, currencyConversion.currencyCode),
-                                 value: fiatAmountString,
-                                 titleIconView: currencyConversionInfoView)
+                let row = addRow(
+                    to: &topGroup,
+                    title: String(format: fiatFormat, currencyConversion.currencyCode),
+                    value: fiatAmountString,
+                    titleIconView: currencyConversionInfoView,
+                    addSeparator: true
+                )
 
                 row.isUserInteractionEnabled = true
                 row.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCurrencyConversionInfo)))
@@ -426,31 +456,33 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             }
         }
 
-        addRow(title: NSLocalizedString("PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE",
-                                        comment: "Label for the 'payment estimated fee' indicator."),
-               value: formatMobileCoinAmount(paymentInfo.estimatedFeeAmount))
-
-        let separator = UIView()
-        separator.backgroundColor = Theme.hairlineColor
-        separator.autoSetDimension(.height, toSize: 1)
-        let separatorRow = UIStackView(arrangedSubviews: [separator])
-        separatorRow.axis = .horizontal
-        separatorRow.alignment = .center
-        separatorRow.distribution = .fill
-        rows.append(separatorRow)
+        addRow(
+            to: &topGroup,
+            title: NSLocalizedString(
+                "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE",
+                comment: "Label for the 'payment estimated fee' indicator."),
+            value: formatMobileCoinAmount(paymentInfo.estimatedFeeAmount),
+            addSeparator: false
+        )
 
         let totalAmount = paymentInfo.paymentAmount.plus(paymentInfo.estimatedFeeAmount)
-        addRow(title: NSLocalizedString("PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL",
-                                        comment: "Label for the 'total payment amount' indicator."),
-               value: formatMobileCoinAmount(totalAmount),
-               isTotal: true)
+        addRow(
+            to: &bottomGroup,
+            title: NSLocalizedString(
+                "PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL",
+                comment: "Label for the 'total payment amount' indicator."),
+            value: formatMobileCoinAmount(totalAmount),
+            isTotal: true
+        )
 
-        let stack = UIStackView(arrangedSubviews: rows)
+        let groups: [UIStackView] = [topGroup, bottomGroup].map { subviews in
+            UIStackView.makeGroupedStyle(views: subviews)
+        }
+
+        let stack = UIStackView(arrangedSubviews: groups)
         stack.axis = .vertical
         stack.alignment = .fill
-        stack.spacing = 16
-
-        UIView.matchHeightsOfViews(rows)
+        stack.spacing = 24
 
         return stack
     }
@@ -746,7 +778,37 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 // MARK: -
 
 extension SendPaymentCompletionActionSheet: SendPaymentHelperDelegate {
-    public func balanceDidChange() {}
+    public func balanceDidChange() {
+        updateBalanceLabel()
+    }
 
     public func currencyConversionDidChange() {}
+}
+
+fileprivate extension UIStackView {
+    static func makeGroupedStyle(views: [UIView]) -> UIStackView {
+        // Add separators to all except the last view
+        views.enumerated().forEach { offset, value in
+            guard offset != views.count - 1 else { return }
+            let separator = UIView()
+            separator.backgroundColor = Theme.hairlineColor
+            separator.autoSetDimension(.height, toSize: 0.5)
+            value.addSubview(separator)
+
+            NSLayoutConstraint.activate([
+                separator.leadingAnchor.constraint(equalTo: value.leadingAnchor, constant: CGFloat(16)),
+                separator.trailingAnchor.constraint(equalTo: value.trailingAnchor),
+                separator.bottomAnchor.constraint(equalTo: value.bottomAnchor)
+            ])
+
+        }
+
+        let group = UIStackView(arrangedSubviews: views)
+        group.axis = .vertical
+        group.alignment = .fill
+        group.spacing = 0
+        group.layer.cornerRadius = 10
+        group.clipsToBounds = true
+        return group
+    }
 }

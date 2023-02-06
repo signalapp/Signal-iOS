@@ -110,7 +110,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
         topStack.isLayoutMarginsRelativeArrangement = true
         topStack.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 0)
 
-        let enableButton = OWSFlatButton.button(title: enableButtonTitle(),
+        let enableButton = OWSFlatButton.insetButton(title: enableButtonTitle(),
                                                font: UIFont.ows_dynamicTypeBody.ows_semibold,
                                                titleColor: .white,
                                                backgroundColor: .ows_accentBlue,
@@ -118,7 +118,7 @@ public class PaymentsBiometryLockPromptViewController: OWSViewController {
                                                selector: #selector(didTapEnableButton))
         enableButton.autoSetHeightUsingFont()
 
-        let notNowButton = OWSFlatButton.button(title: CommonStrings.notNowButton,
+        let notNowButton = OWSFlatButton.insetButton(title: CommonStrings.notNowButton,
                                                font: UIFont.ows_dynamicTypeBody.ows_semibold,
                                                titleColor: .ows_accentBlue,
                                                backgroundColor: .clear,

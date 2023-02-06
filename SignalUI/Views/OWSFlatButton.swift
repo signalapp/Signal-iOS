@@ -137,13 +137,54 @@ public class OWSFlatButton: UIView {
                              backgroundColor: UIColor,
                              target: Any,
                              selector: Selector) -> OWSFlatButton {
+        return OWSFlatButton.button(
+            title: title,
+            font: font,
+            titleColor: titleColor,
+            backgroundColor: backgroundColor,
+            target: target,
+            selector: selector,
+            cornerRadius: .defaultCornerStyle
+        )
+    }
+
+    @objc
+    public class func insetButton(
+        title: String,
+        font: UIFont,
+        titleColor: UIColor,
+        backgroundColor: UIColor,
+        target: Any,
+        selector: Selector
+    ) -> OWSFlatButton {
+        return OWSFlatButton.button(
+            title: title,
+            font: font,
+            titleColor: titleColor,
+            backgroundColor: backgroundColor,
+            target: target,
+            selector: selector,
+            cornerRadius: .insetCornerStyle
+        )
+    }
+
+    public class func button(
+        title: String,
+        font: UIFont,
+        titleColor: UIColor,
+        backgroundColor: UIColor,
+        target: Any,
+        selector: Selector,
+        cornerRadius: CGFloat
+    ) -> OWSFlatButton {
         let button = OWSFlatButton()
         button.setTitle(title: title,
                         font: font,
                         titleColor: titleColor )
         button.setBackgroundColors(upColor: backgroundColor)
-        button.useDefaultCornerRadius()
         button.addTarget(target: target, selector: selector)
+        button.layer.cornerRadius = cornerRadius
+        button.clipsToBounds = true
         return button
     }
 
@@ -155,7 +196,6 @@ public class OWSFlatButton: UIView {
         return UIFont.ows_semiboldFont(withSize: fontPointSize)
     }
 
-    @objc
     public class func heightForFont(_ font: UIFont) -> CGFloat {
         font.lineHeight * 2.5
     }
@@ -212,6 +252,12 @@ public class OWSFlatButton: UIView {
     }
 
     @objc
+    public func useInsetCornerRadius() {
+        button.layer.cornerRadius = 14
+        button.clipsToBounds = true
+    }
+
+    @objc
     public func setEnabled(_ isEnabled: Bool) {
         button.isEnabled = isEnabled
     }
@@ -245,16 +291,20 @@ public class OWSFlatButton: UIView {
         return button.titleLabel?.font
     }
 
-    @objc
-    public func autoSetHeightUsingFont() {
+    public func autoSetHeightUsingFont(extraVerticalInsets: CGFloat = 0) {
         guard let font = font else {
             owsFailDebug("Missing button font.")
             return
         }
-        autoSetDimension(.height, toSize: Self.heightForFont(font))
+        autoSetDimension(.height, toSize: Self.heightForFont(font) + CGFloat(extraVerticalInsets * 2.0))
     }
 
     override public var intrinsicContentSize: CGSize {
         button.intrinsicContentSize
     }
+}
+
+fileprivate extension CGFloat {
+    static var defaultCornerStyle = 5.0
+    static var insetCornerStyle = 14.0
 }

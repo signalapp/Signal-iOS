@@ -77,6 +77,50 @@ public class SendPaymentViewController: OWSViewController {
         recipient.isIdentifiedPayment
     }
 
+    @objc
+    public var isUsingPresentedStyle: Bool {
+        return presentingViewController != nil
+    }
+
+    @objc
+    open var tableBackgroundColor: UIColor {
+        AssertIsOnMainThread()
+
+        return Self.tableBackgroundColor(isUsingPresentedStyle: isUsingPresentedStyle)
+    }
+
+    @objc
+    public static func tableBackgroundColor(isUsingPresentedStyle: Bool) -> UIColor {
+        AssertIsOnMainThread()
+
+        if isUsingPresentedStyle {
+            return Theme.tableView2PresentedBackgroundColor
+        } else {
+            return Theme.tableView2BackgroundColor
+        }
+    }
+
+    @objc
+    public var cellBackgroundColor: UIColor {
+        Self.cellBackgroundColor(isUsingPresentedStyle: isUsingPresentedStyle)
+    }
+
+    public static func cellBackgroundColor(isUsingPresentedStyle: Bool) -> UIColor {
+        if isUsingPresentedStyle {
+            return Theme.tableCell2PresentedBackgroundColor
+        } else {
+            return Theme.tableCell2BackgroundColor
+        }
+    }
+
+    public var cellSelectedBackgroundColor: UIColor {
+        if isUsingPresentedStyle {
+            return Theme.tableCell2PresentedSelectedBackgroundColor
+        } else {
+            return Theme.tableCell2SelectedBackgroundColor
+        }
+    }
+
     public required init(recipient: SendPaymentRecipient,
                          paymentRequestModel: TSPaymentRequestModel?,
                          initialPaymentAmount: TSPaymentAmount?,
@@ -336,7 +380,7 @@ public class SendPaymentViewController: OWSViewController {
     open override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = Theme.backgroundColor
+        view.backgroundColor = tableBackgroundColor
 
         addListeners()
 
@@ -392,7 +436,7 @@ public class SendPaymentViewController: OWSViewController {
     private func updateContents() {
         AssertIsOnMainThread()
 
-        view.backgroundColor = Theme.backgroundColor
+        view.backgroundColor = tableBackgroundColor
         navigationItem.title = nil
         if mode.isModalRootView {
             navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
@@ -489,15 +533,21 @@ public class SendPaymentViewController: OWSViewController {
         rootStack.removeAllSubviews()
         rootStack.addArrangedSubviews([
             spacerFactory.buildVSpacer(),
-            bigAmountRow,
             spacerFactory.buildVSpacer(),
+            spacerFactory.buildVSpacer(),
+            bigAmountRow,
             smallAmountRow,
             spacerFactory.buildVSpacer(),
+            spacerFactory.buildVSpacer(),
             memoStack,
+            spacerFactory.buildVSpacer(),
+            spacerFactory.buildVSpacer(),
             spacerFactory.buildVSpacer()
         ] +
         keyboardViews.allRows
         + [
+            spacerFactory.buildVSpacer(),
+            spacerFactory.buildVSpacer(),
             spacerFactory.buildVSpacer(),
             amountButtons,
             spacerFactory.buildVSpacer(),
@@ -516,7 +566,7 @@ public class SendPaymentViewController: OWSViewController {
 
     private func buildKeyboard(spacerFactory: SpacerFactory) -> KeyboardViews {
 
-        let keyboardHSpacing: CGFloat = 25
+        let keyboardHSpacing: CGFloat = 32
         let buttonFont = UIFont.ows_dynamicTypeTitle1Clamped
         func buildAmountKeyboardButton(title: String, block: @escaping () -> Void) -> OWSButton {
             let button = OWSButton(block: block)
@@ -526,6 +576,7 @@ public class SendPaymentViewController: OWSViewController {
             label.font = buttonFont
             label.textColor = Theme.primaryTextColor
             button.addSubview(label)
+            button.backgroundColor = cellBackgroundColor
             label.autoCenterInSuperview()
 
             return button
@@ -534,14 +585,14 @@ public class SendPaymentViewController: OWSViewController {
             let button = OWSButton(imageName: imageName,
                                    tintColor: Theme.primaryTextColor,
                                    block: block)
+            button.backgroundColor = cellBackgroundColor
             return button
         }
         var keyboardRows = [UIView]()
         let buildAmountKeyboardRow = { (buttons: [OWSButton]) -> UIView in
 
             let buttons = buttons.map { (button) -> UIView in
-                button.autoPinToAspectRatio(with: CGSize(width: 1, height: 1))
-                let buttonSize = buttonFont.lineHeight * 2.0
+                let buttonSize = buttonFont.lineHeight * 1.7
                 button.autoSetDimension(.height, toSize: buttonSize)
 
                 let downStateColor = (Theme.isDarkThemeEnabled
@@ -563,8 +614,8 @@ public class SendPaymentViewController: OWSViewController {
                 buttonClipView.autoPinEdge(toSuperviewEdge: .top)
                 buttonClipView.autoPinEdge(toSuperviewEdge: .bottom)
                 buttonClipView.autoHCenterInSuperview()
-                buttonClipView.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
-                buttonClipView.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
+                buttonClipView.autoPinEdge(toSuperviewEdge: .leading)
+                buttonClipView.autoPinEdge(toSuperviewEdge: .trailing)
 
                 return buttonWrapper
             }
@@ -668,11 +719,11 @@ public class SendPaymentViewController: OWSViewController {
 
         rootStack.axis = .vertical
         rootStack.alignment = .fill
-        rootStack.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0)
+        rootStack.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: 24, trailing: 0)
         rootStack.isLayoutMarginsRelativeArrangement = true
         view.addSubview(rootStack)
-        rootStack.autoPinEdge(toSuperviewMargin: .leading)
-        rootStack.autoPinEdge(toSuperviewMargin: .trailing)
+        rootStack.autoPinEdge(toSuperviewMargin: .leading, withInset: 20)
+        rootStack.autoPinEdge(toSuperviewMargin: .trailing, withInset: 20)
         rootStack.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         rootStack.autoPinEdge(.bottom, to: .bottom, of: keyboardLayoutGuideViewSafeArea)
 

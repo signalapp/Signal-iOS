@@ -510,46 +510,47 @@ extension Theme {
 
     public enum ActionSheet {
         case `default`
+        case grouped
         case translucentDark
 
         public var hairlineColor: UIColor {
             switch self {
-            case .default: return isDarkThemeEnabled ? .ows_gray65 : .ows_gray05
+            case .default, .grouped: return isDarkThemeEnabled ? .ows_gray65 : .ows_gray05
             case .translucentDark: return .ows_whiteAlpha20
             }
         }
 
         public var headerTitleColor: UIColor {
             switch self {
-            case .default: return Theme.primaryTextColor
+            case .default, .grouped: return Theme.primaryTextColor
             case .translucentDark: return Theme.darkThemePrimaryColor
             }
         }
 
         public var headerMessageColor: UIColor {
             switch self {
-            case .default: return Theme.primaryTextColor
+            case .default, .grouped: return Theme.primaryTextColor
             case .translucentDark: return Theme.darkThemeSecondaryTextAndIconColor
             }
         }
 
         public var buttonTextColor: UIColor {
             switch self {
-            case .default: return Theme.primaryTextColor
+            case .default, .grouped: return Theme.primaryTextColor
             case .translucentDark: return Theme.darkThemePrimaryColor
             }
         }
 
         public var safetyNumberChangeButtonBackgroundColor: UIColor {
             switch self {
-            case .default: return Theme.conversationButtonBackgroundColor
+            case .default, .grouped: return Theme.conversationButtonBackgroundColor
             case .translucentDark: return .ows_gray75
             }
         }
 
         public var safetyNumberChangeButtonTextColor: UIColor {
             switch self {
-            case .default: return Theme.conversationButtonTextColor
+            case .default, .grouped: return Theme.conversationButtonTextColor
             case .translucentDark: return .ows_accentBlueDark
             }
         }
@@ -560,7 +561,7 @@ extension Theme {
 
         public var buttonHighlightColor: UIColor {
             switch self {
-            case .default: return Theme.cellSelectedColor
+            case .default, .grouped: return Theme.cellSelectedColor
             case .translucentDark: return .ows_whiteAlpha20
             }
         }
@@ -568,13 +569,14 @@ extension Theme {
         public var backgroundColor: UIColor {
             switch self {
             case .default: return isDarkThemeEnabled ? .ows_gray75 : .ows_white
+            case .grouped: return Theme.tableView2BackgroundColor
             case .translucentDark: return .clear
             }
         }
 
         public func createBackgroundView() -> UIView {
             switch self {
-            case .default:
+            case .default, .grouped:
                 let background = UIView()
                 background.backgroundColor = backgroundColor
                 return background

@@ -94,13 +94,13 @@ class SendPaymentHelper: Dependencies {
     public static func buildBottomButton(title: String,
                                          target: Any,
                                          selector: Selector) -> UIView {
-        let button = OWSFlatButton.button(title: title,
+        let button = OWSFlatButton.insetButton(title: title,
                                           font: bottomButtonFont,
                                           titleColor: .white,
                                           backgroundColor: .ows_accentBlue,
                                           target: target,
                                           selector: selector)
-        button.autoSetHeightUsingFont()
+        button.autoSetHeightUsingFont(extraVerticalInsets: 6)
         return button
     }
 
@@ -121,7 +121,7 @@ class SendPaymentHelper: Dependencies {
     // the same exact height.
     public static var bottomControlHeight: CGFloat {
         max(progressIndicatorSize,
-            OWSFlatButton.heightForFont(bottomButtonFont))
+            OWSFlatButton.heightForFont(bottomButtonFont) + 2.0)
     }
 
     public static var bottomButtonFont: UIFont {
@@ -137,6 +137,7 @@ class SendPaymentHelper: Dependencies {
     }
 
     public func updateBalanceLabel(_ balanceLabel: UILabel) {
+        AssertIsOnMainThread()
 
         guard let maximumPaymentAmount = self.maximumPaymentAmount else {
             // Use whitespace to ensure that the height of the label
