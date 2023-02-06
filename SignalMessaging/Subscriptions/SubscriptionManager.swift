@@ -119,6 +119,15 @@ public struct Subscription: Equatable {
         }
     }
 
+    /// The state of the subscription as understood by the backend
+    ///
+    /// A subscription will be in the `active` state as long as the current subscription payment has been
+    /// successfully processed by the payment processor.
+    ///
+    /// One note regarding `active` state: If the user hasn't communicated with the backend in
+    /// 30-45 days, the backend will consider the user 'inactive' and set `cancelAtEndOfPeriod`
+    /// to `true`.  Once the `endOfCurrentPeriod` time has passed, the subscription status will
+    /// transition from `active` to `canceled`
     public enum SubscriptionStatus: String {
         case unknown
         case trialing = "trialing"

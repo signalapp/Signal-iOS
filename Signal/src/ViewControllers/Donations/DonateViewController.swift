@@ -1130,7 +1130,10 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
     private func renderMonthlyButtonsView(monthly: State.MonthlyState) {
         var buttons = [OWSButton]()
 
-        if let currentSubscription = monthly.currentSubscription {
+        if
+            let currentSubscription = monthly.currentSubscription,
+            currentSubscription.active
+        {
             if Self.canMakeNewDonations(forDonateMode: .monthly) {
                 let updateTitle = NSLocalizedString(
                     "DONATE_SCREEN_UPDATE_MONTHLY_SUBSCRIPTION_BUTTON",

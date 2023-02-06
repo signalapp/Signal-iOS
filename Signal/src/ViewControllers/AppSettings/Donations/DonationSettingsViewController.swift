@@ -154,7 +154,10 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 currentSubscriptionPromise.then { currentSubscription -> Guarantee<State> in
                     let result: State = .loadFinished(
                         subscriptionStatus: {
-                            guard let currentSubscription = currentSubscription else {
+                            guard
+                                let currentSubscription = currentSubscription,
+                                currentSubscription.active
+                            else {
                                 return .noSubscription
                             }
                             return .hasSubscription(

@@ -87,6 +87,7 @@ extension DonateViewController {
             let isCurrentSubscription: Bool = {
                 guard let currentSubscription = currentSubscription else { return false }
                 return (
+                    currentSubscription.active &&
                     currentSubscription.level == subscriptionLevel.level &&
                     currentSubscription.amount.currencyCode == currencyCode
                 )
