@@ -1075,37 +1075,37 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     [self.modelReadCaches.userProfileReadCache didRemoveUserProfile:self transaction:transaction];
 }
 
+/// Reindex associated models.
+///
+/// The profile can affect how accounts, recipients, contact threads, and group threads are indexed,
+/// so we need to re-index them whenever the profile changes.
 - (void)reindexAssociatedModels:(SDSAnyWriteTransaction *)transaction
 {
-    // The profile can affect how accounts, recipients, contact threads, and group threads are indexed, so we
-    // need to re-index them whenever the profile changes.
-    FullTextSearchFinder *fullTextSearchFinder = [FullTextSearchFinder new];
-
     AnySignalAccountFinder *accountFinder = [AnySignalAccountFinder new];
     SignalAccount *_Nullable signalAccount = [accountFinder signalAccountForAddress:self.address
                                                                         transaction:transaction];
     if (signalAccount != nil) {
-        [fullTextSearchFinder modelWasUpdatedObjcWithModel:signalAccount transaction:transaction];
+        [FullTextSearchFinder modelWasUpdated:signalAccount transaction:transaction];
     }
 
     AnySignalRecipientFinder *signalRecipientFinder = [AnySignalRecipientFinder new];
     SignalRecipient *_Nullable signalRecipient = [signalRecipientFinder signalRecipientForAddress:self.address
                                                                                       transaction:transaction];
     if (signalRecipient != nil) {
-        [fullTextSearchFinder modelWasUpdatedObjcWithModel:signalRecipient transaction:transaction];
+        [FullTextSearchFinder modelWasUpdated:signalRecipient transaction:transaction];
     }
 
     TSContactThread *_Nullable contactThread = [TSContactThread getThreadWithContactAddress:self.address
                                                                                 transaction:transaction];
     if (contactThread != nil) {
-        [fullTextSearchFinder modelWasUpdatedObjcWithModel:contactThread transaction:transaction];
+        [FullTextSearchFinder modelWasUpdated:contactThread transaction:transaction];
     }
 
     [TSGroupMember enumerateGroupMembersForAddress:self.address
                                    withTransaction:transaction
                                              block:^(TSGroupMember *groupMember, BOOL *stop) {
-                                                 [fullTextSearchFinder modelWasUpdatedObjcWithModel:groupMember
-                                                                                        transaction:transaction];
+                                                 [FullTextSearchFinder modelWasUpdated:groupMember
+                                                                           transaction:transaction];
                                              }];
 }
 

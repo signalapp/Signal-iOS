@@ -240,13 +240,13 @@ public extension SDSCodableModel {
             anyDidInsert(transaction: transaction)
 
             if Self.ftsIndexMode != .never {
-                FullTextSearchFinder().modelWasInserted(model: self, transaction: transaction)
+                FullTextSearchFinder.modelWasInserted(model: self, transaction: transaction)
             }
         case .update:
             anyDidUpdate(transaction: transaction)
 
             if Self.ftsIndexMode == .always {
-                FullTextSearchFinder().modelWasUpdated(model: self, transaction: transaction)
+                FullTextSearchFinder.modelWasUpdated(model: self, transaction: transaction)
             }
         }
     }
@@ -267,7 +267,7 @@ public extension SDSCodableModel {
         anyDidRemove(transaction: transaction)
 
         if Self.ftsIndexMode != .never {
-            FullTextSearchFinder().modelWasRemoved(model: self, transaction: transaction)
+            FullTextSearchFinder.modelWasRemoved(model: self, transaction: transaction)
         }
     }
 }

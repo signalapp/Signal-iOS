@@ -282,7 +282,7 @@ final class DatabaseRecoveryTest: SSKBaseTestSwift {
         finishedDatabaseStorage.read { transaction in
             func searchMessages(for searchText: String) -> [TSMessage] {
                 var result = [TSMessage]()
-                    FullTextSearchFinder().enumerateObjects(
+                    FullTextSearchFinder.enumerateObjects(
                     searchText: searchText,
                     collections: [TSMessage.collection()],
                     maxResults: 99,

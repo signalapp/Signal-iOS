@@ -620,11 +620,9 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
 
         Bench(title: "Search", memorySamplerRatio: 1) { _ in
             self.read { transaction in
-                let finder = FullTextSearchFinder()
-
                 let getMatchCount = { (searchText: String) -> UInt in
                     var count: UInt = 0
-                    finder.enumerateObjects(
+                    FullTextSearchFinder.enumerateObjects(
                         searchText: searchText,
                         collections: [TSMessage.collection()],
                         maxResults: 500,

@@ -416,14 +416,8 @@ public class FullTextSearcher: NSObject {
     @objc
     public static let kDefaultMaxResults: UInt = 500
 
-    private let finder: FullTextSearchFinder
-
     @objc
     public static let shared: FullTextSearcher = FullTextSearcher()
-    override private init() {
-        finder = FullTextSearchFinder()
-        super.init()
-    }
 
     @objc
     public func searchForComposeScreen(searchText: String,
@@ -440,7 +434,7 @@ public class FullTextSearcher: NSObject {
             return false
         }
 
-        finder.enumerateObjects(
+        FullTextSearchFinder.enumerateObjects(
             searchText: searchText,
             collections: [
                 SignalAccount.collection(),
@@ -541,7 +535,7 @@ public class FullTextSearcher: NSObject {
             return false
         }
 
-        finder.enumerateObjects(
+        FullTextSearchFinder.enumerateObjects(
             searchText: searchText,
             collections: [
                 SignalAccount.collection(),
@@ -771,7 +765,7 @@ public class FullTextSearcher: NSObject {
         // will be the chat with my contact named "Matthew", rather than messages
         // where his name was mentioned.
 
-        finder.enumerateObjects(
+        FullTextSearchFinder.enumerateObjects(
             searchText: searchText,
             maxResults: remainingAllowedResults,
             transaction: transaction
@@ -812,7 +806,7 @@ public class FullTextSearcher: NSObject {
             }
         }
 
-        finder.enumerateObjects(
+        FullTextSearchFinder.enumerateObjects(
             searchText: searchText,
             maxResults: remainingAllowedResults,
             transaction: transaction
@@ -846,7 +840,7 @@ public class FullTextSearcher: NSObject {
             groupThreadIds.insert(groupThread.uniqueId)
         }
 
-        finder.enumerateObjects(
+        FullTextSearchFinder.enumerateObjects(
             searchText: searchText,
             maxResults: remainingAllowedResults,
             transaction: transaction
@@ -858,7 +852,7 @@ public class FullTextSearcher: NSObject {
             appendSignalAccount(account)
         }
 
-        finder.enumerateObjects(
+        FullTextSearchFinder.enumerateObjects(
             searchText: searchText,
             maxResults: remainingAllowedResults,
             transaction: transaction
@@ -875,7 +869,7 @@ public class FullTextSearcher: NSObject {
             appendSignalAccount(account)
         }
 
-        finder.enumerateObjects(
+        FullTextSearchFinder.enumerateObjects(
             searchText: searchText,
             maxResults: remainingAllowedResults,
             transaction: transaction
@@ -924,7 +918,7 @@ public class FullTextSearcher: NSObject {
 
         var messages: [UInt64: MessageSearchResult] = [:]
 
-        finder.enumerateObjects(
+        FullTextSearchFinder.enumerateObjects(
             searchText: searchText,
             collections: [
                 TSMessage.collection(),

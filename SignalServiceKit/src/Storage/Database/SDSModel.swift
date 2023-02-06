@@ -51,13 +51,13 @@ public extension SDSModel {
             anyDidInsert(with: transaction)
 
             if type(of: self).ftsIndexMode != .never {
-                FullTextSearchFinder().modelWasInserted(model: self, transaction: transaction)
+                FullTextSearchFinder.modelWasInserted(model: self, transaction: transaction)
             }
         case .update:
             anyDidUpdate(with: transaction)
 
             if type(of: self).ftsIndexMode == .always {
-                FullTextSearchFinder().modelWasUpdated(model: self, transaction: transaction)
+                FullTextSearchFinder.modelWasUpdated(model: self, transaction: transaction)
             }
         }
     }
@@ -85,7 +85,7 @@ public extension SDSModel {
         anyDidRemove(with: transaction)
 
         if type(of: self).ftsIndexMode != .never {
-            FullTextSearchFinder().modelWasRemoved(model: self, transaction: transaction)
+            FullTextSearchFinder.modelWasRemoved(model: self, transaction: transaction)
         }
     }
 }
