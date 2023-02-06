@@ -2097,6 +2097,9 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.addSpamReportingTokenRecordTable) { transaction in
             try transaction.database.create(table: SpamReportingTokenRecord.databaseTableName) { table in
+                // This is a BLOB column [by default][0]. We should've been explicit but don't want
+                // to go back and change existing migrations, even if the change should be a no-op.
+                // [0]: https://www.sqlite.org/datatype3.html#determination_of_column_affinity
                 table.column("sourceUuid").primaryKey().notNull()
                 table.column("spamReportingToken", .blob).notNull()
             }

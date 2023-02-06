@@ -13,7 +13,7 @@ final class SpamReportingTokenRecordTest: XCTestCase {
 
         try result.write { db in
             try db.create(table: SpamReportingTokenRecord.databaseTableName) { table in
-                table.column("sourceUuid").primaryKey().notNull()
+                table.column("sourceUuid", .blob).primaryKey().notNull()
                 table.column("spamReportingToken", .blob).notNull()
             }
         }
