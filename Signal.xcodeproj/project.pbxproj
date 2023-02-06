@@ -776,6 +776,9 @@
 		50D5E2412980AD6F00899660 /* LinkValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D5E2402980AD6F00899660 /* LinkValidator.swift */; };
 		50D5E2432980B53000899660 /* LinkValidatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D5E2422980B53000899660 /* LinkValidatorTest.swift */; };
 		641CECC436F5F3EE2AC07EE9 /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */; };
+		6600F34C298C81CD00B1EDB7 /* UnknownEnumCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */; };
+		6600F34F298C823C00B1EDB7 /* UnknownEnumCodableTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F34D298C81E300B1EDB7 /* UnknownEnumCodableTest.swift */; };
+		6600F351298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F350298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift */; };
 		66138FAB2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FAA2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift */; };
 		66138FB02982F4CA002E0CFE /* MockDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FAE2982F4C4002E0CFE /* MockDB.swift */; };
 		66138FB429831AB0002E0CFE /* InMemoryKeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FB22983010D002E0CFE /* InMemoryKeyValueStore.swift */; };
@@ -826,6 +829,8 @@
 		669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */; };
 		669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */; };
 		66A1DF6E298C2AFE00C4E4A7 /* KBSAuthCredential.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF6D298C2AFE00C4E4A7 /* KBSAuthCredential.swift */; };
+		66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */; };
+		66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
 		66AE5779298440A100E40CFA /* ViewControllerContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC13297F38BB004EFC30 /* ViewControllerContext.swift */; };
 		66AE577B298496EA00E40CFA /* KBSAuthCredentialStorageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AE577A298496EA00E40CFA /* KBSAuthCredentialStorageMock.swift */; };
@@ -3150,6 +3155,9 @@
 		50F96F3A28ECBC3200541EED /* ms */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ms; path = translations/ms.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		55D83291ED67EE1A7FC96E60 /* Pods-SignalNSE.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.testable release.xcconfig"; sourceTree = "<group>"; };
 		63BAA38DC365EE44110A6BD1 /* Pods-SignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.debug.xcconfig"; sourceTree = "<group>"; };
+		6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnknownEnumCodable.swift; sourceTree = "<group>"; };
+		6600F34D298C81E300B1EDB7 /* UnknownEnumCodableTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnknownEnumCodableTest.swift; sourceTree = "<group>"; };
+		6600F350298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRequestFactoryTest.swift; sourceTree = "<group>"; };
 		66138FAA2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceTestShims.swift; sourceTree = "<group>"; };
 		66138FAE2982F4C4002E0CFE /* MockDB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDB.swift; sourceTree = "<group>"; };
 		66138FB22983010D002E0CFE /* InMemoryKeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryKeyValueStore.swift; sourceTree = "<group>"; };
@@ -3202,6 +3210,8 @@
 		669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerProtocol.swift; sourceTree = "<group>"; };
 		669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerMock.swift; sourceTree = "<group>"; };
 		66A1DF6D298C2AFE00C4E4A7 /* KBSAuthCredential.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSAuthCredential.swift; sourceTree = "<group>"; };
+		66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRequestFactory.swift; sourceTree = "<group>"; };
+		66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationServiceResponses.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
 		66AE577A298496EA00E40CFA /* KBSAuthCredentialStorageMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSAuthCredentialStorageMock.swift; sourceTree = "<group>"; };
 		66AE577E2984AB8700E40CFA /* ToyExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToyExample.swift; sourceTree = "<group>"; };
@@ -6266,6 +6276,15 @@
 			path = ViewControllerContext;
 			sourceTree = "<group>";
 		};
+		66A1DF71298C634500C4E4A7 /* Registration */ = {
+			isa = PBXGroup;
+			children = (
+				66A1DF72298C635E00C4E4A7 /* RegistrationRequestFactory.swift */,
+				66A1DF74298C73D900C4E4A7 /* RegistrationServiceResponses.swift */,
+			);
+			path = Registration;
+			sourceTree = "<group>";
+		};
 		76EB03C118170B33006006FC /* src */ = {
 			isa = PBXGroup;
 			children = (
@@ -7377,6 +7396,7 @@
 				F94261D2289B1B5400460798 /* OWSHttpHeadersTest.swift */,
 				F94261D3289B1B5400460798 /* OWSRequestFactoryTest.swift */,
 				F94261D1289B1B5400460798 /* OWSURLBuilderUtilTest.swift */,
+				6600F350298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift */,
 				F9B93CDB28E1FE3500B3F8A0 /* SignalProxyTest.swift */,
 			);
 			name = Network;
@@ -7441,6 +7461,7 @@
 				F9CAC77E29199B9200EEC1DE /* StringTest.swift */,
 				F94261EB289B1B5400460798 /* TSMessageStorageTests.m */,
 				F94261E8289B1B5400460798 /* UnfairLockTest.swift */,
+				6600F34D298C81E300B1EDB7 /* UnknownEnumCodableTest.swift */,
 				F9D5BFD02979B027001737E5 /* URLPathComponentsTest.swift */,
 				F94261FD289B1B5400460798 /* ViewOnceMessagesTest.swift */,
 			);
@@ -8549,6 +8570,7 @@
 		F9C5CAE1289453B200548EEE /* Requests */ = {
 			isa = PBXGroup;
 			children = (
+				66A1DF71298C634500C4E4A7 /* Registration */,
 				D95C39E5296DE9E900A9DA23 /* OWSRequestFactory+BoostPayments.swift */,
 				F9D5BFCC2979A017001737E5 /* OWSRequestFactory+Spam.swift */,
 				D95C39E7296DEBFB00A9DA23 /* OWSRequestFactory+Usernames.swift */,
@@ -8701,6 +8723,7 @@
 				F9C5CB3E289453B200548EEE /* UIImage+OWS.h */,
 				F9C5CB04289453B200548EEE /* UIImage+OWS.m */,
 				F9C5CB4D289453B200548EEE /* UIImage+OWS.swift */,
+				6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */,
 				F9D5BFCE2979AFF4001737E5 /* URLPathComponents.swift */,
 				F9C5CB54289453B200548EEE /* UserProfileFinder.swift */,
 				F9C5CB03289453B200548EEE /* ViewOnceMessages.swift */,
@@ -11501,6 +11524,8 @@
 				F9C5CE14289453B400548EEE /* ReadyFlag.swift in Sources */,
 				F9C5CE18289453B400548EEE /* Refinery.swift in Sources */,
 				F9C5CCAD289453B300548EEE /* RefreshPreKeysOperation.swift in Sources */,
+				66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */,
+				66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */,
 				F9C5CCB0289453B300548EEE /* RemoteAttestation.swift in Sources */,
 				F9C5CCB1289453B300548EEE /* RemoteAttestationQuote.m in Sources */,
 				F9C5CCB2289453B300548EEE /* RemoteAttestationSigningCertificate.m in Sources */,
@@ -11695,6 +11720,7 @@
 				F9C5CDE5289453B400548EEE /* UIColor+SSK.swift in Sources */,
 				F9C5CDD6289453B400548EEE /* UIImage+OWS.m in Sources */,
 				F9C5CE1F289453B400548EEE /* UIImage+OWS.swift in Sources */,
+				6600F34C298C81CD00B1EDB7 /* UnknownEnumCodable.swift in Sources */,
 				F9D5BFCF2979AFF4001737E5 /* URLPathComponents.swift in Sources */,
 				F9C5CE26289453B400548EEE /* UserProfileFinder.swift in Sources */,
 				F9C5CCBD289453B300548EEE /* UUIDBackfillTask.swift in Sources */,
@@ -11784,6 +11810,7 @@
 				F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */,
 				F97391A328EF0B20002DDE5D /* ProtoParsingTest.swift in Sources */,
 				F942625D289B1B5500460798 /* RefineryTest.swift in Sources */,
+				6600F351298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift in Sources */,
 				F9426259289B1B5500460798 /* RemoteConfigManagerTests.swift in Sources */,
 				F945FE4D298481EA00C835C7 /* RingrtcFieldTrialsTest.swift in Sources */,
 				F942624E289B1B5500460798 /* SDSDatabaseStorageObservationTest.swift in Sources */,
@@ -11823,6 +11850,7 @@
 				F942627F289B1B5600460798 /* TSThreadTest.m in Sources */,
 				F942628F289B1B5600460798 /* TypingIndicatorMessageTest.swift in Sources */,
 				F9426255289B1B5500460798 /* UnfairLockTest.swift in Sources */,
+				6600F34F298C823C00B1EDB7 /* UnknownEnumCodableTest.swift in Sources */,
 				F9D5BFD12979B027001737E5 /* URLPathComponentsTest.swift in Sources */,
 				F945FE502984822D00C835C7 /* UserDefaults.swift in Sources */,
 				F9426284289B1B5600460798 /* UUIDBackfillTaskTest.swift in Sources */,
