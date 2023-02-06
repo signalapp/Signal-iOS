@@ -3011,7 +3011,7 @@
 "GROUP_WAS_MIGRATED" = "This group was upgraded to a New Group.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and has been removed from the group.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and have been removed from the group.";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "You couldn’t be added to the New Group and has been invited to join";
