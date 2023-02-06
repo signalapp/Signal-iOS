@@ -49,19 +49,15 @@ public struct DeviceTransferProtoFile: Codable, CustomDebugStringConvertible {
 
     public init(serializedData: Data) throws {
         let proto = try DeviceTransferProtos_File(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: DeviceTransferProtos_File) throws {
+    fileprivate init(_ proto: DeviceTransferProtos_File) {
         let identifier = proto.identifier
 
         let relativePath = proto.relativePath
 
         let estimatedSize = proto.estimatedSize
-
-        // MARK: - Begin Validation Logic for DeviceTransferProtoFile -
-
-        // MARK: - End Validation Logic for DeviceTransferProtoFile -
 
         self.init(proto: proto,
                   identifier: identifier,
@@ -141,7 +137,11 @@ public struct DeviceTransferProtoFileBuilder {
     }
 
     public func build() throws -> DeviceTransferProtoFile {
-        return try DeviceTransferProtoFile(proto)
+        return DeviceTransferProtoFile(proto)
+    }
+
+    public func buildInfallibly() -> DeviceTransferProtoFile {
+        return DeviceTransferProtoFile(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -159,7 +159,7 @@ extension DeviceTransferProtoFile {
 
 extension DeviceTransferProtoFileBuilder {
     public func buildIgnoringErrors() -> DeviceTransferProtoFile? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -197,17 +197,13 @@ public struct DeviceTransferProtoDefault: Codable, CustomDebugStringConvertible 
 
     public init(serializedData: Data) throws {
         let proto = try DeviceTransferProtos_Default(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: DeviceTransferProtos_Default) throws {
+    fileprivate init(_ proto: DeviceTransferProtos_Default) {
         let key = proto.key
 
         let encodedValue = proto.encodedValue
-
-        // MARK: - Begin Validation Logic for DeviceTransferProtoDefault -
-
-        // MARK: - End Validation Logic for DeviceTransferProtoDefault -
 
         self.init(proto: proto,
                   key: key,
@@ -281,7 +277,11 @@ public struct DeviceTransferProtoDefaultBuilder {
     }
 
     public func build() throws -> DeviceTransferProtoDefault {
-        return try DeviceTransferProtoDefault(proto)
+        return DeviceTransferProtoDefault(proto)
+    }
+
+    public func buildInfallibly() -> DeviceTransferProtoDefault {
+        return DeviceTransferProtoDefault(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -299,7 +299,7 @@ extension DeviceTransferProtoDefault {
 
 extension DeviceTransferProtoDefaultBuilder {
     public func buildIgnoringErrors() -> DeviceTransferProtoDefault? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -341,19 +341,15 @@ public struct DeviceTransferProtoDatabase: Codable, CustomDebugStringConvertible
 
     public init(serializedData: Data) throws {
         let proto = try DeviceTransferProtos_Database(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: DeviceTransferProtos_Database) throws {
+    fileprivate init(_ proto: DeviceTransferProtos_Database) {
         let key = proto.key
 
-        let database = try DeviceTransferProtoFile(proto.database)
+        let database = DeviceTransferProtoFile(proto.database)
 
-        let wal = try DeviceTransferProtoFile(proto.wal)
-
-        // MARK: - Begin Validation Logic for DeviceTransferProtoDatabase -
-
-        // MARK: - End Validation Logic for DeviceTransferProtoDatabase -
+        let wal = DeviceTransferProtoFile(proto.wal)
 
         self.init(proto: proto,
                   key: key,
@@ -439,7 +435,11 @@ public struct DeviceTransferProtoDatabaseBuilder {
     }
 
     public func build() throws -> DeviceTransferProtoDatabase {
-        return try DeviceTransferProtoDatabase(proto)
+        return DeviceTransferProtoDatabase(proto)
+    }
+
+    public func buildInfallibly() -> DeviceTransferProtoDatabase {
+        return DeviceTransferProtoDatabase(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -457,7 +457,7 @@ extension DeviceTransferProtoDatabase {
 
 extension DeviceTransferProtoDatabaseBuilder {
     public func buildIgnoringErrors() -> DeviceTransferProtoDatabase? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -514,29 +514,25 @@ public struct DeviceTransferProtoManifest: Codable, CustomDebugStringConvertible
 
     public init(serializedData: Data) throws {
         let proto = try DeviceTransferProtos_Manifest(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: DeviceTransferProtos_Manifest) throws {
+    fileprivate init(_ proto: DeviceTransferProtos_Manifest) {
         let grdbSchemaVersion = proto.grdbSchemaVersion
 
         var database: DeviceTransferProtoDatabase?
         if proto.hasDatabase {
-            database = try DeviceTransferProtoDatabase(proto.database)
+            database = DeviceTransferProtoDatabase(proto.database)
         }
 
         var appDefaults: [DeviceTransferProtoDefault] = []
-        appDefaults = try proto.appDefaults.map { try DeviceTransferProtoDefault($0) }
+        appDefaults = proto.appDefaults.map { DeviceTransferProtoDefault($0) }
 
         var standardDefaults: [DeviceTransferProtoDefault] = []
-        standardDefaults = try proto.standardDefaults.map { try DeviceTransferProtoDefault($0) }
+        standardDefaults = proto.standardDefaults.map { DeviceTransferProtoDefault($0) }
 
         var files: [DeviceTransferProtoFile] = []
-        files = try proto.files.map { try DeviceTransferProtoFile($0) }
-
-        // MARK: - Begin Validation Logic for DeviceTransferProtoManifest -
-
-        // MARK: - End Validation Logic for DeviceTransferProtoManifest -
+        files = proto.files.map { DeviceTransferProtoFile($0) }
 
         self.init(proto: proto,
                   grdbSchemaVersion: grdbSchemaVersion,
@@ -643,7 +639,11 @@ public struct DeviceTransferProtoManifestBuilder {
     }
 
     public func build() throws -> DeviceTransferProtoManifest {
-        return try DeviceTransferProtoManifest(proto)
+        return DeviceTransferProtoManifest(proto)
+    }
+
+    public func buildInfallibly() -> DeviceTransferProtoManifest {
+        return DeviceTransferProtoManifest(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -661,7 +661,7 @@ extension DeviceTransferProtoManifest {
 
 extension DeviceTransferProtoManifestBuilder {
     public func buildIgnoringErrors() -> DeviceTransferProtoManifest? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 

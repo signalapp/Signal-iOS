@@ -74,14 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
         SSKProtoContactDetailsAvatarBuilder *avatarBuilder = [SSKProtoContactDetailsAvatar builder];
         [avatarBuilder setContentType:OWSMimeTypeImageJpeg];
         [avatarBuilder setLength:(uint32_t)avatarJpegData.length];
-
-        NSError *error;
-        SSKProtoContactDetailsAvatar *_Nullable avatar = [avatarBuilder buildAndReturnError:&error];
-        if (error || !avatar) {
-            OWSLogError(@"could not build protobuf: %@", error);
-            return;
-        }
-        [contactBuilder setAvatar:avatar];
+        [contactBuilder setAvatar:[avatarBuilder buildInfallibly]];
     }
 
     if (profileKeyData) {

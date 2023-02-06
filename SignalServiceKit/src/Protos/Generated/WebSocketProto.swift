@@ -91,10 +91,6 @@ public class WebSocketProtoWebSocketRequestMessage: NSObject, Codable, NSSecureC
         }
         let requestID = proto.requestID
 
-        // MARK: - Begin Validation Logic for WebSocketProtoWebSocketRequestMessage -
-
-        // MARK: - End Validation Logic for WebSocketProtoWebSocketRequestMessage -
-
         self.init(proto: proto,
                   verb: verb,
                   path: path,
@@ -335,10 +331,6 @@ public class WebSocketProtoWebSocketResponseMessage: NSObject, Codable, NSSecure
             throw WebSocketProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: status")
         }
         let status = proto.status
-
-        // MARK: - Begin Validation Logic for WebSocketProtoWebSocketResponseMessage -
-
-        // MARK: - End Validation Logic for WebSocketProtoWebSocketResponseMessage -
 
         self.init(proto: proto,
                   requestID: requestID,
@@ -591,10 +583,6 @@ public class WebSocketProtoWebSocketMessage: NSObject, Codable, NSSecureCoding {
         if proto.hasResponse {
             response = try WebSocketProtoWebSocketResponseMessage(proto.response)
         }
-
-        // MARK: - Begin Validation Logic for WebSocketProtoWebSocketMessage -
-
-        // MARK: - End Validation Logic for WebSocketProtoWebSocketMessage -
 
         self.init(proto: proto,
                   request: request,

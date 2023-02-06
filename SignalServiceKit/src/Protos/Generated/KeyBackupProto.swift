@@ -55,28 +55,24 @@ public class KeyBackupProtoRequest: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try KeyBackupProtos_Request(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: KeyBackupProtos_Request) throws {
+    fileprivate convenience init(_ proto: KeyBackupProtos_Request) {
         var backup: KeyBackupProtoBackupRequest?
         if proto.hasBackup {
-            backup = try KeyBackupProtoBackupRequest(proto.backup)
+            backup = KeyBackupProtoBackupRequest(proto.backup)
         }
 
         var restore: KeyBackupProtoRestoreRequest?
         if proto.hasRestore {
-            restore = try KeyBackupProtoRestoreRequest(proto.restore)
+            restore = KeyBackupProtoRestoreRequest(proto.restore)
         }
 
         var delete: KeyBackupProtoDeleteRequest?
         if proto.hasDelete {
-            delete = try KeyBackupProtoDeleteRequest(proto.delete)
+            delete = KeyBackupProtoDeleteRequest(proto.delete)
         }
-
-        // MARK: - Begin Validation Logic for KeyBackupProtoRequest -
-
-        // MARK: - End Validation Logic for KeyBackupProtoRequest -
 
         self.init(proto: proto,
                   backup: backup,
@@ -193,7 +189,12 @@ public class KeyBackupProtoRequestBuilder: NSObject {
 
     @objc
     public func build() throws -> KeyBackupProtoRequest {
-        return try KeyBackupProtoRequest(proto)
+        return KeyBackupProtoRequest(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> KeyBackupProtoRequest {
+        return KeyBackupProtoRequest(proto)
     }
 
     @objc
@@ -214,7 +215,7 @@ extension KeyBackupProtoRequest {
 extension KeyBackupProtoRequestBuilder {
     @objc
     public func buildIgnoringErrors() -> KeyBackupProtoRequest? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -262,28 +263,24 @@ public class KeyBackupProtoResponse: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try KeyBackupProtos_Response(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: KeyBackupProtos_Response) throws {
+    fileprivate convenience init(_ proto: KeyBackupProtos_Response) {
         var backup: KeyBackupProtoBackupResponse?
         if proto.hasBackup {
-            backup = try KeyBackupProtoBackupResponse(proto.backup)
+            backup = KeyBackupProtoBackupResponse(proto.backup)
         }
 
         var restore: KeyBackupProtoRestoreResponse?
         if proto.hasRestore {
-            restore = try KeyBackupProtoRestoreResponse(proto.restore)
+            restore = KeyBackupProtoRestoreResponse(proto.restore)
         }
 
         var delete: KeyBackupProtoDeleteResponse?
         if proto.hasDelete {
-            delete = try KeyBackupProtoDeleteResponse(proto.delete)
+            delete = KeyBackupProtoDeleteResponse(proto.delete)
         }
-
-        // MARK: - Begin Validation Logic for KeyBackupProtoResponse -
-
-        // MARK: - End Validation Logic for KeyBackupProtoResponse -
 
         self.init(proto: proto,
                   backup: backup,
@@ -400,7 +397,12 @@ public class KeyBackupProtoResponseBuilder: NSObject {
 
     @objc
     public func build() throws -> KeyBackupProtoResponse {
-        return try KeyBackupProtoResponse(proto)
+        return KeyBackupProtoResponse(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> KeyBackupProtoResponse {
+        return KeyBackupProtoResponse(proto)
     }
 
     @objc
@@ -421,7 +423,7 @@ extension KeyBackupProtoResponse {
 extension KeyBackupProtoResponseBuilder {
     @objc
     public func buildIgnoringErrors() -> KeyBackupProtoResponse? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -532,14 +534,10 @@ public class KeyBackupProtoBackupRequest: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try KeyBackupProtos_BackupRequest(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: KeyBackupProtos_BackupRequest) throws {
-        // MARK: - Begin Validation Logic for KeyBackupProtoBackupRequest -
-
-        // MARK: - End Validation Logic for KeyBackupProtoBackupRequest -
-
+    fileprivate convenience init(_ proto: KeyBackupProtos_BackupRequest) {
         self.init(proto: proto)
     }
 
@@ -696,7 +694,12 @@ public class KeyBackupProtoBackupRequestBuilder: NSObject {
 
     @objc
     public func build() throws -> KeyBackupProtoBackupRequest {
-        return try KeyBackupProtoBackupRequest(proto)
+        return KeyBackupProtoBackupRequest(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> KeyBackupProtoBackupRequest {
+        return KeyBackupProtoBackupRequest(proto)
     }
 
     @objc
@@ -717,7 +720,7 @@ extension KeyBackupProtoBackupRequest {
 extension KeyBackupProtoBackupRequestBuilder {
     @objc
     public func buildIgnoringErrors() -> KeyBackupProtoBackupRequest? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -807,14 +810,10 @@ public class KeyBackupProtoBackupResponse: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try KeyBackupProtos_BackupResponse(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: KeyBackupProtos_BackupResponse) throws {
-        // MARK: - Begin Validation Logic for KeyBackupProtoBackupResponse -
-
-        // MARK: - End Validation Logic for KeyBackupProtoBackupResponse -
-
+    fileprivate convenience init(_ proto: KeyBackupProtos_BackupResponse) {
         self.init(proto: proto)
     }
 
@@ -907,7 +906,12 @@ public class KeyBackupProtoBackupResponseBuilder: NSObject {
 
     @objc
     public func build() throws -> KeyBackupProtoBackupResponse {
-        return try KeyBackupProtoBackupResponse(proto)
+        return KeyBackupProtoBackupResponse(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> KeyBackupProtoBackupResponse {
+        return KeyBackupProtoBackupResponse(proto)
     }
 
     @objc
@@ -928,7 +932,7 @@ extension KeyBackupProtoBackupResponse {
 extension KeyBackupProtoBackupResponseBuilder {
     @objc
     public func buildIgnoringErrors() -> KeyBackupProtoBackupResponse? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -1018,14 +1022,10 @@ public class KeyBackupProtoRestoreRequest: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try KeyBackupProtos_RestoreRequest(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: KeyBackupProtos_RestoreRequest) throws {
-        // MARK: - Begin Validation Logic for KeyBackupProtoRestoreRequest -
-
-        // MARK: - End Validation Logic for KeyBackupProtoRestoreRequest -
-
+    fileprivate convenience init(_ proto: KeyBackupProtos_RestoreRequest) {
         self.init(proto: proto)
     }
 
@@ -1160,7 +1160,12 @@ public class KeyBackupProtoRestoreRequestBuilder: NSObject {
 
     @objc
     public func build() throws -> KeyBackupProtoRestoreRequest {
-        return try KeyBackupProtoRestoreRequest(proto)
+        return KeyBackupProtoRestoreRequest(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> KeyBackupProtoRestoreRequest {
+        return KeyBackupProtoRestoreRequest(proto)
     }
 
     @objc
@@ -1181,7 +1186,7 @@ extension KeyBackupProtoRestoreRequest {
 extension KeyBackupProtoRestoreRequestBuilder {
     @objc
     public func buildIgnoringErrors() -> KeyBackupProtoRestoreRequest? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -1298,14 +1303,10 @@ public class KeyBackupProtoRestoreResponse: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try KeyBackupProtos_RestoreResponse(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: KeyBackupProtos_RestoreResponse) throws {
-        // MARK: - Begin Validation Logic for KeyBackupProtoRestoreResponse -
-
-        // MARK: - End Validation Logic for KeyBackupProtoRestoreResponse -
-
+    fileprivate convenience init(_ proto: KeyBackupProtos_RestoreResponse) {
         self.init(proto: proto)
     }
 
@@ -1420,7 +1421,12 @@ public class KeyBackupProtoRestoreResponseBuilder: NSObject {
 
     @objc
     public func build() throws -> KeyBackupProtoRestoreResponse {
-        return try KeyBackupProtoRestoreResponse(proto)
+        return KeyBackupProtoRestoreResponse(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> KeyBackupProtoRestoreResponse {
+        return KeyBackupProtoRestoreResponse(proto)
     }
 
     @objc
@@ -1441,7 +1447,7 @@ extension KeyBackupProtoRestoreResponse {
 extension KeyBackupProtoRestoreResponseBuilder {
     @objc
     public func buildIgnoringErrors() -> KeyBackupProtoRestoreResponse? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -1498,14 +1504,10 @@ public class KeyBackupProtoDeleteRequest: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try KeyBackupProtos_DeleteRequest(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: KeyBackupProtos_DeleteRequest) throws {
-        // MARK: - Begin Validation Logic for KeyBackupProtoDeleteRequest -
-
-        // MARK: - End Validation Logic for KeyBackupProtoDeleteRequest -
-
+    fileprivate convenience init(_ proto: KeyBackupProtos_DeleteRequest) {
         self.init(proto: proto)
     }
 
@@ -1604,7 +1606,12 @@ public class KeyBackupProtoDeleteRequestBuilder: NSObject {
 
     @objc
     public func build() throws -> KeyBackupProtoDeleteRequest {
-        return try KeyBackupProtoDeleteRequest(proto)
+        return KeyBackupProtoDeleteRequest(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> KeyBackupProtoDeleteRequest {
+        return KeyBackupProtoDeleteRequest(proto)
     }
 
     @objc
@@ -1625,7 +1632,7 @@ extension KeyBackupProtoDeleteRequest {
 extension KeyBackupProtoDeleteRequestBuilder {
     @objc
     public func buildIgnoringErrors() -> KeyBackupProtoDeleteRequest? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -1658,14 +1665,10 @@ public class KeyBackupProtoDeleteResponse: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try KeyBackupProtos_DeleteResponse(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: KeyBackupProtos_DeleteResponse) throws {
-        // MARK: - Begin Validation Logic for KeyBackupProtoDeleteResponse -
-
-        // MARK: - End Validation Logic for KeyBackupProtoDeleteResponse -
-
+    fileprivate convenience init(_ proto: KeyBackupProtos_DeleteResponse) {
         self.init(proto: proto)
     }
 
@@ -1736,7 +1739,12 @@ public class KeyBackupProtoDeleteResponseBuilder: NSObject {
 
     @objc
     public func build() throws -> KeyBackupProtoDeleteResponse {
-        return try KeyBackupProtoDeleteResponse(proto)
+        return KeyBackupProtoDeleteResponse(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> KeyBackupProtoDeleteResponse {
+        return KeyBackupProtoDeleteResponse(proto)
     }
 
     @objc
@@ -1757,7 +1765,7 @@ extension KeyBackupProtoDeleteResponse {
 extension KeyBackupProtoDeleteResponseBuilder {
     @objc
     public func buildIgnoringErrors() -> KeyBackupProtoDeleteResponse? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 

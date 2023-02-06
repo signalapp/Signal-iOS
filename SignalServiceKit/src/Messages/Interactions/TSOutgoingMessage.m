@@ -1107,13 +1107,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         [storyContextBuilder setAuthorUuid:self.storyAuthorUuidString];
         [storyContextBuilder setSentTimestamp:self.storyTimestamp.unsignedLongLongValue];
 
-        NSError *error;
-        SSKProtoDataMessageStoryContext *_Nullable storyContext = [storyContextBuilder buildAndReturnError:&error];
-        if (error || !storyContext) {
-            OWSFailDebug(@"Could not build storyContext protobuf: %@.", error);
-        } else {
-            [builder setStoryContext:storyContext];
-        }
+        [builder setStoryContext:[storyContextBuilder buildInfallibly]];
     }
 
     [builder setExpireTimer:self.expiresInSeconds];

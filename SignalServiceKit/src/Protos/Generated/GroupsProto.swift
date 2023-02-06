@@ -107,14 +107,10 @@ public struct GroupsProtoAvatarUploadAttributes: Codable, CustomDebugStringConve
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_AvatarUploadAttributes(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_AvatarUploadAttributes) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoAvatarUploadAttributes -
-
-        // MARK: - End Validation Logic for GroupsProtoAvatarUploadAttributes -
-
+    fileprivate init(_ proto: GroupsProtos_AvatarUploadAttributes) {
         self.init(proto: proto)
     }
 
@@ -250,7 +246,11 @@ public struct GroupsProtoAvatarUploadAttributesBuilder {
     }
 
     public func build() throws -> GroupsProtoAvatarUploadAttributes {
-        return try GroupsProtoAvatarUploadAttributes(proto)
+        return GroupsProtoAvatarUploadAttributes(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoAvatarUploadAttributes {
+        return GroupsProtoAvatarUploadAttributes(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -268,7 +268,7 @@ extension GroupsProtoAvatarUploadAttributes {
 
 extension GroupsProtoAvatarUploadAttributesBuilder {
     public func buildIgnoringErrors() -> GroupsProtoAvatarUploadAttributes? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -403,14 +403,10 @@ public struct GroupsProtoMember: Codable, CustomDebugStringConvertible {
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_Member(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_Member) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoMember -
-
-        // MARK: - End Validation Logic for GroupsProtoMember -
-
+    fileprivate init(_ proto: GroupsProtos_Member) {
         self.init(proto: proto)
     }
 
@@ -508,7 +504,11 @@ public struct GroupsProtoMemberBuilder {
     }
 
     public func build() throws -> GroupsProtoMember {
-        return try GroupsProtoMember(proto)
+        return GroupsProtoMember(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoMember {
+        return GroupsProtoMember(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -526,7 +526,7 @@ extension GroupsProtoMember {
 
 extension GroupsProtoMemberBuilder {
     public func buildIgnoringErrors() -> GroupsProtoMember? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -577,18 +577,14 @@ public struct GroupsProtoPendingMember: Codable, CustomDebugStringConvertible {
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_PendingMember(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_PendingMember) throws {
+    fileprivate init(_ proto: GroupsProtos_PendingMember) {
         var member: GroupsProtoMember?
         if proto.hasMember {
-            member = try GroupsProtoMember(proto.member)
+            member = GroupsProtoMember(proto.member)
         }
-
-        // MARK: - Begin Validation Logic for GroupsProtoPendingMember -
-
-        // MARK: - End Validation Logic for GroupsProtoPendingMember -
 
         self.init(proto: proto,
                   member: member)
@@ -668,7 +664,11 @@ public struct GroupsProtoPendingMemberBuilder {
     }
 
     public func build() throws -> GroupsProtoPendingMember {
-        return try GroupsProtoPendingMember(proto)
+        return GroupsProtoPendingMember(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoPendingMember {
+        return GroupsProtoPendingMember(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -686,7 +686,7 @@ extension GroupsProtoPendingMember {
 
 extension GroupsProtoPendingMemberBuilder {
     public func buildIgnoringErrors() -> GroupsProtoPendingMember? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -753,14 +753,10 @@ public struct GroupsProtoRequestingMember: Codable, CustomDebugStringConvertible
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_RequestingMember(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_RequestingMember) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoRequestingMember -
-
-        // MARK: - End Validation Logic for GroupsProtoRequestingMember -
-
+    fileprivate init(_ proto: GroupsProtos_RequestingMember) {
         self.init(proto: proto)
     }
 
@@ -851,7 +847,11 @@ public struct GroupsProtoRequestingMemberBuilder {
     }
 
     public func build() throws -> GroupsProtoRequestingMember {
-        return try GroupsProtoRequestingMember(proto)
+        return GroupsProtoRequestingMember(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoRequestingMember {
+        return GroupsProtoRequestingMember(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -869,7 +869,7 @@ extension GroupsProtoRequestingMember {
 
 extension GroupsProtoRequestingMemberBuilder {
     public func buildIgnoringErrors() -> GroupsProtoRequestingMember? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -916,14 +916,10 @@ public struct GroupsProtoBannedMember: Codable, CustomDebugStringConvertible {
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_BannedMember(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_BannedMember) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoBannedMember -
-
-        // MARK: - End Validation Logic for GroupsProtoBannedMember -
-
+    fileprivate init(_ proto: GroupsProtos_BannedMember) {
         self.init(proto: proto)
     }
 
@@ -988,7 +984,11 @@ public struct GroupsProtoBannedMemberBuilder {
     }
 
     public func build() throws -> GroupsProtoBannedMember {
-        return try GroupsProtoBannedMember(proto)
+        return GroupsProtoBannedMember(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoBannedMember {
+        return GroupsProtoBannedMember(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -1006,7 +1006,7 @@ extension GroupsProtoBannedMember {
 
 extension GroupsProtoBannedMemberBuilder {
     public func buildIgnoringErrors() -> GroupsProtoBannedMember? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -1150,14 +1150,10 @@ public struct GroupsProtoAccessControl: Codable, CustomDebugStringConvertible {
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_AccessControl(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_AccessControl) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoAccessControl -
-
-        // MARK: - End Validation Logic for GroupsProtoAccessControl -
-
+    fileprivate init(_ proto: GroupsProtos_AccessControl) {
         self.init(proto: proto)
     }
 
@@ -1223,7 +1219,11 @@ public struct GroupsProtoAccessControlBuilder {
     }
 
     public func build() throws -> GroupsProtoAccessControl {
-        return try GroupsProtoAccessControl(proto)
+        return GroupsProtoAccessControl(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoAccessControl {
+        return GroupsProtoAccessControl(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -1241,7 +1241,7 @@ extension GroupsProtoAccessControl {
 
 extension GroupsProtoAccessControlBuilder {
     public func buildIgnoringErrors() -> GroupsProtoAccessControl? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -1365,30 +1365,26 @@ public struct GroupsProtoGroup: Codable, CustomDebugStringConvertible {
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_Group(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_Group) throws {
+    fileprivate init(_ proto: GroupsProtos_Group) {
         var accessControl: GroupsProtoAccessControl?
         if proto.hasAccessControl {
-            accessControl = try GroupsProtoAccessControl(proto.accessControl)
+            accessControl = GroupsProtoAccessControl(proto.accessControl)
         }
 
         var members: [GroupsProtoMember] = []
-        members = try proto.members.map { try GroupsProtoMember($0) }
+        members = proto.members.map { GroupsProtoMember($0) }
 
         var pendingMembers: [GroupsProtoPendingMember] = []
-        pendingMembers = try proto.pendingMembers.map { try GroupsProtoPendingMember($0) }
+        pendingMembers = proto.pendingMembers.map { GroupsProtoPendingMember($0) }
 
         var requestingMembers: [GroupsProtoRequestingMember] = []
-        requestingMembers = try proto.requestingMembers.map { try GroupsProtoRequestingMember($0) }
+        requestingMembers = proto.requestingMembers.map { GroupsProtoRequestingMember($0) }
 
         var bannedMembers: [GroupsProtoBannedMember] = []
-        bannedMembers = try proto.bannedMembers.map { try GroupsProtoBannedMember($0) }
-
-        // MARK: - Begin Validation Logic for GroupsProtoGroup -
-
-        // MARK: - End Validation Logic for GroupsProtoGroup -
+        bannedMembers = proto.bannedMembers.map { GroupsProtoBannedMember($0) }
 
         self.init(proto: proto,
                   accessControl: accessControl,
@@ -1580,7 +1576,11 @@ public struct GroupsProtoGroupBuilder {
     }
 
     public func build() throws -> GroupsProtoGroup {
-        return try GroupsProtoGroup(proto)
+        return GroupsProtoGroup(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroup {
+        return GroupsProtoGroup(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -1598,7 +1598,7 @@ extension GroupsProtoGroup {
 
 extension GroupsProtoGroupBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroup? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -1639,18 +1639,14 @@ public struct GroupsProtoGroupChangeActionsAddMemberAction: Codable, CustomDebug
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.AddMemberAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.AddMemberAction) throws {
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.AddMemberAction) {
         var added: GroupsProtoMember?
         if proto.hasAdded {
-            added = try GroupsProtoMember(proto.added)
+            added = GroupsProtoMember(proto.added)
         }
-
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsAddMemberAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsAddMemberAction -
 
         self.init(proto: proto,
                   added: added)
@@ -1717,7 +1713,11 @@ public struct GroupsProtoGroupChangeActionsAddMemberActionBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsAddMemberAction {
-        return try GroupsProtoGroupChangeActionsAddMemberAction(proto)
+        return GroupsProtoGroupChangeActionsAddMemberAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsAddMemberAction {
+        return GroupsProtoGroupChangeActionsAddMemberAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -1735,7 +1735,7 @@ extension GroupsProtoGroupChangeActionsAddMemberAction {
 
 extension GroupsProtoGroupChangeActionsAddMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsAddMemberAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -1775,14 +1775,10 @@ public struct GroupsProtoGroupChangeActionsDeleteMemberAction: Codable, CustomDe
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.DeleteMemberAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.DeleteMemberAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsDeleteMemberAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsDeleteMemberAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.DeleteMemberAction) {
         self.init(proto: proto)
     }
 
@@ -1840,7 +1836,11 @@ public struct GroupsProtoGroupChangeActionsDeleteMemberActionBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsDeleteMemberAction {
-        return try GroupsProtoGroupChangeActionsDeleteMemberAction(proto)
+        return GroupsProtoGroupChangeActionsDeleteMemberAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsDeleteMemberAction {
+        return GroupsProtoGroupChangeActionsDeleteMemberAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -1858,7 +1858,7 @@ extension GroupsProtoGroupChangeActionsDeleteMemberAction {
 
 extension GroupsProtoGroupChangeActionsDeleteMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsDeleteMemberAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -1916,14 +1916,10 @@ public struct GroupsProtoGroupChangeActionsModifyMemberRoleAction: Codable, Cust
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyMemberRoleAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyMemberRoleAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyMemberRoleAction) {
         self.init(proto: proto)
     }
 
@@ -1988,7 +1984,11 @@ public struct GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsModifyMemberRoleAction {
-        return try GroupsProtoGroupChangeActionsModifyMemberRoleAction(proto)
+        return GroupsProtoGroupChangeActionsModifyMemberRoleAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyMemberRoleAction {
+        return GroupsProtoGroupChangeActionsModifyMemberRoleAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -2006,7 +2006,7 @@ extension GroupsProtoGroupChangeActionsModifyMemberRoleAction {
 
 extension GroupsProtoGroupChangeActionsModifyMemberRoleActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyMemberRoleAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -2066,14 +2066,10 @@ public struct GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: Codable
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction) {
         self.init(proto: proto)
     }
 
@@ -2157,7 +2153,11 @@ public struct GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
-        return try GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction(proto)
+        return GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
+        return GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -2175,7 +2175,7 @@ extension GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction {
 
 extension GroupsProtoGroupChangeActionsModifyMemberProfileKeyActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -2209,18 +2209,14 @@ public struct GroupsProtoGroupChangeActionsAddPendingMemberAction: Codable, Cust
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.AddPendingMemberAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.AddPendingMemberAction) throws {
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.AddPendingMemberAction) {
         var added: GroupsProtoPendingMember?
         if proto.hasAdded {
-            added = try GroupsProtoPendingMember(proto.added)
+            added = GroupsProtoPendingMember(proto.added)
         }
-
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsAddPendingMemberAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsAddPendingMemberAction -
 
         self.init(proto: proto,
                   added: added)
@@ -2280,7 +2276,11 @@ public struct GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsAddPendingMemberAction {
-        return try GroupsProtoGroupChangeActionsAddPendingMemberAction(proto)
+        return GroupsProtoGroupChangeActionsAddPendingMemberAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsAddPendingMemberAction {
+        return GroupsProtoGroupChangeActionsAddPendingMemberAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -2298,7 +2298,7 @@ extension GroupsProtoGroupChangeActionsAddPendingMemberAction {
 
 extension GroupsProtoGroupChangeActionsAddPendingMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsAddPendingMemberAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -2338,14 +2338,10 @@ public struct GroupsProtoGroupChangeActionsDeletePendingMemberAction: Codable, C
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.DeletePendingMemberAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.DeletePendingMemberAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsDeletePendingMemberAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsDeletePendingMemberAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.DeletePendingMemberAction) {
         self.init(proto: proto)
     }
 
@@ -2403,7 +2399,11 @@ public struct GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsDeletePendingMemberAction {
-        return try GroupsProtoGroupChangeActionsDeletePendingMemberAction(proto)
+        return GroupsProtoGroupChangeActionsDeletePendingMemberAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsDeletePendingMemberAction {
+        return GroupsProtoGroupChangeActionsDeletePendingMemberAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -2421,7 +2421,7 @@ extension GroupsProtoGroupChangeActionsDeletePendingMemberAction {
 
 extension GroupsProtoGroupChangeActionsDeletePendingMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsDeletePendingMemberAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -2481,14 +2481,10 @@ public struct GroupsProtoGroupChangeActionsPromotePendingMemberAction: Codable, 
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.PromotePendingMemberAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.PromotePendingMemberAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsPromotePendingMemberAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsPromotePendingMemberAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.PromotePendingMemberAction) {
         self.init(proto: proto)
     }
 
@@ -2572,7 +2568,11 @@ public struct GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsPromotePendingMemberAction {
-        return try GroupsProtoGroupChangeActionsPromotePendingMemberAction(proto)
+        return GroupsProtoGroupChangeActionsPromotePendingMemberAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsPromotePendingMemberAction {
+        return GroupsProtoGroupChangeActionsPromotePendingMemberAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -2590,7 +2590,7 @@ extension GroupsProtoGroupChangeActionsPromotePendingMemberAction {
 
 extension GroupsProtoGroupChangeActionsPromotePendingMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsPromotePendingMemberAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -2624,18 +2624,14 @@ public struct GroupsProtoGroupChangeActionsAddRequestingMemberAction: Codable, C
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.AddRequestingMemberAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.AddRequestingMemberAction) throws {
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.AddRequestingMemberAction) {
         var added: GroupsProtoRequestingMember?
         if proto.hasAdded {
-            added = try GroupsProtoRequestingMember(proto.added)
+            added = GroupsProtoRequestingMember(proto.added)
         }
-
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsAddRequestingMemberAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsAddRequestingMemberAction -
 
         self.init(proto: proto,
                   added: added)
@@ -2695,7 +2691,11 @@ public struct GroupsProtoGroupChangeActionsAddRequestingMemberActionBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsAddRequestingMemberAction {
-        return try GroupsProtoGroupChangeActionsAddRequestingMemberAction(proto)
+        return GroupsProtoGroupChangeActionsAddRequestingMemberAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsAddRequestingMemberAction {
+        return GroupsProtoGroupChangeActionsAddRequestingMemberAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -2713,7 +2713,7 @@ extension GroupsProtoGroupChangeActionsAddRequestingMemberAction {
 
 extension GroupsProtoGroupChangeActionsAddRequestingMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsAddRequestingMemberAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -2753,14 +2753,10 @@ public struct GroupsProtoGroupChangeActionsDeleteRequestingMemberAction: Codable
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsDeleteRequestingMemberAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsDeleteRequestingMemberAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.DeleteRequestingMemberAction) {
         self.init(proto: proto)
     }
 
@@ -2818,7 +2814,11 @@ public struct GroupsProtoGroupChangeActionsDeleteRequestingMemberActionBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsDeleteRequestingMemberAction {
-        return try GroupsProtoGroupChangeActionsDeleteRequestingMemberAction(proto)
+        return GroupsProtoGroupChangeActionsDeleteRequestingMemberAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsDeleteRequestingMemberAction {
+        return GroupsProtoGroupChangeActionsDeleteRequestingMemberAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -2836,7 +2836,7 @@ extension GroupsProtoGroupChangeActionsDeleteRequestingMemberAction {
 
 extension GroupsProtoGroupChangeActionsDeleteRequestingMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsDeleteRequestingMemberAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -2894,14 +2894,10 @@ public struct GroupsProtoGroupChangeActionsPromoteRequestingMemberAction: Codabl
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsPromoteRequestingMemberAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsPromoteRequestingMemberAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.PromoteRequestingMemberAction) {
         self.init(proto: proto)
     }
 
@@ -2966,7 +2962,11 @@ public struct GroupsProtoGroupChangeActionsPromoteRequestingMemberActionBuilder 
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsPromoteRequestingMemberAction {
-        return try GroupsProtoGroupChangeActionsPromoteRequestingMemberAction(proto)
+        return GroupsProtoGroupChangeActionsPromoteRequestingMemberAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsPromoteRequestingMemberAction {
+        return GroupsProtoGroupChangeActionsPromoteRequestingMemberAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -2984,7 +2984,7 @@ extension GroupsProtoGroupChangeActionsPromoteRequestingMemberAction {
 
 extension GroupsProtoGroupChangeActionsPromoteRequestingMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsPromoteRequestingMemberAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -3018,18 +3018,14 @@ public struct GroupsProtoGroupChangeActionsAddBannedMemberAction: Codable, Custo
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.AddBannedMemberAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.AddBannedMemberAction) throws {
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.AddBannedMemberAction) {
         var added: GroupsProtoBannedMember?
         if proto.hasAdded {
-            added = try GroupsProtoBannedMember(proto.added)
+            added = GroupsProtoBannedMember(proto.added)
         }
-
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsAddBannedMemberAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsAddBannedMemberAction -
 
         self.init(proto: proto,
                   added: added)
@@ -3089,7 +3085,11 @@ public struct GroupsProtoGroupChangeActionsAddBannedMemberActionBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsAddBannedMemberAction {
-        return try GroupsProtoGroupChangeActionsAddBannedMemberAction(proto)
+        return GroupsProtoGroupChangeActionsAddBannedMemberAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsAddBannedMemberAction {
+        return GroupsProtoGroupChangeActionsAddBannedMemberAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -3107,7 +3107,7 @@ extension GroupsProtoGroupChangeActionsAddBannedMemberAction {
 
 extension GroupsProtoGroupChangeActionsAddBannedMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsAddBannedMemberAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -3147,14 +3147,10 @@ public struct GroupsProtoGroupChangeActionsDeleteBannedMemberAction: Codable, Cu
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsDeleteBannedMemberAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsDeleteBannedMemberAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.DeleteBannedMemberAction) {
         self.init(proto: proto)
     }
 
@@ -3212,7 +3208,11 @@ public struct GroupsProtoGroupChangeActionsDeleteBannedMemberActionBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsDeleteBannedMemberAction {
-        return try GroupsProtoGroupChangeActionsDeleteBannedMemberAction(proto)
+        return GroupsProtoGroupChangeActionsDeleteBannedMemberAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsDeleteBannedMemberAction {
+        return GroupsProtoGroupChangeActionsDeleteBannedMemberAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -3230,7 +3230,7 @@ extension GroupsProtoGroupChangeActionsDeleteBannedMemberAction {
 
 extension GroupsProtoGroupChangeActionsDeleteBannedMemberActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsDeleteBannedMemberAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -3270,14 +3270,10 @@ public struct GroupsProtoGroupChangeActionsModifyTitleAction: Codable, CustomDeb
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyTitleAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyTitleAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyTitleAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyTitleAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyTitleAction) {
         self.init(proto: proto)
     }
 
@@ -3335,7 +3331,11 @@ public struct GroupsProtoGroupChangeActionsModifyTitleActionBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsModifyTitleAction {
-        return try GroupsProtoGroupChangeActionsModifyTitleAction(proto)
+        return GroupsProtoGroupChangeActionsModifyTitleAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyTitleAction {
+        return GroupsProtoGroupChangeActionsModifyTitleAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -3353,7 +3353,7 @@ extension GroupsProtoGroupChangeActionsModifyTitleAction {
 
 extension GroupsProtoGroupChangeActionsModifyTitleActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyTitleAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -3393,14 +3393,10 @@ public struct GroupsProtoGroupChangeActionsModifyAvatarAction: Codable, CustomDe
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyAvatarAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyAvatarAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyAvatarAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAction) {
         self.init(proto: proto)
     }
 
@@ -3458,7 +3454,11 @@ public struct GroupsProtoGroupChangeActionsModifyAvatarActionBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsModifyAvatarAction {
-        return try GroupsProtoGroupChangeActionsModifyAvatarAction(proto)
+        return GroupsProtoGroupChangeActionsModifyAvatarAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyAvatarAction {
+        return GroupsProtoGroupChangeActionsModifyAvatarAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -3476,7 +3476,7 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAction {
 
 extension GroupsProtoGroupChangeActionsModifyAvatarActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyAvatarAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -3516,14 +3516,10 @@ public struct GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction) {
         self.init(proto: proto)
     }
 
@@ -3581,7 +3577,11 @@ public struct GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
-        return try GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction(proto)
+        return GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
+        return GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -3599,7 +3599,7 @@ extension GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction {
 
 extension GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -3647,14 +3647,10 @@ public struct GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction: 
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyAttributesAccessControlAction) {
         self.init(proto: proto)
     }
 
@@ -3706,7 +3702,11 @@ public struct GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBu
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
-        return try GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction(proto)
+        return GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
+        return GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -3724,7 +3724,7 @@ extension GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction {
 
 extension GroupsProtoGroupChangeActionsModifyAttributesAccessControlActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -3772,14 +3772,10 @@ public struct GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction: Coda
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAccessControlAction) {
         self.init(proto: proto)
     }
 
@@ -3831,7 +3827,11 @@ public struct GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilde
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
-        return try GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction(proto)
+        return GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
+        return GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -3849,7 +3849,7 @@ extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction {
 
 extension GroupsProtoGroupChangeActionsModifyAvatarAccessControlActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyAvatarAccessControlAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -3897,14 +3897,10 @@ public struct GroupsProtoGroupChangeActionsModifyMembersAccessControlAction: Cod
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyMembersAccessControlAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyMembersAccessControlAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyMembersAccessControlAction) {
         self.init(proto: proto)
     }
 
@@ -3956,7 +3952,11 @@ public struct GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuild
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
-        return try GroupsProtoGroupChangeActionsModifyMembersAccessControlAction(proto)
+        return GroupsProtoGroupChangeActionsModifyMembersAccessControlAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
+        return GroupsProtoGroupChangeActionsModifyMembersAccessControlAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -3974,7 +3974,7 @@ extension GroupsProtoGroupChangeActionsModifyMembersAccessControlAction {
 
 extension GroupsProtoGroupChangeActionsModifyMembersAccessControlActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyMembersAccessControlAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -4022,14 +4022,10 @@ public struct GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlA
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyAddFromInviteLinkAccessControlAction) {
         self.init(proto: proto)
     }
 
@@ -4081,7 +4077,11 @@ public struct GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlA
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction {
-        return try GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction(proto)
+        return GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction {
+        return GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -4099,7 +4099,7 @@ extension GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActio
 
 extension GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -4139,14 +4139,10 @@ public struct GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction: Codab
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyInviteLinkPasswordAction) {
         self.init(proto: proto)
     }
 
@@ -4204,7 +4200,11 @@ public struct GroupsProtoGroupChangeActionsModifyInviteLinkPasswordActionBuilder
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction {
-        return try GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction(proto)
+        return GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction {
+        return GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -4222,7 +4222,7 @@ extension GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction {
 
 extension GroupsProtoGroupChangeActionsModifyInviteLinkPasswordActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -4262,14 +4262,10 @@ public struct GroupsProtoGroupChangeActionsModifyDescriptionAction: Codable, Cus
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyDescriptionAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyDescriptionAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyDescriptionAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyDescriptionAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyDescriptionAction) {
         self.init(proto: proto)
     }
 
@@ -4327,7 +4323,11 @@ public struct GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsModifyDescriptionAction {
-        return try GroupsProtoGroupChangeActionsModifyDescriptionAction(proto)
+        return GroupsProtoGroupChangeActionsModifyDescriptionAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyDescriptionAction {
+        return GroupsProtoGroupChangeActionsModifyDescriptionAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -4345,7 +4345,7 @@ extension GroupsProtoGroupChangeActionsModifyDescriptionAction {
 
 extension GroupsProtoGroupChangeActionsModifyDescriptionActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyDescriptionAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -4382,14 +4382,10 @@ public struct GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction: Codabl
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions.ModifyAnnouncementsOnlyAction) {
         self.init(proto: proto)
     }
 
@@ -4441,7 +4437,11 @@ public struct GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder 
     }
 
     public func build() throws -> GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction {
-        return try GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction(proto)
+        return GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction {
+        return GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -4459,7 +4459,7 @@ extension GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction {
 
 extension GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyActionBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -4590,94 +4590,90 @@ public struct GroupsProtoGroupChangeActions: Codable, CustomDebugStringConvertib
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange.Actions(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions) throws {
+    fileprivate init(_ proto: GroupsProtos_GroupChange.Actions) {
         var addMembers: [GroupsProtoGroupChangeActionsAddMemberAction] = []
-        addMembers = try proto.addMembers.map { try GroupsProtoGroupChangeActionsAddMemberAction($0) }
+        addMembers = proto.addMembers.map { GroupsProtoGroupChangeActionsAddMemberAction($0) }
 
         var deleteMembers: [GroupsProtoGroupChangeActionsDeleteMemberAction] = []
-        deleteMembers = try proto.deleteMembers.map { try GroupsProtoGroupChangeActionsDeleteMemberAction($0) }
+        deleteMembers = proto.deleteMembers.map { GroupsProtoGroupChangeActionsDeleteMemberAction($0) }
 
         var modifyMemberRoles: [GroupsProtoGroupChangeActionsModifyMemberRoleAction] = []
-        modifyMemberRoles = try proto.modifyMemberRoles.map { try GroupsProtoGroupChangeActionsModifyMemberRoleAction($0) }
+        modifyMemberRoles = proto.modifyMemberRoles.map { GroupsProtoGroupChangeActionsModifyMemberRoleAction($0) }
 
         var modifyMemberProfileKeys: [GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction] = []
-        modifyMemberProfileKeys = try proto.modifyMemberProfileKeys.map { try GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction($0) }
+        modifyMemberProfileKeys = proto.modifyMemberProfileKeys.map { GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction($0) }
 
         var addPendingMembers: [GroupsProtoGroupChangeActionsAddPendingMemberAction] = []
-        addPendingMembers = try proto.addPendingMembers.map { try GroupsProtoGroupChangeActionsAddPendingMemberAction($0) }
+        addPendingMembers = proto.addPendingMembers.map { GroupsProtoGroupChangeActionsAddPendingMemberAction($0) }
 
         var deletePendingMembers: [GroupsProtoGroupChangeActionsDeletePendingMemberAction] = []
-        deletePendingMembers = try proto.deletePendingMembers.map { try GroupsProtoGroupChangeActionsDeletePendingMemberAction($0) }
+        deletePendingMembers = proto.deletePendingMembers.map { GroupsProtoGroupChangeActionsDeletePendingMemberAction($0) }
 
         var promotePendingMembers: [GroupsProtoGroupChangeActionsPromotePendingMemberAction] = []
-        promotePendingMembers = try proto.promotePendingMembers.map { try GroupsProtoGroupChangeActionsPromotePendingMemberAction($0) }
+        promotePendingMembers = proto.promotePendingMembers.map { GroupsProtoGroupChangeActionsPromotePendingMemberAction($0) }
 
         var modifyTitle: GroupsProtoGroupChangeActionsModifyTitleAction?
         if proto.hasModifyTitle {
-            modifyTitle = try GroupsProtoGroupChangeActionsModifyTitleAction(proto.modifyTitle)
+            modifyTitle = GroupsProtoGroupChangeActionsModifyTitleAction(proto.modifyTitle)
         }
 
         var modifyAvatar: GroupsProtoGroupChangeActionsModifyAvatarAction?
         if proto.hasModifyAvatar {
-            modifyAvatar = try GroupsProtoGroupChangeActionsModifyAvatarAction(proto.modifyAvatar)
+            modifyAvatar = GroupsProtoGroupChangeActionsModifyAvatarAction(proto.modifyAvatar)
         }
 
         var modifyDisappearingMessagesTimer: GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction?
         if proto.hasModifyDisappearingMessagesTimer {
-            modifyDisappearingMessagesTimer = try GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction(proto.modifyDisappearingMessagesTimer)
+            modifyDisappearingMessagesTimer = GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction(proto.modifyDisappearingMessagesTimer)
         }
 
         var modifyAttributesAccess: GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction?
         if proto.hasModifyAttributesAccess {
-            modifyAttributesAccess = try GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction(proto.modifyAttributesAccess)
+            modifyAttributesAccess = GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction(proto.modifyAttributesAccess)
         }
 
         var modifyMemberAccess: GroupsProtoGroupChangeActionsModifyMembersAccessControlAction?
         if proto.hasModifyMemberAccess {
-            modifyMemberAccess = try GroupsProtoGroupChangeActionsModifyMembersAccessControlAction(proto.modifyMemberAccess)
+            modifyMemberAccess = GroupsProtoGroupChangeActionsModifyMembersAccessControlAction(proto.modifyMemberAccess)
         }
 
         var modifyAddFromInviteLinkAccess: GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction?
         if proto.hasModifyAddFromInviteLinkAccess {
-            modifyAddFromInviteLinkAccess = try GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction(proto.modifyAddFromInviteLinkAccess)
+            modifyAddFromInviteLinkAccess = GroupsProtoGroupChangeActionsModifyAddFromInviteLinkAccessControlAction(proto.modifyAddFromInviteLinkAccess)
         }
 
         var addRequestingMembers: [GroupsProtoGroupChangeActionsAddRequestingMemberAction] = []
-        addRequestingMembers = try proto.addRequestingMembers.map { try GroupsProtoGroupChangeActionsAddRequestingMemberAction($0) }
+        addRequestingMembers = proto.addRequestingMembers.map { GroupsProtoGroupChangeActionsAddRequestingMemberAction($0) }
 
         var deleteRequestingMembers: [GroupsProtoGroupChangeActionsDeleteRequestingMemberAction] = []
-        deleteRequestingMembers = try proto.deleteRequestingMembers.map { try GroupsProtoGroupChangeActionsDeleteRequestingMemberAction($0) }
+        deleteRequestingMembers = proto.deleteRequestingMembers.map { GroupsProtoGroupChangeActionsDeleteRequestingMemberAction($0) }
 
         var promoteRequestingMembers: [GroupsProtoGroupChangeActionsPromoteRequestingMemberAction] = []
-        promoteRequestingMembers = try proto.promoteRequestingMembers.map { try GroupsProtoGroupChangeActionsPromoteRequestingMemberAction($0) }
+        promoteRequestingMembers = proto.promoteRequestingMembers.map { GroupsProtoGroupChangeActionsPromoteRequestingMemberAction($0) }
 
         var modifyInviteLinkPassword: GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction?
         if proto.hasModifyInviteLinkPassword {
-            modifyInviteLinkPassword = try GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction(proto.modifyInviteLinkPassword)
+            modifyInviteLinkPassword = GroupsProtoGroupChangeActionsModifyInviteLinkPasswordAction(proto.modifyInviteLinkPassword)
         }
 
         var modifyDescription: GroupsProtoGroupChangeActionsModifyDescriptionAction?
         if proto.hasModifyDescription {
-            modifyDescription = try GroupsProtoGroupChangeActionsModifyDescriptionAction(proto.modifyDescription)
+            modifyDescription = GroupsProtoGroupChangeActionsModifyDescriptionAction(proto.modifyDescription)
         }
 
         var modifyAnnouncementsOnly: GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction?
         if proto.hasModifyAnnouncementsOnly {
-            modifyAnnouncementsOnly = try GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction(proto.modifyAnnouncementsOnly)
+            modifyAnnouncementsOnly = GroupsProtoGroupChangeActionsModifyAnnouncementsOnlyAction(proto.modifyAnnouncementsOnly)
         }
 
         var addBannedMembers: [GroupsProtoGroupChangeActionsAddBannedMemberAction] = []
-        addBannedMembers = try proto.addBannedMembers.map { try GroupsProtoGroupChangeActionsAddBannedMemberAction($0) }
+        addBannedMembers = proto.addBannedMembers.map { GroupsProtoGroupChangeActionsAddBannedMemberAction($0) }
 
         var deleteBannedMembers: [GroupsProtoGroupChangeActionsDeleteBannedMemberAction] = []
-        deleteBannedMembers = try proto.deleteBannedMembers.map { try GroupsProtoGroupChangeActionsDeleteBannedMemberAction($0) }
-
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangeActions -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangeActions -
+        deleteBannedMembers = proto.deleteBannedMembers.map { GroupsProtoGroupChangeActionsDeleteBannedMemberAction($0) }
 
         self.init(proto: proto,
                   addMembers: addMembers,
@@ -4989,7 +4985,11 @@ public struct GroupsProtoGroupChangeActionsBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChangeActions {
-        return try GroupsProtoGroupChangeActions(proto)
+        return GroupsProtoGroupChangeActions(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangeActions {
+        return GroupsProtoGroupChangeActions(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -5007,7 +5007,7 @@ extension GroupsProtoGroupChangeActions {
 
 extension GroupsProtoGroupChangeActionsBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangeActions? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -5064,14 +5064,10 @@ public struct GroupsProtoGroupChange: Codable, CustomDebugStringConvertible {
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChange(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChange) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChange -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChange -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChange) {
         self.init(proto: proto)
     }
 
@@ -5149,7 +5145,11 @@ public struct GroupsProtoGroupChangeBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChange {
-        return try GroupsProtoGroupChange(proto)
+        return GroupsProtoGroupChange(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChange {
+        return GroupsProtoGroupChange(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -5167,7 +5167,7 @@ extension GroupsProtoGroupChange {
 
 extension GroupsProtoGroupChangeBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChange? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -5205,23 +5205,19 @@ public struct GroupsProtoGroupChangesGroupChangeState: Codable, CustomDebugStrin
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChanges.GroupChangeState(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChanges.GroupChangeState) throws {
+    fileprivate init(_ proto: GroupsProtos_GroupChanges.GroupChangeState) {
         var groupChange: GroupsProtoGroupChange?
         if proto.hasGroupChange {
-            groupChange = try GroupsProtoGroupChange(proto.groupChange)
+            groupChange = GroupsProtoGroupChange(proto.groupChange)
         }
 
         var groupState: GroupsProtoGroup?
         if proto.hasGroupState {
-            groupState = try GroupsProtoGroup(proto.groupState)
+            groupState = GroupsProtoGroup(proto.groupState)
         }
-
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChangesGroupChangeState -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChangesGroupChangeState -
 
         self.init(proto: proto,
                   groupChange: groupChange,
@@ -5295,7 +5291,11 @@ public struct GroupsProtoGroupChangesGroupChangeStateBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChangesGroupChangeState {
-        return try GroupsProtoGroupChangesGroupChangeState(proto)
+        return GroupsProtoGroupChangesGroupChangeState(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChangesGroupChangeState {
+        return GroupsProtoGroupChangesGroupChangeState(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -5313,7 +5313,7 @@ extension GroupsProtoGroupChangesGroupChangeState {
 
 extension GroupsProtoGroupChangesGroupChangeStateBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChangesGroupChangeState? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -5347,14 +5347,10 @@ public struct GroupsProtoGroupChanges: Codable, CustomDebugStringConvertible {
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupChanges(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupChanges) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupChanges -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupChanges -
-
+    fileprivate init(_ proto: GroupsProtos_GroupChanges) {
         self.init(proto: proto)
     }
 
@@ -5408,7 +5404,11 @@ public struct GroupsProtoGroupChangesBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupChanges {
-        return try GroupsProtoGroupChanges(proto)
+        return GroupsProtoGroupChanges(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupChanges {
+        return GroupsProtoGroupChanges(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -5426,7 +5426,7 @@ extension GroupsProtoGroupChanges {
 
 extension GroupsProtoGroupChangesBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupChanges? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -5501,14 +5501,10 @@ public struct GroupsProtoGroupAttributeBlob: Codable, CustomDebugStringConvertib
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupAttributeBlob(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupAttributeBlob) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupAttributeBlob -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupAttributeBlob -
-
+    fileprivate init(_ proto: GroupsProtos_GroupAttributeBlob) {
         self.init(proto: proto)
     }
 
@@ -5566,7 +5562,11 @@ public struct GroupsProtoGroupAttributeBlobBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupAttributeBlob {
-        return try GroupsProtoGroupAttributeBlob(proto)
+        return GroupsProtoGroupAttributeBlob(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupAttributeBlob {
+        return GroupsProtoGroupAttributeBlob(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -5584,7 +5584,7 @@ extension GroupsProtoGroupAttributeBlob {
 
 extension GroupsProtoGroupAttributeBlobBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupAttributeBlob? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -5634,14 +5634,10 @@ public struct GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1: Codable, Cust
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1 -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1 -
-
+    fileprivate init(_ proto: GroupsProtos_GroupInviteLink.GroupInviteLinkContentsV1) {
         self.init(proto: proto)
     }
 
@@ -5712,7 +5708,11 @@ public struct GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder {
     }
 
     public func build() throws -> GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1 {
-        return try GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1(proto)
+        return GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1 {
+        return GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -5730,7 +5730,7 @@ extension GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1 {
 
 extension GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1Builder {
     public func buildIgnoringErrors() -> GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -5744,7 +5744,7 @@ public enum GroupsProtoGroupInviteLinkOneOfContents {
 
 private func GroupsProtoGroupInviteLinkOneOfContentsWrap(_ value: GroupsProtos_GroupInviteLink.OneOf_Contents) throws -> GroupsProtoGroupInviteLinkOneOfContents {
     switch value {
-    case .contentsV1(let value): return .contentsV1(try GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1(value))
+    case .contentsV1(let value): return .contentsV1(GroupsProtoGroupInviteLinkGroupInviteLinkContentsV1(value))
     }
 }
 
@@ -5796,14 +5796,10 @@ public struct GroupsProtoGroupInviteLink: Codable, CustomDebugStringConvertible 
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupInviteLink(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupInviteLink) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupInviteLink -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupInviteLink -
-
+    fileprivate init(_ proto: GroupsProtos_GroupInviteLink) {
         self.init(proto: proto)
     }
 
@@ -5861,7 +5857,11 @@ public struct GroupsProtoGroupInviteLinkBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupInviteLink {
-        return try GroupsProtoGroupInviteLink(proto)
+        return GroupsProtoGroupInviteLink(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupInviteLink {
+        return GroupsProtoGroupInviteLink(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -5879,7 +5879,7 @@ extension GroupsProtoGroupInviteLink {
 
 extension GroupsProtoGroupInviteLinkBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupInviteLink? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -5988,14 +5988,10 @@ public struct GroupsProtoGroupJoinInfo: Codable, CustomDebugStringConvertible {
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupJoinInfo(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupJoinInfo) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupJoinInfo -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupJoinInfo -
-
+    fileprivate init(_ proto: GroupsProtos_GroupJoinInfo) {
         self.init(proto: proto)
     }
 
@@ -6120,7 +6116,11 @@ public struct GroupsProtoGroupJoinInfoBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupJoinInfo {
-        return try GroupsProtoGroupJoinInfo(proto)
+        return GroupsProtoGroupJoinInfo(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupJoinInfo {
+        return GroupsProtoGroupJoinInfo(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -6138,7 +6138,7 @@ extension GroupsProtoGroupJoinInfo {
 
 extension GroupsProtoGroupJoinInfoBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupJoinInfo? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -6178,14 +6178,10 @@ public struct GroupsProtoGroupExternalCredential: Codable, CustomDebugStringConv
 
     public init(serializedData: Data) throws {
         let proto = try GroupsProtos_GroupExternalCredential(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate init(_ proto: GroupsProtos_GroupExternalCredential) throws {
-        // MARK: - Begin Validation Logic for GroupsProtoGroupExternalCredential -
-
-        // MARK: - End Validation Logic for GroupsProtoGroupExternalCredential -
-
+    fileprivate init(_ proto: GroupsProtos_GroupExternalCredential) {
         self.init(proto: proto)
     }
 
@@ -6243,7 +6239,11 @@ public struct GroupsProtoGroupExternalCredentialBuilder {
     }
 
     public func build() throws -> GroupsProtoGroupExternalCredential {
-        return try GroupsProtoGroupExternalCredential(proto)
+        return GroupsProtoGroupExternalCredential(proto)
+    }
+
+    public func buildInfallibly() -> GroupsProtoGroupExternalCredential {
+        return GroupsProtoGroupExternalCredential(proto)
     }
 
     public func buildSerializedData() throws -> Data {
@@ -6261,7 +6261,7 @@ extension GroupsProtoGroupExternalCredential {
 
 extension GroupsProtoGroupExternalCredentialBuilder {
     public func buildIgnoringErrors() -> GroupsProtoGroupExternalCredential? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 

@@ -54,10 +54,6 @@ public class ProvisioningProtoProvisioningUuid: NSObject, Codable, NSSecureCodin
         }
         let uuid = proto.uuid
 
-        // MARK: - Begin Validation Logic for ProvisioningProtoProvisioningUuid -
-
-        // MARK: - End Validation Logic for ProvisioningProtoProvisioningUuid -
-
         self.init(proto: proto,
                   uuid: uuid)
     }
@@ -224,10 +220,6 @@ public class ProvisioningProtoProvisionEnvelope: NSObject, Codable, NSSecureCodi
             throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: body")
         }
         let body = proto.body
-
-        // MARK: - Begin Validation Logic for ProvisioningProtoProvisionEnvelope -
-
-        // MARK: - End Validation Logic for ProvisioningProtoProvisionEnvelope -
 
         self.init(proto: proto,
                   publicKey: publicKey,
@@ -518,10 +510,6 @@ public class ProvisioningProtoProvisionMessage: NSObject, Codable, NSSecureCodin
             throw ProvisioningProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: profileKey")
         }
         let profileKey = proto.profileKey
-
-        // MARK: - Begin Validation Logic for ProvisioningProtoProvisionMessage -
-
-        // MARK: - End Validation Logic for ProvisioningProtoProvisionMessage -
 
         self.init(proto: proto,
                   aciIdentityKeyPublic: aciIdentityKeyPublic,

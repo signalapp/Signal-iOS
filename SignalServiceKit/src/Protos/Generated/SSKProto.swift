@@ -247,10 +247,6 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
         }
         let timestamp = proto.timestamp
 
-        // MARK: - Begin Validation Logic for SSKProtoEnvelope -
-
-        // MARK: - End Validation Logic for SSKProtoEnvelope -
-
         self.init(proto: proto,
                   timestamp: timestamp)
     }
@@ -572,10 +568,6 @@ public class SSKProtoTypingMessage: NSObject, Codable, NSSecureCoding {
         }
         let timestamp = proto.timestamp
 
-        // MARK: - Begin Validation Logic for SSKProtoTypingMessage -
-
-        // MARK: - End Validation Logic for SSKProtoTypingMessage -
-
         self.init(proto: proto,
                   timestamp: timestamp)
     }
@@ -777,22 +769,18 @@ public class SSKProtoStoryMessage: NSObject, Codable, NSSecureCoding {
     fileprivate convenience init(_ proto: SignalServiceProtos_StoryMessage) throws {
         var group: SSKProtoGroupContextV2?
         if proto.hasGroup {
-            group = try SSKProtoGroupContextV2(proto.group)
+            group = SSKProtoGroupContextV2(proto.group)
         }
 
         var fileAttachment: SSKProtoAttachmentPointer?
         if proto.hasFileAttachment {
-            fileAttachment = try SSKProtoAttachmentPointer(proto.fileAttachment)
+            fileAttachment = SSKProtoAttachmentPointer(proto.fileAttachment)
         }
 
         var textAttachment: SSKProtoTextAttachment?
         if proto.hasTextAttachment {
             textAttachment = try SSKProtoTextAttachment(proto.textAttachment)
         }
-
-        // MARK: - Begin Validation Logic for SSKProtoStoryMessage -
-
-        // MARK: - End Validation Logic for SSKProtoStoryMessage -
 
         self.init(proto: proto,
                   group: group,
@@ -1039,12 +1027,8 @@ public class SSKProtoPreview: NSObject, Codable, NSSecureCoding {
 
         var image: SSKProtoAttachmentPointer?
         if proto.hasImage {
-            image = try SSKProtoAttachmentPointer(proto.image)
+            image = SSKProtoAttachmentPointer(proto.image)
         }
-
-        // MARK: - Begin Validation Logic for SSKProtoPreview -
-
-        // MARK: - End Validation Logic for SSKProtoPreview -
 
         self.init(proto: proto,
                   url: url,
@@ -1277,14 +1261,10 @@ public class SSKProtoTextAttachmentGradient: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_TextAttachment.Gradient(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_TextAttachment.Gradient) throws {
-        // MARK: - Begin Validation Logic for SSKProtoTextAttachmentGradient -
-
-        // MARK: - End Validation Logic for SSKProtoTextAttachmentGradient -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_TextAttachment.Gradient) {
         self.init(proto: proto)
     }
 
@@ -1401,7 +1381,12 @@ public class SSKProtoTextAttachmentGradientBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoTextAttachmentGradient {
-        return try SSKProtoTextAttachmentGradient(proto)
+        return SSKProtoTextAttachmentGradient(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoTextAttachmentGradient {
+        return SSKProtoTextAttachmentGradient(proto)
     }
 
     @objc
@@ -1422,7 +1407,7 @@ extension SSKProtoTextAttachmentGradient {
 extension SSKProtoTextAttachmentGradientBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoTextAttachmentGradient? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -1569,12 +1554,8 @@ public class SSKProtoTextAttachment: NSObject, Codable, NSSecureCoding {
 
         var gradient: SSKProtoTextAttachmentGradient?
         if proto.hasGradient {
-            gradient = try SSKProtoTextAttachmentGradient(proto.gradient)
+            gradient = SSKProtoTextAttachmentGradient(proto.gradient)
         }
-
-        // MARK: - Begin Validation Logic for SSKProtoTextAttachment -
-
-        // MARK: - End Validation Logic for SSKProtoTextAttachment -
 
         self.init(proto: proto,
                   preview: preview,
@@ -1861,12 +1842,12 @@ public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
 
         var nullMessage: SSKProtoNullMessage?
         if proto.hasNullMessage {
-            nullMessage = try SSKProtoNullMessage(proto.nullMessage)
+            nullMessage = SSKProtoNullMessage(proto.nullMessage)
         }
 
         var receiptMessage: SSKProtoReceiptMessage?
         if proto.hasReceiptMessage {
-            receiptMessage = try SSKProtoReceiptMessage(proto.receiptMessage)
+            receiptMessage = SSKProtoReceiptMessage(proto.receiptMessage)
         }
 
         var typingMessage: SSKProtoTypingMessage?
@@ -1881,12 +1862,8 @@ public class SSKProtoContent: NSObject, Codable, NSSecureCoding {
 
         var pniSignatureMessage: SSKProtoPniSignatureMessage?
         if proto.hasPniSignatureMessage {
-            pniSignatureMessage = try SSKProtoPniSignatureMessage(proto.pniSignatureMessage)
+            pniSignatureMessage = SSKProtoPniSignatureMessage(proto.pniSignatureMessage)
         }
-
-        // MARK: - Begin Validation Logic for SSKProtoContent -
-
-        // MARK: - End Validation Logic for SSKProtoContent -
 
         self.init(proto: proto,
                   dataMessage: dataMessage,
@@ -2240,10 +2217,6 @@ public class SSKProtoCallMessageOffer: NSObject, Codable, NSSecureCoding {
         }
         let id = proto.id
 
-        // MARK: - Begin Validation Logic for SSKProtoCallMessageOffer -
-
-        // MARK: - End Validation Logic for SSKProtoCallMessageOffer -
-
         self.init(proto: proto,
                   id: id)
     }
@@ -2454,10 +2427,6 @@ public class SSKProtoCallMessageAnswer: NSObject, Codable, NSSecureCoding {
             throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: id")
         }
         let id = proto.id
-
-        // MARK: - Begin Validation Logic for SSKProtoCallMessageAnswer -
-
-        // MARK: - End Validation Logic for SSKProtoCallMessageAnswer -
 
         self.init(proto: proto,
                   id: id)
@@ -2683,10 +2652,6 @@ public class SSKProtoCallMessageIceUpdate: NSObject, Codable, NSSecureCoding {
         }
         let id = proto.id
 
-        // MARK: - Begin Validation Logic for SSKProtoCallMessageIceUpdate -
-
-        // MARK: - End Validation Logic for SSKProtoCallMessageIceUpdate -
-
         self.init(proto: proto,
                   id: id)
     }
@@ -2887,10 +2852,6 @@ public class SSKProtoCallMessageBusy: NSObject, Codable, NSSecureCoding {
             throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: id")
         }
         let id = proto.id
-
-        // MARK: - Begin Validation Logic for SSKProtoCallMessageBusy -
-
-        // MARK: - End Validation Logic for SSKProtoCallMessageBusy -
 
         self.init(proto: proto,
                   id: id)
@@ -3103,10 +3064,6 @@ public class SSKProtoCallMessageHangup: NSObject, Codable, NSSecureCoding {
         }
         let id = proto.id
 
-        // MARK: - Begin Validation Logic for SSKProtoCallMessageHangup -
-
-        // MARK: - End Validation Logic for SSKProtoCallMessageHangup -
-
         self.init(proto: proto,
                   id: id)
     }
@@ -3314,14 +3271,10 @@ public class SSKProtoCallMessageOpaque: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_CallMessage.Opaque(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_CallMessage.Opaque) throws {
-        // MARK: - Begin Validation Logic for SSKProtoCallMessageOpaque -
-
-        // MARK: - End Validation Logic for SSKProtoCallMessageOpaque -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_CallMessage.Opaque) {
         self.init(proto: proto)
     }
 
@@ -3414,7 +3367,12 @@ public class SSKProtoCallMessageOpaqueBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoCallMessageOpaque {
-        return try SSKProtoCallMessageOpaque(proto)
+        return SSKProtoCallMessageOpaque(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoCallMessageOpaque {
+        return SSKProtoCallMessageOpaque(proto)
     }
 
     @objc
@@ -3435,7 +3393,7 @@ extension SSKProtoCallMessageOpaque {
 extension SSKProtoCallMessageOpaqueBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoCallMessageOpaque? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -3567,12 +3525,8 @@ public class SSKProtoCallMessage: NSObject, Codable, NSSecureCoding {
 
         var opaque: SSKProtoCallMessageOpaque?
         if proto.hasOpaque {
-            opaque = try SSKProtoCallMessageOpaque(proto.opaque)
+            opaque = SSKProtoCallMessageOpaque(proto.opaque)
         }
-
-        // MARK: - Begin Validation Logic for SSKProtoCallMessage -
-
-        // MARK: - End Validation Logic for SSKProtoCallMessage -
 
         self.init(proto: proto,
                   offer: offer,
@@ -3859,18 +3813,14 @@ public class SSKProtoDataMessageQuoteQuotedAttachment: NSObject, Codable, NSSecu
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Quote.QuotedAttachment(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Quote.QuotedAttachment) throws {
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Quote.QuotedAttachment) {
         var thumbnail: SSKProtoAttachmentPointer?
         if proto.hasThumbnail {
-            thumbnail = try SSKProtoAttachmentPointer(proto.thumbnail)
+            thumbnail = SSKProtoAttachmentPointer(proto.thumbnail)
         }
-
-        // MARK: - Begin Validation Logic for SSKProtoDataMessageQuoteQuotedAttachment -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessageQuoteQuotedAttachment -
 
         self.init(proto: proto,
                   thumbnail: thumbnail)
@@ -3985,7 +3935,12 @@ public class SSKProtoDataMessageQuoteQuotedAttachmentBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoDataMessageQuoteQuotedAttachment {
-        return try SSKProtoDataMessageQuoteQuotedAttachment(proto)
+        return SSKProtoDataMessageQuoteQuotedAttachment(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessageQuoteQuotedAttachment {
+        return SSKProtoDataMessageQuoteQuotedAttachment(proto)
     }
 
     @objc
@@ -4006,7 +3961,7 @@ extension SSKProtoDataMessageQuoteQuotedAttachment {
 extension SSKProtoDataMessageQuoteQuotedAttachmentBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoDataMessageQuoteQuotedAttachment? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -4164,14 +4119,10 @@ public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
         let id = proto.id
 
         var attachments: [SSKProtoDataMessageQuoteQuotedAttachment] = []
-        attachments = try proto.attachments.map { try SSKProtoDataMessageQuoteQuotedAttachment($0) }
+        attachments = proto.attachments.map { SSKProtoDataMessageQuoteQuotedAttachment($0) }
 
         var bodyRanges: [SSKProtoDataMessageBodyRange] = []
-        bodyRanges = try proto.bodyRanges.map { try SSKProtoDataMessageBodyRange($0) }
-
-        // MARK: - Begin Validation Logic for SSKProtoDataMessageQuote -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessageQuote -
+        bodyRanges = proto.bodyRanges.map { SSKProtoDataMessageBodyRange($0) }
 
         self.init(proto: proto,
                   id: id,
@@ -4442,14 +4393,10 @@ public class SSKProtoDataMessageContactName: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Contact.Name(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Contact.Name) throws {
-        // MARK: - Begin Validation Logic for SSKProtoDataMessageContactName -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessageContactName -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Contact.Name) {
         self.init(proto: proto)
     }
 
@@ -4604,7 +4551,12 @@ public class SSKProtoDataMessageContactNameBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoDataMessageContactName {
-        return try SSKProtoDataMessageContactName(proto)
+        return SSKProtoDataMessageContactName(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessageContactName {
+        return SSKProtoDataMessageContactName(proto)
     }
 
     @objc
@@ -4625,7 +4577,7 @@ extension SSKProtoDataMessageContactName {
 extension SSKProtoDataMessageContactNameBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoDataMessageContactName? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -4730,14 +4682,10 @@ public class SSKProtoDataMessageContactPhone: NSObject, Codable, NSSecureCoding 
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Contact.Phone(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Contact.Phone) throws {
-        // MARK: - Begin Validation Logic for SSKProtoDataMessageContactPhone -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessageContactPhone -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Contact.Phone) {
         self.init(proto: proto)
     }
 
@@ -4844,7 +4792,12 @@ public class SSKProtoDataMessageContactPhoneBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoDataMessageContactPhone {
-        return try SSKProtoDataMessageContactPhone(proto)
+        return SSKProtoDataMessageContactPhone(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessageContactPhone {
+        return SSKProtoDataMessageContactPhone(proto)
     }
 
     @objc
@@ -4865,7 +4818,7 @@ extension SSKProtoDataMessageContactPhone {
 extension SSKProtoDataMessageContactPhoneBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoDataMessageContactPhone? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -4970,14 +4923,10 @@ public class SSKProtoDataMessageContactEmail: NSObject, Codable, NSSecureCoding 
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Contact.Email(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Contact.Email) throws {
-        // MARK: - Begin Validation Logic for SSKProtoDataMessageContactEmail -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessageContactEmail -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Contact.Email) {
         self.init(proto: proto)
     }
 
@@ -5084,7 +5033,12 @@ public class SSKProtoDataMessageContactEmailBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoDataMessageContactEmail {
-        return try SSKProtoDataMessageContactEmail(proto)
+        return SSKProtoDataMessageContactEmail(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessageContactEmail {
+        return SSKProtoDataMessageContactEmail(proto)
     }
 
     @objc
@@ -5105,7 +5059,7 @@ extension SSKProtoDataMessageContactEmail {
 extension SSKProtoDataMessageContactEmailBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoDataMessageContactEmail? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -5279,14 +5233,10 @@ public class SSKProtoDataMessageContactPostalAddress: NSObject, Codable, NSSecur
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Contact.PostalAddress(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Contact.PostalAddress) throws {
-        // MARK: - Begin Validation Logic for SSKProtoDataMessageContactPostalAddress -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessageContactPostalAddress -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Contact.PostalAddress) {
         self.init(proto: proto)
     }
 
@@ -5477,7 +5427,12 @@ public class SSKProtoDataMessageContactPostalAddressBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoDataMessageContactPostalAddress {
-        return try SSKProtoDataMessageContactPostalAddress(proto)
+        return SSKProtoDataMessageContactPostalAddress(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessageContactPostalAddress {
+        return SSKProtoDataMessageContactPostalAddress(proto)
     }
 
     @objc
@@ -5498,7 +5453,7 @@ extension SSKProtoDataMessageContactPostalAddress {
 extension SSKProtoDataMessageContactPostalAddressBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoDataMessageContactPostalAddress? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -5545,18 +5500,14 @@ public class SSKProtoDataMessageContactAvatar: NSObject, Codable, NSSecureCoding
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Contact.Avatar(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Contact.Avatar) throws {
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Contact.Avatar) {
         var avatar: SSKProtoAttachmentPointer?
         if proto.hasAvatar {
-            avatar = try SSKProtoAttachmentPointer(proto.avatar)
+            avatar = SSKProtoAttachmentPointer(proto.avatar)
         }
-
-        // MARK: - Begin Validation Logic for SSKProtoDataMessageContactAvatar -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessageContactAvatar -
 
         self.init(proto: proto,
                   avatar: avatar)
@@ -5651,7 +5602,12 @@ public class SSKProtoDataMessageContactAvatarBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoDataMessageContactAvatar {
-        return try SSKProtoDataMessageContactAvatar(proto)
+        return SSKProtoDataMessageContactAvatar(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessageContactAvatar {
+        return SSKProtoDataMessageContactAvatar(proto)
     }
 
     @objc
@@ -5672,7 +5628,7 @@ extension SSKProtoDataMessageContactAvatar {
 extension SSKProtoDataMessageContactAvatarBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoDataMessageContactAvatar? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -5742,32 +5698,28 @@ public class SSKProtoDataMessageContact: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.Contact(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Contact) throws {
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.Contact) {
         var name: SSKProtoDataMessageContactName?
         if proto.hasName {
-            name = try SSKProtoDataMessageContactName(proto.name)
+            name = SSKProtoDataMessageContactName(proto.name)
         }
 
         var number: [SSKProtoDataMessageContactPhone] = []
-        number = try proto.number.map { try SSKProtoDataMessageContactPhone($0) }
+        number = proto.number.map { SSKProtoDataMessageContactPhone($0) }
 
         var email: [SSKProtoDataMessageContactEmail] = []
-        email = try proto.email.map { try SSKProtoDataMessageContactEmail($0) }
+        email = proto.email.map { SSKProtoDataMessageContactEmail($0) }
 
         var address: [SSKProtoDataMessageContactPostalAddress] = []
-        address = try proto.address.map { try SSKProtoDataMessageContactPostalAddress($0) }
+        address = proto.address.map { SSKProtoDataMessageContactPostalAddress($0) }
 
         var avatar: SSKProtoDataMessageContactAvatar?
         if proto.hasAvatar {
-            avatar = try SSKProtoDataMessageContactAvatar(proto.avatar)
+            avatar = SSKProtoDataMessageContactAvatar(proto.avatar)
         }
-
-        // MARK: - Begin Validation Logic for SSKProtoDataMessageContact -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessageContact -
 
         self.init(proto: proto,
                   name: name,
@@ -5919,7 +5871,12 @@ public class SSKProtoDataMessageContactBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoDataMessageContact {
-        return try SSKProtoDataMessageContact(proto)
+        return SSKProtoDataMessageContact(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessageContact {
+        return SSKProtoDataMessageContact(proto)
     }
 
     @objc
@@ -5940,7 +5897,7 @@ extension SSKProtoDataMessageContact {
 extension SSKProtoDataMessageContactBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoDataMessageContact? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -6027,11 +5984,7 @@ public class SSKProtoDataMessageSticker: NSObject, Codable, NSSecureCoding {
         guard proto.hasData else {
             throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: data")
         }
-        let data = try SSKProtoAttachmentPointer(proto.data)
-
-        // MARK: - Begin Validation Logic for SSKProtoDataMessageSticker -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessageSticker -
+        let data = SSKProtoAttachmentPointer(proto.data)
 
         self.init(proto: proto,
                   packID: packID,
@@ -6302,10 +6255,6 @@ public class SSKProtoDataMessageReaction: NSObject, Codable, NSSecureCoding {
         }
         let timestamp = proto.timestamp
 
-        // MARK: - Begin Validation Logic for SSKProtoDataMessageReaction -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessageReaction -
-
         self.init(proto: proto,
                   emoji: emoji,
                   timestamp: timestamp)
@@ -6491,10 +6440,6 @@ public class SSKProtoDataMessageDelete: NSObject, Codable, NSSecureCoding {
             throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: targetSentTimestamp")
         }
         let targetSentTimestamp = proto.targetSentTimestamp
-
-        // MARK: - Begin Validation Logic for SSKProtoDataMessageDelete -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessageDelete -
 
         self.init(proto: proto,
                   targetSentTimestamp: targetSentTimestamp)
@@ -6697,14 +6642,10 @@ public class SSKProtoDataMessageBodyRange: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.BodyRange(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.BodyRange) throws {
-        // MARK: - Begin Validation Logic for SSKProtoDataMessageBodyRange -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessageBodyRange -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.BodyRange) {
         self.init(proto: proto)
     }
 
@@ -6805,7 +6746,12 @@ public class SSKProtoDataMessageBodyRangeBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoDataMessageBodyRange {
-        return try SSKProtoDataMessageBodyRange(proto)
+        return SSKProtoDataMessageBodyRange(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessageBodyRange {
+        return SSKProtoDataMessageBodyRange(proto)
     }
 
     @objc
@@ -6826,7 +6772,7 @@ extension SSKProtoDataMessageBodyRange {
 extension SSKProtoDataMessageBodyRangeBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoDataMessageBodyRange? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -6871,14 +6817,10 @@ public class SSKProtoDataMessageGroupCallUpdate: NSObject, Codable, NSSecureCodi
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.GroupCallUpdate(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.GroupCallUpdate) throws {
-        // MARK: - Begin Validation Logic for SSKProtoDataMessageGroupCallUpdate -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessageGroupCallUpdate -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.GroupCallUpdate) {
         self.init(proto: proto)
     }
 
@@ -6963,7 +6905,12 @@ public class SSKProtoDataMessageGroupCallUpdateBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoDataMessageGroupCallUpdate {
-        return try SSKProtoDataMessageGroupCallUpdate(proto)
+        return SSKProtoDataMessageGroupCallUpdate(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessageGroupCallUpdate {
+        return SSKProtoDataMessageGroupCallUpdate(proto)
     }
 
     @objc
@@ -6984,7 +6931,7 @@ extension SSKProtoDataMessageGroupCallUpdate {
 extension SSKProtoDataMessageGroupCallUpdateBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoDataMessageGroupCallUpdate? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -7030,10 +6977,6 @@ public class SSKProtoDataMessagePaymentAmountMobileCoin: NSObject, Codable, NSSe
             throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: picoMob")
         }
         let picoMob = proto.picoMob
-
-        // MARK: - Begin Validation Logic for SSKProtoDataMessagePaymentAmountMobileCoin -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessagePaymentAmountMobileCoin -
 
         self.init(proto: proto,
                   picoMob: picoMob)
@@ -7185,10 +7128,6 @@ public class SSKProtoDataMessagePaymentAmount: NSObject, Codable, NSSecureCoding
         if proto.hasMobileCoin {
             mobileCoin = try SSKProtoDataMessagePaymentAmountMobileCoin(proto.mobileCoin)
         }
-
-        // MARK: - Begin Validation Logic for SSKProtoDataMessagePaymentAmount -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessagePaymentAmount -
 
         self.init(proto: proto,
                   mobileCoin: mobileCoin)
@@ -7342,10 +7281,6 @@ public class SSKProtoDataMessagePaymentRequestId: NSObject, Codable, NSSecureCod
             throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: uuid")
         }
         let uuid = proto.uuid
-
-        // MARK: - Begin Validation Logic for SSKProtoDataMessagePaymentRequestId -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessagePaymentRequestId -
 
         self.init(proto: proto,
                   uuid: uuid)
@@ -7525,10 +7460,6 @@ public class SSKProtoDataMessagePaymentRequest: NSObject, Codable, NSSecureCodin
             throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: amount")
         }
         let amount = try SSKProtoDataMessagePaymentAmount(proto.amount)
-
-        // MARK: - Begin Validation Logic for SSKProtoDataMessagePaymentRequest -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessagePaymentRequest -
 
         self.init(proto: proto,
                   requestID: requestID,
@@ -7714,10 +7645,6 @@ public class SSKProtoDataMessagePaymentNotificationMobileCoin: NSObject, Codable
         }
         let receipt = proto.receipt
 
-        // MARK: - Begin Validation Logic for SSKProtoDataMessagePaymentNotificationMobileCoin -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessagePaymentNotificationMobileCoin -
-
         self.init(proto: proto,
                   receipt: receipt)
     }
@@ -7896,10 +7823,6 @@ public class SSKProtoDataMessagePaymentNotification: NSObject, Codable, NSSecure
         if proto.hasRequestID {
             requestID = try SSKProtoDataMessagePaymentRequestId(proto.requestID)
         }
-
-        // MARK: - Begin Validation Logic for SSKProtoDataMessagePaymentNotification -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessagePaymentNotification -
 
         self.init(proto: proto,
                   mobileCoin: mobileCoin,
@@ -8083,10 +8006,6 @@ public class SSKProtoDataMessagePaymentCancellation: NSObject, Codable, NSSecure
         }
         let requestID = try SSKProtoDataMessagePaymentRequestId(proto.requestID)
 
-        // MARK: - Begin Validation Logic for SSKProtoDataMessagePaymentCancellation -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessagePaymentCancellation -
-
         self.init(proto: proto,
                   requestID: requestID)
     }
@@ -8263,10 +8182,6 @@ public class SSKProtoDataMessagePayment: NSObject, Codable, NSSecureCoding {
         if proto.hasCancellation {
             cancellation = try SSKProtoDataMessagePaymentCancellation(proto.cancellation)
         }
-
-        // MARK: - Begin Validation Logic for SSKProtoDataMessagePayment -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessagePayment -
 
         self.init(proto: proto,
                   notification: notification,
@@ -8492,14 +8407,10 @@ public class SSKProtoDataMessageStoryContext: NSObject, Codable, NSSecureCoding 
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.StoryContext(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.StoryContext) throws {
-        // MARK: - Begin Validation Logic for SSKProtoDataMessageStoryContext -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessageStoryContext -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.StoryContext) {
         self.init(proto: proto)
     }
 
@@ -8592,7 +8503,12 @@ public class SSKProtoDataMessageStoryContextBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoDataMessageStoryContext {
-        return try SSKProtoDataMessageStoryContext(proto)
+        return SSKProtoDataMessageStoryContext(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessageStoryContext {
+        return SSKProtoDataMessageStoryContext(proto)
     }
 
     @objc
@@ -8613,7 +8529,7 @@ extension SSKProtoDataMessageStoryContext {
 extension SSKProtoDataMessageStoryContextBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoDataMessageStoryContext? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -8658,14 +8574,10 @@ public class SSKProtoDataMessageGiftBadge: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DataMessage.GiftBadge(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.GiftBadge) throws {
-        // MARK: - Begin Validation Logic for SSKProtoDataMessageGiftBadge -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessageGiftBadge -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage.GiftBadge) {
         self.init(proto: proto)
     }
 
@@ -8750,7 +8662,12 @@ public class SSKProtoDataMessageGiftBadgeBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoDataMessageGiftBadge {
-        return try SSKProtoDataMessageGiftBadge(proto)
+        return SSKProtoDataMessageGiftBadge(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDataMessageGiftBadge {
+        return SSKProtoDataMessageGiftBadge(proto)
     }
 
     @objc
@@ -8771,7 +8688,7 @@ extension SSKProtoDataMessageGiftBadge {
 extension SSKProtoDataMessageGiftBadgeBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoDataMessageGiftBadge? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -9013,7 +8930,7 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
 
     fileprivate convenience init(_ proto: SignalServiceProtos_DataMessage) throws {
         var attachments: [SSKProtoAttachmentPointer] = []
-        attachments = try proto.attachments.map { try SSKProtoAttachmentPointer($0) }
+        attachments = proto.attachments.map { SSKProtoAttachmentPointer($0) }
 
         var group: SSKProtoGroupContext?
         if proto.hasGroup {
@@ -9022,7 +8939,7 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
 
         var groupV2: SSKProtoGroupContextV2?
         if proto.hasGroupV2 {
-            groupV2 = try SSKProtoGroupContextV2(proto.groupV2)
+            groupV2 = SSKProtoGroupContextV2(proto.groupV2)
         }
 
         var quote: SSKProtoDataMessageQuote?
@@ -9031,7 +8948,7 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
         }
 
         var contact: [SSKProtoDataMessageContact] = []
-        contact = try proto.contact.map { try SSKProtoDataMessageContact($0) }
+        contact = proto.contact.map { SSKProtoDataMessageContact($0) }
 
         var preview: [SSKProtoPreview] = []
         preview = try proto.preview.map { try SSKProtoPreview($0) }
@@ -9052,11 +8969,11 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
         }
 
         var bodyRanges: [SSKProtoDataMessageBodyRange] = []
-        bodyRanges = try proto.bodyRanges.map { try SSKProtoDataMessageBodyRange($0) }
+        bodyRanges = proto.bodyRanges.map { SSKProtoDataMessageBodyRange($0) }
 
         var groupCallUpdate: SSKProtoDataMessageGroupCallUpdate?
         if proto.hasGroupCallUpdate {
-            groupCallUpdate = try SSKProtoDataMessageGroupCallUpdate(proto.groupCallUpdate)
+            groupCallUpdate = SSKProtoDataMessageGroupCallUpdate(proto.groupCallUpdate)
         }
 
         var payment: SSKProtoDataMessagePayment?
@@ -9066,17 +8983,13 @@ public class SSKProtoDataMessage: NSObject, Codable, NSSecureCoding {
 
         var storyContext: SSKProtoDataMessageStoryContext?
         if proto.hasStoryContext {
-            storyContext = try SSKProtoDataMessageStoryContext(proto.storyContext)
+            storyContext = SSKProtoDataMessageStoryContext(proto.storyContext)
         }
 
         var giftBadge: SSKProtoDataMessageGiftBadge?
         if proto.hasGiftBadge {
-            giftBadge = try SSKProtoDataMessageGiftBadge(proto.giftBadge)
+            giftBadge = SSKProtoDataMessageGiftBadge(proto.giftBadge)
         }
-
-        // MARK: - Begin Validation Logic for SSKProtoDataMessage -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessage -
 
         self.init(proto: proto,
                   attachments: attachments,
@@ -9480,14 +9393,10 @@ public class SSKProtoNullMessage: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_NullMessage(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_NullMessage) throws {
-        // MARK: - Begin Validation Logic for SSKProtoNullMessage -
-
-        // MARK: - End Validation Logic for SSKProtoNullMessage -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_NullMessage) {
         self.init(proto: proto)
     }
 
@@ -9572,7 +9481,12 @@ public class SSKProtoNullMessageBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoNullMessage {
-        return try SSKProtoNullMessage(proto)
+        return SSKProtoNullMessage(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoNullMessage {
+        return SSKProtoNullMessage(proto)
     }
 
     @objc
@@ -9593,7 +9507,7 @@ extension SSKProtoNullMessage {
 extension SSKProtoNullMessageBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoNullMessage? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -9676,14 +9590,10 @@ public class SSKProtoReceiptMessage: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_ReceiptMessage(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_ReceiptMessage) throws {
-        // MARK: - Begin Validation Logic for SSKProtoReceiptMessage -
-
-        // MARK: - End Validation Logic for SSKProtoReceiptMessage -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_ReceiptMessage) {
         self.init(proto: proto)
     }
 
@@ -9773,7 +9683,12 @@ public class SSKProtoReceiptMessageBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoReceiptMessage {
-        return try SSKProtoReceiptMessage(proto)
+        return SSKProtoReceiptMessage(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoReceiptMessage {
+        return SSKProtoReceiptMessage(proto)
     }
 
     @objc
@@ -9794,7 +9709,7 @@ extension SSKProtoReceiptMessage {
 extension SSKProtoReceiptMessageBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoReceiptMessage? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -9966,14 +9881,10 @@ public class SSKProtoVerified: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_Verified(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_Verified) throws {
-        // MARK: - Begin Validation Logic for SSKProtoVerified -
-
-        // MARK: - End Validation Logic for SSKProtoVerified -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_Verified) {
         self.init(proto: proto)
     }
 
@@ -10116,7 +10027,12 @@ public class SSKProtoVerifiedBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoVerified {
-        return try SSKProtoVerified(proto)
+        return SSKProtoVerified(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoVerified {
+        return SSKProtoVerified(proto)
     }
 
     @objc
@@ -10137,7 +10053,7 @@ extension SSKProtoVerified {
 extension SSKProtoVerifiedBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoVerified? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -10249,14 +10165,10 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codabl
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus) throws {
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageSentUnidentifiedDeliveryStatus -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageSentUnidentifiedDeliveryStatus -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus) {
         self.init(proto: proto)
     }
 
@@ -10371,7 +10283,12 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder: NSObject 
 
     @objc
     public func build() throws -> SSKProtoSyncMessageSentUnidentifiedDeliveryStatus {
-        return try SSKProtoSyncMessageSentUnidentifiedDeliveryStatus(proto)
+        return SSKProtoSyncMessageSentUnidentifiedDeliveryStatus(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageSentUnidentifiedDeliveryStatus {
+        return SSKProtoSyncMessageSentUnidentifiedDeliveryStatus(proto)
     }
 
     @objc
@@ -10392,7 +10309,7 @@ extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatus {
 extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoSyncMessageSentUnidentifiedDeliveryStatus? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -10485,14 +10402,10 @@ public class SSKProtoSyncMessageSentStoryMessageRecipient: NSObject, Codable, NS
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient) throws {
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageSentStoryMessageRecipient -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageSentStoryMessageRecipient -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Sent.StoryMessageRecipient) {
         self.init(proto: proto)
     }
 
@@ -10596,7 +10509,12 @@ public class SSKProtoSyncMessageSentStoryMessageRecipientBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoSyncMessageSentStoryMessageRecipient {
-        return try SSKProtoSyncMessageSentStoryMessageRecipient(proto)
+        return SSKProtoSyncMessageSentStoryMessageRecipient(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageSentStoryMessageRecipient {
+        return SSKProtoSyncMessageSentStoryMessageRecipient(proto)
     }
 
     @objc
@@ -10617,7 +10535,7 @@ extension SSKProtoSyncMessageSentStoryMessageRecipient {
 extension SSKProtoSyncMessageSentStoryMessageRecipientBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoSyncMessageSentStoryMessageRecipient? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -10777,7 +10695,7 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
         }
 
         var unidentifiedStatus: [SSKProtoSyncMessageSentUnidentifiedDeliveryStatus] = []
-        unidentifiedStatus = try proto.unidentifiedStatus.map { try SSKProtoSyncMessageSentUnidentifiedDeliveryStatus($0) }
+        unidentifiedStatus = proto.unidentifiedStatus.map { SSKProtoSyncMessageSentUnidentifiedDeliveryStatus($0) }
 
         var storyMessage: SSKProtoStoryMessage?
         if proto.hasStoryMessage {
@@ -10785,11 +10703,7 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
         }
 
         var storyMessageRecipients: [SSKProtoSyncMessageSentStoryMessageRecipient] = []
-        storyMessageRecipients = try proto.storyMessageRecipients.map { try SSKProtoSyncMessageSentStoryMessageRecipient($0) }
-
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageSent -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageSent -
+        storyMessageRecipients = proto.storyMessageRecipients.map { SSKProtoSyncMessageSentStoryMessageRecipient($0) }
 
         self.init(proto: proto,
                   message: message,
@@ -11050,11 +10964,7 @@ public class SSKProtoSyncMessageContacts: NSObject, Codable, NSSecureCoding {
         guard proto.hasBlob else {
             throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: blob")
         }
-        let blob = try SSKProtoAttachmentPointer(proto.blob)
-
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageContacts -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageContacts -
+        let blob = SSKProtoAttachmentPointer(proto.blob)
 
         self.init(proto: proto,
                   blob: blob)
@@ -11212,18 +11122,14 @@ public class SSKProtoSyncMessageGroups: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.Groups(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Groups) throws {
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Groups) {
         var blob: SSKProtoAttachmentPointer?
         if proto.hasBlob {
-            blob = try SSKProtoAttachmentPointer(proto.blob)
+            blob = SSKProtoAttachmentPointer(proto.blob)
         }
-
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageGroups -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageGroups -
 
         self.init(proto: proto,
                   blob: blob)
@@ -11310,7 +11216,12 @@ public class SSKProtoSyncMessageGroupsBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoSyncMessageGroups {
-        return try SSKProtoSyncMessageGroups(proto)
+        return SSKProtoSyncMessageGroups(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageGroups {
+        return SSKProtoSyncMessageGroups(proto)
     }
 
     @objc
@@ -11331,7 +11242,7 @@ extension SSKProtoSyncMessageGroups {
 extension SSKProtoSyncMessageGroupsBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoSyncMessageGroups? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -11379,14 +11290,10 @@ public class SSKProtoSyncMessageBlocked: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.Blocked(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Blocked) throws {
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageBlocked -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageBlocked -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Blocked) {
         self.init(proto: proto)
     }
 
@@ -11490,7 +11397,12 @@ public class SSKProtoSyncMessageBlockedBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoSyncMessageBlocked {
-        return try SSKProtoSyncMessageBlocked(proto)
+        return SSKProtoSyncMessageBlocked(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageBlocked {
+        return SSKProtoSyncMessageBlocked(proto)
     }
 
     @objc
@@ -11511,7 +11423,7 @@ extension SSKProtoSyncMessageBlocked {
 extension SSKProtoSyncMessageBlockedBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoSyncMessageBlocked? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -11601,14 +11513,10 @@ public class SSKProtoSyncMessageRequest: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.Request(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Request) throws {
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageRequest -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageRequest -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Request) {
         self.init(proto: proto)
     }
 
@@ -11687,7 +11595,12 @@ public class SSKProtoSyncMessageRequestBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoSyncMessageRequest {
-        return try SSKProtoSyncMessageRequest(proto)
+        return SSKProtoSyncMessageRequest(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageRequest {
+        return SSKProtoSyncMessageRequest(proto)
     }
 
     @objc
@@ -11708,7 +11621,7 @@ extension SSKProtoSyncMessageRequest {
 extension SSKProtoSyncMessageRequestBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoSyncMessageRequest? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -11824,10 +11737,6 @@ public class SSKProtoSyncMessageRead: NSObject, Codable, NSSecureCoding {
             throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: timestamp")
         }
         let timestamp = proto.timestamp
-
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageRead -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageRead -
 
         self.init(proto: proto,
                   timestamp: timestamp)
@@ -12086,10 +11995,6 @@ public class SSKProtoSyncMessageViewed: NSObject, Codable, NSSecureCoding {
         }
         let timestamp = proto.timestamp
 
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageViewed -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageViewed -
-
         self.init(proto: proto,
                   timestamp: timestamp)
     }
@@ -12308,14 +12213,10 @@ public class SSKProtoSyncMessageConfiguration: NSObject, Codable, NSSecureCoding
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.Configuration(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Configuration) throws {
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageConfiguration -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageConfiguration -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Configuration) {
         self.init(proto: proto)
     }
 
@@ -12426,7 +12327,12 @@ public class SSKProtoSyncMessageConfigurationBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoSyncMessageConfiguration {
-        return try SSKProtoSyncMessageConfiguration(proto)
+        return SSKProtoSyncMessageConfiguration(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageConfiguration {
+        return SSKProtoSyncMessageConfiguration(proto)
     }
 
     @objc
@@ -12447,7 +12353,7 @@ extension SSKProtoSyncMessageConfiguration {
 extension SSKProtoSyncMessageConfigurationBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoSyncMessageConfiguration? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -12545,10 +12451,6 @@ public class SSKProtoSyncMessageStickerPackOperation: NSObject, Codable, NSSecur
             throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: packKey")
         }
         let packKey = proto.packKey
-
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageStickerPackOperation -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageStickerPackOperation -
 
         self.init(proto: proto,
                   packID: packID,
@@ -12798,10 +12700,6 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable, NSSecureCoding 
         }
         let timestamp = proto.timestamp
 
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageViewOnceOpen -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageViewOnceOpen -
-
         self.init(proto: proto,
                   timestamp: timestamp)
     }
@@ -13023,14 +12921,10 @@ public class SSKProtoSyncMessageFetchLatest: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.FetchLatest(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.FetchLatest) throws {
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageFetchLatest -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageFetchLatest -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.FetchLatest) {
         self.init(proto: proto)
     }
 
@@ -13109,7 +13003,12 @@ public class SSKProtoSyncMessageFetchLatestBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoSyncMessageFetchLatest {
-        return try SSKProtoSyncMessageFetchLatest(proto)
+        return SSKProtoSyncMessageFetchLatest(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageFetchLatest {
+        return SSKProtoSyncMessageFetchLatest(proto)
     }
 
     @objc
@@ -13130,7 +13029,7 @@ extension SSKProtoSyncMessageFetchLatest {
 extension SSKProtoSyncMessageFetchLatestBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoSyncMessageFetchLatest? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -13175,14 +13074,10 @@ public class SSKProtoSyncMessageKeys: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.Keys(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Keys) throws {
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageKeys -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageKeys -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.Keys) {
         self.init(proto: proto)
     }
 
@@ -13267,7 +13162,12 @@ public class SSKProtoSyncMessageKeysBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoSyncMessageKeys {
-        return try SSKProtoSyncMessageKeys(proto)
+        return SSKProtoSyncMessageKeys(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageKeys {
+        return SSKProtoSyncMessageKeys(proto)
     }
 
     @objc
@@ -13288,7 +13188,7 @@ extension SSKProtoSyncMessageKeys {
 extension SSKProtoSyncMessageKeysBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoSyncMessageKeys? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -13345,14 +13245,10 @@ public class SSKProtoSyncMessagePniIdentity: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.PniIdentity(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.PniIdentity) throws {
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessagePniIdentity -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessagePniIdentity -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.PniIdentity) {
         self.init(proto: proto)
     }
 
@@ -13451,7 +13347,12 @@ public class SSKProtoSyncMessagePniIdentityBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoSyncMessagePniIdentity {
-        return try SSKProtoSyncMessagePniIdentity(proto)
+        return SSKProtoSyncMessagePniIdentity(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessagePniIdentity {
+        return SSKProtoSyncMessagePniIdentity(proto)
     }
 
     @objc
@@ -13472,7 +13373,7 @@ extension SSKProtoSyncMessagePniIdentity {
 extension SSKProtoSyncMessagePniIdentityBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoSyncMessagePniIdentity? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -13638,14 +13539,10 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable, NSSec
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.MessageRequestResponse(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.MessageRequestResponse) throws {
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageMessageRequestResponse -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageMessageRequestResponse -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.MessageRequestResponse) {
         self.init(proto: proto)
     }
 
@@ -13774,7 +13671,12 @@ public class SSKProtoSyncMessageMessageRequestResponseBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoSyncMessageMessageRequestResponse {
-        return try SSKProtoSyncMessageMessageRequestResponse(proto)
+        return SSKProtoSyncMessageMessageRequestResponse(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageMessageRequestResponse {
+        return SSKProtoSyncMessageMessageRequestResponse(proto)
     }
 
     @objc
@@ -13795,7 +13697,7 @@ extension SSKProtoSyncMessageMessageRequestResponse {
 extension SSKProtoSyncMessageMessageRequestResponseBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoSyncMessageMessageRequestResponse? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -13904,10 +13806,6 @@ public class SSKProtoSyncMessageOutgoingPaymentMobileCoin: NSObject, Codable, NS
             throw SSKProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: ledgerBlockIndex")
         }
         let ledgerBlockIndex = proto.ledgerBlockIndex
-
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageOutgoingPaymentMobileCoin -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageOutgoingPaymentMobileCoin -
 
         self.init(proto: proto,
                   amountPicoMob: amountPicoMob,
@@ -14189,10 +14087,6 @@ public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable, NSSecureCodi
         if proto.hasMobileCoin {
             mobileCoin = try SSKProtoSyncMessageOutgoingPaymentMobileCoin(proto.mobileCoin)
         }
-
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageOutgoingPayment -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageOutgoingPayment -
 
         self.init(proto: proto,
                   mobileCoin: mobileCoin)
@@ -14526,14 +14420,10 @@ public class SSKProtoSyncMessageCallEvent: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_SyncMessage.CallEvent(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.CallEvent) throws {
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageCallEvent -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessageCallEvent -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_SyncMessage.CallEvent) {
         self.init(proto: proto)
     }
 
@@ -14658,7 +14548,12 @@ public class SSKProtoSyncMessageCallEventBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoSyncMessageCallEvent {
-        return try SSKProtoSyncMessageCallEvent(proto)
+        return SSKProtoSyncMessageCallEvent(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoSyncMessageCallEvent {
+        return SSKProtoSyncMessageCallEvent(proto)
     }
 
     @objc
@@ -14679,7 +14574,7 @@ extension SSKProtoSyncMessageCallEvent {
 extension SSKProtoSyncMessageCallEventBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoSyncMessageCallEvent? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -14825,12 +14720,12 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
 
         var groups: SSKProtoSyncMessageGroups?
         if proto.hasGroups {
-            groups = try SSKProtoSyncMessageGroups(proto.groups)
+            groups = SSKProtoSyncMessageGroups(proto.groups)
         }
 
         var request: SSKProtoSyncMessageRequest?
         if proto.hasRequest {
-            request = try SSKProtoSyncMessageRequest(proto.request)
+            request = SSKProtoSyncMessageRequest(proto.request)
         }
 
         var read: [SSKProtoSyncMessageRead] = []
@@ -14838,17 +14733,17 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
 
         var blocked: SSKProtoSyncMessageBlocked?
         if proto.hasBlocked {
-            blocked = try SSKProtoSyncMessageBlocked(proto.blocked)
+            blocked = SSKProtoSyncMessageBlocked(proto.blocked)
         }
 
         var verified: SSKProtoVerified?
         if proto.hasVerified {
-            verified = try SSKProtoVerified(proto.verified)
+            verified = SSKProtoVerified(proto.verified)
         }
 
         var configuration: SSKProtoSyncMessageConfiguration?
         if proto.hasConfiguration {
-            configuration = try SSKProtoSyncMessageConfiguration(proto.configuration)
+            configuration = SSKProtoSyncMessageConfiguration(proto.configuration)
         }
 
         var stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation] = []
@@ -14861,17 +14756,17 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
 
         var fetchLatest: SSKProtoSyncMessageFetchLatest?
         if proto.hasFetchLatest {
-            fetchLatest = try SSKProtoSyncMessageFetchLatest(proto.fetchLatest)
+            fetchLatest = SSKProtoSyncMessageFetchLatest(proto.fetchLatest)
         }
 
         var keys: SSKProtoSyncMessageKeys?
         if proto.hasKeys {
-            keys = try SSKProtoSyncMessageKeys(proto.keys)
+            keys = SSKProtoSyncMessageKeys(proto.keys)
         }
 
         var messageRequestResponse: SSKProtoSyncMessageMessageRequestResponse?
         if proto.hasMessageRequestResponse {
-            messageRequestResponse = try SSKProtoSyncMessageMessageRequestResponse(proto.messageRequestResponse)
+            messageRequestResponse = SSKProtoSyncMessageMessageRequestResponse(proto.messageRequestResponse)
         }
 
         var outgoingPayment: SSKProtoSyncMessageOutgoingPayment?
@@ -14884,17 +14779,13 @@ public class SSKProtoSyncMessage: NSObject, Codable, NSSecureCoding {
 
         var pniIdentity: SSKProtoSyncMessagePniIdentity?
         if proto.hasPniIdentity {
-            pniIdentity = try SSKProtoSyncMessagePniIdentity(proto.pniIdentity)
+            pniIdentity = SSKProtoSyncMessagePniIdentity(proto.pniIdentity)
         }
 
         var callEvent: SSKProtoSyncMessageCallEvent?
         if proto.hasCallEvent {
-            callEvent = try SSKProtoSyncMessageCallEvent(proto.callEvent)
+            callEvent = SSKProtoSyncMessageCallEvent(proto.callEvent)
         }
-
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessage -
-
-        // MARK: - End Validation Logic for SSKProtoSyncMessage -
 
         self.init(proto: proto,
                   sent: sent,
@@ -15464,14 +15355,10 @@ public class SSKProtoAttachmentPointer: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_AttachmentPointer(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_AttachmentPointer) throws {
-        // MARK: - Begin Validation Logic for SSKProtoAttachmentPointer -
-
-        // MARK: - End Validation Logic for SSKProtoAttachmentPointer -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_AttachmentPointer) {
         self.init(proto: proto)
     }
 
@@ -15710,7 +15597,12 @@ public class SSKProtoAttachmentPointerBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoAttachmentPointer {
-        return try SSKProtoAttachmentPointer(proto)
+        return SSKProtoAttachmentPointer(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoAttachmentPointer {
+        return SSKProtoAttachmentPointer(proto)
     }
 
     @objc
@@ -15731,7 +15623,7 @@ extension SSKProtoAttachmentPointer {
 extension SSKProtoAttachmentPointerBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoAttachmentPointer? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -15776,14 +15668,10 @@ public class SSKProtoGroupContextMember: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_GroupContext.Member(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_GroupContext.Member) throws {
-        // MARK: - Begin Validation Logic for SSKProtoGroupContextMember -
-
-        // MARK: - End Validation Logic for SSKProtoGroupContextMember -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_GroupContext.Member) {
         self.init(proto: proto)
     }
 
@@ -15868,7 +15756,12 @@ public class SSKProtoGroupContextMemberBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoGroupContextMember {
-        return try SSKProtoGroupContextMember(proto)
+        return SSKProtoGroupContextMember(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoGroupContextMember {
+        return SSKProtoGroupContextMember(proto)
     }
 
     @objc
@@ -15889,7 +15782,7 @@ extension SSKProtoGroupContextMember {
 extension SSKProtoGroupContextMemberBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoGroupContextMember? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -16016,15 +15909,11 @@ public class SSKProtoGroupContext: NSObject, Codable, NSSecureCoding {
 
         var avatar: SSKProtoAttachmentPointer?
         if proto.hasAvatar {
-            avatar = try SSKProtoAttachmentPointer(proto.avatar)
+            avatar = SSKProtoAttachmentPointer(proto.avatar)
         }
 
         var members: [SSKProtoGroupContextMember] = []
-        members = try proto.members.map { try SSKProtoGroupContextMember($0) }
-
-        // MARK: - Begin Validation Logic for SSKProtoGroupContext -
-
-        // MARK: - End Validation Logic for SSKProtoGroupContext -
+        members = proto.members.map { SSKProtoGroupContextMember($0) }
 
         self.init(proto: proto,
                   id: id,
@@ -16262,14 +16151,10 @@ public class SSKProtoGroupContextV2: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_GroupContextV2(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_GroupContextV2) throws {
-        // MARK: - Begin Validation Logic for SSKProtoGroupContextV2 -
-
-        // MARK: - End Validation Logic for SSKProtoGroupContextV2 -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_GroupContextV2) {
         self.init(proto: proto)
     }
 
@@ -16376,7 +16261,12 @@ public class SSKProtoGroupContextV2Builder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoGroupContextV2 {
-        return try SSKProtoGroupContextV2(proto)
+        return SSKProtoGroupContextV2(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoGroupContextV2 {
+        return SSKProtoGroupContextV2(proto)
     }
 
     @objc
@@ -16397,7 +16287,7 @@ extension SSKProtoGroupContextV2 {
 extension SSKProtoGroupContextV2Builder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoGroupContextV2? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -16451,14 +16341,10 @@ public class SSKProtoContactDetailsAvatar: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_ContactDetails.Avatar(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_ContactDetails.Avatar) throws {
-        // MARK: - Begin Validation Logic for SSKProtoContactDetailsAvatar -
-
-        // MARK: - End Validation Logic for SSKProtoContactDetailsAvatar -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_ContactDetails.Avatar) {
         self.init(proto: proto)
     }
 
@@ -16551,7 +16437,12 @@ public class SSKProtoContactDetailsAvatarBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoContactDetailsAvatar {
-        return try SSKProtoContactDetailsAvatar(proto)
+        return SSKProtoContactDetailsAvatar(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoContactDetailsAvatar {
+        return SSKProtoContactDetailsAvatar(proto)
     }
 
     @objc
@@ -16572,7 +16463,7 @@ extension SSKProtoContactDetailsAvatar {
 extension SSKProtoContactDetailsAvatarBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoContactDetailsAvatar? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -16757,23 +16648,19 @@ public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_ContactDetails(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_ContactDetails) throws {
+    fileprivate convenience init(_ proto: SignalServiceProtos_ContactDetails) {
         var avatar: SSKProtoContactDetailsAvatar?
         if proto.hasAvatar {
-            avatar = try SSKProtoContactDetailsAvatar(proto.avatar)
+            avatar = SSKProtoContactDetailsAvatar(proto.avatar)
         }
 
         var verified: SSKProtoVerified?
         if proto.hasVerified {
-            verified = try SSKProtoVerified(proto.verified)
+            verified = SSKProtoVerified(proto.verified)
         }
-
-        // MARK: - Begin Validation Logic for SSKProtoContactDetails -
-
-        // MARK: - End Validation Logic for SSKProtoContactDetails -
 
         self.init(proto: proto,
                   avatar: avatar,
@@ -16985,7 +16872,12 @@ public class SSKProtoContactDetailsBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoContactDetails {
-        return try SSKProtoContactDetails(proto)
+        return SSKProtoContactDetails(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoContactDetails {
+        return SSKProtoContactDetails(proto)
     }
 
     @objc
@@ -17006,7 +16898,7 @@ extension SSKProtoContactDetails {
 extension SSKProtoContactDetailsBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoContactDetails? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -17060,14 +16952,10 @@ public class SSKProtoGroupDetailsAvatar: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_GroupDetails.Avatar(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_GroupDetails.Avatar) throws {
-        // MARK: - Begin Validation Logic for SSKProtoGroupDetailsAvatar -
-
-        // MARK: - End Validation Logic for SSKProtoGroupDetailsAvatar -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_GroupDetails.Avatar) {
         self.init(proto: proto)
     }
 
@@ -17160,7 +17048,12 @@ public class SSKProtoGroupDetailsAvatarBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoGroupDetailsAvatar {
-        return try SSKProtoGroupDetailsAvatar(proto)
+        return SSKProtoGroupDetailsAvatar(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoGroupDetailsAvatar {
+        return SSKProtoGroupDetailsAvatar(proto)
     }
 
     @objc
@@ -17181,7 +17074,7 @@ extension SSKProtoGroupDetailsAvatar {
 extension SSKProtoGroupDetailsAvatarBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoGroupDetailsAvatar? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -17226,14 +17119,10 @@ public class SSKProtoGroupDetailsMember: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_GroupDetails.Member(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_GroupDetails.Member) throws {
-        // MARK: - Begin Validation Logic for SSKProtoGroupDetailsMember -
-
-        // MARK: - End Validation Logic for SSKProtoGroupDetailsMember -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_GroupDetails.Member) {
         self.init(proto: proto)
     }
 
@@ -17318,7 +17207,12 @@ public class SSKProtoGroupDetailsMemberBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoGroupDetailsMember {
-        return try SSKProtoGroupDetailsMember(proto)
+        return SSKProtoGroupDetailsMember(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoGroupDetailsMember {
+        return SSKProtoGroupDetailsMember(proto)
     }
 
     @objc
@@ -17339,7 +17233,7 @@ extension SSKProtoGroupDetailsMember {
 extension SSKProtoGroupDetailsMemberBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoGroupDetailsMember? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -17472,15 +17366,11 @@ public class SSKProtoGroupDetails: NSObject, Codable, NSSecureCoding {
 
         var avatar: SSKProtoGroupDetailsAvatar?
         if proto.hasAvatar {
-            avatar = try SSKProtoGroupDetailsAvatar(proto.avatar)
+            avatar = SSKProtoGroupDetailsAvatar(proto.avatar)
         }
 
         var members: [SSKProtoGroupDetailsMember] = []
-        members = try proto.members.map { try SSKProtoGroupDetailsMember($0) }
-
-        // MARK: - Begin Validation Logic for SSKProtoGroupDetails -
-
-        // MARK: - End Validation Logic for SSKProtoGroupDetails -
+        members = proto.members.map { SSKProtoGroupDetailsMember($0) }
 
         self.init(proto: proto,
                   id: id,
@@ -17769,10 +17659,6 @@ public class SSKProtoPackSticker: NSObject, Codable, NSSecureCoding {
         }
         let id = proto.id
 
-        // MARK: - Begin Validation Logic for SSKProtoPackSticker -
-
-        // MARK: - End Validation Logic for SSKProtoPackSticker -
-
         self.init(proto: proto,
                   id: id)
     }
@@ -17984,10 +17870,6 @@ public class SSKProtoPack: NSObject, Codable, NSSecureCoding {
         var stickers: [SSKProtoPackSticker] = []
         stickers = try proto.stickers.map { try SSKProtoPackSticker($0) }
 
-        // MARK: - Begin Validation Logic for SSKProtoPack -
-
-        // MARK: - End Validation Logic for SSKProtoPack -
-
         self.init(proto: proto,
                   cover: cover,
                   stickers: stickers)
@@ -18191,10 +18073,6 @@ public class SSKProtoPaymentAddressMobileCoin: NSObject, Codable, NSSecureCoding
         }
         let signature = proto.signature
 
-        // MARK: - Begin Validation Logic for SSKProtoPaymentAddressMobileCoin -
-
-        // MARK: - End Validation Logic for SSKProtoPaymentAddressMobileCoin -
-
         self.init(proto: proto,
                   publicAddress: publicAddress,
                   signature: signature)
@@ -18365,10 +18243,6 @@ public class SSKProtoPaymentAddress: NSObject, Codable, NSSecureCoding {
             mobileCoin = try SSKProtoPaymentAddressMobileCoin(proto.mobileCoin)
         }
 
-        // MARK: - Begin Validation Logic for SSKProtoPaymentAddress -
-
-        // MARK: - End Validation Logic for SSKProtoPaymentAddress -
-
         self.init(proto: proto,
                   mobileCoin: mobileCoin)
     }
@@ -18538,14 +18412,10 @@ public class SSKProtoDecryptionErrorMessage: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_DecryptionErrorMessage(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_DecryptionErrorMessage) throws {
-        // MARK: - Begin Validation Logic for SSKProtoDecryptionErrorMessage -
-
-        // MARK: - End Validation Logic for SSKProtoDecryptionErrorMessage -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_DecryptionErrorMessage) {
         self.init(proto: proto)
     }
 
@@ -18646,7 +18516,12 @@ public class SSKProtoDecryptionErrorMessageBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoDecryptionErrorMessage {
-        return try SSKProtoDecryptionErrorMessage(proto)
+        return SSKProtoDecryptionErrorMessage(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoDecryptionErrorMessage {
+        return SSKProtoDecryptionErrorMessage(proto)
     }
 
     @objc
@@ -18667,7 +18542,7 @@ extension SSKProtoDecryptionErrorMessage {
 extension SSKProtoDecryptionErrorMessageBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoDecryptionErrorMessage? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 
@@ -18724,14 +18599,10 @@ public class SSKProtoPniSignatureMessage: NSObject, Codable, NSSecureCoding {
     @objc
     public convenience init(serializedData: Data) throws {
         let proto = try SignalServiceProtos_PniSignatureMessage(serializedData: serializedData)
-        try self.init(proto)
+        self.init(proto)
     }
 
-    fileprivate convenience init(_ proto: SignalServiceProtos_PniSignatureMessage) throws {
-        // MARK: - Begin Validation Logic for SSKProtoPniSignatureMessage -
-
-        // MARK: - End Validation Logic for SSKProtoPniSignatureMessage -
-
+    fileprivate convenience init(_ proto: SignalServiceProtos_PniSignatureMessage) {
         self.init(proto: proto)
     }
 
@@ -18830,7 +18701,12 @@ public class SSKProtoPniSignatureMessageBuilder: NSObject {
 
     @objc
     public func build() throws -> SSKProtoPniSignatureMessage {
-        return try SSKProtoPniSignatureMessage(proto)
+        return SSKProtoPniSignatureMessage(proto)
+    }
+
+    @objc
+    public func buildInfallibly() -> SSKProtoPniSignatureMessage {
+        return SSKProtoPniSignatureMessage(proto)
     }
 
     @objc
@@ -18851,7 +18727,7 @@ extension SSKProtoPniSignatureMessage {
 extension SSKProtoPniSignatureMessageBuilder {
     @objc
     public func buildIgnoringErrors() -> SSKProtoPniSignatureMessage? {
-        return try! self.build()
+        return self.buildInfallibly()
     }
 }
 

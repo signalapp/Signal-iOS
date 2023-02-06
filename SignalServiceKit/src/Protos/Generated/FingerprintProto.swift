@@ -54,10 +54,6 @@ public class FingerprintProtoLogicalFingerprint: NSObject, Codable, NSSecureCodi
         }
         let identityData = proto.identityData
 
-        // MARK: - Begin Validation Logic for FingerprintProtoLogicalFingerprint -
-
-        // MARK: - End Validation Logic for FingerprintProtoLogicalFingerprint -
-
         self.init(proto: proto,
                   identityData: identityData)
     }
@@ -234,10 +230,6 @@ public class FingerprintProtoLogicalFingerprints: NSObject, Codable, NSSecureCod
             throw FingerprintProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: remoteFingerprint")
         }
         let remoteFingerprint = try FingerprintProtoLogicalFingerprint(proto.remoteFingerprint)
-
-        // MARK: - Begin Validation Logic for FingerprintProtoLogicalFingerprints -
-
-        // MARK: - End Validation Logic for FingerprintProtoLogicalFingerprints -
 
         self.init(proto: proto,
                   version: version,

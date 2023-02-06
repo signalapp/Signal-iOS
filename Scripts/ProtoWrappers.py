@@ -359,6 +359,13 @@ class BaseContext(object):
                 return True
         return False
 
+    def is_field_a_proto_whose_init_throws(self, field):
+        matching_context = self.context_for_proto_type(field)
+        if matching_context is not None:
+            if type(matching_context) is MessageContext:
+                return matching_context.can_init_throw()
+        return False
+
     def can_field_be_optional_objc(self, field):
         return self.can_field_be_optional(field) and not self.is_field_primitive(field) and not self.is_field_an_enum(field)
 
@@ -487,6 +494,14 @@ class MessageContext(BaseContext):
 
     def children(self):
         return self.enums + self.messages + self.oneofs
+
+    def can_init_throw(self):
+        for field in self.fields():
+            if self.is_field_a_proto_whose_init_throws(field):
+                return True
+            if field.is_required and proto_syntax == "proto2":
+                return True
+        return False
 
     def prepare(self):
         self.swift_name = self.derive_swift_name()
@@ -830,16 +845,23 @@ public func serializedData() throws -> Data {
             writer.add('public init(serializedData: Data) throws {')
         writer.push_indent()
         writer.add('let proto = try %s(serializedData: serializedData)' % ( wrapped_swift_name, ) )
-        writer.add('try self.init(proto)')
+        if self.can_init_throw():
+            writer.add('try self.init(proto)')
+        else:
+            writer.add('self.init(proto)')
         writer.pop_indent()
         writer.add('}')
         writer.newline()
 
         # init(proto:) func
+        chunks = ["fileprivate"]
         if writer.needs_objc():
-            writer.add('fileprivate convenience init(_ proto: %s) throws {' % ( wrapped_swift_name, ) )
-        else:
-            writer.add('fileprivate init(_ proto: %s) throws {' % ( wrapped_swift_name, ) )
+            chunks.append("convenience")
+        chunks.append(f"init(_ proto: {wrapped_swift_name})")
+        if self.can_init_throw():
+            chunks.append("throws")
+        chunks.append("{")
+        writer.add(" ".join(chunks))
         writer.push_indent()
 
         for field in explict_fields:
@@ -856,8 +878,10 @@ public func serializedData() throws -> Data {
                     # TODO: Assert that rules is empty.
                     enum_context = self.context_for_proto_type(field)
                     writer.add('let %s = %s(proto.%s)' % ( field.name_swift, enum_context.wrap_func_name(), field.name_swift, ) )
-                elif self.is_field_a_proto(field):
+                elif self.is_field_a_proto_whose_init_throws(field):
                     writer.add('let %s = try %s(proto.%s)' % (field.name_swift, self.base_swift_type_for_field(field), field.name_swift)),
+                elif self.is_field_a_proto(field):
+                    writer.add('let %s = %s(proto.%s)' % (field.name_swift, self.base_swift_type_for_field(field), field.name_swift)),
                 else:
                     writer.add('let %s = proto.%s' % ( field.name_swift, field.name_swift, ) )
                 writer.newline()
@@ -873,8 +897,10 @@ public func serializedData() throws -> Data {
                 if self.is_field_an_enum(field):
                     enum_context = self.context_for_proto_type(field)
                     writer.add('%s = proto.%s.map { %s($0) }' % ( field.name_swift, field.name_swift, enum_context.wrap_func_name(), ) )
-                elif self.is_field_a_proto(field):
+                elif self.is_field_a_proto_whose_init_throws(field):
                     writer.add('%s = try proto.%s.map { try %s($0) }' % ( field.name_swift, field.name_swift, self.base_swift_type_for_field(field), ) )
+                elif self.is_field_a_proto(field):
+                    writer.add('%s = proto.%s.map { %s($0) }' % ( field.name_swift, field.name_swift, self.base_swift_type_for_field(field), ) )
                 else:
                     writer.add('%s = proto.%s' % ( field.name_swift, field.name_swift, ) )
             else:
@@ -885,27 +911,16 @@ public func serializedData() throws -> Data {
                     # TODO: Assert that rules is empty.
                     enum_context = self.context_for_proto_type(field)
                     writer.add('%s = %s(proto.%s)' % ( field.name_swift, enum_context.wrap_func_name(), field.name_swift, ) )
-                elif self.is_field_a_proto(field):
+                elif self.is_field_a_proto_whose_init_throws(field):
                     writer.add('%s = try %s(proto.%s)' % (field.name_swift, self.base_swift_type_for_field(field), field.name_swift)),
+                elif self.is_field_a_proto(field):
+                    writer.add('%s = %s(proto.%s)' % (field.name_swift, self.base_swift_type_for_field(field), field.name_swift)),
                 else:
                     writer.add('%s = proto.%s' % ( field.name_swift, field.name_swift, ) )
 
                 writer.pop_indent()
                 writer.add('}')
             writer.newline()
-
-        writer.add('// MARK: - Begin Validation Logic for %s -' % self.swift_name)
-        writer.newline()
-
-        # Preserve existing validation logic.
-        if self.swift_name in args.validation_map:
-            validation_block = args.validation_map[self.swift_name]
-            if validation_block:
-                writer.add_raw(validation_block)
-                writer.newline()
-
-        writer.add('// MARK: - End Validation Logic for %s -' % self.swift_name)
-        writer.newline()
 
         initializer_prefix = 'self.init('
         initializer_arguments = []
@@ -1011,7 +1026,10 @@ public func serializedData() throws -> Data {
         with writer.braced('extension %s' % self.swift_builder_name ) as writer:
             writer.add_objc()
             with writer.braced('public func buildIgnoringErrors() -> %s?' % self.swift_name) as writer:
-                writer.add('return try! self.build()')
+                if self.can_init_throw():
+                    writer.add('return try! self.build()')
+                else:
+                    writer.add('return self.buildInfallibly()')
 
         writer.newline()
         writer.add('#endif')
@@ -1255,10 +1273,22 @@ public func serializedData() throws -> Data {
         writer.add_objc()
         writer.add('public func build() throws -> %s {' % self.swift_name)
         writer.push_indent()
-        writer.add('return try %s(proto)' % self.swift_name)
+        if self.can_init_throw():
+            writer.add('return try %s(proto)' % self.swift_name)
+        else:
+            writer.add('return %s(proto)' % self.swift_name)
         writer.pop_indent()
         writer.add('}')
         writer.newline()
+
+        if not self.can_init_throw():
+            writer.add_objc()
+            writer.add('public func buildInfallibly() -> %s {' % self.swift_name)
+            writer.push_indent()
+            writer.add('return %s(proto)' % self.swift_name)
+            writer.pop_indent()
+            writer.add('}')
+            writer.newline()
 
         # buildSerializedData() func
         writer.add_objc()
@@ -1501,7 +1531,7 @@ class OneOfContext(BaseContext):
 
         return None
 
-    def case_pairs(self):
+    def case_tuples(self):
         result = []
         for index in self.sorted_item_indices():
             index_str = str(index)
@@ -1509,9 +1539,11 @@ class OneOfContext(BaseContext):
             item_type = self.item_type_map[item_name]
             case_name = lower_camel_case(item_name)
             case_type = swift_type_for_proto_primitive_type(item_type)
+            case_throws = False
             if case_type is None:
                 case_type = self.context_for_proto_type(item_type).swift_name
-            result.append( (case_name, case_type,) )
+                case_throws = self.is_field_a_proto_whose_init_throws(item_type)
+            result.append( (case_name, case_type, case_throws) )
         return result
 
     def generate(self, writer):
@@ -1525,7 +1557,7 @@ class OneOfContext(BaseContext):
 
         writer.push_context(self.proto_name, self.swift_name)
 
-        for case_name, case_type in self.case_pairs():
+        for case_name, case_type, _ in self.case_tuples():
             writer.add('case %s(%s)' % ( case_name, case_type, ) )
 
 
@@ -1534,16 +1566,19 @@ class OneOfContext(BaseContext):
         writer.rstrip()
         writer.add('}')
         writer.newline()
-            
+
         wrapped_swift_name = self.derive_wrapped_swift_name()
+        # TODO: Only mark this throws if one of the cases throws.
         writer.add('private func %sWrap(_ value: %s) throws -> %s {' % ( self.swift_name, wrapped_swift_name, self.swift_name, ) )
         writer.push_indent()
         writer.add('switch value {')
-        for case_name, case_type in self.case_pairs():
+        for case_name, case_type, case_throws in self.case_tuples():
             if is_swift_primitive_type(case_type):
                 writer.add('case .%s(let value): return .%s(value)' % (case_name, case_name, ) )
-            else:
+            elif case_throws:
                 writer.add('case .%s(let value): return .%s(try %s(value))' % (case_name, case_name, case_type, ) )
+            else:
+                writer.add('case .%s(let value): return .%s(%s(value))' % (case_name, case_name, case_type, ) )
             
         writer.add('}')
         writer.pop_indent()
@@ -1553,7 +1588,7 @@ class OneOfContext(BaseContext):
         writer.add('private func %sUnwrap(_ value: %s) -> %s {' % ( self.swift_name, self.swift_name, wrapped_swift_name, ) )
         writer.push_indent()
         writer.add('switch value {')
-        for case_name, case_type in self.case_pairs():
+        for case_name, case_type, case_throws in self.case_tuples():
             if is_swift_primitive_type(case_type):
                 writer.add('case .%s(let value): return .%s(value)' % (case_name, case_name,))
             else:
@@ -1820,43 +1855,6 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
         raise Exception('Invalid message syntax[%s]: %s' % (proto_file_path, line))
 
 
-def preserve_validation_logic(args, proto_file_path, dst_file_path):
-    args.validation_map = {}
-    if os.path.exists(dst_file_path):
-        with open(dst_file_path, 'rt') as f:
-            old_text = f.read()
-        for match in validation_start_regex.finditer(old_text):
-            # print 'match'
-            name = match.group(1)
-            # print '\t name:', name
-            start = match.end(0)
-            # print '\t start:', start
-            end_marker = '// MARK: - End Validation Logic for %s -' % name
-            end = old_text.find(end_marker)
-            # print '\t end:', end
-            if end < start:
-                raise Exception('Malformed validation: %s, %s' % ( proto_file_path, name, ) )
-            validation_block = old_text[start:end]
-            # print '\t validation_block:', validation_block
-
-            # Strip trailing whitespace.
-            validation_lines = validation_block.split('\n')
-            validation_lines = [line.rstrip() for line in validation_lines]
-            # Strip leading empty lines.
-            while len(validation_lines) > 0 and validation_lines[0] == '':
-                validation_lines = validation_lines[1:]
-            # Strip trailing empty lines.
-            while len(validation_lines) > 0 and validation_lines[-1] == '':
-                validation_lines = validation_lines[:-1]
-            validation_block = '\n'.join(validation_lines)
-
-            if len(validation_block) > 0:
-                if args.verbose:
-                    print('Preserving validation logic for:', name)
-
-            args.validation_map[name] = validation_block
-
-
 def process_proto_file(args, proto_file_path, dst_file_path):
     with open(proto_file_path, 'rt') as f:
         text = f.read()
@@ -1911,8 +1909,6 @@ def process_proto_file(args, proto_file_path, dst_file_path):
             continue
 
         raise Exception('Invalid syntax[%s]: %s' % (proto_file_path, line))
-
-    preserve_validation_logic(args, proto_file_path, dst_file_path)
 
     writer = LineWriter(args)
     context.prepare()

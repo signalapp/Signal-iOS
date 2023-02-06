@@ -128,10 +128,6 @@ public class SignalIOSProtoBackupSnapshotBackupEntity: NSObject, Codable, NSSecu
         }
         let key = proto.key
 
-        // MARK: - Begin Validation Logic for SignalIOSProtoBackupSnapshotBackupEntity -
-
-        // MARK: - End Validation Logic for SignalIOSProtoBackupSnapshotBackupEntity -
-
         self.init(proto: proto,
                   entityData: entityData,
                   collection: collection,
@@ -321,10 +317,6 @@ public class SignalIOSProtoBackupSnapshot: NSObject, Codable, NSSecureCoding {
         var entity: [SignalIOSProtoBackupSnapshotBackupEntity] = []
         entity = try proto.entity.map { try SignalIOSProtoBackupSnapshotBackupEntity($0) }
 
-        // MARK: - Begin Validation Logic for SignalIOSProtoBackupSnapshot -
-
-        // MARK: - End Validation Logic for SignalIOSProtoBackupSnapshot -
-
         self.init(proto: proto,
                   entity: entity)
     }
@@ -494,10 +486,6 @@ public class SignalIOSProtoDeviceName: NSObject, Codable, NSSecureCoding {
             throw SignalIOSProtoError.invalidProtobuf(description: "\(Self.logTag()) missing required field: ciphertext")
         }
         let ciphertext = proto.ciphertext
-
-        // MARK: - Begin Validation Logic for SignalIOSProtoDeviceName -
-
-        // MARK: - End Validation Logic for SignalIOSProtoDeviceName -
 
         self.init(proto: proto,
                   ephemeralPublic: ephemeralPublic,
