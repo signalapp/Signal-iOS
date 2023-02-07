@@ -52,7 +52,6 @@ public class PhotoGridViewCell: UICollectionViewCell {
 
     var item: PhotoGridItem?
 
-    private static let animatedBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_gif")
     private static let selectedBadgeImage = UIImage(named: "media-composer-checkmark")
     public var loadingColor = Theme.washColor
 
@@ -193,30 +192,17 @@ public class PhotoGridViewCell: UICollectionViewCell {
         return UIFont.ows_semiboldFont(withSize: max(12, fontDescriptor.pointSize))
     }
 
-    private func setContentTypeBadge(image: UIImage?) {
-        guard image != nil else {
-            contentTypeBadgeView?.isHidden = true
-            return
-        }
-
-        if contentTypeBadgeView == nil {
-            let contentTypeBadgeView = UIImageView()
-            contentView.addSubview(contentTypeBadgeView)
-            contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .leading, withInset: 4)
-            contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 4)
-            self.contentTypeBadgeView = contentTypeBadgeView
-        }
-        contentTypeBadgeView?.isHidden = false
-        contentTypeBadgeView?.image = image
-        contentTypeBadgeView?.sizeToFit()
-    }
-
     private func setMedia(itemType: PhotoGridItemType) {
         hideVideoDuration()
         switch itemType {
         case .video(let promisedDuration):
             updateVideoDurationWhenPromiseFulfilled(promisedDuration)
-        case .animated, .photo:
+        case .animated:
+            setCaption(
+                OWSLocalizedString(
+                    "ALL_MEDIA_THUMBNAIL_LABEL_GIF",
+                    comment: "Label shown over thumbnails of GIFs in the All Media view"))
+        case .photo:
             break
         }
     }
@@ -227,7 +213,7 @@ public class PhotoGridViewCell: UICollectionViewCell {
             guard let self, self.item === originalItem, case .success(let duration) = result else {
                 return
             }
-            self.setVideoDuration(duration)
+            self.setCaption(OWSFormat.localizedDurationString(from: duration))
         }
     }
 
@@ -236,7 +222,7 @@ public class PhotoGridViewCell: UICollectionViewCell {
         durationLabelBackground?.isHidden = true
     }
 
-    private func setVideoDuration(_ duration: Double) {
+    private func setCaption(_ caption: String) {
         if durationLabel == nil {
             let durationLabel = UILabel()
             durationLabel.textColor = .white
@@ -276,7 +262,7 @@ public class PhotoGridViewCell: UICollectionViewCell {
 
         durationLabel.isHidden = false
         durationLabelBackground.isHidden = false
-        durationLabel.text = OWSFormat.localizedDurationString(from: duration)
+        durationLabel.text = caption
         durationLabel.sizeToFit()
     }
 
@@ -300,7 +286,6 @@ public class PhotoGridViewCell: UICollectionViewCell {
         self.image = nil
         setMedia(itemType: .photo)
         setUpAccessibility(item: nil)
-        setContentTypeBadge(image: nil)
     }
 
     public func configure(item: PhotoGridItem) {
@@ -330,13 +315,6 @@ public class PhotoGridViewCell: UICollectionViewCell {
 
         setMedia(itemType: item.type)
         setUpAccessibility(item: item)
-
-        switch item.type {
-        case .animated:
-            setContentTypeBadge(image: PhotoGridViewCell.animatedBadgeImage)
-        case .photo, .video:
-            setContentTypeBadge(image: nil)
-        }
     }
 
     override public func prepareForReuse() {

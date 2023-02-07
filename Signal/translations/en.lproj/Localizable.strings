@@ -115,6 +115,9 @@
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "About Message Requests";
 
+/* Label shown over thumbnails of GIFs in the All Media view */
+"ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
+
 /* Title for the view of all your signal connections */
 "ALL_SIGNAL_CONNECTIONS_TITLE" = "All Connections";
 
