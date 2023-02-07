@@ -686,6 +686,11 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     return [self getOrLoadAccountStateWithSneakyTransaction].isDiscoverableByPhoneNumber;
 }
 
+- (BOOL)isDiscoverableByPhoneNumberWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self getOrLoadAccountStateWithTransaction:transaction].isDiscoverableByPhoneNumber;
+}
+
 - (BOOL)hasDefinedIsDiscoverableByPhoneNumber
 {
     return [self getOrLoadAccountStateWithSneakyTransaction].hasDefinedIsDiscoverableByPhoneNumber;

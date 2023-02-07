@@ -738,7 +738,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             builder.setNoteToSelfMarkedUnread(threadAssociatedData.isMarkedUnread)
         }
 
-        let readReceiptsEnabled = receiptManager.areReadReceiptsEnabled()
+        let readReceiptsEnabled = receiptManager.areReadReceiptsEnabled(transaction: transaction)
         builder.setReadReceipts(readReceiptsEnabled)
 
         let storyViewReceiptsEnabled = StoryManager.areViewReceiptsEnabled(transaction: transaction)
@@ -759,7 +759,7 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         let phoneNumberSharingMode = udManager.phoneNumberSharingMode
         builder.setPhoneNumberSharingMode(phoneNumberSharingMode.asProtoMode)
 
-        let notDiscoverableByPhoneNumber = !tsAccountManager.isDiscoverableByPhoneNumber()
+        let notDiscoverableByPhoneNumber = !tsAccountManager.isDiscoverableByPhoneNumber(with: transaction)
         builder.setNotDiscoverableByPhoneNumber(notDiscoverableByPhoneNumber)
 
         let pinnedConversationProtos = try PinnedThreadManager.pinnedConversationProtos(transaction: transaction)

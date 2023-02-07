@@ -112,6 +112,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
 - (void)setIsOnboarded:(BOOL)isOnboarded transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)isDiscoverableByPhoneNumber;
+- (BOOL)isDiscoverableByPhoneNumberWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (BOOL)hasDefinedIsDiscoverableByPhoneNumber;
 - (void)setIsDiscoverableByPhoneNumber:(BOOL)isDiscoverableByPhoneNumber
                   updateStorageService:(BOOL)updateStorageService
