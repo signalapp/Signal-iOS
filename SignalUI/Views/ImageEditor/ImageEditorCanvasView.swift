@@ -7,7 +7,16 @@ import UIKit
 
 class EditorTextLayer: CATextLayer {
 
+    // Margins between text and edges of the colored background.
+    private enum Constants {
+        static let horizontalMargin: CGFloat = 6
+        static let verticalMargin: CGFloat = 2
+        static let cornerRadius: CGFloat = 8
+    }
+
     let itemId: String
+
+    private var contentLayer: EditorTextLayer?
 
     init(itemId: String) {
         self.itemId = itemId
@@ -17,6 +26,49 @@ class EditorTextLayer: CATextLayer {
     @available(*, unavailable, message: "use other init() instead.")
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    // Creates a new layer that is larger than `self` by amount specified in `Margins`.
+    // The resulting layer has background color and rounded corners set.
+    // `self` is added as a sublayer and is centered vertically and horizontally.
+    fileprivate func withRoundedRectBackground(_ backgroundColor: CGColor) -> EditorTextLayer {
+        guard backgroundColor.alpha > 0 else { return self }
+
+        let rootLayer = EditorTextLayer(itemId: itemId)
+        rootLayer.frame = frame.inset(by: UIEdgeInsets(hMargin: -Constants.horizontalMargin,
+                                                       vMargin: -Constants.verticalMargin))
+        rootLayer.backgroundColor = backgroundColor
+        rootLayer.cornerRadius = Constants.cornerRadius
+        rootLayer.addSublayer(self)
+        rootLayer.contentLayer = self
+        position = rootLayer.bounds.center
+        return rootLayer
+    }
+
+    override var contentsScale: CGFloat {
+        get { super.contentsScale }
+        set {
+            super.contentsScale = newValue
+            if let contentLayer {
+                contentLayer.contentsScale = newValue
+            }
+        }
+    }
+
+    fileprivate func prepareForRendering() {
+        guard let contentLayer, backgroundColor != nil, cornerRadius > 0 else { return }
+
+        let scale = UIScreen.main.scale
+
+        cornerRadius = Constants.cornerRadius * scale
+
+        let position = position
+        bounds.size = CGSize(
+            width: contentLayer.bounds.width + 2 * scale * Constants.horizontalMargin,
+            height: contentLayer.bounds.height + 2 * scale * Constants.verticalMargin
+        )
+        self.position = position
+        contentLayer.position = bounds.center
     }
 }
 
@@ -797,12 +849,7 @@ class ImageEditorCanvasView: UIView {
         // Enlarge the layer slightly when setting the background color to add some horizontal padding around the text.
         let layer: EditorTextLayer
         if let textBackgroundColor = item.textBackgroundColor {
-            layer = EditorTextLayer(itemId: item.itemId)
-            layer.frame = textLayer.frame.inset(by: UIEdgeInsets(hMargin: -6, vMargin: -2))
-            layer.backgroundColor = textBackgroundColor.cgColor
-            layer.cornerRadius = 8
-            layer.addSublayer(textLayer)
-            textLayer.position = layer.bounds.center
+            layer = textLayer.withRoundedRectBackground(textBackgroundColor.cgColor)
         } else {
             layer = textLayer
         }
@@ -956,6 +1003,9 @@ class ImageEditorCanvasView: UIView {
                                             continue
             }
             layer.contentsScale = dstScale * transform.scaling * item.outputScale()
+            if let editorTextLayer = layer as? EditorTextLayer {
+                editorTextLayer.prepareForRendering()
+            }
             layers.append(layer)
         }
         // UIView.renderAsImage() doesn't honor zPosition of layers,
