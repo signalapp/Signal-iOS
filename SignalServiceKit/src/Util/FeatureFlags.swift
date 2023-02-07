@@ -105,8 +105,6 @@ public class FeatureFlags: BaseFlags {
         return false
     }
 
-    public static let ringRtcUseNwPathMonitorFieldTrial = build.includes(.internal)
-
     @objc
     public static func logFlags() {
         let logFlag = { (prefix: String, key: String, value: Any?) in
