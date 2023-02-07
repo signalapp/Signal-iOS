@@ -461,6 +461,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                                                                      transaction:(SDSAnyReadTransaction *)transaction
 {
     if (!signalAccount) {
+        if (!phoneNumber) {
+            return nil;
+        }
         // search system contacts for no-longer-registered signal users, for which there will be no SignalAccount
         Contact *_Nullable nonSignalContact = [self contactForPhoneNumber:phoneNumber transaction:transaction];
         if (!nonSignalContact) {
