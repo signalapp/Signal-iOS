@@ -338,11 +338,7 @@ fileprivate extension SDSCodableModel {
             """
 
             let statement = try transaction.database.cachedStatement(sql: sql)
-            guard let arguments = StatementArguments([uniqueId]) else {
-                owsFail("Could not convert values.")
-            }
-            // TODO: We could use setArguments for more safety.
-            statement.setUncheckedArguments(arguments)
+            try statement.setArguments([uniqueId])
             try statement.execute()
         } catch {
             DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(

@@ -705,16 +705,10 @@ public class SDSKeyValueStore: NSObject {
     private class func update(
         transaction: GRDBWriteTransaction,
         sql: String,
-        arguments: [DatabaseValueConvertible]
+        arguments: StatementArguments
     ) throws {
-
         let statement = try transaction.database.cachedStatement(sql: sql)
-        guard let statementArguments = StatementArguments(arguments) else {
-            owsFailDebug("Could not convert values.")
-            return
-        }
-        // TODO: We could use setArguments for more safety.
-        statement.setUncheckedArguments(statementArguments)
+        try statement.setArguments(arguments)
 
         do {
             try statement.execute()
