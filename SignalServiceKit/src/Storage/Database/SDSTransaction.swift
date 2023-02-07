@@ -256,7 +256,7 @@ public extension GRDBWriteTransaction {
     func execute(sql: String, arguments: StatementArguments = .init()) {
         do {
             let statement = try database.makeStatement(sql: sql)
-            // TODO: We could use setArgumentsWithValidation for more safety.
+            // TODO: We could use setArguments for more safety.
             statement.setUncheckedArguments(arguments)
             try statement.execute()
         } catch {
@@ -271,7 +271,7 @@ public extension GRDBWriteTransaction {
     func executeAndCacheStatement(sql: String, arguments: StatementArguments = .init()) {
         do {
             let statement = try database.cachedStatement(sql: sql)
-            // TODO: We could use setArgumentsWithValidation for more safety.
+            // TODO: We could use setArguments for more safety.
             statement.setUncheckedArguments(arguments)
             try statement.execute()
         } catch {

@@ -713,7 +713,7 @@ public class SDSKeyValueStore: NSObject {
             owsFailDebug("Could not convert values.")
             return
         }
-        // TODO: We could use setArgumentsWithValidation for more safety.
+        // TODO: We could use setArguments for more safety.
         statement.setUncheckedArguments(statementArguments)
 
         do {

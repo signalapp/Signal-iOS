@@ -341,7 +341,7 @@ fileprivate extension SDSCodableModel {
             guard let arguments = StatementArguments([uniqueId]) else {
                 owsFail("Could not convert values.")
             }
-            // TODO: We could use setArgumentsWithValidation for more safety.
+            // TODO: We could use setArguments for more safety.
             statement.setUncheckedArguments(arguments)
             try statement.execute()
         } catch {
