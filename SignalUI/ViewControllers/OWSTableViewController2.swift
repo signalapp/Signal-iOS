@@ -664,22 +664,20 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         UITableView.automaticDimension
     }
 
-    private func buildHeaderOrFooterTextView() -> UITextView {
-        let textView = LinkingTextView()
-        textView.backgroundColor = self.tableBackgroundColor
-        return textView
-    }
-
     private var headerFont: UIFont { .ows_dynamicTypeBodyClamped.ows_semibold }
     private var footerFont: UIFont { .ows_dynamicTypeCaption1Clamped }
 
     private func headerTextContainerInsets(for section: OWSTableSection) -> UIEdgeInsets {
+        headerTextContainerInsets(useDeepInsets: section.hasBackground)
+    }
+
+    private func headerTextContainerInsets(useDeepInsets: Bool) -> UIEdgeInsets {
         var textContainerInset = cellOuterInsetsWithMargin(
             top: (defaultSpacingBetweenSections ?? 0) + 12,
             bottom: 10
         )
 
-        if section.hasBackground {
+        if useDeepInsets {
             textContainerInset.left += Self.cellHInnerMargin * 0.5
             textContainerInset.right += Self.cellHInnerMargin * 0.5
         }
@@ -690,9 +688,13 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     }
 
     private func footerTextContainerInsets(for section: OWSTableSection) -> UIEdgeInsets {
+        footerTextContainerInsets(useDeepInsets: section.hasBackground)
+    }
+
+    private func footerTextContainerInsets(useDeepInsets: Bool) -> UIEdgeInsets {
         var textContainerInset = cellOuterInsetsWithMargin(top: 12)
 
-        if section.hasBackground {
+        if useDeepInsets {
             textContainerInset.left += Self.cellHInnerMargin
             textContainerInset.right += Self.cellHInnerMargin
         }
@@ -703,40 +705,73 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         return textContainerInset
     }
 
+    private func buildDefaultHeaderOrFooter(height: CGFloat) -> UIView {
+        let view = UIView()
+        view.backgroundColor = .clear
+        view.autoSetDimension(.height, toSize: height)
+        return view
+    }
+
+    private func buildHeaderOrFooterTextView() -> UITextView {
+        let textView = LinkingTextView()
+        textView.backgroundColor = self.tableBackgroundColor
+        return textView
+    }
+
+    public func buildHeaderTextView(forSection section: OWSTableSection) -> UITextView {
+        buildHeaderTextView(withDeepInsets: section.hasBackground)
+    }
+
+    public func buildHeaderTextView(withDeepInsets: Bool) -> UITextView {
+        let textView = buildHeaderOrFooterTextView()
+
+        textView.textColor = (Theme.isDarkThemeEnabled || forceDarkMode) ? UIColor.ows_gray05 : UIColor.ows_gray90
+        textView.font = headerFont
+        textView.textContainerInset = headerTextContainerInsets(useDeepInsets: withDeepInsets)
+
+        return textView
+    }
+
+    public func buildFooterTextView(forSection section: OWSTableSection) -> UITextView {
+        buildFooterTextView(withDeepInsets: section.hasBackground)
+    }
+
+    public func buildFooterTextView(withDeepInsets: Bool) -> UITextView {
+        let textView = buildHeaderOrFooterTextView()
+
+        textView.textColor = forceDarkMode ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
+        textView.font = footerFont
+
+        let linkTextAttributes: [NSAttributedString.Key: Any] = [
+            NSAttributedString.Key.foregroundColor: forceDarkMode ? Theme.darkThemePrimaryColor : Theme.primaryTextColor,
+            NSAttributedString.Key.font: footerFont,
+            NSAttributedString.Key.underlineStyle: 0
+        ]
+        textView.linkTextAttributes = linkTextAttributes
+
+        textView.textContainerInset = footerTextContainerInsets(useDeepInsets: withDeepInsets)
+
+        return textView
+    }
+
     public func tableView(_ tableView: UITableView, viewForHeaderInSection sectionIndex: Int) -> UIView? {
         guard let section = contents.sections[safe: sectionIndex] else {
             owsFailDebug("Missing section: \(sectionIndex)")
             return nil
         }
 
-        func buildTextView() -> UITextView {
-            let textView = buildHeaderOrFooterTextView()
-            textView.textColor = (Theme.isDarkThemeEnabled || forceDarkMode) ? UIColor.ows_gray05 : UIColor.ows_gray90
-            textView.font = headerFont
-            textView.textContainerInset = headerTextContainerInsets(for: section)
-            return textView
-        }
-
         if let customHeaderView = section.customHeaderView {
             return customHeaderView
         } else if let headerTitle = section.headerTitle,
                   !headerTitle.isEmpty {
-            let textView = buildTextView()
+            let textView = buildHeaderTextView(forSection: section)
             textView.text = headerTitle
-
-            if let textViewConfigBlock = section.headerTextViewConfigBlock {
-                textViewConfigBlock(textView)
-            }
 
             return textView
         } else if let headerAttributedTitle = section.headerAttributedTitle,
                   !headerAttributedTitle.isEmpty {
-            let textView = buildTextView()
+            let textView = buildHeaderTextView(forSection: section)
             textView.attributedText = headerAttributedTitle
-
-            if let textViewConfigBlock = section.headerTextViewConfigBlock {
-                textViewConfigBlock(textView)
-            }
 
             return textView
         } else if let customHeaderHeight = section.customHeaderHeight,
@@ -753,56 +788,24 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         }
     }
 
-    private func buildDefaultHeaderOrFooter(height: CGFloat) -> UIView {
-        let view = UIView()
-        view.backgroundColor = .clear
-        view.autoSetDimension(.height, toSize: height)
-        return view
-    }
-
     public func tableView(_ tableView: UITableView, viewForFooterInSection sectionIndex: Int) -> UIView? {
         guard let section = contents.sections[safe: sectionIndex] else {
             owsFailDebug("Missing section: \(sectionIndex)")
             return nil
         }
 
-        func buildTextView() -> UITextView {
-            let textView = buildHeaderOrFooterTextView()
-            textView.textColor = forceDarkMode ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
-            textView.font = footerFont
-
-            let linkTextAttributes: [NSAttributedString.Key: Any] = [
-                NSAttributedString.Key.foregroundColor: forceDarkMode ? Theme.darkThemePrimaryColor : Theme.primaryTextColor,
-                NSAttributedString.Key.font: footerFont,
-                NSAttributedString.Key.underlineStyle: 0
-            ]
-            textView.linkTextAttributes = linkTextAttributes
-
-            textView.textContainerInset = footerTextContainerInsets(for: section)
-
-            return textView
-        }
-
         if let customFooterView = section.customFooterView {
             return customFooterView
         } else if let footerTitle = section.footerTitle,
                   !footerTitle.isEmpty {
-            let textView = buildTextView()
+            let textView = buildFooterTextView(forSection: section)
             textView.text = footerTitle
-
-            if let textViewConfigBlock = section.footerTextViewConfigBlock {
-                textViewConfigBlock(textView)
-            }
 
             return textView
         } else if let footerAttributedTitle = section.footerAttributedTitle,
                   !footerAttributedTitle.isEmpty {
-            let textView = buildTextView()
+            let textView = buildFooterTextView(forSection: section)
             textView.attributedText = footerAttributedTitle
-
-            if let textViewConfigBlock = section.footerTextViewConfigBlock {
-                textViewConfigBlock(textView)
-            }
 
             return textView
         } else if let customFooterHeight = section.customFooterHeight,

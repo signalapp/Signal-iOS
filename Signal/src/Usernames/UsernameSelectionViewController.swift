@@ -94,8 +94,7 @@ class UsernameSelectionViewController: OWSTableViewController2 {
                 return
             }
 
-            updateTableContents()
-            updateNavigation()
+            updateTableContents(forFirstLoad: false)
         }
     }
 
@@ -141,9 +140,6 @@ class UsernameSelectionViewController: OWSTableViewController2 {
 
         super.init()
 
-        usernameTextField.delegate = self
-        usernameTextField.addTarget(self, action: #selector(usernameTextFieldContentsDidChange), for: .editingChanged)
-
         shouldAvoidKeyboard = true
     }
 
@@ -179,14 +175,30 @@ class UsernameSelectionViewController: OWSTableViewController2 {
     /// Manages editing of the nickname and presents additional visual state
     /// such as the current discriminator.
     private lazy var usernameTextField: UsernameTextField = {
-        .init(forUsername: existingUsername)
+        let textField = UsernameTextField(forUsername: existingUsername)
+
+        textField.delegate = self
+        textField.addTarget(self, action: #selector(usernameTextFieldContentsDidChange), for: .editingChanged)
+
+        return textField
     }()
 
-    /// An ``NSAttributedString`` containing styled text to use as the footer
-    /// for the username text field. Dynamically assembled as appropriate for
-    /// the current internal state. Contains a "learn more" link that we should
-    /// intercept locally.
-    private var usernameFooterStyled: NSAttributedString {
+    private var _usernameFooterTextView: UITextView?
+    private var usernameFooterTextView: UITextView {
+        get {
+            guard let _usernameFooterTextView else {
+                owsFail("Missing footer view! Were table contents built?")
+            }
+
+            return _usernameFooterTextView
+        }
+        set { _usernameFooterTextView = newValue }
+    }
+
+    /// Returns styled text to use as a footer. Dynamically assembled as
+    /// appropriate for the current internal state. Contains a "learn more"
+    /// link that we should intercept locally.
+    private func assembleUsernameFooterText() -> NSAttributedString {
         var components = [Composable]()
 
         let errorText: String? = {
@@ -250,8 +262,7 @@ class UsernameSelectionViewController: OWSTableViewController2 {
     override func themeDidChange() {
         super.themeDidChange()
 
-        updateTableContents()
-        updateNavigation()
+        rebuildTableContents()
     }
 
     /// Only allow gesture-based dismissal when there have been no edits.
@@ -277,8 +288,7 @@ class UsernameSelectionViewController: OWSTableViewController2 {
 
         navigationItem.rightBarButtonItem = doneBarButtonItem
 
-        updateTableContents()
-        updateNavigation()
+        rebuildTableContents()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -286,11 +296,123 @@ class UsernameSelectionViewController: OWSTableViewController2 {
     }
 }
 
-// MARK: - Configure views
+// MARK: - Dynamic table contents
 
 private extension UsernameSelectionViewController {
-    /// Update the table contents to reflect the current internal state.
-    private func updateTableContents() {
+
+    /// Update (without replacing) table contents whose content can change as
+    /// as internal state changes.
+    ///
+    /// Prefer this method for updating table contents on dynamic state change
+    /// whenever possible, to avoid rebuilding the entire table (and resulting
+    /// behaviors such as keyboard dismissal).
+    func updateTableContents(forFirstLoad: Bool) {
+        updateNavigationItems()
+        updateHeaderViewContent()
+        updateUsernameTextFieldContent()
+        updateFooterTextViewContent()
+
+        if !forFirstLoad {
+            // Since we have changed the contents of views, and their heights may
+            // have changed, we need to recompute. Redundant on the first load.
+            recomputeItemHeightsWithoutReloadingData()
+        }
+    }
+
+    /// Update the contents of navigation items for the current internal
+    /// controller state.
+    private func updateNavigationItems() {
+        doneBarButtonItem.isEnabled = {
+            switch currentUsernameState {
+            case
+                    .reservationSuccessful,
+                    .shouldDelete:
+                return true
+            case
+                    .noChangesToExisting,
+                    .reservationPending,
+                    .reservationRejected,
+                    .reservationFailed,
+                    .tooShort,
+                    .tooLong,
+                    .invalidCharacters:
+                return false
+            }
+        }()
+    }
+
+    /// Update the contents of the header view for the current internal
+    /// controller state.
+    private func updateHeaderViewContent() {
+        // If we are able to finalize a username (i.e., have a
+        // reservation or deletion primed), we should display it.
+        let usernameDisplayText: String? = {
+            switch self.currentUsernameState {
+            case .noChangesToExisting:
+                if let existingUsername = self.existingUsername {
+                    return existingUsername.reassembled
+                }
+
+                fallthrough
+            case .shouldDelete:
+                return OWSLocalizedString(
+                    "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER",
+                    comment: "When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty."
+                )
+            case let .reservationSuccessful(reservation):
+                return reservation.username.reassembled
+            case
+                    .reservationPending,
+                    .reservationRejected,
+                    .reservationFailed,
+                    .tooShort,
+                    .tooLong,
+                    .invalidCharacters:
+                return nil
+            }
+        }()
+
+        if let usernameDisplayText {
+            self.headerView.setUsernameText(to: usernameDisplayText)
+        }
+    }
+
+    /// Update the contents of the username text field for the current internal
+    /// controller state.
+    private func updateUsernameTextFieldContent() {
+        switch self.currentUsernameState {
+        case .noChangesToExisting:
+            self.usernameTextField.configure(forConfirmedUsername: self.existingUsername)
+        case .shouldDelete:
+            self.usernameTextField.configure(forConfirmedUsername: nil)
+        case .reservationPending:
+            self.usernameTextField.configureForReservationInProgress()
+        case let .reservationSuccessful(reservation):
+            self.usernameTextField.configure(forConfirmedUsername: reservation.username)
+        case
+                .reservationRejected,
+                .reservationFailed,
+                .tooShort,
+                .tooLong,
+                .invalidCharacters:
+            self.usernameTextField.configureForError()
+        }
+    }
+
+    /// Update the contents of the footer text view for the current internal
+    /// controller state.
+    private func updateFooterTextViewContent() {
+        usernameFooterTextView.attributedText = assembleUsernameFooterText()
+    }
+}
+
+// MARK: - Build table contents
+
+private extension UsernameSelectionViewController {
+    /// Construct and reset the table contents. Use sparingly, both to avoid
+    /// unnecessary construction and as this can interact oddly with other
+    /// simultaneous UI interactions (such as keyboard presentation).
+    func rebuildTableContents() {
         let contents = OWSTableContents()
 
         // Holds a header image, and text displaying the entered username with
@@ -309,38 +431,6 @@ private extension UsernameSelectionViewController {
 
                     self.headerView.setColorsForCurrentTheme()
                     self.headerView.updateFontsForCurrentPreferredContentSize()
-
-                    // If we are able to finalize a username (i.e., have a
-                    // reservation or deletion primed), we should display it.
-                    let usernameDisplayText: String? = {
-                        switch self.currentUsernameState {
-                        case .noChangesToExisting:
-                            if let existingUsername = self.existingUsername {
-                                return existingUsername.reassembled
-                            }
-
-                            fallthrough
-                        case .shouldDelete:
-                            return OWSLocalizedString(
-                                "USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER",
-                                comment: "When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty."
-                            )
-                        case let .reservationSuccessful(reservation):
-                            return reservation.username.reassembled
-                        case
-                                .reservationPending,
-                                .reservationRejected,
-                                .reservationFailed,
-                                .tooShort,
-                                .tooLong,
-                                .invalidCharacters:
-                            return nil
-                        }
-                    }()
-
-                    if let usernameDisplayText {
-                        self.headerView.setUsernameText(to: usernameDisplayText)
-                    }
 
                     return cell
                 },
@@ -369,34 +459,19 @@ private extension UsernameSelectionViewController {
                     self.usernameTextField.setColorsForCurrentTheme()
                     self.usernameTextField.updateFontsForCurrentPreferredContentSize()
 
-                    switch self.currentUsernameState {
-                    case .noChangesToExisting:
-                        self.usernameTextField.configure(forConfirmedUsername: self.existingUsername)
-                    case .shouldDelete:
-                        self.usernameTextField.configure(forConfirmedUsername: nil)
-                    case .reservationPending:
-                        self.usernameTextField.configureForReservationInProgress()
-                    case let .reservationSuccessful(reservation):
-                        self.usernameTextField.configure(forConfirmedUsername: reservation.username)
-                    case
-                            .reservationRejected,
-                            .reservationFailed,
-                            .tooShort,
-                            .tooLong,
-                            .invalidCharacters:
-                        self.usernameTextField.configureForError()
-                    }
-
                     return cell
                 },
                 actionBlock: nil
             ))
 
-            // The footer text will have a "learn more" link in it. By making
-            // ourselves the delegate for the footer text view, we can
-            // intercept taps on that link.
-            section.footerAttributedTitle = usernameFooterStyled
-            section.footerTextViewConfigBlock = { $0.delegate = self }
+            section.customFooterView = {
+                let footerTextView = self.buildFooterTextView(withDeepInsets: true)
+
+                footerTextView.delegate = self
+                self.usernameFooterTextView = footerTextView
+
+                return footerTextView
+            }()
 
             return section
         }()
@@ -406,36 +481,9 @@ private extension UsernameSelectionViewController {
             usernameTextFieldSection
         ])
 
-        let usernameTextFieldIsFirstResponder = usernameTextField.isFirstResponder
-
         self.contents = contents
 
-        if usernameTextFieldIsFirstResponder {
-            // By setting contents, we will steal first responder. We should
-            // give it back.
-            usernameTextField.becomeFirstResponder()
-        }
-    }
-
-    /// Update the nav bar items to reflect the current internal state.
-    private func updateNavigation() {
-        doneBarButtonItem.isEnabled = {
-            switch currentUsernameState {
-            case
-                    .reservationSuccessful,
-                    .shouldDelete:
-                return true
-            case
-                    .noChangesToExisting,
-                    .reservationPending,
-                    .reservationRejected,
-                    .reservationFailed,
-                    .tooShort,
-                    .tooLong,
-                    .invalidCharacters:
-                return false
-            }
-        }()
+        updateTableContents(forFirstLoad: true)
     }
 }
 
@@ -798,5 +846,22 @@ extension UsernameSelectionViewController: UITextViewDelegate {
             title: title,
             message: message
         )
+    }
+}
+
+// MARK: - Recompute table view item heights
+
+private extension OWSTableViewController2 {
+    /// Recompute heights in-place for all table items, headers, and footers.
+    func recomputeItemHeightsWithoutReloadingData() {
+        AssertIsOnMainThread()
+
+        UIView.performWithoutAnimation {
+            // Calling `.beginUpdates()` triggers a height computation for all
+            // items in the table view.
+
+            tableView.beginUpdates()
+            tableView.endUpdates()
+        }
     }
 }

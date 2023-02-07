@@ -25,8 +25,6 @@ extern const CGFloat kOWSTable_DefaultCellHeight;
 
 #pragma mark -
 
-typedef void (^OWSTableSectionTextViewConfigBlock)(UITextView *);
-
 @interface OWSTableSection : NSObject
 
 @property (nonatomic, nullable) NSString *headerTitle;
@@ -34,9 +32,6 @@ typedef void (^OWSTableSectionTextViewConfigBlock)(UITextView *);
 
 @property (nonatomic, nullable) NSAttributedString *headerAttributedTitle;
 @property (nonatomic, nullable) NSAttributedString *footerAttributedTitle;
-
-@property (nonatomic, nullable) OWSTableSectionTextViewConfigBlock headerTextViewConfigBlock;
-@property (nonatomic, nullable) OWSTableSectionTextViewConfigBlock footerTextViewConfigBlock;
 
 @property (nonatomic, nullable) UIView *customHeaderView;
 @property (nonatomic, nullable) UIView *customFooterView;
