@@ -659,6 +659,7 @@
 		45BD60821DE9547E00A8F436 /* Contacts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45BD60811DE9547E00A8F436 /* Contacts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		45C845AD291466C0005F6EA5 /* JournalingOrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C845AC291466C0005F6EA5 /* JournalingOrderedDictionary.swift */; };
 		45C845AF291467F7005F6EA5 /* JournalingOrderedDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45C845AE291467F7005F6EA5 /* JournalingOrderedDictionaryTests.swift */; };
+		45CADA8B298DD2B4009EBDF5 /* MediaTileScrollFlag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45CADA8A298DD2B4009EBDF5 /* MediaTileScrollFlag.swift */; };
 		45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */; };
 		45D062F527D7F49800BD505E /* OWSContactsManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D062F427D7F49800BD505E /* OWSContactsManagerTest.swift */; };
 		45D49115296F69AA00B92BB1 /* AllMediaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D49114296F69AA00B92BB1 /* AllMediaViewController.swift */; };
@@ -3022,6 +3023,7 @@
 		45BD60811DE9547E00A8F436 /* Contacts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Contacts.framework; path = System/Library/Frameworks/Contacts.framework; sourceTree = SDKROOT; };
 		45C845AC291466C0005F6EA5 /* JournalingOrderedDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalingOrderedDictionary.swift; sourceTree = "<group>"; };
 		45C845AE291467F7005F6EA5 /* JournalingOrderedDictionaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalingOrderedDictionaryTests.swift; sourceTree = "<group>"; };
+		45CADA8A298DD2B4009EBDF5 /* MediaTileScrollFlag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTileScrollFlag.swift; sourceTree = "<group>"; };
 		45CB2FA71CB7146C00E1B343 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = "Launch Screen.storyboard"; path = "Signal/src/util/Launch Screen.storyboard"; sourceTree = SOURCE_ROOT; };
 		45D062F427D7F49800BD505E /* OWSContactsManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactsManagerTest.swift; sourceTree = "<group>"; };
 		45D231761DC7E8F10034FA89 /* SessionResetJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionResetJob.swift; sourceTree = "<group>"; };
@@ -6126,6 +6128,7 @@
 				4585B4A2291B2BFB003A8F8E /* MediaGalleryCollectionViewUpdater.swift */,
 				1700E33828B568200073D949 /* MediaGallerySections.swift */,
 				45F32C1D205718B000A300D5 /* MediaPageViewController.swift */,
+				45CADA8A298DD2B4009EBDF5 /* MediaTileScrollFlag.swift */,
 				454A84032059C787008B8C75 /* MediaTileViewController.swift */,
 				45B821F82981F7D400BB08BE /* VideoDurationHelper.swift */,
 			);
@@ -10870,6 +10873,7 @@
 				4C8A6DFE22E54AFA00469AE7 /* MediaInteractiveDismiss.swift in Sources */,
 				45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */,
 				4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */,
+				45CADA8B298DD2B4009EBDF5 /* MediaTileScrollFlag.swift in Sources */,
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
 				4C8A6DFC22E5499300469AE7 /* MediaZoomAnimationController.swift in Sources */,
 				8837F74123DA0B0F00772A32 /* MegaphoneView.swift in Sources */,

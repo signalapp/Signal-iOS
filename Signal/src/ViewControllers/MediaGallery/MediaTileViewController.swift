@@ -206,8 +206,170 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
 
     // MARK: UICollectionViewDelegate
 
+    private let scrollFlag = MediaTileScrollFlag()
+
+    private var willDecelerate = false
+    private var scrollingToTop = false
+
+    override public func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
+        scrollingToTop = true
+        return true
+    }
+
+    override public func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
+        scrollingToTop = false
+        showOrHideScrollFlag()
+    }
+
+    override public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        willDecelerate = decelerate
+    }
+
+    override public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        willDecelerate = false
+        showOrHideScrollFlag()
+    }
+
+    private var scrollFlagShouldBeVisible = false
+
     override public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         self.autoLoadMoreIfNecessary()
+        showOrHideScrollFlag()
+        if scrollFlag.superview != nil {
+            updateScrollFlag()
+        }
+    }
+
+    private func showOrHideScrollFlag() {
+        if #unavailable(iOS 12) {
+            return
+        }
+        if collectionView.isTracking || scrollingToTop {
+            willDecelerate = false
+            scrollFlagShouldBeVisible = true
+            if scrollFlag.superview == nil {
+                collectionView?.addSubview(scrollFlag)
+            }
+            scrollFlag.alpha = 1.0
+        } else if scrollFlagShouldBeVisible && !willDecelerate {
+            scrollFlagShouldBeVisible = false
+            UIView.animate(withDuration: 0.25) {
+                self.scrollFlag.alpha = 0.0
+            }
+        }
+    }
+
+    // Like indexPathsForVisibleItems but excludes those obscured by the navigation bar.
+    private var reallyVisibleIndexPaths: [IndexPath] {
+        guard let superview = collectionView.superview else {
+            return []
+        }
+        let visibleFrame = collectionView.convert(collectionView.frame.inset(by: collectionView.safeAreaInsets),
+                                                  from: superview)
+        return collectionView.indexPathsForVisibleItems.filter { indexPath in
+            guard let cell = collectionView.cellForItem(at: indexPath) else {
+                return false
+            }
+            return cell.frame.intersects(visibleFrame)
+        }
+    }
+
+    private func updateScrollFlag() {
+        if #unavailable(iOS 12) {
+            return
+        }
+        guard mediaGallery.galleryDates.count > 0,
+              let indexPath = reallyVisibleIndexPaths.min(by: { lhs, rhs in
+                  return lhs.section < rhs.section
+              }) else {
+            scrollFlag.alpha = 0.0
+            return
+        }
+        let i = max(0, indexPath.section - 1)
+        let date = mediaGallery.galleryDates[i]
+        scrollFlag.stringValue = date.localizedString
+        scrollFlag.sizeToFit()
+
+        scrollFlag.center = guessCenterOfFlag()
+    }
+
+    private func guessCenterOfFlag() -> CGPoint {
+        let currentOffset = collectionView.contentOffset.y
+        let contentHeight = collectionView.contentSize.height
+        let visibleHeight = collectionView.bounds.height
+
+        // This crazy mess is to figure out where the scroll indicator is. It is complicated by
+        // the fact that the scrollbar's exact location is not exposed, nor is the minimum
+        // height of the indicator.
+
+        let scrollbarInsets = {
+            // This code is cursed and I'm sorry.
+            let hasNotch = (UIApplication.shared.keyWindow?.safeAreaInsets.bottom) ?? 0 > 0
+            if !hasNotch {
+                return UIEdgeInsets.zero
+            }
+            switch UIApplication.shared.statusBarOrientation {
+            case .portrait, .portraitUpsideDown, .unknown, .landscapeRight:
+                // Note that adjustedContentInset is used because it seems to include the
+                // rounded corners of the device, whereas safeAreaInsets is not enough.
+                var result = collectionView.adjustedContentInset
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    result.bottom = 8.0
+                }
+                result.right = 0
+                return result
+            case .landscapeLeft:
+                // In landscape the horizontal line to indicate swipe direction makes the bottom inset
+                // too big. safeAreaInsets isn't right either. I don't think iOS exposes anything so
+                // I'm hardcoding this until a better idea comes along.
+                var result = collectionView.adjustedContentInset
+                result.bottom = 8.0
+                // In landscape left the scroll indicator is shifted way in, but its adjusted
+                // content inset is 0.
+                result.right = collectionView.safeAreaInsets.right
+                return result
+            @unknown default:
+                return collectionView.adjustedContentInset
+            }
+        }()
+        // If iOS had a scrollbar, `scrollbarHeight` is how tall it would be. The scroll
+        // indicator moves through an area of this height.
+        let scrollbarHeight = collectionView.frame.height - scrollbarInsets.top - scrollbarInsets.bottom
+        let rightInset = 20.0 + scrollbarInsets.right
+
+        // Set a minimum height for the handle. iOS has no API for this.
+        let minimumHandleHeight = UIDevice.current.userInterfaceIdiom == .pad ? 42.0 : 36.0
+
+        // How much of the content is visible?
+        let fractionVisible = visibleHeight / contentHeight
+
+        // Guess how tall the indicator is.
+        let indicatorHeight = max(minimumHandleHeight,
+                                  scrollbarHeight * fractionVisible)
+
+        // First we calculate what fraction (from 0 to 1) is the top of the visible area at. This can't move through
+        // the entire contentSize (except during overscroll, which we ignore). Reucing the denominator by visibleHeight
+        // ensures it's at 1.0 when you're scrolled all the way down.
+        let topFrac = collectionView.contentOffset.y / max(collectionView.contentOffset.y,
+                                                           collectionView.contentSize.height - visibleHeight)
+        // Next we figure out what the "range of motion" of the indicator is. It can only move through
+        // scrollbarHeight minus its minimum height.
+        let indicatorRangeOfMotion = scrollbarHeight - indicatorHeight
+
+        // Now it's easy to calculate the vertical offset of the *top* of the indicator within the scrollbar.
+        let indicatorOffsetInScrollbar = indicatorRangeOfMotion * topFrac
+
+        // Calculate the top of the scrollbar.
+        let scrollbarMinY = scrollbarInsets.top + currentOffset
+
+        // Finally, we can calculate the coordinate of the vertical center of the indicator.
+        let indicatorMidY = indicatorOffsetInScrollbar + indicatorHeight / 2.0 + scrollbarMinY
+
+        let center = CGPoint(
+            x: collectionView.bounds.width - rightInset - scrollFlag.bounds.width / 2.0,
+            y: indicatorMidY
+        )
+        return center
     }
 
     var previousAdjustedContentInset: UIEdgeInsets = UIEdgeInsets()
@@ -226,6 +388,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
                     scrollView.contentSize.height - scrollView.bounds.height + scrollView.adjustedContentInset.bottom
             }
         }
+
+        updateScrollFlag()
     }
 
     override public func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
@@ -491,7 +655,13 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
         layout.sectionInsetReference = .fromSafeArea
         layout.minimumInteritemSpacing = kInterItemSpacing
         layout.minimumLineSpacing = kInterItemSpacing
-        layout.sectionHeadersPinToVisibleBounds = true
+        if #available(iOS 12, *) {
+            // Modern design
+            layout.sectionHeadersPinToVisibleBounds = false
+        } else {
+            // Legacy design, which I can't test easily.
+            layout.sectionHeadersPinToVisibleBounds = true
+        }
 
         return layout
     }
