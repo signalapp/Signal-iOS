@@ -905,13 +905,13 @@
 "CONFIRM_DELETE_DATA_TEXT" = "Questo ripristinerà l'applicazione eliminando i tuoi messaggi. L'app si chiuderà una volta completato questo processo.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TITLE" = "Sei sicuro di voler eliminare tutti i dati?";
+"CONFIRM_DELETE_DATA_TITLE" = "Vuoi davvero eliminare tutti i dati?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Ciò resetterà l'applicazione eliminando tutti i tuoi messaggi da questo dispositivo. Puoi sempre associarlo di nuovo al tuo telefono, ma ciò non ripristinerà i messaggi eliminati. L'app si chiuderà al termine di questo processo.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Questo resetterà l'applicazione eliminando tutti i tuoi messaggi da questo dispositivo. Puoi associarlo di nuovo al tuo telefono, ma i messaggi eliminati non saranno ripristinati. L'app si chiuderà al termine di questo processo.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Sei sicuro di voler eliminare tutti i dati?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Vuoi davvero eliminare tutti i dati?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Non sarai più in grado di inviare o ricevere messaggi in questo gruppo.";
@@ -1550,10 +1550,10 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Elimina account";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Questo cancellerà il tuo account Signal e ripristinerà l'applicazione. L'app si chiuderà al termine di questo processo.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Questo eliminerà il tuo account Signal e ripristinerà l'applicazione. L'app si chiuderà al termine di questo processo.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Sei sicuro di voler eliminare il tuo account?";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Vuoi davvero eliminare il tuo account?";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Prefisso telefonico internazionale";
@@ -2936,7 +2936,7 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Rimuovi la Storia di gruppo";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Confermi di voler eliminare la Storia \"%1$@\"?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Confermi di voler rimuovere la Storia \"%1$@\"?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Chi fa parte della chat di gruppo \"%1$@\" può vedere e rispondere a questa Storia. Puoi aggiornare l'iscrizione a questa chat all'interno del gruppo.";
@@ -3158,10 +3158,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Questi membri dovranno accettare un invito per unirsi di nuovo a questo gruppo e non riceveranno i messaggi del gruppo finché non accettano:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Questo membro non è in grado di unirsi ai Nuovi Gruppi e sarà rimosso dal gruppo:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Questo membro non può unirsi ai Nuovi Gruppi e sarà rimosso dal gruppo:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Questi membri non sono in grado di unirsi ai Nuovi Gruppi e saranno rimossi dal gruppo:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Questi membri non possono unirsi ai Nuovi Gruppi e saranno rimossi dal gruppo:";
 
 /* Title for the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Aggiorna a Nuovo Gruppo";
@@ -3458,13 +3458,13 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Anteprima link";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "La funzione di gestione dei contatti di sistema non è più disponibile su iPad. Per aggiungere le tue Amicizie di Signal ai sistemi del tuo dispositivo devi aprire Signal sul tuo telefono.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "La funzione di gestione dei contatti di sistema non è più supportata su iPad. Questo dispositivo continuerà a sincronizzare ogni cambiamento nella lista dei tuoi contatti dall'app di Signal sul tuo telefono.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
-"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Scopri di più";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Dispositivi associati";
@@ -3731,7 +3731,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Elimina e abbandona";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Abbandonerai questo gruppo e verrà eliminato da tutti i tuoi dispositivi.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Quando abbandonerai il gruppo, verrà eliminato da tutti i tuoi dispositivi.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Eliminare e abbandonare il gruppo?";
@@ -6275,10 +6275,10 @@
 "SMS_INVITE_BODY" = "Ti sto invitando a installare Signal! Ecco il lnk:";
 
 /* An error message generically indicating that something went wrong. */
-"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+"SOMETHING_WENT_WRONG_ERROR" = "Qualcosa è andato storto.";
 
 /* An error message generically indicating that something went wrong, and that the user should try again later. */
-"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Qualcosa è andato storto. Riprova più tardi.";
 
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "Suoni e notifiche";
@@ -6362,7 +6362,7 @@
 "STORIES_DELETE_STORY_ACTION" = "Elimina";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Vuoi eliminare questa Storia? Verrà rimossa anche per tutte le persone che l'hanno ricevuta.";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Vuoi eliminare questa Storia? Verrà eliminata anche per tutte le persone che l'hanno ricevuta.";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "Storia salvata";
@@ -6941,40 +6941,40 @@
 "USERNAME_PREFIX" = "@";
 
 /* The title of an action sheet button that will delete a user's username. */
-"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Elimina nome utente";
 
 /* A message asking the user if they are sure they want to remove their username. */
-"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "Questo rimuoverà il tuo nome utente, permettendo ad altri utenti di usarlo. Vuoi procedere comunque?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Grazie ai nomi utente, le altre persone possono inviarti dei messaggi senza sapere il tuo numero di telefono. I nomi utente vengono combinati con una serie di numeri per aumentare il livello di privacy. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Scegli il tuo nome utente";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "I nomi utente possono contenere solo caratteri a-z, numeri 0-9 e il carattere speciale _";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Questi numeri fanno in modo che il tuo nome utente rimanga privato, così da evitare di ricevere messaggi indesiderati. Ti consigliamo di condividere il tuo nome utente solamente con le persone e i gruppi con cui vuoi chattare. Se cambi il nome utente, riceverai una nuova serie di numeri.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Cosa rappresenta questo numero?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Questo nome utente non è disponibile.";
 
 /* The placeholder for a text field into which users can type their desired username. */
-"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Nome utente";
 
 /* The title for the username selection view. */
-"USERNAME_SELECTION_TITLE" = "Username";
+"USERNAME_SELECTION_TITLE" = "Nome utente";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "I nomi utente devono avere almeno %1$@ caratteri.";
 
 /* A header describing buttons that allow the user to copy or share their username. */
-"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copia o condividi un link per il nome utente";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Il nome del dispositivo non può essere vuoto";
@@ -7016,7 +7016,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Fai clic qui per far scomparire questo messaggio dopo che è stato visualizzato.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "I file multimediali visualizzabili una volta in uscita sono automaticamente rimossi dopo l'invio.";
+"VIEW_ONCE_OUTGOING_TOAST" = "I file multimediali in uscita visualizzabili una volta sono automaticamente rimossi dopo l'invio.";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "Visualizza foto";

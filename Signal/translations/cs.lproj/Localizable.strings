@@ -857,7 +857,7 @@
 "CHAT_COLOR_SETTINGS_AUTO" = "auto";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Smazat barvu";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Odstranit barvu";
 
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "Barva chatu";
@@ -905,13 +905,13 @@
 "CONFIRM_DELETE_DATA_TEXT" = "Tímto obnovíte aplikaci smazáním vašich zpráv. Aplikace se zavře, až bude proces hotový.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TITLE" = "Opravdu chcete odstranit veškerá přidružená data?";
+"CONFIRM_DELETE_DATA_TITLE" = "Opravdu chcete odstranit všechna data?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Tímto aplikaci resetujete. Budou smazány všechny vaše zprávy z tohoto zařízení. Aplikaci můžete znovu propojit se svým telefonem, tím ale neobnovíte smazané zprávy. Po dokončení se aplikace zavře.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Tím se aplikace resetuje a odstraní se všechny vaše zprávy z tohoto zařízení. Aplikaci můžete znovu propojit se svým telefonem, odstraněné zprávy se však neobnoví. Po dokončení tohoto procesu se aplikace zavře.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Opravdu chcete odstranit veškerá přidružená data?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Opravdu chcete odstranit všechna data?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Nebudete dále moci odesílat nebo přijímat zprávy v této skupině.";
@@ -1109,7 +1109,7 @@
 "CONTEXT_MENU_COPY" = "Kopírovat";
 
 /* Context menu button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "Smazat";
+"CONTEXT_MENU_DELETE_MESSAGE" = "Odstranit";
 
 /* Context menu button title */
 "CONTEXT_MENU_DETAILS" = "Info";
@@ -1133,10 +1133,10 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Zastavit";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Tento chat bude odstraněn z tohoto zařízení.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Tato konverzace bude z tohoto zařízení odstraněna.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Odstranit chat?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Odstranit konverzaci?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Ztišit tuto konverzaci na…";
@@ -1325,13 +1325,13 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Odebrat ze skupiny";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Odebrat %1$@ ze skupiny?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Odebrat uživatele %1$@ ze skupiny?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Odebrat administrátorská práva";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Odebrat %1$@ jako administrátora skupiny?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Odebrat %1$@ jako správce skupiny?";
 
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "hledat";
@@ -1550,19 +1550,19 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Smazat účet";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Tímto odstraníte váš Signal účet a obnovíte aplikaci. Aplikace se zavře, až bude proces hotový.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Tím se smaže váš účet Signal a aplikace se resetuje. Po dokončení tohoto procesu se aplikace zavře.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Opravdu chcete smazat váš účet?";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Opravdu chcete smazat svůj účet?";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Kód země";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Smazání účtu selhalo. Ujistěte se, že máte aktivní WiFi připojení nebo mobilní data a akci opakujte.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Účet se nepodařilo smazat. Ujistěte se, že máte zapnutou Wi-Fi nebo mobilní data, a pak to zkuste znovu.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Tímto smažete informace o účtu, profil a všechny vaše zprávy.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Tím se vymažou informace o vašem účtu, váš profil a všechny vaše zprávy.";
 
 /* Indicates the work we are doing while deleting the account */
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Odstraňování účtu…";
@@ -1583,7 +1583,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Telefonní číslo, které jste zadali, neodpovídá vašemu účtu.";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Odstranit všechny zprávy v chatu?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Smazat všechny zprávy v konverzaci?";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Smazat všechny zprávy";
@@ -2639,7 +2639,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ změnil nastavení skupiny tak, aby zprávy mohli odesílat pouze správci.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "K této skupině se nemůžete připojit prostřednictvím odkazu na skupinu, protože vás odstranil správce.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "K této skupině se nemůžete připojit přes odkazu na skupinu, protože vás odebral správce.";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Nelze přistoupit ke skupině";
@@ -2780,7 +2780,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Připojili jste se ke skupině pomocí skupinového odkazu.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ vás odebral(a) ze skupiny.";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ vás odebral/a ze skupiny.";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Byli jste odebráni ze skupiny.";
@@ -2888,7 +2888,7 @@
 "GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "Odebrali jste %1$@ ze skupiny.";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
-"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ odebral(a) %2$@.";
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ odebral/a %2$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Schválil jste požadavek na připojení ke skupině od %1$@.";
@@ -2933,10 +2933,10 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ do %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Odebrat skupinový příběh";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Odstranit skupinový příběh";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Opravdu chcete odebrat „%1$@“?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Opravdu chcete odstranit „%1$@“?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Tento příběh mohou zobrazit a odpovídat na něj členové skupiny „%1$@“. Členství v této konverzaci můžete aktualizovat ve skupině.";
@@ -2948,13 +2948,13 @@
 "GROUP_UPDATED" = "Skupina aktualizována.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "Obrázek skupiny byl odstraněn.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "Skupinová fotografie byla odstraněna.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Odstranili jste obrázek.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Odstranili jste fotografii.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ odstranil obrázek.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ odstranil/a fotografii.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED" = "Obrázek skupiny byl aktualizován.";
@@ -2972,13 +2972,13 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ upravil skupinu.";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "Popisek skupiny byl odstraněn";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "Popisek skupiny byl odstraněn.";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "Odstranili jste popoisek skupiny.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "Odstranili jste popisek skupiny.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ odstranil(a) popisek skupiny.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ odstranil/a popisek skupiny.";
 
 /* Message indicating that the group's description was changed. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED" = "Popisek skupiny byl změněn.";
@@ -2990,13 +2990,13 @@
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ změnil(a) popisek skupiny.";
 
 /* Message indicating that the group's name was removed. */
-"GROUP_UPDATED_NAME_REMOVED" = "Jméno skupiny bylo odstraněno.";
+"GROUP_UPDATED_NAME_REMOVED" = "Název skupiny byl odstraněn.";
 
 /* Message indicating that the group's name was removed by the local user. */
-"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Odstranili jste jméno skupiny.";
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Odstranili jste název skupiny.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ odstranil jméno skupiny.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ odstranil/a název skupiny.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Změnili jste jméno skupiny na \"%1$@\".";
@@ -3011,7 +3011,7 @@
 "GROUP_WAS_MIGRATED" = "Tato skupina byla aktualizována na novou verzi.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Nemohl jste být přidán do nové verze skupiny a byl jste z ní odebrán.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Nemohl/a jste být přidán/a do Nové skupiny a byl/a jste z ní odebrán/a.";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Nemohli jste být přidáni do nové skupiny a byli jste pozváni k připojení.";
@@ -3146,10 +3146,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Veškerá historie zpráv a média byla zachována z doby před aktualizací.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Tento člen byl odebrán ze skupiny a nebude se moci znovu připojit, dokud neupgraduje:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Tento člen byl odebrán ze skupiny a nebude se k ní moci znovu připojit, dokud neprovede aktualizaci:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Tito členové byli odebráni ze skupiny a nebudou se moci znovu připojit, dokud neupgradují:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Tito členové byli odebráni ze skupiny a nebudou se k ní moci znovu připojit, dokud neprovedou aktualizaci:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Tento člen bude muset přijmout pozvánku, aby se znovu připojil k této skupině, a dokud ji nepřijme, nebude dostávat skupinové zprávy:";
@@ -3158,10 +3158,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Tito členové budou muset přijmout pozvánku, aby se znovu připojili k této skupině, a dokud ji nepřijmou, nebudou dostávat skupinové zprávy:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Tento člen není způsobilý pro připojení k nové verzi skupiny a bude ze skupiny odstraněn:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Tento člen se nemůže připojit k Novým skupinám a bude ze skupiny odebrán:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Tito členové nejsou způsobilí pro připojení k nové verzi skupin a budou odstraněni ze skupiny:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Tito členové se nemůžou připojit k Novým skupinám a budou ze skupiny odebráni:";
 
 /* Title for the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Aktualizovat na novou skupinu";
@@ -3458,13 +3458,13 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Náhled odkazu";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Správa systémových kontaktů již není na iPadu k dispozici. Pokud chcete do svých systémových kontaktů přidat spojení Signal, otevřete v telefonu aplikaci Signal.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Správa systémových kontaktů již není na iPadu podporována. Zařízení bude nadále synchronizovat všechny změny v seznamu kontaktů z aplikace Signal v telefonu.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
-"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Více informací";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Připojená zařízení";
@@ -3557,19 +3557,19 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Smazat pro všechny";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Tato zpráva bude smazána pro všechny členy konverzace, pokud mají nainstalovanou poslední verzi aplikace Signal. Členové konverzace uvidí, že jste zprávu smazali.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Tato zpráva bude smazána pro všechny v konverzaci, pokud používají poslední verzi aplikace Signal. Všichni budou moci vidět, že jste zprávu odstranili.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Pro koho chcete smazat tuto zprávu?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Pro koho chcete tuto zprávu odstranit?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Smazat pro mne";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Odstranit pro mne";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Smazat tuto zprávu";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Odstranit tuto zprávu";
 
 /* accessibility label */
-"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Smazat označené zprávy?";
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Odstranit označené zprávy";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Více informací";
@@ -3701,7 +3701,7 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Blokovat";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Zablokovat a smazat";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Zablokovat a odstranit";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Nahlásit spam a zablokovat";
@@ -3719,22 +3719,22 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Zablokovat a opustit %1$@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Smazat";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Odstranit";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Tato konverzace bude smazána ze všech vašich zařízení.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Tato konverzace bude odstraněna ze všech vašich zařízení.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Odstranit chat?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Odstranit konverzaci?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Smazat a odejít";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Odstranit a opustit";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Opustíte tuto skupinu a bude smazána ze všech vašich zařízení.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Tuto skupinu opustíte a bude odstraněna ze všech vašich zařízení.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Smazat a opustit skupinu?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Odstranit a opustit skupinu?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
 "MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Požadavky důkladně ověřte. Signal našel jiný kontakt se stejným jménem.";
@@ -3779,7 +3779,7 @@
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "Pokračovat";
 
 /* incoming message request button text which deletes a conversation */
-"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Smazat";
+"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Odstranit";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Pokračovat v konverzaci s %1$@ a sdílet s nimi vaše jméno a fotografii?";
@@ -3899,7 +3899,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Nemůžete připojit žádné další zařízení.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Dosáhl(a) jste maximálního počtu zařízení, které můžete připojit k vašemu účtu. Prosím odstraňte některé ze zařízení a zkuste to znovu.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Dosáhli jste maximálního počtu zařízení, které můžete aktuálně propojit se svým účtem. Odeberte zařízení a zkuste to znovu.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Ztlumeno";
@@ -4877,7 +4877,7 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Tato osoba již nebude moci tento příběh zobrazit.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Odstranit %1$@?";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Odebrat %1$@?";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Pokračovat";
@@ -5183,7 +5183,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Telefonní číslo, které se snažíte zaregistrovat, je již zaregistrováno na jiném serveru. Zrušte jeho registraci z tohoto serveru a zkuste to znovu.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
-"REMOVE_PREVIEW" = "Odstranit náhled";
+"REMOVE_PREVIEW" = "Zrušit náhled";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Vyberte nového administrátora";
@@ -5288,10 +5288,10 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Nepodařilo se získat sdružovací kód";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Pokud chcete toto zařízení propojit s jiným účtem, musíte zařízení nejprve resetovat. Opravdu chcete odstranit veškerou historii (zprávy, přílohy, hovory atd.)? Tuto akci nelze vrátit zpět.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Pokud chcete toto zařízení propojit s jiným účtem, musíte jej nejprve resetovat. Opravdu chcete odstranit veškerou historii (zprávy, přílohy, hovory atd.)? Tuto akci nelze vrátit zpět.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Smazat vše";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Odstranit vše";
 
 /* Title for error alert indicating that re-linking failed because the account did not match. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Účet nesouhlasí";
@@ -5591,7 +5591,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Opravdu chcete smazat veškerou historii (zprávy, přílohy, volání atd.)? Tuto akci nelze vzít zpět.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Smazat vše";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Odstranit vše";
 
 /* Label for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES" = "Mizející zprávy";
@@ -6275,10 +6275,10 @@
 "SMS_INVITE_BODY" = "Zvu tě do aplikace Signal! Tady je odkaz:";
 
 /* An error message generically indicating that something went wrong. */
-"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+"SOMETHING_WENT_WRONG_ERROR" = "Něco se pokazilo.";
 
 /* An error message generically indicating that something went wrong, and that the user should try again later. */
-"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Něco se pokazilo. Zkuste to prosím znovu později.";
 
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "Zvuky & oznámení";
@@ -6356,10 +6356,10 @@
 "STORIES_COPY_REPLY_ACTION" = "Kopírovat";
 
 /* Context menu action to delete the selected story reply */
-"STORIES_DELETE_REPLY_ACTION" = "Smazat";
+"STORIES_DELETE_REPLY_ACTION" = "Odstranit";
 
 /* Context menu action to delete the selected story */
-"STORIES_DELETE_STORY_ACTION" = "Smazat";
+"STORIES_DELETE_STORY_ACTION" = "Odstranit";
 
 /* Title asking the user if they are sure they want to delete their story */
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Smazat tento příběh? Smaže se také pro všechny, kdo jej obdrželi.";
@@ -6431,7 +6431,7 @@
 "STORIES_SETTINGS_STORIES_HEADER" = "Příběhy";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Příběhy již nebudete moci sdílet ani zobrazovat. Aktualizace příběhů, které jste nedávno sdíleli, budou také odstraněny.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Příběhy již nebudete moci sdílet ani zobrazovat. Smazány budou také aktualizace příběhů, které jste nedávno sdíleli.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Vypnout a smazat příběhy";
@@ -6689,7 +6689,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Potvrdit";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Už vám nebude účtován žádný poplatek. Na konci zúčtovacího období bude váš odznak z vašeho profilu odstraněn.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Nebude vám znovu účtován poplatek. Na konci zúčtovacího období bude odznak z vašeho profilu odstraněn.";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Potvrdit zrušení?";
@@ -6764,7 +6764,7 @@
 "TAP_REPLACE_EMOJI" = "Klepněte pro nahrazení smajlíka";
 
 /* text indicating the message was remotely deleted */
-"THIS_MESSAGE_WAS_DELETED" = "Tato zpráva byla smazána.";
+"THIS_MESSAGE_WAS_DELETED" = "Tato zpráva byla odstraněna.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Člen %1$@, %2$@ a %3$lu dalších skupin";
@@ -6830,7 +6830,7 @@
 "TXT_CANCEL_TITLE" = "Zrušit";
 
 /* Label for the delete button in an alert or action sheet. */
-"TXT_DELETE_TITLE" = "Smazat";
+"TXT_DELETE_TITLE" = "Odstranit";
 
 /* Label for the unarchive button for conversations list view */
 "UNARCHIVE_ACTION" = "Zrušit archivaci";
@@ -6941,40 +6941,40 @@
 "USERNAME_PREFIX" = "@";
 
 /* The title of an action sheet button that will delete a user's username. */
-"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Smazat uživatelské jméno";
 
 /* A message asking the user if they are sure they want to remove their username. */
-"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "Tímto smažete své uživatelské jméno a umožníte ostatním uživatelům, aby si ho přivlastnili. Jste si tím jisti?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Uživatelská jména umožňují ostatním posílat vám zprávy, aniž by potřebovali znát vaše telefonní číslo. Jsou spárována se sadou číslic, které pomáhá udržet vaši adresu v soukromí. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Zvolte si své uživatelské jméno";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Uživatelská jména mohou obsahovat pouze znaky a-z, 0-9 a _.";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Tyto číslice pomáhají udržet vaše uživatelské jméno v soukromí, abyste se vyhnuli nechtěným zprávám. Uživatelské jméno sdílejte pouze s lidmi a skupinami, se kterými chcete konverzovat. Pokud uživatelské jméno změníte, obdržíte novou sadu číslic.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Co je to za číslo?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Toto uživatelské jméno není k dispozici.";
 
 /* The placeholder for a text field into which users can type their desired username. */
-"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Uživatelské jméno";
 
 /* The title for the username selection view. */
-"USERNAME_SELECTION_TITLE" = "Username";
+"USERNAME_SELECTION_TITLE" = "Uživatelské jméno";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Uživatelské jméno musí začínat alespoň %1$@ znaky.";
 
 /* A header describing buttons that allow the user to copy or share their username. */
-"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Kopírovat nebo sdílet odkaz na uživatelské jméno";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Jméno zařízení nemůže být prázdné";
@@ -7016,7 +7016,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Klepněte zde, aby tato zpráva zmizela poté, co bude zobrazena.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Odchozí soubory médií pro jednorázové zobrazení jsou po odeslání automaticky odstraněny.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Odchozí multimediální soubory pro jednorázové zobrazení jsou po odeslání automaticky odstraněny.";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "Zobrazit fotografii";
@@ -7124,7 +7124,7 @@
 "YOU" = "Vy";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "Smazali jste tuto zprávu.";
+"YOU_DELETED_THIS_MESSAGE" = "Tuto zprávu jste odstranili.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Zakázal(a) jste mizející zprávy.";

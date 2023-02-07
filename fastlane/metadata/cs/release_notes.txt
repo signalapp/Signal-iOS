@@ -1,2 +1,2 @@
-• Even though the “Find by Phone Number” feature is now more than 4x faster, you can still take your time when you decide to start a new conversation.
-• We fixed a few bugs, including one that sometimes caused the text input field to be displayed incorrectly when replying to a story.
+• I když je nyní funkce „Najít podle telefonního čísla“ více než čtyřikrát rychlejší, pořád si můžete dát na čas, kdy se rozhodnete zahájit novou konverzaci.
+• Opravili jsme několik chyb, včetně té, která způsobovala, že se pole pro vkládání textu reakce na příběh zobrazovalo nesprávně.

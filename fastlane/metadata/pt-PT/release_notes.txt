@@ -1,2 +1,2 @@
-• Even though the “Find by Phone Number” feature is now more than 4x faster, you can still take your time when you decide to start a new conversation.
-• We fixed a few bugs, including one that sometimes caused the text input field to be displayed incorrectly when replying to a story.
+• Ainda que a funcionalidade "Encontrar pelo número de telemóvel" seja agora 4x mais rápida, não é preciso ter pressa para começar uma nova conversa.
+• Corrigimos alguns bugs, incluindo um que às vezes fazia o campo de entrada de texto ser exibido incorretamente ao responder a uma história.

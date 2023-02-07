@@ -281,7 +281,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "চিত্র বিশ্লেষণ করতে অক্ষম।";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "চিত্র থেকে মেটাডেটা সরাতে অক্ষম।";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "ছবি থেকে মেটাডেটা সরাতে সক্ষম নয়।";
 
 /* Attachment error message for image attachments which could not be resized */
 "ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "চিত্রের আকার পরিবর্তন করতে অক্ষম।";
@@ -857,7 +857,7 @@
 "CHAT_COLOR_SETTINGS_AUTO" = "স্বয়ংক্রিয়";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "রঙ মুছুন";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "রঙ মুছে ফেলুন";
 
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "চ্যাটের রঙ";
@@ -905,13 +905,13 @@
 "CONFIRM_DELETE_DATA_TEXT" = "এটি আপনার মেসেজগুলি মুছে দিয়ে অ্যাপ্লিকেশনটি রিসেট করবে। এই প্রক্রিয়াটি সম্পন্ন হওয়ার পর অ্যাপটি বন্ধ হবে।";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TITLE" = "আপনি কি সমস্ত ডেটা মুছে ফেলতে চাওয়ার ব্যাপারে নিশ্চিত?";
+"CONFIRM_DELETE_DATA_TITLE" = "আপনি কি সকল ডেটা মুছে ফেলতে চাওয়ার ব্যাপারে নিশ্চিত?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "এটি এই ডিভাইস থেকে আপনার সমস্ত বার্তাকে মুছে ফেলে অ্যাপ্লিকেশনটিকে পুনরায় সেট করবে। আপনি সর্বদা আপনার ফোনের সাথে আবার যুক্ত করতে পারবেন, তবে এটি মোছা বার্তাগুলি পুনরুদ্ধার করবে না। এই প্রক্রিয়াটি সম্পূর্ণ হওয়ার পরে অ্যাপটি বন্ধ হয়ে যাবে।";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "এটি এই ডিভাইস থেকে আপনার সকল বার্তা মুছে ফেলে অ্যাপ্লিকেশনটিকে পুনরায় সেট করবে। আপনি সর্বদা আপনার ফোনের সাথে আবার লিংক করতে পারবেন, তবে এটি মুছে ফেলা বার্তাগুলো পুনরুদ্ধার করবে না। এই প্রক্রিয়াটি সম্পন্ন হওয়ার পরে অ্যাপটি বন্ধ হয়ে যাবে।";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "আপনি কি নিশ্চিতভাবে সব তথ্য মুছে ফেলতে চান?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "আপনি কি সকল ডেটা মুছে ফেলতে চাওয়ার ব্যাপারে নিশ্চিত?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "আপনি আর এই গ্রুপে বার্তা প্রেরণ বা গ্রহণ করতে সক্ষম হবেন না।";
@@ -1109,7 +1109,7 @@
 "CONTEXT_MENU_COPY" = "কপি করুন";
 
 /* Context menu button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "মুছুন";
+"CONTEXT_MENU_DELETE_MESSAGE" = "মুছে ফেলুন";
 
 /* Context menu button title */
 "CONTEXT_MENU_DETAILS" = "তথ্য";
@@ -1136,7 +1136,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "এই চ্যাটটি এই ডিভাইস থেকে মুছে ফেলা হবে।";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "চ্যাট মুছবেন?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "চ্যাট মুছে ফেলবেন?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "এই চ্যাটটি মিউট করুন…";
@@ -1322,13 +1322,13 @@
 "CONVERSATION_SETTINGS_PERMISSIONS" = "অনুমতি";
 
 /* Label for 'remove from group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "গ্রুপ থেকে সরান";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "গ্রুপ থেকে সরিয়ে ফেলুন";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%1$@-কে গ্রুপ থেকে সরাবেন?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%1$@-কে গ্রুপ থেকে সরিয়ে ফেলবেন?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "অ্যাডমিন থেকে সরান";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "অ্যাডমিন থেকে সরিয়ে ফেলুন";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@-কে গ্রুপের অ্যাডমিন থেকে সরাবেন?";
@@ -1373,7 +1373,7 @@
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "আপনি পাঠিয়েছেন:";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "সমস্ত মুছুন";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "সবগুলো মুছে ফেলুন";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "আরও বার্তা লোড হচ্ছে…";
@@ -1547,7 +1547,7 @@
 "DECLINED_VIDEO_CALL" = "আপনি একটি ভিডিও কল প্রত্যাখ্যান করেছেন";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "অ্যাকাউন্ট মুছুন";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "অ্যাকাউন্ট মুছে ফেলুন";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "এটি আপনার Signal অ্যাকাউন্ট মুছে দেবে ও অ্যাপ্লিকেশনটি রিসেট করবে। এই প্রক্রিয়াটি সম্পন্ন হওয়ার পর অ্যাপটি বন্ধ হয়ে যাবে।";
@@ -1562,7 +1562,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "অ্যাকাউন্ট ‍মুছতে ব্যর্থ হয়েছে। Wi-Fi বা মোবাইল ডেটা যে চালু করা আছে তা নিশ্চিত করার পর আবার চেষ্টা করুন।";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "এর ফলে আপনার অ্যাকাউন্ট তথ্য, প্রোফাইল ও আপনার সমস্ত মেসেজ মুছে যাবে।";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "এর ফলে আপনার অ্যাকাউন্টের তথ্য, প্রোফাইল ও আপনার সকল বার্তা মুছে যাবে।";
 
 /* Indicates the work we are doing while deleting the account */
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "অ্যাকাউন্ট মুছে ফেলা হচ্ছে…";
@@ -1577,16 +1577,16 @@
 "DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "আপনার Signal নম্বর নিশ্চিত করুন";
 
 /* Title for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "অ্যাকাউন্ট মুছুন";
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "অ্যাকাউন্ট মুছে ফেলুন";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "আপনার লেখা ফোন নম্বরটি আপনার অ্যাকাউন্টের সাথে মিলছে না।";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "চ্যাটটিতে থাকা সমস্ত মেসেজ মুছবেন?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "চ্যাট-এ থাকা সকল বার্তা মুছবেন?";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "সমস্ত বার্তা মুছুন";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "সকল বার্তা মুছে ফেলুন";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "আপনি এই ডিভাইসে Signal থেকে লগ আউট হয়ে গিয়েছেন।";
@@ -2639,7 +2639,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "কেবলমাত্র অ্যাডমিনদের মেসেজ পাঠানোর অনুমতি দিতে %1$@ গ্রুপের সেটিংস পরিবর্তন করেছেন।";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "আপনি এই লিংকের মাধ্যমে গ্ৰুপে যোগ দিতে পারবেন না কারণ একজন অ্যাডমিন আপনাকে বাদ দিয়েছেন।";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "আপনি এই লিংকের মাধ্যমে গ্ৰুপে যোগ দিতে পারবেন না, কারণ একজন অ্যাডমিন আপনাকে সরিয়ে দিয়েছেন।";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "গ্রুপে যোগ দেওয়া যাবে না";
@@ -2780,7 +2780,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "আপনি গ্রুপ লিঙ্কের মাধ্যমে গ্রুপে যোগ দিয়েছেন।";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ আপনাকে সরিয়েছেন।";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ আপনাকে সরিয়ে দিয়েছেন।";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "আপনাকে গ্রুপ থেকে সরানো হয়েছে।";
@@ -2885,10 +2885,10 @@
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%1$@ গ্রুপ ছেড়ে চলে গেছেন।";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "আপনি %1$@-কে সরিয়েছেন।";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "আপনি %1$@-কে সরিয়ে দিয়েছেন।";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
-"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ %2$@-কে সরিয়েছেন।";
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ %2$@-কে সরিয়ে দিয়েছেন।";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "আপনি গ্রুপটিতে যোগদান করার জন্য %1$@-এর অনুরোধ অনুমোদন করেছেন।";
@@ -2933,10 +2933,10 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ থেকে %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "গ্ৰুপ স্টোরি মুছুন";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "গ্ৰুপ স্টোরি সরিয়ে ফেলুন";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "আপনি কি \"%1$@\" মুছে ফেলার ব্যাপারে নিশ্চিত?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "আপনি কি \"%1$@\" সরিয়ে ফেলার ব্যাপারে নিশ্চিত?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "\"%1$@\" গ্রুপ চ্যাটের সদস্যরা এই স্টোরিটি দেখতে এবং এর উত্তর দিতে পারবেন৷ আপনি গ্রুপে এই চ্যাটের সদস্যতা আপডেট করতে পারবেন।";
@@ -2948,13 +2948,13 @@
 "GROUP_UPDATED" = "গ্রুপ আপডেট হয়েছে।";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "গ্রুপ ফটোটি সরানো হয়েছে।";
+"GROUP_UPDATED_AVATAR_REMOVED" = "গ্রুপ ছবিটি সরানো হয়েছে।";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "আপনি গ্রুপ ফটোটি সরিয়েছেন।";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "আপনি গ্রুপ ছবিটি সরিয়ে দিয়েছেন।";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ ফটোটি সরিয়েছেন।";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ ছবিটি সরিয়ে দিয়েছেন।";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED" = "গ্রুপ ফটোটি আপডেট করা হয়েছে।";
@@ -2972,13 +2972,13 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ গ্রুপটি আপডেট করেছেন।";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "গ্রুপের বিবরণ সরানো হয়েছে।";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "গ্রুপের বিবরণ সরিয়ে ফেলা হয়েছে।";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "আপনি গ্রুপের বিবরণ মুছে দিয়েছেন।";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "আপনি গ্রুপের বিবরণ সরিয়ে ফেলেছেন।";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ গ্রুপের বিবরণ সরিয়েছেন।";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ গ্রুপের বিবরণ সরিয়ে ফেলেছেন।";
 
 /* Message indicating that the group's description was changed. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED" = "গ্রুপের বিবরণ পরিবর্তন করা হয়েছে।";
@@ -2993,10 +2993,10 @@
 "GROUP_UPDATED_NAME_REMOVED" = "গ্রুপের নাম সরানো হয়েছে।";
 
 /* Message indicating that the group's name was removed by the local user. */
-"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "আপনি গ্রুপের নাম সরিয়েছেন।";
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "আপনি গ্রুপের নাম সরিয়ে ফেলেছেন।";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ গ্রুপের নাম সরিয়েছেন।";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ গ্রুপের নাম সরিয়ে দিয়েছেন।";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "আপনি গ্রুপের নামটি পরিবর্তন করে \"%1$@\" রেখেছেন।";
@@ -3458,13 +3458,13 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "লিঙ্ক পূর্বরূপ";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "iPad-এ আর সিস্টেম কন্টাক্ট পরিচালনা করার সুবিধাটি নেই। আপনার সিস্টেম কন্টাক্টে Signal কানেকশন যোগ করতে আপনার ফোনে Signal খুলুন।";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "iPad-এ আর সিস্টেম কন্টাক্ট পরিচালনা করা যায় না। এই ডিভাইসটি Signal থেকে আপনার কন্টাক্ট লিস্টের যেকোনো পরিবর্তন আপনার ফোনের সাথে সিঙ্ক করতে থাকবে।";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
-"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "আরো জানুন";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "সংযুক্ত ডিভাইসগুলি";
@@ -3554,22 +3554,22 @@
 "MESSAGE_ACTION_COPY_TEXT" = "বার্তার লেখা অনুলিপি করুন";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "সবার জন্য মুছুন";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "সবার জন্য মুছে ফেলুন";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "এই মেসেজটি চ্যাটে থাকা সকলের জন্য মুছে যাবে যদি তারা Signal-এর সর্বশেষ সংস্করণটি ব্যবহার করেন। আপনি যে একটি মেসেজ মুছে ফেলেছেন তা তারা দেখতে পাবেন।";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "এই বার্তাটি চ্যাটে থাকা সকলের জন্য মুছে যাবে, যদি তারা Signal-এর সর্বশেষ সংস্করণটি ব্যবহার করেন। আপনি যে একটি বার্তা মুছে ফেলেছেন তা তারা দেখতে পাবেন।";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "আপনি কার জন্য মেসেজটি মুছতে চান?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "আপনি কার জন্য বার্তাটি মুছে ফেলতে চান?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "আমার জন্য মুছুন";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "আমার জন্য মুছে ফেলুন";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "এই বার্তাটি মুছে দিন";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "এই বার্তাটি মুছে ফেলুন";
 
 /* accessibility label */
-"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "নির্বাচিত মেসেজ মুছুন";
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "নির্বাচিত বার্তাগুলো মুছে ফেলুন";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "আরও তথ্য";
@@ -3701,7 +3701,7 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "ব্লক করুন";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "ব্লক করুন এবং মুছুন";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "ব্লক করুন এবং মুছে ফেলুন";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "স্প্যামের রিপোর্ট করুন ও ব্লক করুন";
@@ -3719,19 +3719,19 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%1$@ ব্লক করবেন এবং ছেড়ে চলে যাবেন?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "মুছুন";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "মুছে ফেলুন";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "এই চ্যাটটি আপনার সমস্ত ডিভাইস থেকে মুছে ফেলা হবে।";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "এই চ্যাটটি আপনার সকল ডিভাইস থেকে মুছে ফেলা হবে।";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "চ্যাট মুছবেন?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "চ্যাট মুছে ফেলবেন?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "মুছুন এবং ছেড়ে চলে যান";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "মুছে ফেলুন এবং ছেড়ে চলে যান";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "আপনি এই গ্রুপটি ছেড়ে চলে যাবেন এবং এটি আপনার সমস্ত ডিভাইস থেকে মুছে ফেলা হবে।";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "আপনি এই গ্রুপটি ছেড়ে চলে যাবেন এবং এটি আপনার সকল ডিভাইস থেকে মুছে ফেলা হবে।";
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "গ্রুপ মুছবেন এবং ছেড়ে চলে যাবেন?";
@@ -3779,7 +3779,7 @@
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "চালিয়ে যান";
 
 /* incoming message request button text which deletes a conversation */
-"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "মুছে দিন";
+"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "মুছে ফেলুন";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "%1$@-এর সাথে চ্যাট চালিয়ে যাবেন এবং আপনার নাম ও ফটো তাদের সাথে শেয়ার করবেন?";
@@ -3899,7 +3899,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "আপনি আর কোনও ডিভাইস লিঙ্ক করতে পারবেন না।";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "আপনি বর্তমানে আপনার অ্যাকাউন্টের সাথে লিঙ্ক করতে পারেন এমন সবগুলো ডিভাইস যোগ করে ফেলেছেন। দয়া করে একটি ডিভাইস বাদ দিন এবং আবার চেষ্টা করুন।";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "আপনি বর্তমানে আপনার অ্যাকাউন্টের সাথে লিংক করতে পারেন এমন সবগুলো ডিভাইস যোগ করে ফেলেছেন। অনুগ্রহ করে একটি ডিভাইস বাদ দিন এবং আবার চেষ্টা করুন।";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "মিউট করা হয়েছে";
@@ -4868,16 +4868,16 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "কাস্টম স্টোরি মুছে ফেলুন";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "আপনি কি \"%1$@\" মুছতে চান? এই স্টোরিতে শেয়ার করা আপডেটগুলোও মুছে ফেলা হবে৷";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "আপনি কি \"%1$@\" মুছে ফেলতে চান? এই স্টোরিতে শেয়ার করা আপডেটগুলোও মুছে ফেলা হবে৷";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "সরান";
+"PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "সরিয়ে ফেলুন";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "এই ব্যক্তি আর এই স্টোরিটি দেখতে পারবেন না।";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "%1$@ মুছবেন?";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "%1$@ সরিয়ে ফেলবেন?";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "এগিয়ে যান";
@@ -5288,10 +5288,10 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "সংযুক্তিকরণ কোড আনতে অক্ষম";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "ডিভাইসটিকে ভিন্ন একটি অ্যাকাউন্টের সাথে লিংক করতে, আপনাকে প্রথমে ডিভাইসটি রিসেট করতে হবে। আপনি কি সব ইতিহাস (ম্যাসেজ, সংযুক্তি, কল ইত্যাদি) মুছে ফেলার ব্যাপারে নিশ্চিত? এটি আর আগের অবস্থায় ফিরিয়ে নেওয়া যাবে না।";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "ডিভাইসটিকে ভিন্ন একটি অ্যাকাউন্টের সাথে লিংক করতে, আপনাকে অবশ্যই প্রথমে ডিভাইসটি রিসেট করতে হবে। আপনি কি সব ইতিহাস (বার্তা, সংযুক্তি, কল ইত্যাদি) মুছে ফেলার ব্যাপারে নিশ্চিত? এটি আর আগের অবস্থায় ফিরিয়ে নেওয়া যাবে না।";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "সবকিছু মুছে দিন";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "সবকিছু মুছে ফেলুন";
 
 /* Title for error alert indicating that re-linking failed because the account did not match. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "অ্যাকাউন্টটি মিলছে না";
@@ -5570,7 +5570,7 @@
 "SETTINGS_DATA_TITLE" = "ডেটার ব্যবহার";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "অ্যাকাউন্ট মুছে দিন";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "অ্যাকাউন্ট মুছে ফেলুন";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "ট্রান্সফার করবেন না";
@@ -5585,13 +5585,13 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "ব্যালেন্স স্থানান্তর করুন";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "সকল ডেটা মুছে দিন";
+"SETTINGS_DELETE_DATA_BUTTON" = "সকল ডেটা মুছে ফেলুন";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "আপনি কি সকল ইতিহাস (ম্যাসেজ, সংযুক্তি সমুহ, কল সমূহ ইত্যাদি) মুছে ফেলার ব্যাপারে নিশ্চিত? এটি আর আগের অবস্থায় ফেরানো যাবে না।";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "আপনি কি সকল ইতিহাস (বার্তা, সংযুক্তি, কল ইত্যাদি) মুছে ফেলার ব্যাপারে নিশ্চিত? এটি আর আগের অবস্থায় ফেরানো যাবে না।";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "সবকিছু মুছে দিন";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "সবকিছু মুছে ফেলুন";
 
 /* Label for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES" = "অদৃশ্য হওয়া বার্তা";
@@ -5924,7 +5924,7 @@
 "SETTINGS_PAYMENTS_REMAINING_BALANCE" = "অবশিষ্ট ব্যালেন্স";
 
 /* Label for the 'remove payments details' button in the app settings. */
-"SETTINGS_PAYMENTS_REMOVE_BUTTON" = "সরান";
+"SETTINGS_PAYMENTS_REMOVE_BUTTON" = "সরিয়ে ফেলুন";
 
 /* Label for 'restore payments' button in the payments settings. */
 "SETTINGS_PAYMENTS_RESTORE_PAYMENTS_BUTTON" = "একটি পেমেন্ট অ্যাকাউন্ট পুনর্বহাল করুন";
@@ -6275,10 +6275,10 @@
 "SMS_INVITE_BODY" = "আমি আপনাকে Signal ইনস্টল করার জন্য আমন্ত্রণ করছি! লিঙ্কটি এখানে:";
 
 /* An error message generically indicating that something went wrong. */
-"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+"SOMETHING_WENT_WRONG_ERROR" = "কোনো একটি সমস্যা হয়েছে।";
 
 /* An error message generically indicating that something went wrong, and that the user should try again later. */
-"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "কোনো একটি সমস্যা হয়েছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন।";
 
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "সাউন্ড ও নোটিফিকেশন";
@@ -6356,10 +6356,10 @@
 "STORIES_COPY_REPLY_ACTION" = "কপি করুন";
 
 /* Context menu action to delete the selected story reply */
-"STORIES_DELETE_REPLY_ACTION" = "মুছুন";
+"STORIES_DELETE_REPLY_ACTION" = "মুছে ফেলুন";
 
 /* Context menu action to delete the selected story */
-"STORIES_DELETE_STORY_ACTION" = "মুছুন";
+"STORIES_DELETE_STORY_ACTION" = "মুছে ফেলুন";
 
 /* Title asking the user if they are sure they want to delete their story */
 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "স্টোরিটি মুছে ফেলবেন? যারা এটি পেয়েছেন তাদের জন্যও এটি মুছে যাবে৷";
@@ -6434,7 +6434,7 @@
 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "আপনি আর স্টোরি শেয়ার করতে বা দেখতে পারবেন না। আপনি সম্প্রতি শেয়ার করেছেন এমন স্টোরি আপডেটগুলোও মুছে ফেলা হবে৷";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "বন্ধ করুন এবং স্টোরি মুছুন";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "বন্ধ করুন এবং স্টোরি মুছে ফেলুন";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "স্টোরি বন্ধ করলে আপনি আর স্টোরি শেয়ার করতে কিংবা দেখতে পারবেন না।";
@@ -6764,7 +6764,7 @@
 "TAP_REPLACE_EMOJI" = "একটি ইমোজি রিপ্লেস করতে ট্যাপ করুন";
 
 /* text indicating the message was remotely deleted */
-"THIS_MESSAGE_WAS_DELETED" = "এই মেসেজটি মুছে ফেলা হয়েছে।";
+"THIS_MESSAGE_WAS_DELETED" = "এই বার্তাটি মুছে ফেলা হয়েছে।";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%1$@, %2$@, এবং %3$lu এর অতিরিক্ত সদস্য";
@@ -6830,7 +6830,7 @@
 "TXT_CANCEL_TITLE" = "বাতিল";
 
 /* Label for the delete button in an alert or action sheet. */
-"TXT_DELETE_TITLE" = "মুছে দিন";
+"TXT_DELETE_TITLE" = "মুছে ফেলুন";
 
 /* Label for the unarchive button for conversations list view */
 "UNARCHIVE_ACTION" = "আর্কাইভ মুক্ত";
@@ -6941,40 +6941,40 @@
 "USERNAME_PREFIX" = "@";
 
 /* The title of an action sheet button that will delete a user's username. */
-"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "ব্যবহারকারীর নাম মুছে ফেলুন";
 
 /* A message asking the user if they are sure they want to remove their username. */
-"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "এটি আপনার ব্যবহারকারীর নাম মুছে ফেলবে, যা অন্য ব্যবহারকারীদের এই নামটি ব্যবহার করতে দিবে। আপনি কি নিশ্চিত?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "ব্যবহারকারীর নাম ব্যবহার করলে আপনার ফোন নম্বর ছাড়াই অন্যরা আপনাকে বার্তা দিতে পারবেন। আপনার ঠিকানা গোপন রাখতে সাহায্য করার জন্য এগুলো কিছু সংখ্যার সেটের সাথে যুক্ত করা হয়। %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "আপনার ব্যবহারকারীর নামটি বেছে নিন";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "ব্যবহারকারীর নামে শুধুমাত্র এগুলো থাকতে পারবে: a-z, 0-9, এবং _।";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "এই সংখ্যাগুলো আপনার ব্যবহারকারীর নামটি গোপন রাখতে সাহায্য করে, যাতে আপনি অবাঞ্ছিত বার্তা এড়িয়ে যেতে পারেন। আপনি যে ব্যক্তি ও গ্রুপের সাথে চ্যাট করতে চান শুধুমাত্র তাদের সাথে আপনার ব্যবহারকারীর নামটি শেয়ার করুন। ব্যবহারকারীর নামটি পরিবর্তন করলে আপনি কিছু নতুন সংখ্যার সেট পাবেন।";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "এই নম্বরটি কী?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "এই ব্যবহারকারীর নামটি উপলভ্য নেই।";
 
 /* The placeholder for a text field into which users can type their desired username. */
-"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "ব্যবহারকারীর নাম";
 
 /* The title for the username selection view. */
-"USERNAME_SELECTION_TITLE" = "Username";
+"USERNAME_SELECTION_TITLE" = "ব্যবহারকারীর নাম";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "ব্যবহারকারীর নাম কমপক্ষে %1$@-টি অক্ষরের হতে হবে।";
 
 /* A header describing buttons that allow the user to copy or share their username. */
-"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "ব্যবহারকারীর নামের একটি লিংক কপি করুন অথবা শেয়ার করুন";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "ডিভাইস এর নাম খালি থাকা যাবেনা";
@@ -7016,7 +7016,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "এই বার্তাটি দেখার পরে অদৃশ্য হয়ে যাওয়ার জন্য এখানে আলতো চাপুন।";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "আউটগোয়িং একবার দেখার যোগ্য মিডিয়া ফাইলগুলি পাঠানোর পরে সেগুলি স্বয়ংক্রিয়ভাবে সরানো হবে।";
+"VIEW_ONCE_OUTGOING_TOAST" = "শুধু-একবার-দেখার-যোগ্য আউটগোয়িং মিডিয়া ফাইলগুলো পাঠানোর পরে স্বয়ংক্রিয়ভাবে সরিয়ে ফেলা হবে।";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "ছবি দেখুন";
@@ -7124,7 +7124,7 @@
 "YOU" = "আপনি";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "আপনি এই মেসেজটি মুছে দিয়েছেন।";
+"YOU_DELETED_THIS_MESSAGE" = "আপনি এই বার্তাটি মুছে দিয়েছেন।";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "আপনি অদৃশ্য হয়ে যাওয়া বার্তাগুলি অক্ষম করেছেন।";

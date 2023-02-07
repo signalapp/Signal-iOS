@@ -281,7 +281,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "ไม่สามารถอ่านภาพได้";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "ไม่สามารถลบข้อมูลเมทาดาทาจากภาพได้";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "ไม่สามารถลบข้อมูลเมตาจากภาพได้";
 
 /* Attachment error message for image attachments which could not be resized */
 "ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "ไม่สามารถปรับขนาดภาพได้";
@@ -905,13 +905,13 @@
 "CONFIRM_DELETE_DATA_TEXT" = "นี่จะเป็นการรีเซ็ตแอปพลิเคชันโดยการลบข้อความของคุณ แอปจะปิดลงหลังจากที่กระบวนการนี้เสร็จสิ้น";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TITLE" = "คุณแน่ใจหรือไม่ว่าคุณต้องการลบข้อมูลทั้งหมด?";
+"CONFIRM_DELETE_DATA_TITLE" = "คุณแน่ใจหรือไม่ว่าคุณต้องการลบข้อมูลทั้งหมด";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "นี่จะเป็นการรีเซ็ตแอปพลิเคชันโดยการลบข้อความทั้งหมดของคุณออกจากอุปกรณ์นี้ คุณสามารถเชื่อมโยงอีกครั้งจากโทรศัพท์ของคุณได้เสมอ แต่จะไม่สามารถกู้คืนข้อความที่ถูกลบ แอปจะปิดลงหลังจากที่กระบวนการนี้เสร็จสิ้น";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "คุณแน่ใจหรือไม่ว่าคุณต้องการลบข้อมูลทั้งหมด?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "คุณแน่ใจหรือไม่ว่าคุณต้องการลบข้อมูลทั้งหมด";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "คุณจะไม่สามารถส่งหรือรับข้อความในกลุ่มนี้ได้อีกต่อไป";
@@ -1133,10 +1133,10 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "หยุด";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "การสนทนานี้จะถูกลบออกจากอุปกรณ์นี้";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "ระบบจะลบแชทนี้ออกจากอุปกรณ์เครื่องนี้";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "ลบการสนทนาหรือไม่?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "ลบแชทใช่หรือไม่";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "ปิดเสียงแชทนี้เป็นเวลา…";
@@ -1325,13 +1325,13 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "ลบออกจากกลุ่ม";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "ลบ %1$@ ออกจากกลุ่มหรือไม่?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "ลบ %1$@ ออกจากกลุ่มใช่หรือไม่";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "ปลดจากผู้ดูแล";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "ปลดจากการเป็นผู้ดูแล";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "ปลด %1$@ จากการเป็นผู้ดูแลกลุ่มหรือไม่?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "ปลด %1$@ จากการเป็นผู้ดูแลกลุ่มหรือไม่";
 
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "ค้นหา";
@@ -1550,16 +1550,16 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "ลบบัญชี";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "การกระทำนี้จะลบบัญชี Signal ของคุณและล้างตั้งแอปใหม่ โดยแอปจะปิดลงหลังจากที่กระบวนการนี้เสร็จสิ้น";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "การกระทำนี้จะลบบัญชี Signal ของคุณและรีเซ็ตแอปใหม่ โดยแอปจะปิดลงหลังจากที่กระบวนการนี้เสร็จสิ้น";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "คุณแน่ใจหรือไม่ว่าต้องการลบบัญชีของคุณ";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "คุณแน่ใจหรือไม่ว่าต้องการลบบัญชี";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "รหัสประเทศ";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "การลบบัญชีล้มเหลว ตรวจสอบให้แน่ใจว่า Wi-Fi หรือข้อมูลมือถือได้เปิดไว้แล้วลองใหม่อีกครั้ง";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "ลบบัญชีไม่สำเร็จ ตรวจสอบให้แน่ใจว่าเปิด Wi-Fi หรืออินเทอร์เน็ตมือถือไว้แล้ว และลองใหม่อีกครั้ง";
 
 /* Description for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "การกระทำนี้จะลบข้อมูลบัญชีผู้ใช้ โปรไฟล์ และข้อความของคุณทั้งหมด";
@@ -1583,7 +1583,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "หมายเลขโทรศัพท์ที่คุณป้อนไม่ตรงกับหมายเลขในบัญชีคุณ";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "ลบข้อความทั้งหมดในแชตนี้หรือไม่?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "ลบข้อความทั้งหมดในแชทนี้หรือไม่";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "ลบข้อความทั้งหมด";
@@ -2639,7 +2639,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ เปลี่ยนการตั้งค่ากลุ่มเพื่ออนุญาตให้ผู้ดูแลเท่านั้นที่ส่งข้อความได้";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "คุณเข้าร่วมกลุ่มนี้ด้วยลิงก์กลุ่มนี้ไม่ได้เพราะผู้ดูแลลบคุณออกไปแล้ว";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "คุณเข้าร่วมกลุ่มนี้ด้วยลิงก์กลุ่มไม่ได้เพราะผู้ดูแลลบคุณออกไปแล้ว";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "ไม่สามารถเข้าร่วมกลุ่ม";
@@ -2780,7 +2780,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "คุณได้เข้าร่วมกลุ่มผ่านลิงก์กลุ่ม";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ ได้ลบคุณออก";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ ลบคุณออก";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "คุณถูกลบออกจากกลุ่ม";
@@ -2885,10 +2885,10 @@
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%1$@ ออกจากกลุ่ม";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "คุณได้ลบ %1$@ ออก";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "คุณลบ %1$@ ออก";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
-"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ ได้ลบ %2$@ ออก";
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ ลบ %2$@ ออก";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "คุณได้อนุมัติคำขอเข้ากลุ่มของ %1$@";
@@ -2951,10 +2951,10 @@
 "GROUP_UPDATED_AVATAR_REMOVED" = "รูปของกลุ่มถูกลบแล้ว";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "คุณได้ลบรูป";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "คุณลบรูป";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ ได้ลบรูป";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ ลบรูป";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED" = "รูปของกลุ่มถูกเปลี่ยนแล้ว";
@@ -2993,10 +2993,10 @@
 "GROUP_UPDATED_NAME_REMOVED" = "ชื่อกลุ่มถูกลบ";
 
 /* Message indicating that the group's name was removed by the local user. */
-"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "คุณได้ลบชื่อกลุ่ม";
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "คุณลบชื่อกลุ่ม";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ ได้ลบชื่อกลุ่ม";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ ลบชื่อกลุ่ม";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "คุณเปลี่ยนชื่อกลุ่มเป็น %1$@";
@@ -3011,7 +3011,7 @@
 "GROUP_WAS_MIGRATED" = "กลุ่มนี้ได้ปรับรุ่นเป็นกลุ่มแบบใหม่แล้ว";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "คุณไม่สามารถถูกเพิ่มไปยังกลุ่มแบบใหม่ได้และได้ถูกลบออกจากกลุ่ม";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "คุณเข้ากลุ่มแบบใหม่ไม่ได้และได้ถูกลบออกจากกลุ่มแล้ว";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "คุณไม่สามารถถูกเพิ่มไปยังกลุ่มแบบใหม่ได้และได้ถูกเชิญให้เข้าร่วม";
@@ -3146,10 +3146,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "ประวัติการส่งข้อความและสื่อทั้งหมดได้ถูกบันทึกไว้ก่อนการอัปเกรด";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "สมาชิกรายนี้ถูกลบออกจากกลุ่ม และจะไม่สามารถเข้าร่วมกลุ่มได้อีกจนกว่าเธอจะปรับรุ่น:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "สมาชิกรายนี้ถูกลบออกจากกลุ่ม และจะไม่สามารถเข้าร่วมกลุ่มได้อีกจนกว่าจะอัปเกรด:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "สมาชิกเหล่านี้ถูกนำออกจากกลุ่ม และจะไม่สามารถเข้าร่วมกลุ่มได้อีกจนกว่าพวกเขาจะปรับรุ่น:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "สมาชิกเหล่านี้ถูกลบออกจากกลุ่ม และจะไม่สามารถเข้าร่วมกลุ่มได้อีกจนกว่าจะอัปเกรด:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "สมาชิกรายนี้จะต้องตอบรับคำเชิญเพื่อเข้าร่วมกลุ่มนี้อีกครั้ง และเขาจะไม่ได้รับข้อความกลุ่มจนกว่าเขาจะตอบรับ:";
@@ -3158,10 +3158,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "สมาชิกเหล่านี้จะต้องตอบรับคำเชิญเพื่อเข้าร่วมกลุ่มนี้อีกครั้ง และพวกเขาจะไม่ได้รับข้อความกลุ่มจนกว่าพวกเขาจะตอบรับ:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "สมาชิกรายนี้ไม่สามารถร่วมกลุ่มแบบใหม่ได้ และจะถูกนำออกจากกลุ่ม:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "สมาชิกรายนี้ไม่สามารถร่วมกลุ่มแบบใหม่ได้ และจะถูกลบออกจากกลุ่ม:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "สมาชิกเหล่านี้ไม่สามารถร่วมกลุ่มแบบใหม่ได้ และจะถูกนำออกจากกลุ่ม:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "สมาชิกเหล่านี้ไม่สามารถร่วมกลุ่มแบบใหม่ได้ และจะถูกลบออกจากกลุ่ม:";
 
 /* Title for the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "ปรับรุ่นเป็นกลุ่มแบบใหม่";
@@ -3458,13 +3458,13 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "ภาพตัวอย่างลิงก์";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "ไม่สามารถใช้ iPad จัดการรายชื่อผู้ติดต่อของระบบได้อีกต่อไป กรุณาเปิดแอป Signal บนโทรศัพท์เพื่อเพิ่มเครือข่าย Signal ลงในรายชื่อผู้ติดต่อของระบบ";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "ไม่รองรับการใช้ iPad จัดการรายชื่อผู้ติดต่อของระบบอีกต่อไป อุปกรณ์นี้จะยังคงซิงค์การเปลี่ยนแปลงในรายชื่อผู้ติดต่อตามแอป Signal บนโทรศัพท์ของคุณ";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
-"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "เรียนรู้เพิ่มเติม";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "อุปกรณ์ที่เชื่อมโยง";
@@ -3557,10 +3557,10 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "ลบสำหรับทุกคน";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "หากพวกเขากำลังใช้ Signal รุ่นที่เพิ่งปรับปรุงไม่นานนี้ ข้อความนี้จะถูกลบจากทุกคนที่อยู่ในบทสนทนา พวกเขาจะเห็นว่าคุณลบข้อความ";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "ระบบจะลบข้อความนี้สำหรับทุกคนในแชทที่ใช้ Signal รุ่นล่าสุด และผู้ใช้จะเห็นว่าคุณลบข้อความ";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "คุณต้องการลบข้อความนี้ออกจากใคร?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "คุณต้องการลบข้อความนี้สำหรับใคร";
 
 /* The title for the action that deletes a message for the local user only. */
 "MESSAGE_ACTION_DELETE_FOR_YOU" = "ลบของฉัน";
@@ -3701,7 +3701,7 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "ปิดกั้น";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "ปิดกั้นและลบ";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "บล็อกและลบ";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "รายงานสแปมและปิดกั้น";
@@ -3722,19 +3722,19 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "ลบ";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "แชตนี้จะถูกลบออกจากอุปกรณ์ทุกเครื่องของคุณ";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "แชทนี้จะถูกลบออกจากอุปกรณ์ทุกเครื่องของคุณ";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "ต้องการลบแชตหรือไม่?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "ลบแชทใช่หรือไม่";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "ลบและออก";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "คุณจะออกจากกลุ่มนี้และมันจะถูกลบออกจากทุกอุปกรณ์ของคุณ";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "คุณจะออกจากกลุ่มนี้และระบบจะลบกลุ่มออกจากอุปกรณ์ทุกเครื่องของคุณ";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "ลบและออกจากกลุ่มหรือไม่?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "ลบและออกจากกลุ่มใช่หรือไม่";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
 "MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Signal พบผู้ติดต่ออีกรายการที่มีชื่อเหมือนกัน โปรดพิจารณาคำขออย่างถี่ถ้วน";
@@ -3899,7 +3899,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "คุณไม่สามารถเชื่อมโยงกับอุปกรณ์เพิ่มได้อีก";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "คุณได้เชื่อมโยงอุปกรณ์เข้ากับบัญชีของคุณถึงจำนวนที่จำกัดแล้ว กรุณาลบอุปกรณ์ใดอุปกรณ์หนึ่งและลองอีกครั้ง";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "คุณได้ลิงก์อุปกรณ์เข้ากับบัญชีถึงจำนวนที่จำกัดไว้แล้ว กรุณาลบอุปกรณ์ออกหนึ่งเครื่องและลองอีกครั้ง";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "ปิดเสียงอยู่";
@@ -5288,7 +5288,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "ไม่สามารถนำเข้ารหัสเชื่อมโยงได้";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "หากต้องการเชื่อมโยงอุปกรณ์นี้กับบัญชีอื่น คุณต้องรีเซ็ตอุปกรณ์นี้ก่อน คุณแน่ใจหรือไม่ว่าต้องการลบประวัติทั้งหมด (ข้อความ ไฟล์แนบ การโทร ฯลฯ) การดำเนินการนี้ไม่สามารถย้อนกลับได้";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "หากต้องการลิงก์อุปกรณ์นี้กับบัญชีอื่น คุณต้องรีเซ็ตอุปกรณ์นี้ก่อน คุณแน่ใจหรือไม่ว่าต้องการลบประวัติทั้งหมด (ข้อความ ไฟล์แนบ การโทร ฯลฯ) การดำเนินการนี้ไม่สามารถย้อนกลับได้";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "ลบทั้งหมด";
@@ -6275,10 +6275,10 @@
 "SMS_INVITE_BODY" = "ฉันกำลังชวนคุณให้ติดตั้ง Signal! นี่คือลิงก์:";
 
 /* An error message generically indicating that something went wrong. */
-"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+"SOMETHING_WENT_WRONG_ERROR" = "เกิดข้อผิดพลาดบางอย่าง";
 
 /* An error message generically indicating that something went wrong, and that the user should try again later. */
-"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "เกิดข้อผิดพลาดบางอย่าง โปรดลองอีกครั้งในภายหลัง";
 
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "เสียงและการแจ้งเตือน";
@@ -6689,7 +6689,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "ยืนยัน";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "คุณจะไม่ถูกเรียกเก็บเงินอีก โล่ของคุณจะถูกลบออกจากโปรไฟล์เมื่อสิ้นสุดรอบการเรียกเก็บเงิน";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "คุณจะไม่ถูกเรียกเก็บเงินอีก โล่ของคุณจะถูกนำออกออกจากโปรไฟล์เมื่อสิ้นสุดรอบการเรียกเก็บเงิน";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "ยืนยันการยกเลิกใช่ไหม";
@@ -6941,40 +6941,40 @@
 "USERNAME_PREFIX" = "@";
 
 /* The title of an action sheet button that will delete a user's username. */
-"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "ลบชื่อผู้ใช้";
 
 /* A message asking the user if they are sure they want to remove their username. */
-"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "การดำเนินการนี้จะลบชื่อผู้ใช้ของคุณและทำให้ผู้ใช้รายอื่นนำไปใช้ได้ คุณแน่ใจหรือไม่";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "ชื่อผู้ใช้จะช่วยให้ผู้ใช้รายอื่นส่งข้อความหาคุณได้โดยไม่จำเป็นต้องมีหมายเลขโทรศัพท์ของคุณ ชื่อผู้ใช้จะถูกผูกเข้ากับกลุ่มตัวเลขเพื่อช่วยรักษาความเป็นส่วนตัวของข้อมูลคุณ %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "เลือกชื่อผู้ใช้";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "ชื่อผู้ใช้จะมีได้เฉพาะ a-z, 0-9 และ _";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "ตัวเลขนี้จะช่วยรักษาความเป็นส่วนตัวให้ชื่อผู้ใช้ของคุณ ป้องกันไม่ให้คุณได้รับข้อความที่ไม่พึงประสงค์ เราขอแนะนำให้แชร์ชื่อผู้ใช้ของคุณเฉพาะกับคนและกลุ่มที่คุณอยากติดต่อด้วยเท่านั้น โดยหากเปลี่ยนชื่อผู้ใช้ คุณก็จะได้รับชุดตัวเลขใหม่";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "ตัวเลขนี้คืออะไร";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "ไม่สามารถใช้ชื่อผู้ใช้นี้ได้";
 
 /* The placeholder for a text field into which users can type their desired username. */
-"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "ชื่อผู้ใช้";
 
 /* The title for the username selection view. */
-"USERNAME_SELECTION_TITLE" = "Username";
+"USERNAME_SELECTION_TITLE" = "ชื่อผู้ใช้";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "ชื่อผู้ใช้ต้องมีอักขระอย่างน้อย %1$@ ตัว";
 
 /* A header describing buttons that allow the user to copy or share their username. */
-"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "คัดลอกหรือแชร์ลิงก์ชื่อผู้ใช้";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "เว้นว่างชื่ออุปกรณ์ไม่ได้";
@@ -7016,7 +7016,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "แตะที่นี่เพื่อทำให้ข้อความหายไปหลังจากเห็นข้อความ";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "แฟ้มสื่อที่ดูได้ครั้งเดียวขาออกจะถูกลบอัตโนมัติหลังจากส่งแล้ว";
+"VIEW_ONCE_OUTGOING_TOAST" = "ไฟล์สื่อแบบที่ดูได้ครั้งเดียวขาออกจะถูกลบอัตโนมัติหลังจากส่งแล้ว";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "ดูรูปภาพ";
@@ -7124,7 +7124,7 @@
 "YOU" = "คุณ";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "คุณได้ลบข้อความนี้";
+"YOU_DELETED_THIS_MESSAGE" = "คุณลบข้อความนี้";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "คุณได้ปิดใช้งานข้อความที่ลบตัวเองได้";

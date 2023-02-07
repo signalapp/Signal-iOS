@@ -857,7 +857,7 @@
 "CHAT_COLOR_SETTINGS_AUTO" = "automatik";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Padamkan Warna";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Padam Warna";
 
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "Warna Sembang";
@@ -911,7 +911,7 @@
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "Ini akan menetapkan semula aplikasi dengan memadam semua mesej anda daripada peranti ini. Anda sentiasa boleh pautkan dengan telefon anda sekali lagi, tetapi itu tidak akan memulihkan mesej yang dipadam. Aplikasi akan ditutup selepas proses ini selesai.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Adakah anda pasti mahu padamkan semua data?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Adakah anda pasti mahu memadam semua data?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Anda tidak akan dapat menerima atau menghantar mesej dalam kumpulan ini.";
@@ -1136,7 +1136,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Sembang ini akan dipadamkan daripada peranti ini.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Padamkan Sembang?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Padam Sembang?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Senyapkan sembang ini untuk…";
@@ -1553,7 +1553,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Tindakan ini akan memadamkan akaun Signal anda dan menetapkan semula aplikasi. Aplikasi akan ditutup setelah proses ini selesai.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Adakah anda pasti mahu padamkan akaun anda?";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Adakah anda pasti mahu memadam akaun anda?";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Kod Negara";
@@ -1583,7 +1583,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Nombor telefon yang anda masukkan tidak sepadan dengan akaun anda.";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Padamkan semua mesej dalam sembang?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Padam semua mesej dalam sembang?";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Padam Semua Mesej";
@@ -3146,10 +3146,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Semua sejarah mesej dan media telah disimpan sebelum naik taraf dibuat.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Ahli ini telah dialih keluar daripada kumpulan dan tidak dapat menyertai semula kumpulan sehingga mereka naik taraf:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Ahli ini telah dialih keluar daripada kumpulan dan tidak dapat menyertai semula kumpulan sehingga mereka menaik taraf:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Ahli-ahli ini telah dialih keluar daripada kumpulan dan tidak akan dapat menyertai semula kumpulan sehingga mereka naik taraf:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Ahli-ahli ini telah dialih keluar daripada kumpulan dan tidak akan dapat menyertai semula kumpulan sehingga mereka menaik taraf:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Ahli ini perlu menerima jemputan untuk menyertai kumpulan ini sekali lagi, dan tidak akan mendapat mesej kumpulan sehingga mereka menerima jemputan:";
@@ -3458,13 +3458,13 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Pratonton Pautan";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Menguruskan kenalan sistem tidak lagi tersedia pada iPad. Untuk menambah hubungan Signal pada kenalan sistem anda, buka Signal pada telefon anda.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Menguruskan kenalan sistem tidak lagi disokong pada iPad. Peranti ini akan terus menyegerakkan sebarang perubahan kepada senarai kenalan anda daripada Signal pada telefon anda.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
-"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Ketahui lebih lanjut";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Peranti Dipautkan";
@@ -3557,7 +3557,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Padam untuk Semua Orang";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Mesej ini akan dipadamkan untuk semua orang dalam sembang jika mereka menggunakan Signal versi terkini. Mereka akan dapat lihat bahawa anda telah memadamkan mesej.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Mesej ini akan dipadamkan untuk semua orang dalam sembang jika mereka menggunakan Signal versi terkini. Mereka akan dapat melihat jika anda memadamkan mesej.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Untuk siapa anda mahu memadamkan mesej ini?";
@@ -3725,7 +3725,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Sembang ini akan dipadamkan daripada semua peranti anda.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Padamkan Sembang?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Padam Sembang?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Padam dan Tinggalkan";
@@ -3899,7 +3899,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Anda tidak boleh memautkan sebarang peranti lagi.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Anda telah mencapai maksimum peranti yang kini anda boleh pautkan dengan akaun anda. Sila alih keluar peranti dan cuba lagi.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Anda telah mencapai jumlah maksimum peranti yang boleh dipautkan dengan akaun anda. Sila alih keluar peranti dan cuba lagi.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Diredamkan";
@@ -5291,7 +5291,7 @@
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Untuk memautkan peranti ini ke akaun lain, anda mesti menetapkan semula peranti ini terlebih dahulu. Adakah anda pasti mahu memadam semua sejarah (mesej, lampiran, panggilan dll.)? Tindakan ini tidak boleh diulang.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Padamkan Semuanya";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Padam Semua";
 
 /* Title for error alert indicating that re-linking failed because the account did not match. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Akaun Tidak Sepadan";
@@ -5585,13 +5585,13 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "Pindahkan Baki";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "Padakan Semua Data";
+"SETTINGS_DELETE_DATA_BUTTON" = "Padam Semua Data";
 
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Adakah anda pasti mahu memadam semua sejarah (mesej, lampiran, panggilan, dll)? Tindakan ini tidak boleh diulang.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Padamkan Semuanya";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Padam Semua";
 
 /* Label for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES" = "Mesej Hilang";
@@ -6275,10 +6275,10 @@
 "SMS_INVITE_BODY" = "Saya menjemput anda untuk memasang Signal! Berikut adalah pautan:";
 
 /* An error message generically indicating that something went wrong. */
-"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+"SOMETHING_WENT_WRONG_ERROR" = "Ada yang tidak kena.";
 
 /* An error message generically indicating that something went wrong, and that the user should try again later. */
-"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Ada yang tidak kena. Sila cuba lagi nanti.";
 
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "Bunyi & Pemberitahuan";
@@ -6941,40 +6941,40 @@
 "USERNAME_PREFIX" = "@";
 
 /* The title of an action sheet button that will delete a user's username. */
-"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Padam nama pengguna";
 
 /* A message asking the user if they are sure they want to remove their username. */
-"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "Ini akan menyingkirkan nama pengguna anda, membolehkan pengguna lain untuk menuntutnya. Adakah anda pasti?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Nama pengguna membenarkan orang lain menghantar mesej kepada anda tanpa memerlukan nombor telefon anda. Ia dipasangkan dengan set digit untuk membantu mengekalkan privasi alamat anda. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Pilih nama pengguna anda";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Nama pengguna hanya boleh mengandungi a-z, 0-9, dan _.";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Digit ini membantu mengekalkan privasi nama pengguna anda supaya anda boleh mengelakkan mesej yang tidak diingini. Kongsi nama pengguna anda hanya dengan orang dan kumpulan yang anda mahu bersembang. Jika anda menukar nama pengguna, anda akan menerima set digit baru.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Apakah nombor ini?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Nama pengguna ini tidak tersedia.";
 
 /* The placeholder for a text field into which users can type their desired username. */
-"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Nama Pengguna";
 
 /* The title for the username selection view. */
-"USERNAME_SELECTION_TITLE" = "Username";
+"USERNAME_SELECTION_TITLE" = "Nama Pengguna";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Nama pengguna mesti bermula dengan sekurang-kurangnya %1$@ aksara.";
 
 /* A header describing buttons that allow the user to copy or share their username. */
-"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Salin atau kongsi pautan nama pengguna";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Nama peranti tidak boleh kosong";
@@ -7016,7 +7016,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Ketik di sini untuk menjadikan mesej ini hilang selepas ia dilihat.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Fail media lihat sekali keluar dikeluarkan secara automatik selepas ia dihantar.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Fail media sekali tontonan dialih keluar secara automatik selepas ia dihantar.";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "Lihat Foto";

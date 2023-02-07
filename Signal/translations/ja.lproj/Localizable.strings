@@ -281,7 +281,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "画像をパースできません。";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "画像からメタデータを消去できませんでした。";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "画像からメタデータを削除できませんでした。";
 
 /* Attachment error message for image attachments which could not be resized */
 "ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "画像のサイズを変更できません。";
@@ -857,7 +857,7 @@
 "CHAT_COLOR_SETTINGS_AUTO" = "自動";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "色の削除";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "色の消去";
 
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "チャットの色";
@@ -905,13 +905,13 @@
 "CONFIRM_DELETE_DATA_TEXT" = "メッセージを消去して、アプリを初期化します。処理が完了するとアプリを閉じます。";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TITLE" = "本当にすべてのデータを削除しますか？";
+"CONFIRM_DELETE_DATA_TITLE" = "本当にすべてのデータを消去しますか？";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "この端末上のメッセージをすべて消去し、アプリケーションをリセットします。いつでもリンクし直すことはできますが、削除されたメッセージは復元できません。処理が完了するとアプリを閉じます。";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "この端末上のメッセージをすべて消去し、アプリケーションをリセットします。いつでもリンクし直すことはできますが、消去されたメッセージは復元できません。処理が完了するとアプリが閉じます。";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "本当にすべてのデータを削除しますか？";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "本当にすべてのデータを消去しますか？";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "このグループでのメッセージ送受信が出来なくなります。";
@@ -1109,7 +1109,7 @@
 "CONTEXT_MENU_COPY" = "コピー";
 
 /* Context menu button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "削除";
+"CONTEXT_MENU_DELETE_MESSAGE" = "消去する";
 
 /* Context menu button title */
 "CONTEXT_MENU_DETAILS" = "詳細";
@@ -1133,10 +1133,10 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "停止";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "このチャットはこの端末から削除されます。";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "このチャットはこの端末から消去されます。";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "チャットを削除しますか？";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "チャットを消去しますか？";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "このチャットをミュート…";
@@ -1373,7 +1373,7 @@
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "あなたから送信:";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "すべて削除する";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "すべて消去する";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "メッセージを読み込んでいます…";
@@ -1547,22 +1547,22 @@
 "DECLINED_VIDEO_CALL" = "ビデオ通話を拒否しました";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "アカウントを削除する";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "アカウントを消去する";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "あなたのSignalアカウントを削除して、アプリを初期化します。処理が完了するとアプリを閉じます。";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "あなたのSignalアカウントを消去して、アプリを初期化します。処理が完了するとアプリは閉じます。";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "本当にあなたのアカウントを削除しますか？";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "本当にあなたのアカウントを消去しますか？";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "国番号";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "アカウントの削除に失敗しました。Wi-Fiまたはモバイルデータ通信が有効であることを確認して、再度試してください。";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "アカウントの消去に失敗しました。Wi-Fiまたはモバイルデータ通信が有効であることを確認して、再度試してください。";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "あなたのアカウント情報、プロフィールおよびずべてのメッセージを削除します。";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "あなたのアカウント情報、プロフィールおよびずべてのメッセージを消去します。";
 
 /* Indicates the work we are doing while deleting the account */
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "アカウントを削除しています…";
@@ -1577,16 +1577,16 @@
 "DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "Signal番号の確認";
 
 /* Title for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "アカウントの削除";
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "アカウントを消去する";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "入力された電話番号は、あなたのアカウントのものと一致しません。";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "このチャットのメッセージをすべて削除しますか？";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "このチャットのメッセージをすべて消去しますか？";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "すべてのメッセージを削除する";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "すべてのメッセージを消去する";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "この端末上のSignalからログアウトしました。";
@@ -2885,7 +2885,7 @@
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%1$@ がグループを抜けました。";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "%1$@ を削除しました。　";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "%1$@ を削除しました。";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ が %2$@ を削除しました。";
@@ -3458,13 +3458,13 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "リンクプレビュー";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "iPadでは連絡先の管理はできなくなりました。連絡先にSignalコネクションを追加するには、お使いの携帯電話でSignalを操作してください。";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "iPadでは、連絡先の管理はサポートされなくなりました。お使いの携帯電話でSignalの連絡先リストに変更があった場合は、この端末は引き続き同期します。";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
-"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "詳しく見る";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "リンク済み端末";
@@ -3554,22 +3554,22 @@
 "MESSAGE_ACTION_COPY_TEXT" = "メッセージテキストをコピー";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "全員分を削除";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "全員に対して消去";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "このメッセージは、チャットの参加者全員が最新バージョンのSignalを使用している場合、全員で削除されます。参加者には、あなたがメッセージを削除したことがわかります。";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "このメッセージは、チャットの参加者全員が最新バージョンのSignalを使用している場合、全員に対して消去されます。参加者には、あなたがメッセージを消去したことがわかります。";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "このメッセージを誰から削除しますか？";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "このメッセージを誰に対して消去しますか？";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "自分の分だけ削除";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "自分の分だけ消去";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "このメッセージを削除";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "このメッセージを消去";
 
 /* accessibility label */
-"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "選択したメッセージを削除";
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "選択したメッセージを消去";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "詳細";
@@ -3719,22 +3719,22 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%1$@ をブロックして抜けますか？";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "削除する";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "消去する";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "このチャットは、あなたのすべての端末から削除されます。";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "このチャットは、あなたのすべての端末から消去されます。";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "チャットを削除しますか？";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "チャットを消去しますか？";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "削除して抜ける";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "消去して抜ける";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "このグループから抜けて、すべての端末から削除します。";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "このグループから抜けて、すべての端末から消去します。";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "削除してグループから抜けますか？";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "消去してグループから抜けますか？";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
 "MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "申請は慎重に確認してください。Signalに同じ名前で別の連絡先があります。";
@@ -3779,7 +3779,7 @@
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "続ける";
 
 /* incoming message request button text which deletes a conversation */
-"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "削除する";
+"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "消去する";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "%1$@ とのチャットを継続して、名前と写真を共有しますか？";
@@ -4865,10 +4865,10 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "閲覧できる人を追加";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "カスタムストーリーを削除する";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "カスタムストーリーを消去する";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "本当に「%1$@」を削除しますか？ストーリーで共有された更新情報も削除されます。";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "本当に「%1$@」を消去しますか？ストーリーで共有された更新情報も消去されます。";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "削除";
@@ -5291,7 +5291,7 @@
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "この端末を別のアカウントで使用するには、最初にこの端末をリセットする必要があります。本当にすべての履歴 (メッセージ、添付ファイル、通話など) を消去しますか？この処理は元に戻せません。";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "すべて削除する";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "すべて消去する";
 
 /* Title for error alert indicating that re-linking failed because the account did not match. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "アカウントが一致しません";
@@ -5570,7 +5570,7 @@
 "SETTINGS_DATA_TITLE" = "データ通信量";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "アカウントを削除する";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "アカウントを消去する";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "振り替えない";
@@ -5585,7 +5585,7 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "残高を振替";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "すべてのデータを削除する";
+"SETTINGS_DELETE_DATA_BUTTON" = "すべてのデータを消去する";
 
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "本当にすべての履歴 (メッセージ、添付ファイル、通話など) を消去しますか？この処理は元に戻せません。";
@@ -6275,10 +6275,10 @@
 "SMS_INVITE_BODY" = "Signalのインストールをお勧めします！このリンクから入手してください:";
 
 /* An error message generically indicating that something went wrong. */
-"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+"SOMETHING_WENT_WRONG_ERROR" = "エラーが発生しました！";
 
 /* An error message generically indicating that something went wrong, and that the user should try again later. */
-"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "エラーが発生しました！あとでもう一度試してください。";
 
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "音と通知";
@@ -6356,13 +6356,13 @@
 "STORIES_COPY_REPLY_ACTION" = "コピー";
 
 /* Context menu action to delete the selected story reply */
-"STORIES_DELETE_REPLY_ACTION" = "削除";
+"STORIES_DELETE_REPLY_ACTION" = "消去する";
 
 /* Context menu action to delete the selected story */
-"STORIES_DELETE_STORY_ACTION" = "削除";
+"STORIES_DELETE_STORY_ACTION" = "消去する";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "このストーリーを削除しますか？これを受けとった人にも削除されます。";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "このストーリーを消去しますか？これを受けとった人に対しても消去されます。";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "ストーリーが保存されました";
@@ -6431,10 +6431,10 @@
 "STORIES_SETTINGS_STORIES_HEADER" = "ストーリー";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "ストーリーを共有したり閲覧したりできなくなります。最近共有したストーリーの更新情報も削除されます。";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "ストーリーを共有したり閲覧したりできなくなります。最近共有したストーリーの更新情報も消去されます。";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "ストーリーを非表示にして削除します";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "ストーリーを非表示にして消去します";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "ストーリーを非表示にすると、以後はストーリーを共有したり閲覧したりすることができなくなります。";
@@ -6764,7 +6764,7 @@
 "TAP_REPLACE_EMOJI" = "タップして絵文字を置き換えます";
 
 /* text indicating the message was remotely deleted */
-"THIS_MESSAGE_WAS_DELETED" = "このメッセージは削除されました。";
+"THIS_MESSAGE_WAS_DELETED" = "このメッセージは消去されました。";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%1$@, %2$@ ほか%3$luグループのメンバー";
@@ -6830,7 +6830,7 @@
 "TXT_CANCEL_TITLE" = "キャンセル";
 
 /* Label for the delete button in an alert or action sheet. */
-"TXT_DELETE_TITLE" = "削除";
+"TXT_DELETE_TITLE" = "消去する";
 
 /* Label for the unarchive button for conversations list view */
 "UNARCHIVE_ACTION" = "アーカイブ解除";
@@ -6941,40 +6941,40 @@
 "USERNAME_PREFIX" = "@";
 
 /* The title of an action sheet button that will delete a user's username. */
-"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "ユーザーネームを消去";
 
 /* A message asking the user if they are sure they want to remove their username. */
-"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "これにより、あなたのユーザーネームが削除され、他のユーザーがそのユーザーネームを使用できるようになります。よろしいですか？";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "ユーザーネームを使用すると、相手は電話番号なしであなたにメッセージを送ることができますユーザーネームは数字と対になっているのでアドレスを非公開にすることができます。%1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "ユーザーネームを選択してください";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "ユーザネームには半角の英数字とアンダーバーのみ使用できます。";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "これらの数字は、ユーザーネームを非公開にし、不要なメッセージを避けるのに役立ちます。ユーザーネームは、チャットをしたい人やグループとだけ共有してください。ユーザーネームを変更すると、新しい数字に更新されます。";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "この数字は何ですか？";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "このユーザーネームは使用できません。";
 
 /* The placeholder for a text field into which users can type their desired username. */
-"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "ユーザーネーム";
 
 /* The title for the username selection view. */
-"USERNAME_SELECTION_TITLE" = "Username";
+"USERNAME_SELECTION_TITLE" = "ユーザーネーム";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "ユーザーネームは、%1$@ 文字以上にしてください。";
 
 /* A header describing buttons that allow the user to copy or share their username. */
-"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "ユーザーネームのリンクをコピーまたは共有する";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "端末名は必須です";
@@ -7124,7 +7124,7 @@
 "YOU" = "あなた";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "メッセージを削除しました。";
+"YOU_DELETED_THIS_MESSAGE" = "メッセージを消去しました。";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "消えるメッセージを無効にしました。";

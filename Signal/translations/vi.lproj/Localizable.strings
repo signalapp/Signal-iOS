@@ -857,7 +857,7 @@
 "CHAT_COLOR_SETTINGS_AUTO" = "tự động";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Xoá Màu";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Xóa Màu";
 
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "Màu Cuộc trò chuyện";
@@ -1133,10 +1133,10 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Dừng";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Tin nhắn này sẽ bị xoá khỏi thiết bị này.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Tin nhắn này sẽ bị xóa khỏi thiết bị này.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Xoá Cuộc trò chuyện?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Xóa Cuộc trò chuyện?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Tắt thông báo cuộc trò chuyện này trong…";
@@ -1328,10 +1328,10 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Xóa %1$@ khỏi nhóm?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Loại bỏ khỏi vai trò Quản trị viên";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Gỡ vai trò Quản trị viên";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Loại bỏ quyền quản trị của %1$@?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Gỡ quyền quản trị của %1$@?";
 
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "tìm kiếm";
@@ -1373,7 +1373,7 @@
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "Bạn đã gửi:";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Xoá Tất cả";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Xóa Tất cả";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Đang tải Thêm Tin nhắn…";
@@ -1550,19 +1550,19 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Xóa Tài khoản";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Việc này sẽ xoá tài khoản Signal của bạn và thiết lập lại ứng dụng. Ứng dụng sẽ đóng sau khi quá trình này hoàn tất.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Việc này sẽ xóa tài khoản Signal của bạn và thiết lập lại ứng dụng. Ứng dụng sẽ đóng sau khi quá trình này hoàn tất.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Bạn có chắc muốn xoá tài khoản?";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Bạn có chắc muốn xóa tài khoản?";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Mã quốc gia";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Xoá tài khoản không thành công. Đảm bảo là Wi-Fi hoặc dữ liệu di động được bật, sau đó hãy thử lại.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Xóa tài khoản không thành công. Đảm bảo là Wi-Fi hoặc dữ liệu di động được bật, sau đó hãy thử lại.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Việc này sẽ xoá thông tin tài khoản của bạn, hồ sơ cá nhân, và tất cả tin nhắn của bạn.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Việc này sẽ xóa thông tin tài khoản của bạn, hồ sơ cá nhân, và tất cả tin nhắn của bạn.";
 
 /* Indicates the work we are doing while deleting the account */
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Đang xoá Tài khoản…";
@@ -1583,10 +1583,10 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Số điện thoại bạn đã nhập không trùng khớp với số của tài khoản của bạn.";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Xoá tất cả các tin nhắn trong cuộc trò chuyện?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Xóa tất cả các tin nhắn trong cuộc trò chuyện?";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Xoá Mọi Tin nhắn";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Xóa Mọi Tin nhắn";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Bạn đã đăng xuất khỏi Signal trên thiết bị này.";
@@ -2990,13 +2990,13 @@
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ đã sửa mô tả nhóm";
 
 /* Message indicating that the group's name was removed. */
-"GROUP_UPDATED_NAME_REMOVED" = "Tên nhóm đã bị xoá.";
+"GROUP_UPDATED_NAME_REMOVED" = "Tên nhóm đã bị xóa.";
 
 /* Message indicating that the group's name was removed by the local user. */
-"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Bạn đã xoá tên nhóm.";
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Bạn đã xóa tên nhóm.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ đã xoá tên nhóm.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ đã xóa tên nhóm.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Bạn đã đổi tên nhóm thành \"%1$@\".";
@@ -3458,13 +3458,13 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Xem trước Đường dẫn";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Việc quản lý danh bạ của hệ thống không còn khả dụng trên iPad. Để thêm liên hệ Signal vào danh bạ của hệ thống, hãy mở Signal trên điện thoại của bạn.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Việc quản lý danh bạ của hệ thống không còn khả dụng trên iPad. Thiết bị này sẽ tiếp tục đồng bộ các thay đổi với danh sách liên hệ từ Signal trên điện thoại của bạn.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
-"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Tìm hiểu thêm";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Các thiết bị đã liên kết";
@@ -3554,22 +3554,22 @@
 "MESSAGE_ACTION_COPY_TEXT" = "Sao chép Nội dung Tin nhắn";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Xoá đối với Mọi người";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Xóa đối với Mọi người";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Tin nhắn này sẽ được xoá cho tất cả mọi người trong cuộc trò chuyện nếu như họ sử dụng phiên bản mới của Signal. Họ sẽ có thể thấy được rằng bạn đã xoá tin nhắn.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Tin nhắn này sẽ được xóa cho tất cả mọi người trong cuộc trò chuyện nếu như họ sử dụng phiên bản mới của Signal. Họ sẽ có thể thấy được rằng bạn đã xoá tin nhắn.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Bạn muốn xoá tin nhắn này cho ai?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Bạn muốn xóa tin nhắn này cho ai?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Xoá cho Tôi";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Xóa cho Tôi";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Xóa Tin nhắn này";
 
 /* accessibility label */
-"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Xoá các Tin nhắn Đã chọn";
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Xóa các Tin nhắn Đã chọn";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Thông tin khác";
@@ -3701,7 +3701,7 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Chặn";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Chặn và Xoá";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Chặn và Xóa";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Báo cáo Tin nhắn Rác và Chặn";
@@ -3722,13 +3722,13 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Xóa";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Cuộc trò chuyện này sẽ được xoá khỏi tất cả thiết bị của bạn.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Cuộc trò chuyện này sẽ được xóa khỏi tất cả thiết bị của bạn.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Xoá Cuộc trò chuyện?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Xóa Cuộc trò chuyện?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Xoá và Rời";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Xóa và Rời";
 
 /* Action sheet message to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Bạn sẽ rời nhóm, và lịch sử trò chuyện sẽ bị xóa trên tất cả các thiết bị của bạn.";
@@ -5288,7 +5288,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Không thể lấy được Mã Liên kết thiết bị";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Để kết nối thiết bị này với một tài khoản khác, bạn phải thiết lập lại thiết bị này trước. Bạn có chắc bạn muốn xoá tất cả lịch sử (tin nhắn, tập tin đính kèm, cuộc gọi, v.v)? Thao tác này không thể được hoàn lại.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Để kết nối thiết bị này với một tài khoản khác, bạn phải thiết lập lại thiết bị này trước. Bạn có chắc bạn muốn xóa tất cả lịch sử (tin nhắn, tập tin đính kèm, cuộc gọi, v.v)? Thao tác này không thể được hoàn lại.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Xóa Tất cả";
@@ -6275,10 +6275,10 @@
 "SMS_INVITE_BODY" = "Tôi đang mời bạn cài đặt Signal! Đây là đường dẫn:";
 
 /* An error message generically indicating that something went wrong. */
-"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+"SOMETHING_WENT_WRONG_ERROR" = "Đã xảy ra lỗi.";
 
 /* An error message generically indicating that something went wrong, and that the user should try again later. */
-"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Đã xảy ra lỗi. Vui lòng thử lại sau.";
 
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "Âm thanh & thông báo";
@@ -6941,40 +6941,40 @@
 "USERNAME_PREFIX" = "@";
 
 /* The title of an action sheet button that will delete a user's username. */
-"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Xóa Tên người dùng";
 
 /* A message asking the user if they are sure they want to remove their username. */
-"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "Thao tác này sẽ gỡ tên người dùng của bạn, cho phép người dùng khác xác nhận quyền sở hữu. Bạn có chắc không?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Tên người dùng giúp các thành viên khác nhắn tin cho bạn mà không cần có số điện thoại của bạn. Tên người dùng được ghép với một dãy ký tự để giúp giữ bí mật thông tin của bạn. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Chọn tên người dùng của bạn";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Tên người dùng chỉ được chứa các ký tự a-z, 0-9, và _.";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Các ký tự này giúp giữ bí mật tên người dùng của bạn giúp bạn tránh các tin nhắn ngoài ý muốn. Chỉ chia sẻ tên người dùng của bạn với những người hoặc nhóm bạn muốn trò chuyện. Nếu bạn đổi tên người dùng, bạn sẽ nhận được một dãy ký tự mới.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Số này là gì?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Tên người dùng này không khả dụng.";
 
 /* The placeholder for a text field into which users can type their desired username. */
-"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Tên người dùng";
 
 /* The title for the username selection view. */
-"USERNAME_SELECTION_TITLE" = "Username";
+"USERNAME_SELECTION_TITLE" = "Tên người dùng";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Tên người dùng phải bắt đầu với ít nhất %1$@ ký tự.";
 
 /* A header describing buttons that allow the user to copy or share their username. */
-"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Sao chép hoặc chia sẻ liên kết tên người dùng";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Không được để trống tên thiết bị";
@@ -7016,7 +7016,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Nhấn vào đây để khiến tin nhắn tự hủy sau khi đã được xem.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Các tập tin đa phương tiện xem-một-lần sẽ được xoá tự động sau khi chúng được gửi đi.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Các tập tin đa phương tiện xem-một-lần sẽ được xóa tự động sau khi chúng được gửi đi.";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "Xem Ảnh";

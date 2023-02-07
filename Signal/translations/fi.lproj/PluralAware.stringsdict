@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Poistetaanko %1$d keskustelu?</string>
+			<string>Poistetaanko keskustelu?</string>
 			<key>other</key>
 			<string>Poistetaanko %1$d keskustelua?</string>
 		</dict>
@@ -141,7 +141,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tämä keskustelu poistetaan tältä laitteelta</string>
+			<string>Tämä keskustelu poistetaan tältä laitteelta.</string>
 			<key>other</key>
 			<string>Nämä keskustelut poistetaan tältä laitteelta.</string>
 		</dict>
@@ -680,7 +680,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d jäsentä ei voitu lisätä uuteen ryhmään, ja hänet on poistettu ryhmästä.</string>
+			<string>Yhtä jäsentä ei voitu lisätä uuteen ryhmään, ja hänet on poistettu ryhmästä.</string>
 			<key>other</key>
 			<string>%1$d jäsentä ei voitu lisätä uuteen ryhmään, ja heidät on poistettu ryhmästä.</string>
 		</dict>

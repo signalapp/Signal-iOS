@@ -680,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d tagot nem lehetett közvetlenül az új csoporthoz adni, és így el lett távolítva.</string>
+			<string>%1$d tagot nem lehetett közvetlenül az Új csoporthoz adni, és így el lett távolítva.</string>
 			<key>other</key>
-			<string>%1$d tagot nem lehetett közvetlenül az új csoporthoz adni, és így el lettek távolítva.</string>
+			<string>%1$d tagot nem lehetett közvetlenül az Új csoporthoz adni, és így el lettek távolítva.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>

@@ -1,2 +1,2 @@
-• Even though the “Find by Phone Number” feature is now more than 4x faster, you can still take your time when you decide to start a new conversation.
-• We fixed a few bugs, including one that sometimes caused the text input field to be displayed incorrectly when replying to a story.
+• Selv om «Finn med telefonnummer»-funksjonen nå er fire ganger raskere enn før, kan du fortsatt ta deg god tid når du skal bestemme deg for om du vil starte en ny samtale.
+• Vi har fikset noen feil, inkludert en som noen ganger førte til at inntastingsfeltet ble vist feil når man svarte på en story.

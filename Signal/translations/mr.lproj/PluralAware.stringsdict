@@ -95,7 +95,7 @@
 			<key>one</key>
 			<string>हा सानुकूल रंग %1$d चॅटमध्ये वापरला आहे. आपण तो हटवू इच्छिता?</string>
 			<key>other</key>
-			<string>हा सानुकूल रंग %1$d चॅट्समध्ये वापरला आहे. आपण तो सर्व चॅटसाठी हटवू इच्छिता?</string>
+			<string>हा सानुकूल रंग %1$d चॅट्समध्ये वापरला आहे. आपण तो सर्व चॅट्ससाठी हटवू इच्छिता?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>चॅट हटवायचा?</string>
+			<string>चॅट हटवायचे?</string>
 			<key>other</key>
 			<string>%1$d चॅट्स हटवायचे?</string>
 		</dict>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>या उपकरणावरून हा चॅट हटवला जाईल.</string>
+			<string>हे चॅट ह्या डिव्हाइस वरून हटवले जाईल.</string>
 			<key>other</key>
-			<string>हे चॅट या उपकरणातून हटवले जातील.</string>
+			<string>हे चॅट्स या डिव्हाइसमधून हटवले जातील.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -1080,9 +1080,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>आपल्याकडे %1$d प्रयत्न शिल्लक आहे. जरी आपले प्रयत्न संपले तर आपले खाते अवरोधित केले जाईल. ७ दिवसांच्या निष्क्रियतेनंतर आपण आपल्या PIN शिवाय पुन्हा नोंदणी करू शकता. आपले अकाऊंट साफ केले जाईल आणि सर्व माहिती हटविली जाईल.</string>
+			<string>आपल्याकडे %1$d प्रयत्न शिल्लक आहे. जरी आपले प्रयत्न संपले तर आपले अकाऊंट लॉक केले जाईल. 7 दिवसांच्या निष्क्रियतेनंतर, आपण आपल्या PIN शिवाय पुन्हा नोंदणी करू शकता. आपले अकाऊंट साफ केले जाईल आणि सर्व माहिती हटवली जाईल.</string>
 			<key>other</key>
-			<string>आपल्याकडे %1$d प्रयत्न शिल्लक आहेत. जरी आपले प्रयत्न संपले तर आपले खाते अवरोधित केले जाईल. ७ दिवसांच्या निष्क्रियतेनंतर, आपण आपल्या PIN शिवाय पुन्हा नोंदणी करू शकता. आपले अकाऊंट साफ केले जाईल आणि सर्व माहिती हटविली जाईल.</string>
+			<string>आपल्याकडे %1$d प्रयत्न शिल्लक आहेत. जरी आपले प्रयत्न संपले तर आपले अकाऊंट लॉक केले जाईल. 7 दिवसांच्या निष्क्रियतेनंतर, आपण आपल्या PIN शिवाय पुन्हा नोंदणी करू शकता. आपले अकाऊंट साफ केले जाईल आणि सर्व माहिती हटवली जाईल.</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

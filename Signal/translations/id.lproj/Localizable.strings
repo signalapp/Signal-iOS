@@ -908,7 +908,7 @@
 "CONFIRM_DELETE_DATA_TITLE" = "Anda yakin ingin menghapus semua data?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Ini akan mengatur ulang aplikasi dengan cara menghapus seluruh pesan di perangkat Anda. Anda bisa menghubungkan perangkat kembali, tanpa memulihkan pesan yang terhapus. Aplikasi akan ditutup setelah proses ini selesai.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Tindakan ini akan mereset aplikasi dengan menghapus seluruh pesan Anda di perangkat ini. Anda selalu dapat menghubungkan lagi dengan ponsel Anda, tetapi itu tidak akan memulihkan pesan yang telah dihapus. Aplikasi akan ditutup setelah proses ini selesai.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Anda yakin ingin menghapus semua data?";
@@ -1133,10 +1133,10 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Berhenti";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Percakapan ini akan dihapus dari perangkat ini.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Obrolan ini akan dihapus dari perangkat ini.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Hapus Pesan?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Hapus Obrolan?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Senyapkan obrolan ini untuk…";
@@ -1322,16 +1322,16 @@
 "CONVERSATION_SETTINGS_PERMISSIONS" = "Perizinan";
 
 /* Label for 'remove from group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Keluarkan Dari Grup";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Hapus Dari Grup";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Keluarkan %1$@ dari grup?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Cabut Akses Admin";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Hapus dari Peran Admin";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Cabut akses %1$@ sebagai admin grup?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Hapus %1$@ dari admin grup?";
 
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "cari";
@@ -1550,10 +1550,10 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Hapus Akun";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Ini akan menghapus akun Signal Anda dan memulai ulang aplikasi. Aplikasi akan ditutup setelah proses ini selesai.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Tindakan ini akan menghapus akun Signal Anda dan mereset aplikasi. Aplikasi akan ditutup setelah proses ini selesai.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Apakah kamu yakin ingin menghapus akun Anda?";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Anda yakin ingin menghapus akun Anda?";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Kode Negeri";
@@ -2951,10 +2951,10 @@
 "GROUP_UPDATED_AVATAR_REMOVED" = "Foto grup telah dihapus.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Anda telah menghapus foto grup.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Anda menghapus foto grup.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@telah menghapus foto grup.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ menghapus foto grup.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED" = "Foto grup telah diperbarui.";
@@ -3011,7 +3011,7 @@
 "GROUP_WAS_MIGRATED" = "Grup ini telah diperbarui ke Grup Baru.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Anda tidak dapat ditambahkan ke Grup dan telah dikeluarkan dari grup.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Anda tidak dapat ditambahkan ke Grup Baru dan telah dikeluarkan dari grup.";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Anda tidak dapat ditambahkan ke Grup Baru dan telah diundang untuk bergabung";
@@ -3146,10 +3146,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Semua riwayat pesan dan media telah disimpan sebelum pemutakhiran.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Anggota ini telah dikeluarkan dari grup dan tidak dapat bergabung kembali sampai mereka melakukan pembaruan:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Anggota ini telah dikeluarkan dari grup dan tidak bisa bergabung kembali sampai mereka melakukan pembaruan:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Anggota ini telah dikeluarkan dari grup dan tidak dapat bergabung kembali sampai mereka melakukan pembaruan:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Anggota-anggota ini telah dikeluarkan dari grup dan tidak bisa bergabung kembali sampai mereka melakukan pembaruan:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Anggota ini harus menerima permintaan untuk bergabung ke grup ini lagi, dan tidak akan menerima pesan grup sampai mereka menerimanya:";
@@ -3161,7 +3161,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Anggota ini tidak dapat bergabung ke Grup Baru, dan akan dikeluarkan dari grup:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Anggota ini tidak dapat bergabung ke Grup Baru, dan akan dikeluarkan dari grup:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Anggota-anggota ini tidak dapat bergabung ke Grup Baru, dan akan dikeluarkan dari grup:";
 
 /* Title for the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Perbarui ke Grup Baru";
@@ -3458,13 +3458,13 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Pratinjau Tautan";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Pengelolaan kontak sistem sudah tidak tersedia di iPad. Untuk menambahkan koneksi Signal ke kontak sistem, buka Signal di ponsel Anda.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Pengelolaan kontak sistem sudah tidak didukung di iPad. Perangkat ini akan terus menyinkronkan setiap perubahan pada daftar kontak dari Signal di ponsel Anda.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
-"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Selengkapnya";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Perangkat Terhubung";
@@ -3554,10 +3554,10 @@
 "MESSAGE_ACTION_COPY_TEXT" = "Salin teks pesan";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Hapus untuk Semua";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Hapus untuk Semua Orang";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Pesan ini akan dihapus untuk semua orang dalam percakapan jika mereka menggunakan versi terakhir Signal. Mereka akan melihat bahwa Anda menghapus sebuah pesan.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Pesan ini akan dihapus untuk semua orang yang ada dalam obrolan jika mereka menggunakan versi terbaru Signal. Mereka akan bisa melihat bahwa Anda telah menghapus sebuah pesan.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "Untuk siapa Anda ingin menghapus pesan ini?";
@@ -3569,7 +3569,7 @@
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Hapus Pesan Ini";
 
 /* accessibility label */
-"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Pilih Pesan yang Dipilih";
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Hapus Pesan yang Dipilih";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Info lebih lanjut";
@@ -3725,16 +3725,16 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Percakapan ini akan dihapus dari semua perangkat Anda.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Hapus Pesan?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Hapus Obrolan?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Hapus dan Tinggalkan";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Hapus dan Keluar";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Anda akan meninggalkan grup ini. Catatan mengenai grup akan dihapus dari semua perangkat Anda.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Anda akan keluar dari grup ini, dan grup akan dihapus dari semua perangkat Anda.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Hapus dan Tinggalkan Grup?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Hapus dan Keluar dari Grup?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
 "MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Tinjau permintaan dengan hati-hati. Signal menemukan kontak lain dengan nama yang sama.";
@@ -3899,7 +3899,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Anda tidak dapat menghubungkan perangkat lain lagi.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Anda telah mencapai batas maksimal perangkat yang bisa dihubungkan dengan akun Anda. Mohon hapus perangkat dan coba lagi.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Anda telah mencapai batas maksimal perangkat yang bisa dihubungkan dengan akun Anda. Harap hapus satu perangkat dan coba lagi.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Disenyapkan";
@@ -4868,7 +4868,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Hapus Cerita Kustom";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Yakin Anda mau menghapus “%1$@”? Pembaruan yang dibagikan ke cerita ini juga akan dihapus.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Yakin Anda ingin menghapus “%1$@”? Pembaruan yang dibagikan ke cerita ini juga akan dihapus.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Hapus";
@@ -5288,7 +5288,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Tidak Dapat Memperoleh Kode Penghubung";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Untuk menautkan perangkat ini dengan akun lain, Anda harus mereset perangkat ini dahulu. Yakin ingin menghapus semua riwayat (pesan, lampiran, panggilan, dll.)? Tindakan ini tidak dapat diurungkan.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Untuk menautkan perangkat ini ke akun lain, Anda harus mereset perangkat ini terlebih dahulu. Yakin ingin menghapus semua riwayat (pesan, lampiran, panggilan, dll.)? Tindakan ini tidak dapat diurungkan.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Hapus Semuanya";
@@ -6275,10 +6275,10 @@
 "SMS_INVITE_BODY" = "Saya mengundang Anda untuk memasang Signal! Tautan tersedia di sini:";
 
 /* An error message generically indicating that something went wrong. */
-"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+"SOMETHING_WENT_WRONG_ERROR" = "Terjadi kesalahan.";
 
 /* An error message generically indicating that something went wrong, and that the user should try again later. */
-"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Terjadi kesalahan. Coba lagi nanti.";
 
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "Suara & Notifikasi";
@@ -6431,7 +6431,7 @@
 "STORIES_SETTINGS_STORIES_HEADER" = "Cerita";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Anda tidak bisa lagi membagikan atau melihat cerita. Pembaruan cerita yang baru-baru ini Anda bagikan juga akan dihapus.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "Anda tidak akan bisa lagi membagikan atau melihat cerita. Pembaruan cerita yang baru-baru ini Anda bagikan juga akan dihapus.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
 "STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Nonaktifkan dan Hapus Cerita";
@@ -6689,7 +6689,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Konfirmasi";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Anda tidak akan dikenakan biaya lagi. Lencana Anda akan dihapus dari profil Anda pada periode akhir tagihan Anda.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Anda tidak akan dikenakan biaya lagi. Lencana Anda akan dihapus dari profil Anda pada akhir periode penagihan.";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Konfirmasi Pembatalan?";
@@ -6941,40 +6941,40 @@
 "USERNAME_PREFIX" = "@";
 
 /* The title of an action sheet button that will delete a user's username. */
-"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Hapus Nama Pengguna";
 
 /* A message asking the user if they are sure they want to remove their username. */
-"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "Ini akan menghapus nama pengguna Anda, dan memungkinkan pengguna lain untuk memakainya. Apakah Anda yakin?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Dengan nama pengguna, orang lain dapat mengirimi Anda pesan tanpa memerlukan nomor telepon Anda. Nama pengguna dipasangkan dengan serangkaian nomor untuk membantu memastikan alamat Anda tetap privat. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Pilih nama pengguna";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Nama pengguna hanya boleh terdiri dari karakter a-z, 0-9, dan _.";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Nomor ini membantu memastikan nama pengguna Anda tetap privat sehingga Anda terhindar dari pesan yang tidak diinginkan. Bagikan nama pengguna Anda hanya dengan orang dan grup yang diinginkan. Jika mengganti nama pengguna, Anda akan mendapatkan serangkaian nomor baru.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Nomor apa ini?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Nama pengguna ini tidak tersedia.";
 
 /* The placeholder for a text field into which users can type their desired username. */
-"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Nama Pengguna";
 
 /* The title for the username selection view. */
-"USERNAME_SELECTION_TITLE" = "Username";
+"USERNAME_SELECTION_TITLE" = "Nama Pengguna";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Nama pengguna harus terdiri dari minimal %1$@ karakter.";
 
 /* A header describing buttons that allow the user to copy or share their username. */
-"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Salin atau bagikan tautan nama pengguna";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Nama perangkat tidak boleh kosong";
@@ -7016,7 +7016,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Ketuk di sini untuk membuat pesan ini menghilang setelah dilihat.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Berkas media lihat-sekali akan langsung terhapus setelah terkirim.";
+"VIEW_ONCE_OUTGOING_TOAST" = "File media sekali lihat akan langsung terhapus setelah terkirim.";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "Lihat Foto";

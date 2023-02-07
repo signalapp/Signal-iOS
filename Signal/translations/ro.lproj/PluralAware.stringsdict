@@ -139,7 +139,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ștergi conversația?</string>
+			<string>Șterg Conversația?</string>
 			<key>few</key>
 			<string>Ștergi %1$d conversații?</string>
 			<key>other</key>
@@ -296,11 +296,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ștergi mesajul?</string>
+			<string>Ștergi Mesajul?</string>
 			<key>few</key>
-			<string>Ștergi %1$d mesaje?</string>
+			<string>Ștergi %1$d Mesaje?</string>
 			<key>other</key>
-			<string>Ștergi %1$d de mesaje?</string>
+			<string>Ștergi %1$d de Mesaje?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -764,11 +764,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Un membru nu a putut fi adăugat noului grup și a fost eliminat din grup.</string>
+			<string>Un membru nu a putut fi adăugat Noului Grup și a fost eliminat din grup.</string>
 			<key>few</key>
-			<string>%1$d membri nu au putut fi adăugați noului grup și au fost eliminați din grup.</string>
+			<string>%1$d membri nu au putut fi adăugați Noului Grup și au fost eliminați din grup.</string>
 			<key>other</key>
-			<string>%1$d de membri nu au putut fi adăugați noului grup și au fost eliminați din grup.</string>
+			<string>%1$d de membri nu au putut fi adăugați Noului Grup și au fost eliminați din grup.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>

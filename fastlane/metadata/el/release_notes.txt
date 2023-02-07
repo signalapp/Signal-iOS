@@ -1,2 +1,2 @@
-• Even though the “Find by Phone Number” feature is now more than 4x faster, you can still take your time when you decide to start a new conversation.
-• We fixed a few bugs, including one that sometimes caused the text input field to be displayed incorrectly when replying to a story.
+• Παρόλο που η λειτουργία "Εύρεση μέσω αριθμού τηλεφώνου" είναι 4 φορές πιο γρήγορη, μπορείς ακόμα να αφιερώσεις χρόνο όταν αποφασίζεις να ξεκινήσεις μια νέα συνομιλία.
+• Διορθώσαμε μερικά σφάλματα, συμπεριλαμβανομένου ενός που μερικές φορές προκαλούσε την εσφαλμένη εμφάνιση του πεδίου εισαγωγής κειμένου κατά την απάντηση σε μια ιστορία.

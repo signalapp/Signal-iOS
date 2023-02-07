@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Essa cor personalizada é usada em %1$d chat. Quer removê-la?</string>
+			<string>Essa cor personalizada é usada em %1$d chat. Quer apagá-la?</string>
 			<key>other</key>
-			<string>Essa cor personalizada é usada em %1$d chats. Quer removê-la de todos os chats?</string>
+			<string>Essa cor personalizada é usada em %1$d chats. Quer apagá-la de todos os chats?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Excluir chat?</string>
+			<string>Apagar chat?</string>
 			<key>other</key>
-			<string>Excluir %1$d chats?</string>
+			<string>Apagar %1$d chats?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Este chat será excluído deste dispositivo.</string>
+			<string>Este chat será apagado deste dispositivo.</string>
 			<key>other</key>
-			<string>Estes chats serão excluídos deste dispositivo.</string>
+			<string>Estes chats serão apagados deste dispositivo.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -264,9 +264,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Excluir mensagem?</string>
+			<string>Apagar mensagem?</string>
 			<key>other</key>
-			<string>Excluir %1$d mensagens?</string>
+			<string>Apagar %1$d mensagens?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -744,9 +744,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Excluir %1$d mensagem</string>
+			<string>Apagar %1$d mensagem</string>
 			<key>other</key>
-			<string>Excluir %1$d mensagens</string>
+			<string>Apagar %1$d mensagens</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>

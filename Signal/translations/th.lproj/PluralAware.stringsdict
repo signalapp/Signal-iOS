@@ -83,7 +83,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>สีที่กำหนดเองนี้มีการใช้งานใน %1$d แชท คุณต้องการลบสีนี้จากแชททั้งหมดหรือไม่</string>
+			<string>สีที่กำหนดเองนี้มีการใช้งานในแชท %1$d รายการ คุณต้องการลบสีนี้จากแชททั้งหมดหรือไม่</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>แชตเหล่านี้จะถูกลบออกจากอุปกรณ์นี้</string>
+			<string>แชทเหล่านี้จะถูกลบออกจากอุปกรณ์เครื่องนี้</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -596,7 +596,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>เพิ่มสมาชิก %1$d คนใน New Group ไม่ได้ และได้ถูกลบออกจากกลุ่มแล้ว</string>
+			<string>เพิ่มสมาชิก %1$d คนในกลุ่มแบบใหม่ไม่ได้ และได้ถูกลบออกจากกลุ่มแล้ว</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -652,7 +652,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>ลบ %1$d ข้อความ</string>
+			<string>ลบข้อความ %1$d รายการ</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -946,7 +946,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>ลองได้อีก %1$d ครั้ง บัญชีของคุณจะถูกล็อกหากลองจนครบจำนวนครั้งแล้ว ถ้าไม่มีความเคลื่อนไหวภายใน 7 วัน คุณจะสามารถลงทะเบียนได้อีกครั้งโดยไม่ต้องใช้รหัส PIN โดยบัญชีของคุณจะถูกล้างและเนื้อหาทั้งหมดจะถูกลบ</string>
+			<string>ลองได้อีก %1$d ครั้ง บัญชีของคุณจะถูกล็อกหากลองจนครบจำนวนครั้งแล้ว หากไม่มีความเคลื่อนไหวภายใน 7 วัน คุณจะสามารถลงทะเบียนได้อีกครั้งโดยไม่ต้องใช้ PIN โดยบัญชีของคุณจะถูกล้างและเนื้อหาทั้งหมดจะถูกลบ</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

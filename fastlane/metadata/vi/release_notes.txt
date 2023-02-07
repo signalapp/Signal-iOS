@@ -1,2 +1,2 @@
-• Even though the “Find by Phone Number” feature is now more than 4x faster, you can still take your time when you decide to start a new conversation.
-• We fixed a few bugs, including one that sometimes caused the text input field to be displayed incorrectly when replying to a story.
+• Tính năng "Tìm theo Số Điện Thoại" nay nhanh hơn gấp 4 lần, dù vậy bạn vẫn có thời gian để nghĩ về việc bắt đầu trò chuyện nhé, không cần vội.
+• Chúng tôi đã sửa một số lỗi, bao gồm lỗi dẫn đến trường nhập văn bản đôi khi hiển thị không đúng khi trả lời story.

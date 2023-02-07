@@ -1080,9 +1080,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Il vous reste %1$d tentative. Si vous n&apos;avez plus de tentatives, votre compte sera verrouillé. Après 7 jours d&apos;inactivité, vous pouvez vous réinscrire sans votre code PIN. Votre compte sera effacé et tout le contenu supprimé.</string>
+			<string>Il vous reste %1$d tentative. Si vous n&apos;avez plus de tentatives, votre compte sera verrouillé. Après 7 jours d&apos;inactivité, vous pouvez vous réinscrire sans votre code PIN. Votre compte sera effacé et tout le contenu supprimé.</string>
 			<key>other</key>
-			<string>Il vous reste %1$d tentatives. Si vous n&apos;avez plus de tentatives, votre compte sera verrouillé. Après 7 jours d&apos;inactivité, vous pouvez vous réinscrire sans votre code PIN. Votre compte sera effacé et tout le contenu supprimé.</string>
+			<string>Il vous reste %1$d tentatives. Si vous n&apos;avez plus de tentatives, votre compte sera verrouillé. Après 7 jours d&apos;inactivité, vous pouvez vous réinscrire sans votre code PIN. Votre compte sera effacé et tout le contenu supprimé.</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

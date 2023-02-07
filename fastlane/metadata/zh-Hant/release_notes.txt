@@ -1,2 +1,2 @@
-• Even though the “Find by Phone Number” feature is now more than 4x faster, you can still take your time when you decide to start a new conversation.
-• We fixed a few bugs, including one that sometimes caused the text input field to be displayed incorrectly when replying to a story.
+• 儘管「以電話號碼搜尋」功能現在的速度提高了 4 倍以上，但您可以慢慢決定何時開始新的對話。
+• 我們修復了一些錯誤，包括在回覆限時動態時導致文字輸入欄位顯示不正確的錯誤。

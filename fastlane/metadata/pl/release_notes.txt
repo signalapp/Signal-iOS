@@ -1,2 +1,2 @@
-• Even though the “Find by Phone Number” feature is now more than 4x faster, you can still take your time when you decide to start a new conversation.
-• We fixed a few bugs, including one that sometimes caused the text input field to be displayed incorrectly when replying to a story.
+• Funkcja „Szukaj po numerze telefonu” może i stała się 4x szybsza, ale Ty nie musisz się spieszyć – pisz do ludzi wtedy, kiedy masz ochotę.
+• Naprawiliśmy kilka błędów, w tym jeden, który powodował nieprawidłowe wyświetlanie pola wprowadzania tekstu podczas odpowiadania na relację.

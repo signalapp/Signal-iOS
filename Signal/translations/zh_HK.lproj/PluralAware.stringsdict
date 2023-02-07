@@ -83,7 +83,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>此自訂色彩已在 %1$d 個聊天中使用。你要為所有聊天刪除此色彩嗎？</string>
+			<string>此自訂色彩已在 %1$d 個聊天中使用。您要為所有聊天刪除此色彩嗎？</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -946,7 +946,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>你尚餘 %1$d 次嘗試機會。如果你用光了嘗試機會，你的帳戶會被鎖定。閒置 7 天後，你無需使用 PIN 碼便能重新註冊，只是你的帳戶資料及所有內容會被清除。</string>
+			<string>您尚餘 %1$d 次嘗試機會。如果您用光了嘗試機會，您的帳戶會被鎖定。閒置 7 天後，您無需使用 PIN 碼便能重新註冊，只是您的帳戶資料及所有內容會被清除。</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

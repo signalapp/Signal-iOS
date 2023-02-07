@@ -115,11 +115,11 @@
 			<key>one</key>
 			<string>Tato vlastní barva se používá v %1$d konverzaci. Chcete ji odstranit?</string>
 			<key>few</key>
-			<string>Tato vlastní barva se používá v %1$d konverzacích. Chcete ji smazat ze všech konverzací?</string>
+			<string>Tato vlastní barva se používá v %1$d konverzacích. Chcete ji odstranit ze všech konverzací?</string>
 			<key>many</key>
-			<string>Tato vlastní barva se používá v %1$d konverzacích. Chcete ji smazat ze všech konverzací?</string>
+			<string>Tato vlastní barva se používá v %1$d konverzací. Chcete ji odstranit ze všech konverzací?</string>
 			<key>other</key>
-			<string>Tato vlastní barva se používá v %1$d konverzacích. Chcete ji smazat ze všech konverzací?</string>
+			<string>Tato vlastní barva se používá v %1$d konverzacích. Chcete ji odstranit ze všech konverzací?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -153,13 +153,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Smazat konverzaci?</string>
+			<string>Odstranit konverzaci?</string>
 			<key>few</key>
-			<string>Smazat %1$d konverzace?</string>
+			<string>Odstranit %1$d konverzace?</string>
 			<key>many</key>
-			<string>Smazat %1$d konverzací?</string>
+			<string>Odstranit %1$d konverzací?</string>
 			<key>other</key>
-			<string>Smazat %1$d konverzací?</string>
+			<string>Odstranit %1$d konverzací?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -173,13 +173,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tento chat bude vymazán z tohoto zařízení.</string>
+			<string>Tato konverzace bude z tohoto zařízení odstraněna.</string>
 			<key>few</key>
-			<string>Tyto chaty budou vymazány z tohoto zařízení.</string>
+			<string>Tyto konverzace budou z tohoto zařízení odstraněny.</string>
 			<key>many</key>
-			<string>Tyto chaty budou vymazány z tohoto zařízení.</string>
+			<string>Těchto konverzací bude z tohoto zařízení odstraněno.</string>
 			<key>other</key>
-			<string>Tyto chaty budou vymazány z tohoto zařízení.</string>
+			<string>Těchto konverzací bude z tohoto zařízení odstraněno.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -848,7 +848,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Do nové skupiny nebylo možné přidat jednoho člena  a ze skupiny byl odebrán.</string>
+			<string>Do nové skupiny nebylo možné přidat jednoho člena a ze skupiny byl odebrán.</string>
 			<key>few</key>
 			<string>Do nové skupiny nebylo možné přidat %1$d členy a ze skupiny byli odebráni.</string>
 			<key>many</key>
@@ -1348,13 +1348,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Zbývá vám %1$d pokus. Pokud vám pokusy dojdou, bude váš účet zablokován. Po 7 dnech nečinnosti se můžete znovu zaregistrovat bez svého PIN. Váš účet bude odstraněn a veškerý jeho obsah smazán.</string>
+			<string>Zbývá vám %1$d pokus. Pokud vám pokusy dojdou, bude váš účet zablokován. Po 7 dnech nečinnosti se můžete znovu zaregistrovat bez vašeho PIN. Váš účet bude zrušen a veškerý obsah smazán.</string>
 			<key>few</key>
-			<string>Zbývají vám %1$d pokusy. Pokud vám pokusy dojdou, bude váš účet zablokován. Po 7 dnech nečinnosti se můžete znovu zaregistrovat bez svého PIN. Váš účet bude odstraněn a veškerý jeho obsah smazán.</string>
+			<string>Zbývají vám %1$d pokusy. Pokud vám pokusy dojdou, bude váš účet zablokován. Po 7 dnech nečinnosti se můžete znovu zaregistrovat bez vašeho PIN. Váš účet bude zrušen a veškerý obsah smazán.</string>
 			<key>many</key>
-			<string>Zbývá vám %1$d pokusů. Pokud vám pokusy dojdou, bude váš účet zablokován. Po 7 dnech nečinnosti se můžete znovu zaregistrovat bez svého PIN. Váš účet bude odstraněn a veškerý jeho obsah smazán.</string>
+			<string>Zbývá vám %1$d pokusů. Pokud vám pokusy dojdou, bude váš účet zablokován. Po 7 dnech nečinnosti se můžete znovu zaregistrovat bez vašeho PIN. Váš účet bude zrušen a veškerý obsah smazán.</string>
 			<key>other</key>
-			<string>Zbývá vám %1$d pokusů. Pokud vám pokusy dojdou, bude váš účet zablokován. Po 7 dnech nečinnosti se můžete znovu zaregistrovat bez svého PIN. Váš účet bude odstraněn a veškerý jeho obsah smazán.</string>
+			<string>Zbývá vám %1$d pokusů. Pokud vám pokusy dojdou, bude váš účet zablokován. Po 7 dnech nečinnosti se můžete znovu zaregistrovat bez vašeho PIN. Váš účet bude zrušen a veškerý obsah smazán.</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

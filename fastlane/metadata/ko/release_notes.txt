@@ -1,2 +1,2 @@
-• Even though the “Find by Phone Number” feature is now more than 4x faster, you can still take your time when you decide to start a new conversation.
-• We fixed a few bugs, including one that sometimes caused the text input field to be displayed incorrectly when replying to a story.
+• '전화번호로 검색' 기능이 이전보다 4배 이상 빨라지긴 했지만, 새 대화를 시작할 땐 여유롭게 충분히 시간을 들여 시작하세요.
+• 스토리에 답장할 때 때로 텍스트 입력 필드가 잘못 표시됐던 오류를 비롯해 몇 가지 버그를 수정했습니다.

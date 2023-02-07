@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sohbet silinsin mi?</string>
+			<string>Konuşmayı Sil?</string>
 			<key>other</key>
 			<string>%1$d sohbetleri silinsin mi?</string>
 		</dict>
@@ -141,7 +141,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Bu sohbet bu cihazdan silinecek.</string>
+			<string>Bu konuşma bu cihazdan silinecektir.</string>
 			<key>other</key>
 			<string>Bu sohbetler bu cihazdan silinecek.</string>
 		</dict>
@@ -1080,9 +1080,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d deneme hakkın kaldı. Hakkın biterse hesabın kilitlenecektir. 7 gün eylemsizlikten sonra, PIN olmadan tekrar kaydolabilirsin. Hesabın ve tüm içeriğin silinecektir.</string>
+			<string>%1$d deneme hakkın kaldı. Hakkın biterse hesabın kilitlenecektir. 7 gün hareketsizlikten sonra PIN olmadan tekrar kaydolabilirsin. Hesabın ve tüm içeriğin silinecektir.</string>
 			<key>other</key>
-			<string>%1$d deneme hakkın kaldı. Hakkın biterse hesabın kilitlenecektir. 7 gün eylemsizlikten sonra, PIN olmadan tekrar kaydolabilirsin. Hesabın ve tüm içeriğin silinecektir.</string>
+			<string>%1$d deneme hakkın kaldı. Hakkın biterse hesabın kilitlenecektir. 7 gün hareketsizlikten sonra PIN olmadan tekrar kaydolabilirsin. Hesabın ve tüm içeriğin silinecektir.</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

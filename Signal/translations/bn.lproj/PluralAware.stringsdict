@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>চ্যাট মুছবেন?</string>
+			<string>চ্যাট মুছে ফেলবেন?</string>
 			<key>other</key>
 			<string>%1$dটি চ্যাট মুছবেন?</string>
 		</dict>
@@ -141,7 +141,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>এই চ্যাটগুলো এই ডিভাইস থেকে মুছে ফেলা হবে।</string>
+			<string>এই চ্যাটটি এই ডিভাইস থেকে মুছে ফেলা হবে।</string>
 			<key>other</key>
 			<string>এই চ্যাটগুলো এই ডিভাইস থেকে মুছে ফেলা হবে।</string>
 		</dict>
@@ -264,9 +264,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>ম্যাসেজ মুছবেন?</string>
+			<string>বার্তা মুছবেন?</string>
 			<key>other</key>
-			<string>%1$dটি ম্যাসেজ মুছবেন?</string>
+			<string>%1$dটি বার্তা মুছবেন?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -744,9 +744,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$dটি ম্যাসেজ মুছে দিন</string>
+			<string>%1$dটি ম্যাসেজ মুছে ফেলুন</string>
 			<key>other</key>
-			<string>%1$dটি ম্যাসেজ মুছে দিন</string>
+			<string>%1$dটি ম্যাসেজ মুছে ফেলুন</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -1080,9 +1080,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>আপনি আর %1$d বার চেষ্টা করতে পারবেন। আপনার প্রচেষ্টার সুযোগ শেষ হয়ে গেলে আপনার অ্যাকাউন্ট লক করা হবে। 7 দিন নিষ্ক্রিয় থাকার পর, আপনি আপনার পিন ছাড়াই পুনরায় নিবন্ধন করতে পারবেন। আপনার অ্যাকাউন্ট মুছে ফেলা হবে এবং সমস্ত কন্টেন্টও মুছে ফেলা হবে।</string>
+			<string>আপনি আর %1$d বার চেষ্টা করতে পারবেন। আপনার প্রচেষ্টার সুযোগ শেষ হয়ে গেলে আপনার অ্যাকাউন্ট লক করা হবে। 7 দিন নিষ্ক্রিয় থাকার পর, আপনি আপনার পিন ছাড়াই পুনরায় নিবন্ধন করতে পারবেন। আপনার অ্যাকাউন্ট মুছে ফেলা হবে এবং সকল কন্টেন্টও মুছে ফেলা হবে।</string>
 			<key>other</key>
-			<string>আপনি আর %1$d বার চেষ্টা করতে পারবেন। আপনার প্রচেষ্টার সুযোগ শেষ হয়ে গেলে আপনার অ্যাকাউন্ট লক করা হবে। 7 দিন নিষ্ক্রিয় থাকার পর, আপনি আপনার পিন ছাড়াই পুনরায় নিবন্ধন করতে পারবেন। আপনার অ্যাকাউন্ট মুছে ফেলা হবে এবং সমস্ত কন্টেন্টও মুছে ফেলা হবে।</string>
+			<string>আপনি আর %1$d বার চেষ্টা করতে পারবেন। আপনার প্রচেষ্টার সুযোগ শেষ হয়ে গেলে আপনার অ্যাকাউন্ট লক করা হবে। 7 দিন নিষ্ক্রিয় থাকার পর, আপনি আপনার পিন ছাড়াই পুনরায় নিবন্ধন করতে পারবেন। আপনার অ্যাকাউন্ট মুছে ফেলা হবে এবং সকল কন্টেন্টও মুছে ফেলা হবে।</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

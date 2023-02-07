@@ -113,7 +113,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>צבע מותאם אישית זה נמצא בשימוש בצ׳אט %1$d. למחוק אותו עבור כל הצ׳אטים?</string>
+			<string>צבע מותאם אישית זה נמצא בשימוש בצ׳אט %1$d. למחוק אותו?</string>
 			<key>two</key>
 			<string>צבע מותאם אישית זה נמצא בשימוש ב–%1$d צ׳אטים. למחוק אותו עבור כל הצ׳אטים?</string>
 			<key>many</key>
@@ -153,7 +153,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>למחוק צ׳אט?</string>
+			<string>למחוק צ&apos;אט?</string>
 			<key>two</key>
 			<string>למחוק %1$d צ׳אטים?</string>
 			<key>many</key>
@@ -173,13 +173,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>התכתבות זו תימחק ממכשיר זה.</string>
+			<string>צ&apos;אט זה יימחק ממכשיר זה.</string>
 			<key>two</key>
-			<string>התכתבויות אלו יימחקו ממכשיר זה.</string>
+			<string>צ׳אטים אלו יימחקו ממכשיר זה.</string>
 			<key>many</key>
-			<string>התכתבויות אלו יימחקו ממכשיר זה.</string>
+			<string>צ׳אטים אלו יימחקו ממכשיר זה.</string>
 			<key>other</key>
-			<string>התכתבויות אלו יימחקו ממכשיר זה.</string>
+			<string>צ׳אטים אלו יימחקו ממכשיר זה.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>

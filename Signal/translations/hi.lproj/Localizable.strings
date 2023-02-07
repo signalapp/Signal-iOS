@@ -857,7 +857,7 @@
 "CHAT_COLOR_SETTINGS_AUTO" = "ऑटो";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "रंग हटाए";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "रंग डिलीट करें";
 
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "चैट का रंग";
@@ -905,13 +905,13 @@
 "CONFIRM_DELETE_DATA_TEXT" = "यह आपके संदेशों को हटाकर एप्लिकेशन को रीसेट कर देगा। यह प्रक्रिया पूरी होने के बाद ऐप बंद हो जाएगा।";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TITLE" = "क्या आपको यकीन है कि आप अपना डाटा हटाना चाहते हैं?";
+"CONFIRM_DELETE_DATA_TITLE" = "क्या आपको यकीन है कि आप अपना डाटा डिलीट करना चाहते हैं?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "ये करने से आपका ऐप रिसेट हो जाएगा और इस डिवाइस से सारे मेसेज हटा दिये जाएँगे। आप अपने फोन को दोबारा लिंक कर सकते हैं पर इससे हटाए गए मेसेज वापस नहीं प्राप्त हो पाऐंगे। यह प्रक्रिया खत्म होने के बाद ऐप बंद हो जाएगा।";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "क्या आपको यकीन है कि आप अपना डाटा हटाना चाहते हैं?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "क्या आपको यकीन है कि आप अपना डाटा डिलीट करना चाहते हैं?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "अब आप इस ग्रुप मे कोई मेसेज भेज या प्राप्त नहीं कर पाऐंगे।";
@@ -1109,7 +1109,7 @@
 "CONTEXT_MENU_COPY" = "कॉपी";
 
 /* Context menu button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "हटाए";
+"CONTEXT_MENU_DELETE_MESSAGE" = "डिलीट करें";
 
 /* Context menu button title */
 "CONTEXT_MENU_DETAILS" = "जानकारी";
@@ -1133,7 +1133,7 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "रुकें";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "इस चैट को इस डिवाइस से मिटा दिया जाएगा।";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "इस चैट को इस डिवाइस से डिलीट कर दिया जाएगा।";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "चैट को डिलीट करना है?";
@@ -1373,7 +1373,7 @@
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "आपने यह भेजा है:";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "सब हटा दें";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "सब डिलीट करें";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "और संदेश लोड हो रहे हैं…";
@@ -1547,19 +1547,19 @@
 "DECLINED_VIDEO_CALL" = "आपने एक वीडियो कॉल काट दी";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "खाता बंद कर दें";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "अकाउंट डिलीट करें";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "इससे आपका Signal खाता डिलीट हो जाएगा और एप्लिकेशन रीसेट हो जाएगी। यह प्रक्रिया पूरी हो जाने के बाद ऐप बंद हो जाएगी।";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "इससे आपका Signal अकाउंट डिलीट हो जाएगा और एप्लिकेशन रीसेट हो जाएगी। यह प्रक्रिया पूरी हो जाने के बाद ऐप बंद हो जाएगी।";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "क्या आपको यकीन है कि आप अपना ख़ाता खत्म करना चाहते हैं?";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "क्या आपको यकीन है कि आप अपना अकाउंट डिलीट करना चाहते हैं?";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "देश कोड";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "खाता डिलीट करने में विफल रहे। सुनिश्चित करें कि Wi-Fi या मोबाइल डेटा चालू है, फिर दोबारा प्रयास करें।";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "अकाउंट डिलीट करने में विफल रहे। सुनिश्चित करें कि Wi-Fi या मोबाइल डेटा चालू है, फिर दोबारा प्रयास करें।";
 
 /* Description for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "इससे आपके खाते की जानकारी, प्रोफ़ाइल, और आपके सारे संदेश डिलीट हो जाएँगे।";
@@ -1577,7 +1577,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "अपने Signal नंबर की पुष्टि करें";
 
 /* Title for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "खाता बंद कर दें";
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "अकाउंट डिलीट करें";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "आपके द्वारा दर्ज किया गया फ़ोन नंबर आपके खाते के फ़ोन नंबर से मेल नहीं खाता है।";
@@ -2783,7 +2783,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ ने आपको हटा दिया है।";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
-"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "आप ग्रुप से निकाले गए।";
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "आपको ग्रुप से हटाया गया।";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ने इस ग्रुप में शामिल होने के आपके अनुरोध को एप्रूव कर लिया है।";
@@ -2975,7 +2975,7 @@
 "GROUP_UPDATED_DESCRIPTION_REMOVED" = "समूह विवरण हटा दिया गया था।";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "आपने समूह विवरण निकाल दिया है.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "आपने समूह विवरण हटा दिया है.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
 "GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ ने ग्रुप का विवरण हटा दिया है।";
@@ -3458,13 +3458,13 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "लिंक पूर्वावलोकन";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "सिस्टम संपर्कों को प्रबंधित करना अब iPad पर उपलब्ध नहीं है। अपने सिस्टम संपर्कों में Signal कनेक्शन जोड़ने के लिए अपने फोन पर Signal खोलें।";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "सिस्टम संपर्कों को प्रबंधित करना अब iPad पर सपोर्टेड नहीं है। यह डिवाइस आपके फोन पर Signal से आपकी संपर्क सूची में किसी भी बदलाव को सिंक करना जारी रखेगी।";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
-"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "अधिक जानें";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "लिंक की गईं डिवाइसें";
@@ -3554,19 +3554,19 @@
 "MESSAGE_ACTION_COPY_TEXT" = "मेसेज के शब्द कॉपी करें";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "सब के लिये हटा दें";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "सब के लिये डिलीट करें";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "यह मेसेज चैट में शामिल सभी के लिए मिटा दिया जाएगा यदि वे Signal के नवीनमत वर्ज़न पर हैं। वे देख सकेंगे कि आपने एक मेसेज को मिटा दिया है।";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "यह मेसेज चैट में शामिल सभी के लिए डिलीट कर दिया जाएगा यदि वे Signal के नवीनमत वर्ज़न पर हैं। वे देख सकेंगे कि आपने एक मेसेज को डिलीट कर दिया है।";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "आप यह संदेश किसके लिए डिलीट करना चाहेंगे?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "मेरे लिए मिटाएँ";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "मेरे लिए डिलीट करें";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "यह मेसेज हटाएं";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "यह मेसेज डिलीट करें";
 
 /* accessibility label */
 "MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "चुने हुए संदेशों को डिलीट करें";
@@ -3719,10 +3719,10 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%1$@ को ब्लॉक करके छोड़ दें?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "हटाए";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "डिलीट करें";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "इस चैट को आपके सभी डिवाइसेस से मिटा दिया जाएगा।";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "इस चैट को आपके सभी डिवाइसेस से डिलीट कर दिया जाएगा।";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "चैट को डिलीट करना है?";
@@ -3779,7 +3779,7 @@
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "आगे";
 
 /* incoming message request button text which deletes a conversation */
-"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "मिटाओ";
+"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "डिलीट करें";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "%1$@ के साथ यह चैट जारी रखनी है और इनके साथ अपना नाम और तस्वीर शेयर करनी है?";
@@ -5288,10 +5288,10 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "लिंकिंग कोड नहीं मिल रहा है";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "इस डिवाइस को किसी अन्य अकाउंट से लिंक करने के लिए आपको पहले इस डिवाइस को रीसेट करना होगा। क्या आप वाकई सारा इतिहास (संदेश, अटैचमेंट, कॉल, इत्यादि) हटाना चाहते हैं? यह कार्रवाई होने के बाद वापस नहीं ली जा सकती।";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "इस डिवाइस को किसी अन्य अकाउंट से लिंक करने के लिए आपको पहले इस डिवाइस को रीसेट करना होगा। क्या आप वाकई सारा इतिहास (संदेश, अटैचमेंट, कॉल, इत्यादि) डिलीट करना चाहते हैं? यह कार्रवाई होने के बाद वापस नहीं ली जा सकती।";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "सब कुछ हटा दें";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "सब कुछ डिलीट करें";
 
 /* Title for error alert indicating that re-linking failed because the account did not match. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "खातों का मिलान नहीं हो रहा है";
@@ -5570,7 +5570,7 @@
 "SETTINGS_DATA_TITLE" = "डेटा का उपयोग";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "खाता बंद कर दें";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "अकाउंट डिलीट करें";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "ट्रांसफ़र न करें";
@@ -5585,13 +5585,13 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "बैलेंस ट्रांसफ़र करें";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "सारा डाटा साफ़ कर दें";
+"SETTINGS_DELETE_DATA_BUTTON" = "सारा डाटा डिलीट करें";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "क्या आप वाकई सारा इतिहास (संदेश, अटैचमेंट, कॉल, इत्यादि) हटाना चाहते हैं? यह कार्रवाई होने के बाद वापस नहीं ली जा सकती।";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "क्या आप वाकई सारा इतिहास (संदेश, अटैचमेंट, कॉल, इत्यादि) डिलीट करना चाहते हैं? यह कार्रवाई होने के बाद वापस नहीं ली जा सकती।";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "सब कुछ हटा दें";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "सब कुछ डिलीट करें";
 
 /* Label for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES" = "गायब होते मेसेज";
@@ -6275,10 +6275,10 @@
 "SMS_INVITE_BODY" = "मैं आपको Signal स्थापिेत करने का निमंत्रण देता हुँ, ये रही लिंक:";
 
 /* An error message generically indicating that something went wrong. */
-"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+"SOMETHING_WENT_WRONG_ERROR" = "कुछ गलत हो गया।";
 
 /* An error message generically indicating that something went wrong, and that the user should try again later. */
-"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "कुछ गलत हो गया। कृपया बाद में पुन: प्रयास करें।";
 
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "ध्वनियाँ और सूचनाएँ";
@@ -6830,7 +6830,7 @@
 "TXT_CANCEL_TITLE" = "रद्द करें";
 
 /* Label for the delete button in an alert or action sheet. */
-"TXT_DELETE_TITLE" = "मिटाओ";
+"TXT_DELETE_TITLE" = "डिलीट करें";
 
 /* Label for the unarchive button for conversations list view */
 "UNARCHIVE_ACTION" = "अनारक्षित करें";
@@ -6941,40 +6941,40 @@
 "USERNAME_PREFIX" = "@";
 
 /* The title of an action sheet button that will delete a user's username. */
-"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "यूज़र नाम डिलीट करें";
 
 /* A message asking the user if they are sure they want to remove their username. */
-"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "यह आपके यूज़र नाम को हटा देगा, जिससे अन्य यूज़र इस पर दावा कर सकेंगे. क्या आप वाकई यह करना चाहते हैं?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "यूज़रनेम से अन्य लोग बिना आपके फ़ोन नंबर के बिना ही आपको संदेश भेज सकते हैं। वे कुछ अंकों के समूह में होते हैं ताकि आपको अपना पता निजी रखने में मदद मिल सके। %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "अपना यूज़रनेम चुनें";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "उपयोगकर्ता नाम में केवल a-z, 0-9, और _ आ सकते हैं।";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "यह अंक आपके यूज़रनेम को निजी रखने में मदद करते हैं ताकि आप अवांछित संदेशों से बच सकें। अपना यूज़रनेम केवल उन लोगों और ग्रुप्स के साथ साझा करें जिनसे आप चैट करना पसंद करते हैं। यदि आप यूज़रनेम बदलते हैं तो आपको अंकों का एक नया सेट मिलेगा।";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "यह नंबर क्या है?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "यह यूज़रनेम उपलब्ध नहीं है।";
 
 /* The placeholder for a text field into which users can type their desired username. */
-"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "यूज़रनेम";
 
 /* The title for the username selection view. */
-"USERNAME_SELECTION_TITLE" = "Username";
+"USERNAME_SELECTION_TITLE" = "यूज़रनेम";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "यूज़रनेम कम से कम %1$@ वर्णों से शुरू होने चाहिए।";
 
 /* A header describing buttons that allow the user to copy or share their username. */
-"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "कोई यूज़रनेम लिंक कॉपी या शेयर करें";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "डिवाइस का नाम ख़ाली नहीं हो सकता";
@@ -7016,7 +7016,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "इस संदेश को देखने के बाद ग़ायब करने के लिए यहाँ टैप करें।";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "आउटगोइंग व्यू-एक बार मीडिया फ़ाइलों को उनके भेजे जाने के बाद स्वचालित रूप से हटा दिया जाता है";
+"VIEW_ONCE_OUTGOING_TOAST" = "आउटगोइंग व्यू-एक बार मीडिया फ़ाइलों को उनके भेजे जाने के बाद स्वचालित रूप से हटा दिया जाता है।";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "फ़ोटो देखें";

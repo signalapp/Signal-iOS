@@ -908,7 +908,7 @@
 "CONFIRM_DELETE_DATA_TITLE" = "Biztosan törölni akarsz minden adatot?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Ezzel az alkalmazás alaphelyzetbe áll és minden üzeneted törlődik. A későbbiekben bármikor újratársíthatod a készüléked, de a törölt üzenetek nem kerülnek vissza. Az alkalmazás ezt követően bezáródik.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Ezzel az alkalmazás alaphelyzetbe áll, és minden üzeneted törlődik a készülékről. A későbbiekben bármikor újratársíthatod a készüléked, de a törölt üzenetek nem kerülnek vissza. Az alkalmazás ezt követően bezáródik.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Biztosan törölni akarsz minden adatot?";
@@ -1325,7 +1325,7 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Eltávolítás a csoportból";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Eltávolítod a csoportból: %1$@?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Eltávolítod %1$@ felhasználót a csoportból?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Admin jog elvétele";
@@ -1373,7 +1373,7 @@
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "Te küldted:";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Minden törlése";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Az összes törlése";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "További üzenetek betöltése…";
@@ -1550,7 +1550,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Fiók törlése";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Ez törölni fogja a Signal fiókod és alaphelyzetbe állítja az alkalmazást. A Signal a folyamat végén bezárásra kerül.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Ez törölni fogja a Signal fiókod, és alaphelyzetbe állítja az alkalmazást. A Signal a folyamat végén bezárásra kerül.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Biztosan törölni akarod a fiókod?";
@@ -1559,7 +1559,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Országkód";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Sikertelen fióktörlés. Ellenőrizd, hogy van WiFi vagy mobilnet kapcsolatod és próbáld újra.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Sikertelen fióktörlés. Ellenőrizd, hogy van-e WiFi vagy mobilnet kapcsolatod, és próbáld újra.";
 
 /* Description for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Ezzel fiók információid, profilod és minden üzeneted törlésre kerül.";
@@ -2885,10 +2885,10 @@
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%1$@ elhagyta a csoportot.";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "Eltávolítottad a csoportból: %1$@.";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "Eltávolítottad a csoportból %1$@ felhasználót.";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
-"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ eltávolította a csoportból: %2$@.";
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ eltávolította a csoportból %2$@ felhasználót.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "Jóváhagytál egy csoport belépési igényt tőle: %1$@";
@@ -2948,7 +2948,7 @@
 "GROUP_UPDATED" = "Csoport frissítve.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "A csoport avatár eltávolítva.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "Csoport avatár eltávolításra került.";
 
 /* Message indicating that the group's avatar was removed. */
 "GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Eltávolítottad a csoport avatárt.";
@@ -3011,7 +3011,7 @@
 "GROUP_WAS_MIGRATED" = "Ez a csoport új típusú csoporttá lett alakítva.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Nem tudtak közvetlenül az új típusú csoporthoz adni és el lettél távolítva a tagok közül.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Nem tudtak közvetlenül az Új csoporthoz adni, és el lettél távolítva a tagok közül.";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Nem tudtak közvetlenül az új típusú csoporthoz adni, ezért meghívót kaptál.";
@@ -3146,10 +3146,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "Megtartottuk a frissítés előtti üzenet-előzményeket és médiafájlokat.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Az alábbi tag eltávolításra került és amíg nem frissíti az alkalmazását nem is lesz képes a csoporthoz csatlakozni:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "Az alábbi tag eltávolításra került, és amíg nem frissíti az alkalmazását, nem fog tudni a csoporthoz csatlakozni:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Az alábbi tagok eltávolításra kerültek és amíg nem frissítik az alkalmazásukat nem is lesznek képesek a csoporthoz csatlakozni:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "Az alábbi tagok eltávolításra kerültek, és amíg nem frissítik az alkalmazásukat, nem fognak tudni a csoporthoz csatlakozni:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Az alábbi tag csak egy meghívó elfogadása után lesz képes a csoporthoz csatlakozni és annak megtörténtéig nem fogadhat innen üzeneteket sem:";
@@ -3158,10 +3158,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Az alábbi tagok csak egy meghívó elfogadása után lesznek képesek a csoporthoz csatlakozni és annak megtörténtéig nem fogadhatnak innen üzeneteket sem:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Az alábbi tag nem képes az új típusú csoportba belépni és eltávolításra kerül:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Az alábbi tag nem tud az Új csoportokba belépni, és eltávolításra kerül:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Az alábbi tagok nem képesek az új típusú csoportba belépni és eltávolításra kerülnek:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Az alábbi tagok nem tudnak az Új csoportba belépni, és eltávolításra kerülnek:";
 
 /* Title for the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Frissítés új típusú csoportra";
@@ -3458,13 +3458,13 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link előnézet";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "A rendszernévjegyek kezelése már nem érhető el iPaden. Ha Signal Névjegyeket szeretnél hozzáadni a rendszernévjegyekhez, nyisd meg a Signalt a telefonodon.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Az iPad már nem támogatja a rendszernévjegyek kezelését. Ez az eszköz továbbra is szinkronizálja a telefonodon megtalálható Signal-névjegylistán végrehajtott módosításokat.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
-"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Tudj meg többet";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Társított eszközök";
@@ -3569,7 +3569,7 @@
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Üzenet törlése";
 
 /* accessibility label */
-"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Törlöd a kiválasztott üzeneteket?";
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Kiválasztott üzenetek törlése";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Részletek";
@@ -3728,7 +3728,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Törlöd a beszélgetést?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Törlés és kilépés.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Törlés és kilépés";
 
 /* Action sheet message to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Elhagyod a csoportot, így az összes társított eszközödről is törölve lesz.";
@@ -3899,7 +3899,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Nem lehetséges több eszköz társítása.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Elérted a maximum társítható eszközök számát. Szüntesd meg az egyik meglevő társítását, majd próbálkozz újra.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Elérted a maximum társítható eszközök számát. Szüntesd meg az egyik eszköz társítását, majd próbálkozz újra.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Némítva";
@@ -5288,10 +5288,10 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Társító kód lekérése sikertelen";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Az eszközt az újratársításhoz előbb alaphelyzetbe kell állítani. Biztosan mindent (üzenetek, csatolmányok, hívások stb.) törölni szeretnél? A művelet nem visszavonható.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Az eszközt az újratársításhoz előbb alaphelyzetbe kell állítani. Biztosan minden előzményt (üzenetek, csatolmányok, hívások stb.) törölni szeretnél? A művelet nem visszavonható.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Minden törlése";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Az összes törlése";
 
 /* Title for error alert indicating that re-linking failed because the account did not match. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "Nem egyező fiók";
@@ -5588,10 +5588,10 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Minden adat törlése";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Biztosan mindent (üzenetek, csatolmányok, hívások stb.) törölni szeretnél? A művelet nem visszavonható.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Biztosan minden előzményt (üzenetek, csatolmányok, hívások stb.) törölni szeretnél? A művelet nem visszavonható.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Minden törlése";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Az összes törlése";
 
 /* Label for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES" = "Eltűnő üzenetek";
@@ -6275,10 +6275,10 @@
 "SMS_INVITE_BODY" = "Szia, használd te is a Signalt! Innen telepítheted:";
 
 /* An error message generically indicating that something went wrong. */
-"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+"SOMETHING_WENT_WRONG_ERROR" = "Probléma merült fel!";
 
 /* An error message generically indicating that something went wrong, and that the user should try again later. */
-"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Probléma merült fel! Kérlek, próbáld újra később.";
 
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "Hangok és Értesítések";
@@ -6689,7 +6689,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Megerősítés";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Nem vonunk több összeget. Jelvényed a számlázási ciklus végig megmarad.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Nem vonunk le több összeget. Jelvényed a számlázási ciklus végig megmarad.";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Törlés biztosan?";
@@ -6941,40 +6941,40 @@
 "USERNAME_PREFIX" = "@";
 
 /* The title of an action sheet button that will delete a user's username. */
-"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Felhasználónév törlése";
 
 /* A message asking the user if they are sure they want to remove their username. */
-"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "Ezzel törlöd a felhasználóneved, ami így más számára elérhetővé válik. Biztos vagy benne?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "A felhasználónevek segítségével mások üzenetet küldhetnek neked anélkül, hogy szükségük lenne a telefonszámodra. Számjegyekkel vannak párosítva, hogy segítsenek megőrizni a címed privát jellegét. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Válaszd ki a felhasználóneved";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "A felhasználónevek csak az alábbi karaktereket tartalmazhatják: a-z, 0-9, _";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Ezek a számok segítenek megőrizni a felhasználóneved privát jellegét, hogy elkerüld a nem kívánt üzeneteket. Csak azokkal az emberekkel és csoportokkal oszd meg a felhasználóneved, akikkel csevegni szeretnél. Ha módosítod a felhasználóneved, új számsort kapsz.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Mi ez a szám?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Ez a felhasználónév nem érhető el";
 
 /* The placeholder for a text field into which users can type their desired username. */
-"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Felhasználónév";
 
 /* The title for the username selection view. */
-"USERNAME_SELECTION_TITLE" = "Username";
+"USERNAME_SELECTION_TITLE" = "Felhasználónév";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "A felhasználónév minimális hossza %1$@ karakter.";
 
 /* A header describing buttons that allow the user to copy or share their username. */
-"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Felhasználónév hivatkozás másolása vagy megosztása";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Az eszköz név megadása kötelező";
@@ -7016,7 +7016,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Koppints ide, hogy az üzenet olvasás után azonnal törlődő típusú legyen.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Az egyszer-megjelenő médiafájlok küldésük után a te oldaladon azonnal törlődnek.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Az egyszer megjelenő médiafájlok elküldésük után a te oldaladon azonnal törlődnek.";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "Fotó megtekintése";

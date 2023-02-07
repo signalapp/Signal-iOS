@@ -173,13 +173,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Цей чат буде видалено з цього пристрою.</string>
+			<string>Цей чат буде видалено з даного пристрою.</string>
 			<key>few</key>
-			<string>Ці чати буде видалено з цього пристрою.</string>
+			<string>Ці чати буде видалено з даного пристрою.</string>
 			<key>many</key>
-			<string>Ці чати буде видалено з цього пристрою.</string>
+			<string>Ці чати буде видалено з даного пристрою.</string>
 			<key>other</key>
-			<string>Ці чати буде видалено з цього пристрою.</string>
+			<string>Ці чати буде видалено з даного пристрою.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>

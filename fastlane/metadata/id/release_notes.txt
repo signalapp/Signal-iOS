@@ -1,2 +1,2 @@
-• Even though the “Find by Phone Number” feature is now more than 4x faster, you can still take your time when you decide to start a new conversation.
-• We fixed a few bugs, including one that sometimes caused the text input field to be displayed incorrectly when replying to a story.
+• Meskipun fitur “Cari berdasarkan Nomor Telepon” kini jadi lebih cepat 4x lipat, Anda tetap dapat menentukan kapan ingin memulai percakapan baru, tanpa perlu terburu-buru.
+• Kami memperbaiki beberapa bug, termasuk bug yang kadang menyebabkan kolom input teks tidak ditampilkan dengan benar saat membalas cerita.
