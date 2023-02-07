@@ -1177,13 +1177,13 @@ extension GroupsV2Error: IsRetryableProvider {
 
         switch self {
         case
-                .redundantChange,
                 .conflictingChangeOnService,
                 .shouldRetry,
                 .timeout,
                 .newMemberMissingAnnouncementOnlyCapability:
             return true
         case
+                .redundantChange,
                 .shouldDiscard,
                 .localUserNotInGroup,
                 .cannotBuildGroupChangeProto_conflictingChange,

@@ -662,25 +662,28 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         }
 
         for uuid in invitedMembersToPromote {
-            // Check that pending member is still invited.
-            guard currentGroupMembership.isInvitedMember(uuid) else {
-                if currentGroupMembership.isFullMember(uuid) {
-                    throw GroupsV2Error.redundantChange
-                } else {
-                    throw GroupsV2Error.cannotBuildGroupChangeProto_conflictingChange
+            if currentGroupMembership.isInvitedMember(uuid) {
+                guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
+                    throw OWSAssertionError("Missing profile key credential: \(uuid)")
                 }
-            }
-            guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
-                throw OWSAssertionError("Missing profile key credential: \(uuid)")
-            }
-            var actionBuilder = GroupsProtoGroupChangeActionsPromotePendingMemberAction.builder()
-            actionBuilder.setPresentation(try GroupsV2Protos.presentationData(profileKeyCredential: profileKeyCredential,
-                                                                              groupV2Params: groupV2Params))
-            actionsBuilder.addPromotePendingMembers(try actionBuilder.build())
-            didChange = true
 
-            remainingMemberOfAnyKindUuids.insert(uuid)
-            remainingFullMemberUuids.insert(uuid)
+                var actionBuilder = GroupsProtoGroupChangeActionsPromotePendingMemberAction.builder()
+                actionBuilder.setPresentation(try GroupsV2Protos.presentationData(
+                    profileKeyCredential: profileKeyCredential,
+                    groupV2Params: groupV2Params
+                ))
+
+                actionsBuilder.addPromotePendingMembers(try actionBuilder.build())
+                didChange = true
+
+                remainingMemberOfAnyKindUuids.insert(uuid)
+                remainingFullMemberUuids.insert(uuid)
+            } else if currentGroupMembership.isFullMember(uuid) {
+                // Redundant change, not a conflict.
+            } else {
+                throw GroupsV2Error.cannotBuildGroupChangeProto_conflictingChange
+            }
+
         }
 
         if self.shouldLeaveGroupDeclineInvite {
