@@ -787,6 +787,14 @@
 		6600F387298F358F00B1EDB7 /* TestSchedulers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F385298F355B00B1EDB7 /* TestSchedulers.swift */; };
 		6600F389298F5D9200B1EDB7 /* SyncScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F388298F5D9200B1EDB7 /* SyncScheduler.swift */; };
 		6600F38B299016BC00B1EDB7 /* TestSchedulerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F38A299016BC00B1EDB7 /* TestSchedulerTest.swift */; };
+		6600F354298C8FCA00B1EDB7 /* RegistrationSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F353298C8FCA00B1EDB7 /* RegistrationSession.swift */; };
+		6600F356298C903000B1EDB7 /* RegistrationSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F355298C903000B1EDB7 /* RegistrationSessionManager.swift */; };
+		6600F358298D646E00B1EDB7 /* RegistrationSessionManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F357298D646E00B1EDB7 /* RegistrationSessionManagerImpl.swift */; };
+		6600F364298D96C700B1EDB7 /* TSRequestOWSURLSessionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F363298D96C700B1EDB7 /* TSRequestOWSURLSessionMock.swift */; };
+		6600F368298DA57200B1EDB7 /* OWSSignalServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FEC28B4177800043D28 /* OWSSignalServiceMock.swift */; };
+		6600F369298DA57200B1EDB7 /* BaseOWSURLSessionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FE528B4149200043D28 /* BaseOWSURLSessionMock.swift */; };
+		6600F36C298DAA6200B1EDB7 /* DateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F36B298DAA6200B1EDB7 /* DateProvider.swift */; };
+		6600F367298D9D1100B1EDB7 /* RegistrationSessionManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F366298D9D1100B1EDB7 /* RegistrationSessionManagerTest.swift */; };
 		66138FAB2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FAA2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift */; };
 		66138FB429831AB0002E0CFE /* InMemoryKeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FB22983010D002E0CFE /* InMemoryKeyValueStore.swift */; };
 		66138FB6298326C7002E0CFE /* KeyBackupServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FB5298326C7002E0CFE /* KeyBackupServiceProtocol.swift */; };
@@ -828,9 +836,7 @@
 		6698FC1C2980AE00004EFC30 /* KeyBackupServiceObjcBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6698FC1B2980AE00004EFC30 /* KeyBackupServiceObjcBridge.swift */; };
 		669E8FE828B4153C00043D28 /* OWSUrlSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FE728B4153B00043D28 /* OWSUrlSession.swift */; };
 		669E8FE928B415C000043D28 /* OWSURLBuilderUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */; };
-		669E8FED28B4177900043D28 /* OWSSignalServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FEC28B4177800043D28 /* OWSSignalServiceMock.swift */; };
 		669E8FEF28B417D500043D28 /* OWSSignalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FEE28B417D500043D28 /* OWSSignalService.swift */; };
-		669E8FF028B4185300043D28 /* OWSURLSessionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FE528B4149200043D28 /* OWSURLSessionMock.swift */; };
 		669E8FF128B41A8500043D28 /* StoryUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668AB0CB28AD610600B31984 /* StoryUtil.swift */; };
 		669E900028B42B7A00043D28 /* SystemStoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */; };
 		669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */; };
@@ -3182,6 +3188,12 @@
 		6600F385298F355B00B1EDB7 /* TestSchedulers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSchedulers.swift; sourceTree = "<group>"; };
 		6600F388298F5D9200B1EDB7 /* SyncScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncScheduler.swift; sourceTree = "<group>"; };
 		6600F38A299016BC00B1EDB7 /* TestSchedulerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSchedulerTest.swift; sourceTree = "<group>"; };
+		6600F353298C8FCA00B1EDB7 /* RegistrationSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationSession.swift; sourceTree = "<group>"; };
+		6600F355298C903000B1EDB7 /* RegistrationSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationSessionManager.swift; sourceTree = "<group>"; };
+		6600F357298D646E00B1EDB7 /* RegistrationSessionManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationSessionManagerImpl.swift; sourceTree = "<group>"; };
+		6600F363298D96C700B1EDB7 /* TSRequestOWSURLSessionMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSRequestOWSURLSessionMock.swift; sourceTree = "<group>"; };
+		6600F36B298DAA6200B1EDB7 /* DateProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateProvider.swift; sourceTree = "<group>"; };
+		6600F366298D9D1100B1EDB7 /* RegistrationSessionManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationSessionManagerTest.swift; sourceTree = "<group>"; };
 		66138FAA2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceTestShims.swift; sourceTree = "<group>"; };
 		66138FAE2982F4C4002E0CFE /* MockDBV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDBV2.swift; sourceTree = "<group>"; };
 		66138FB22983010D002E0CFE /* InMemoryKeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryKeyValueStore.swift; sourceTree = "<group>"; };
@@ -3226,7 +3238,7 @@
 		6698FC192980AB45004EFC30 /* DependenciesBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependenciesBridge.swift; sourceTree = "<group>"; };
 		6698FC1B2980AE00004EFC30 /* KeyBackupServiceObjcBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceObjcBridge.swift; sourceTree = "<group>"; };
 		669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSURLBuilderUtil.swift; sourceTree = "<group>"; };
-		669E8FE528B4149200043D28 /* OWSURLSessionMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLSessionMock.swift; sourceTree = "<group>"; };
+		669E8FE528B4149200043D28 /* BaseOWSURLSessionMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseOWSURLSessionMock.swift; sourceTree = "<group>"; };
 		669E8FE728B4153B00043D28 /* OWSUrlSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSUrlSession.swift; sourceTree = "<group>"; };
 		669E8FEC28B4177800043D28 /* OWSSignalServiceMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSignalServiceMock.swift; sourceTree = "<group>"; };
 		669E8FEE28B417D500043D28 /* OWSSignalService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSignalService.swift; sourceTree = "<group>"; };
@@ -6218,6 +6230,40 @@
 				6600F38A299016BC00B1EDB7 /* TestSchedulerTest.swift */,
 			);
 			path = Schedulers;
+                        sourceTree = "<group>";
+                };
+		6600F352298C8FBB00B1EDB7 /* Registration */ = {
+			isa = PBXGroup;
+			children = (
+				6600F353298C8FCA00B1EDB7 /* RegistrationSession.swift */,
+				6600F355298C903000B1EDB7 /* RegistrationSessionManager.swift */,
+				6600F357298D646E00B1EDB7 /* RegistrationSessionManagerImpl.swift */,
+			);
+			path = Registration;
+			sourceTree = "<group>";
+		};
+		6600F360298D961000B1EDB7 /* OWSSignalServiceMocks */ = {
+			isa = PBXGroup;
+			children = (
+				6600F363298D96C700B1EDB7 /* TSRequestOWSURLSessionMock.swift */,
+			);
+			path = OWSSignalServiceMocks;
+			sourceTree = "<group>";
+		};
+		6600F36A298DAA4F00B1EDB7 /* DateProvider */ = {
+			isa = PBXGroup;
+			children = (
+				6600F36B298DAA6200B1EDB7 /* DateProvider.swift */,
+			);
+			path = DateProvider;
+                        sourceTree = "<group>";
+                };
+		6600F365298D9D0000B1EDB7 /* Registration */ = {
+			isa = PBXGroup;
+			children = (
+				6600F366298D9D1100B1EDB7 /* RegistrationSessionManagerTest.swift */,
+			);
+			path = Registration;
 			sourceTree = "<group>";
 		};
 		66138FAC2982F4A7002E0CFE /* SDSDatabaseStorage */ = {
@@ -7452,6 +7498,7 @@
 		F94261CF289B1B5400460798 /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				6600F360298D961000B1EDB7 /* OWSSignalServiceMocks */,
 				F9427EAC297F1EA5008EF0AC /* Spam */,
 				F94261D4289B1B5400460798 /* HTMLMetadataTests.swift */,
 				F94261D0289B1B5400460798 /* MessageSenderJobRecordTest.swift */,
@@ -7741,6 +7788,7 @@
 				F9C5C9BA289453B100548EEE /* Account */,
 				F945FE482984795A00C835C7 /* Calls */,
 				F9C5C9CC289453B100548EEE /* Contacts */,
+				6600F36A298DAA4F00B1EDB7 /* DateProvider */,
 				666BAB0E2980B76B00867196 /* Dependencies */,
 				F9C5CA09289453B100548EEE /* Devices */,
 				D920487D28EB8201003F5371 /* Experience Upgrades */,
@@ -7753,6 +7801,7 @@
 				F9C5CA9F289453B200548EEE /* Payments */,
 				F9C5CA00289453B100548EEE /* Protocols */,
 				F9C5C9A1289453B100548EEE /* Protos */,
+				6600F352298C8FBB00B1EDB7 /* Registration */,
 				F9C5C9C6289453B100548EEE /* Remote Attestation */,
 				F9B0DC3B28948656004E07B7 /* Resources */,
 				6600F37C298F27B600B1EDB7 /* Schedulers */,
@@ -7783,6 +7832,7 @@
 				F942621C289B1B5500460798 /* Messages */,
 				F94261CF289B1B5400460798 /* Network */,
 				F97391A128EF0AFB002DDE5D /* Protos */,
+				6600F365298D9D0000B1EDB7 /* Registration */,
 				6600F381298F2A3200B1EDB7 /* Schedulers */,
 				F94261CB289B1B5300460798 /* Security */,
 				F94261D7289B1B5400460798 /* Storage */,
@@ -8531,6 +8581,7 @@
 				88DF819328E112F600F8BA80 /* Signal Proxy */,
 				F9C5CAB4289453B200548EEE /* Spam */,
 				F9C5CAC2289453B200548EEE /* WebSockets */,
+				669E8FE528B4149200043D28 /* BaseOWSURLSessionMock.swift */,
 				F9C5CAF7289453B200548EEE /* ContentProxy.swift */,
 				F9C5CABC289453B200548EEE /* HTMLMetadata.swift */,
 				F9C5CAF1289453B200548EEE /* NetworkInterfaceSet.swift */,
@@ -8548,7 +8599,6 @@
 				669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */,
 				669E8FE728B4153B00043D28 /* OWSUrlSession.swift */,
 				503C2F422977752B00217527 /* OWSURLSessionEndpoint.swift */,
-				669E8FE528B4149200043D28 /* OWSURLSessionMock.swift */,
 				F9C5CAF3289453B200548EEE /* OWSURLSessionProtocol.swift */,
 				F9C5CABF289453B200548EEE /* ProxiedContentDownloader.swift */,
 				F9C5CABD289453B200548EEE /* ReachabilityManager.swift */,
@@ -11212,6 +11262,7 @@
 				F9C5CE3A289453B400548EEE /* BadgeAssets.swift in Sources */,
 				F9C5CE37289453B400548EEE /* BadgeStore.swift in Sources */,
 				F9C5CD58289453B300548EEE /* BaseModel.m in Sources */,
+				6600F369298DA57200B1EDB7 /* BaseOWSURLSessionMock.swift in Sources */,
 				F9C5CE36289453B400548EEE /* Batching.swift in Sources */,
 				F9C5CE12289453B400548EEE /* Bench.swift in Sources */,
 				F9C5CC31289453B300548EEE /* BlockingManager.swift in Sources */,
@@ -11255,6 +11306,7 @@
 				F9B652C328D8E3DF006914CA /* DatabaseRecovery.swift in Sources */,
 				F9C5CDD9289453B400548EEE /* DataSource.m in Sources */,
 				F9C5CE4D289453B400548EEE /* Date+SSK.swift in Sources */,
+				6600F36C298DAA6200B1EDB7 /* DateProvider.swift in Sources */,
 				6673FF87297B694C00F96CFD /* DB.swift in Sources */,
 				6673FF89297B6AF800F96CFD /* DBTransaction.swift in Sources */,
 				F9C5CDD8289453B400548EEE /* DebouncedEvent.swift in Sources */,
@@ -11526,7 +11578,7 @@
 				F9C5CD62289453B300548EEE /* OWSSessionResetJobRecord+SDS.swift in Sources */,
 				F9C5CD6D289453B300548EEE /* OWSSessionResetJobRecord.m in Sources */,
 				669E8FEF28B417D500043D28 /* OWSSignalService.swift in Sources */,
-				669E8FED28B4177900043D28 /* OWSSignalServiceMock.swift in Sources */,
+				6600F368298DA57200B1EDB7 /* OWSSignalServiceMock.swift in Sources */,
 				F9C5CD8C289453B300548EEE /* OWSSignalServiceProtocol.swift in Sources */,
 				F9C5CBFE289453B300548EEE /* OWSStaticOutgoingMessage.m in Sources */,
 				F9C5CCF0289453B300548EEE /* OWSStickerPackSyncMessage.m in Sources */,
@@ -11552,7 +11604,6 @@
 				669E8FE928B415C000043D28 /* OWSURLBuilderUtil.swift in Sources */,
 				669E8FE828B4153C00043D28 /* OWSUrlSession.swift in Sources */,
 				503C2F432977752B00217527 /* OWSURLSessionEndpoint.swift in Sources */,
-				669E8FF028B4185300043D28 /* OWSURLSessionMock.swift in Sources */,
 				F9C5CDC6289453B400548EEE /* OWSURLSessionProtocol.swift in Sources */,
 				F9C5CE41289453B400548EEE /* OWSUserProfile+SDS.swift in Sources */,
 				F9C5CE45289453B400548EEE /* OWSUserProfile.m in Sources */,
@@ -11600,6 +11651,9 @@
 				F9C5CCAD289453B300548EEE /* RefreshPreKeysOperation.swift in Sources */,
 				66A1DF73298C635E00C4E4A7 /* RegistrationRequestFactory.swift in Sources */,
 				66A1DF75298C73D900C4E4A7 /* RegistrationServiceResponses.swift in Sources */,
+				6600F354298C8FCA00B1EDB7 /* RegistrationSession.swift in Sources */,
+				6600F356298C903000B1EDB7 /* RegistrationSessionManager.swift in Sources */,
+				6600F358298D646E00B1EDB7 /* RegistrationSessionManagerImpl.swift in Sources */,
 				F9C5CCB0289453B300548EEE /* RemoteAttestation.swift in Sources */,
 				F9C5CCB1289453B300548EEE /* RemoteAttestationQuote.m in Sources */,
 				F9C5CCB2289453B300548EEE /* RemoteAttestationSigningCertificate.m in Sources */,
@@ -11893,6 +11947,7 @@
 				F97391A328EF0B20002DDE5D /* ProtoParsingTest.swift in Sources */,
 				F942625D289B1B5500460798 /* RefineryTest.swift in Sources */,
 				6600F351298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift in Sources */,
+				6600F367298D9D1100B1EDB7 /* RegistrationSessionManagerTest.swift in Sources */,
 				F9426259289B1B5500460798 /* RemoteConfigManagerTests.swift in Sources */,
 				F945FE4D298481EA00C835C7 /* RingrtcFieldTrialsTest.swift in Sources */,
 				F942624E289B1B5500460798 /* SDSDatabaseStorageObservationTest.swift in Sources */,
@@ -11932,6 +11987,7 @@
 				F9426258289B1B5500460798 /* TSMessageStorageTests.m in Sources */,
 				F942628A289B1B5600460798 /* TSMessageTest.swift in Sources */,
 				F9426289289B1B5600460798 /* TSOutgoingMessageTest.swift in Sources */,
+				6600F364298D96C700B1EDB7 /* TSRequestOWSURLSessionMock.swift in Sources */,
 				F942627F289B1B5600460798 /* TSThreadTest.m in Sources */,
 				F942628F289B1B5600460798 /* TypingIndicatorMessageTest.swift in Sources */,
 				F9426255289B1B5500460798 /* UnfairLockTest.swift in Sources */,

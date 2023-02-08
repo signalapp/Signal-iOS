@@ -9,10 +9,17 @@ import Foundation
 /// Produces instances of `InMemoryKeyValueStore`.
 public class InMemoryKeyValueStoreFactory: KeyValueStoreFactory {
 
+    public var stores = [String: InMemoryKeyValueStore]()
+
     public init() {}
 
     public func keyValueStore(collection: String) -> SignalServiceKit.KeyValueStoreProtocol {
-        return InMemoryKeyValueStore(collection: collection)
+        if let store = stores[collection] {
+            return store
+        }
+        let store = InMemoryKeyValueStore(collection: collection)
+        stores[collection] = store
+        return store
     }
 }
 

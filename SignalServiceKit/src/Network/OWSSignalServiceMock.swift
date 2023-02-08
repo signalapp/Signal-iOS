@@ -38,11 +38,11 @@ public class OWSSignalServiceMock: NSObject, OWSSignalServiceProtocol {
         )
     }
 
-    public var mockUrlSessionBuilder: ((SignalServiceInfo, OWSURLSessionEndpoint, URLSessionConfiguration?) -> OWSURLSessionMock)?
+    public var mockUrlSessionBuilder: ((SignalServiceInfo, OWSURLSessionEndpoint, URLSessionConfiguration?) -> BaseOWSURLSessionMock)?
 
     public func typeUnsafe_buildUrlSession(for signalServiceInfo: Any, endpoint: OWSURLSessionEndpoint, configuration: URLSessionConfiguration?) -> Any {
         let signalServiceInfo = signalServiceInfo as! SignalServiceInfo
-        return mockUrlSessionBuilder?(signalServiceInfo, endpoint, configuration) ?? OWSURLSessionMock(
+        return mockUrlSessionBuilder?(signalServiceInfo, endpoint, configuration) ?? BaseOWSURLSessionMock(
             endpoint: endpoint,
             configuration: .default,
             maxResponseSize: nil

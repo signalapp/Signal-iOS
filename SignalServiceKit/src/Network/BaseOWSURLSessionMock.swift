@@ -5,7 +5,7 @@
 
 import Foundation
 
-public class OWSURLSessionMock: OWSURLSessionProtocol {
+public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
 
     // MARK: - OWSURLSessionProtocol conformance
 

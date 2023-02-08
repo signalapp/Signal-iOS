@@ -479,7 +479,7 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
     }
 }
 
-private class MockDownloadSession: OWSURLSessionMock {
+private class MockDownloadSession: BaseOWSURLSessionMock {
 
     var dataPromiseSource: ((URL?) -> Promise<HTTPResponse>)?
 
@@ -498,7 +498,7 @@ private class MockDownloadSession: OWSURLSessionMock {
 
     override func downloadTaskPromise(
         request: URLRequest,
-        progress progressBlock: OWSURLSessionMock.ProgressBlock?
+        progress progressBlock: BaseOWSURLSessionMock.ProgressBlock?
     ) -> Promise<OWSUrlDownloadResponse> {
         guard let downloadPromiseSource = downloadPromiseSource else {
             fatalError()

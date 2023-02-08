@@ -84,7 +84,7 @@ public class _KeyBackupService_RemoteAttestationMock: KBS.Shims.RemoteAttestatio
 
 // MARK: - OWSURLSession
 
-public class _KeyBackupService_OWSURLSessionMock: OWSURLSessionMock {
+public class _KeyBackupService_OWSURLSessionMock: BaseOWSURLSessionMock {
 
     public var promiseForTSRequestBlock: ((TSRequest) -> Promise<HTTPResponse>)?
 
