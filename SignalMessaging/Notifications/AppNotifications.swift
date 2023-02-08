@@ -202,7 +202,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     // MARK: - Notifications Permissions
 
-    public func registerNotificationSettings() -> Promise<Void> {
+    public func registerNotificationSettings() -> Guarantee<Void> {
         return presenter.registerNotificationSettings()
     }
 

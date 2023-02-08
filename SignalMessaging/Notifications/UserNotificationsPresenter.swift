@@ -144,10 +144,8 @@ class UserNotificationPresenter: Dependencies {
     }
 
     /// Request notification permissions.
-    ///
-    /// Resolves even if the user denies the request.
-    func registerNotificationSettings() -> Promise<Void> {
-        return Promise { future in
+    func registerNotificationSettings() -> Guarantee<Void> {
+        return Guarantee { done in
             Self.notificationCenter.requestAuthorization(options: [.badge, .sound, .alert]) { (granted, error) in
                 Self.notificationCenter.setNotificationCategories(UserNotificationConfig.allNotificationCategories)
 
@@ -159,7 +157,7 @@ class UserNotificationPresenter: Dependencies {
                     Logger.info("User denied notification permission")
                 }
 
-                future.resolve()
+                done(())
             }
         }
     }

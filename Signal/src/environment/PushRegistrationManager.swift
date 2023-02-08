@@ -52,7 +52,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
     public func requestPushTokens(forceRotation: Bool) -> Promise<(pushToken: String, voipToken: String?)> {
         Logger.info("")
 
-        return firstly { () -> Promise<Void> in
+        return firstly {
             return self.registerUserNotificationSettings()
         }.then { (_) -> Promise<(pushToken: String, voipToken: String?)> in
             guard !Platform.isSimulator else {
@@ -289,7 +289,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
 
     // User notification settings must be registered *before* AppDelegate will
     // return any requested push tokens.
-    public func registerUserNotificationSettings() -> Promise<Void> {
+    public func registerUserNotificationSettings() -> Guarantee<Void> {
         Logger.info("registering user notification settings")
 
         return notificationPresenter.registerNotificationSettings()
