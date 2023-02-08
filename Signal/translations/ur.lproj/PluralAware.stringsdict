@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>چیٹ ڈیلیٹ کریں؟</string>
+			<string>چیٹ کو حذف کریں؟</string>
 			<key>other</key>
 			<string>%1$d چیٹس ڈیلیٹ کریں؟</string>
 		</dict>

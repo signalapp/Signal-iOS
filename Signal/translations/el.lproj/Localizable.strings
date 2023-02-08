@@ -115,6 +115,9 @@
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Σχετικά με τα αιτήματα μηνυμάτων";
 
+/* Label shown over thumbnails of GIFs in the All Media view */
+"ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
+
 /* Title for the view of all your signal connections */
 "ALL_SIGNAL_CONNECTIONS_TITLE" = "Όλες οι επαφές";
 
@@ -905,13 +908,13 @@
 "CONFIRM_DELETE_DATA_TEXT" = "Αυτό θα επαναφέρει την εφαρμογή διαγράφοντας τα μηνύματά σου. Η εφαρμογή θα κλείσει αφού ολοκληρωθεί αυτή η διαδικασία.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TITLE" = "Είσαι σίγουρος/η ότι θέλεις να διαγράψεις όλα τα δεδομένα;";
+"CONFIRM_DELETE_DATA_TITLE" = "Θέλεις σίγουρα να διαγράψεις όλα τα δεδομένα;";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Αυτό θα επαναφέρει την εφαρμογή στην αρχική κατάσταση, διαγράφοντας τα μηνύματα και το λογαριασμό σου από τον διακομιστή. Μπορείς να ξανασυνδέσεις το τηλέφωνό σου, αλλά αυτό δεν θα επαναφέρει τα σβησμένα μηνύματα. Η εφαρμογή θα κλείσει μετά την ολοκλήρωση αυτής της διαδικασίας.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Αυτή η ενέργεια θα επαναφέρει την εφαρμογή στην αρχική κατάσταση, διαγράφοντας τα μηνύματα και τον λογαριασμό σου από τον διακομιστή. Μπορείς να ξανασυνδέσεις το τηλέφωνό σου, αλλά με αυτόν τον τρόπο δεν θα επανέλθουν τα σβησμένα μηνύματα. Η εφαρμογή θα κλείσει μετά την ολοκλήρωση αυτής της διαδικασίας.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Είσαι σίγουρος/η ότι θέλεις να διαγράψεις όλα τα δεδομένα;";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Θέλεις σίγουρα να διαγράψεις όλα τα δεδομένα;";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Δε θα μπορείς πια να στείλεις ή να λάβεις μηνύματα σε αυτήν την ομάδα.";
@@ -1328,10 +1331,10 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Αφαίρεση του/της %1$@ από την ομάδα;";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Αφαίρεση ως διαχειριστή";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Αφαίρεση από ρόλο διαχειριστή";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Αφαίρεση του/της %1$@ ως διαχειριστή/τρια της ομάδας;";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Αφαίρεση του/της %1$@ από διαχειριστή της ομάδας;";
 
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "αναζήτηση";
@@ -1550,19 +1553,19 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Διαγραφή λογαριασμού";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Αυτό θα διαγράψει τον λογαριασμό Signal σου και θα επαναφέρει την εφαρμογή. Η εφαρμογή θα κλείσει αφού ολοκληρωθεί η διαδικασία.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Με αυτή την ενέργεια, ο λογαριασμός σου στο Signal θα διαγραφεί και η εφαρμογή θα επανέλθει στις αρχικές ρυθμίσεις. Αφού ολοκληρωθεί η διαδικασία, η εφαρμογή θα κλείσει.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Είσαι σίγουρος/η ότι θέλεις να διαγράψεις το λογαριασμό σου;";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Θέλεις σίγουρα να διαγράψεις τον λογαριασμό σου;";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Κωδικός χώρας";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Αποτυχία διαγραφής λογαριασμού. Παρακαλώ επιβεβαίωσε πως το Wi-Fi ή τα δεδομένα είναι ενεργοποιημένα, και προσπάθησε ξανά.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Αποτυχία διαγραφής λογαριασμού. Επιβεβαίωσε πώς το WiFi ή τα δεδομένα είναι ενεργοποιημένα και προσπάθησε ξανά.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Αυτό θα διαγράψει τα στοιχεία του λογαριασμού σου, το προφίλ σου και όλα σου τα μηνύματα.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Με αυτή την ενέργεια, τα στοιχεία του λογαριασμού σου, το προφίλ σου και όλα σου τα μηνύματα θα διαγραφούν.";
 
 /* Indicates the work we are doing while deleting the account */
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Διαγραφή λογαριασμού…";
@@ -1583,7 +1586,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Ο αριθμός τηλεφώνου που έγραψες δεν αντιστοιχεί στο λογαριασμό σου.";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Διαγραφή όλων των μηνυμάτων αυτής της συνομιλίας;";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Διαγραφή όλων των μηνυμάτων στη συνομιλία;";
 
 /* button text */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Διαγραφή όλων των μηνυμάτων";
@@ -2639,7 +2642,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "Ο/Η %1$@ άλλαξε τις ρυθμίσεις της ομάδας για να επιτρέπεται μόνο σε διαχειριστές να στέλνουν μηνύματα.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Δεν μπορείς να μπεις στην ομάδα μέσω του συνδέσμου της ομάδας, επειδή ένας/μια διαχειριστής σε αφαίρεσε.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Δεν μπορείς να μπεις στην ομάδα μέσω του συνδέσμου ομάδας, επειδή κάποιος διαχειριστής σε αφαίρεσε.";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Δεν μπορείς να μπεις στην ομάδα";
@@ -2936,7 +2939,7 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Αφαίρεση ιστορίας ομάδας";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Σίγουρα θέλεις να διαγράψεις την ιστορία \"%1$@\";";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Θέλεις σίγουρα να διαγράψεις την ιστορία \"%1$@\";";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Τα μέλη αυτής της ομαδικής συνομιλίας \"%1$@\" μπορούν να δουν και να απαντήσουν σε αυτή την ιστορία. Μπορείς να ενημερώσεις τα μέλη για αυτήν τη συνομιλία στην ομάδα.";
@@ -3011,7 +3014,7 @@
 "GROUP_WAS_MIGRATED" = "Αυτή η ομάδα αναβαθμίστηκε σε Ομάδα νέου τύπου.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Δεν μπόρεσες να προστεθείς στην Ομάδα νέου τύπου, και αφαιρέθηκες από την ομάδα.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and have been removed from the group.";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Δεν μπόρεσες να προστεθείς στην Ομάδα νέου τύπου, και προσκλήθηκες να μπεις.";
@@ -3158,10 +3161,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Αυτά τα μέλη θα πρέπει να αποδεχτούν την πρόσκληση να ξαναμπούν στην ομάδα, και δεν θα λαμβάνουν τα μηνύματα της ομάδας μέχρι να αποδεχτούν:";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Αυτό το μέλος δεν μπορεί να μπει σε Ομάδες νέου τύπου, και θα αφαιρεθεί από την ομάδα:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Αυτό το μέλος δεν μπορεί να μπει σε Νέες Ομάδες και θα αφαιρεθεί από την ομάδα:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Αυτά τα μέλη δεν μπορούν να μπουν σε Ομάδες νέου τύπου, και θα αφαιρεθούν από την ομάδα:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Αυτά τα μέλη δεν μπορούν να μπουν σε Νέες Ομάδες και θα αφαιρεθούν από την ομάδα:";
 
 /* Title for the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_TITLE" = "Αναβάθμιση σε Ομάδα νέου τύπου";
@@ -3458,13 +3461,13 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Προεπισκόπηση συνδέσμου";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Η διαχείριση επαφών συστήματος δεν είναι πλέον διαθέσιμη στο iPad. Για να προσθέσεις επαφές Signal στις επαφές του συστήματός σου, άνοιξε το Signal στο τηλέφωνό σου.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Η διαχείριση επαφών συστήματος δεν υποστηρίζεται πλέον από το iPad. Αυτή η συσκευή θα συνεχίσει να συγχρονίζει τυχόν αλλαγές στη λίστα επαφών σου από το Signal στο τηλέφωνό σου.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
-"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Μάθε περισσότερα";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Συνδεμένες συσκευές";
@@ -3557,10 +3560,10 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Διαγραφή για όλους/ες";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Αυτό το μήνυμα θα διαγραφεί για όλους/ες στη συνομιλία, αν έχουν μια πρόσφατη έκδοση του Signal. Θα μπορούν να δούν ότι διέγραψες ένα μήνυμα.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Αυτό το μήνυμα θα διαγραφεί για όλους/ες στη συνομιλία, αν έχουν μια πρόσφατη έκδοση του Signal. Θα μπορούν να δουν ότι διέγραψες ένα μήνυμα.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Για ποιούς/ες θα ήθελες να διαγράψεις αυτό το μήνυμα;";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Για ποια άτομα θα ήθελες να διαγράψεις αυτό το μήνυμα;";
 
 /* The title for the action that deletes a message for the local user only. */
 "MESSAGE_ACTION_DELETE_FOR_YOU" = "Διαγραφή για εμένα";
@@ -3701,7 +3704,7 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Φραγή";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Φραγή και διαγραφή";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Αποκλεισμός και διαγραφή";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Αναφορά ως ανεπιθύμητο και φραγή";
@@ -3731,10 +3734,10 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Διαγραφή και αποχώρηση";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Θα φύγεις απ'την ομάδα, και αυτή θα διαγραφτεί απ' όλες τις συσκευές σου.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Θα φύγεις από την ομάδα και αυτή θα διαγραφεί απ' όλες τις συσκευές σου.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Διαγραφή και αποχώρηση απ' την ομάδα;";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Διαγραφή και αποχώρηση από την ομάδα;";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
 "MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Εξέτασε τα αιτήματα με προσοχή. Το Signal βρήκε μια άλλη επαφή με το ίδιο όνομα.";
@@ -3899,7 +3902,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Δεν μπορείς να συνδέσεις περισσότερες συσκευές.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Έχεις φτάσει το μέγιστο αριθμό συσκευών που μπορείς να συνδέσεις στο λογαριασμό σου. Αφαίρεσε κάποια συσκευή και ξαναδοκίμασε.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Έχεις φτάσει το μέγιστο αριθμό συσκευών που μπορείς να συνδέσεις στον λογαριασμό σου. Αφαίρεσε κάποια συσκευή και ξαναδοκίμασε.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "Σε σίγαση";
@@ -4333,6 +4336,60 @@
 /* Status indicator for outgoing payments which failed to verify. */
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Μη έγκυρο";
 
+/* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
+"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Add an additional layer of security and require your passcode or Touch ID to send funds";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Add an additional layer of security and require Face ID to send funds.";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Add an additional layer of security and require passcode to send funds.";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "Add an additional layer of security and require Touch ID to send funds.";
+
+/* First time payments suggest payments lock title */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "Turn on Payment Lock for Future Sends?";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "Require Your Passcode or Touch ID to Send";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Require Face ID to Send";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Require Your Phone's Passcode to Send";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "Require Touch ID to Send";
+
+/* Message for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "Authentication did not succeed. Ensure that biometrics is enabled on your device and a passcode is set.";
+
+/* Title for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "Biometric Authentication Failed";
+
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'. */
+"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "Authenticate to confirm payment.";
+
 /* Label for the 'add memo' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Προσθήκη σημείωσης";
 
@@ -4365,6 +4422,12 @@
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Η πληρωμή δεν έχει επαληθευτεί ακόμη";
+
+/* Indicates that a payment failed because the payments lock attempt was cancelled. */
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Payments lock authentication cancelled.";
+
+/* Indicates that a payment failed because the payments lock failed to authenticate. */
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Payments lock authentication failure.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Αδυναμία ολοκλήρωσης πληρωμής. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.";
@@ -4865,10 +4928,10 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Προσθήκη θεατών";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Διαγραφή προσαρμοσμένης ιστορίας";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Διαγραφή εξατομικευμένης ιστορίας";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Σίγουρα θέλεις να διαγράψεις την ιστορία \"%1$@\"; Οι ενημερώσεις που κοινοποιούνται σε αυτήν την ιστορία θα διαγραφούν επίσης.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Θέλεις σίγουρα να διαγράψεις την ιστορία \"%1$@\"; Οι ενημερώσεις που κοινοποιούνται σε αυτήν την ιστορία θα διαγραφούν επίσης.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Αφαίρεση";
@@ -5288,7 +5351,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Αδυναμία ανάκτησης κωδικού σύνδεσης";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Για τη σύνδεση αυτής της συσκευής σε άλλο λογαριασμό, πρέπει πρώτα να επαναφέρεις αυτήν τη συσκευή. Σίγουρα θέλεις να διαγράψεις όλο το ιστορικό (μηνύματα, συνημμένα, κλήσεις, κλπ); Αυτή η ενέργεια είναι μη αναστρέψιμη.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Για τη σύνδεση αυτής της συσκευής σε άλλο λογαριασμό, πρέπει πρώτα να επαναφέρεις αυτήν τη συσκευή. Θέλεις σίγουρα να διαγράψεις όλο το ιστορικό (μηνύματα, συνημμένα, κλήσεις, κλπ); Δεν θα έχεις τη δυνατότητα να ανακαλέσεις αυτή την ενέργεια.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Διαγραφή όλων";
@@ -5588,7 +5651,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Διαγραφή όλων των δεδομένων";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Θέλεις σίγουρα να διαγράψεις όλο το ιστορικό (μηνύματα, συνημμένα, κλήσεις, κτλ); Αυτή η ενέργεια είναι μη αναστρέψιμη.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Θέλεις σίγουρα να διαγράψεις όλο το ιστορικό (μηνύματα, συνημμένα, κλήσεις, κτλ); Δεν θα έχεις τη δυνατότητα να ανακαλέσεις αυτή την ενέργεια.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Διαγραφή όλων";
@@ -5764,6 +5827,9 @@
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "Ενεργοποίηση Πληρωμών";
 
+/* Title for the 'enable payments lock' view of the payments activation flow. */
+"SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "Payments Lock";
+
 /* Description for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "Το MobileCoin είναι ένα νέο ψηφιακό νόμισμα που εστιάζει στην προστασία της ιδιωτικότητας.";
 
@@ -5782,6 +5848,15 @@
 /* Title for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Εξαργύρωση";
 
+/* Label for button in the 'Save Passphrase' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "Save Your Phrase";
+
+/* Description for the 'Save Passphrase' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your balance.";
+
+/* Title for the 'Save Passphrase' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "Save Your Phrase";
+
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Ανανέωση PIN";
 
@@ -5791,17 +5866,11 @@
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Ενημέρωση του PIN";
 
-/* Label for button in the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Καταγραφή Φράσης Ανάκτησης";
-
-/* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Η φράση ανάκτησης σάς δίνει ακόμα έναν τρόπο να επαναφέρεται τον λογαριασμό πληρωμών σας.";
-
-/* Title for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Καταγραφή φράσης ανάκτησης";
-
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Μη Έγκυρη Διεύθυνση Πορτοφολιού";
+
+/* Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase. */
+"SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "Payments Lock";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "Δεν υπάρχει ακόμη πρόσφατη δραστηριότητα.";
@@ -5833,8 +5902,23 @@
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Παρουσίαση των πληρωμών (Beta)";
 
+/* Button when discarding recovery phrase. */
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Skip Recovery Phrase";
+
+/* Message of confirmation alert when discarding recovery phrase. */
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Your recovery phrase lets you restore your balance in a worst-case scenario. We strongly reccommend you save it.";
+
+/* Title of confirmation alert when discarding recovery phrase. */
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "Continue Without Saving?";
+
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Το υπόλοιπό σας θα αποκατασταθεί αυτόματα όταν εγκαταστήσετε ξανά το Signal, εάν επιβεβαιώσετε το Signal PIN. Μπορείτε επίσης να επαναφέρετε το υπόλοιπό σας χρησιμοποιώντας μια φράση ανάκτησης, η οποία είναι μια φράση 24 λέξεων, μοναδική για εσάς. Σημειώστε την και αποθηκεύστε την σε ασφαλές μέρος.";
+
+/* Explanation of the 'payments passphrase' when there is a balance. */
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "You’ve got a balance! Time to save your recovery phrase—a 24-word key you can use to restore your balance.";
+
+/* Explanation of the 'payments passphrase' when from the help card. */
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Time to save your recovery phrase—a 24-word key you can use to restore your balance.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Προσθήκη Χρημάτων";
@@ -5886,6 +5970,36 @@
 
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Οι πληρωμές απενεργοποιήθηκαν.";
+
+/* Description for the 'double reminder' action sheet in the 'payments lock prompt' view in the payment settings. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "Skipping this step could allow anyone who has physical access to your phone to transfer funds or view your recovery phrase.";
+
+/* Double reminder action sheet title in Payments Lock Prompt view for Face ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Skip Enabling Face ID?";
+
+/* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Skip Enabling Passcode?";
+
+/* Double reminder action sheet title in Payments Lock Prompt view for Touch ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "Skip Enabling Touch ID?";
+
+/* Enable Button title in Payments Lock Prompt view for Face ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Use Face ID";
+
+/* Enable Button title in Payments Lock Prompt view for Passcode. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Use Passcode";
+
+/* Enable Button title in Payments Lock Prompt view for Touch ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "Use Touch ID";
+
+/* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Help prevent a person with your phone from accessing your funds by enabling Face ID. You can disable this option in Settings.";
+
+/* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Help prevent a person with your phone from accessing your funds by using your passcode. You can disable this option in Settings.";
+
+/* Explanation of 'payments lock' with Touch ID in the 'payments lock prompt' view shown after payments activation. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Help prevent a person with your phone from accessing your funds by enabling Touch ID. You can disable this option in Settings.";
 
 /* Button for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Αναβάθμιση του Signal";
@@ -5980,6 +6094,9 @@
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Εισάγετε τη φράση ανάκτησης";
 
+/* Title for the first step of the 'save payments passphrase' views. */
+"SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "Save Recovery Phrase";
+
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Σαρώστε τον κωδικό QR για τον παραλήπτη της μεταφοράς.";
 
@@ -5988,6 +6105,21 @@
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "Σκανάρισμα κωδικού QR";
+
+/* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown. */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "Require your passcode or Touch ID to transfer funds.";
+
+/* Caption for footer label beneath the payments lock privacy toggle for faceid biometry. */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Require Face ID to transfer funds.";
+
+/* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Require your phone's passcode to transfer funds.";
+
+/* Caption for footer label beneath the payments lock privacy toggle for touchid biometry */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID" = "Require Touch ID to transfer funds.";
+
+/* Title for the payments section in the app’s privacy settings tableview */
+"SETTINGS_PAYMENTS_SECURITY_TITLE" = "Payments";
 
 /* Label for 'send payment' button in the payment settings. */
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "Αποστολή πληρωμής";
@@ -6068,7 +6200,10 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Σημειώστε τις ακόλουθες 24 λέξεις με τη σειρά. Φυλάξτε τον κατάλογό σας σε ασφαλές μέρος.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Μην λαμβάνετε στιγμιότυπα οθόνης και μην στέλνετε με email.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2" = "Do not share this list";
+
+/* Title for the content section of the  'payments lock prompt' view shown after payemts activation. */
+"SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE" = "Another Layer of Protection";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Φράση ανάκτησης";
@@ -6275,10 +6410,10 @@
 "SMS_INVITE_BODY" = "Σε προσκαλώ να εγκαταστήσεις το Signal! Να ο σύνδεσμος:";
 
 /* An error message generically indicating that something went wrong. */
-"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+"SOMETHING_WENT_WRONG_ERROR" = "Κάτι πήγε στραβά.";
 
 /* An error message generically indicating that something went wrong, and that the user should try again later. */
-"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Κάτι πήγε στραβά. Δοκίμασε αργότερα.";
 
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "Ήχοι & ειδοποιήσεις";
@@ -6764,7 +6899,7 @@
 "TAP_REPLACE_EMOJI" = "Πάτα για αντικατάσταση ενός emoji";
 
 /* text indicating the message was remotely deleted */
-"THIS_MESSAGE_WAS_DELETED" = "Αυτο το μήνυμα διαγράφτηκε.";
+"THIS_MESSAGE_WAS_DELETED" = "Αυτό το μήνυμα διαγράφτηκε.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Μέλος των %1$@, %2$@, και %3$lu επιπλέον ομάδων";
@@ -6929,52 +7064,52 @@
 "USE_PROXY_EXPLANATION" = "Χρησιμοποίησε proxy μόνο αν δεν μπορείς να συνδεθείς στο Signal από δεδομένα κινητής ή Wi-Fi.";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "Σφάλμα κατά την αναζήτηση του ονόματος χρήστη. Παρακαλώ ξαναδοκίμασε αργότερα.";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "An error occurred while looking up the username. Please try again later.";
 
-/* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "Ο/Η %1$@ δεν είναι χρήστης/τρια του Signal. Επιβεβαίωσε ότι έγραψες ολόκληρο το όνομα χρήστη.";
+/* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ is not a Signal user. Make sure you’ve entered the complete username.";
 
-/* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "Ο/Η χρήστης/τρια δεν βρέθηκε";
+/* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
+"USERNAME_LOOKUP_NOT_FOUND_TITLE" = "User Not Found";
 
 /* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* The title of an action sheet button that will delete a user's username. */
-"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Διαγραφή ονόματος χρήστη";
 
 /* A message asking the user if they are sure they want to remove their username. */
-"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "Αυτή η ενέργεια θα αφαιρέσει το όνομα χρήστη σου και άλλοι χρήστες θα μπορούν να το χρησιμοποιήσουν. Είσαι σίγουρος/η;";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Τα ονόματα χρήστη επιτρέπουν σε άλλους χρήστες να σου στείλουν μηνύματα χωρίς τον αριθμό τηλεφώνου σου. Είναι συνδεδεμένα με ένα σετ ψηφίων ώστε να διατηρούν απόρρητη τη διεύθυνσή σου. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Διάλεξε όνομα χρήστη";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Τα ονόματα χρήστη μπορούν να περιέχουν μόνο λατινικούς χαρακτήρες a-z, νούμερα 0-9 και την κάτω παύλα _.";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Αυτά τα ψηφία διατηρούν απόρρητο το δικό σου όνομα χρήστη, ώστε να μη λαμβάνεις ανεπιθύμητα μηνύματα. Να μοιράζεσαι το όνομα χρήστη σου μόνο με άτομα και ομάδες που θέλεις να συνομιλείς. Εάν θέλεις να αλλάξεις όνομα χρήστη, θα λάβεις ένα νέο σετ ψηφίων.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Τι είναι αυτός ο αριθμός;";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Αυτό το όνομα χρήστη δεν είναι διαθέσιμο.";
 
 /* The placeholder for a text field into which users can type their desired username. */
-"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Όνομα χρήστη";
 
 /* The title for the username selection view. */
-"USERNAME_SELECTION_TITLE" = "Username";
+"USERNAME_SELECTION_TITLE" = "Όνομα χρήστη";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Τα ονόματα χρήστη πρέπει να ξεκινούν με τουλάχιστον %1$@ χαρακτήρες.";
 
 /* A header describing buttons that allow the user to copy or share their username. */
-"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Αντίγραψε ή μοιράσου έναν σύνδεσμο ονόματος χρήστη";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Το όνομα συσκευής δεν μπορεί να είναι κενό";
@@ -7016,7 +7151,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Πάτα εδώ για να κάνεις αυτό το μήνυμα να εξαφανιστεί αφού διαβαστεί.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Τα εξερχόμενα αρχεία μιας μόνο προβολής αφαιρούνται αυτόματα μετά την αποστολή τους.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Τα εξερχόμενα αρχεία μεμονωμένης προβολής αφαιρούνται αυτόματα μετά την αποστολή τους.";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "Προβολή φωτογραφίας";

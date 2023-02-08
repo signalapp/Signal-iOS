@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Желите ли да избришете %1$d ћаскање?</string>
+			<string>Желите ли да избришете ћаскање?</string>
 			<key>other</key>
 			<string>Желите ли да избришете %1$d ћаскања?</string>
 		</dict>
@@ -264,7 +264,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Желите ли да избришете поруке (%1$d)?</string>
+			<string>Желите ли да избришете поруку?</string>
 			<key>other</key>
 			<string>Желите ли да избришете поруке (%1$d)?</string>
 		</dict>
@@ -744,7 +744,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Избриши поруке (%1$d)</string>
+			<string>Избриши поруку</string>
 			<key>other</key>
 			<string>Избриши поруке (%1$d)</string>
 		</dict>

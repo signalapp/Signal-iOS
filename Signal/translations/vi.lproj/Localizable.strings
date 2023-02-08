@@ -115,6 +115,9 @@
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Về Yêu cầu Nhắn tin";
 
+/* Label shown over thumbnails of GIFs in the All Media view */
+"ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
+
 /* Title for the view of all your signal connections */
 "ALL_SIGNAL_CONNECTIONS_TITLE" = "Tất cả Liên hệ";
 
@@ -857,7 +860,7 @@
 "CHAT_COLOR_SETTINGS_AUTO" = "tự động";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Xoá Màu";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "Xóa Màu";
 
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "Màu Cuộc trò chuyện";
@@ -1133,10 +1136,10 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Dừng";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Tin nhắn này sẽ bị xoá khỏi thiết bị này.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Tin nhắn này sẽ bị xóa khỏi thiết bị này.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Xoá Cuộc trò chuyện?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Xóa Cuộc trò chuyện?";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "Tắt thông báo cuộc trò chuyện này trong…";
@@ -1328,10 +1331,10 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Xóa %1$@ khỏi nhóm?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Loại bỏ khỏi vai trò Quản trị viên";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Gỡ vai trò Quản trị viên";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Loại bỏ quyền quản trị của %1$@?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Gỡ quyền quản trị của %1$@?";
 
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "tìm kiếm";
@@ -1373,7 +1376,7 @@
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "Bạn đã gửi:";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Xoá Tất cả";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Xóa Tất cả";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Đang tải Thêm Tin nhắn…";
@@ -1550,19 +1553,19 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "Xóa Tài khoản";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Việc này sẽ xoá tài khoản Signal của bạn và thiết lập lại ứng dụng. Ứng dụng sẽ đóng sau khi quá trình này hoàn tất.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "Việc này sẽ xóa tài khoản Signal của bạn và thiết lập lại ứng dụng. Ứng dụng sẽ đóng sau khi quá trình này hoàn tất.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Bạn có chắc muốn xoá tài khoản?";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "Bạn có chắc muốn xóa tài khoản?";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "Mã quốc gia";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Xoá tài khoản không thành công. Đảm bảo là Wi-Fi hoặc dữ liệu di động được bật, sau đó hãy thử lại.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "Xóa tài khoản không thành công. Đảm bảo là Wi-Fi hoặc dữ liệu di động được bật, sau đó hãy thử lại.";
 
 /* Description for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Việc này sẽ xoá thông tin tài khoản của bạn, hồ sơ cá nhân, và tất cả tin nhắn của bạn.";
+"DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "Việc này sẽ xóa thông tin tài khoản của bạn, hồ sơ cá nhân, và tất cả tin nhắn của bạn.";
 
 /* Indicates the work we are doing while deleting the account */
 "DELETE_ACCOUNT_CONFIRMATION_IN_PROGRESS" = "Đang xoá Tài khoản…";
@@ -1583,10 +1586,10 @@
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "Số điện thoại bạn đã nhập không trùng khớp với số của tài khoản của bạn.";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Xoá tất cả các tin nhắn trong cuộc trò chuyện?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Xóa tất cả các tin nhắn trong cuộc trò chuyện?";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Xoá Mọi Tin nhắn";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Xóa Mọi Tin nhắn";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "Bạn đã đăng xuất khỏi Signal trên thiết bị này.";
@@ -2990,13 +2993,13 @@
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ đã sửa mô tả nhóm";
 
 /* Message indicating that the group's name was removed. */
-"GROUP_UPDATED_NAME_REMOVED" = "Tên nhóm đã bị xoá.";
+"GROUP_UPDATED_NAME_REMOVED" = "Tên nhóm đã bị xóa.";
 
 /* Message indicating that the group's name was removed by the local user. */
-"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Bạn đã xoá tên nhóm.";
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Bạn đã xóa tên nhóm.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ đã xoá tên nhóm.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ đã xóa tên nhóm.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Bạn đã đổi tên nhóm thành \"%1$@\".";
@@ -3011,7 +3014,7 @@
 "GROUP_WAS_MIGRATED" = "Nhóm này đã được nâng cấp Nhóm Mới.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "Bạn không thể được thêm vào Nhóm Mới và đã bị gỡ bỏ khỏi nhóm.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and have been removed from the group.";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "Bạn không thể được thêm vào Nhóm Mới và đã được mời tham gia";
@@ -3458,13 +3461,13 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Xem trước Đường dẫn";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Việc quản lý danh bạ của hệ thống không còn khả dụng trên iPad. Để thêm liên hệ Signal vào danh bạ của hệ thống, hãy mở Signal trên điện thoại của bạn.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Việc quản lý danh bạ của hệ thống không còn khả dụng trên iPad. Thiết bị này sẽ tiếp tục đồng bộ các thay đổi với danh sách liên hệ từ Signal trên điện thoại của bạn.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
-"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Tìm hiểu thêm";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Các thiết bị đã liên kết";
@@ -3554,22 +3557,22 @@
 "MESSAGE_ACTION_COPY_TEXT" = "Sao chép Nội dung Tin nhắn";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Xoá đối với Mọi người";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Xóa đối với Mọi người";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Tin nhắn này sẽ được xoá cho tất cả mọi người trong cuộc trò chuyện nếu như họ sử dụng phiên bản mới của Signal. Họ sẽ có thể thấy được rằng bạn đã xoá tin nhắn.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Tin nhắn này sẽ được xóa cho tất cả mọi người trong cuộc trò chuyện nếu như họ sử dụng phiên bản mới của Signal. Họ sẽ có thể thấy được rằng bạn đã xoá tin nhắn.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Bạn muốn xoá tin nhắn này cho ai?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Bạn muốn xóa tin nhắn này cho ai?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Xoá cho Tôi";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Xóa cho Tôi";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Xóa Tin nhắn này";
 
 /* accessibility label */
-"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Xoá các Tin nhắn Đã chọn";
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Xóa các Tin nhắn Đã chọn";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "Thông tin khác";
@@ -3701,7 +3704,7 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Chặn";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Chặn và Xoá";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Chặn và Xóa";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Báo cáo Tin nhắn Rác và Chặn";
@@ -3722,13 +3725,13 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Xóa";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Cuộc trò chuyện này sẽ được xoá khỏi tất cả thiết bị của bạn.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Cuộc trò chuyện này sẽ được xóa khỏi tất cả thiết bị của bạn.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Xoá Cuộc trò chuyện?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Xóa Cuộc trò chuyện?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Xoá và Rời";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Xóa và Rời";
 
 /* Action sheet message to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Bạn sẽ rời nhóm, và lịch sử trò chuyện sẽ bị xóa trên tất cả các thiết bị của bạn.";
@@ -4333,6 +4336,60 @@
 /* Status indicator for outgoing payments which failed to verify. */
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "Không hợp lệ";
 
+/* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
+"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Add an additional layer of security and require your passcode or Touch ID to send funds";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Add an additional layer of security and require Face ID to send funds.";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Add an additional layer of security and require passcode to send funds.";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "Add an additional layer of security and require Touch ID to send funds.";
+
+/* First time payments suggest payments lock title */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "Turn on Payment Lock for Future Sends?";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "Require Your Passcode or Touch ID to Send";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Require Face ID to Send";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Require Your Phone's Passcode to Send";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "Require Touch ID to Send";
+
+/* Message for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "Authentication did not succeed. Ensure that biometrics is enabled on your device and a passcode is set.";
+
+/* Title for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "Biometric Authentication Failed";
+
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'. */
+"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "Authenticate to confirm payment.";
+
 /* Label for the 'add memo' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "Thêm Ghi chú";
 
@@ -4365,6 +4422,12 @@
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "Thanh toán chưa được xác minh";
+
+/* Indicates that a payment failed because the payments lock attempt was cancelled. */
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Payments lock authentication cancelled.";
+
+/* Indicates that a payment failed because the payments lock failed to authenticate. */
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Payments lock authentication failure.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "Không thể hoàn tất thanh toán. Kiểm tra kết nối của bạn và thử lại.";
@@ -5288,7 +5351,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Không thể lấy được Mã Liên kết thiết bị";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Để kết nối thiết bị này với một tài khoản khác, bạn phải thiết lập lại thiết bị này trước. Bạn có chắc bạn muốn xoá tất cả lịch sử (tin nhắn, tập tin đính kèm, cuộc gọi, v.v)? Thao tác này không thể được hoàn lại.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "Để kết nối thiết bị này với một tài khoản khác, bạn phải thiết lập lại thiết bị này trước. Bạn có chắc bạn muốn xóa tất cả lịch sử (tin nhắn, tập tin đính kèm, cuộc gọi, v.v)? Thao tác này không thể được hoàn lại.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "Xóa Tất cả";
@@ -5764,6 +5827,9 @@
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "Bật Thanh toán";
 
+/* Title for the 'enable payments lock' view of the payments activation flow. */
+"SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "Payments Lock";
+
 /* Description for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin là một tiền tệ điện tử mới tập trung vào sự riêng tư.";
 
@@ -5782,6 +5848,15 @@
 /* Title for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "Rút tiền";
 
+/* Label for button in the 'Save Passphrase' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "Save Your Phrase";
+
+/* Description for the 'Save Passphrase' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your balance.";
+
+/* Title for the 'Save Passphrase' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "Save Your Phrase";
+
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "Cập nhật mã PIN";
 
@@ -5791,17 +5866,11 @@
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "Cập nhật mã PIN của bạn";
 
-/* Label for button in the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "Lưu lại cụm từ khôi phục";
-
-/* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "Cụm từ khôi phục cho bạn một cách khác để khôi phục tài khoản thanh toán của bạn.";
-
-/* Title for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "Lưu lại cụm từ khôi phục";
-
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "Địa chỉ Ví Không hợp lệ";
+
+/* Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase. */
+"SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "Payments Lock";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "Chưa có hoạt động gần đây";
@@ -5833,8 +5902,23 @@
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "Giới thiệu thanh toán (Beta)";
 
+/* Button when discarding recovery phrase. */
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Skip Recovery Phrase";
+
+/* Message of confirmation alert when discarding recovery phrase. */
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Your recovery phrase lets you restore your balance in a worst-case scenario. We strongly reccommend you save it.";
+
+/* Title of confirmation alert when discarding recovery phrase. */
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "Continue Without Saving?";
+
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "Số dư của bạn sẽ tự động khôi phục khi bạn cài lại Signal nếu bạn xác nhận mã PIN Signal của mình. Bạn cũng có thể khôi phục số dư của mình bằng cách sử dụng một cụm từ khôi phục, và đây là một cụm từ 24-từ chỉ riêng cho bạn. Ghi nó lại và lưu giữ nó ở một nơi an toàn.";
+
+/* Explanation of the 'payments passphrase' when there is a balance. */
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "You’ve got a balance! Time to save your recovery phrase—a 24-word key you can use to restore your balance.";
+
+/* Explanation of the 'payments passphrase' when from the help card. */
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Time to save your recovery phrase—a 24-word key you can use to restore your balance.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "Thêm quỹ";
@@ -5886,6 +5970,36 @@
 
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "Thanh toán đã huỷ kích hoạt.";
+
+/* Description for the 'double reminder' action sheet in the 'payments lock prompt' view in the payment settings. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "Skipping this step could allow anyone who has physical access to your phone to transfer funds or view your recovery phrase.";
+
+/* Double reminder action sheet title in Payments Lock Prompt view for Face ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Skip Enabling Face ID?";
+
+/* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Skip Enabling Passcode?";
+
+/* Double reminder action sheet title in Payments Lock Prompt view for Touch ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "Skip Enabling Touch ID?";
+
+/* Enable Button title in Payments Lock Prompt view for Face ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Use Face ID";
+
+/* Enable Button title in Payments Lock Prompt view for Passcode. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Use Passcode";
+
+/* Enable Button title in Payments Lock Prompt view for Touch ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "Use Touch ID";
+
+/* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Help prevent a person with your phone from accessing your funds by enabling Face ID. You can disable this option in Settings.";
+
+/* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Help prevent a person with your phone from accessing your funds by using your passcode. You can disable this option in Settings.";
+
+/* Explanation of 'payments lock' with Touch ID in the 'payments lock prompt' view shown after payments activation. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Help prevent a person with your phone from accessing your funds by enabling Touch ID. You can disable this option in Settings.";
 
 /* Button for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Cập nhật Signal";
@@ -5980,6 +6094,9 @@
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "Nhập và Cụm từ Khôi phục";
 
+/* Title for the first step of the 'save payments passphrase' views. */
+"SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "Save Recovery Phrase";
+
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "Quét mã QR cho người nhận chuyển khoản.";
 
@@ -5988,6 +6105,21 @@
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "Quét Mã QR";
+
+/* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown. */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "Require your passcode or Touch ID to transfer funds.";
+
+/* Caption for footer label beneath the payments lock privacy toggle for faceid biometry. */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Require Face ID to transfer funds.";
+
+/* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Require your phone's passcode to transfer funds.";
+
+/* Caption for footer label beneath the payments lock privacy toggle for touchid biometry */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID" = "Require Touch ID to transfer funds.";
+
+/* Title for the payments section in the app’s privacy settings tableview */
+"SETTINGS_PAYMENTS_SECURITY_TITLE" = "Payments";
 
 /* Label for 'send payment' button in the payment settings. */
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "Gửi Thanh toán";
@@ -6068,7 +6200,10 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "Ghi lại 24 từ sau theo thứ tự. Lưu trữ danh sách của bạn ở một nơi bảo mật.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "Không chụp màn hình lại hoặc gửi qua email.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2" = "Do not share this list";
+
+/* Title for the content section of the  'payments lock prompt' view shown after payemts activation. */
+"SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE" = "Another Layer of Protection";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "Cụm từ khôi phục";
@@ -6275,10 +6410,10 @@
 "SMS_INVITE_BODY" = "Tôi đang mời bạn cài đặt Signal! Đây là đường dẫn:";
 
 /* An error message generically indicating that something went wrong. */
-"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+"SOMETHING_WENT_WRONG_ERROR" = "Đã xảy ra lỗi.";
 
 /* An error message generically indicating that something went wrong, and that the user should try again later. */
-"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Đã xảy ra lỗi. Vui lòng thử lại sau.";
 
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "Âm thanh & thông báo";
@@ -6929,52 +7064,52 @@
 "USE_PROXY_EXPLANATION" = "Chỉ dùng proxy khi bạn không thể kết nối tới Signal trên dữ liệu di động hoặc Wi-Fi.";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "Đã xảy ra lỗi khi tìm tên người dùng. Hãy thử lại sau.";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "An error occurred while looking up the username. Please try again later.";
 
-/* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%1$@ không phải là người dùng Signal. Hãy kiểm tra lại bạn đã nhập đầy đủ tên người dùng hay chưa.";
+/* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ is not a Signal user. Make sure you’ve entered the complete username.";
 
-/* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "Không tìm thấy Người dùng";
+/* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
+"USERNAME_LOOKUP_NOT_FOUND_TITLE" = "User Not Found";
 
 /* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* The title of an action sheet button that will delete a user's username. */
-"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Xóa Tên người dùng";
 
 /* A message asking the user if they are sure they want to remove their username. */
-"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "Thao tác này sẽ gỡ tên người dùng của bạn, cho phép người dùng khác xác nhận quyền sở hữu. Bạn có chắc không?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Tên người dùng giúp các thành viên khác nhắn tin cho bạn mà không cần có số điện thoại của bạn. Tên người dùng được ghép với một dãy ký tự để giúp giữ bí mật thông tin của bạn. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Chọn tên người dùng của bạn";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Tên người dùng chỉ được chứa các ký tự a-z, 0-9, và _.";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "Các ký tự này giúp giữ bí mật tên người dùng của bạn giúp bạn tránh các tin nhắn ngoài ý muốn. Chỉ chia sẻ tên người dùng của bạn với những người hoặc nhóm bạn muốn trò chuyện. Nếu bạn đổi tên người dùng, bạn sẽ nhận được một dãy ký tự mới.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "Số này là gì?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "Tên người dùng này không khả dụng.";
 
 /* The placeholder for a text field into which users can type their desired username. */
-"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Tên người dùng";
 
 /* The title for the username selection view. */
-"USERNAME_SELECTION_TITLE" = "Username";
+"USERNAME_SELECTION_TITLE" = "Tên người dùng";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Tên người dùng phải bắt đầu với ít nhất %1$@ ký tự.";
 
 /* A header describing buttons that allow the user to copy or share their username. */
-"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Sao chép hoặc chia sẻ liên kết tên người dùng";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "Không được để trống tên thiết bị";
@@ -7016,7 +7151,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Nhấn vào đây để khiến tin nhắn tự hủy sau khi đã được xem.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Các tập tin đa phương tiện xem-một-lần sẽ được xoá tự động sau khi chúng được gửi đi.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Các tập tin đa phương tiện xem-một-lần sẽ được xóa tự động sau khi chúng được gửi đi.";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "Xem Ảnh";

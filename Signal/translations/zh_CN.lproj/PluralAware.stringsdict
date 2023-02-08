@@ -946,7 +946,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>您还剩 %1$d 次机会。如果机会用尽，您的帐户将会被锁定。经过 7 天休眠后，您可以在没有 PIN 码的情况下重新注册。您的帐户将会被抹除，所有内容也将会被删除。</string>
+			<string>您还剩 %1$d 次机会。如果机会用尽，您的帐户将会被锁定。经过 7 天休眠后，您可以在没有 PIN 码的情况下重新注册。您的账户户将会被抹除，所有内容也将会被删除。</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

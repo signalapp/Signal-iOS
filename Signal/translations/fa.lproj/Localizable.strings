@@ -115,6 +115,9 @@
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "دربارهٔ درخواست‌های تبادل پیام";
 
+/* Label shown over thumbnails of GIFs in the All Media view */
+"ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
+
 /* Title for the view of all your signal connections */
 "ALL_SIGNAL_CONNECTIONS_TITLE" = "تمام آشنایان";
 
@@ -857,7 +860,7 @@
 "CHAT_COLOR_SETTINGS_AUTO" = "خودکار";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "حذف رنگ";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "پاک کردن رنگ";
 
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "رنگ گفتگو";
@@ -905,13 +908,13 @@
 "CONFIRM_DELETE_DATA_TEXT" = "این گزینه برنامه را از طریق پاک کردن پیام‌های شما بازنشانی می‌کند. برنامه پس از کامل شدن این فرایند بسته خواهد شد.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TITLE" = "آیا مطمئن هستید که میخواهید تمام داده ها را پاک کنید؟";
+"CONFIRM_DELETE_DATA_TITLE" = "آیا مطمئن هستید که میخواهید تمام اطلاعات را پاک کنید؟";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "این کار تمام پیام های شما روی این دستگاه را پاک کرده و برنامه به حالت اولیه باز می گرداند. شما همواره می توانید برنامه را دوباره با تلفن خود پیوند دهید، اما این کار پیام های پاک شده را باز نخواهد گرداند. برنامه پس از اینکه عملیات کامل شد بسته خواهد شد.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "این کار تمام پیام‌های شما روی این دستگاه را پاک کرده و برنامه را به حالت اولیه باز می‌گرداند. شما همواره می‌توانید برنامه را دوباره با تلفن خود پیوند دهید، اما این کار پیام‌های پاک شده را باز نخواهد گرداند. برنامه پس از اینکه عملیات کامل شد بسته خواهد شد.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "آیا مطمئن هستید که میخواهید تمام داده ها را پاک کنید؟";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "آیا مطمئن هستید که میخواهید تمام اطلاعات را پاک کنید؟";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "شما دیگر قادر به ارسال یا دریافت پیام از این گروه نخواهید بود";
@@ -1109,7 +1112,7 @@
 "CONTEXT_MENU_COPY" = "کپی";
 
 /* Context menu button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "حذف";
+"CONTEXT_MENU_DELETE_MESSAGE" = "پاک کردن";
 
 /* Context menu button title */
 "CONTEXT_MENU_DETAILS" = "اطلاعات";
@@ -1133,10 +1136,10 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "توقف";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "این گفتگو از این دستگاه حذف خواهد شد.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "این گفتگو از این دستگاه پاک خواهد شد.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "گفتگو حذف شود؟";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "گفتگو پاک شود؟";
 
 /* Title for the 'conversation mute confirmation' alert. */
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "بی‌صدا کردن این گفتگو به‌مدت…";
@@ -1331,7 +1334,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "حذف از مدیریت";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ از مدیریت گروه حذف شود؟";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "آیا می‌خواهید %1$@ را از سمت مدیر حذف کنید؟";
 
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "جستجو";
@@ -1373,7 +1376,7 @@
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "شما ارسال کردید:";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "حذف همه";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "پاک کردن همه";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "در حال بارگیری پیام‌های بیشتر…";
@@ -1547,19 +1550,19 @@
 "DECLINED_VIDEO_CALL" = "یک تماس تصویری را رد کردید";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "حذف حساب کاربری";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "پاک کردن حساب کاربری";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "این گزینه حساب کاربری سیگنال شما را حذف کرده و برنامه را بازنشانی می‌کند. برنامه پس از کامل شدن این فرایند بسته می‌شود.";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "این گزینه حساب کاربری سیگنال شما را پاک کرده و برنامه را بازنشانی می‌کند. برنامه پس از کامل شدن این فرایند بسته می‌شود.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "آیا از حذف حساب کاربری خود اطمینان دارید؟";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "آیا از پاک کردن حساب کاربری خود اطمینان دارید؟";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "پیش‌شماره کشور";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "حذف حساب کاربری ناموفق بود. مطمئن شوید Wi-Fi یا داده‌های تلفن همراه روشن شده است، و دوباره امتحان کنید.";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "پاک کردن حساب کاربری ناموفق بود. مطمئن شوید Wi-Fi یا اینترنت تلفن همراه روشن شده است، و دوباره امتحان کنید.";
 
 /* Description for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "این گزینه اطلاعات حساب کاربری، پروفایل، و تمامی پیام‌های شما را پاک می‌کند.";
@@ -1577,16 +1580,16 @@
 "DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "شماره سیگنال خود را تأیید کنید";
 
 /* Title for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "حذف حساب کاربری";
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "پاک کردن حساب کاربری";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "شماره‌تلفنی که وارد کردید با حساب کاربری شما همخوانی ندارد.";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "همه پیام های موجود در گفتگو حذف شود؟";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "همه پیام‌های موجود در گفتگو پاک شود؟";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "پاک کردن همه پیام ها";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "پاک کردن همه پیام‌ها";
 
 /* Notification warning the user that they have been de-registered. */
 "DEREGISTRATION_NOTIFICATION" = "در این دستگاه از سیگنال خارج شده‌اید.";
@@ -1847,7 +1850,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "تایید اهدای کمک مالی";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
-"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "پیام‌های ناپدیدشونده در این چت فعال است. پیام کمک مالی شما در %1$@ ناپدید می‌شود.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "پیام‌های ناپدیدشونده در این گفتگو فعال است. پیام کمک مالی شما در %1$@ ناپدید می‌شود.";
 
 /* Users can donate on a friend's behalf. If something goes wrong during this donation, such as a network error, this error message is shown. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_GENERIC_SEND_ERROR_BODY" = "اهدای کمک مالی امکان‌پذیر نیست. اتصال خود را بررسی و دوباره تلاش کنید.";
@@ -2783,7 +2786,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ شما را حذف کرد.";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
-"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "شما از گروه حذف شده اید.";
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "شما از گروه حذف شده‌اید.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ با درخواست شما را برای پیوستن به گروه موافقت کرد.";
@@ -2939,7 +2942,7 @@
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "مطمئن هستید که می‌خواهید «%1$@» را حذف کنید؟";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "اعضای گفتگوی گروهی «%1$@» می‌توانند این استوری را مشاهده کنند و به آن پاسخ دهند. می‌توانید عضویت این چت را در گروه به‌روزرسانی کنید.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "اعضای گفتگوی گروهی «%1$@» می‌توانند این استوری را مشاهده کنند و به آن پاسخ دهند. می‌توانید عضویت این گفتگو را در گروه به‌روزرسانی کنید.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "کسانی که می‌توانند این استوری را مشاهده کنند";
@@ -2948,7 +2951,7 @@
 "GROUP_UPDATED" = "گروه ، به روز رسانی شده است.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "عکس گروه حذف شد";
+"GROUP_UPDATED_AVATAR_REMOVED" = "عکس گروه حذف شد.";
 
 /* Message indicating that the group's avatar was removed. */
 "GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "عکس را حذف کردید.";
@@ -2996,7 +2999,7 @@
 "GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "شما نام گروه را حذف کردید.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@نام گروه را حذف کرد.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ نام گروه را حذف کرد.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "شما نام گروه را به \"%1$@\" تغییر دادید.";
@@ -3011,7 +3014,7 @@
 "GROUP_WAS_MIGRATED" = "این گروه به یک گروه جدید ارتقا یافت.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "شما نمی‌توانستید به گروه جدید اضافه شوید و از گروه حذف شد‌ید.";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and have been removed from the group.";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "شما نمی‌توانستید به گروه جدید اضافه شوید و برای پیوستن دعوت شدید";
@@ -3146,10 +3149,10 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_2_BODY" = "تمام تاریخچهٔ گروه و رسانه‌های پیش از ارتقا حفظ شده‌اند.";
 
 /* Body text for the 'dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "این عضو از گروه حذف شد و تا زمانی که گروه خود را ارتقا ندهند، دوباره نخواهند توانست به گروه بپیوندند:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_1" = "این عضو از گروه حذف شده بود و تا زمانی که ارتقا ندهند، دوباره نخواهند توانست به گروه بپیوندند:";
 
 /* Body text for the 'dropped members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "این اعضا از گروه حذف شدند و تا زمانی که گروه خود را ارتقا ندهند، دوباره نخواهند توانست به گروه بپیوندند:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "این اعضا از گروه حذف شده‌اند و تا زمانی که ارتقا ندهند، دوباره نخواهند توانست به گروه بپیوندند:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "این عضو نیاز خواهد داشت تا دعوتی را برای پیوستن دوباره به گروه بپذیرد و پیام‌های گروه را تا زمانی که آن‌ها نپذیرند دریافت نخواهد کرد:";
@@ -3308,10 +3311,10 @@
 "IN_CALL_TERMINATED" = "پایان تماس.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "چت‌های بی‌صدا که بایگانی می‌شوند، پس از دریافت پیام جدید نیز در بایگانی می‌مانند.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "گفتگوهای بی‌صدا که بایگانی می‌شوند، پس از دریافت پیام جدید نیز در بایگانی می‌مانند.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "با دریافت پیام جدید، چت‌های بایگانی‌شده به صندوق ورودی منتقل می‌شوند.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "با دریافت پیام جدید، گفتگوهای بایگانی‌شده به صندوق ورودی منتقل می‌شوند.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "هنوز گفتگویی وجود ندارد.\nبا پیام دادن به یک دوست آغاز کنید.";
@@ -3458,13 +3461,13 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "پیش نمایش لینک";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "مدیریت مخاطبان سیستم در آی‌پد دیگر در دسترس نیست. برای افزودن آشنایان در سیگنال به مخاطبان سیستم خود، سیگنال را در تلفنتان باز کنید.";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "مدیریت مخاطبان سیستم در آی‌پد دیگر پشتیبانی نمی‌شود. این دستگاه همچنان هرگونه تغییر در فهرست مخاطبان شما را از سیگنال به تلفنتان همگام‌سازی خواهد کرد.";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
-"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "بیشتر بدانید";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "دستگاه‌های متصل شده";
@@ -3554,22 +3557,22 @@
 "MESSAGE_ACTION_COPY_TEXT" = "کپی متن پیام";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "برای همه پاک شود";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "پاک کردن برای همه";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "این پیام برای همه در این گفتگو در صورتی که آن‌ها از نسخهٔ اخیر سیگنال استفاده می‌کنند، حذف خواهد شد. آن‌ها قادر خواهند بود ببینند که شما پیامی را پاک کردید.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "این پیام برای همهٔ کسانی در این گفتگو که از تازه‌ترین نسخهٔ سیگنال استفاده می‌کنند، پاک خواهد شد. آن‌ها قادر خواهند بود ببینند که شما پیامی را پاک کردید.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "این پیام را می‌خواهید برای چه کسانی حذف کنید؟";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "می‌خواهید این پیام را برای چه کسانی پاک کنید؟";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "حذف برای من";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "پاک کردن برای من";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "حذف این پیام";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "پاک کردن این پیام";
 
 /* accessibility label */
-"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "پاک کردن پیام های انتخاب شده";
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "پاک کردن پیام‌های انتخاب شده";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "اطلاعات بیشتر";
@@ -3701,7 +3704,7 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "مسدود سازی";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "بلاک و حذف";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "مسدود و پاک کردن";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
 "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "گزارش اسپم و مسدود کردن";
@@ -3719,22 +3722,22 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "مسدود کردن و ترک %1$@؟";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "حذف";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "پاک کردن";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "این گپ از تمام دستگاه‌های شما پاک خواهد شد.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "این گفتگو از تمام دستگاه‌های شما پاک خواهد شد.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "گفتگو حذف شود؟";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "گفتگو پاک شود؟";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "حذف و ترک";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "پاک کردن و ترک";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "شما این گروه را ترک کرده و گروه از روی تمامی دستگاه‌هایتان حذف خواهد شد.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "شما این گروه را ترک می‌کنید و گروه از روی تمامی دستگاه‌هایتان پاک خواهد شد.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "حذف و خروج از گروه؟";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "پاک کردن و ترک گروه؟";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
 "MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "درخواست‌ها را با دقت بازبینی کنید. سیگنال مخاطب دیگری با همان نام پیدا کرد.";
@@ -3779,7 +3782,7 @@
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "ادامه دادن";
 
 /* incoming message request button text which deletes a conversation */
-"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "حذف";
+"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "پاک کردن";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "این گفتگو را با %1$@ ادامه می‌دهید و نام و عکس خود را با آن‌ها به اشتراک می‌گذارید؟";
@@ -3899,7 +3902,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "شما دستگاه های بیشتری را نمیتوانید لینک کنید.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "شما به بیشینه دستگاه هایی که میتوانید با آن ها به وسیله این حساب کاربری پیوند داشته باشید رسیده اید. لطفا یک دستگاه را حذف کنید و دوباره امتحان کنید.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "شما به حداکثر دستگاه‌هایی که می‌توانید با آن‌ها به وسیله این حساب کاربری پیوند داشته باشید رسیده‌اید. لطفا یک دستگاه را حذف کنید و دوباره امتحان کنید.";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "بی‌صدا";
@@ -4333,6 +4336,60 @@
 /* Status indicator for outgoing payments which failed to verify. */
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "نامعتبر";
 
+/* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
+"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Add an additional layer of security and require your passcode or Touch ID to send funds";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Add an additional layer of security and require Face ID to send funds.";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Add an additional layer of security and require passcode to send funds.";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "Add an additional layer of security and require Touch ID to send funds.";
+
+/* First time payments suggest payments lock title */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "Turn on Payment Lock for Future Sends?";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "Require Your Passcode or Touch ID to Send";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Require Face ID to Send";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Require Your Phone's Passcode to Send";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "Require Touch ID to Send";
+
+/* Message for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "Authentication did not succeed. Ensure that biometrics is enabled on your device and a passcode is set.";
+
+/* Title for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "Biometric Authentication Failed";
+
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'. */
+"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "Authenticate to confirm payment.";
+
 /* Label for the 'add memo' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "افزودن یادداشت";
 
@@ -4365,6 +4422,12 @@
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "پرداخت هنوز تأیید نشده است";
+
+/* Indicates that a payment failed because the payments lock attempt was cancelled. */
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Payments lock authentication cancelled.";
+
+/* Indicates that a payment failed because the payments lock failed to authenticate. */
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Payments lock authentication failure.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "امکان تکمیل پرداخت وجود نداشت. اتصال خود را بررسی و دوباره امتحان کنید.";
@@ -4865,10 +4928,10 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "افزودن بازدیدکنندگان";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "حذف استوری سفارشی";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "پاک کردن استوری سفارشی";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "آیا مطمئن هستید که می‌خواهید \"%1$@\" را پاک کنید؟ به‌روزرسانی‌های همرسانی شده در این استوری نیز حذف خواهند شد.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "آیا مطمئن هستید که می‌خواهید \"%1$@\" را پاک کنید؟ به‌روزرسانی‌های همرسانی شده در این استوری نیز پاک خواهند شد.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "حذف";
@@ -5288,7 +5351,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "عدم توانایی در گرفتن کد گرفتن پیوند";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "برای پیوند دادن این دستگاه به حساب کاربری دیگر، باید ابتدا این دستگاه را بازنشانی کنید. مطمئن هستید که می‌خواهید همه پیشینه (پیام‌ها، پیوست‌ها، تماس‌ها و …) را حذف کنید؟ این عمل بازگشت‌پذیر نیست.";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "برای پیوند دادن این دستگاه به حساب کاربری دیگر، باید ابتدا این دستگاه را بازنشانی کنید. مطمئن هستید که می‌خواهید همه تاریخچه (پیام‌ها، پیوست‌ها، تماس‌ها و …) را پاک کنید؟ این عمل بازگشت‌پذیر نیست.";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "پاک کردن همه چیز";
@@ -5570,7 +5633,7 @@
 "SETTINGS_DATA_TITLE" = "مصرف داده";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "حذف حساب کاربری";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "پاک کردن حساب کاربری";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "انتقال ندادن";
@@ -5588,7 +5651,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "پاک کردن تمام اطلاعات";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "مطمئن هستید که می‌خواهید تمام پیشینه (پیام‌ها، پیوست‌ها، تماس‌ها و …) را حذف کنید؟ این عمل بازگشت‌پذیر نیست.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "مطمئن هستید که می‌خواهید تمام تاریخچه (پیام‌ها، پیوست‌ها، تماس‌ها و …) را پاک کنید؟ این عمل بازگشت‌پذیر نیست.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "پاک کردن همه چیز";
@@ -5615,10 +5678,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "صدای پیام";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "چت‌های بی‌صدا که بایگانی می‌شوند، پس از دریافت پیام جدید نیز در بایگانی می‌مانند.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "گفتگوهای بی‌صدا که بایگانی می‌شوند، پس از دریافت پیام جدید نیز در بایگانی می‌مانند.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "چت‌های بی‌صدا را در بایگانی نگه دارید";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "گفتگوهای بی‌صدا را در بایگانی نگه دارید";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "شرایط و سیاست های حفظ حریم خصوصی";
@@ -5764,6 +5827,9 @@
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "فعال کردن پرداخت‌ها";
 
+/* Title for the 'enable payments lock' view of the payments activation flow. */
+"SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "Payments Lock";
+
 /* Description for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin یک ارز دیجیتال متمرکز بر حریم خصوصی است.";
 
@@ -5782,6 +5848,15 @@
 /* Title for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "تخلیهٔ حساب";
 
+/* Label for button in the 'Save Passphrase' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "Save Your Phrase";
+
+/* Description for the 'Save Passphrase' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your balance.";
+
+/* Title for the 'Save Passphrase' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "Save Your Phrase";
+
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "به‌روزرسانی پین";
 
@@ -5791,17 +5866,11 @@
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "پین خود را به‌روزرسانی کنید";
 
-/* Label for button in the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "ذخیره عبارت بازیابی";
-
-/* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "عبارت بازیابی راه دیگری برای بازگردانی حساب کاربری پرداخت‌های شما را فراهم می‌کند.";
-
-/* Title for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "ذخیره عبارت بازیابی";
-
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "نشانی کیف پول نامعتبر";
+
+/* Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase. */
+"SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "Payments Lock";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "هنوز فعالیت تازه‌ای وجود ندارد.";
@@ -5833,8 +5902,23 @@
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "معرفی پرداخت‌ها (بتا)";
 
+/* Button when discarding recovery phrase. */
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Skip Recovery Phrase";
+
+/* Message of confirmation alert when discarding recovery phrase. */
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Your recovery phrase lets you restore your balance in a worst-case scenario. We strongly reccommend you save it.";
+
+/* Title of confirmation alert when discarding recovery phrase. */
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "Continue Without Saving?";
+
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "اگر پین سیگنال خود را تأیید کنید موجودی شما هنگام نصب دوبارهٔ سیگنال به صورت خودکار بازگردانی خواهد شد. شما همچنین می‌توانید موجودی خود را با استفاده از یک عبارت بازیابی، که یک عبارت ۲۴-کلمه‌ای منحصر به شماست، بازگردانی کنید. آن را یادداشت و در یک مکان امن نگهداری کنید.";
+
+/* Explanation of the 'payments passphrase' when there is a balance. */
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "You’ve got a balance! Time to save your recovery phrase—a 24-word key you can use to restore your balance.";
+
+/* Explanation of the 'payments passphrase' when from the help card. */
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Time to save your recovery phrase—a 24-word key you can use to restore your balance.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "افزودن اعتبار";
@@ -5886,6 +5970,36 @@
 
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "پرداخت‌ها غیرفعال شدند";
+
+/* Description for the 'double reminder' action sheet in the 'payments lock prompt' view in the payment settings. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "Skipping this step could allow anyone who has physical access to your phone to transfer funds or view your recovery phrase.";
+
+/* Double reminder action sheet title in Payments Lock Prompt view for Face ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Skip Enabling Face ID?";
+
+/* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Skip Enabling Passcode?";
+
+/* Double reminder action sheet title in Payments Lock Prompt view for Touch ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "Skip Enabling Touch ID?";
+
+/* Enable Button title in Payments Lock Prompt view for Face ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Use Face ID";
+
+/* Enable Button title in Payments Lock Prompt view for Passcode. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Use Passcode";
+
+/* Enable Button title in Payments Lock Prompt view for Touch ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "Use Touch ID";
+
+/* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Help prevent a person with your phone from accessing your funds by enabling Face ID. You can disable this option in Settings.";
+
+/* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Help prevent a person with your phone from accessing your funds by using your passcode. You can disable this option in Settings.";
+
+/* Explanation of 'payments lock' with Touch ID in the 'payments lock prompt' view shown after payments activation. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Help prevent a person with your phone from accessing your funds by enabling Touch ID. You can disable this option in Settings.";
 
 /* Button for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "به‌روزرسانی سیگنال";
@@ -5980,6 +6094,9 @@
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "وارد کردن عبارت بازیابی";
 
+/* Title for the first step of the 'save payments passphrase' views. */
+"SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "Save Recovery Phrase";
+
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "کد QR را برای گیرندهٔ انتقال اسکن کنید.";
 
@@ -5988,6 +6105,21 @@
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "کد QR را اسکن کنید";
+
+/* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown. */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "Require your passcode or Touch ID to transfer funds.";
+
+/* Caption for footer label beneath the payments lock privacy toggle for faceid biometry. */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Require Face ID to transfer funds.";
+
+/* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Require your phone's passcode to transfer funds.";
+
+/* Caption for footer label beneath the payments lock privacy toggle for touchid biometry */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID" = "Require Touch ID to transfer funds.";
+
+/* Title for the payments section in the app’s privacy settings tableview */
+"SETTINGS_PAYMENTS_SECURITY_TITLE" = "Payments";
 
 /* Label for 'send payment' button in the payment settings. */
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "ارسال پرداخت";
@@ -6068,7 +6200,10 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "۲۴ کلمهٔ زیر را به ترتیب یادداشت کنید. فهرست خود را در یک جای امن نگهداری کنید.";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "عکس از صفحه نگیرید و یا با ایمیل ارسال نکنید.";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2" = "Do not share this list";
+
+/* Title for the content section of the  'payments lock prompt' view shown after payemts activation. */
+"SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE" = "Another Layer of Protection";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "عبارت بازیابی";
@@ -6275,10 +6410,10 @@
 "SMS_INVITE_BODY" = "من شما را از طریق این لینک، به نصب برنامه سیگنال دعوت می‌کنم:";
 
 /* An error message generically indicating that something went wrong. */
-"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+"SOMETHING_WENT_WRONG_ERROR" = "مشکلی پیش آمد.";
 
 /* An error message generically indicating that something went wrong, and that the user should try again later. */
-"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "مشکلی پیش آمد. لطفاً بعداً دوباره امتحان کنید.";
 
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "صداها و اعلان‌ها";
@@ -6356,13 +6491,13 @@
 "STORIES_COPY_REPLY_ACTION" = "کپی";
 
 /* Context menu action to delete the selected story reply */
-"STORIES_DELETE_REPLY_ACTION" = "حذف";
+"STORIES_DELETE_REPLY_ACTION" = "پاک کردن";
 
 /* Context menu action to delete the selected story */
-"STORIES_DELETE_STORY_ACTION" = "حذف";
+"STORIES_DELETE_STORY_ACTION" = "پاک کردن";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "این استوری حذف شود؟ این استوری برای تمام افرادی که آن را دریافت کرده‌اند نیز حذف خواهد شد.";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "این استوری پاک شود؟ این استوری برای تمام افرادی که آن را دریافت کرده‌اند نیز پاک خواهد شد.";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "استوری ذخیره شد";
@@ -6431,10 +6566,10 @@
 "STORIES_SETTINGS_STORIES_HEADER" = "استوری‌ها";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "دیگر نمی‌توانید استوری‌ها را هم‌رسانی یا مشاهده کنید. به‌روزرسانی‌های استوری‌هایی که اخیراً همرسانی کرده‌اید نیز حذف خواهند شد.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "دیگر نمی‌توانید استوری‌ها را هم‌رسانی یا مشاهده کنید. به‌روزرسانی‌های استوری‌هایی که اخیراً همرسانی کرده‌اید نیز پاک خواهند شد.";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "خاموش کردن و حذف استوری‌ها";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "خاموش و پاک کردن استوری‌ها";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "اگر از استوری‌ها انصراف دهید، دیگر نمی‌توانید استوری‌ها را هم‌رسانی یا مشاهده کنید.";
@@ -6689,7 +6824,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "تأیید";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "از شما دیگر هزینه‌ای کسر نخواهد شد. نشان شما در انتهای دوره پرداختتان از نمایه‌تان حذف خواهد شد.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "دیگر هزینه‌ای از شما کسر نخواهد شد. نشان شما در انتهای دوره پرداختتان از نمایه‌تان حذف خواهد شد.";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "تأیید لغو اشتراک؟";
@@ -6764,7 +6899,7 @@
 "TAP_REPLACE_EMOJI" = "برای جایگزینی ایموجی ضربه بزنید";
 
 /* text indicating the message was remotely deleted */
-"THIS_MESSAGE_WAS_DELETED" = "این پیام حذف شد";
+"THIS_MESSAGE_WAS_DELETED" = "این پیام پاک شد.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "عضو %1$@، %2$@، و %3$lu گروه دیگر";
@@ -6830,7 +6965,7 @@
 "TXT_CANCEL_TITLE" = "لغو";
 
 /* Label for the delete button in an alert or action sheet. */
-"TXT_DELETE_TITLE" = "حذف";
+"TXT_DELETE_TITLE" = "پاک کردن";
 
 /* Label for the unarchive button for conversations list view */
 "UNARCHIVE_ACTION" = "خارج کردن از آرشیو";
@@ -6929,52 +7064,52 @@
 "USE_PROXY_EXPLANATION" = "فقط در صورتی از پروکسی استفاده کنید که قادر به اتصال به سیگنال روی اینترنت همراه یا Wi-Fi نباشید.";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "خطایی هنگام جستجوی نام کاربری رخ داد. لطفاً بعداً دوباره امتحان کنید.";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "An error occurred while looking up the username. Please try again later.";
 
-/* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%1$@کاربر سیگنال نیست اطمینان حاصل کنید که نام کاربری کامل را وارد کرده اید.";
+/* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ is not a Signal user. Make sure you’ve entered the complete username.";
 
-/* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "کاربر یافت نشد";
+/* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
+"USERNAME_LOOKUP_NOT_FOUND_TITLE" = "User Not Found";
 
 /* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* The title of an action sheet button that will delete a user's username. */
-"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "پاک کردن نام کاربری";
 
 /* A message asking the user if they are sure they want to remove their username. */
-"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "با این کار، نام کاربری شما حذف می‌شود و سایر کاربران می‌توانند آن را برای خود برگزینند. آیا مطمئن هستید؟";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "نام کاربری به دیگران امکان می‌دهد که بدون نیاز به شماره تلفنتان به شما پیام بدهند. نام کاربری با مجموعه‌ای از اعداد جفت‌سازی می‌شود تا آدرس شما خصوصی بماند. %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "نام کاربری خود را انتخاب کنید";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "نام کاربری فقط می‌تواند حاوی حروف a تا z، اعداد ۰ تا ۹ و _ باشد.";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "این ارقام به حفظ حریم خصوصی نام کاربری‌تان کمک می‌کند تا بتوانید از پیام‌های ناخواسته جلوگیری کنید. نام کاربری خود را فقط با افراد و گروه‌هایی که می‌خواهید با آن‌ها گفتگو کنید به اشتراک بگذارید. اگر نام کاربری را تغییر دهید، مجموعه اعداد جدیدی دریافت خواهید کرد.";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "این عدد چیست؟";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "این نام کاربری در دسترس نیست.";
 
 /* The placeholder for a text field into which users can type their desired username. */
-"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "نام کاربری";
 
 /* The title for the username selection view. */
-"USERNAME_SELECTION_TITLE" = "Username";
+"USERNAME_SELECTION_TITLE" = "نام کاربری";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "نام کاربری باید با حداقل %1$@ نویسه شروع شود.";
 
 /* A header describing buttons that allow the user to copy or share their username. */
-"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "کپی یا اشتراک‌گذاری یک پیوند نام کاربری";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "نام دستگاه نمی تواند سفید باشد";
@@ -7124,7 +7259,7 @@
 "YOU" = "شما";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "شما این پیام را حذف کردید.";
+"YOU_DELETED_THIS_MESSAGE" = "شما این پیام را پاک کردید.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "شما پیام‌های ناپدید شونده را غیرفعال کردید.";

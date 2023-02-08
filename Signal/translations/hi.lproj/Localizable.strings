@@ -115,6 +115,9 @@
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "संदेश अनुरोधों के बारे में";
 
+/* Label shown over thumbnails of GIFs in the All Media view */
+"ALL_MEDIA_THUMBNAIL_LABEL_GIF" = "GIF";
+
 /* Title for the view of all your signal connections */
 "ALL_SIGNAL_CONNECTIONS_TITLE" = "सभी कनेक्शन";
 
@@ -857,7 +860,7 @@
 "CHAT_COLOR_SETTINGS_AUTO" = "ऑटो";
 
 /* Title for the 'delete chat color confirm alert' in the chat color settings view. */
-"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "रंग हटाए";
+"CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE" = "रंग डिलीट करें";
 
 /* Title for the chat color settings view. */
 "CHAT_COLOR_SETTINGS_TITLE" = "चैट का रंग";
@@ -905,13 +908,13 @@
 "CONFIRM_DELETE_DATA_TEXT" = "यह आपके संदेशों को हटाकर एप्लिकेशन को रीसेट कर देगा। यह प्रक्रिया पूरी होने के बाद ऐप बंद हो जाएगा।";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TITLE" = "क्या आपको यकीन है कि आप अपना डाटा हटाना चाहते हैं?";
+"CONFIRM_DELETE_DATA_TITLE" = "क्या आपको यकीन है कि आप अपना डाटा डिलीट करना चाहते हैं?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "ये करने से आपका ऐप रिसेट हो जाएगा और इस डिवाइस से सारे मेसेज हटा दिये जाएँगे। आप अपने फोन को दोबारा लिंक कर सकते हैं पर इससे हटाए गए मेसेज वापस नहीं प्राप्त हो पाऐंगे। यह प्रक्रिया खत्म होने के बाद ऐप बंद हो जाएगा।";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "क्या आपको यकीन है कि आप अपना डाटा हटाना चाहते हैं?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "क्या आपको यकीन है कि आप अपना डाटा डिलीट करना चाहते हैं?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "अब आप इस ग्रुप मे कोई मेसेज भेज या प्राप्त नहीं कर पाऐंगे।";
@@ -1109,7 +1112,7 @@
 "CONTEXT_MENU_COPY" = "कॉपी";
 
 /* Context menu button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "हटाए";
+"CONTEXT_MENU_DELETE_MESSAGE" = "डिलीट करें";
 
 /* Context menu button title */
 "CONTEXT_MENU_DETAILS" = "जानकारी";
@@ -1133,7 +1136,7 @@
 "CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "रुकें";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "इस चैट को इस डिवाइस से मिटा दिया जाएगा।";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "इस चैट को इस डिवाइस से डिलीट कर दिया जाएगा।";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "चैट को डिलीट करना है?";
@@ -1373,7 +1376,7 @@
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "आपने यह भेजा है:";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "सब हटा दें";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "सब डिलीट करें";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "और संदेश लोड हो रहे हैं…";
@@ -1547,19 +1550,19 @@
 "DECLINED_VIDEO_CALL" = "आपने एक वीडियो कॉल काट दी";
 
 /* Title for the action sheet 'delete' action of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "खाता बंद कर दें";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_ACTION" = "अकाउंट डिलीट करें";
 
 /* Title for the action sheet message of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "इससे आपका Signal खाता डिलीट हो जाएगा और एप्लिकेशन रीसेट हो जाएगी। यह प्रक्रिया पूरी हो जाने के बाद ऐप बंद हो जाएगी।";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "इससे आपका Signal अकाउंट डिलीट हो जाएगा और एप्लिकेशन रीसेट हो जाएगी। यह प्रक्रिया पूरी हो जाने के बाद ऐप बंद हो जाएगी।";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "क्या आपको यकीन है कि आप अपना ख़ाता खत्म करना चाहते हैं?";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "क्या आपको यकीन है कि आप अपना अकाउंट डिलीट करना चाहते हैं?";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "देश कोड";
 
 /* Title for the action sheet when delete failed on the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "खाता डिलीट करने में विफल रहे। सुनिश्चित करें कि Wi-Fi या मोबाइल डेटा चालू है, फिर दोबारा प्रयास करें।";
+"DELETE_ACCOUNT_CONFIRMATION_DELETE_FAILED" = "अकाउंट डिलीट करने में विफल रहे। सुनिश्चित करें कि Wi-Fi या मोबाइल डेटा चालू है, फिर दोबारा प्रयास करें।";
 
 /* Description for the 'delete account' confirmation view. */
 "DELETE_ACCOUNT_CONFIRMATION_DESCRIPTION" = "इससे आपके खाते की जानकारी, प्रोफ़ाइल, और आपके सारे संदेश डिलीट हो जाएँगे।";
@@ -1577,7 +1580,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_SECTION_TITLE" = "अपने Signal नंबर की पुष्टि करें";
 
 /* Title for the 'delete account' confirmation view. */
-"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "खाता बंद कर दें";
+"DELETE_ACCOUNT_CONFIRMATION_TITLE" = "अकाउंट डिलीट करें";
 
 /* Title for the action sheet when you enter the wrong number on the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_WRONG_NUMBER" = "आपके द्वारा दर्ज किया गया फ़ोन नंबर आपके खाते के फ़ोन नंबर से मेल नहीं खाता है।";
@@ -2783,7 +2786,7 @@
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ ने आपको हटा दिया है।";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
-"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "आप ग्रुप से निकाले गए।";
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "आपको ग्रुप से हटाया गया।";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ने इस ग्रुप में शामिल होने के आपके अनुरोध को एप्रूव कर लिया है।";
@@ -2975,7 +2978,7 @@
 "GROUP_UPDATED_DESCRIPTION_REMOVED" = "समूह विवरण हटा दिया गया था।";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "आपने समूह विवरण निकाल दिया है.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "आपने समूह विवरण हटा दिया है.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
 "GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ ने ग्रुप का विवरण हटा दिया है।";
@@ -3011,7 +3014,7 @@
 "GROUP_WAS_MIGRATED" = "इस ग्रुप को एक नए ग्रुप में अपग्रेड किया गया था।";
 
 /* Message indicating that the local user was dropped while migrating the group. */
-"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "नए ग्रुप में एक आपको शामिल नहीं किया जा सका और आपको ग्रुप में से हटा दिया गया है।";
+"GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and have been removed from the group.";
 
 /* Message indicating that the local user was invited while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_INVITED_LOCAL_USER" = "आपको नए ग्रुप में शमिल नहीं किया जा सका और आपको शामिल होने के लिए आमंत्रित किया गया है";
@@ -3458,13 +3461,13 @@
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "लिंक पूर्वावलोकन";
 
 /* Shown in an alert when trying to edit a contact. */
-"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "Managing system contacts is no longer available on iPad. To add Signal connections to your system contacts open Signal on your phone.";
+"LINKED_DEVICE_CONTACTS_NOT_ALLOWED" = "सिस्टम संपर्कों को प्रबंधित करना अब iPad पर उपलब्ध नहीं है। अपने सिस्टम संपर्कों में Signal कनेक्शन जोड़ने के लिए अपने फोन पर Signal खोलें।";
 
 /* Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. */
-"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "Managing system contacts is no longer supported on iPad. This device will continue to sync any changes to your contact list from Signal on your phone.";
+"LINKED_DEVICE_MANAGE_CONTACTS_BANNER" = "सिस्टम संपर्कों को प्रबंधित करना अब iPad पर सपोर्टेड नहीं है। यह डिवाइस आपके फोन पर Signal से आपकी संपर्क सूची में किसी भी बदलाव को सिंक करना जारी रखेगी।";
 
 /* A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details. */
-"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "Learn more";
+"LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE" = "अधिक जानें";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "लिंक की गईं डिवाइसें";
@@ -3554,19 +3557,19 @@
 "MESSAGE_ACTION_COPY_TEXT" = "मेसेज के शब्द कॉपी करें";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "सब के लिये हटा दें";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "सब के लिये डिलीट करें";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "यह मेसेज चैट में शामिल सभी के लिए मिटा दिया जाएगा यदि वे Signal के नवीनमत वर्ज़न पर हैं। वे देख सकेंगे कि आपने एक मेसेज को मिटा दिया है।";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "यह मेसेज चैट में शामिल सभी के लिए डिलीट कर दिया जाएगा यदि वे Signal के नवीनमत वर्ज़न पर हैं। वे देख सकेंगे कि आपने एक मेसेज को डिलीट कर दिया है।";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
 "MESSAGE_ACTION_DELETE_FOR_TITLE" = "आप यह संदेश किसके लिए डिलीट करना चाहेंगे?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "मेरे लिए मिटाएँ";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "मेरे लिए डिलीट करें";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "यह मेसेज हटाएं";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "यह मेसेज डिलीट करें";
 
 /* accessibility label */
 "MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "चुने हुए संदेशों को डिलीट करें";
@@ -3719,10 +3722,10 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%1$@ को ब्लॉक करके छोड़ दें?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "हटाए";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "डिलीट करें";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "इस चैट को आपके सभी डिवाइसेस से मिटा दिया जाएगा।";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "इस चैट को आपके सभी डिवाइसेस से डिलीट कर दिया जाएगा।";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "चैट को डिलीट करना है?";
@@ -3779,7 +3782,7 @@
 "MESSAGE_REQUEST_VIEW_CONTINUE_BUTTON" = "आगे";
 
 /* incoming message request button text which deletes a conversation */
-"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "मिटाओ";
+"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "डिलीट करें";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "%1$@ के साथ यह चैट जारी रखनी है और इनके साथ अपना नाम और तस्वीर शेयर करनी है?";
@@ -4333,6 +4336,60 @@
 /* Status indicator for outgoing payments which failed to verify. */
 "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED" = "अमान्य";
 
+/* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
+"PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+
+/* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
+"PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Payments Lock.";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE" = "Add an additional layer of security and require your passcode or Touch ID to send funds";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_FACEID" = "Add an additional layer of security and require Face ID to send funds.";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_PASSCODE" = "Add an additional layer of security and require passcode to send funds.";
+
+/* First time payments suggest payments lock message */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_MESSAGE_TOUCHID" = "Add an additional layer of security and require Touch ID to send funds.";
+
+/* First time payments suggest payments lock title */
+"PAYMENTS_LOCK_FIRST_TIME_ACTION_SHEET_TITLE" = "Turn on Payment Lock for Future Sends?";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION" = "Require Your Passcode or Touch ID to Send";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_FACEID" = "Require Face ID to Send";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_PASSCODE" = "Require Your Phone's Passcode to Send";
+
+/* Affirmative action title to enable payments lock */
+"PAYMENTS_LOCK_FIRST_TIME_AFFIRMATIVE_ACTION_TOUCHID" = "Require Touch ID to Send";
+
+/* Message for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_MESSAGE" = "Authentication did not succeed. Ensure that biometrics is enabled on your device and a passcode is set.";
+
+/* Title for action sheet shown when unlocking with biometrics like Face ID or TouchID fails because it is disabled at a system level. */
+"PAYMENTS_LOCK_LOCAL_BIOMETRY_AUTH_DISABLED_TITLE" = "Biometric Authentication Failed";
+
+/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'. */
+"PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK" = "Authenticate to confirm payment.";
+
 /* Label for the 'add memo' ui in the 'send payment' UI. */
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "नोट जोड़ें";
 
@@ -4365,6 +4422,12 @@
 
 /* Indicates that an outgoing payment could not be verified in a timely way. */
 "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG" = "भुगतान अभी तक सत्यापित नहीं हुआ";
+
+/* Indicates that a payment failed because the payments lock attempt was cancelled. */
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED" = "Payments lock authentication cancelled.";
+
+/* Indicates that a payment failed because the payments lock failed to authenticate. */
+"PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE" = "Payments lock authentication failure.";
 
 /* Indicates that an unknown error occurred while sending a payment or payment request. */
 "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN" = "भुगतान पूरा नहीं कर सके। अपना कनेक्शन जाँचें और दोबारा प्रयास करें।";
@@ -5288,10 +5351,10 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "लिंकिंग कोड नहीं मिल रहा है";
 
 /* Message for error alert indicating that re-linking failed because the account did not match. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "इस डिवाइस को किसी अन्य अकाउंट से लिंक करने के लिए आपको पहले इस डिवाइस को रीसेट करना होगा। क्या आप वाकई सारा इतिहास (संदेश, अटैचमेंट, कॉल, इत्यादि) हटाना चाहते हैं? यह कार्रवाई होने के बाद वापस नहीं ली जा सकती।";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_MESSAGE" = "इस डिवाइस को किसी अन्य अकाउंट से लिंक करने के लिए आपको पहले इस डिवाइस को रीसेट करना होगा। क्या आप वाकई सारा इतिहास (संदेश, अटैचमेंट, कॉल, इत्यादि) डिलीट करना चाहते हैं? यह कार्रवाई होने के बाद वापस नहीं ली जा सकती।";
 
 /* Label for the 'reset device' action in the 're-linking failed because the account did not match' alert. */
-"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "सब कुछ हटा दें";
+"SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_RESET_DEVICE" = "सब कुछ डिलीट करें";
 
 /* Title for error alert indicating that re-linking failed because the account did not match. */
 "SECONDARY_LINKING_ERROR_DIFFERENT_ACCOUNT_TITLE" = "खातों का मिलान नहीं हो रहा है";
@@ -5570,7 +5633,7 @@
 "SETTINGS_DATA_TITLE" = "डेटा का उपयोग";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "खाता बंद कर दें";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "अकाउंट डिलीट करें";
 
 /* Button for to _not_ transfer the user's payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "ट्रांसफ़र न करें";
@@ -5585,13 +5648,13 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TRANSFER" = "बैलेंस ट्रांसफ़र करें";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "सारा डाटा साफ़ कर दें";
+"SETTINGS_DELETE_DATA_BUTTON" = "सारा डाटा डिलीट करें";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "क्या आप वाकई सारा इतिहास (संदेश, अटैचमेंट, कॉल, इत्यादि) हटाना चाहते हैं? यह कार्रवाई होने के बाद वापस नहीं ली जा सकती।";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "क्या आप वाकई सारा इतिहास (संदेश, अटैचमेंट, कॉल, इत्यादि) डिलीट करना चाहते हैं? यह कार्रवाई होने के बाद वापस नहीं ली जा सकती।";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "सब कुछ हटा दें";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "सब कुछ डिलीट करें";
 
 /* Label for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES" = "गायब होते मेसेज";
@@ -5764,6 +5827,9 @@
 /* Label for the 'enable payments' button in the 'payments not enabled' alert. */
 "SETTINGS_PAYMENTS_ENABLE_ACTION" = "भुगतान चालू करें";
 
+/* Title for the 'enable payments lock' view of the payments activation flow. */
+"SETTINGS_PAYMENTS_ENABLE_PAYMENTS_LOCK_PROMPT" = "Payments Lock";
+
 /* Description for the 'About MobileCoin' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_ABOUT_MOBILECOIN_DESCRIPTION" = "MobileCoin एक नई गोपनीयता केंद्रित डिजिटल मुद्रा है।";
 
@@ -5782,6 +5848,15 @@
 /* Title for the 'Cashing Out' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_CASHING_OUT_TITLE" = "भुनाना";
 
+/* Label for button in the 'Save Passphrase' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON" = "Save Your Phrase";
+
+/* Description for the 'Save Passphrase' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION" = "Your recovery phrase gives you another way to restore your balance.";
+
+/* Title for the 'Save Passphrase' help card in the payments settings. */
+"SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE" = "Save Your Phrase";
+
 /* Label for button in the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_BUTTON" = "पिन अपडेट करें";
 
@@ -5791,17 +5866,11 @@
 /* Title for the 'Update PIN' help card in the payments settings. */
 "SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE" = "अपना PIN अपडेट करें";
 
-/* Label for button in the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON" = "रिकवरी फ़्रेज़ रिकॉर्ड करें";
-
-/* Description for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION" = "आपका रिकवरी फ़्रेज़ आपको अपना भुगतान खाता रीस्टोर करने का एक और तरीका प्रदान करता है।";
-
-/* Title for the 'View Passphrase' help card in the payments settings. */
-"SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE" = "रिकवरी फ़्रेज़ रिकॉर्ड करें";
-
 /* Indicator that the payments wallet address is invalid. */
 "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS" = "अमान्य वॉलेट पता";
+
+/* Label for UISwitch based payments-lock setting that when enabled requires biometric-authentication (or passcode) to transfer funds or view the recovery phrase. */
+"SETTINGS_PAYMENTS_LOCK_SWITCH_LABEL" = "Payments Lock";
 
 /* Message indicating that there is no payment activity to display in the payment settings. */
 "SETTINGS_PAYMENTS_NO_ACTIVITY_INDICATOR" = "अभी तक हाल की कोई गतिविधि नहीं है।";
@@ -5833,8 +5902,23 @@
 /* Title for the 'payments opt-in' view in the app settings. */
 "SETTINGS_PAYMENTS_OPT_IN_TITLE" = "भुगतान (बीटा) के बारे में जानकारी";
 
+/* Button when discarding recovery phrase. */
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON" = "Skip Recovery Phrase";
+
+/* Message of confirmation alert when discarding recovery phrase. */
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE" = "Your recovery phrase lets you restore your balance in a worst-case scenario. We strongly reccommend you save it.";
+
+/* Title of confirmation alert when discarding recovery phrase. */
+"SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE" = "Continue Without Saving?";
+
 /* Explanation of the 'payments passphrase' in the 'view payments passphrase' settings. */
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "आपके द्वारा Signal फिर से इंस्टॉल करते समय यदि आप अपने Signal PIN की पुष्टि करते हैं तो आपका बैलेंस अपने आप रीस्टोर हो जाएगा। आप रिकवरी फ़्रेज़ का उपयोग करके भी अपना बैलेंस रीस्टोर कर सकते हैं, जो कि एक 24-शब्दों का आपके लिए अलग वाक्यांश होता है। इसे लिख लें और किसी सुरक्षित स्थान पर रखें।";
+
+/* Explanation of the 'payments passphrase' when there is a balance. */
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE" = "You’ve got a balance! Time to save your recovery phrase—a 24-word key you can use to restore your balance.";
+
+/* Explanation of the 'payments passphrase' when from the help card. */
+"SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD" = "Time to save your recovery phrase—a 24-word key you can use to restore your balance.";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
 "SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "धनराशि जोड़ें";
@@ -5886,6 +5970,36 @@
 
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "भुगतान निष्क्रिय किया गया।";
+
+/* Description for the 'double reminder' action sheet in the 'payments lock prompt' view in the payment settings. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_MESSAGE" = "Skipping this step could allow anyone who has physical access to your phone to transfer funds or view your recovery phrase.";
+
+/* Double reminder action sheet title in Payments Lock Prompt view for Face ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_FACEID" = "Skip Enabling Face ID?";
+
+/* Double reminder action sheet title in Payments Lock Prompt view for Passcode. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_PASSCODE" = "Skip Enabling Passcode?";
+
+/* Double reminder action sheet title in Payments Lock Prompt view for Touch ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_DOUBLE_REMINDER_TITLE_TOUCHID" = "Skip Enabling Touch ID?";
+
+/* Enable Button title in Payments Lock Prompt view for Face ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_FACEID" = "Use Face ID";
+
+/* Enable Button title in Payments Lock Prompt view for Passcode. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_PASSCODE" = "Use Passcode";
+
+/* Enable Button title in Payments Lock Prompt view for Touch ID. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_ENABLE_BUTTON_TOUCHID" = "Use Touch ID";
+
+/* Explanation of 'payments lock' with Face ID in the 'payments lock prompt' view shown after payments activation. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_FACEID" = "Help prevent a person with your phone from accessing your funds by enabling Face ID. You can disable this option in Settings.";
+
+/* Explanation of 'payments lock' with passcode in the 'payments lock prompt' view shown after payments activation. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_PASSCODE" = "Help prevent a person with your phone from accessing your funds by using your passcode. You can disable this option in Settings.";
+
+/* Explanation of 'payments lock' with Touch ID in the 'payments lock prompt' view shown after payments activation. */
+"SETTINGS_PAYMENTS_PAYMENTS_LOCK_PROMPT_EXPLANATION_TOUCHID" = "Help prevent a person with your phone from accessing your funds by enabling Touch ID. You can disable this option in Settings.";
 
 /* Button for payments outdated sheet. */
 "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON" = "Signal अपडेट करें";
@@ -5980,6 +6094,9 @@
 /* Title for the 'enter word' step of the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE" = "रिकवरी फ़्रेज़ दर्ज करें";
 
+/* Title for the first step of the 'save payments passphrase' views. */
+"SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE" = "Save Recovery Phrase";
+
 /* Instructions in the 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_INSTRUCTIONS" = "ट्रांसफ़र रसीद के लिए QR कोड स्कैन करें।";
 
@@ -5988,6 +6105,21 @@
 
 /* Label for 'scan payment address QR code' view in the payment settings. */
 "SETTINGS_PAYMENTS_SCAN_QR_TITLE" = "QR कोड स्कैन करें";
+
+/* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is unknown. */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL" = "Require your passcode or Touch ID to transfer funds.";
+
+/* Caption for footer label beneath the payments lock privacy toggle for faceid biometry. */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_FACEID" = "Require Face ID to transfer funds.";
+
+/* Caption for footer label beneath the payments lock privacy toggle for a biometry type that is a passcode. */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_PASSCODE" = "Require your phone's passcode to transfer funds.";
+
+/* Caption for footer label beneath the payments lock privacy toggle for touchid biometry */
+"SETTINGS_PAYMENTS_SECURITY_DETAIL_TOUCHID" = "Require Touch ID to transfer funds.";
+
+/* Title for the payments section in the app’s privacy settings tableview */
+"SETTINGS_PAYMENTS_SECURITY_TITLE" = "Payments";
 
 /* Label for 'send payment' button in the payment settings. */
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "भुगतान भेजें";
@@ -6068,7 +6200,10 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION" = "निम्न 24 शब्दों को क्रम में लिखें। अपनी सूची को किसी सुरक्षित स्थान पर रखें।";
 
 /* Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER" = "स्क्रीनशॉट न लें या ईमेल से न भेजें।";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2" = "Do not share this list";
+
+/* Title for the content section of the  'payments lock prompt' view shown after payemts activation. */
+"SETTINGS_PAYMENTS_VIEW_PAYMENTS_LOCK_PROMPT_TITLE" = "Another Layer of Protection";
 
 /* Label for 'view payments recovery passphrase' button in the app settings. */
 "SETTINGS_PAYMENTS_VIEW_RECOVERY_PASSPHRASE" = "रिकवरी फ़्रेज़";
@@ -6275,10 +6410,10 @@
 "SMS_INVITE_BODY" = "मैं आपको Signal स्थापिेत करने का निमंत्रण देता हुँ, ये रही लिंक:";
 
 /* An error message generically indicating that something went wrong. */
-"SOMETHING_WENT_WRONG_ERROR" = "Something went wrong.";
+"SOMETHING_WENT_WRONG_ERROR" = "कुछ गलत हो गया।";
 
 /* An error message generically indicating that something went wrong, and that the user should try again later. */
-"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "Something went wrong. Please try again later.";
+"SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR" = "कुछ गलत हो गया। कृपया बाद में पुन: प्रयास करें।";
 
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "ध्वनियाँ और सूचनाएँ";
@@ -6830,7 +6965,7 @@
 "TXT_CANCEL_TITLE" = "रद्द करें";
 
 /* Label for the delete button in an alert or action sheet. */
-"TXT_DELETE_TITLE" = "मिटाओ";
+"TXT_DELETE_TITLE" = "डिलीट करें";
 
 /* Label for the unarchive button for conversations list view */
 "UNARCHIVE_ACTION" = "अनारक्षित करें";
@@ -6929,52 +7064,52 @@
 "USE_PROXY_EXPLANATION" = "प्रॉक्सी का उपयोग केवल तभी करें जब आप मोबाइल डेटा या वाई-फाई पर Signal से कनेक्ट करने में सक्षम न हों।";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "उपभोगकर्ता नाम खोजते समय त्रुटि हुई है। कृपया कुछ देर बाद कोशिश करें।";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "An error occurred while looking up the username. Please try again later.";
 
-/* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%1$@ एक Signal उपयोगकर्ता नहीं है। सुनिश्चित करें कि आपने उपयोगकर्ता का पूरा नाम डाला है।";
+/* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ is not a Signal user. Make sure you’ve entered the complete username.";
 
-/* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "उपयोगकर्ता नहीं मिला";
+/* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
+"USERNAME_LOOKUP_NOT_FOUND_TITLE" = "User Not Found";
 
 /* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* The title of an action sheet button that will delete a user's username. */
-"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "Delete Username";
+"USERNAME_SELECTION_DELETE_USERNAME_ACTION_TITLE" = "यूज़र नाम डिलीट करें";
 
 /* A message asking the user if they are sure they want to remove their username. */
-"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "This will remove your username, allowing other users to claim it. Are you sure?";
+"USERNAME_SELECTION_DELETION_CONFIRMATION_ALERT_TITLE" = "यह आपके यूज़र नाम को हटा देगा, जिससे अन्य यूज़र इस पर दावा कर सकेंगे. क्या आप वाकई यह करना चाहते हैं?";
 
 /* Footer text below a text field in which users type their desired username, which explains how usernames work. Embeds a {{ \"learn more\" link. }}. */
-"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "Usernames let others message you without needing your phone number. They are paired with a set of digits to help keep your address private. %1$@";
+"USERNAME_SELECTION_EXPLANATION_FOOTER_FORMAT" = "यूज़रनेम से अन्य लोग बिना आपके फ़ोन नंबर के बिना ही आपको संदेश भेज सकते हैं। वे कुछ अंकों के समूह में होते हैं ताकि आपको अपना पता निजी रखने में मदद मिल सके। %1$@";
 
 /* When the user has entered text into a text field for setting their username, a header displays the username text. This string is shown in the header when the text field is empty. */
-"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "Choose your username";
+"USERNAME_SELECTION_HEADER_TEXT_FOR_PLACEHOLDER" = "अपना यूज़रनेम चुनें";
 
 /* An error message shown when the user has typed a username that has invalid characters. The character ranges \"a-z\", \"0-9\", \"_\" should not be translated, as they are literal. */
-"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "Usernames may only contain a-z, 0-9, and _.";
+"USERNAME_SELECTION_INVALID_CHARACTERS_ERROR_MESSAGE" = "उपयोगकर्ता नाम में केवल a-z, 0-9, और _ आ सकते हैं।";
 
 /* The message of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. This message help explain that the automatically-generated numeric suffix of their username helps keep their username private, to avoid them being contacted by people by whom they don't want to be contacted. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "These digits help keep your username private so you can avoid unwanted messages. Share your username with only the people and groups you’d like to chat with. If you change usernames you’ll get a new set of digits.";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_MESSAGE" = "यह अंक आपके यूज़रनेम को निजी रखने में मदद करते हैं ताकि आप अवांछित संदेशों से बच सकें। अपना यूज़रनेम केवल उन लोगों और ग्रुप्स के साथ साझा करें जिनसे आप चैट करना पसंद करते हैं। यदि आप यूज़रनेम बदलते हैं तो आपको अंकों का एक नया सेट मिलेगा।";
 
 /* The title of a sheet that pops up when the user taps \"Learn More\" in text that explains how usernames work. The sheet will present a more detailed explanation of the username's numeric suffix. */
-"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "What is this number?";
+"USERNAME_SELECTION_LEARN_MORE_ACTION_SHEET_TITLE" = "यह नंबर क्या है?";
 
 /* An error message shown when the user wants to set their username to an unavailable value. */
-"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "This username is not available.";
+"USERNAME_SELECTION_NOT_AVAILABLE_ERROR_MESSAGE" = "यह यूज़रनेम उपलब्ध नहीं है।";
 
 /* The placeholder for a text field into which users can type their desired username. */
-"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "Username";
+"USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER" = "यूज़रनेम";
 
 /* The title for the username selection view. */
-"USERNAME_SELECTION_TITLE" = "Username";
+"USERNAME_SELECTION_TITLE" = "यूज़रनेम";
 
 /* An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}. */
-"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "Usernames must start with at least %1$@ characters.";
+"USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE" = "यूज़रनेम कम से कम %1$@ वर्णों से शुरू होने चाहिए।";
 
 /* A header describing buttons that allow the user to copy or share their username. */
-"USERNAME_SHARE_SHEET_HEADER_TITLE" = "Copy or share a username link";
+"USERNAME_SHARE_SHEET_HEADER_TITLE" = "कोई यूज़रनेम लिंक कॉपी या शेयर करें";
 
 /* error label near a field */
 "VALIDATION_ERROR_CANNOT_BE_BLANK" = "डिवाइस का नाम ख़ाली नहीं हो सकता";
@@ -7016,7 +7151,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "इस संदेश को देखने के बाद ग़ायब करने के लिए यहाँ टैप करें।";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "आउटगोइंग व्यू-एक बार मीडिया फ़ाइलों को उनके भेजे जाने के बाद स्वचालित रूप से हटा दिया जाता है";
+"VIEW_ONCE_OUTGOING_TOAST" = "आउटगोइंग व्यू-एक बार मीडिया फ़ाइलों को उनके भेजे जाने के बाद स्वचालित रूप से हटा दिया जाता है।";
 
 /* View the photo of a group or user */
 "VIEW_PHOTO" = "फ़ोटो देखें";

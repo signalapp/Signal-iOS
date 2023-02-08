@@ -153,7 +153,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Odstrániť %1$d čet?</string>
+			<string>Vymazať čet?</string>
 			<key>few</key>
 			<string>Odstrániť %1$d čety?</string>
 			<key>many</key>
@@ -173,13 +173,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Tento rozhovor bude z tohto zariadenia odstránený.</string>
+			<string>Tento čet bude odstránený z tohto zariadenia.</string>
 			<key>few</key>
-			<string>Tieto rozhovory budú z tohto zariadenia odstránené.</string>
+			<string>Tieto čety budú odstránené z tohto zariadenia.</string>
 			<key>many</key>
-			<string>Tieto rozhovory budú z tohto zariadenia odstránené.</string>
+			<string>Tieto čety budú odstránené z tohto zariadenia.</string>
 			<key>other</key>
-			<string>Tieto rozhovory budú z tohto zariadenia odstránené.</string>
+			<string>Tieto čety budú odstránené z tohto zariadenia.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>

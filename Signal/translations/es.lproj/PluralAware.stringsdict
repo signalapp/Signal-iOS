@@ -744,9 +744,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>¿Eliminar %1$d mensaje?</string>
+			<string>Eliminar %1$d mensaje</string>
 			<key>other</key>
-			<string>¿Eliminar %1$d mensajes?</string>
+			<string>Eliminar %1$d mensajes</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>

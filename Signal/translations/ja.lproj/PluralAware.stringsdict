@@ -83,7 +83,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>このカスタムの色は%1$d件のチャットで使用されています。すべてのチャットで削除しますか？</string>
+			<string>このカスタムカラーは%1$d件のチャットで使用されています。すべてのチャットで消去しますか？</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -111,7 +111,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d件のチャットを削除しますか？</string>
+			<string>%1$d件のチャットを消去しますか？</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>これらのチャットはこの端末から削除されます。</string>
+			<string>これらのチャットはこの端末から消去されます。</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -232,7 +232,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d件のメッセージを削除しますか？</string>
+			<string>%1$d件のメッセージを消去しますか？</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -652,7 +652,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d件のメッセージを削除</string>
+			<string>%1$d件のメッセージを消去</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -946,7 +946,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>あと%1$d回、PINを入力することができます。PINが一致しない場合、アカウントはロックされます。7日後に、PINなしで再登録ができるようになりますが、アカウントはリセットされ、すべてのコンテンツが削除されます。</string>
+			<string>あと%1$d回、PINを入力することができます。PINが一致しない場合、アカウントはロックされます。7日後に、PINなしで再登録ができるようになりますが、アカウントはリセットされ、すべてのコンテンツが消去されます。</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

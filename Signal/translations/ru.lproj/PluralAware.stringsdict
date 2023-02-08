@@ -175,11 +175,11 @@
 			<key>one</key>
 			<string>Этот чат будет удалён с этого устройства.</string>
 			<key>few</key>
-			<string>эти чата будут удалены с этого устройства.</string>
+			<string>эти чаты будут удалены с этого устройства.</string>
 			<key>many</key>
-			<string>эти чата будут удалены с этого устройства.</string>
+			<string>эти чаты будут удалены с этого устройства.</string>
 			<key>other</key>
-			<string>эти чата будут удалены с этого устройства.</string>
+			<string>эти чаты будут удалены с этого устройства.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>

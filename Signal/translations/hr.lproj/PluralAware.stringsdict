@@ -173,7 +173,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Razgovor će bit izbrisan s ovog uređaja.</string>
+			<string>Razgovor će biti izbrisan s ovog uređaja.</string>
 			<key>few</key>
 			<string>Razgovori će biti izbrisani s ovog uređaja.</string>
 			<key>many</key>
@@ -1348,9 +1348,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Preostao vam je %1$d pokušaj. Ako vam ponestane pokušaja, vaš će račun biti zaključan. Nakon 7 dana neaktivnosti možete se ponovno registrirati bez PIN-a. Vaš račun kao i sav sadržaj će biti izbrisani.</string>
+			<string>Preostao vam je %1$d pokušaj. Ako vam ponestane pokušaja, vaš će račun biti zaključan. Nakon 7 dana neaktivnosti možete se ponovno registrirati bez PIN-a. Vaš račun i sav njegov sadržaj bit će izbrisani.</string>
 			<key>few</key>
-			<string>Preostala su vam %1$d pokušaja. Ako vam ponestane pokušaja, vaš će račun biti zaključan. Nakon 7 dana neaktivnosti možete se ponovno registrirati bez PIN-a. Vaš račun kao i sav sadržaj će biti izbrisani.</string>
+			<string>Preostala su vam %1$d pokušaja. Ako vam ponestane pokušaja, vaš će račun biti zaključan. Nakon 7 dana neaktivnosti možete se ponovno registrirati bez PIN-a. Vaš račun i sav njegov sadržaj bit će izbrisani.</string>
 			<key>many</key>
 			<string>Preostalo vam je %1$d pokušaja. Ako vam ponestane pokušaja, vaš će račun biti zaključan. Nakon 7 dana neaktivnosti možete se ponovno registrirati bez PIN-a. Vaš račun i sav njegov sadržaj bit će izbrisani.</string>
 			<key>other</key>

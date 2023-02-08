@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Denne selvvalgte fargen brukes i %1$d samtale. Vil du fjerne den?</string>
+			<string>Denne egendefinerte fargen brukes i %1$d samtale. Ønsker du å slette den?</string>
 			<key>other</key>
-			<string>Denne selvvalgte fargen brukes i %1$d samtaler. Vil du fjerne den i alle samtalene?</string>
+			<string>Denne egendefinerte fargen brukes i %1$d samtaler. Ønsker du å slette den for alle samtalene?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -141,7 +141,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Denne samtalen vil slettes fra enheten.</string>
+			<string>Denne samtalen slettes fra denne enheten.</string>
 			<key>other</key>
 			<string>Disse samtalene vil slettes fra enheten.</string>
 		</dict>
@@ -680,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d medlem kunne ikke legges til i den nye gruppen og har blitt fjernet.</string>
+			<string>%1$d medlem kunne ikke legges til i den nye gruppen og er fjernet fra gruppen.</string>
 			<key>other</key>
-			<string>%1$d medlemmer kunne ikke legges til i den nye gruppen og har blitt fjernet.</string>
+			<string>%1$d medlemmer kunne ikke legges til i den nye gruppen og er fjernet fra gruppen.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>

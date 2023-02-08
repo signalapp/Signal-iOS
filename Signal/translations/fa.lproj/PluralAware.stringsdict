@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>این رنگ سفارشی در %1$d چت استفاده شده است. آن را از همه چت‌ها حذف می‌کنید؟</string>
+			<string>این رنگ سفارشی در %1$d گفتگو استفاده شده است. می‌خواهید آن را از همه گفتگو‌ها پاک کنید؟</string>
 			<key>other</key>
-			<string>این رنگ سفارشی در %1$d چت استفاده شده است. آن را از همه چت‌ها حذف می‌کنید؟</string>
+			<string>این رنگ سفارشی در %1$d گفتگو استفاده شده است. می‌خواهید آن را از همه گفتگو‌ها پاک کنید؟</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>این رنگ در %1$d چت استفاده شده است. تغییرات را برای همه چت‌ها ذخیره می‌کنید؟</string>
+			<string>این رنگ در %1$d گفتگو استفاده شده است. تغییرات را برای همه گفتگو‌ها ذخیره می‌کنید؟</string>
 			<key>other</key>
-			<string>این رنگ در %1$d چت استفاده شده است. تغییرات را برای تمام چت‌ها ذخیره می‌کنید؟</string>
+			<string>این رنگ در %1$d گفتگو استفاده شده است. تغییرات را برای تمام گفتگو‌ها ذخیره می‌کنید؟</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>چت حذف شود؟</string>
+			<string>گفتگو پاک شود؟</string>
 			<key>other</key>
-			<string>%1$d چت حذف شود؟</string>
+			<string>%1$d گفتگو پاک شود؟</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -157,9 +157,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>بیشتر از ۱ چت نمی‌توانید انتخاب کنید.</string>
+			<string>بیشتر از ۱ گفتگو نمی‌توانید انتخاب کنید.</string>
 			<key>other</key>
-			<string>بیشتر از %1$d چت نمی‌توانید انتخاب کنید.</string>
+			<string>بیشتر از %1$d گفتگو نمی‌توانید انتخاب کنید.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -264,9 +264,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>پیام حذف شود؟</string>
+			<string>پیام پاک شود؟</string>
 			<key>other</key>
-			<string>%1$d پیام حذف شود؟</string>
+			<string>%1$d پیام پاک شود؟</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -680,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>عضو به گروه جدید اضافه نشد و از گروه حذف شد.</string>
+			<string>اضافه کردن یک عضو به گروه جدید ممکن نبود و از گروه حذف شد.</string>
 			<key>other</key>
-			<string>%1$d عضو به گروه جدید اضافه نشدند و از گروه حذف شدند.</string>
+			<string>اضافه کردن %1$d عضو به گروه جدید ممکن نبود و از گروه حذف شدند.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -744,9 +744,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>حذف %1$d پیام</string>
+			<string>پاک کردن %1$d پیام</string>
 			<key>other</key>
-			<string>حذف %1$d پیام</string>
+			<string>پاک کردن %1$d پیام</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -1080,9 +1080,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d تلاش باقیمانده دارید. اگر فرصت‌هایتان تمام شود، حسابتان قفل خواهد شد. پس از ۷ روز عدم فعالیت، می‌توانید بدون پین دوباره ثبت‌نام کنید. حساب شما پاک خواهد شد و کلیه محتوا حذف می‌شود.</string>
+			<string>شما %1$d تلاش باقیمانده دارید. اگر فرصت‌هایتان تمام شود، حسابتان قفل خواهد شد. پس از ۷ روز عدم فعالیت، می‌توانید بدون پین دوباره ثبت‌نام کنید. حساب شما به حالت خالی اول برگردانده می‌شود و تمام محتوا پاک می‌شود.</string>
 			<key>other</key>
-			<string>%1$d تلاش باقیمانده دارید. اگر فرصت‌هایتان تمام شود، حسابتان قفل خواهد شد. پس از ۷ روز عدم فعالیت، می‌توانید بدون پین دوباره ثبت‌نام کنید. حساب شما پاک خواهد شد و کلیه محتوا حذف می‌شود.</string>
+			<string>شما %1$d تلاش باقیمانده دارید. اگر فرصت‌هایتان تمام شود، حسابتان قفل خواهد شد. پس از ۷ روز عدم فعالیت، می‌توانید بدون پین دوباره ثبت‌نام کنید. حساب شما به حالت خالی اول برگردانده می‌شود و تمام محتوا پاک می‌شود.</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

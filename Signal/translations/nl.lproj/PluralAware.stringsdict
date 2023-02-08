@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Deze zelfgekozen kleur wordt nog in %1$d gesprek gebruikt. Wil je het voor dat gesprek wissen?</string>
+			<string>Deze zelfgekozen kleur wordt nog in %1$d gesprek gebruikt. Wil je dit wissen?</string>
 			<key>other</key>
-			<string>Deze zelfgekozen kleur wordt nog in %1$d gesprekken gebruikt. Wil je het voor al die gesprekken wissen?</string>
+			<string>Deze zelfgekozen kleur wordt nog in %1$d gesprekken gebruikt. Wil je het voor alle gesprekken wissen?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d gesprek wissen?</string>
+			<string>%1$d gesprek verwijderen?</string>
 			<key>other</key>
-			<string>%1$d gesprekken wissen?</string>
+			<string>%1$d gesprekken verwijderen?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Dit gesprek zal alleen op dit apparaat worden gewist.</string>
+			<string>Dit gesprek zal alleen op dit apparaat worden verwijderd.</string>
 			<key>other</key>
-			<string>Deze gesprekken zullen alleen op dit apparaat worden gewist.</string>
+			<string>Deze gesprekken zullen alleen op dit apparaat worden verwijderen.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -1080,9 +1080,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Je hebt nog %1$d poging. Als je geen pogingen meer over hebt, wordt Signal voor dit telefoonnummer tijdelijk vergrendeld. Na 7 dagen kun je je telefoonnummer opnieuw registreren zonder je pincode. Je account wordt gewist en alle inhoud wordt verwijderd.</string>
+			<string>Je hebt nog %1$d poging. Als je geen pogingen meer over hebt, wordt Signal voor dit telefoonnummer tijdelijk vergrendeld. Na 7 dagen kun je je telefoonnummer opnieuw registreren zonder je pincode. Je account wordt verwijderd en alle inhoud wordt gewist.</string>
 			<key>other</key>
-			<string>Je hebt nog %1$d pogingen. Als je geen pogingen meer over hebt, wordt Signal voor dit telefoonnummer tijdelijk vergrendeld. Na 7 dagen kun je je telefoonnummer opnieuw registreren zonder je pincode. Je account wordt gewist en alle inhoud wordt verwijderd.</string>
+			<string>Je hebt nog %1$d pogingen. Als je geen pogingen meer over hebt, wordt Signal voor dit telefoonnummer tijdelijk vergrendeld. Na 7 dagen kun je je telefoonnummer opnieuw registreren zonder je pincode. Je account wordt verwijderd en alle inhoud wordt gewist.</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

@@ -946,7 +946,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d번 더 시도할 수 있습니다. 남은 시도 횟수를 모두 사용하면 계정이 잠깁니다. 7일 동안 활동이 없으면 PIN 없이 다시 등록할 수 있으며, 이 경우 계정이 초기화되고 모든 내용이 삭제됩니다.</string>
+			<string>%1$d번 더 시도할 수 있습니다. 남은 시도 횟수를 모두 사용하면 계정이 잠깁니다. 7일 동안 활동이 없으면 PIN 번호 없이 다시 등록할 수 있으며, 이 경우 계정이 초기화되고 모든 내용이 삭제됩니다.</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

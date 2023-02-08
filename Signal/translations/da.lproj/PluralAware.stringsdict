@@ -1080,9 +1080,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Du har 1 forsøg tilbage. Hvis du løber tør for forsøg, vil din konto blive låst. Efter 7 dages inaktivitet, kan du genregistrere uden din pinkode. Din konto vil blive ryddet og alt indhold slettet.</string>
+			<string>Du har 1 forsøg tilbage. Hvis du løber tør for forsøg, vil din konto blive låst. Efter syv dages inaktivitet, kan du genregistrere uden din pinkode. Din konto vil blive ryddet og alt indhold slettet.</string>
 			<key>other</key>
-			<string>Du har %1$d forsøg tilbage. Hvis du løber tør for forsøg, vil din konto blive låst. Efter 7 dages inaktivitet, kan du genregistrere uden din pinkode. Din konto vil blive ryddet og alt indhold slettet.</string>
+			<string>Du har %1$d forsøg tilbage. Hvis du løber tør for forsøg, vil din konto blive låst. Efter syv dages inaktivitet, kan du genregistrere uden din pinkode. Din konto vil blive ryddet og alt indhold slettet.</string>
 		</dict>
 	</dict>
 	<key>STORIES_SHARESHEET_PARTIAL_SEND_SUBTITLE_%d</key>

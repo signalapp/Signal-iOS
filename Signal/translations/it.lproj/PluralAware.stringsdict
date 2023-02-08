@@ -125,7 +125,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Vuoi eliminare %1$d chat?</string>
+			<string>Eliminare la chat?</string>
 			<key>other</key>
 			<string>Vuoi eliminare %1$d chat?</string>
 		</dict>
