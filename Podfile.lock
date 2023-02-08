@@ -35,8 +35,8 @@ PODS:
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
-  - MobileCoin/CoreHTTP (4.0.0-pre8):
-    - LibMobileCoin/CoreHTTP (= 4.0.0-pre3)
+  - MobileCoin/CoreHTTP (4.0.0):
+    - LibMobileCoin/CoreHTTP (~> 4.0.0-pre3)
     - Logging (~> 1.4)
   - MobileCoinMinimal (1.2.0-pre2):
     - CocoaLumberjack
@@ -85,14 +85,14 @@ DEPENDENCIES:
   - "Curve25519Kit (from `ssh://git@github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)"
   - "Curve25519Kit/Tests (from `ssh://git@github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)"
   - GRDB.swift/SQLCipher
-  - LibMobileCoin/CoreHTTP (from `https://github.com/signalapp/libmobilecoin-ios-artifacts.git`, commit `4ee8fab85cc401c50478006246b1b288ecd55d5c`)
+  - LibMobileCoin/CoreHTTP (from `https://github.com/signalapp/libmobilecoin-ios-artifacts.git`, commit `586a60aa38eb7667ddb74b666c6bb6f7107288fc`)
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
   - LibSignalClient (from `https://github.com/signalapp/libsignal-client.git`)
   - LibSignalClient/Tests (from `https://github.com/signalapp/libsignal-client.git`)
   - libwebp
   - lottie-ios
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
-  - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift.git`, tag `v4.0.0-pre8`)
+  - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift.git`, tag `v4.0.0`)
   - MobileCoinMinimal (from `https://github.com/signalapp/MobileCoin-Swift.git`, branch `charlesmchen/mobileCoinMinimal`)
   - MobileCoinMinimal/Tests (from `https://github.com/signalapp/MobileCoin-Swift.git`, branch `charlesmchen/mobileCoinMinimal`)
   - OpenSSL-Universal (from `https://github.com/signalapp/GRKOpenSSLFramework`)
@@ -133,7 +133,7 @@ EXTERNAL SOURCES:
     :branch: feature/SignalClient-adoption
     :git: "ssh://git@github.com/signalapp/Curve25519Kit"
   LibMobileCoin:
-    :commit: 4ee8fab85cc401c50478006246b1b288ecd55d5c
+    :commit: 586a60aa38eb7667ddb74b666c6bb6f7107288fc
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts.git
   libPhoneNumber-iOS:
     :branch: signal-master
@@ -145,7 +145,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/Mantle
   MobileCoin:
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift.git
-    :tag: v4.0.0-pre8
+    :tag: v4.0.0
   MobileCoinMinimal:
     :branch: charlesmchen/mobileCoinMinimal
     :git: https://github.com/signalapp/MobileCoin-Swift.git
@@ -175,7 +175,7 @@ CHECKOUT OPTIONS:
     :commit: 0af175812b5335dd32879a3556524c569dea95c9
     :git: "ssh://git@github.com/signalapp/Curve25519Kit"
   LibMobileCoin:
-    :commit: 4ee8fab85cc401c50478006246b1b288ecd55d5c
+    :commit: 586a60aa38eb7667ddb74b666c6bb6f7107288fc
     :git: https://github.com/signalapp/libmobilecoin-ios-artifacts.git
   libPhoneNumber-iOS:
     :commit: 8b6f552682be0e66cf25cd0f0db5e1732a1e9f15
@@ -188,7 +188,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/Mantle
   MobileCoin:
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift.git
-    :tag: v4.0.0-pre8
+    :tag: v4.0.0
   MobileCoinMinimal:
     :commit: dae1e36cb6aeb8fab2c35ce857bd45cd0ce07023
     :git: https://github.com/signalapp/MobileCoin-Swift.git
@@ -225,7 +225,7 @@ SPEC CHECKSUMS:
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   lottie-ios: 016449b5d8be0c3dcbcfa0a9988469999cd04c5d
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
-  MobileCoin: 6c9b37aee29f4a1d3216efbdc1b83dd4642557cb
+  MobileCoin: eef7c6962bce0d82270171ee9aeac9da7b91b5d4
   MobileCoinMinimal: 627ed590d8a0d5d57c39ec25727bde3d976d2f7a
   OpenSSL-Universal: 84efb8a29841f2764ac5403e0c4119a28b713346
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
@@ -240,6 +240,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 6498755f65b95f44d14af6736d1c7b4838f3fa7c
+PODFILE CHECKSUM: 9bf4ff92161c0782d385958042d9f3b402d4f953
 
 COCOAPODS: 1.11.3

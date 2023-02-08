@@ -70,8 +70,8 @@ def ui_pods
   pod 'Starscream', git: 'https://github.com/signalapp/Starscream.git', branch: 'signal-release'
   # pod 'Starscream', path: '../Starscream'
 
-  pod 'LibMobileCoin/CoreHTTP', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts.git', :commit => '4ee8fab85cc401c50478006246b1b288ecd55d5c'
-  pod 'MobileCoin/CoreHTTP', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git', :tag => 'v4.0.0-pre8'
+  pod 'LibMobileCoin/CoreHTTP', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts.git', :commit => '586a60aa38eb7667ddb74b666c6bb6f7107288fc'
+  pod 'MobileCoin/CoreHTTP', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git', :tag => 'v4.0.0'
 end
 
 target 'Signal' do
