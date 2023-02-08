@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalUI
 import SignalMessaging
 
 public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController2 {
@@ -151,22 +152,31 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
     }
 
     private func buildBottomView() {
-        let confirmButton = OWSFlatButton.button(title: NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM",
-                                                                          comment: "Label for 'confirm' button in the 'view payments passphrase' view of the app settings."),
-                                                 font: UIFont.ows_dynamicTypeBody.ows_semibold,
-                                                 titleColor: .white,
-                                                 backgroundColor: .ows_accentBlue,
-                                                 target: self,
-                                                 selector: #selector(didTapConfirmButton))
-        confirmButton.autoSetHeightUsingFont()
+        let confirmButton = OWSFlatButton.insetButton(
+            title: NSLocalizedString(
+                "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM",
+                comment: "Label for 'confirm' button in the 'view payments passphrase' view of the app settings."),
+            font: UIFont.ows_dynamicTypeBody.ows_semibold,
+            titleColor: .white,
+            backgroundColor: .ows_accentBlue,
+            target: self,
+            selector: #selector(didTapConfirmButton)
+        )
 
-        let backButton = OWSFlatButton.button(title: NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN",
-                                                                       comment: "Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings."),
-                                              font: UIFont.ows_dynamicTypeBody.ows_semibold,
-                                              titleColor: .ows_accentBlue,
-                                              backgroundColor: self.tableBackgroundColor,
-                                              target: self,
-                                              selector: #selector(didTapSeePassphraseAgainButton))
+        confirmButton.autoSetHeightUsingFont()
+        confirmButton.cornerRadius = 14
+
+        let backButton = OWSFlatButton.insetButton(
+            title: NSLocalizedString(
+                "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_SEE_PASSPHRASE_AGAIN",
+                comment: "Label for 'see passphrase again' button in the 'view payments passphrase' view of the app settings."),
+            font: UIFont.ows_dynamicTypeBody.ows_semibold,
+            titleColor: .ows_accentBlue,
+            backgroundColor: self.tableBackgroundColor,
+            target: self,
+            selector: #selector(didTapSeePassphraseAgainButton)
+        )
+
         backButton.autoSetHeightUsingFont()
 
         bottomStack.axis = .vertical
@@ -281,7 +291,8 @@ public class PaymentsViewPassphraseConfirmViewController: OWSTableViewController
         let topStack = UIStackView(arrangedSubviews: [
             titleLabel,
             UIView.spacer(withHeight: 10),
-            explanationLabel
+            explanationLabel,
+            UIView.spacer(withHeight: 40)
         ])
         topStack.axis = .vertical
         topStack.alignment = .center

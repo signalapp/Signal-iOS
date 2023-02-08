@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalUI
 import SignalMessaging
 
 public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
@@ -52,12 +53,15 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
     }
 
     private func buildBottomView() {
-        let nextButton = OWSFlatButton.button(title: CommonStrings.nextButton,
-                                              font: UIFont.ows_dynamicTypeBody.ows_semibold,
-                                              titleColor: .white,
-                                              backgroundColor: .ows_accentBlue,
-                                              target: self,
-                                              selector: #selector(didTapNextButton))
+        let nextButton = OWSFlatButton.insetButton(
+            title: CommonStrings.nextButton,
+            font: UIFont.ows_dynamicTypeBody.ows_semibold,
+            titleColor: .white,
+            backgroundColor: .ows_accentBlue,
+            target: self,
+            selector: #selector(didTapNextButton)
+        )
+
         nextButton.autoSetHeightUsingFont()
 
         bottomStack.axis = .vertical
@@ -138,7 +142,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
 
     private func buildFooter() -> UIView {
         let explanationLabel = UILabel()
-        explanationLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER",
+        explanationLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2",
                                                   comment: "Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings.")
         explanationLabel.font = .ows_dynamicTypeSubheadlineClamped
         explanationLabel.textColor = Theme.secondaryTextAndIconColor

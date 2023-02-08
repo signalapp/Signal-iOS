@@ -103,7 +103,7 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
             return
         }
         let view = PaymentsViewPassphraseSplashViewController(passphrase: passphrase,
-                                                              shouldShowConfirm: true,
+                                                              style: .reviewed,
                                                               viewPassphraseDelegate: self)
         let navigationVC = OWSNavigationController(rootViewController: view)
         present(navigationVC, animated: true)
@@ -118,5 +118,9 @@ extension AdvancedPinSettingsTableViewController: PaymentsViewPassphraseDelegate
 
         presentToast(text: NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST",
                                              comment: "Message indicating that 'payments passphrase review' is complete."))
+    }
+
+    public func viewPassphraseDidCancel(viewController: PaymentsViewPassphraseSplashViewController) {
+        viewController.dismiss(animated: true)
     }
 }

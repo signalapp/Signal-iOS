@@ -87,10 +87,79 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         Self.paymentsSwift.updateCurrentPaymentBalance()
     }
 
+    private var hasSignificantBalance: Bool {
+        guard let paymentBalance = Self.paymentsSwift.currentPaymentBalance else {
+            return false
+        }
+        let significantPicoMob = 500 * Double(PaymentsConstants.picoMobPerMob)
+        return Double(paymentBalance.amount.picoMob) >= significantPicoMob
+    }
+
+    private static let keyValueStore = SDSKeyValueStore(collection: "PaymentSettings")
+
+    private static let savePassphraseShownKey = "PaymentsSavePassphraseShown"
+    private var savePassphraseShown: Bool {
+        get {
+            databaseStorage.read { transaction in
+                Self.keyValueStore.getBool(
+                    Self.savePassphraseShownKey,
+                    defaultValue: false,
+                    transaction: transaction
+                )
+            }
+        }
+        set {
+            databaseStorage.write { transaction in
+                Self.keyValueStore.setBool(
+                    newValue,
+                    key: Self.savePassphraseShownKey,
+                    transaction: transaction
+                )
+            }
+        }
+    }
+
+    private static let savePassphraseHelpCardEnabledKey = "PaymentsSavePassphraseHelpCardEnabled"
+    private var savePassphraseHelpCardEnabled: Bool {
+        get {
+            databaseStorage.read { transaction in
+                Self.keyValueStore.getBool(
+                    Self.savePassphraseHelpCardEnabledKey,
+                    defaultValue: false,
+                    transaction: transaction
+                )
+            }
+        }
+        set {
+            databaseStorage.write { transaction in
+                Self.keyValueStore.setBool(
+                    newValue,
+                    key: Self.savePassphraseHelpCardEnabledKey,
+                    transaction: transaction
+                )
+            }
+            updateTableContents()
+        }
+    }
+
+    private func showSavePaymentsPassphraseUIIfNeeded() {
+        guard savePassphraseShown == false else { return }
+        guard let amount = paymentsSwift.currentPaymentBalance?.amount else { return }
+        guard amount.picoMob > 0 else { return }
+        savePassphraseShown = true
+        showPaymentsPassphraseUI(style: .fromBalance)
+    }
+
+    private func clearHelpCardEnabledFromDismissedList() {
+        Self.databaseStorage.write { transaction in
+            Self.helpCardStore.removeValue(forKey: HelpCard.saveRecoveryPhrase.rawValue, transaction: transaction)
+        }
+    }
+
     // MARK: - Help Cards
 
     private enum HelpCard: String, Equatable, CaseIterable {
-        case viewRecoveryPhrase
+        case saveRecoveryPhrase
         case updatePin
         case aboutMobileCoin
         case addMoney
@@ -108,16 +177,16 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     private var helpCardsForEnabled: [HelpCard] {
         // Order matters as we build this list.
-        var helpCards = [HelpCard]()
-        let hasSignificantBalance: Bool = {
-            guard let paymentBalance = Self.paymentsSwift.currentPaymentBalance else {
-                return false
-            }
-            let significantPicoMob = 500 * PaymentsConstants.picoMobPerMob
-            return paymentBalance.amount.picoMob >= significantPicoMob
-        }()
+        var helpCards = OrderedSet<HelpCard>()
+
+        if savePassphraseHelpCardEnabled {
+            helpCards.append(.saveRecoveryPhrase)
+        }
+
         if hasSignificantBalance {
-            helpCards.append(.viewRecoveryPhrase)
+            if !helpCards.contains(.saveRecoveryPhrase) {
+                helpCards.append(.saveRecoveryPhrase)
+            }
 
             let hasShortOrMissingPin: Bool = {
                 guard OWS2FAManager.shared.is2FAEnabled() else {
@@ -132,14 +201,19 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
             if hasShortOrMissingPin {
                 helpCards.append(.updatePin)
             }
+        } else {
+            clearHelpCardEnabledFromDismissedList()
         }
-        helpCards.append(contentsOf: [
+
+        let defaultCards: [HelpCard] = [
             .aboutMobileCoin,
             .addMoney,
             .cashOut
-        ])
-
-        return filterDismissedHelpCards(helpCards)
+        ]
+        for card in defaultCards {
+            helpCards.append(card)
+        }
+        return filterDismissedHelpCards(helpCards.orderedMembers)
     }
 
     private static let helpCardStore = SDSKeyValueStore(collection: "paymentsHelpCardStore")
@@ -152,6 +226,10 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     private func dismissHelpCard(_ helpCard: HelpCard) {
+        if helpCard == .saveRecoveryPhrase {
+            showPaymentsPassphraseUI(style: .fromHelpCardDismiss)
+            savePassphraseHelpCardEnabled = false
+        }
         databaseStorage.write { transaction in
             Self.helpCardStore.setString(helpCard.rawValue, key: helpCard.rawValue, transaction: transaction)
         }
@@ -322,6 +400,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
     private func updateTableContentsEnabled() {
         AssertIsOnMainThread()
+
+        showSavePaymentsPassphraseUIIfNeeded()
 
         let contents = OWSTableContents()
 
@@ -694,18 +774,18 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
 
         for helpCard in helpCards {
             switch helpCard {
-            case .viewRecoveryPhrase:
+            case .saveRecoveryPhrase:
                 contents.addSection(buildHelpCard(helpCard: helpCard,
-                                                  title: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_TITLE",
-                                                                           comment: "Title for the 'View Passphrase' help card in the payments settings."),
-                                                  body: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_DESCRIPTION",
-                                                                          comment: "Description for the 'View Passphrase' help card in the payments settings."),
-                                                  buttonText: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_VIEW_PASSPHRASE_BUTTON",
-                                                                                comment: "Label for button in the 'View Passphrase' help card in the payments settings."),
+                                                  title: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_TITLE",
+                                                                           comment: "Title for the 'Save Passphrase' help card in the payments settings."),
+                                                  body: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_DESCRIPTION",
+                                                                          comment: "Description for the 'Save Passphrase' help card in the payments settings."),
+                                                  buttonText: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_SAVE_PASSPHRASE_BUTTON",
+                                                                                comment: "Label for button in the 'Save Passphrase' help card in the payments settings."),
                                                   iconName: (Theme.isDarkThemeEnabled
                                                                 ? "restore-dark"
                                                                 : "restore"),
-                                                  selector: #selector(didTapViewPassphraseCard)))
+                                                  selector: #selector(didTapSavePassphraseCard)))
             case .updatePin:
                 contents.addSection(buildHelpCard(helpCard: helpCard,
                                                   title: NSLocalizedString("SETTINGS_PAYMENTS_HELP_CARD_UPDATE_PIN_TITLE",
@@ -1041,17 +1121,20 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     private func didTapViewPaymentsPassphraseButton() {
-        showViewPaymentsPassphraseUI()
+        if Self.hasReviewedPassphraseWithSneakyTransaction() {
+            showPaymentsPassphraseUI(style: .reviewed)
+        } else {
+            showPaymentsPassphraseUI(style: .view)
+        }
     }
 
-    private func showViewPaymentsPassphraseUI() {
+    private func showPaymentsPassphraseUI(style: PaymentsViewPassphraseSplashViewController.Style) {
         guard let passphrase = paymentsSwift.passphrase else {
             owsFailDebug("Missing passphrase.")
             return
         }
-        let shouldShowConfirm = !Self.hasReviewedPassphraseWithSneakyTransaction()
         let view = PaymentsViewPassphraseSplashViewController(passphrase: passphrase,
-                                                              shouldShowConfirm: shouldShowConfirm,
+                                                              style: style,
                                                               viewPassphraseDelegate: self)
         let navigationVC = OWSNavigationController(rootViewController: view)
         present(navigationVC, animated: true)
@@ -1175,8 +1258,8 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
     }
 
     @objc
-    private func didTapViewPassphraseCard() {
-        showViewPaymentsPassphraseUI()
+    private func didTapSavePassphraseCard() {
+        showPaymentsPassphraseUI(style: .fromHelpCard)
     }
 }
 
@@ -1204,7 +1287,6 @@ extension PaymentsSettingsViewController: PaymentsHistoryDataSourceDelegate {
 
 extension PaymentsSettingsViewController: PaymentsViewPassphraseDelegate {
 
-    private static let keyValueStore = SDSKeyValueStore(collection: "PaymentSettings")
     private static let hasReviewedPassphraseKey = "hasReviewedPassphrase"
 
     public static func hasReviewedPassphraseWithSneakyTransaction() -> Bool {
@@ -1224,11 +1306,20 @@ extension PaymentsSettingsViewController: PaymentsViewPassphraseDelegate {
     }
 
     public func viewPassphraseDidComplete() {
+        self.savePassphraseHelpCardEnabled = false
         if !Self.hasReviewedPassphraseWithSneakyTransaction() {
             Self.setHasReviewedPassphraseWithSneakyTransaction()
 
             presentToast(text: NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST",
                                                  comment: "Message indicating that 'payments passphrase review' is complete."))
+        }
+    }
+
+    public func viewPassphraseDidCancel(viewController: PaymentsViewPassphraseSplashViewController) {
+        viewController.dismiss(animated: true)
+        if viewController.style.shouldShowHelpCardAfterCancel {
+            self.clearHelpCardEnabledFromDismissedList()
+            self.savePassphraseHelpCardEnabled = true
         }
     }
 }

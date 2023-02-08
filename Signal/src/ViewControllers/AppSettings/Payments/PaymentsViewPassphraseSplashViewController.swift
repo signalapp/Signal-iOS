@@ -4,9 +4,11 @@
 //
 
 import Foundation
+import SignalUI
 import SignalMessaging
 
 public protocol PaymentsViewPassphraseDelegate: AnyObject {
+    func viewPassphraseDidCancel(viewController: PaymentsViewPassphraseSplashViewController)
     func viewPassphraseDidComplete()
 }
 
@@ -15,19 +17,32 @@ public protocol PaymentsViewPassphraseDelegate: AnyObject {
 @objc
 public class PaymentsViewPassphraseSplashViewController: OWSViewController {
 
-    private let passphrase: PaymentsPassphrase
+    public enum Style: Int, CaseIterable {
+        /// From settings menu when user has not completed recovery phrase
+        case view
+        /// From settings menu after user has completed recovery phrase
+        case reviewed
+        /// When balance becomes non-zero for the first time
+        case fromBalance
+        /// From the help card on payments settings
+        case fromHelpCard
+        /// When dismissing the help card on payments settings
+        case fromHelpCardDismiss
+    }
 
-    private let shouldShowConfirm: Bool
+    public let style: Style
+
+    private let passphrase: PaymentsPassphrase
 
     private weak var viewPassphraseDelegate: PaymentsViewPassphraseDelegate?
 
     private let rootView = UIStackView()
 
     public required init(passphrase: PaymentsPassphrase,
-                         shouldShowConfirm: Bool,
+                         style: Style,
                          viewPassphraseDelegate: PaymentsViewPassphraseDelegate) {
         self.passphrase = passphrase
-        self.shouldShowConfirm = shouldShowConfirm
+        self.style = style
         self.viewPassphraseDelegate = viewPassphraseDelegate
 
         super.init()
@@ -59,10 +74,15 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
     }
 
     private func updateNavbar() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
-                                                           target: self,
-                                                           action: #selector(didTapDismiss),
-                                                           accessibilityIdentifier: "dismiss")
+        let closeButton = UIImage(named: "x-24")?.withRenderingMode(.alwaysTemplate)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            image: closeButton,
+            landscapeImagePhone: nil,
+            style: .plain,
+            target: self,
+            action: #selector(didTapDismiss),
+            accessibilityIdentifier: "dismiss"
+        )
     }
 
     public override func viewWillAppear(_ animated: Bool) {
@@ -81,17 +101,15 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
         let heroImage = UIImageView(image: UIImage(named: "recovery-phrase"))
 
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE",
-                                            comment: "Title for the first step of the 'view payments passphrase' views.")
+        titleLabel.text = style.title
         titleLabel.font = UIFont.ows_dynamicTypeTitle2Clamped.ows_semibold
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
 
         let explanationLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
-            text: NSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION",
-                                    comment: "Explanation of the 'payments passphrase' in the 'view payments passphrase' settings."),
+            text: self.style.explanationText,
             font: .ows_dynamicTypeBody2Clamped,
-            learnMoreUrl: "https://support.signal.org/hc/en-us/articles/360057625692#payments_wallet_view_passphrase")
+            learnMoreUrl: self.style.explanationUrl)
         explanationLabel.textAlignment = .center
 
         let topStack = UIStackView(arrangedSubviews: [
@@ -106,13 +124,28 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
         topStack.isLayoutMarginsRelativeArrangement = true
         topStack.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 0)
 
-        let startButton = OWSFlatButton.button(title: CommonStrings.startButton,
-                                               font: UIFont.ows_dynamicTypeBody.ows_semibold,
-                                               titleColor: .white,
-                                               backgroundColor: .ows_accentBlue,
-                                               target: self,
-                                               selector: #selector(didTapStartButton))
-        startButton.autoSetHeightUsingFont()
+        let nextButton = OWSFlatButton.insetButton(
+            title: CommonStrings.nextButton,
+            font: UIFont.ows_dynamicTypeBody.ows_semibold,
+            titleColor: .white,
+            backgroundColor: .ows_accentBlue,
+            target: self,
+            selector: #selector(didTapNextButton)
+        )
+
+        nextButton.autoSetHeightUsingFont()
+        nextButton.cornerRadius = 14
+
+        let cancelButton = OWSFlatButton.insetButton(
+            title: CommonStrings.notNowButton,
+            font: UIFont.ows_dynamicTypeBody.ows_semibold,
+            titleColor: .ows_accentBlue,
+            backgroundColor: .clear,
+            target: self,
+            selector: #selector(didTapDismiss)
+        )
+
+        cancelButton.autoSetHeightUsingFont()
 
         let spacerFactory = SpacerFactory()
 
@@ -121,23 +154,48 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
             spacerFactory.buildVSpacer(),
             topStack,
             spacerFactory.buildVSpacer(),
-            startButton,
+            nextButton,
+            cancelButton,
             UIView.spacer(withHeight: 8)
         ])
 
         spacerFactory.finalizeSpacers()
     }
 
+    func showDismissConfirmation() {
+        let actionSheet = ActionSheetController(title: NSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE",
+                                                                         comment: "Title of confirmation alert when discarding recovery phrase."),
+                                                message: NSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE",
+                                                                           comment: "Message of confirmation alert when discarding recovery phrase."))
+        actionSheet.addAction(ActionSheetAction(
+            title: NSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON",
+                                     comment: "Button when discarding recovery phrase."),
+            style: .destructive,
+            handler: { [weak self] _ in
+                self?.notifyCancelled()
+            }
+        ))
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.cancelButton,
+            style: .cancel,
+            handler: nil
+        ))
+        self.presentActionSheet(actionSheet)
+    }
+
+    private func notifyCancelled() {
+        viewPassphraseDelegate?.viewPassphraseDidCancel(viewController: self)
+    }
+
     // MARK: - Events
 
     @objc
     func didTapDismiss() {
-        dismiss(animated: true, completion: nil)
-    }
-
-    @objc
-    func didTapStartButton() {
-        didTapNextButton()
+        if style.shouldConfirmCancel {
+            showDismissConfirmation()
+        } else {
+            notifyCancelled()
+        }
     }
 
     @objc
@@ -171,4 +229,55 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
             navigationController?.pushViewController(view, animated: true)
         }
     }
+}
+
+extension PaymentsViewPassphraseSplashViewController.Style {
+
+    var title: String {
+        switch self {
+        case .reviewed:
+            return NSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE",
+                                     comment: "Title for the first step of the 'view payments passphrase' views.")
+        case .fromBalance, .fromHelpCard, .fromHelpCardDismiss, .view:
+            return NSLocalizedString("SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE",
+                                     comment: "Title for the first step of the 'save payments passphrase' views.")
+        }
+    }
+
+    var explanationText: String {
+        switch self {
+        case .view, .reviewed:
+            return NSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION",
+                                     comment: "Explanation of the 'payments passphrase' in the 'view payments passphrase' settings.")
+        case .fromHelpCard, .fromHelpCardDismiss:
+            return NSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD",
+                                     comment: "Explanation of the 'payments passphrase' when from the help card.")
+        case .fromBalance:
+            return NSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE",
+                                     comment: "Explanation of the 'payments passphrase' when there is a balance.")
+        }
+    }
+
+    var explanationUrl: String {
+        return "https://support.signal.org/hc/en-us/articles/360057625692#payments_wallet_view_passphrase"
+    }
+
+    var shouldConfirmCancel: Bool {
+        switch self {
+        case .reviewed:
+            return false
+        case .fromBalance, .fromHelpCard, .fromHelpCardDismiss, .view:
+            return true
+        }
+    }
+
+    var shouldShowHelpCardAfterCancel: Bool {
+        switch self {
+        case .reviewed, .fromHelpCardDismiss:
+            return false
+        case .fromBalance, .fromHelpCard, .view:
+            return true
+        }
+    }
+
 }
