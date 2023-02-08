@@ -1,2 +1,2 @@
-• Even though the “Find by Phone Number” feature is now more than 4x faster, you can still take your time when you decide to start a new conversation.
-• We fixed a few bugs, including one that sometimes caused the text input field to be displayed incorrectly when replying to a story.
+• The new and improved All Media view makes it easier to spot old GIFs in your favorite chats, keep track of where you are in the timeline while scrolling, and see the length of individual videos.
+• We fixed a few bugs, including one that sometimes made an endless progress spinner appear while trying to leave a group. If you have been enthusiastically trying to escape from an "Escape Room Enthusiasts" group, the puzzle has been solved and the door is now open.
