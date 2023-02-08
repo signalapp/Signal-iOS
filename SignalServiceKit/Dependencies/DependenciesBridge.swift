@@ -34,6 +34,8 @@ public class DependenciesBridge {
     }
     private static var _shared: DependenciesBridge?
 
+    public let schedulers: Schedulers
+
     public let db: DB
     public let keyValueStoreFactory: KeyValueStoreFactory
 
@@ -71,6 +73,7 @@ public class DependenciesBridge {
         tsConstants: TSConstantsProtocol,
         ows2FAManager: OWS2FAManager
     ) {
+        self.schedulers = DispatchQueueSchedulers()
         self.db = SDSDB(databaseStorage: databaseStorage)
         self.keyValueStoreFactory = SDSKeyValueStoreFactory()
         self.kbsCredentialStorage = KBSAuthCredentialStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
@@ -81,6 +84,7 @@ public class DependenciesBridge {
             databaseStorage: db,
             keyValueStoreFactory: keyValueStoreFactory,
             remoteAttestation: KBS.Wrappers.RemoteAttestation(),
+            schedulers: schedulers,
             signalService: signalService,
             storageServiceManager: KBS.Wrappers.StorageServiceManager(storageServiceManager),
             syncManager: syncManager,

@@ -17,6 +17,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     private let db: DB
     private let keyValueStoreFactory: KeyValueStoreFactory
     private let remoteAttestation: KBS.Shims.RemoteAttestation
+    private let schedulers: Schedulers
     private let signalService: OWSSignalServiceProtocol
     private let storageServiceManager: KBS.Shims.StorageServiceManager
     private let syncManager: SyncManagerProtocolSwift
@@ -30,6 +31,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         databaseStorage: DB,
         keyValueStoreFactory: KeyValueStoreFactory,
         remoteAttestation: KBS.Shims.RemoteAttestation,
+        schedulers: Schedulers,
         signalService: OWSSignalServiceProtocol,
         storageServiceManager: KBS.Shims.StorageServiceManager,
         syncManager: SyncManagerProtocolSwift,
@@ -42,6 +44,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         self.db = databaseStorage
         self.keyValueStoreFactory = keyValueStoreFactory
         self.remoteAttestation = remoteAttestation
+        self.schedulers = schedulers
         self.signalService = signalService
         self.storageServiceManager = storageServiceManager
         self.syncManager = syncManager
@@ -76,10 +79,10 @@ public class KeyBackupService: KeyBackupServiceProtocol {
     /// Indicates whether your pin is valid when compared to your stored keys.
     /// This is a local verification and does not make any requests to the KBS.
     public func verifyPin(_ pin: String, resultHandler: @escaping (Bool) -> Void) {
-        DispatchQueue.global().async {
+        schedulers.global().async { [schedulers] in
             var isValid = false
             defer {
-                DispatchQueue.main.async { resultHandler(isValid) }
+                schedulers.main.async { resultHandler(isValid) }
             }
 
             guard let encodedVerificationString = self.getOrLoadStateWithSneakyTransaction().encodedVerificationString else {
@@ -148,13 +151,13 @@ public class KeyBackupService: KeyBackupServiceProtocol {
             auth: auth,
             enclave: enclave,
             ignoreCachedToken: true
-        ).map(on: DispatchQueue.global()) { restoredKeys -> String in
+        ).map(on: schedulers.global()) { restoredKeys -> String in
             guard let registrationLockToken = KBS.DerivedKey.registrationLock.derivedData(from: restoredKeys.masterKey)?.hexadecimalString else {
                 owsFailDebug("Failed to derive registration lock token")
                 throw KBS.KBSError.assertion
             }
             return registrationLockToken
-        }.recover(on: DispatchQueue.global()) { error -> Promise<String> in
+        }.recover(on: schedulers.global()) { error -> Promise<String> in
             owsAssertDebug(error is KBS.KBSError, "Unexpectedly surfacing a non KBS error \(error)")
             throw error
         }
@@ -216,7 +219,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 enclave: self.currentEnclave,
                 auth: auth
             ).map { ($0, restoredKeys.masterKey) }
-        }.done(on: DispatchQueue.global()) { response, masterKey in
+        }.done(on: schedulers.global()) { response, masterKey in
             guard let status = response.status else {
                 owsFailDebug("KBS backup is missing status")
                 throw KBS.KBSError.assertion
@@ -274,7 +277,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 owsFailDebug("Failed to delete keys from previous enclave \(error)")
                 throw error
             }
-        }.recover(on: DispatchQueue.global()) { error in
+        }.recover(on: schedulers.global()) { error in
             guard let kbsError = error as? KBS.KBSError else {
                 owsFailDebug("Unexpectedly surfacing a non KBS error \(error)")
                 throw error
@@ -300,7 +303,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
             auth: auth,
             enclave: enclave,
             ignoreCachedToken: ignoreCachedToken
-        ).map(on: DispatchQueue.global()) { backupId in
+        ).map(on: schedulers.global()) { backupId in
             return try self.deriveEncryptionKeyAndAccessKey(pin: pin, backupId: backupId)
         }.then { encryptionKey, accessKey in
             self.restoreKeyRequest(
@@ -309,7 +312,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 auth: auth,
                 ignoreCachedToken: ignoreCachedToken
             ).map { ($0, encryptionKey, accessKey) }
-        }.map(on: DispatchQueue.global()) { response, encryptionKey, accessKey -> RestoredKeys in
+        }.map(on: schedulers.global()) { response, encryptionKey, accessKey -> RestoredKeys in
             guard let status = response.status else {
                 owsFailDebug("KBS restore is missing status")
                 throw KBS.KBSError.assertion
@@ -367,7 +370,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         return fetchBackupId(
             auth: nil,
             enclave: currentEnclave
-        ).map(on: DispatchQueue.global()) { backupId -> (Data, Data, Data) in
+        ).map(on: schedulers.global()) { backupId -> (Data, Data, Data) in
             let masterKey: Data = {
                 if rotateMasterKey { return self.generateMasterKey() }
                 return self.getOrLoadStateWithSneakyTransaction().masterKey ?? self.generateMasterKey()
@@ -382,7 +385,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 encryptedMasterKey: encryptedMasterKey,
                 enclave: self.currentEnclave
             ).map { ($0, masterKey) }
-        }.done(on: DispatchQueue.global()) { response, masterKey in
+        }.done(on: schedulers.global()) { response, masterKey in
             guard let status = response.status else {
                 owsFailDebug("KBS backup is missing status")
                 throw KBS.KBSError.assertion
@@ -423,7 +426,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                     )
                 }
             }
-        }.recover(on: DispatchQueue.global()) { error in
+        }.recover(on: schedulers.global()) { error in
             Logger.error("recording backupKeyRequest errored: \(error)")
 
             self.db.write { transaction in
@@ -930,10 +933,10 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         return performRemoteAttestation(
             auth: auth,
             enclave: enclave
-        ).then { remoteAttestation -> Promise<RequestType.ResponseOptionType> in
+        ).then { [schedulers] remoteAttestation -> Promise<RequestType.ResponseOptionType> in
             firstly {
                 self.fetchToken(for: remoteAttestation, ignoreCachedToken: ignoreCachedToken)
-            }.then(on: DispatchQueue.global()) { tokenResponse -> Promise<HTTPResponse> in
+            }.then(on: schedulers.global()) { tokenResponse -> Promise<HTTPResponse> in
                 let requestOption = try requestOptionBuilder(tokenResponse)
                 let requestBuilder = KeyBackupProtoRequest.builder()
                 requestOption.set(on: requestBuilder)
@@ -967,7 +970,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 }
                 return firstly {
                     urlSession.promiseForTSRequest(request)
-                }.recover(on: DispatchQueue.global()) { error -> Promise<HTTPResponse> in
+                }.recover(on: schedulers.global()) { error -> Promise<HTTPResponse> in
                     // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
                     if let httpError = error as? OWSHTTPError {
                         throw httpError
@@ -976,7 +979,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                         throw OWSHTTPError.invalidRequest(requestUrl: requestUrl)
                     }
                 }
-            }.map(on: DispatchQueue.global()) { (response: HTTPResponse) in
+            }.map(on: schedulers.global()) { (response: HTTPResponse) in
                 guard let json = response.responseBodyJson else {
                     owsFailDebug("Missing or invalid JSON.")
                     throw KBS.KBSError.assertion
@@ -1278,7 +1281,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
             }
             return firstly {
                 urlSession.promiseForTSRequest(request)
-            }.recover(on: DispatchQueue.global()) { error -> Promise<HTTPResponse> in
+            }.recover(on: schedulers.global()) { error -> Promise<HTTPResponse> in
                 // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
                 if let httpError = error as? OWSHTTPError {
                     throw httpError
@@ -1287,7 +1290,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                     throw OWSHTTPError.invalidRequest(requestUrl: requestUrl)
                 }
             }
-        }.map(on: DispatchQueue.global()) { response in
+        }.map(on: schedulers.global()) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON.")
             }
@@ -1310,7 +1313,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 auth: auth,
                 enclave: enclave
             )
-            .recover(on: DispatchQueue.sharedBackground) { [credentialStorage, remoteAttestation, db] error in
+            .recover(on: schedulers.sync) { [credentialStorage, remoteAttestation, db] error in
                 Logger.warn("KBS attestation failed, rotating auth credential.")
                 // If we fail for any reason, be aggressive and clear our auth
                 // credential and retry so we fetch a new one. It's cheap to do so.
@@ -1323,7 +1326,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                         enclave: enclave
                     )
             }
-            .map(on: DispatchQueue.sharedBackground) { [credentialStorage, db] attestation in
+            .map(on: schedulers.sync) { [credentialStorage, db] attestation in
                 let credential = attestation.auth
                 db.write { credentialStorage.storeAuthCredentialForCurrentUsername(KBSAuthCredential(credential: credential), $0) }
                 return attestation

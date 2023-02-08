@@ -17,6 +17,7 @@ class KeyBackupServiceTests: XCTestCase {
     private var remoteAttestation: KBS.TestMocks.RemoteAttestation!
     private var mockSignalService: OWSSignalServiceMock!
     private var tsConstants: TSConstantsProtocol!
+    private var scheduler: TestScheduler!
 
     override func setUp() {
         self.db = MockDB()
@@ -24,6 +25,9 @@ class KeyBackupServiceTests: XCTestCase {
         self.remoteAttestation = KBS.TestMocks.RemoteAttestation()
         self.mockSignalService = OWSSignalServiceMock()
         self.tsConstants = TSConstants.shared
+        self.scheduler = TestScheduler()
+        // Start the scheduler so everything executes synchronously.
+        self.scheduler.start()
         self.keyBackupService = KeyBackupService(
             accountManager: KBS.TestMocks.TSAccountManager(),
             appContext: TestAppContext(),
@@ -31,6 +35,7 @@ class KeyBackupServiceTests: XCTestCase {
             databaseStorage: db,
             keyValueStoreFactory: InMemoryKeyValueStoreFactory(),
             remoteAttestation: remoteAttestation,
+            schedulers: TestSchedulers(scheduler: scheduler),
             signalService: mockSignalService,
             storageServiceManager: KBS.TestMocks.StorageServiceManager(),
             syncManager: OWSMockSyncManager(),
@@ -218,9 +223,7 @@ class KeyBackupServiceTests: XCTestCase {
 
         // Try once without auth, and with a success response.
         var promise: Promise<RemoteAttestation> = keyBackupService.performRemoteAttestation(auth: nil, enclave: tsConstants.keyBackupEnclave)
-        var expectation = self.expectation(description: "noAuth")
-        promise.observe {
-            expectation.fulfill()
+        promise.observe(on: scheduler) {
             switch $0 {
             case .success:
                 break
@@ -228,7 +231,6 @@ class KeyBackupServiceTests: XCTestCase {
                 XCTFail("\(error)")
             }
         }
-        wait(for: [expectation], timeout: 10)
 
         // Input should be empty.
         XCTAssertEqual(remoteAttestation.authCredentialInputs, [nil])
@@ -247,9 +249,7 @@ class KeyBackupServiceTests: XCTestCase {
         remoteAttestation.promisesToReturn.append(.value(fakeRemoteAttestation(secondCredential)))
 
         promise = keyBackupService.performRemoteAttestation(auth: nil, enclave: tsConstants.keyBackupEnclave)
-        expectation = self.expectation(description: "existingAuth")
-        promise.observe {
-            expectation.fulfill()
+        promise.observe(on: scheduler) {
             switch $0 {
             case .success:
                 break
@@ -257,7 +257,6 @@ class KeyBackupServiceTests: XCTestCase {
                 XCTFail("\(error)")
             }
         }
-        wait(for: [expectation], timeout: 10)
 
         // Should have used existing auth.
         XCTAssertEqual(remoteAttestation.authCredentialInputs, [firstCredential])
@@ -274,9 +273,7 @@ class KeyBackupServiceTests: XCTestCase {
         remoteAttestation.promisesToReturn.append(.value(fakeRemoteAttestation(thirdCredential)))
 
         promise = keyBackupService.performRemoteAttestation(auth: nil, enclave: tsConstants.keyBackupEnclave)
-        expectation = self.expectation(description: "failedRequest")
-        promise.observe {
-            expectation.fulfill()
+        promise.observe(on: scheduler) {
             switch $0 {
             case .success:
                 break
@@ -284,7 +281,6 @@ class KeyBackupServiceTests: XCTestCase {
                 XCTFail("\(error)")
             }
         }
-        wait(for: [expectation], timeout: 10)
 
         // Should have used existing auth.
         XCTAssertEqual(remoteAttestation.authCredentialInputs, [secondCredential, nil])

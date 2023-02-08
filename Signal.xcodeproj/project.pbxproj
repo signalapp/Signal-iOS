@@ -779,6 +779,12 @@
 		6600F34C298C81CD00B1EDB7 /* UnknownEnumCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */; };
 		6600F34F298C823C00B1EDB7 /* UnknownEnumCodableTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F34D298C81E300B1EDB7 /* UnknownEnumCodableTest.swift */; };
 		6600F351298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F350298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift */; };
+		6600F37E298F27C600B1EDB7 /* Schedulers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F37D298F27C600B1EDB7 /* Schedulers.swift */; };
+		6600F380298F27FE00B1EDB7 /* DispatchQueueSchedulers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F37F298F27FE00B1EDB7 /* DispatchQueueSchedulers.swift */; };
+		6600F384298F305C00B1EDB7 /* TestScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F382298F2A3D00B1EDB7 /* TestScheduler.swift */; };
+		6600F387298F358F00B1EDB7 /* TestSchedulers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F385298F355B00B1EDB7 /* TestSchedulers.swift */; };
+		6600F389298F5D9200B1EDB7 /* SyncScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F388298F5D9200B1EDB7 /* SyncScheduler.swift */; };
+		6600F38B299016BC00B1EDB7 /* TestSchedulerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6600F38A299016BC00B1EDB7 /* TestSchedulerTest.swift */; };
 		66138FAB2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FAA2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift */; };
 		66138FB429831AB0002E0CFE /* InMemoryKeyValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FB22983010D002E0CFE /* InMemoryKeyValueStore.swift */; };
 		66138FB6298326C7002E0CFE /* KeyBackupServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66138FB5298326C7002E0CFE /* KeyBackupServiceProtocol.swift */; };
@@ -3166,6 +3172,12 @@
 		6600F34B298C81CD00B1EDB7 /* UnknownEnumCodable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnknownEnumCodable.swift; sourceTree = "<group>"; };
 		6600F34D298C81E300B1EDB7 /* UnknownEnumCodableTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnknownEnumCodableTest.swift; sourceTree = "<group>"; };
 		6600F350298C8BC900B1EDB7 /* RegistrationRequestFactoryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationRequestFactoryTest.swift; sourceTree = "<group>"; };
+		6600F37D298F27C600B1EDB7 /* Schedulers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Schedulers.swift; sourceTree = "<group>"; };
+		6600F37F298F27FE00B1EDB7 /* DispatchQueueSchedulers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DispatchQueueSchedulers.swift; sourceTree = "<group>"; };
+		6600F382298F2A3D00B1EDB7 /* TestScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScheduler.swift; sourceTree = "<group>"; };
+		6600F385298F355B00B1EDB7 /* TestSchedulers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSchedulers.swift; sourceTree = "<group>"; };
+		6600F388298F5D9200B1EDB7 /* SyncScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncScheduler.swift; sourceTree = "<group>"; };
+		6600F38A299016BC00B1EDB7 /* TestSchedulerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSchedulerTest.swift; sourceTree = "<group>"; };
 		66138FAA2982EE5F002E0CFE /* KeyBackupServiceTestShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBackupServiceTestShims.swift; sourceTree = "<group>"; };
 		66138FAE2982F4C4002E0CFE /* MockDBV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDBV2.swift; sourceTree = "<group>"; };
 		66138FB22983010D002E0CFE /* InMemoryKeyValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryKeyValueStore.swift; sourceTree = "<group>"; };
@@ -6184,6 +6196,26 @@
 			path = Discovery;
 			sourceTree = "<group>";
 		};
+		6600F37C298F27B600B1EDB7 /* Schedulers */ = {
+			isa = PBXGroup;
+			children = (
+				6600F37F298F27FE00B1EDB7 /* DispatchQueueSchedulers.swift */,
+				6600F37D298F27C600B1EDB7 /* Schedulers.swift */,
+				6600F388298F5D9200B1EDB7 /* SyncScheduler.swift */,
+			);
+			path = Schedulers;
+			sourceTree = "<group>";
+		};
+		6600F381298F2A3200B1EDB7 /* Schedulers */ = {
+			isa = PBXGroup;
+			children = (
+				6600F382298F2A3D00B1EDB7 /* TestScheduler.swift */,
+				6600F385298F355B00B1EDB7 /* TestSchedulers.swift */,
+				6600F38A299016BC00B1EDB7 /* TestSchedulerTest.swift */,
+			);
+			path = Schedulers;
+			sourceTree = "<group>";
+		};
 		66138FAC2982F4A7002E0CFE /* SDSDatabaseStorage */ = {
 			isa = PBXGroup;
 			children = (
@@ -7719,6 +7751,7 @@
 				F9C5C9A1289453B100548EEE /* Protos */,
 				F9C5C9C6289453B100548EEE /* Remote Attestation */,
 				F9B0DC3B28948656004E07B7 /* Resources */,
+				6600F37C298F27B600B1EDB7 /* Schedulers */,
 				F9C5CB98289453B200548EEE /* Security */,
 				F9C5CA2F289453B100548EEE /* Storage */,
 				F9C5CB82289453B200548EEE /* TestUtils */,
@@ -7746,6 +7779,7 @@
 				F942621C289B1B5500460798 /* Messages */,
 				F94261CF289B1B5400460798 /* Network */,
 				F97391A128EF0AFB002DDE5D /* Protos */,
+				6600F381298F2A3200B1EDB7 /* Schedulers */,
 				F94261CB289B1B5300460798 /* Security */,
 				F94261D7289B1B5400460798 /* Storage */,
 				884BF73A28D37D5F00D94636 /* Stories */,
@@ -11231,6 +11265,7 @@
 				F9C5CCA0289453B300548EEE /* DeviceTransferProto.swift in Sources */,
 				F925A3AB29493D0D009024D0 /* DisappearingMessagesFinder.swift in Sources */,
 				F9C5CDE8289453B400548EEE /* DispatchQueue+OWS.swift in Sources */,
+				6600F380298F27FE00B1EDB7 /* DispatchQueueSchedulers.swift in Sources */,
 				F9C5CD7F289453B300548EEE /* DonationReceipt.swift in Sources */,
 				F9C5CD87289453B300548EEE /* DonationReceiptFinder.swift in Sources */,
 				F9C5CC14289453B300548EEE /* DownloadStickerOperation.swift in Sources */,
@@ -11568,6 +11603,7 @@
 				F9C5CDF8289453B400548EEE /* ReverseDispatchQueue.swift in Sources */,
 				F945FE4A2984796D00C835C7 /* RingrtcFieldTrials.swift in Sources */,
 				F9C5CCA6289453B300548EEE /* RotateSignedKeyOperation.swift in Sources */,
+				6600F37E298F27C600B1EDB7 /* Schedulers.swift in Sources */,
 				F9C5CDEE289453B400548EEE /* SDS+SSK.swift in Sources */,
 				F9C5CD2D289453B300548EEE /* SDSCodableModel.swift in Sources */,
 				F9C5CD2F289453B300548EEE /* SDSCrossProcess.m in Sources */,
@@ -11660,6 +11696,7 @@
 				F9C5CCE8289453B300548EEE /* SubscriptionManagerProtocol.swift in Sources */,
 				F9C5CE2F289453B400548EEE /* SwiftSingletons.swift in Sources */,
 				F9C5CE04289453B400548EEE /* SyncManagerProtocol.swift in Sources */,
+				6600F389298F5D9200B1EDB7 /* SyncScheduler.swift in Sources */,
 				669E900028B42B7A00043D28 /* SystemStoryManager.swift in Sources */,
 				669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */,
 				669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */,
@@ -11876,6 +11913,9 @@
 				884BF73D28D37D5F00D94636 /* SystemStoryManagerTest.swift in Sources */,
 				F9426249289B1B5500460798 /* TestModelTests.swift in Sources */,
 				F9426288289B1B5600460798 /* TestProtocolRunnerTest.swift in Sources */,
+				6600F384298F305C00B1EDB7 /* TestScheduler.swift in Sources */,
+				6600F387298F358F00B1EDB7 /* TestSchedulers.swift in Sources */,
+				6600F38B299016BC00B1EDB7 /* TestSchedulerTest.swift in Sources */,
 				66AE57802984AB9F00E40CFA /* ToyExample.swift in Sources */,
 				F903C29B28EC7AE60035B42B /* TSAccountManagerTest.swift in Sources */,
 				F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */,
