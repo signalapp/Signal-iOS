@@ -5,6 +5,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class DeviceMessage;
 @class ECKeyPair;
 @class OWSDevice;
 @class PreKeyRecord;
@@ -72,7 +73,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
     NS_SWIFT_NAME(requestVerificationCodeRequest(e164:preauthChallenge:captchaToken:transport:));
 
 + (TSRequest *)submitMessageRequestWithServiceId:(NSUUID *)serviceId
-                                        messages:(NSArray *)messages
+                                        messages:(NSArray<DeviceMessage *> *)messages
                                        timestamp:(uint64_t)timestamp
                                      udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
                                         isOnline:(BOOL)isOnline

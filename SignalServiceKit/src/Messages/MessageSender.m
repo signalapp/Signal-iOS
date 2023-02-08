@@ -303,14 +303,14 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 @end
 
 @interface MessageSender (ImplementedInSwift)
-- (nullable NSDictionary *)encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
-                                                 deviceId:(int)deviceId
-                                              transaction:(SDSAnyWriteTransaction *)transaction
-                                                    error:(NSError **)error;
-- (nullable NSDictionary *)wrappedPlaintextMessageForMessageSend:(OWSMessageSend *)messageSend
-                                                        deviceId:(int)deviceId
-                                                     transaction:(SDSAnyWriteTransaction *)transaction
-                                                           error:(NSError **)error;
+- (nullable DeviceMessage *)encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
+                                                  deviceId:(int)deviceId
+                                               transaction:(SDSAnyWriteTransaction *)transaction
+                                                     error:(NSError **)error;
+- (nullable DeviceMessage *)wrappedPlaintextMessageForMessageSend:(OWSMessageSend *)messageSend
+                                                         deviceId:(int)deviceId
+                                                      transaction:(SDSAnyWriteTransaction *)transaction
+                                                            error:(NSError **)error;
 @end
 
 #pragma mark -
@@ -903,8 +903,8 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     return thread;
 }
 
-- (nullable NSArray<NSDictionary *> *)deviceMessagesForMessageSend:(OWSMessageSend *)messageSend
-                                                             error:(NSError **)errorHandle
+- (nullable NSArray<DeviceMessage *> *)deviceMessagesForMessageSend:(OWSMessageSend *)messageSend
+                                                              error:(NSError **)errorHandle
 {
     OWSAssertDebug(!NSThread.isMainThread);
     OWSAssertDebug(messageSend);
@@ -912,7 +912,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
     SignalServiceAddress *address = messageSend.address;
 
-    NSArray<NSDictionary *> *deviceMessages;
+    NSArray<DeviceMessage *> *deviceMessages;
     @try {
         deviceMessages = [self throws_deviceMessagesForMessageSend:messageSend];
     } @catch (NSException *exception) {
@@ -1014,8 +1014,8 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     }
 
     NSError *deviceMessagesError;
-    NSArray<NSDictionary *> *_Nullable deviceMessages = [self deviceMessagesForMessageSend:messageSend
-                                                                                     error:&deviceMessagesError];
+    NSArray<DeviceMessage *> *_Nullable deviceMessages = [self deviceMessagesForMessageSend:messageSend
+                                                                                      error:&deviceMessagesError];
     if (deviceMessagesError || !deviceMessages) {
         OWSAssertDebug(deviceMessagesError);
         return messageSend.failure(deviceMessagesError);
@@ -1044,19 +1044,8 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         }];
 
         BOOL hasDeviceMessages = NO;
-        for (NSDictionary<NSString *, id> *deviceMessage in deviceMessages) {
-            NSString *_Nullable destination = deviceMessage[@"destination"];
-            if (!destination) {
-                OWSFailDebug(@"Sync device message missing destination: %@", deviceMessage);
-                continue;
-            }
-
-            NSNumber *_Nullable destinationDeviceId = deviceMessage[@"destinationDeviceId"];
-            if (!destinationDeviceId) {
-                OWSFailDebug(@"Sync device message missing destination device id: %@", deviceMessage);
-                continue;
-            }
-            if (destinationDeviceId.unsignedIntValue != self.tsAccountManager.storedDeviceId) {
+        for (DeviceMessage *deviceMessage in deviceMessages) {
+            if (deviceMessage.destinationDeviceId != self.tsAccountManager.storedDeviceId) {
                 hasDeviceMessages = YES;
                 break;
             }
@@ -1092,8 +1081,8 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         }
     }
 
-    for (NSDictionary *deviceMessage in deviceMessages) {
-        SSKProtoEnvelopeType messageType = [deviceMessage[@"type"] intValue];
+    for (DeviceMessage *deviceMessage in deviceMessages) {
+        SSKProtoEnvelopeType messageType = deviceMessage.type;
         BOOL hasValidMessageType = NO;
         if (messageSend.isUDSend) {
             hasValidMessageType |= (messageType == SSKProtoEnvelopeTypeUnidentifiedSender);
@@ -1188,7 +1177,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         });
 }
 
-- (NSArray<NSDictionary *> *)throws_deviceMessagesForMessageSend:(OWSMessageSend *)messageSend
+- (NSArray<DeviceMessage *> *)throws_deviceMessagesForMessageSend:(OWSMessageSend *)messageSend
 {
     OWSAssertDebug(!NSThread.isMainThread);
     OWSAssertDebug(messageSend.message);
@@ -1212,7 +1201,6 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     NSMutableArray<NSNumber *> *deviceIds = [recipient.devices.array mutableCopy];
     OWSAssertDebug(deviceIds);
 
-    NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:deviceIds.count];
     OWSLogVerbose(@"building device messages for: %@ %@ (isLocalAddress: %d, isUDSend: %d)",
         recipient.address,
         deviceIds,
@@ -1244,37 +1232,39 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         }
     }
 
+    NSMutableArray<DeviceMessage *> *messagesArray = [NSMutableArray arrayWithCapacity:deviceIds.count];
+
     __block NSError *encryptionError;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         for (NSNumber *deviceId in deviceIds) {
-            NSDictionary *_Nullable messageDict = nil;
+            DeviceMessage *_Nullable deviceMessage = nil;
             switch (messageSend.message.encryptionStyle) {
                 case EncryptionStyleWhisper:
-                    messageDict = [self encryptedMessageForMessageSend:messageSend
-                                                              deviceId:deviceId.intValue
-                                                           transaction:transaction
-                                                                 error:&encryptionError];
+                    deviceMessage = [self encryptedMessageForMessageSend:messageSend
+                                                                deviceId:deviceId.intValue
+                                                             transaction:transaction
+                                                                   error:&encryptionError];
                     break;
                 case EncryptionStylePlaintext:
-                    messageDict = [self wrappedPlaintextMessageForMessageSend:messageSend
-                                                                     deviceId:deviceId.intValue
-                                                                  transaction:transaction
-                                                                        error:&encryptionError];
+                    deviceMessage = [self wrappedPlaintextMessageForMessageSend:messageSend
+                                                                       deviceId:deviceId.intValue
+                                                                    transaction:transaction
+                                                                          error:&encryptionError];
                     break;
                 default:
                     encryptionError = OWSErrorMakeAssertionError(@"Unrecognized encryption style");
                     break;
             }
-            if (!messageDict || encryptionError) {
+            if (!deviceMessage || encryptionError) {
                 return;
             }
-            [messagesArray addObject:messageDict];
+            [messagesArray addObject:deviceMessage];
         }
     });
     if (encryptionError) {
         OWSRaiseException(InvalidMessageException, @"Failed to encrypt message: %@", encryptionError);
     }
-    return [messagesArray copy];
+    return messagesArray;
 }
 
 - (void)throws_ensureRecipientHasSessionForMessageSend:(OWSMessageSend *)messageSend

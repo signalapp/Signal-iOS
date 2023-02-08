@@ -482,7 +482,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
 }
 
 + (TSRequest *)submitMessageRequestWithServiceId:(NSUUID *)serviceId
-                                        messages:(NSArray *)messages
+                                        messages:(NSArray<DeviceMessage *> *)messages
                                        timestamp:(uint64_t)timestamp
                                      udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
                                         isOnline:(BOOL)isOnline
@@ -500,8 +500,12 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     // the Signal Web Service.
     // See
     // <https://github.com/signalapp/Signal-Server/blob/65da844d70369cb8b44966cfb2d2eb9b925a6ba4/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessageList.java>.
-    NSDictionary *parameters =
-        @{ @"messages" : messages, @"timestamp" : @(timestamp), @"online" : @(isOnline), @"urgent" : @(isUrgent) };
+    NSDictionary *parameters = @{
+        @"messages" : [messages map:^id _Nonnull(DeviceMessage *_Nonnull item) { return [item requestParameters]; }],
+        @"timestamp" : @(timestamp),
+        @"online" : @(isOnline),
+        @"urgent" : @(isUrgent)
+    };
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
     if (udAccessKey != nil) {

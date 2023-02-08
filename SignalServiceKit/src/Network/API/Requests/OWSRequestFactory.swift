@@ -144,3 +144,20 @@ public extension OWSRequestFactory {
         return result
     }
 }
+
+// MARK: - Messages
+
+extension DeviceMessage {
+    /// Returns the per-device-message parameters when sending a message.
+    ///
+    /// See <https://github.com/signalapp/Signal-Server/blob/ab26a65/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessage.java>.
+    @objc
+    func requestParameters() -> NSDictionary {
+        return [
+            "type": type.rawValue,
+            "destinationDeviceId": destinationDeviceId,
+            "destinationRegistrationId": Int32(bitPattern: destinationRegistrationId),
+            "content": serializedMessage.base64EncodedString()
+        ]
+    }
+}

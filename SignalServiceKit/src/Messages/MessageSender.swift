@@ -773,7 +773,7 @@ public extension TSMessage {
 // MARK: -
 
 @objc
-public extension MessageSender {
+extension MessageSender {
 
     private static let completionQueue: DispatchQueue = {
         return DispatchQueue(label: OWSDispatch.createLabel("messageSendCompletion"),
@@ -781,12 +781,10 @@ public extension MessageSender {
                              autoreleaseFrequency: .workItem)
     }()
 
-    typealias DeviceMessageType = [String: AnyObject]
-
     func performMessageSendRequest(
         _ messageSend: OWSMessageSend,
         serviceId: UUID,
-        deviceMessages: [DeviceMessageType]
+        deviceMessages: [DeviceMessage]
     ) {
         owsAssertDebug(!Thread.isMainThread)
 
@@ -862,10 +860,12 @@ public extension MessageSender {
         }
     }
 
-    private func messageSendDidSucceed(_ messageSend: OWSMessageSend,
-                                       deviceMessages: [DeviceMessageType],
-                                       wasSentByUD: Bool,
-                                       wasSentByWebsocket: Bool) {
+    private func messageSendDidSucceed(
+        _ messageSend: OWSMessageSend,
+        deviceMessages: [DeviceMessage],
+        wasSentByUD: Bool,
+        wasSentByWebsocket: Bool
+    ) {
         owsAssertDebug(!Thread.isMainThread)
 
         let address: SignalServiceAddress = messageSend.address
@@ -886,20 +886,16 @@ public extension MessageSender {
         }
 
         Self.databaseStorage.write { transaction in
-            deviceMessages.forEach { messageDict in
-                guard let uuidString = messageDict["destination"] as? String,
-                      let uuid = UUID(uuidString: uuidString),
-                      let deviceId = messageDict["destinationDeviceId"] as? Int64,
-                      uuid == messageSend.address.uuid else {
-                    owsFailDebug("Expected a destination deviceId")
-                    return
+            deviceMessages.forEach { deviceMessage in
+                guard let uuid = address.uuid else {
+                    return owsFailDebug("Expected a destination")
                 }
 
                 if let payloadId = messageSend.plaintextPayloadId {
                     MessageSendLog.recordPendingDelivery(
                         payloadId: payloadId,
                         recipientUuid: uuid,
-                        recipientDeviceId: deviceId,
+                        recipientDeviceId: Int64(deviceMessage.destinationDeviceId),
                         message: message,
                         transaction: transaction)
                 }
@@ -950,11 +946,13 @@ public extension MessageSender {
         }
     }
 
-    private func messageSendDidFail(_ messageSend: OWSMessageSend,
-                                    deviceMessages: [DeviceMessageType],
-                                    statusCode: Int,
-                                    responseError: Error,
-                                    responseData: Data?) {
+    private func messageSendDidFail(
+        _ messageSend: OWSMessageSend,
+        deviceMessages: [DeviceMessage],
+        statusCode: Int,
+        responseError: Error,
+        responseData: Data?
+    ) {
         owsAssertDebug(!Thread.isMainThread)
 
         let address: SignalServiceAddress = messageSend.address
@@ -1167,7 +1165,7 @@ extension MessageSender {
     @objc(encryptedMessageForMessageSend:deviceId:transaction:error:)
     private func encryptedMessage(for messageSend: OWSMessageSend,
                                   deviceId: Int32,
-                                  transaction: SDSAnyWriteTransaction) throws -> NSDictionary {
+                                  transaction: SDSAnyWriteTransaction) throws -> DeviceMessage {
         owsAssertDebug(!Thread.isMainThread)
 
         let recipientAddress = messageSend.address
@@ -1241,23 +1239,18 @@ extension MessageSender {
         // We had better have a session after encrypting for this recipient!
         let session = try signalProtocolStore.sessionStore.loadSession(for: protocolAddress, context: transaction)!
 
-        // Returns the per-device-message parameters used when submitting a message to
-        // the Signal Web Service.
-        // See <https://github.com/signalapp/Signal-Server/blob/65da844d70369cb8b44966cfb2d2eb9b925a6ba4/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessageList.java>.
-        return [
-            "type": messageType.rawValue,
-            "destination": protocolAddress.name,
-            "destinationDeviceId": protocolAddress.deviceId,
-            "destinationRegistrationId": Int32(bitPattern: try session.remoteRegistrationId()),
-            "content": serializedMessage.base64EncodedString(),
-            "urgent": messageSend.message.isUrgent
-        ]
+        return DeviceMessage(
+            type: messageType,
+            destinationDeviceId: protocolAddress.deviceId,
+            destinationRegistrationId: try session.remoteRegistrationId(),
+            serializedMessage: serializedMessage
+        )
     }
 
     @objc(wrappedPlaintextMessageForMessageSend:deviceId:transaction:error:)
     private func wrappedPlaintextMessage(for messageSend: OWSMessageSend,
                                          deviceId: Int32,
-                                         transaction: SDSAnyWriteTransaction) throws -> NSDictionary {
+                                         transaction: SDSAnyWriteTransaction) throws -> DeviceMessage {
         let recipientAddress = messageSend.address
         owsAssertDebug(!Thread.isMainThread)
         guard recipientAddress.isValid else { throw OWSAssertionError("Invalid address") }
@@ -1294,18 +1287,13 @@ extension MessageSender {
             messageType = .plaintextContent
         }
 
-        // Returns the per-device-message parameters used when submitting a message to
-        // the Signal Web Service.
-        // See <https://github.com/signalapp/Signal-Server/blob/65da844d70369cb8b44966cfb2d2eb9b925a6ba4/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessageList.java>.
         let session = try signalProtocolStore(for: .aci).sessionStore.loadSession(for: protocolAddress,
                                                                                   context: transaction)!
-        return [
-            "type": messageType.rawValue,
-            "destination": protocolAddress.name,
-            "destinationDeviceId": protocolAddress.deviceId,
-            "destinationRegistrationId": Int32(bitPattern: try session.remoteRegistrationId()),
-            "content": serializedMessage.base64EncodedString(),
-            "urgent": messageSend.message.isUrgent
-        ]
+        return DeviceMessage(
+            type: messageType,
+            destinationDeviceId: protocolAddress.deviceId,
+            destinationRegistrationId: try session.remoteRegistrationId(),
+            serializedMessage: serializedMessage
+        )
     }
 }
