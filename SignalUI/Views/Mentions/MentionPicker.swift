@@ -15,7 +15,6 @@ class MentionPicker: UIView {
     let mentionableUsers: [MentionableUser]
     struct MentionableUser {
         let address: SignalServiceAddress
-        let username: String?
         let displayName: String
     }
 
@@ -39,8 +38,6 @@ class MentionPicker: UIView {
 
                 return MentionableUser(
                     address: address,
-                    // TODO: [Usernames] Rip this out
-                    username: nil,
                     displayName: Self.contactsManager.displayName(for: address, transaction: transaction)
                 )
             }
@@ -134,10 +131,6 @@ class MentionPicker: UIView {
 
             let concatenatedDisplayName = user.displayName.replacingOccurrences(of: " ", with: "").lowercased()
             namesToCheck.append(concatenatedDisplayName)
-
-            if let username = user.username {
-                namesToCheck.append(username.lowercased())
-            }
 
             for name in namesToCheck {
                 guard name.hasPrefix(mentionText) else { continue }
@@ -306,7 +299,6 @@ private class MentionableUserCell: UITableViewCell {
     }
 
     let displayNameLabel = UILabel()
-    let usernameLabel = UILabel()
     let avatarView = ConversationAvatarView(
         sizeClass: MentionableUserCell.avatarSizeClass,
         localUserDisplayMode: .asUser,
@@ -325,12 +317,10 @@ private class MentionableUserCell: UITableViewCell {
         avatarView.autoMatch(.height, to: .height, of: avatarContainer, withOffset: 0, relation: .lessThanOrEqual)
 
         displayNameLabel.font = .ows_dynamicTypeBody2
-        usernameLabel.font = .ows_dynamicTypeBody2
 
         let stackView = UIStackView(arrangedSubviews: [
             avatarContainer,
             displayNameLabel,
-            usernameLabel,
             UIView.hStretchingSpacer()
         ])
         stackView.axis = .horizontal
@@ -352,22 +342,13 @@ private class MentionableUserCell: UITableViewCell {
     func configure(with mentionableUser: MentionPicker.MentionableUser, style: Mention.Style) {
         if [.composingAttachment, .groupReply].contains(style) {
             displayNameLabel.textColor = Theme.darkThemePrimaryColor
-            usernameLabel.textColor = Theme.darkThemeSecondaryTextAndIconColor
             selectedBackgroundView?.backgroundColor = UIColor.white.withAlphaComponent(0.2)
         } else {
             displayNameLabel.textColor = Theme.primaryTextColor
-            usernameLabel.textColor = Theme.secondaryTextAndIconColor
             selectedBackgroundView?.backgroundColor = Theme.cellSelectedColor
         }
 
         displayNameLabel.text = mentionableUser.displayName
-
-        if let username = mentionableUser.username {
-            usernameLabel.isHidden = false
-            usernameLabel.text = CommonFormats.formatUsername(username)
-        } else {
-            usernameLabel.isHidden = true
-        }
 
         avatarView.updateWithSneakyTransactionIfNecessary { configuration in
             configuration.dataSource = .address(mentionableUser.address)
