@@ -268,7 +268,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [Environment.shared.preferences unsetRecordedAPNSTokens];
 
-    [SignalApp.shared showOnboardingView:[Deprecated_OnboardingController new]];
+    [SignalApp.shared showDeprecatedOnboardingView:[Deprecated_OnboardingController new]];
 }
 
 + (void)clearHasDismissedOffers

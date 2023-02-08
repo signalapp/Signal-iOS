@@ -18,12 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminateKey";
 
-@interface SignalApp ()
-
-@property (nonatomic, nullable, weak) ConversationSplitViewController *conversationSplitViewController;
-
-@end
-
 #pragma mark -
 
 @implementation SignalApp
@@ -274,7 +268,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
     self.conversationSplitViewController = splitViewController;
 }
 
-- (void)showOnboardingView:(Deprecated_OnboardingController *)onboardingController
+- (void)showDeprecatedOnboardingView:(Deprecated_OnboardingController *)onboardingController
 {
     Deprecated_OnboardingNavigationController *navController =
         [[Deprecated_OnboardingNavigationController alloc] initWithOnboardingController:onboardingController];

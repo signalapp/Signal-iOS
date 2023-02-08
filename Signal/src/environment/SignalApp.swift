@@ -39,7 +39,10 @@ extension SignalApp {
         }
     }
 
-    func ensureRootViewController(launchStartedAt: TimeInterval) {
+    func ensureRootViewController(
+        appDelegate: UIApplicationDelegate,
+        launchStartedAt: TimeInterval
+    ) {
         AssertIsOnMainThread()
 
         Logger.info("ensureRootViewController")
@@ -56,14 +59,27 @@ extension SignalApp {
         if onboardingController.isComplete {
             onboardingController.markAsOnboarded()
             showConversationSplitView()
+        } else if FeatureFlags.useNewRegistrationFlow {
+            showRegistrationView(appDelegate: appDelegate)
+            AppReadiness.setUIIsReady()
         } else {
-            showOnboardingView(onboardingController)
+            showDeprecatedOnboardingView(onboardingController)
             AppReadiness.setUIIsReady()
         }
 
         AppUpdateNag.shared.showAppUpgradeNagIfNecessary()
 
         UIViewController.attemptRotationToDeviceOrientation()
+    }
+
+    private func showRegistrationView(appDelegate: UIApplicationDelegate) {
+        // This code is likely to change significantly.
+        let navController = OWSNavigationController()
+        navController.setViewControllers([RegistrationSplashViewController()], animated: false)
+
+        appDelegate.window??.rootViewController = navController
+
+        conversationSplitViewController = nil
     }
 
     func showAppSettings(mode: ShowAppSettingsMode) {

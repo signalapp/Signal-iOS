@@ -205,7 +205,10 @@ extension AppDelegate {
             )
         }
 
-        SignalApp.shared().ensureRootViewController(launchStartedAt: launchStartedAt)
+        SignalApp.shared().ensureRootViewController(
+            appDelegate: self,
+            launchStartedAt: launchStartedAt
+        )
     }
 
     @objc

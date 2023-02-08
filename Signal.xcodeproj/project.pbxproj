@@ -1237,6 +1237,7 @@
 		F927478A28CFE9C60056EAFE /* test-png-with-metadata.png in Resources */ = {isa = PBXBuildFile; fileRef = F927478928CFE9C60056EAFE /* test-png-with-metadata.png */; };
 		F927478B28CFEA680056EAFE /* test-apng.png in Resources */ = {isa = PBXBuildFile; fileRef = F908AA7C28CE629700472E68 /* test-apng.png */; };
 		F9292634297743EF0097F8FF /* PreparedGiftPayment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9292633297743EF0097F8FF /* PreparedGiftPayment.swift */; };
+		F933FC3F2992E77300D78DB0 /* RegistrationSplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F933FC3E2992E77300D78DB0 /* RegistrationSplashViewController.swift */; };
 		F93461B0291EB5E300366682 /* CreditOrDebitCardDonationViewController+FormState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461AF291EB5E300366682 /* CreditOrDebitCardDonationViewController+FormState.swift */; };
 		F93461B3291EB8C700366682 /* CreditOrDebitCardDonationViewController+OneTimeDonation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461B2291EB8C700366682 /* CreditOrDebitCardDonationViewController+OneTimeDonation.swift */; };
 		F93461B9291ED28A00366682 /* CreditAndDebitCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93461B8291ED28900366682 /* CreditAndDebitCards.swift */; };
@@ -1340,6 +1341,7 @@
 		F94D12FF28BD0DD900B2C478 /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */; };
 		F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */; };
 		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
+		F95D71A3299305C400ED3102 /* RegistrationViewUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95D71A2299305C400ED3102 /* RegistrationViewUtil.swift */; };
 		F9613CDC2981F11400894B55 /* SqliteUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9613CDB2981F11400894B55 /* SqliteUtil.swift */; };
 		F9613CDE2981F15700894B55 /* SqliteUtilTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9613CDD2981F15700894B55 /* SqliteUtilTest.swift */; };
 		F962B38A293F9F1F00765BD8 /* CRC32.swift in Sources */ = {isa = PBXBuildFile; fileRef = F962B389293F9F1F00765BD8 /* CRC32.swift */; };
@@ -3702,6 +3704,7 @@
 		F927478728CFE9B10056EAFE /* test-png.png */ = {isa = PBXFileReference; explicitFileType = compiled; path = "test-png.png"; sourceTree = "<group>"; };
 		F927478928CFE9C60056EAFE /* test-png-with-metadata.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-png-with-metadata.png"; sourceTree = "<group>"; };
 		F9292633297743EF0097F8FF /* PreparedGiftPayment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreparedGiftPayment.swift; sourceTree = "<group>"; };
+		F933FC3E2992E77300D78DB0 /* RegistrationSplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationSplashViewController.swift; sourceTree = "<group>"; };
 		F93461AF291EB5E300366682 /* CreditOrDebitCardDonationViewController+FormState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreditOrDebitCardDonationViewController+FormState.swift"; sourceTree = "<group>"; };
 		F93461B2291EB8C700366682 /* CreditOrDebitCardDonationViewController+OneTimeDonation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CreditOrDebitCardDonationViewController+OneTimeDonation.swift"; sourceTree = "<group>"; };
 		F93461B8291ED28900366682 /* CreditAndDebitCards.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreditAndDebitCards.swift; sourceTree = "<group>"; };
@@ -3806,6 +3809,7 @@
 		F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechManager.swift; sourceTree = "<group>"; };
 		F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseRecoveryTest.swift; sourceTree = "<group>"; };
 		F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingThanksSheet.swift; sourceTree = "<group>"; };
+		F95D71A2299305C400ED3102 /* RegistrationViewUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationViewUtil.swift; sourceTree = "<group>"; };
 		F9613CDB2981F11400894B55 /* SqliteUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SqliteUtil.swift; sourceTree = "<group>"; };
 		F9613CDD2981F15700894B55 /* SqliteUtilTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SqliteUtilTest.swift; sourceTree = "<group>"; };
 		F962B389293F9F1F00765BD8 /* CRC32.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRC32.swift; sourceTree = "<group>"; };
@@ -4867,6 +4871,8 @@
 				34ACA7ED2733161000E47AD4 /* Deprecated_RegistrationHelper.swift */,
 				34404274273C0E41008C9FA4 /* Deprecated_RegistrationPinAttemptsExhaustedViewController.swift */,
 				34ACA7EC2733161000E47AD4 /* Deprecated_RegistrationVerificationViewController.swift */,
+				F933FC3E2992E77300D78DB0 /* RegistrationSplashViewController.swift */,
+				F95D71A2299305C400ED3102 /* RegistrationViewUtil.swift */,
 			);
 			path = Registration;
 			sourceTree = "<group>";
@@ -10964,8 +10970,10 @@
 				88863A56280CD04B00977F69 /* ReactionFlybyAnimation.swift in Sources */,
 				88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */,
 				8809CE8A22F93C2200D38867 /* RecentPhotoCollectionView.swift in Sources */,
+				F933FC3F2992E77300D78DB0 /* RegistrationSplashViewController.swift in Sources */,
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
 				3440426B273AB186008C9FA4 /* RegistrationUtils.swift in Sources */,
+				F95D71A3299305C400ED3102 /* RegistrationViewUtil.swift in Sources */,
 				D997FA7628F8E3A2003C7B8B /* RemoteMegaphone.swift in Sources */,
 				450D19131F85236600970622 /* RemoteVideoView.m in Sources */,
 				348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */,
