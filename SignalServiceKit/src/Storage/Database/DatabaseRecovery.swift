@@ -449,56 +449,61 @@ public extension DatabaseRecovery {
         ) -> TableCopyResult {
             owsAssert(SqliteUtil.isSafe(sqlName: tableName))
 
-            return from.read { fromTransaction -> TableCopyResult in
-                let fromDb = fromTransaction.unwrapGrdbRead.database
+            do {
+                return try from.readThrows { fromTransaction -> TableCopyResult in
+                    let fromDb = fromTransaction.unwrapGrdbRead.database
 
-                let columnNames: [String]
-                let cursor: RowCursor
-                do {
-                    columnNames = try getColumnNames(db: fromDb, tableName: tableName)
-                    cursor = try Row.fetchCursor(fromDb, sql: "SELECT * FROM \(tableName)")
-                } catch {
-                    Logger.warn("Could not create cursor for table \(tableName) with error: \(error)")
-                    return .totalFailure(error: error)
-                }
-
-                let insertSql = insertSql(tableName: tableName, columnNames: columnNames)
-
-                return to.write { toTransaction in
-                    let toDb = toTransaction.unwrapGrdbWrite.database
-
-                    let insertStatement: Statement
+                    let columnNames: [String]
+                    let cursor: RowCursor
                     do {
-                        insertStatement = try toDb.makeStatement(sql: insertSql)
+                        columnNames = try getColumnNames(db: fromDb, tableName: tableName)
+                        cursor = try Row.fetchCursor(fromDb, sql: "SELECT * FROM \(tableName)")
                     } catch {
-                        Logger.warn("Could not create prepared insert statement. \(error)")
+                        Logger.warn("Could not create cursor for table \(tableName) with error: \(error)")
                         return .totalFailure(error: error)
                     }
 
-                    var rowsCopied: UInt = 0
-                    var latestError: Error?
+                    let insertSql = insertSql(tableName: tableName, columnNames: columnNames)
 
-                    do {
-                        try cursor.forEach { row in
-                            let statementArguments = StatementArguments(row.asDictionary)
-                            do {
-                                try insertStatement.execute(arguments: statementArguments)
-                                rowsCopied += 1
-                            } catch {
-                                latestError = error
-                            }
+                    return to.write { toTransaction in
+                        let toDb = toTransaction.unwrapGrdbWrite.database
+
+                        let insertStatement: Statement
+                        do {
+                            insertStatement = try toDb.makeStatement(sql: insertSql)
+                        } catch {
+                            Logger.warn("Could not create prepared insert statement. \(error)")
+                            return .totalFailure(error: error)
                         }
-                    } catch {
-                        Logger.warn("Error while iterating: \(error)")
-                        latestError = error
-                    }
 
-                    if let latestError = latestError {
-                        return .copiedSomeButHadTrouble(error: latestError, rowsCopied: rowsCopied)
-                    } else {
-                        return .wentFlawlessly(rowsCopied: rowsCopied)
+                        var rowsCopied: UInt = 0
+                        var latestError: Error?
+
+                        do {
+                            try cursor.forEach { row in
+                                let statementArguments = StatementArguments(row.asDictionary)
+                                do {
+                                    try insertStatement.execute(arguments: statementArguments)
+                                    rowsCopied += 1
+                                } catch {
+                                    latestError = error
+                                }
+                            }
+                        } catch {
+                            Logger.warn("Error while iterating: \(error)")
+                            latestError = error
+                        }
+
+                        if let latestError = latestError {
+                            return .copiedSomeButHadTrouble(error: latestError, rowsCopied: rowsCopied)
+                        } else {
+                            return .wentFlawlessly(rowsCopied: rowsCopied)
+                        }
                     }
                 }
+            } catch {
+                Logger.warn("Error when reading: \(error)")
+                return .totalFailure(error: error)
             }
         }
 

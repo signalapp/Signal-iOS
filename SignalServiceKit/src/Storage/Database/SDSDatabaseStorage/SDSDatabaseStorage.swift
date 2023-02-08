@@ -354,18 +354,31 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     // MARK: - SDSTransactable
 
-    public override func read(file: String = #file,
-                              function: String = #function,
-                              line: Int = #line,
-                              block: (SDSAnyReadTransaction) -> Void) {
-        InstrumentsMonitor.measure(category: "db", parent: "read", name: Self.owsFormatLogMessage(file: file, function: function, line: line)) {
-            do {
-                try grdbStorage.read { transaction in
-                    block(transaction.asAnyRead)
-                }
-            } catch {
-                owsFail("error: \(error.grdbErrorForLogging)")
-            }
+    public func readThrows<T>(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (SDSAnyReadTransaction) throws -> T
+    ) throws -> T {
+        try InstrumentsMonitor.measure(
+            category: "db",
+            parent: "readThrows",
+            name: Self.owsFormatLogMessage(file: file, function: function, line: line)
+        ) {
+            try grdbStorage.read { try block($0.asAnyRead) }
+        }
+    }
+
+    public override func read(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (SDSAnyReadTransaction) -> Void
+    ) {
+        do {
+            try readThrows(file: file, function: function, line: line, block: block)
+        } catch {
+            owsFail("error: \(error.grdbErrorForLogging)")
         }
     }
 
