@@ -12,6 +12,10 @@ extension SignalRecipient {
     @objc
     public var isRegistered: Bool { !devices.set.isEmpty }
 
+    public var deviceIds: [UInt32]? {
+        (devices.array as? [NSNumber])?.map { $0.uint32Value }
+    }
+
     private static let storageServiceUnregisteredThreshold = kMonthInterval
 
     @objc

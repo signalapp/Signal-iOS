@@ -617,9 +617,7 @@ class SignalRecipientTest: SSKBaseTestSwift {
                     }
                 }
                 recipient.markAsRegistered(deviceId: testCase.addedDeviceId, transaction: transaction)
-
-                let actualDeviceIds = Set(recipient.devices.map { ($0 as! NSNumber).uint32Value })
-                XCTAssertEqual(actualDeviceIds, testCase.expectedDeviceIds, "\(testCase)")
+                XCTAssertEqual(recipient.deviceIds.map { Set($0) }, testCase.expectedDeviceIds, "\(testCase)")
             }
         }
     }

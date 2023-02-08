@@ -64,13 +64,7 @@ extension MessageSender {
 
             accountId = recipient.accountId
 
-            var deviceIds: [UInt32] = recipient.devices.compactMap { value in
-                guard let numberValue = value as? NSNumber else {
-                    owsFailDebug("Invalid device id: \(value)")
-                    return nil
-                }
-                return numberValue.uint32Value
-            }
+            var deviceIds = recipient.deviceIds ?? []
 
             // Filter out the current device, we never need a session for it.
             if messageSend.isLocalAddress {

@@ -24,14 +24,10 @@ extension MessageSender {
         }
 
         init(address: SignalServiceAddress, transaction readTx: SDSAnyReadTransaction) {
-            self.address = address
             let recipient = SignalRecipient.get(address: address, mustHaveDevices: false, transaction: readTx)
 
-            if let deviceSet = recipient?.devices.array as? [NSNumber] {
-                devices = deviceSet.map { $0.uint32Value }
-            } else {
-                devices = []
-            }
+            self.address = address
+            self.devices = recipient?.deviceIds ?? []
         }
     }
 
