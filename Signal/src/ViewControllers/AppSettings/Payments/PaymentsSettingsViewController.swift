@@ -51,6 +51,12 @@ public class PaymentsSettingsViewController: OWSTableViewController2 {
         super.init()
 
         self.topHeader = topHeaderStackView
+
+        // Add placeholder view to stackview so it always has an calculable height.
+        let placeholderView = UIView()
+        placeholderView.translatesAutoresizingMaskIntoConstraints = false
+        placeholderView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        topHeaderStackView.addArrangedSubview(placeholderView)
     }
 
     // MARK: - Update Balance Timer
