@@ -4,7 +4,16 @@
 //
 
 import Foundation
-@testable import SignalServiceKit
+
+// TODO: [DBV2] Ideally, these would live in a test target.
+//
+// The types in here are used in both SignalServiceKitTests and SignalTests,
+// and we want to share them across the two. Unfortunately, that means they
+// cannot live in SignalServiceKitTests. In the future, we should add a
+// separate target (e.g., "SignalTestMocks") that encompasses classes that we
+// want to share across our various test targets.
+
+#if TESTABLE_BUILD
 
 /// Mock implementation of `DBReadTransaction`.
 /// Empty stub that does nothing, serves only to crash and fail tests if
@@ -195,3 +204,5 @@ public class MockDB: DB {
         return try block(MockWriteTransaction())
     }
 }
+
+#endif

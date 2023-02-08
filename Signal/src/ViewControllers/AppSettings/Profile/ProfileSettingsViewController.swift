@@ -11,9 +11,13 @@ import SignalUI
 @objc
 class ProfileSettingsViewController: OWSTableViewController2 {
 
+    private let context: ViewControllerContext = .shared
+
     private var hasUnsavedChanges = false {
         didSet { updateNavigationItem() }
     }
+
+    private var localAci: UUID?
 
     private var avatarData: Data?
     private var givenName: String?
@@ -37,11 +41,24 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         avatarData = snapshot.avatarData
         givenName = snapshot.givenName
         familyName = snapshot.familyName
-        username = snapshot.username
         bio = snapshot.bio
         bioEmoji = snapshot.bioEmoji
         allBadges = snapshot.profileBadgeInfo ?? []
         displayBadgesOnProfile = subscriptionManager.displayBadgesOnProfile
+
+        if let localAci = tsAccountManager.localUuid {
+            self.localAci = localAci
+
+            username = databaseStorage.read { transaction -> String? in
+                context.usernameLookupManager.fetchUsername(
+                    forAci: localAci,
+                    transaction: transaction.asV2Read
+                )
+            }
+        } else {
+            owsFailBeta("Should never get to profile settings without an ACI!")
+        }
+
         updateTableContents()
     }
 
@@ -100,7 +117,8 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             }
         ))
-        if FeatureFlags.usernames {
+
+        if FeatureFlags.usernames, let localAci {
             let (
                 usernameTitle,
                 usernameSubtitle,
@@ -180,10 +198,11 @@ class ProfileSettingsViewController: OWSTableViewController2 {
 
                     let vc = UsernameSelectionViewController(
                         existingUsername: .init(rawUsername: self.username),
+                        localAci: localAci,
                         context: .init(
                             networkManager: self.networkManager,
                             databaseStorage: self.databaseStorage,
-                            profileManager: self.profileManager
+                            usernameLookupManager: DependenciesBridge.shared.usernameLookupManager
                         )
                     )
 
@@ -193,6 +212,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                 }
             ))
         }
+
         mainSection.add(.disclosureItem(
             icon: .settingsAbout,
             name: OWSUserProfile.bioForDisplay(bio: bio, bioEmoji: bioEmoji) ?? NSLocalizedString(

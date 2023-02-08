@@ -29,7 +29,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 @property (nonatomic, readonly, nullable) NSString *fullName;
 @property (nonatomic, readonly, nullable) NSString *bio;
 @property (nonatomic, readonly, nullable) NSString *bioEmoji;
-@property (nonatomic, readonly, nullable) NSString *username;
 
 @property (nonatomic, readonly, nullable) NSData *avatarData;
 @property (nonatomic, readonly, nullable) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
@@ -69,7 +68,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (nullable NSString *)localGivenName;
 - (nullable NSString *)localFamilyName;
 - (nullable NSString *)localFullName;
-- (nullable NSString *)localUsername;
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
 - (nullable NSArray<OWSUserProfileBadgeInfo *> *)localProfileBadgeInfo;
@@ -77,21 +75,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (OWSProfileSnapshot *)localProfileSnapshotWithShouldIncludeAvatar:(BOOL)shouldIncludeAvatar
     NS_SWIFT_NAME(localProfileSnapshot(shouldIncludeAvatar:));
 
-- (void)updateLocalUsername:(nullable NSString *)username
-          userProfileWriter:(UserProfileWriter)userProfileWriter
-                transaction:(SDSAnyWriteTransaction *)transaction;
-
 - (BOOL)isProfileNameTooLong:(nullable NSString *)profileName;
 
 + (NSData *)avatarDataForAvatarImage:(UIImage *)image;
 
 - (void)fetchLocalUsersProfile;
-
-// The completions are invoked on the main thread.
-- (void)fetchProfileForUsername:(NSString *)username
-                        success:(void (^)(SignalServiceAddress *))successHandler
-                       notFound:(void (^)(void))notFoundHandler
-                        failure:(void (^)(NSError *))failureHandler;
 
 #pragma mark - Local Profile Updates
 
@@ -135,9 +123,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
                             downloadIfMissing:(BOOL)downloadIfMissing
                                   transaction:(SDSAnyReadTransaction *)transaction;
-
-- (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address
-                              transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable NSString *)profileBioForDisplayForAddress:(SignalServiceAddress *)address
                                           transaction:(SDSAnyReadTransaction *)transaction;

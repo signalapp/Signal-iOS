@@ -5,12 +5,12 @@
 
 import Foundation
 
-extension Usernames {
+public extension Usernames {
     /// Manages interactions with username-related APIs.
     struct API {
         private let networkManager: NetworkManager
 
-        init(networkManager: NetworkManager) {
+        public init(networkManager: NetworkManager) {
             self.networkManager = networkManager
         }
 
@@ -32,33 +32,33 @@ extension Usernames {
 
 // MARK: - Reservation
 
-extension Usernames.API {
+public extension Usernames.API {
     struct SuccessfulReservation: Equatable {
         /// The raw reserved username, including a numeric discriminator suffix.
         fileprivate let rawUsername: String
 
-        /// The reserved username.
-        let username: Usernames.ParsedUsername
-
         /// A token representing the reservation, which is used to later
         /// confirm the username.
-        let reservationToken: String
+        fileprivate let reservationToken: String
+
+        /// The reserved username.
+        public let username: Usernames.ParsedUsername
     }
 
     struct ReservationResult {
-        enum State {
+        public enum State {
             case successful(reservation: SuccessfulReservation)
             case rejected
             case rateLimited
         }
 
-        let attemptId: UUID
-        let state: State
+        public let attemptId: UUID
+        public let state: State
     }
 
     struct ReservationError: Error {
-        let attemptId: UUID
-        let underlying: Error
+        public let attemptId: UUID
+        public let underlying: Error
     }
 
     /// Attempts to reserve the given nickname.
@@ -102,8 +102,8 @@ extension Usernames.API {
 
             let successState: ReservationResult.State = .successful(reservation: SuccessfulReservation(
                 rawUsername: usernameString,
-                username: parsedUsername,
-                reservationToken: reservationToken
+                reservationToken: reservationToken,
+                username: parsedUsername
             ))
 
             return .init(attemptId: attemptId, state: successState)
@@ -146,7 +146,7 @@ extension Usernames.API {
 
 // MARK: - Confirmation
 
-extension Usernames.API {
+public extension Usernames.API {
     enum ConfirmationResult {
         /// The reservation was successfully confirmed.
         case success(confirmedUsername: String)
@@ -209,7 +209,7 @@ extension Usernames.API {
 
 // MARK: - Deletion
 
-extension Usernames.API {
+public extension Usernames.API {
     func attemptToDeleteCurrentUsername() -> Promise<Void> {
         let request = OWSRequestFactory.deleteExistingUsernameRequest()
 
@@ -221,6 +221,50 @@ extension Usernames.API {
 
         func onRequestFailure(error: Error) throws {
             throw error
+        }
+
+        return performRequest(
+            request: request,
+            onSuccess: onRequestSuccess,
+            onFailure: onRequestFailure
+        )
+    }
+}
+
+// MARK: - Lookup
+
+public extension Usernames.API {
+    func attemptAciLookup(forUsername username: String) -> Promise<UUID?> {
+        let request = OWSRequestFactory.lookupAciUsernameRequest(usernameToLookup: username)
+
+        func onRequestSuccess(response: HTTPResponse) throws -> UUID {
+            guard response.responseStatusCode == 200 else {
+                throw OWSAssertionError("Unexpected response code: \(response.responseStatusCode)")
+            }
+
+            guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
+                throw OWSAssertionError("Unexpectedly missing JSON response body!")
+            }
+
+            let uuid: UUID = try parser.required(key: "uuid")
+
+            return uuid
+        }
+
+        func onRequestFailure(error: Error) throws -> UUID? {
+            guard let statusCode = error.httpStatusCode else {
+                owsFailDebug("Unexpectedly missing HTTP status code!")
+                throw error
+            }
+
+            switch statusCode {
+            case 404:
+                // If the requested username does not belong to any accounts,
+                // we get a 404.
+                return nil
+            default:
+                throw error
+            }
         }
 
         return performRequest(

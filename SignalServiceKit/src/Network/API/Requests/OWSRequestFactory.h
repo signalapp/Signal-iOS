@@ -160,11 +160,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 + (TSRequest *)udSenderCertificateRequestWithUuidOnly:(BOOL)uuidOnly
     NS_SWIFT_NAME(udSenderCertificateRequest(uuidOnly:));
 
-#pragma mark - Usernames
-
-// TODO: [Usernames] Probably going to delete this
-+ (TSRequest *)getProfileRequestWithUsername:(NSString *)username;
-
 #pragma mark - Profiles
 
 + (TSRequest *)profileNameSetRequestWithEncryptedPaddedName:(NSData *)encryptedPaddedName;

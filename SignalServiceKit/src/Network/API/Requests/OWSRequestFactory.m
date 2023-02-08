@@ -706,21 +706,6 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     request.isUDRequest = YES;
 }
 
-#pragma mark - Usernames
-
-+ (TSRequest *)getProfileRequestWithUsername:(NSString *)username
-{
-    OWSAssertDebug(username.length > 0);
-    
-    NSString *urlEncodedUsername =
-    [username stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLUserAllowedCharacterSet]];
-    
-    OWSAssertDebug(urlEncodedUsername.length > 0);
-    
-    NSString *path = [NSString stringWithFormat:@"v1/profile/username/%@", urlEncodedUsername];
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
-}
-
 #pragma mark - Profiles
 
 + (TSRequest *)profileNameSetRequestWithEncryptedPaddedName:(NSData *)encryptedPaddedName

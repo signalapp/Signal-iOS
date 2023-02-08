@@ -5,23 +5,23 @@
 
 import Foundation
 
-extension Usernames {
+public extension Usernames {
     /// Facilitates sharing a username in various forms.
     struct ShareableUsername {
         private let username: String
 
-        init(username: String) {
+        public init(username: String) {
             self.username = username
         }
 
         /// Returns a shareable string form.
-        var asString: String {
+        public var asString: String {
             username
         }
 
         /// Returns a string that looks similar to the shareable URL form, but
         /// is aesthetically shortened. Should not be treated as a valid URL.
-        var asShortUrlString: String {
+        public var asShortUrlString: String {
             guard
                 var components = URLComponents(url: asUrl, resolvingAgainstBaseURL: true)
             else {
@@ -41,7 +41,7 @@ extension Usernames {
 
         /// Returns a shareable URL form which links to this username's Signal
         /// account.
-        var asUrl: URL {
+        public var asUrl: URL {
             var components = URLComponents()
             components.scheme = "https"
             components.host = "signal.me"

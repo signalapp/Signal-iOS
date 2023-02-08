@@ -52,7 +52,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 - (nullable NSString *)localGivenName;
 - (nullable NSString *)localFamilyName;
 - (nullable NSString *)localFullName;
-- (nullable NSString *)localUsername;
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
 - (nullable NSArray<OWSUserProfileBadgeInfo *> *)localProfileBadgeInfo;
@@ -152,7 +151,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
                      familyName:(nullable NSString *)familyName
                             bio:(nullable NSString *)bio
                        bioEmoji:(nullable NSString *)bioEmoji
-                       username:(nullable NSString *)username
                isStoriesCapable:(BOOL)isStoriesCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
           optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
@@ -185,18 +183,6 @@ typedef NS_ENUM(NSUInteger, UserProfileWriter) {
 
 - (NSArray<SignalServiceAddress *> *)allWhitelistedRegisteredAddressesWithTransaction:
     (SDSAnyReadTransaction *)transaction;
-
-#pragma mark - Usernames
-
-- (void)updateLocalUsername:(nullable NSString *)username
-          userProfileWriter:(UserProfileWriter)userProfileWriter
-                transaction:(SDSAnyWriteTransaction *)transaction;
-
-- (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address
-                              transaction:(SDSAnyReadTransaction *)transaction;
-
-- (NSArray<id<SSKMaybeString>> *)usernamesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
-                                           transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

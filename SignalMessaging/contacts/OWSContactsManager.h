@@ -46,6 +46,12 @@ typedef NS_CLOSED_ENUM(NSUInteger, ContactAuthorizationForSharing) {
  */
 @interface OWSContactsManager : NSObject <ContactsManagerProtocol>
 
+- (id)new NS_UNAVAILABLE;
+
+- (id)init NS_UNAVAILABLE;
+
+- (id)initWithSwiftValues:(OWSContactsManagerSwiftValues *)swiftValues;
+
 @property (nonatomic, readonly) BOOL shouldSortByGivenName;
 
 @property (nonatomic, readonly) OWSContactsManagerSwiftValues *swiftValues;

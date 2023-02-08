@@ -11,7 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSFakeProfileManager : NSObject <ProfileManagerProtocol>
 @property (nullable, nonatomic, copy) NSDictionary<SignalServiceAddress *, NSString *> *fakeDisplayNames;
-@property (nullable, nonatomic, copy) NSDictionary<SignalServiceAddress *, NSString *> *fakeUsernames;
 
 @property (nonatomic) NSMutableDictionary<SignalServiceAddress *, NSNumber *> *stubbedStoriesCapabilitiesMap;
 

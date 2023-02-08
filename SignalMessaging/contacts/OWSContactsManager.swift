@@ -6,6 +6,8 @@
 import Foundation
 import SignalServiceKit
 
+// MARK: - OWSContactsMangerSwiftValues
+
 @objc
 class OWSContactsManagerSwiftValues: NSObject {
 
@@ -17,8 +19,29 @@ class OWSContactsManagerSwiftValues: NSObject {
         systemContactsDataProvider.get() as? PrimaryDeviceSystemContactsDataProvider
     }
 
-    override init() {}
+    fileprivate let usernameLookupManager: UsernameLookupManager
+
+    init(usernameLookupManager: UsernameLookupManager) {
+        self.usernameLookupManager = usernameLookupManager
+
+        super.init()
+    }
 }
+
+// MARK: Build for ObjC
+
+extension OWSContactsManagerSwiftValues {
+    /// This method allows ObjC code to get an instance of this class, without
+    /// exposing the Swift-only types required by the constructor. Note that
+    /// this method will fail if ``DependenciesBridge`` has not yet been
+    /// created.
+    @objc
+    static func makeWithValuesFromDependenciesBridge() -> OWSContactsManagerSwiftValues {
+        .init(usernameLookupManager: DependenciesBridge.shared.usernameLookupManager)
+    }
+}
+
+// MARK: - Some caches
 
 // TODO: Should we use these caches in NSE?
 fileprivate extension OWSContactsManager {
@@ -1136,19 +1159,6 @@ extension OWSContactsManager {
         }
     }
 
-    @objc
-    public func displayName(forSignalAccount signalAccount: SignalAccount,
-                            transaction: SDSAnyReadTransaction) -> String {
-        self.displayName(for: signalAccount.recipientAddress, transaction: transaction)
-    }
-
-    @objc
-    public func displayNameForSignalAccountWithSneakyTransaction(_ signalAccount: SignalAccount) -> String {
-        databaseStorage.read { transaction in
-            self.displayName(forSignalAccount: signalAccount, transaction: transaction)
-        }
-    }
-
     // This is based on -[OWSContactsManager displayNameForAddress:transaction:].
     // Rather than being called once for each address, we call it once with all the
     // addresses and it will use a single database query per step to assign
@@ -1168,13 +1178,11 @@ extension OWSContactsManager {
                                      transaction: transaction).lazy.map {
                 return $0?.nilIfEmpty
             }
-        }.refine { addresses in
-            return self.profileManager.usernames(forAddresses: Array(addresses), transaction: transaction).map { maybeUsername in
-                guard let username = maybeUsername.stringOrNil else {
-                    return nil
-                }
-                return CommonFormats.formatUsername(username)
-            }
+        }.refine { addresses -> [String?] in
+            swiftValues.usernameLookupManager.fetchUsernames(
+                forAddresses: addresses,
+                transaction: transaction.asV2Read
+            )
         }.refine { addresses in
             return addresses.lazy.map {
                 self.fetchProfile(forUnknownAddress: $0)

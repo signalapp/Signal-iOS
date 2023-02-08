@@ -235,7 +235,10 @@ public extension DatabaseRecovery {
             TSThread.table.tableName,
             ThreadAssociatedData.databaseTableName,
             // We'd like to get receipts back, but it's okay if we don't get them all.
-            DonationReceipt.databaseTableName
+            DonationReceipt.databaseTableName,
+            // We'd like to keep our own username, and lookups for our contacts'
+            // usernames. However, we don't want to block recovery on them.
+            UsernameLookupRecord.databaseTableName
         ]
 
         private static func prepareToCopyTablesWithBestEffort(

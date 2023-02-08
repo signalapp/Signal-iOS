@@ -7,9 +7,9 @@ import Foundation
 
 #if TESTABLE_BUILD
 
+@objc
 extension MockSSKEnvironment {
-    @objc
-    func configureGrdb() {
+    public func configureGrdb() {
         do {
             try GRDBSchemaMigrator.migrateDatabase(
                 databaseStorage: databaseStorage,
@@ -19,6 +19,24 @@ extension MockSSKEnvironment {
         } catch {
             owsFail("\(error)")
         }
+    }
+
+    /// Set up a mock SSK environment as well as ``DependenciesBridge``.
+    public static func activate() {
+        let sskEnvironment = MockSSKEnvironment()
+        MockSSKEnvironment.setShared(sskEnvironment)
+
+        DependenciesBridge.setupSingleton(
+            databaseStorage: sskEnvironment.databaseStorage,
+            tsAccountManager: sskEnvironment.tsAccountManager,
+            signalService: sskEnvironment.signalService,
+            storageServiceManager: sskEnvironment.storageServiceManager,
+            syncManager: sskEnvironment.syncManager,
+            ows2FAManager: sskEnvironment.ows2FAManager
+        )
+
+        sskEnvironment.configureGrdb()
+        sskEnvironment.warmCaches()
     }
 }
 

@@ -40,17 +40,6 @@ public extension AnyUserProfileFinder {
     }
 
     @objc
-    func userProfile(forUsername username: String, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
-        let profile: OWSUserProfile?
-        switch transaction.readTransaction {
-        case .grdbRead(let transaction):
-            profile = grdbAdapter.userProfile(forUsername: username.lowercased(), transaction: transaction)
-        }
-        profile?.loadBadgeContent(with: transaction)
-        return profile
-    }
-
-    @objc
     func enumerateMissingAndStaleUserProfiles(transaction: SDSAnyReadTransaction, block: @escaping (OWSUserProfile) -> Void) {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
@@ -138,11 +127,6 @@ class GRDBUserProfileFinder: NSObject {
                 return maybeArray?[0]
             }
         }.values
-    }
-
-    func userProfile(forUsername username: String, transaction: GRDBReadTransaction) -> OWSUserProfile? {
-        let sql = "SELECT * FROM \(UserProfileRecord.databaseTableName) WHERE \(userProfileColumn: .username) = ? LIMIT 1"
-        return OWSUserProfile.grdbFetchOne(sql: sql, arguments: [username], transaction: transaction)
     }
 
     func enumerateMissingAndStaleUserProfiles(transaction: GRDBReadTransaction, block: @escaping (OWSUserProfile) -> Void) {

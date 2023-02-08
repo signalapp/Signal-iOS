@@ -67,57 +67,15 @@ private struct ProfileFetchOptions {
 
 // MARK: -
 
-private enum ProfileRequestSubject {
-    case address(address: SignalServiceAddress)
-    case username(username: String)
-}
-
-extension ProfileRequestSubject: Hashable {
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(hashTypeConstant)
-        switch self {
-        case .address(let address):
-            hasher.combine(address)
-        case .username(let username):
-            hasher.combine(username)
-        }
-    }
-
-    var hashTypeConstant: String {
-        switch self {
-        case .address:
-            return "address"
-        case .username:
-            return "username"
-        }
-    }
-}
-
-// MARK: -
-
-extension ProfileRequestSubject: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .address(let address):
-            return "[address:\(address)]"
-        case .username:
-            // TODO: Could we redact username for logging?
-            return "[username]"
-        }
-    }
-}
-
-// MARK: -
-
 @objc
 public class ProfileFetcherJob: NSObject {
 
     private static let queueCluster = GCDQueueCluster(label: "org.signal.profileFetcherJob",
                                                       concurrency: 5)
 
-    private static var fetchDateMap = LRUCache<ProfileRequestSubject, Date>(maxSize: 256)
+    private static var fetchDateMap = LRUCache<SignalServiceAddress, Date>(maxSize: 256)
 
-    private let subject: ProfileRequestSubject
+    private let subject: SignalServiceAddress
     private let options: ProfileFetchOptions
 
     private var backgroundTask: OWSBackgroundTask?
@@ -136,20 +94,18 @@ public class ProfileFetcherJob: NSObject {
                                           ignoreThrottling: Bool = false,
                                           shouldUpdateStore: Bool = true,
                                           fetchType: ProfileFetchType = .default) -> Promise<FetchedProfile> {
-        let subject = ProfileRequestSubject.address(address: address)
         let options = ProfileFetchOptions(mainAppOnly: mainAppOnly,
                                           ignoreThrottling: ignoreThrottling,
                                           shouldUpdateStore: shouldUpdateStore,
                                           fetchType: fetchType)
-        return ProfileFetcherJob(subject: subject, options: options).runAsPromise()
+        return ProfileFetcherJob(subject: address, options: options).runAsPromise()
     }
 
     @objc
     public class func fetchProfile(address: SignalServiceAddress, ignoreThrottling: Bool) {
-        let subject = ProfileRequestSubject.address(address: address)
         let options = ProfileFetchOptions(ignoreThrottling: ignoreThrottling)
         firstly {
-            ProfileFetcherJob(subject: subject, options: options).runAsPromise()
+            ProfileFetcherJob(subject: address, options: options).runAsPromise()
         }.catch { error in
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Error: \(error)")
@@ -170,28 +126,7 @@ public class ProfileFetcherJob: NSObject {
         }
     }
 
-    @objc
-    public class func fetchProfile(username: String,
-                                   success: @escaping (_ address: SignalServiceAddress) -> Void,
-                                   notFound: @escaping () -> Void,
-                                   failure: @escaping (_ error: Error?) -> Void) {
-        let subject = ProfileRequestSubject.username(username: username)
-        let options = ProfileFetchOptions(ignoreThrottling: true)
-        firstly {
-            ProfileFetcherJob(subject: subject, options: options).runAsPromise()
-        }.done { fetchedProfile in
-            success(fetchedProfile.profile.address)
-        }.catch { error in
-            switch error {
-            case ProfileFetchError.missing:
-                notFound()
-            default:
-                failure(error)
-            }
-        }
-    }
-
-    private init(subject: ProfileRequestSubject,
+    private init(subject: SignalServiceAddress,
                  options: ProfileFetchOptions) {
         self.subject = subject
         self.options = options
@@ -227,7 +162,7 @@ public class ProfileFetcherJob: NSObject {
 
         // Check throttling _before_ possible retries.
         if !options.ignoreThrottling {
-            if let lastDate = lastFetchDate(for: subject) {
+            if let lastDate = lastFetchDate() {
                 let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
                 // Don't check a profile more often than every N seconds.
                 //
@@ -240,7 +175,7 @@ public class ProfileFetcherJob: NSObject {
         }
 
         if options.shouldUpdateStore {
-            recordLastFetchDate(for: subject)
+            recordLastFetchDate()
         }
 
         return requestProfileWithRetries()
@@ -310,31 +245,6 @@ public class ProfileFetcherJob: NSObject {
         return promise
     }
 
-    private func requestProfileAttempt() -> Promise<FetchedProfile> {
-        switch subject {
-        case .address(let address):
-            return requestProfileAttempt(address: address)
-        case .username(let username):
-            return requestProfileAttempt(username: username)
-        }
-    }
-
-    private func requestProfileAttempt(username: String) -> Promise<FetchedProfile> {
-        Logger.info("username")
-
-        guard options.fetchType != .versioned else {
-            return Promise(error: ProfileFetchError.cantRequestVersionedProfile)
-        }
-
-        let request = OWSRequestFactory.getProfileRequest(withUsername: username)
-        return firstly { () -> Promise<HTTPResponse> in
-            networkManager.makePromise(request: request)
-        }.map(on: Self.queueCluster.next()) { response in
-            let profile = try SignalServiceProfile(address: nil, responseObject: response.responseBodyJson)
-            return self.fetchedProfile(for: profile, profileKeyFromVersionedRequest: nil)
-        }
-    }
-
     private var shouldUseVersionedFetchForUuids: Bool {
         switch options.fetchType {
         case .default:
@@ -346,7 +256,9 @@ public class ProfileFetcherJob: NSObject {
         }
     }
 
-    private func requestProfileAttempt(address: SignalServiceAddress) -> Promise<FetchedProfile> {
+    private func requestProfileAttempt() -> Promise<FetchedProfile> {
+        let address = self.subject
+
         Logger.verbose("address: \(address)")
 
         // If we don't have a UUID, the request will fail, so bail out early.
@@ -521,7 +433,6 @@ public class ProfileFetcherJob: NSObject {
             bioEmoji = decryptedProfile.bioEmoji?.nilIfEmpty
             paymentAddress = decryptedProfile.paymentAddress
         }
-        let username = profile.username
 
         if DebugFlags.internalLogging {
             let profileKeyDescription = fetchedProfile.profileKey?.keyData.hexadecimalString ?? "None"
@@ -531,7 +442,6 @@ public class ProfileFetcherJob: NSObject {
             let hasFamilyName = familyName?.nilIfEmpty != nil
             let hasBio = bio?.nilIfEmpty != nil
             let hasBioEmoji = bioEmoji?.nilIfEmpty != nil
-            let hasUsername = username?.nilIfEmpty != nil
             let hasPaymentAddress = paymentAddress != nil
             let badges = fetchedProfile.profile.badges.map { "\"\($0.0.description)\"" }.joined(separator: "; ")
 
@@ -543,7 +453,6 @@ public class ProfileFetcherJob: NSObject {
                 "hasFamilyName: \(hasFamilyName), " +
                 "hasBio: \(hasBio), " +
                 "hasBioEmoji: \(hasBioEmoji), " +
-                "hasUsername: \(hasUsername), " +
                 "hasPaymentAddress: \(hasPaymentAddress), " +
                 "profileKey: \(profileKeyDescription), " +
                 "badges: \(badges)"
@@ -582,7 +491,6 @@ public class ProfileFetcherJob: NSObject {
                 familyName: familyName,
                 bio: bio,
                 bioEmoji: bioEmoji,
-                username: profile.username,
                 isStoriesCapable: profile.isStoriesCapable,
                 avatarUrlPath: profile.avatarUrlPath,
                 optionalAvatarFileUrl: localAvatarUrlIfDownloaded,
@@ -624,7 +532,6 @@ public class ProfileFetcherJob: NSObject {
             familyName: nil,
             bio: nil,
             bioEmoji: nil,
-            username: nil,
             isStoriesCapable: false,
             avatarUrlPath: nil,
             optionalAvatarFileUrl: nil,
@@ -684,11 +591,11 @@ public class ProfileFetcherJob: NSObject {
         }
     }
 
-    private func lastFetchDate(for subject: ProfileRequestSubject) -> Date? {
+    private func lastFetchDate() -> Date? {
         ProfileFetcherJob.fetchDateMap[subject]
     }
 
-    private func recordLastFetchDate(for subject: ProfileRequestSubject) {
+    private func recordLastFetchDate() {
         ProfileFetcherJob.fetchDateMap[subject] = Date()
     }
 

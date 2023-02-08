@@ -378,7 +378,6 @@ CREATE
             ,"profileName" TEXT
             ,"recipientPhoneNumber" TEXT
             ,"recipientUUID" TEXT
-            ,"username" TEXT
             ,"familyName" TEXT
             ,"lastFetchDate" DOUBLE
             ,"lastMessagingDate" DOUBLE
@@ -535,12 +534,6 @@ CREATE
 CREATE
     INDEX "index_user_profiles_on_recipientUUID"
         ON "model_OWSUserProfile"("recipientUUID"
-)
-;
-
-CREATE
-    INDEX "index_user_profiles_on_username"
-        ON "model_OWSUserProfile"("username"
 )
 ;
 
@@ -1445,5 +1438,13 @@ CREATE
         IF NOT EXISTS "spamReportingTokenRecords" (
             "sourceUuid" BLOB PRIMARY KEY NOT NULL
             ,"spamReportingToken" BLOB NOT NULL
+        )
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "UsernameLookupRecord" (
+            "aci" BLOB PRIMARY KEY NOT NULL
+            ,"username" TEXT NOT NULL
         )
 ;

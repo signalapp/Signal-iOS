@@ -19,7 +19,6 @@ public class SignalServiceProfile: NSObject {
     public let profileNameEncrypted: Data?
     public let bioEncrypted: Data?
     public let bioEmojiEncrypted: Data?
-    public let username: String?
     public let avatarUrlPath: String?
     public let paymentAddressEncrypted: Data?
     public let unidentifiedAccessVerifier: Data?
@@ -64,8 +63,6 @@ public class SignalServiceProfile: NSObject {
         self.bioEncrypted = try params.optionalBase64EncodedData(key: "about")
 
         self.bioEmojiEncrypted = try params.optionalBase64EncodedData(key: "aboutEmoji")
-
-        self.username = try params.optional(key: "username")
 
         let avatarUrlPath: String? = try params.optional(key: "avatar")
         self.avatarUrlPath = avatarUrlPath

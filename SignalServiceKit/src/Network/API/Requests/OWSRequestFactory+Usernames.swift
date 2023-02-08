@@ -10,6 +10,9 @@ public extension OWSRequestFactory {
         static let reserve = "v1/accounts/username/reserved"
         static let confirm = "v1/accounts/username/confirm"
         static let delete = "v1/accounts/username"
+        static func aciLookup(forUsername username: String) -> String {
+            "v1/accounts/username/\(username)"
+        }
     }
 
     /// Attempt to reserve the given username. If successful, will return the
@@ -63,6 +66,18 @@ public extension OWSRequestFactory {
         return TSRequest(
             url: url,
             method: HTTPMethod.delete.methodName,
+            parameters: nil
+        )
+    }
+
+    static func lookupAciUsernameRequest(
+        usernameToLookup username: String
+    ) -> TSRequest {
+        let url = URL(string: UsernameApiPaths.aciLookup(forUsername: username))!
+
+        return TSRequest(
+            url: url,
+            method: HTTPMethod.get.methodName,
             parameters: nil
         )
     }

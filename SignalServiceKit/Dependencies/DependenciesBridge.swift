@@ -24,7 +24,15 @@ import Foundation
 /// better to use this class than to use `Dependencies`.
 public class DependenciesBridge {
 
-    public static let shared = DependenciesBridge()
+    /// Only available after calling `setupSingleton(...)`.
+    public static var shared: DependenciesBridge {
+        guard let _shared else {
+            owsFail("DependenciesBridge has not yet been set up!")
+        }
+
+        return _shared
+    }
+    private static var _shared: DependenciesBridge?
 
     public let db: DB
     public let keyValueStoreFactory: KeyValueStoreFactory
@@ -32,24 +40,53 @@ public class DependenciesBridge {
     public let kbsCredentialStorage: KBSAuthCredentialStorage
     public let keyBackupService: KeyBackupServiceProtocol
 
-    private init() {
-        self.db = SDSDB(databaseStorage: GlobalDependencies.databaseStorage)
+    public private(set) var usernameLookupManager: UsernameLookupManager
+
+    /// Initialize and configure the ``DependenciesBridge`` singleton.
+    public static func setupSingleton(
+        databaseStorage: SDSDatabaseStorage,
+        tsAccountManager: TSAccountManager,
+        signalService: OWSSignalServiceProtocol,
+        storageServiceManager: StorageServiceManagerProtocol,
+        syncManager: SyncManagerProtocol,
+        ows2FAManager: OWS2FAManager
+    ) {
+        _shared = .init(
+            databaseStorage: databaseStorage,
+            tsAccountManager: tsAccountManager,
+            signalService: signalService,
+            storageServiceManager: storageServiceManager,
+            syncManager: syncManager,
+            tsConstants: TSConstants.shared, // This is safe to hard-code.
+            ows2FAManager: ows2FAManager
+        )
+    }
+
+    private init(
+        databaseStorage: SDSDatabaseStorage,
+        tsAccountManager: TSAccountManager,
+        signalService: OWSSignalServiceProtocol,
+        storageServiceManager: StorageServiceManagerProtocol,
+        syncManager: SyncManagerProtocol,
+        tsConstants: TSConstantsProtocol,
+        ows2FAManager: OWS2FAManager
+    ) {
+        self.db = SDSDB(databaseStorage: databaseStorage)
         self.keyValueStoreFactory = SDSKeyValueStoreFactory()
         self.kbsCredentialStorage = KBSAuthCredentialStorageImpl(keyValueStoreFactory: keyValueStoreFactory)
         self.keyBackupService = KeyBackupService(
-            accountManager: KBS.Wrappers.TSAccountManager(GlobalDependencies.tsAccountManager),
+            accountManager: KBS.Wrappers.TSAccountManager(tsAccountManager),
             appContext: CurrentAppContext(),
             credentialStorage: kbsCredentialStorage,
             databaseStorage: db,
             keyValueStoreFactory: keyValueStoreFactory,
             remoteAttestation: KBS.Wrappers.RemoteAttestation(),
-            signalService: GlobalDependencies.signalService,
-            storageServiceManager: KBS.Wrappers.StorageServiceManager(GlobalDependencies.storageServiceManager),
-            syncManager: GlobalDependencies.syncManager,
-            tsConstants: TSConstants.shared,
-            twoFAManager: KBS.Wrappers.OWS2FAManager(OWS2FAManager.shared)
+            signalService: signalService,
+            storageServiceManager: KBS.Wrappers.StorageServiceManager(storageServiceManager),
+            syncManager: syncManager,
+            tsConstants: tsConstants,
+            twoFAManager: KBS.Wrappers.OWS2FAManager(ows2FAManager)
         )
+        self.usernameLookupManager = UsernameLookupManagerImpl()
     }
-
-    private struct GlobalDependencies: Dependencies {}
 }

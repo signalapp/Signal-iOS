@@ -37,7 +37,6 @@ public struct UserProfileRecord: SDSRecord {
     public let profileName: String?
     public let recipientPhoneNumber: String?
     public let recipientUUID: String?
-    public let username: String?
     public let familyName: String?
     public let lastFetchDate: Double?
     public let lastMessagingDate: Double?
@@ -57,7 +56,6 @@ public struct UserProfileRecord: SDSRecord {
         case profileName
         case recipientPhoneNumber
         case recipientUUID
-        case username
         case familyName
         case lastFetchDate
         case lastMessagingDate
@@ -98,15 +96,14 @@ public extension UserProfileRecord {
         profileName = row[6]
         recipientPhoneNumber = row[7]
         recipientUUID = row[8]
-        username = row[9]
-        familyName = row[10]
-        lastFetchDate = row[11]
-        lastMessagingDate = row[12]
-        bio = row[13]
-        bioEmoji = row[14]
-        profileBadgeInfo = row[15]
-        isStoriesCapable = row[16]
-        canReceiveGiftBadges = row[17]
+        familyName = row[9]
+        lastFetchDate = row[10]
+        lastMessagingDate = row[11]
+        bio = row[12]
+        bioEmoji = row[13]
+        profileBadgeInfo = row[14]
+        isStoriesCapable = row[15]
+        canReceiveGiftBadges = row[16]
     }
 }
 
@@ -156,7 +153,6 @@ extension OWSUserProfile {
             let profileName: String? = record.profileName
             let recipientPhoneNumber: String? = record.recipientPhoneNumber
             let recipientUUID: String? = record.recipientUUID
-            let username: String? = record.username
 
             return OWSUserProfile(grdbId: recordId,
                                   uniqueId: uniqueId,
@@ -173,8 +169,7 @@ extension OWSUserProfile {
                                   profileKey: profileKey,
                                   profileName: profileName,
                                   recipientPhoneNumber: recipientPhoneNumber,
-                                  recipientUUID: recipientUUID,
-                                  username: username)
+                                  recipientUUID: recipientUUID)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -272,7 +267,6 @@ extension OWSUserProfile: DeepCopyable {
             let profileName: String? = modelToCopy.profileName
             let recipientPhoneNumber: String? = modelToCopy.recipientPhoneNumber
             let recipientUUID: String? = modelToCopy.recipientUUID
-            let username: String? = modelToCopy.username
 
             return OWSUserProfile(grdbId: id,
                                   uniqueId: uniqueId,
@@ -289,8 +283,7 @@ extension OWSUserProfile: DeepCopyable {
                                   profileKey: profileKey,
                                   profileName: profileName,
                                   recipientPhoneNumber: recipientPhoneNumber,
-                                  recipientUUID: recipientUUID,
-                                  username: username)
+                                  recipientUUID: recipientUUID)
         }
 
     }
@@ -312,7 +305,6 @@ extension OWSUserProfileSerializer {
     static var profileNameColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "profileName", columnType: .unicodeString, isOptional: true) }
     static var recipientPhoneNumberColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true) }
     static var recipientUUIDColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true) }
-    static var usernameColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "username", columnType: .unicodeString, isOptional: true) }
     static var familyNameColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "familyName", columnType: .unicodeString, isOptional: true) }
     static var lastFetchDateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lastFetchDate", columnType: .double, isOptional: true) }
     static var lastMessagingDateColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lastMessagingDate", columnType: .double, isOptional: true) }
@@ -337,7 +329,6 @@ extension OWSUserProfileSerializer {
         profileNameColumn,
         recipientPhoneNumberColumn,
         recipientUUIDColumn,
-        usernameColumn,
         familyNameColumn,
         lastFetchDateColumn,
         lastMessagingDateColumn,
@@ -746,7 +737,6 @@ class OWSUserProfileSerializer: SDSSerializer {
         let profileName: String? = model.profileName
         let recipientPhoneNumber: String? = model.recipientPhoneNumber
         let recipientUUID: String? = model.recipientUUID
-        let username: String? = model.username
         let familyName: String? = model.familyName
         let lastFetchDate: Double? = archiveOptionalDate(model.lastFetchDate)
         let lastMessagingDate: Double? = archiveOptionalDate(model.lastMessagingDate)
@@ -756,7 +746,7 @@ class OWSUserProfileSerializer: SDSSerializer {
         let isStoriesCapable: Bool = model.isStoriesCapable
         let canReceiveGiftBadges: Bool = model.canReceiveGiftBadges
 
-        return UserProfileRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, username: username, familyName: familyName, lastFetchDate: lastFetchDate, lastMessagingDate: lastMessagingDate, bio: bio, bioEmoji: bioEmoji, profileBadgeInfo: profileBadgeInfo, isStoriesCapable: isStoriesCapable, canReceiveGiftBadges: canReceiveGiftBadges)
+        return UserProfileRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, familyName: familyName, lastFetchDate: lastFetchDate, lastMessagingDate: lastMessagingDate, bio: bio, bioEmoji: bioEmoji, profileBadgeInfo: profileBadgeInfo, isStoriesCapable: isStoriesCapable, canReceiveGiftBadges: canReceiveGiftBadges)
     }
 }
 

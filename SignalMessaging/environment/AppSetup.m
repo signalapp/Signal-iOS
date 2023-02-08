@@ -58,6 +58,21 @@ NS_ASSUME_NONNULL_BEGIN
                                         fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
         OWSAssert(success);
 
+        // MARK: DependenciesBridge
+
+        TSAccountManager *tsAccountManager = [TSAccountManager new];
+        id<OWSSignalServiceProtocol> signalService = [OWSSignalService new];
+        OWSStorageServiceManager *storageServiceManager = OWSStorageServiceManager.shared;
+        id<SyncManagerProtocol> syncManager = (id<SyncManagerProtocol>)[[OWSSyncManager alloc] initDefault];
+        OWS2FAManager *ows2FAManager = [OWS2FAManager new];
+
+        [self setupDependenciesBridgeWithDatabaseStorage:databaseStorage
+                                        tsAccountManager:tsAccountManager
+                                           signalService:signalService
+                                   storageServiceManager:storageServiceManager
+                                             syncManager:syncManager
+                                           ows2FAManager:ows2FAManager];
+
         // MARK: SignalMessaging environment properties
 
         LaunchJobs *launchJobs = [LaunchJobs new];
@@ -70,7 +85,8 @@ NS_ASSUME_NONNULL_BEGIN
 
         // MARK: SSK environment properties
 
-        OWSContactsManager *contactsManager = [OWSContactsManager new];
+        OWSContactsManager *contactsManager = [[OWSContactsManager alloc]
+            initWithSwiftValues:[OWSContactsManagerSwiftValues makeWithValuesFromDependenciesBridge]];
         OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
         MessageSender *messageSender = [MessageSender new];
         id<PendingReceiptRecorder> pendingReceiptRecorder = [MessageRequestPendingReceipts new];
@@ -86,20 +102,15 @@ NS_ASSUME_NONNULL_BEGIN
         OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
         GroupsV2MessageProcessor *groupsV2MessageProcessor = [GroupsV2MessageProcessor new];
         SocketManager *socketManager = [[SocketManager alloc] init];
-        TSAccountManager *tsAccountManager = [TSAccountManager new];
-        OWS2FAManager *ows2FAManager = [OWS2FAManager new];
         OWSDisappearingMessagesJob *disappearingMessagesJob = [OWSDisappearingMessagesJob new];
         OWSReceiptManager *receiptManager = [OWSReceiptManager new];
         OWSOutgoingReceiptManager *outgoingReceiptManager = [OWSOutgoingReceiptManager new];
         id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
-        id<SyncManagerProtocol> syncManager = (id<SyncManagerProtocol>)[[OWSSyncManager alloc] initDefault];
         id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
         OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
         StickerManager *stickerManager = [[StickerManager alloc] init];
         SignalServiceAddressCache *signalServiceAddressCache = [SignalServiceAddressCache new];
-        id<OWSSignalServiceProtocol> signalService = [OWSSignalService new];
         AccountServiceClient *accountServiceClient = [AccountServiceClient new];
-        OWSStorageServiceManager *storageServiceManager = OWSStorageServiceManager.shared;
         SSKPreferences *sskPreferences = [SSKPreferences new];
         id<GroupsV2> groupsV2 = [GroupsV2Impl new];
         id<GroupV2Updates> groupV2Updates = [[GroupV2UpdatesImpl alloc] init];

@@ -6,4 +6,4 @@
 import Foundation
 
 /// A namespace for username-related models.
-enum Usernames {}
+public enum Usernames {}

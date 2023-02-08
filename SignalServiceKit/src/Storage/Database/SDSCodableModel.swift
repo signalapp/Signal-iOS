@@ -130,9 +130,7 @@ public extension SDSCodableModel {
     func anyRemove(transaction: SDSAnyWriteTransaction) {
         sdsRemove(transaction: transaction)
     }
-}
 
-public extension SDSCodableModel where Self: AnyObject {
     /// Get the unique ID of each stored instance of the model.
     static func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
         var result = [String]()

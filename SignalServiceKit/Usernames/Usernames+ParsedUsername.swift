@@ -5,16 +5,16 @@
 
 import Foundation
 
-extension Usernames {
+public extension Usernames {
     /// Represents a username parsed into its user-generated nickname and
     /// programmatically-generated numeric discriminator.
     struct ParsedUsername: Equatable {
-        static let separator: Character = "."
+        public static let separator: Character = "."
 
-        let nickname: String
-        let discriminator: String
+        public let nickname: String
+        public let discriminator: String
 
-        init?(rawUsername: String?) {
+        public init?(rawUsername: String?) {
             guard let rawUsername else {
                 return nil
             }
@@ -38,7 +38,7 @@ extension Usernames {
             self.discriminator = discriminator
         }
 
-        var reassembled: String {
+        public var reassembled: String {
             "\(nickname)\(Self.separator)\(discriminator)"
         }
     }

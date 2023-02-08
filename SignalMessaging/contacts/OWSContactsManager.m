@@ -41,7 +41,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 @implementation OWSContactsManager
 
-- (id)init
+- (id)initWithSwiftValues:(OWSContactsManagerSwiftValues *)swiftValues
 {
     self = [super init];
     if (!self) {
@@ -55,7 +55,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     _cnContactCache = [[AnyLRUCache alloc] initWithMaxSize:50
                                                 nseMaxSize:0
                                 shouldEvacuateInBackground:YES];
-    _swiftValues = [[OWSContactsManagerSwiftValues alloc] init];
+    _swiftValues = swiftValues;
 
     OWSSingletonAssert();
     
@@ -622,43 +622,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(address.isValid);
-    
-    // Prefer a saved name from system contacts, if available.
-    //
-    // We don't need to filterStringForDisplay(); this value is filtered within phoneNumberForAddress,
-    // Contact or SignalAccount.
-    NSString *_Nullable savedContactName = [self cachedContactNameForAddress:address transaction:transaction];
-    if (savedContactName.length > 0) {
-        return savedContactName;
-    }
-    
-    // We don't need to filterStringForDisplay(); this value is filtered within OWSUserProfile.
-    NSString *_Nullable profileName = [self.profileManager fullNameForAddress:address transaction:transaction];
-    // Include the profile name, if set.
-    if (profileName.length > 0) {
-        return profileName;
-    }
-    
-    // We don't need to filterStringForDisplay(); this value is filtered within phoneNumberForAddress.
-    NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address transaction:transaction];
-    if (phoneNumber.length > 0) {
-        phoneNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
-        if (phoneNumber.length > 0) {
-            return phoneNumber;
-        }
-    }
-    
-    // We don't need to filterStringForDisplay(); usernames are strictly filtered.
-    NSString *_Nullable username = [self.profileManagerImpl usernameForAddress:address transaction:transaction];
-    if (username.length > 0) {
-        username = [CommonFormats formatUsername:username];
-        return username;
-    }
-    
-    [self fetchProfileForUnknownAddress:address];
-    
-    return self.unknownUserLabel;
+    return [self displayNamesForAddresses:@[ address ] transaction:transaction].firstObject;
 }
 
 // TODO: Remove?

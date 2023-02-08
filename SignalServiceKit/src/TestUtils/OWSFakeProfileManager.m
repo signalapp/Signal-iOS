@@ -24,7 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *localGivenName;
 @property (nonatomic, nullable) NSString *localFamilyName;
 @property (nonatomic, nullable) NSString *localFullName;
-@property (nonatomic, nullable) NSString *localUsername;
 @property (nonatomic, nullable) NSData *localProfileAvatarData;
 @property (nonatomic, nullable) NSArray<OWSUserProfileBadgeInfo *> *localProfileBadgeInfo;
 
@@ -303,7 +302,6 @@ NS_ASSUME_NONNULL_BEGIN
                      familyName:(nullable NSString *)familyName
                             bio:(nullable NSString *)bio
                        bioEmoji:(nullable NSString *)bioEmoji
-                       username:(nullable NSString *)username
                isStoriesCapable:(BOOL)isStoriesCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
           optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
@@ -390,27 +388,6 @@ NS_ASSUME_NONNULL_BEGIN
     (SDSAnyReadTransaction *)transaction
 {
     return @[];
-}
-
-#pragma mark - Usernames
-
-- (void)updateLocalUsername:(nullable NSString *)username
-          userProfileWriter:(UserProfileWriter)userProfileWriter
-                transaction:(SDSAnyWriteTransaction *)transaction
-{
-    // Do nothing.
-}
-
-- (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address
-                              transaction:(SDSAnyReadTransaction *)transaction
-{
-    return self.fakeUsernames[address];
-}
-
-- (nonnull NSArray<id<SSKMaybeString>> *)usernamesForAddresses:(nonnull NSArray<SignalServiceAddress *> *)addresses
-                                                   transaction:(nonnull SDSAnyReadTransaction *)transaction
-{
-    return [addresses map:^(SignalServiceAddress *address) { return self.fakeUsernames[address] ?: [NSNull null]; }];
 }
 
 @end

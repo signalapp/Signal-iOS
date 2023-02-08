@@ -39,7 +39,8 @@ class MentionPicker: UIView {
 
                 return MentionableUser(
                     address: address,
-                    username: Self.profileManagerImpl.username(for: address, transaction: transaction),
+                    // TODO: [Usernames] Rip this out
+                    username: nil,
                     displayName: Self.contactsManager.displayName(for: address, transaction: transaction)
                 )
             }

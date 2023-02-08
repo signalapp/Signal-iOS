@@ -216,6 +216,8 @@ public class GRDBSchemaMigrator: NSObject {
         case addColumnsForGiftingWithPaypalToJobRecords
         case addSpamReportingTokenRecordTable
         case addVideoDuration
+        case addUsernameLookupRecordsTable
+        case dropUsernameColumnFromOWSUserProfile
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -2110,6 +2112,25 @@ public class GRDBSchemaMigrator: NSObject {
             try transaction.database.alter(table: "model_TSAttachment") { (table: TableAlteration) in
                 table.add(column: "videoDuration", .double)
             }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.addUsernameLookupRecordsTable) { transaction in
+            try transaction.database.create(table: UsernameLookupRecord.databaseTableName) { table in
+                table.column("aci", .blob).primaryKey().notNull()
+                table.column("username", .text).notNull()
+            }
+
+            return .success(())
+        }
+
+        migrator.registerMigration(.dropUsernameColumnFromOWSUserProfile) { transaction in
+            try transaction.database.drop(index: "index_user_profiles_on_username")
+            try transaction.database.alter(table: "model_OWSUserProfile") { table in
+                table.drop(column: "username")
+            }
+
             return .success(())
         }
 

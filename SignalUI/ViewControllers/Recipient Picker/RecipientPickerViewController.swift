@@ -727,10 +727,6 @@ extension RecipientPickerViewController {
             // Don't show username results -- assume this is a phone number
             return nil
         }
-        guard username != profileManager.localUsername() else {
-            // Don't show username results -- the user can't search for their own username
-            return nil
-        }
 
         return username
     }
@@ -767,43 +763,71 @@ extension RecipientPickerViewController {
     }
 
     private func findByUsername(_ username: String) {
+        guard
+            let localAddress = tsAccountManager.localAddress,
+            let localAci = localAddress.uuid
+        else {
+            owsFailDebug("Missing local UUID!")
+            return
+        }
+
+        if
+            let localUsername = databaseStorage.read(block: { transaction -> String? in
+                DependenciesBridge.shared.usernameLookupManager.fetchUsername(
+                    forAci: localAci,
+                    transaction: transaction.asV2Read
+                )
+            }),
+            localUsername.caseInsensitiveCompare(username) == .orderedSame {
+
+            // Searched for ourselves, no reason to hit the service.
+            tryToSelectRecipient(.for(address: localAddress))
+            return
+        }
+
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { modal in
-            self.profileManagerImpl.fetchProfile(
-                forUsername: username,
-                success: { [weak self] address in
-                    modal.dismissIfNotCanceled {
-                        guard let self = self else { return }
-                        self.tryToSelectRecipient(.for(address: address))
-                    }
-                },
-                notFound: {
-                    modal.dismissIfNotCanceled {
-                        OWSActionSheets.showActionSheet(
-                            title: OWSLocalizedString(
-                                "USERNAME_NOT_FOUND_TITLE",
-                                comment: "A message indicating that the given username was not registered with signal."
-                            ),
-                            message: String(
-                                format: OWSLocalizedString(
-                                    "USERNAME_NOT_FOUND_FORMAT",
-                                    comment: "A message indicating that the given username is not a registered signal account. Embeds {{username}}"
-                                ),
-                                CommonFormats.formatUsername(username)
+            firstly { () -> Promise<UUID?> in
+                Usernames.API(networkManager: self.networkManager)
+                    .attemptAciLookup(forUsername: username)
+            }.done(on: DispatchQueue.main) { [weak self] maybeAci in
+                modal.dismissIfNotCanceled {
+                    if let aci = maybeAci {
+                        guard let self else { return }
+
+                        self.databaseStorage.write { transaction in
+                            DependenciesBridge.shared.usernameLookupManager.saveUsername(
+                                username,
+                                forAci: aci,
+                                transaction: transaction.asV2Write
                             )
+                        }
+
+                        self.tryToSelectRecipient(.for(address: .init(uuid: aci)))
+                    } else {
+                        let errorTitle = OWSLocalizedString(
+                            "USERNAME_LOOKUP_NOT_FOUND_TITLE",
+                            comment: "Title for an action sheet indicating that the given username is not associated with a registered Signal account."
                         )
-                    }
-                },
-                failure: { error in
-                    modal.dismissIfNotCanceled {
-                        OWSActionSheets.showErrorAlert(
-                            message: OWSLocalizedString(
-                                "USERNAME_LOOKUP_ERROR",
-                                comment: "A message indicating that username lookup failed."
-                            )
+
+                        let errorMessageFormat = OWSLocalizedString(
+                            "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT",
+                            comment: "A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}."
+                        )
+
+                        OWSActionSheets.showActionSheet(
+                            title: errorTitle,
+                            message: String(format: errorMessageFormat, username)
                         )
                     }
                 }
-            )
+            }.catch(on: DispatchQueue.main) { error in
+                modal.dismissIfNotCanceled {
+                    OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
+                        "USERNAME_LOOKUP_ERROR_MESSAGE",
+                        comment: "A message indicating that username lookup failed."
+                    ))
+                }
+            }
         }
     }
 }

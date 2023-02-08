@@ -50,7 +50,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
 @property (atomic, readonly, nullable) NSString *fullName;
 @property (atomic, readonly, nullable) NSString *bio;
 @property (atomic, readonly, nullable) NSString *bioEmoji;
-@property (atomic, readonly, nullable) NSString *username;
 @property (atomic, readonly) BOOL isStoriesCapable;
 @property (atomic, readonly, nullable) OWSUserProfileBadgeInfo *primaryBadge;
 @property (atomic, readonly, nullable) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
@@ -97,8 +96,7 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter);
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
-                        username:(nullable NSString *)username
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:bio:bioEmoji:canReceiveGiftBadges:familyName:isStoriesCapable:lastFetchDate:lastMessagingDate:profileBadgeInfo:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:bio:bioEmoji:canReceiveGiftBadges:familyName:isStoriesCapable:lastFetchDate:lastMessagingDate:profileBadgeInfo:profileKey:profileName:recipientPhoneNumber:recipientUUID:));
 
 // clang-format on
 
@@ -116,9 +114,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 
 + (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)recipientId
                                         transaction:(SDSAnyWriteTransaction *)transaction;
-
-+ (nullable OWSUserProfile *)userProfileForUsername:(NSString *)username
-                                        transaction:(SDSAnyReadTransaction *)transaction;
 
 + (BOOL)localUserProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (void)loadBadgeContentWithTransaction:(SDSAnyReadTransaction *)transaction;

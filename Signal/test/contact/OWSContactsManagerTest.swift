@@ -11,6 +11,10 @@ import XCTest
 class OWSContactsManagerTest: SignalBaseTest {
     private lazy var localAddress = CommonGenerator.address()
 
+    private let dbV2: MockDB = .init()
+
+    private let mockUsernameLookupMananger: MockUsernameLookupManager = .init()
+
     override func setUp() {
         super.setUp()
 
@@ -21,9 +25,17 @@ class OWSContactsManagerTest: SignalBaseTest {
         (MockSSKEnvironment.shared as! MockSSKEnvironment).setContactsManagerForMock(makeContactsManager())
     }
 
+    override func tearDown() {
+        mockUsernameLookupMananger.clearAllUsernames()
+    }
+
     private func makeContactsManager() -> OWSContactsManager {
-        let contactsManager = OWSContactsManager()
+        let contactsManager = OWSContactsManager(swiftValues: OWSContactsManagerSwiftValues(
+            usernameLookupManager: mockUsernameLookupMananger
+        ))
+
         contactsManager.setUpSystemContacts()
+
         return contactsManager
     }
 
@@ -200,24 +212,36 @@ class OWSContactsManagerTest: SignalBaseTest {
     }
 
     func testGetDisplayNamesWithUserNames() {
-        let addresses = [SignalServiceAddress(uuid: UUID()), SignalServiceAddress(uuid: UUID())]
-        let fakeProfileManager = (self.profileManager as! OWSFakeProfileManager)
-        fakeProfileManager.fakeUsernames = [addresses[0]: "alice", addresses[1]: "bob"]
-        // Prevent default fake name from being used.
-        fakeProfileManager.fakeDisplayNames = [:]
+        let aliceUuid = UUID()
+        let bobUuid = UUID()
+
+        let addresses = [SignalServiceAddress(uuid: aliceUuid), SignalServiceAddress(uuid: bobUuid)]
+
+        // Store some fake usernames.
+
+        dbV2.write { transaction in
+            mockUsernameLookupMananger.saveUsername("alice", forAci: aliceUuid, transaction: transaction)
+            mockUsernameLookupMananger.saveUsername("bob", forAci: bobUuid, transaction: transaction)
+        }
+
+        // Prevent default fake names from being used.
+        (profileManager as! OWSFakeProfileManager).fakeDisplayNames = [:]
+
         read { transaction in
             let contactsManager = self.contactsManager as! OWSContactsManager
             let actual = contactsManager.displayNames(for: addresses, transaction: transaction)
-            let expected = ["@alice", "@bob"]
+            let expected = ["alice", "bob"]
             XCTAssertEqual(actual, expected)
         }
     }
 
     func testGetDisplayNamesUnknown() {
         let addresses = [SignalServiceAddress(uuid: UUID()), SignalServiceAddress(uuid: UUID())]
-        let fakeProfileManager = (self.profileManager as! OWSFakeProfileManager)
-        // Prevent default fake name from being used.
-        fakeProfileManager.fakeDisplayNames = [:]
+
+        // Intentionally do not set any mock usernames. Additionally, prevent
+        // default fake names from being used.
+        (profileManager as! OWSFakeProfileManager).fakeDisplayNames = [:]
+
         read { transaction in
             let contactsManager = self.contactsManager as! OWSContactsManager
             let actual = contactsManager.displayNames(for: addresses, transaction: transaction)
@@ -233,12 +257,15 @@ class OWSContactsManagerTest: SignalBaseTest {
         createAccounts([aliceAccount])
 
         let bobAddress = SignalServiceAddress(uuid: UUID())
-        (self.profileManager as! OWSFakeProfileManager).fakeDisplayNames = [bobAddress: "Bob Bobson"]
+        (profileManager as! OWSFakeProfileManager).fakeDisplayNames = [bobAddress: "Bob Bobson"]
 
         let carolAddress = SignalServiceAddress(phoneNumber: "+17035559900")
 
-        let daveAddress = SignalServiceAddress(uuid: UUID())
-        (self.profileManager as! OWSFakeProfileManager).fakeUsernames = [daveAddress: "dave"]
+        let daveUuid = UUID()
+        let daveAddress = SignalServiceAddress(uuid: daveUuid)
+        dbV2.write { transaction in
+            mockUsernameLookupMananger.saveUsername("dave", forAci: daveUuid, transaction: transaction)
+        }
 
         let eveAddress = SignalServiceAddress(uuid: UUID())
 
@@ -246,7 +273,7 @@ class OWSContactsManagerTest: SignalBaseTest {
             let contactsManager = self.contactsManager as! OWSContactsManager
             let addresses = [aliceAddress, bobAddress, carolAddress, daveAddress, eveAddress]
             let actual = contactsManager.displayNames(for: addresses, transaction: transaction)
-            let expected = ["Alice Aliceson (home)", "Bob Bobson", "+17035559900", "@dave", "Unknown"]
+            let expected = ["Alice Aliceson (home)", "Bob Bobson", "+17035559900", "dave", "Unknown"]
             XCTAssertEqual(actual, expected)
         }
     }

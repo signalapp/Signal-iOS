@@ -25,15 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation MockSSKEnvironment
 
-+ (void)activate
-{
-    MockSSKEnvironment *instance = [[self alloc] init];
-    [self setShared:instance];
-    [instance configureGrdb];
-
-    [instance warmCaches];
-}
-
 - (instancetype)init
 {
     // Ensure that OWSBackgroundTaskManager is created now.

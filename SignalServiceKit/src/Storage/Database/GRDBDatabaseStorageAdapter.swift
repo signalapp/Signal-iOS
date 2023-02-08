@@ -183,7 +183,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             CancelledGroupRing.self,
             CdsPreviousE164.self,
             CallRecord.self,
-            SpamReportingTokenRecord.self
+            SpamReportingTokenRecord.self,
+            UsernameLookupRecord.self
         ]
     }
 

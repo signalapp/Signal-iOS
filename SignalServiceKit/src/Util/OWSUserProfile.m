@@ -119,7 +119,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
 @property (atomic, nullable) NSString *familyName;
 @property (atomic, nullable) NSString *bio;
 @property (atomic, nullable) NSString *bioEmoji;
-@property (atomic, nullable) NSString *username;
 @property (atomic) BOOL isStoriesCapable;
 @property (atomic, nullable) NSArray<OWSUserProfileBadgeInfo *> *profileBadgeInfo;
 @property (atomic) BOOL canReceiveGiftBadges;
@@ -163,7 +162,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
-                        username:(nullable NSString *)username
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId];
@@ -186,7 +184,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     _profileName = profileName;
     _recipientPhoneNumber = recipientPhoneNumber;
     _recipientUUID = recipientUUID;
-    _username = username;
 
     return self;
 }
@@ -273,14 +270,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     OWSAssertDebug(userProfile);
 
     return userProfile;
-}
-
-+ (nullable OWSUserProfile *)userProfileForUsername:(NSString *)username
-                                        transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(username.length > 0);
-
-    return [self.userProfileFinder userProfileForUsername:username transaction:transaction];
 }
 
 + (BOOL)localUserProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -552,9 +541,6 @@ NSString *NSStringForUserProfileWriter(UserProfileWriter userProfileWriter)
     }
     if (changes.bioEmoji != nil) {
         profile.bioEmoji = changes.bioEmoji.value;
-    }
-    if (changes.username != nil) {
-        profile.username = changes.username.value;
     }
     if (changes.isStoriesCapable != nil) {
         profile.isStoriesCapable = changes.isStoriesCapable.value;

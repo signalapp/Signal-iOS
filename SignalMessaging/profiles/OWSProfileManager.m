@@ -54,7 +54,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                          fullName:(nullable NSString *)fullName
                               bio:(nullable NSString *)bio
                          bioEmoji:(nullable NSString *)bioEmoji
-                         username:(nullable NSString *)username
                        avatarData:(nullable NSData *)avatarData
                  profileBadgeInfo:(nullable NSArray<OWSUserProfileBadgeInfo *> *)badgeArray
 {
@@ -69,7 +68,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     _fullName = fullName;
     _bio = bio;
     _bioEmoji = bioEmoji;
-    _username = username;
     _avatarData = avatarData;
     _profileBadgeInfo = [badgeArray copy];
 
@@ -348,11 +346,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     return self.localUserProfile.profileBadgeInfo;
 }
 
-- (nullable NSString *)localUsername
-{
-    return self.localUserProfile.username;
-}
-
 - (OWSProfileSnapshot *)localProfileSnapshotWithShouldIncludeAvatar:(BOOL)shouldIncludeAvatar
 {
     return [self profileSnapshotForUserProfile:self.localUserProfile shouldIncludeAvatar:shouldIncludeAvatar];
@@ -377,25 +370,8 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                                                 fullName:userProfile.fullName
                                                      bio:userProfile.bio
                                                 bioEmoji:userProfile.bioEmoji
-                                                username:userProfile.username
                                               avatarData:avatarData
                                         profileBadgeInfo:userProfile.profileBadgeInfo];
-}
-
-- (void)updateLocalUsername:(nullable NSString *)username
-          userProfileWriter:(UserProfileWriter)userProfileWriter
-                transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(username == nil || username.length > 0);
-
-    OWSUserProfile *userProfile = self.localUserProfile;
-    OWSAssertDebug(self.localUserProfile);
-
-    [userProfile updateWithUsername:username
-                   isStoriesCapable:YES
-               canReceiveGiftBadges:RemoteConfig.canReceiveGiftBadges
-                  userProfileWriter:userProfileWriter
-                        transaction:transaction];
 }
 
 - (void)writeAvatarToDiskWithData:(NSData *)avatarData
@@ -464,31 +440,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
         return [AnyPromise promiseWithError:OWSErrorMakeAssertionError(@"Missing local address.")];
     }
     return [ProfileFetcherJob fetchProfilePromiseObjcWithAddress:localAddress mainAppOnly:NO ignoreThrottling:YES];
-}
-
-- (void)fetchProfileForUsername:(NSString *)username
-                        success:(void (^)(SignalServiceAddress *))success
-                       notFound:(void (^)(void))notFound
-                        failure:(void (^)(NSError *))failure
-{
-    OWSAssertDebug(username.length > 0);
-
-    // Check if we have a cached profile for this username, if so avoid fetching it from the service
-    // since we are limited to 100 username lookups per day.
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        __block OWSUserProfile *_Nullable userProfile;
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            userProfile = [OWSUserProfile userProfileForUsername:username transaction:transaction];
-        });
-        
-        if (userProfile) {
-            success(userProfile.publicAddress);
-            return;
-        }
-        
-        [ProfileFetcherJob fetchProfileWithUsername:username success:success notFound:notFound failure:failure];
-    });
 }
 
 - (void)reuploadLocalProfile
@@ -1196,14 +1147,13 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                                 batched:YES
                                   block:^(OWSUserProfile *userProfile, BOOL *stop) {
                                       OWSLogError(@"\t [%@]: has profile key: %d, has avatar URL: %d, has "
-                                                  @"avatar file: %d, given name: %@, family name: %@, username: %@, badges: %@",
+                                                  @"avatar file: %d, given name: %@, family name: %@, badges: %@",
                                           userProfile.publicAddress,
                                           userProfile.profileKey != nil,
                                           userProfile.avatarUrlPath != nil,
                                           userProfile.avatarFileName != nil,
                                           userProfile.givenName,
                                           userProfile.familyName,
-                                          userProfile.username,
                                           userProfile.profileBadgeInfo);
                                   }];
     }];
@@ -1499,26 +1449,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     return userProfile.avatarUrlPath;
 }
 
-- (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address
-                              transaction:(SDSAnyReadTransaction *)transaction
-{
-    NSArray<id<SSKMaybeString>> *array = [self usernamesForAddresses:@[ address ] transaction:transaction];
-    return [array[0] stringOrNil];
-}
-
-- (NSArray<id<SSKMaybeString>> *)usernamesForAddresses:(NSArray<SignalServiceAddress *> *)addresses
-                                           transaction:(SDSAnyReadTransaction *)transaction
-{
-    NSArray<id<OWSMaybeUserProfile>> *profiles = [self userProfilesForAddresses:addresses transaction:transaction];
-    return [profiles map:^id<SSKMaybeString> _Nonnull(id<OWSMaybeUserProfile> _Nonnull item) {
-        NSString *username = [[item userProfileOrNil] username];
-        if (username.length == 0) {
-            return [NSNull null];
-        }
-        return username;
-    }];
-}
-
 - (NSArray<SignalServiceAddress *> *)allWhitelistedRegisteredAddressesWithTransaction:
     (SDSAnyReadTransaction *)transaction
 {
@@ -1698,7 +1628,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                      familyName:(nullable NSString *)familyName
                             bio:(nullable NSString *)bio
                        bioEmoji:(nullable NSString *)bioEmoji
-                       username:(nullable NSString *)username
                isStoriesCapable:(BOOL)isStoriesCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
           optionalAvatarFileUrl:(nullable NSURL *)optionalAvatarFileUrl
@@ -1726,18 +1655,16 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:writeTx];
     if (!userProfile.profileKey) {
-        [userProfile updateWithUsername:username
-                       isStoriesCapable:isStoriesCapable
-                   canReceiveGiftBadges:canReceiveGiftBadges
-                          lastFetchDate:lastFetchDate
-                      userProfileWriter:userProfileWriter
-                            transaction:writeTx];
+        [userProfile updateWithIsStoriesCapable:isStoriesCapable
+                           canReceiveGiftBadges:canReceiveGiftBadges
+                                  lastFetchDate:lastFetchDate
+                              userProfileWriter:userProfileWriter
+                                    transaction:writeTx];
     } else if (optionalAvatarFileUrl.lastPathComponent) {
         [userProfile updateWithGivenName:givenName
                               familyName:familyName
                                      bio:bio
                                 bioEmoji:bioEmoji
-                                username:username
                         isStoriesCapable:isStoriesCapable
                                   badges:profileBadges
                     canReceiveGiftBadges:canReceiveGiftBadges
@@ -1752,7 +1679,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
                               familyName:familyName
                                      bio:bio
                                 bioEmoji:bioEmoji
-                                username:username
                         isStoriesCapable:isStoriesCapable
                                   badges:profileBadges
                     canReceiveGiftBadges:canReceiveGiftBadges

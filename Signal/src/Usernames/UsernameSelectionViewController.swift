@@ -22,7 +22,7 @@ class UsernameSelectionViewController: OWSTableViewController2 {
     struct Context {
         let networkManager: NetworkManager
         let databaseStorage: SDSDatabaseStorage
-        let profileManager: ProfileManagerProtocol
+        let usernameLookupManager: UsernameLookupManager
     }
 
     enum Constants {
@@ -116,6 +116,9 @@ class UsernameSelectionViewController: OWSTableViewController2 {
     /// A pre-existing username this controller was seeded with.
     private let existingUsername: ParsedUsername?
 
+    /// The local user's ACI.
+    private let localAci: UUID
+
     /// Injected dependencies.
     private let context: Context
 
@@ -134,8 +137,13 @@ class UsernameSelectionViewController: OWSTableViewController2 {
 
     // MARK: Init
 
-    init(existingUsername: ParsedUsername?, context: Context) {
+    init(
+        existingUsername: ParsedUsername?,
+        localAci: UUID,
+        context: Context
+    ) {
         self.existingUsername = existingUsername
+        self.localAci = localAci
         self.context = context
 
         super.init()
@@ -635,12 +643,21 @@ private extension UsernameSelectionViewController {
         usernameValue: String?,
         presentedModalActivityIndicator modal: ModalActivityIndicatorViewController
     ) {
-        self.context.databaseStorage.write { transaction in
-            self.context.profileManager.updateLocalUsername(
-                usernameValue,
-                userProfileWriter: .localUser,
-                transaction: transaction
-            )
+        context.databaseStorage.write { transaction in
+            let transaction: DBWriteTransaction = transaction.asV2Write
+
+            if let usernameValue {
+                context.usernameLookupManager.saveUsername(
+                    usernameValue,
+                    forAci: localAci,
+                    transaction: transaction
+                )
+            } else {
+                context.usernameLookupManager.clearUsername(
+                    forAci: localAci,
+                    transaction: transaction
+                )
+            }
         }
 
         usernameSelectionDelegate?.usernameDidChange(to: usernameValue)

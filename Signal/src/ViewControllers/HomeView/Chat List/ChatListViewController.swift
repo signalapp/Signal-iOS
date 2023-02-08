@@ -574,7 +574,7 @@ extension ChatListViewController {
 
         var contactNames = databaseStorage.read { transaction in
             signalAccounts.map { account in
-                self.contactsManagerImpl.displayName(forSignalAccount: account, transaction: transaction)
+                self.contactsManager.displayName(for: account.recipientAddress, transaction: transaction)
             }
         }
 

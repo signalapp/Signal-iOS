@@ -46,8 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MockSSKEnvironment : SSKEnvironment
 
-+ (void)activate;
-
 - (void)setContactsManagerForMockEnvironment:(id<ContactsManagerProtocol>)contactsManager;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

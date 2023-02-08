@@ -7046,13 +7046,13 @@
 "USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR_MESSAGE" = "An error occurred while looking up the username. Please try again later.";
 
-/* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ is not a Signal user. Make sure you’ve entered the complete username.";
+/* A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}. */
+"USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT" = "%1$@ is not a Signal user. Make sure you’ve entered the complete username.";
 
-/* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "User Not Found";
+/* Title for an action sheet indicating that the given username is not associated with a registered Signal account. */
+"USERNAME_LOOKUP_NOT_FOUND_TITLE" = "User Not Found";
 
 /* A prefix appended to all usernames when displayed */
 "USERNAME_PREFIX" = "@";

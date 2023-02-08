@@ -20,12 +20,16 @@ public class ViewControllerContext {
 
     public let keyBackupService: KeyBackupServiceProtocol
 
+    public let usernameLookupManager: UsernameLookupManager
+
     public init(
         db: DB,
-        keyBackupService: KeyBackupServiceProtocol
+        keyBackupService: KeyBackupServiceProtocol,
+        usernameLookupManager: UsernameLookupManager
     ) {
         self.db = db
         self.keyBackupService = keyBackupService
+        self.usernameLookupManager = usernameLookupManager
     }
 
     /// Eventually, this shared instance should not exist. (And DependenciesBridge should not exist, either).
@@ -36,9 +40,11 @@ public class ViewControllerContext {
     /// the AppDelegate.
     public static let shared: ViewControllerContext = {
         let bridge = DependenciesBridge.shared
+
         return ViewControllerContext(
             db: bridge.db,
-            keyBackupService: bridge.keyBackupService
+            keyBackupService: bridge.keyBackupService,
+            usernameLookupManager: bridge.usernameLookupManager
         )
     }()
 }

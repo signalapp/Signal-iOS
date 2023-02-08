@@ -64,6 +64,8 @@ extension StorageServiceProtoContactRecord: Dependencies {
 
         // Profile
 
+        // TODO: [Usernames] If we have no other identifiers for a contact, we should populate the username on a ContactRecord. See the client spec for details.
+
         if let profileKey = profileKey {
             builder.setProfileKey(profileKey)
         }
@@ -187,6 +189,8 @@ extension StorageServiceProtoContactRecord: Dependencies {
         } else if localProfileKey != nil && !hasProfileKey {
             mergeState = .needsUpdate(recipient.accountId)
         }
+
+        // TODO: [Usernames] If we no other identifiers are present for a contact, we should persist the username from the ContactRecord. See the client spec for details.
 
         // Given name can never be cleared, so ignore all info
         // about the profile if there's no given name.
@@ -716,6 +720,8 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         if let profileKey = profileManager.profileKeyData(for: localAddress, transaction: transaction) {
             builder.setProfileKey(profileKey)
         }
+
+        // TODO: [Usernames] We should persist the local username in the account record, but at the time of writing the proto field does not yet exist.
 
         if let profileGivenName = profileManagerImpl.unfilteredGivenName(for: localAddress, transaction: transaction) {
             builder.setGivenName(profileGivenName)
