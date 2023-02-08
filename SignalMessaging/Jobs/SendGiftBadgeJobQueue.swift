@@ -304,7 +304,7 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
     override public func run() {
         assert(self.durableOperationDelegate != nil)
 
-        firstly(on: .global()) { () -> Promise<Void> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
             Logger.info("[Gifting] Ensuring we can still message recipient...")
             // We also do this check right before sending the message, but we might be able to prevent
             // charging the payment method (and some extra work) if we check now.
@@ -317,14 +317,14 @@ public final class SendGiftBadgeOperation: OWSOperation, DurableOperation {
             self.postJobEventNotification(.chargeSucceeded)
             Logger.info("[Gifting] Charge succeeded! Getting receipt credential...")
             return try self.getReceiptCredentialPresentation(paymentIntentId: paymentIntentId)
-        }.done(on: .global()) { receiptCredentialPresentation in
+        }.done(on: DispatchQueue.global()) { receiptCredentialPresentation in
             Logger.info("[Gifting] Enqueueing messages...")
             try self.databaseStorage.write { transaction in
                 try self.enqueueMessages(receiptCredentialPresentation: receiptCredentialPresentation,
                                          transaction: transaction)
             }
             self.didSucceed()
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             self.reportError(error)
         }
     }

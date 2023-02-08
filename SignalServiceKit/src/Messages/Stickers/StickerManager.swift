@@ -752,7 +752,7 @@ public class StickerManager: NSObject {
 
         return firstly {
             tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
-        }.map(on: .global()) { stickerUrl in
+        }.map(on: DispatchQueue.global()) { stickerUrl in
             self.installSticker(stickerInfo: stickerInfo,
                                 stickerUrl: stickerUrl,
                                 contentType: item.contentType,

@@ -37,7 +37,7 @@ public extension RegistrationUtils {
                     Self.accountManager.deprecated_requestRegistrationVerification(e164: phoneNumber,
                                                                                    captchaToken: nil,
                                                                                    isSMS: true)
-                }.done(on: .main) { _ in
+                }.done(on: DispatchQueue.main) { _ in
 
                     Logger.info("re-registering: send verification code succeeded.")
 
@@ -57,7 +57,7 @@ public extension RegistrationUtils {
                         let window: UIWindow = CurrentAppContext().mainWindow!
                         window.rootViewController = navigationController
                     }
-                }.catch(on: .main) { error in
+                }.catch(on: DispatchQueue.main) { error in
                     AssertIsOnMainThread()
 
                     Logger.warn("Re-registration failure: \(error).")

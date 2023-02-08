@@ -52,11 +52,11 @@ fileprivate extension CVComponentState {
             groupInviteLinkAvatarsInFlight.insert(avatarUrlPath)
         }
 
-        return firstly(on: .global()) { () -> Promise<Data> in
+        return firstly(on: DispatchQueue.global()) { () -> Promise<Data> in
             let groupV2ContextInfo = try Self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
             return self.groupsV2Impl.fetchGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
                                                                 groupSecretParamsData: groupV2ContextInfo.groupSecretParamsData)
-        }.map(on: .global()) { (avatarData: Data) -> Void in
+        }.map(on: DispatchQueue.global()) { (avatarData: Data) -> Void in
             let imageMetadata = (avatarData as NSData).imageMetadata(withPath: nil, mimeType: nil)
             let cacheFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: imageMetadata.fileExtension,
                                                               isAvailableWhileDeviceLocked: true)
@@ -78,7 +78,7 @@ fileprivate extension CVComponentState {
                 Self.groupInviteLinkAvatarCache[avatarUrlPath] = cachedAvatar
                 Self.groupInviteLinkAvatarsInFlight.remove(avatarUrlPath)
             }
-        }.recover(on: .global()) { (error) -> Promise<Void> in
+        }.recover(on: DispatchQueue.global()) { (error) -> Promise<Void> in
             _ = Self.unfairLock.withLock {
                 Self.groupInviteLinkAvatarsInFlight.remove(avatarUrlPath)
             }
@@ -107,16 +107,16 @@ extension CVComponentState {
             // If there is no cached GroupInviteLinkPreview for this link,
             // try to do load it now. On success, touch the interaction
             // in order to trigger reload of the view.
-            firstly(on: .global()) { () -> Promise<GroupInviteLinkPreview> in
+            firstly(on: DispatchQueue.global()) { () -> Promise<GroupInviteLinkPreview> in
                 let groupContextInfo = try Self.groupsV2.groupV2ContextInfo(forMasterKeyData: groupInviteLinkInfo.masterKey)
                 return Self.groupsV2Impl.fetchGroupInviteLinkPreview(inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
                                                                      groupSecretParamsData: groupContextInfo.groupSecretParamsData,
                                                                      allowCached: false)
-            }.done(on: .global()) { (_: GroupInviteLinkPreview) in
+            }.done(on: DispatchQueue.global()) { (_: GroupInviteLinkPreview) in
                 if Self.updateExpirationList(url: url, isExpired: false) {
                     touchMessage()
                 }
-            }.catch(on: .global()) { (error: Error) in
+            }.catch(on: DispatchQueue.global()) { (error: Error) in
                 switch error {
                 case GroupsV2Error.expiredGroupInviteLink, GroupsV2Error.localUserBlockedFromJoining:
                     Logger.warn("Failed to fetch group link content: \(error)")
@@ -146,10 +146,10 @@ extension CVComponentState {
             // If there is no cached avatar for this link,
             // try to do load it now. On success, touch the interaction
             // in order to trigger reload of the view.
-            firstly(on: .global()) {
+            firstly(on: DispatchQueue.global()) {
                 Self.loadGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
                                                groupInviteLinkInfo: groupInviteLinkInfo)
-            }.done(on: .global()) { () in
+            }.done(on: DispatchQueue.global()) { () in
                 touchMessage()
             }.catch { error in
                 // TODO: Add retry?

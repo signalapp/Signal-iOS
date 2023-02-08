@@ -798,7 +798,7 @@ final class MobileCoinHttpRequester: NSObject, HttpRequester {
 
         let owsUrlSession = OWSURLSession(securityPolicy: securityPolicy, configuration: Self.defaultConfiguration)
 
-        firstly(on: .sharedUtility) {
+        firstly(on: DispatchQueue.sharedUtility) {
             owsUrlSession.dataTaskPromise(url.absoluteString, method: method.sskHTTPMethod, headers: headers, body: body)
         }.done { response in
             let headerFields = response.responseHeaders

@@ -323,7 +323,7 @@ extension MessageSender {
 
         // Since we know the guarantee is always successful, on any per-recipient failure, this generic error is used
         // to fail the returned promise.
-        return senderKeyGuarantee.done(on: .global()) {
+        return senderKeyGuarantee.done(on: DispatchQueue.global()) {
             if didHitAnyFailure.get() {
                 // MessageSender just uses this error as a sentinel to consult the per-recipient errors. The
                 // actual error doesn't matter.

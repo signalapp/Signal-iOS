@@ -905,7 +905,7 @@ class StorageServiceOperation: OWSOperation {
             manifest,
             newItems: updatedItems,
             deletedIdentifiers: deletedIdentifiers
-        ).done(on: .global()) { conflictingManifest in
+        ).done(on: DispatchQueue.global()) { conflictingManifest in
             guard let conflictingManifest = conflictingManifest else {
                 Logger.info("Successfully updated to manifest version: \(state.manifestVersion)")
 
@@ -950,7 +950,7 @@ class StorageServiceOperation: OWSOperation {
             return state.manifestVersion
         }()
 
-        StorageService.fetchLatestManifest(greaterThanVersion: greaterThanVersion).done(on: .global()) { response in
+        StorageService.fetchLatestManifest(greaterThanVersion: greaterThanVersion).done(on: DispatchQueue.global()) { response in
             switch response {
             case .noExistingManifest:
                 // There is no existing manifest, lets create one.
@@ -1138,7 +1138,7 @@ class StorageServiceOperation: OWSOperation {
             manifest,
             newItems: allItems,
             deleteAllExistingRecords: shouldDeletePreviousRecords
-        ).done(on: .global()) { conflictingManifest in
+        ).done(on: DispatchQueue.global()) { conflictingManifest in
             guard let conflictingManifest = conflictingManifest else {
                 // Successfully updated, store our changes.
                 self.databaseStorage.write { transaction in
@@ -1216,7 +1216,7 @@ class StorageServiceOperation: OWSOperation {
 
             Logger.info("Merging account record update from manifest version: \(manifest.version).")
 
-            return StorageService.fetchItem(for: newLocalAccountIdentifier).done(on: .global()) { item in
+            return StorageService.fetchItem(for: newLocalAccountIdentifier).done(on: DispatchQueue.global()) { item in
                 guard let item = item else {
                     // This can happen in normal use if between fetching the manifest and starting the item
                     // fetch a linked device has updated the manifest.
@@ -1242,14 +1242,14 @@ class StorageServiceOperation: OWSOperation {
                 // Remove any account record identifiers from the new or updated basket. We've processed them.
                 newOrUpdatedItems.removeAll { localAccountIdentifiers.contains($0) }
             }
-        }.then(on: .global()) { () -> Promise<State> in
+        }.then(on: DispatchQueue.global()) { () -> Promise<State> in
             // Cleanup our unknown identifiers type map to only reflect
             // identifiers that still exist in the manifest.
             state.unknownIdentifiersTypeMap = state.unknownIdentifiersTypeMap.mapValues { Array(allManifestItems.intersection($0)) }
 
             // Then, fetch the remaining items in the manifest and resolve any conflicts as appropriate.
             return self.fetchAndMergeItemsInBatches(identifiers: newOrUpdatedItems, manifest: manifest, state: state)
-        }.done(on: .global()) { updatedState in
+        }.done(on: DispatchQueue.global()) { updatedState in
             var mutableState = updatedState
             self.databaseStorage.write { transaction in
                 // Update the manifest version to reflect the remote version we just restored to
@@ -1344,9 +1344,9 @@ class StorageServiceOperation: OWSOperation {
         var mutableState = state
         var promise = Promise.value(())
         for batch in identifiers.chunked(by: Self.itemsBatchSize) {
-            promise = promise.then(on: .global()) {
+            promise = promise.then(on: DispatchQueue.global()) {
                 StorageService.fetchItems(for: Array(batch))
-            }.done(on: .global()) { items in
+            }.done(on: DispatchQueue.global()) { items in
                 self.databaseStorage.write { transaction in
                     for item in items {
                         if let contactRecord = item.contactRecord {

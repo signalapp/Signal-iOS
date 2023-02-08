@@ -49,7 +49,7 @@ public class ContactSupportAlert: NSObject {
                 _ = modal.wasCancelledPromise.done { operation.cancel() }
 
                 firstly {
-                    operation.perform(on: .sharedUserInitiated)
+                    operation.perform(on: DispatchQueue.sharedUserInitiated)
                 }.done {
                     modal.dismiss()
                 }.catch { error in

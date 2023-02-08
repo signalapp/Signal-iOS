@@ -214,14 +214,14 @@ public final class ContactDiscoveryManagerImpl: NSObject, ContactDiscoveryManage
         let fetchedPhoneNumbers = undiscoverableCache.phoneNumbersToFetch(for: request)
         firstly {
             contactDiscoveryTaskQueue.perform(for: fetchedPhoneNumbers, mode: request.mode)
-        }.recover(on: .global()) { error -> Promise<Set<SignalRecipient>> in
+        }.recover(on: DispatchQueue.global()) { error -> Promise<Set<SignalRecipient>> in
             self.handleRateLimitErrorIfNeeded(error: error, request: request)
             throw error
-        }.done(on: .global()) { signalRecipients in
+        }.done(on: DispatchQueue.global()) { signalRecipients in
             request.future.resolve(signalRecipients)
             self.undiscoverableCache.processResults(signalRecipients, requestedPhoneNumbers: fetchedPhoneNumbers)
             completion()
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             request.future.reject(error)
             completion()
         }

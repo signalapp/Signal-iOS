@@ -34,11 +34,11 @@ public class RefreshPreKeysOperation: OWSOperation {
             return
         }
 
-        firstly(on: .global()) { () -> Promise<Void> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
             self.messageProcessor.fetchingAndProcessingCompletePromise()
-        }.then(on: .global()) { () -> Promise<Int> in
+        }.then(on: DispatchQueue.global()) { () -> Promise<Int> in
             self.accountServiceClient.getPreKeysCount(for: self.identity)
-        }.then(on: .global()) { (preKeysCount: Int) -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { (preKeysCount: Int) -> Promise<Void> in
             Logger.info("\(self.identity) preKeysCount: \(preKeysCount)")
             let signalProtocolStore = self.signalProtocolStore(for: self.identity)
 
@@ -58,12 +58,12 @@ public class RefreshPreKeysOperation: OWSOperation {
                 signalProtocolStore.preKeyStore.storePreKeyRecords(preKeyRecords, transaction: transaction)
             }
 
-            return firstly(on: .global()) { () -> Promise<Void> in
+            return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
                 self.accountServiceClient.setPreKeys(for: self.identity,
                                                      identityKey: identityKeyPair.publicKey,
                                                      signedPreKeyRecord: signedPreKeyRecord,
                                                      preKeyRecords: preKeyRecords)
-            }.done(on: .global()) { () in
+            }.done(on: DispatchQueue.global()) { () in
                 signedPreKeyRecord.markAsAcceptedByService()
 
                 self.databaseStorage.write { transaction in
@@ -78,10 +78,10 @@ public class RefreshPreKeysOperation: OWSOperation {
                     signalProtocolStore.preKeyStore.cullPreKeyRecords(transaction: transaction)
                 }
             }
-        }.done(on: .global()) {
+        }.done(on: DispatchQueue.global()) {
             Logger.info("done")
             self.reportSuccess()
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             self.reportError(withUndefinedRetry: error)
         }
     }

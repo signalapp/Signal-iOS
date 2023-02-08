@@ -522,7 +522,7 @@ public class Location: NSObject {
     }
 
     public func prepareAttachment() -> Promise<SignalAttachment> {
-        return generateSnapshot().map(on: .global()) { image in
+        return generateSnapshot().map(on: DispatchQueue.global()) { image in
             guard let jpegData = image.jpegData(compressionQuality: 1.0) else {
                 throw LocationError.assertion
             }

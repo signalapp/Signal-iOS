@@ -108,9 +108,9 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                                                      presentationDelay: 0.5) { modal in
             firstly {
                 self.canReceiveGiftBadgesViaProfileFetch()
-            }.done(on: .main) { canReceiveGiftBadges in
+            }.done(on: DispatchQueue.main) { canReceiveGiftBadges in
                 modal.dismiss { resultFuture.resolve(canReceiveGiftBadges) }
-            }.catch(on: .main) { error in
+            }.catch(on: DispatchQueue.main) { error in
                 modal.dismiss { resultFuture.reject(error) }
             }
         }
@@ -124,12 +124,12 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         // from eating events after the VC is dismissed.
         messageTextView.resignFirstResponder()
 
-        firstly(on: .main) { [weak self] () -> Promise<Bool> in
+        firstly(on: DispatchQueue.main) { [weak self] () -> Promise<Bool> in
             guard let self = self else {
                 throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
             }
             return self.canReceiveGiftBadgesWithUi()
-        }.then(on: .main) { [weak self] canReceiveGiftBadges -> Promise<DonationViewsUtil.Gifts.SafetyNumberConfirmationResult> in
+        }.then(on: DispatchQueue.main) { [weak self] canReceiveGiftBadges -> Promise<DonationViewsUtil.Gifts.SafetyNumberConfirmationResult> in
             guard let self = self else {
                 throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
             }
@@ -137,7 +137,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                 throw DonationViewsUtil.Gifts.SendGiftError.cannotReceiveGiftBadges
             }
             return DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: self.thread).promise
-        }.done(on: .main) { [weak self] safetyNumberConfirmationResult in
+        }.done(on: DispatchQueue.main) { [weak self] safetyNumberConfirmationResult in
             guard let self = self else {
                 throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
             }

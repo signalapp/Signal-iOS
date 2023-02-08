@@ -457,7 +457,7 @@ final public class IndividualCallService: NSObject {
         }
 
         // Start the call, asynchronously.
-        getIceServers().done(on: .main) { iceServers in
+        getIceServers().done(on: DispatchQueue.main) { iceServers in
             guard self.callService.currentCall === call else {
                 Logger.debug("call has since ended")
                 return
@@ -792,7 +792,7 @@ final public class IndividualCallService: NSObject {
 
         Logger.info("shouldSendOffer")
 
-        firstly(on: .global()) { () throws -> Promise<Void> in
+        firstly(on: DispatchQueue.global()) { () throws -> Promise<Void> in
             let offerBuilder = SSKProtoCallMessageOffer.builder(id: callId)
             offerBuilder.setOpaque(opaque)
             switch callMediaType {
@@ -814,10 +814,10 @@ final public class IndividualCallService: NSObject {
                     transaction: transaction
                 )
             }
-        }.done(on: .main) {
+        }.done(on: DispatchQueue.main) {
             Logger.info("sent offer message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             Logger.error("failed to send offer message to \(call.individualCall.thread.contactAddress) with error: \(error)")
             self.callManager.signalingMessageDidFail(callId: callId)
         }
@@ -828,7 +828,7 @@ final public class IndividualCallService: NSObject {
         owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendAnswer")
 
-        firstly(on: .global()) { () throws -> Promise<Void> in
+        firstly(on: DispatchQueue.global()) { () throws -> Promise<Void> in
             let answerBuilder = SSKProtoCallMessageAnswer.builder(id: callId)
             answerBuilder.setOpaque(opaque)
 
@@ -846,10 +846,10 @@ final public class IndividualCallService: NSObject {
                     transaction: transaction
                 )
             }
-        }.done(on: .main) {
+        }.done(on: DispatchQueue.main) {
             Logger.debug("sent answer message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             Logger.error("failed to send answer message to \(call.individualCall.thread.contactAddress) with error: \(error)")
             self.callManager.signalingMessageDidFail(callId: callId)
         }
@@ -860,7 +860,7 @@ final public class IndividualCallService: NSObject {
         owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendIceCandidates")
 
-        firstly(on: .global()) { () throws -> Promise<Void> in
+        firstly(on: DispatchQueue.global()) { () throws -> Promise<Void> in
             var iceUpdateProtos = [SSKProtoCallMessageIceUpdate]()
 
             for iceCandidate in candidates {
@@ -890,10 +890,10 @@ final public class IndividualCallService: NSObject {
                     transaction: transaction
                 )
             }
-        }.done(on: .main) {
+        }.done(on: DispatchQueue.main) {
             Logger.debug("sent ice update message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             Logger.error("failed to send ice update message to \(call.individualCall.thread.contactAddress) with error: \(error)")
             callManager.signalingMessageDidFail(callId: callId)
         }
@@ -904,7 +904,7 @@ final public class IndividualCallService: NSObject {
         owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendHangup")
 
-        firstly(on: .global()) { () throws -> Promise<Void> in
+        firstly(on: DispatchQueue.global()) { () throws -> Promise<Void> in
             let hangupBuilder = SSKProtoCallMessageHangup.builder(id: callId)
 
             switch hangupType {
@@ -935,10 +935,10 @@ final public class IndividualCallService: NSObject {
                     transaction: transaction
                 )
             }
-        }.done(on: .main) {
+        }.done(on: DispatchQueue.main) {
             Logger.debug("sent hangup message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             Logger.error("failed to send hangup message to \(call.individualCall.thread.contactAddress) with error: \(error)")
             self.callManager.signalingMessageDidFail(callId: callId)
         }
@@ -949,7 +949,7 @@ final public class IndividualCallService: NSObject {
         owsAssertDebug(call.isIndividualCall)
         Logger.info("shouldSendBusy")
 
-        firstly(on: .global()) { () throws -> Promise<Void> in
+        firstly(on: DispatchQueue.global()) { () throws -> Promise<Void> in
             let busyBuilder = SSKProtoCallMessageBusy.builder(id: callId)
 
             return try Self.databaseStorage.write { transaction -> Promise<Void> in
@@ -966,10 +966,10 @@ final public class IndividualCallService: NSObject {
                     transaction: transaction
                 )
             }
-        }.done(on: .main) {
+        }.done(on: DispatchQueue.main) {
             Logger.debug("sent busy message to \(call.individualCall.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             Logger.error("failed to send busy message to \(call.individualCall.thread.contactAddress) with error: \(error)")
             self.callManager.signalingMessageDidFail(callId: callId)
         }
@@ -1186,7 +1186,7 @@ final public class IndividualCallService: NSObject {
 
         return firstly {
             accountManager.getTurnServerInfo()
-        }.map(on: .global()) { turnServerInfo -> [RTCIceServer] in
+        }.map(on: DispatchQueue.global()) { turnServerInfo -> [RTCIceServer] in
             Logger.debug("got turn server urls: \(turnServerInfo.urls)")
 
             return turnServerInfo.urls.map { url in
@@ -1199,7 +1199,7 @@ final public class IndividualCallService: NSObject {
                     return RTCIceServer(urlStrings: [url])
                 }
             } + [IndividualCallService.fallbackIceServer]
-        }.recover(on: .global()) { (error: Error) -> Guarantee<[RTCIceServer]> in
+        }.recover(on: DispatchQueue.global()) { (error: Error) -> Guarantee<[RTCIceServer]> in
             Logger.error("fetching ICE servers failed with error: \(error)")
             Logger.warn("using fallback ICE Servers")
 

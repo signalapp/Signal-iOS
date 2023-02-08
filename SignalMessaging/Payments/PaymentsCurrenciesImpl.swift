@@ -186,10 +186,10 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
             return
         }
 
-        firstly(on: .global()) { () -> Promise<HTTPResponse> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<HTTPResponse> in
             let request = OWSRequestFactory.currencyConversionRequest()
             return Self.networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON")
             }
@@ -223,13 +223,13 @@ public class PaymentsCurrenciesImpl: NSObject, PaymentsCurrenciesSwift, Payments
                 }
             }
             return ConversionRates(conversionRateMap: conversionRateMap, serviceDate: serviceDate)
-        }.done(on: .global()) { (conversionRates: ConversionRates) in
+        }.done(on: DispatchQueue.global()) { (conversionRates: ConversionRates) in
             Logger.info("Success.")
 
             self.setConversionRates(conversionRates)
 
             isUpdateInFlight.set(false)
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             owsFailDebugUnlessNetworkFailure(error)
 
             isUpdateInFlight.set(false)

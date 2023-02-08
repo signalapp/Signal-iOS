@@ -31,13 +31,13 @@ extension DonateViewController {
         }
         let boostBadge = oneTime.profileBadge
 
-        firstly(on: .global()) {
+        firstly(on: DispatchQueue.global()) {
             Stripe.boost(
                 amount: amount,
                 level: .boostBadge,
                 for: .applePay(payment: payment)
             )
-        }.done(on: .main) { confirmedIntent -> Void in
+        }.done(on: DispatchQueue.main) { confirmedIntent -> Void in
             owsAssert(
                 confirmedIntent.redirectToUrl == nil,
                 "[Donations] There shouldn't be a 3DS redirect for Apple Pay"
@@ -54,12 +54,12 @@ extension DonateViewController {
             DonationViewsUtil.wrapPromiseInProgressView(
                 from: self,
                 promise: DonationViewsUtil.waitForSubscriptionJob()
-            ).done(on: .main) {
+            ).done(on: DispatchQueue.main) {
                 self.didCompleteDonation(badge: boostBadge, thanksSheetType: .boost)
-            }.catch(on: .main) { [weak self] error in
+            }.catch(on: DispatchQueue.main) { [weak self] error in
                 self?.didFailDonation(error: error, mode: .oneTime, paymentMethod: .applePay)
             }
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             wrappedCompletion(.init(status: .failure, errors: [error]))
             owsFailDebugUnlessNetworkFailure(error)
         }

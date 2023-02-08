@@ -24,7 +24,7 @@ public extension GroupManager {
             fromViewController: fromViewController,
             canCancel: false
         ) { modalView in
-            firstly(on: .global()) {
+            firstly(on: DispatchQueue.global()) {
                 databaseStorage.write { transaction in
                     self.localLeaveGroupOrDeclineInvite(
                         groupThread: groupThread,
@@ -33,7 +33,7 @@ public extension GroupManager {
                         transaction: transaction
                     ).asVoid()
                 }
-            }.done(on: .main) { _ in
+            }.done(on: DispatchQueue.main) { _ in
                 modalView.dismiss {
                     success?()
                 }
@@ -60,7 +60,7 @@ public extension GroupManager {
             fromViewController: fromViewController,
             canCancel: false
         ) { modalActivityIndicator in
-            firstly(on: .global()) { () -> Promise<TSGroupThread> in
+            firstly(on: DispatchQueue.global()) { () -> Promise<TSGroupThread> in
                 guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid group model")
                 }
@@ -69,7 +69,7 @@ public extension GroupManager {
                     groupModel: groupModelV2,
                     waitForMessageProcessing: true
                 )
-            }.done(on: .main) { _ in
+            }.done(on: DispatchQueue.main) { _ in
                 modalActivityIndicator.dismiss {
                     success()
                 }

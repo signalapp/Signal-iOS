@@ -606,7 +606,7 @@ public class TestableFlag: NSObject {
     public static let ResetAllTestableFlagsNotification = NSNotification.Name("ResetAllTestableFlags")
 
     private func updateCapabilities() {
-        firstly(on: .global()) { () -> Promise<Void> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
             TSAccountManager.shared.updateAccountAttributes().asVoid()
         }.done {
             Logger.info("")

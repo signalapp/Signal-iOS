@@ -35,7 +35,7 @@ public extension OWSProfileManager {
                                         visibleBadgeIds: visibleBadgeIds,
                                         unsavedRotatedProfileKey: unsavedRotatedProfileKey,
                                         userProfileWriter: userProfileWriter)
-        }.then(on: .main) { update in
+        }.then(on: DispatchQueue.main) { update in
             return self.attemptToUpdateProfileOnService(update: update)
         }.then { (_) throws -> Promise<Void> in
             guard unsavedRotatedProfileKey == nil else {
@@ -47,7 +47,7 @@ public extension OWSProfileManager {
                 throw OWSAssertionError("missing local address")
             }
             return ProfileFetcherJob.fetchProfilePromise(address: localAddress, mainAppOnly: false, ignoreThrottling: true, fetchType: .default).asVoid()
-        }.done(on: .global()) { () -> Void in
+        }.done(on: DispatchQueue.global()) { () -> Void in
             Logger.verbose("Profile update did complete.")
         }
     }
@@ -148,7 +148,7 @@ public extension OWSProfileManager {
         // It's essential we avoid a case where other devices are operating
         // with a *new* profile key that we have yet to upload a profile for.
 
-        return firstly(on: .global()) { () -> Promise<OWSAES256Key> in
+        return firstly(on: DispatchQueue.global()) { () -> Promise<OWSAES256Key> in
             Logger.info("Reuploading profile with new profile key")
 
             // We re-upload our local profile with the new profile key
@@ -162,7 +162,7 @@ public extension OWSProfileManager {
 
             let newProfileKey = OWSAES256Key.generateRandom()
             return self.reuploadLocalProfilePromise(unsavedRotatedProfileKey: newProfileKey).map { newProfileKey }
-        }.then(on: .global()) { newProfileKey -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { newProfileKey -> Promise<Void> in
             guard let localAddress = self.tsAccountManager.localAddress else {
                 throw OWSAssertionError("Missing local address")
             }
@@ -198,10 +198,10 @@ public extension OWSProfileManager {
                     transaction: transaction
                 )
             }
-        }.then(on: .global()) { () -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
             Logger.info("Updating account attributes after profile key rotation.")
             return self.tsAccountManager.updateAccountAttributes()
-        }.done(on: .global()) {
+        }.done(on: DispatchQueue.global()) {
             Logger.info("Completed profile key rotation.")
             self.groupsV2.processProfileKeyUpdates()
         }
@@ -553,7 +553,7 @@ extension OWSProfileManager {
             }
 
             self.attemptDidComplete(retryDelay: retryDelay, didSucceed: true)
-        }.recover(on: .global()) { error in
+        }.recover(on: DispatchQueue.global()) { error in
             // We retry network errors forever (with exponential backoff).
             // Other errors cause us to give up immediately.
             // Note that we only ever retry the latest profile update.
@@ -640,7 +640,7 @@ extension OWSProfileManager {
                         "profileBio?: \(attempt.update.profileBio != nil), " +
                         "profileBioEmoji?: \(attempt.update.profileBioEmoji != nil) " +
                         "visibleBadges?: \(attempt.update.visibleBadgeIds.count).")
-        return firstly(on: .global()) {
+        return firstly(on: DispatchQueue.global()) {
             Self.versionedProfilesSwift.updateProfilePromise(profileGivenName: attempt.update.profileGivenName,
                                                              profileFamilyName: attempt.update.profileFamilyName,
                                                              profileBio: attempt.update.profileBio,
@@ -648,7 +648,7 @@ extension OWSProfileManager {
                                                              profileAvatarData: attempt.update.profileAvatarData,
                                                              visibleBadgeIds: attempt.update.visibleBadgeIds,
                                                              unsavedRotatedProfileKey: attempt.update.unsavedRotatedProfileKey)
-        }.map(on: .global()) { versionedUpdate in
+        }.map(on: DispatchQueue.global()) { versionedUpdate in
             attempt.avatarUrlPath = versionedUpdate.avatarUrlPath
         }
     }
@@ -902,7 +902,7 @@ public extension OWSProfileManager {
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)")
 
-        return firstly(on: .global()) { () throws -> Promise<OWSUrlDownloadResponse> in
+        return firstly(on: DispatchQueue.global()) { () throws -> Promise<OWSUrlDownloadResponse> in
             Logger.verbose("downloading profile avatar: \(profileAddress)")
             let urlSession = self.avatarUrlSession
             return urlSession.downloadTaskPromise(avatarUrlPath,
@@ -910,7 +910,7 @@ public extension OWSProfileManager {
                                                   progress: { (_, progress) in
                 Logger.verbose("Downloading avatar for \(profileAddress) \(progress.fractionCompleted)")
             })
-        }.map(on: .global()) { (response: OWSUrlDownloadResponse) -> Data in
+        }.map(on: DispatchQueue.global()) { (response: OWSUrlDownloadResponse) -> Data in
             do {
                 return try Data(contentsOf: response.downloadUrl)
             } catch {
@@ -918,9 +918,9 @@ public extension OWSProfileManager {
                 // Fail immediately; do not retry.
                 throw SSKUnretryableError.couldNotLoadFileData
             }
-        }.recover(on: .global()) { (error: Error) -> Promise<Data> in
+        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<Data> in
             throw error
-        }.map(on: .global()) { (encryptedData: Data) -> Data in
+        }.map(on: DispatchQueue.global()) { (encryptedData: Data) -> Data in
             guard let decryptedData = OWSUserProfile.decrypt(profileData: encryptedData,
                                                              profileKey: profileKey) else {
                 throw OWSGenericError("Could not decrypt profile avatar.")

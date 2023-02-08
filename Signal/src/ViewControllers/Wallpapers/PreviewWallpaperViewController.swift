@@ -418,7 +418,7 @@ private class WallpaperPage: UIViewController {
         photo?.withGaussianBlurPromise(
             radius: 10,
             resizeToMaxPixelDimension: 1024
-        ).done(on: .main) { [weak self] blurredPhoto in
+        ).done(on: DispatchQueue.main) { [weak self] blurredPhoto in
             self?.blurredPhoto = blurredPhoto
             self?.updatePhoto()
         }.catch { error in

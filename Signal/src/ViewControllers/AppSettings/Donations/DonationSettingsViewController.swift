@@ -603,7 +603,7 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
             } else {
                 return Promise.value(())
             }
-        }.then(on: .global()) { () -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
             let displayBadgesOnProfile: Bool
             switch setting {
             case .doNotDisplayPublicly:

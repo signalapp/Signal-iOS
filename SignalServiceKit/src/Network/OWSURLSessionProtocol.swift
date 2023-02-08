@@ -225,7 +225,7 @@ public extension OWSURLSessionProtocol {
         data requestData: Data,
         progress progressBlock: ProgressBlock? = nil
     ) -> Promise<HTTPResponse> {
-        firstly(on: .global()) { () -> Promise<HTTPResponse> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<HTTPResponse> in
             let request = try self.endpoint.buildRequest(urlString, method: method, headers: headers, body: requestData)
             return self.uploadTaskPromise(request: request, data: requestData, progress: progressBlock)
         }
@@ -252,7 +252,7 @@ public extension OWSURLSessionProtocol {
         fileUrl: URL,
         progress progressBlock: ProgressBlock? = nil
     ) -> Promise<HTTPResponse> {
-        firstly(on: .global()) { () -> Promise<HTTPResponse> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<HTTPResponse> in
             let request = try self.endpoint.buildRequest(urlString, method: method, headers: headers)
             return self.uploadTaskPromise(request: request, fileUrl: fileUrl, progress: progressBlock)
         }
@@ -274,7 +274,7 @@ public extension OWSURLSessionProtocol {
         body: Data? = nil,
         ignoreAppExpiry: Bool = false
     ) -> Promise<HTTPResponse> {
-        firstly(on: .global()) { () -> Promise<HTTPResponse> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<HTTPResponse> in
             let request = try self.endpoint.buildRequest(urlString, method: method, headers: headers, body: body)
             return self.dataTaskPromise(request: request, ignoreAppExpiry: ignoreAppExpiry)
         }
@@ -304,7 +304,7 @@ public extension OWSURLSessionProtocol {
         body: Data? = nil,
         progress progressBlock: ProgressBlock? = nil
     ) -> Promise<OWSUrlDownloadResponse> {
-        firstly(on: .global()) { () -> Promise<OWSUrlDownloadResponse> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<OWSUrlDownloadResponse> in
             let request = try self.endpoint.buildRequest(urlString, method: method, headers: headers, body: body)
             return self.downloadTaskPromise(request: request, progress: progressBlock)
         }
@@ -355,7 +355,7 @@ extension OWSURLSessionProtocol {
                                   fileUrl: multipartBodyFileURL,
                                   ignoreAppExpiry: ignoreAppExpiry,
                                   progress: progressBlock)
-            }.ensure(on: .global()) {
+            }.ensure(on: DispatchQueue.global()) {
                 do {
                     try OWSFileSystem.deleteFileIfExists(url: multipartBodyFileURL)
                 } catch {

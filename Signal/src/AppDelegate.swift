@@ -66,11 +66,11 @@ extension AppDelegate {
 
     @objc(setUpMainAppEnvironmentWithCompletion:)
     static func setUpMainAppEnvironment(completion: @escaping (Error?) -> Void) {
-        firstly(on: .main) {
+        firstly(on: DispatchQueue.main) {
             setUpMainAppEnvironment()
-        }.done(on: .main) {
+        }.done(on: DispatchQueue.main) {
             completion(nil)
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             completion(error)
         }
     }
@@ -345,9 +345,9 @@ extension AppDelegate {
         case .databaseCorruptedAndMightBeRecoverable:
             let recoveryViewController = DatabaseRecoveryViewController(
                 setupSskEnvironment: { () -> Promise<Void> in
-                    firstly(on: .main) {
+                    firstly(on: DispatchQueue.main) {
                         Self.setUpMainAppEnvironment()
-                    }.catch(on: .main) { error in
+                    }.catch(on: DispatchQueue.main) { error in
                         owsFailDebug("Error: \(error)")
                         self.showUI(forLaunchFailure: .couldNotLoadDatabase)
                     }

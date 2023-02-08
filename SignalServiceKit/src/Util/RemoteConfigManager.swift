@@ -661,7 +661,7 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
 
         guard tsAccountManager.isRegistered else { return }
         Logger.info("Refreshing and immediately applying new flags due to new registration.")
-        refresh().done(on: .global()) {
+        refresh().done(on: DispatchQueue.global()) {
             self.cacheCurrent()
         }.catch { error in
             Logger.error("Failed to update remote config after registration change \(error)")
@@ -750,9 +750,9 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         Logger.info("Refreshing remote config.")
         lastAttempt = Date()
 
-        return firstly(on: .global()) {
+        return firstly(on: DispatchQueue.global()) {
             self.serviceClient.getRemoteConfig()
-        }.done(on: .global()) { (fetchedConfig: [String: RemoteConfigItem]) in
+        }.done(on: DispatchQueue.global()) { (fetchedConfig: [String: RemoteConfigItem]) in
             // Extract the _supported_ flags from the fetched config.
             var isEnabledFlags = [String: Bool]()
             var valueFlags = [String: AnyObject]()
@@ -832,10 +832,10 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
 
             self.consecutiveFailures = 0
             Logger.info("Stored new remoteConfig. isEnabledFlags: \(isEnabledFlags), valueFlags: \(valueFlags)")
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             Logger.error("error: \(error)")
             self.consecutiveFailures += 1
-        }.ensure(on: .main) {
+        }.ensure(on: DispatchQueue.main) {
             self.scheduleNextRefresh()
         }
     }

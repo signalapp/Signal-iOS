@@ -66,14 +66,14 @@ extension UIImage {
     public func withGaussianBlurPromise(radius: CGFloat, resizeToMaxPixelDimension: CGFloat) -> Promise<UIImage> {
         return firstly {
             cgImageWithGaussianBlurPromise(radius: radius, resizeToMaxPixelDimension: resizeToMaxPixelDimension)
-        }.map(on: .sharedUserInteractive) {
+        }.map(on: DispatchQueue.sharedUserInteractive) {
             UIImage(cgImage: $0)
         }
     }
 
     public func cgImageWithGaussianBlurPromise(radius: CGFloat,
                                                resizeToMaxPixelDimension: CGFloat) -> Promise<CGImage> {
-        return firstly(on: .sharedUserInteractive) {
+        return firstly(on: DispatchQueue.sharedUserInteractive) {
             try self.cgImageWithGaussianBlur(radius: radius,
                                              resizeToMaxPixelDimension: resizeToMaxPixelDimension)
         }

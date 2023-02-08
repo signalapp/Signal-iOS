@@ -207,15 +207,15 @@ public class BulkProfileFetch: NSObject {
             } else {
                 return Guarantee.value(())
             }
-        }.then(on: .global()) {
+        }.then(on: DispatchQueue.global()) {
             ProfileFetcherJob.fetchProfilePromise(address: SignalServiceAddress(uuid: uuid)).asVoid()
-        }.done(on: .global()) {
+        }.done(on: DispatchQueue.global()) {
             self.serialQueue.asyncAfter(deadline: DispatchTime.now() + updateDelaySeconds) {
                 self.isUpdateInFlight = false
                 self.lastOutcomeMap[uuid] = UpdateOutcome(.success)
                 self.process()
             }
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             self.serialQueue.asyncAfter(deadline: DispatchTime.now() + updateDelaySeconds) {
                 self.isUpdateInFlight = false
                 switch error {
@@ -331,7 +331,7 @@ public class BulkProfileFetch: NSObject {
                 userProfiles.append(userProfile)
             }
             return userProfiles
-        }.map(on: .global()) { (userProfiles: [OWSUserProfile]) -> Void in
+        }.map(on: DispatchQueue.global()) { (userProfiles: [OWSUserProfile]) -> Void in
             var addresses: [SignalServiceAddress] = userProfiles.map { $0.publicAddress }
 
             // Limit how many profiles we try to update on launch.
@@ -347,7 +347,7 @@ public class BulkProfileFetch: NSObject {
             }
 
             Logger.verbose("Complete.")
-        }.catch(on: .global()) { (error: Error) -> Void in
+        }.catch(on: DispatchQueue.global()) { (error: Error) -> Void in
             owsFailDebug("Error: \(error)")
         }
     }

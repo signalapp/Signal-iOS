@@ -379,13 +379,13 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         case .none:
             DonationViewsUtil.wrapPromiseInProgressView(
                 from: self,
-                promise: firstly(on: .sharedUserInitiated) {
+                promise: firstly(on: DispatchQueue.sharedUserInitiated) {
                     SubscriptionManager.updateSubscriptionLevel(
                         for: subscriberID,
                         to: selectedSubscriptionLevel,
                         currencyCode: monthly.selectedCurrencyCode
                     )
-                }.then(on: .sharedUserInitiated) { subscription -> Promise<Void> in
+                }.then(on: DispatchQueue.sharedUserInitiated) { subscription -> Promise<Void> in
                     DonationViewsUtil.redeemMonthlyReceipts(
                         usingPaymentProcessor: subscription.paymentProcessor,
                         subscriberID: subscriberID,
@@ -394,12 +394,12 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                     )
                     return DonationViewsUtil.waitForSubscriptionJob()
                 }
-            ).done(on: .main) {
+            ).done(on: DispatchQueue.main) {
                 self.didCompleteDonation(
                     badge: selectedSubscriptionLevel.badge,
                     thanksSheetType: .subscription
                 )
-            }.catch(on: .main) { [weak self] error in
+            }.catch(on: DispatchQueue.main) { [weak self] error in
                 self?.didFailDonation(
                     error: error,
                     mode: .monthly,
@@ -497,7 +497,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
             firstly {
                 SubscriptionManager.cancelSubscription(for: subscriberID)
-            }.done(on: .main) { [weak self] in
+            }.done(on: DispatchQueue.main) { [weak self] in
                 modal.dismiss { [weak self] in
                     guard let self = self else { return }
                     self.onFinished(.monthlySubscriptionCancelled(
@@ -588,7 +588,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         // Start fetching the donation configuration.
         let fetchDonationConfigPromise: Promise<DonationConfiguration> = firstly {
             SubscriptionManager.fetchDonationConfiguration()
-        }.then(on: .sharedUserInitiated) { donationConfiguration -> Promise<DonationConfiguration> in
+        }.then(on: DispatchQueue.sharedUserInitiated) { donationConfiguration -> Promise<DonationConfiguration> in
             let boostBadge = donationConfiguration.boost.badge
             let subscriptionBadges = donationConfiguration.subscription.levels.map { $0.badge }
 
@@ -596,7 +596,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 Self.profileManager.badgeStore.populateAssetsOnBadge($0)
             }
 
-            return Promise.when(fulfilled: badgePromises).map(on: .sharedUserInitiated) { donationConfiguration }
+            return Promise.when(fulfilled: badgePromises).map(on: DispatchQueue.sharedUserInitiated) { donationConfiguration }
         }
 
         // Start loading the current subscription.
@@ -606,12 +606,12 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
 
         return firstly { () -> Promise<(DonationConfiguration, Subscription?)> in
             // Compose the configuration and subscription.
-            fetchDonationConfigPromise.then(on: .sharedUserInitiated) { donationConfiguration in
-                loadCurrentSubscriptionPromise.map(on: .sharedUserInitiated) { subscription in
+            fetchDonationConfigPromise.then(on: DispatchQueue.sharedUserInitiated) { donationConfiguration in
+                loadCurrentSubscriptionPromise.map(on: DispatchQueue.sharedUserInitiated) { subscription in
                     (donationConfiguration, subscription)
                 }
             }
-        }.then(on: .sharedUserInitiated) { (configuration, currentSubscription) -> Guarantee<State> in
+        }.then(on: DispatchQueue.sharedUserInitiated) { (configuration, currentSubscription) -> Guarantee<State> in
             let loadedState = currentState.loaded(
                 oneTimeConfig: configuration.boost,
                 monthlyConfig: configuration.subscription,
@@ -626,7 +626,7 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
             )
 
             return .value(loadedState)
-        }.recover(on: .sharedUserInitiated) { error -> Guarantee<State> in
+        }.recover(on: DispatchQueue.sharedUserInitiated) { error -> Guarantee<State> in
             Logger.warn("[Donations] \(error)")
             owsFailDebugUnlessNetworkFailure(error)
             return Guarantee.value(currentState.loadFailed())

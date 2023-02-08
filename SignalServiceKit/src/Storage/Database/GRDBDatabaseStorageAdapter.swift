@@ -1066,7 +1066,7 @@ extension GRDBDatabaseStorageAdapter {
     }
 
     public static func logIntegrityChecks() -> Promise<Void> {
-        return firstly(on: .global(qos: .userInitiated)) {
+        return firstly(on: DispatchQueue.global(qos: .userInitiated)) {
             let storageCoordinator: StorageCoordinator
             if SSKEnvironment.hasShared() {
                 storageCoordinator = SSKEnvironment.shared.storageCoordinator

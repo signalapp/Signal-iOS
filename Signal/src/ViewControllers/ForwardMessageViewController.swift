@@ -274,9 +274,9 @@ extension ForwardMessageViewController {
         let textMessage = self.textMessage?.strippedOrNil
 
         let recipientConversations = self.selectedConversations
-        firstly(on: .global()) {
+        firstly(on: DispatchQueue.global()) {
             self.outgoingMessageRecipientThreads(for: recipientConversations)
-        }.then(on: .main) { (outgoingMessageRecipientThreads: [TSThread]) -> Promise<Void> in
+        }.then(on: DispatchQueue.main) { (outgoingMessageRecipientThreads: [TSThread]) -> Promise<Void> in
             try Self.databaseStorage.write { transaction in
                 for recipientThread in outgoingMessageRecipientThreads {
                     // We're sending a message to this thread, approve any pending message request
@@ -316,9 +316,9 @@ extension ForwardMessageViewController {
                 let promises: [Promise<Void>] = sortedItems.map { item in
                     self.send(item: item, toOutgoingMessageRecipientThreads: outgoingMessageRecipientThreads)
                 }
-                return firstly(on: .main) { () -> Promise<Void> in
+                return firstly(on: DispatchQueue.main) { () -> Promise<Void> in
                     Promise.when(resolved: promises).asVoid()
-                }.then(on: .main) { _ -> Promise<Void> in
+                }.then(on: DispatchQueue.main) { _ -> Promise<Void> in
                     // The user may have added an additional text message to the forward.
                     // It should be sent last.
                     if let textMessage = textMessage {
@@ -330,13 +330,13 @@ extension ForwardMessageViewController {
                         return Promise.value(())
                     }
                 }
-            }.map(on: .main) {
+            }.map(on: DispatchQueue.main) {
                 self.forwardMessageDelegate?.forwardMessageFlowDidComplete(
                     items: content.allItems,
                     recipientThreads: outgoingMessageRecipientThreads
                 )
             }
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             owsFailDebug("Error: \(error)")
 
             Self.showAlertForForwardError(error: error, forwardedInteractionCount: content.allItems.count)
@@ -455,7 +455,7 @@ extension ForwardMessageViewController {
     }
 
     fileprivate func outgoingMessageRecipientThreads(for conversationItems: [ConversationItem]) -> Promise<[TSThread]> {
-        firstly(on: .global()) {
+        firstly(on: DispatchQueue.global()) {
             guard conversationItems.count > 0 else {
                 throw OWSAssertionError("No recipients.")
             }

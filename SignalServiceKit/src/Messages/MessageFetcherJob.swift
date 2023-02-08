@@ -42,9 +42,9 @@ public class MessageFetcherJob: NSObject {
                 // launching from the background, without this, we end up waiting some extra
                 // seconds before receiving an actionable push notification.
                 if Self.tsAccountManager.isRegistered {
-                    firstly(on: .global()) {
+                    firstly(on: DispatchQueue.global()) {
                         self.run()
-                    }.catch(on: .global()) { error in
+                    }.catch(on: DispatchQueue.global()) { error in
                         owsFailDebugUnlessNetworkFailure(error)
                     }
                 }
@@ -295,9 +295,9 @@ public class MessageFetcherJob: NSObject {
             Logger.debug("")
         }
 
-        return firstly(on: .global()) {
+        return firstly(on: DispatchQueue.global()) {
             fetchBatchViaRest()
-        }.map(on: .global()) { (batch: RESTBatch) -> ([EnvelopeJob], UInt64, Bool) in
+        }.map(on: DispatchQueue.global()) { (batch: RESTBatch) -> ([EnvelopeJob], UInt64, Bool) in
             if DebugFlags.internalLogging {
                 Logger.info("REST fetched envelopes: \(batch.envelopes.count)")
             }
@@ -317,7 +317,7 @@ public class MessageFetcherJob: NSObject {
             return (envelopeJobs: envelopeJobs,
                     serverDeliveryTimestamp: batch.serverDeliveryTimestamp,
                     hasMore: batch.hasMore)
-        }.then(on: .global()) { (envelopeJobs: [EnvelopeJob], serverDeliveryTimestamp: UInt64, hasMore: Bool) -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { (envelopeJobs: [EnvelopeJob], serverDeliveryTimestamp: UInt64, hasMore: Bool) -> Promise<Void> in
             let queuedContentCountOld = Self.messageProcessor.queuedContentCount
             for job in envelopeJobs {
                 Self.messageProcessor.processEncryptedEnvelope(
@@ -499,10 +499,10 @@ public class MessageFetcherJob: NSObject {
     }
 
     private class func fetchBatchViaRest() -> Promise<RESTBatch> {
-        firstly(on: .global()) { () -> Promise<HTTPResponse> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<HTTPResponse> in
             let request = OWSRequestFactory.getMessagesRequest()
             return self.networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON")
             }
@@ -659,9 +659,9 @@ private class MessageAckOperation: OWSOperation {
 
         let envelopeInfo = self.envelopeInfo
         let inFlightAckId = self.inFlightAckId
-        firstly(on: .global()) {
+        firstly(on: DispatchQueue.global()) {
             self.networkManager.makePromise(request: request)
-        }.done(on: .global()) { _ in
+        }.done(on: DispatchQueue.global()) { _ in
             Self.didAck(inFlightAckId: inFlightAckId)
 
             if DebugFlags.internalLogging {
@@ -670,7 +670,7 @@ private class MessageAckOperation: OWSOperation {
                 Logger.debug("acknowledged delivery for message at timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp)")
             }
             self.reportSuccess()
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             if DebugFlags.internalLogging {
                 Logger.info("acknowledging delivery for message at timestamp: \(envelopeInfo.timestamp), serviceTimestamp: \(envelopeInfo.serviceTimestamp) failed with error: \(error)")
             } else {

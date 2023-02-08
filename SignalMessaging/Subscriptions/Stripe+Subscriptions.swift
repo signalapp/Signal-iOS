@@ -16,7 +16,7 @@ extension Stripe {
             let request = OWSRequestFactory.subscriptionCreateStripePaymentMethodRequest(subscriberId.asBase64Url)
 
             return networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             let statusCode = response.responseStatusCode
 
             guard statusCode == 200 else {
@@ -51,16 +51,16 @@ extension Stripe {
     ) -> Promise<String> {
         firstly {
             createPaymentMethod(with: paymentMethod)
-        }.then(on: .sharedUserInitiated) { paymentId -> Promise<String> in
+        }.then(on: DispatchQueue.sharedUserInitiated) { paymentId -> Promise<String> in
             firstly { () -> Promise<ConfirmedIntent> in
                 confirmSetupIntent(for: paymentId, clientSecret: clientSecret)
-            }.then(on: .sharedUserInitiated) { confirmedIntent -> Promise<Void> in
+            }.then(on: DispatchQueue.sharedUserInitiated) { confirmedIntent -> Promise<Void> in
                 if let redirectToUrl = confirmedIntent.redirectToUrl {
                     return show3DS(redirectToUrl)
                 } else {
                     return Promise.value(())
                 }
-            }.map(on: .sharedUserInitiated) {
+            }.map(on: DispatchQueue.sharedUserInitiated) {
                 paymentId
             }
         }

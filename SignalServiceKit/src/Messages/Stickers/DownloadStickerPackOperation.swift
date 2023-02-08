@@ -43,7 +43,7 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
 
         firstly {
             try tryToDownload(urlPath: urlPath, maxDownloadSize: kMaxStickerPackDownloadSize)
-        }.done(on: .global()) { [weak self] (url: URL) in
+        }.done(on: DispatchQueue.global()) { [weak self] (url: URL) in
             guard let self = self else {
                 return
             }
@@ -65,7 +65,7 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
                 // Fail immediately; do not retry.
                 return self.reportError(SSKUnretryableError.stickerDecryptionFailure)
             }
-        }.catch(on: .global()) { [weak self] error in
+        }.catch(on: DispatchQueue.global()) { [weak self] error in
             guard let self = self else {
                 return
             }

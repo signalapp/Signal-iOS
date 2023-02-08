@@ -57,11 +57,11 @@ private extension RecipientPickerViewController {
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
             firstly {
                 delegate.recipientPicker(self, prepareToSelectRecipient: recipient)
-            }.done(on: .main) { [weak self] _ in
+            }.done(on: DispatchQueue.main) { [weak self] _ in
                 modal.dismiss {
                     self?.didPrepareToSelectRecipient(recipient)
                 }
-            }.catch(on: .main) { error in
+            }.catch(on: DispatchQueue.main) { error in
                 owsFailDebugUnlessNetworkFailure(error)
                 modal.dismiss {
                     OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
@@ -604,12 +604,12 @@ extension RecipientPickerViewController {
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { modal in
             firstly {
                 finder.lookUp(phoneNumber: phoneNumberResult)
-            }.done(on: .main) { [weak self] lookupResult in
+            }.done(on: DispatchQueue.main) { [weak self] lookupResult in
                 modal.dismissIfNotCanceled {
                     guard let self = self else { return }
                     self.handlePhoneNumberLookupResult(lookupResult)
                 }
-            }.catch(on: .main) { error in
+            }.catch(on: DispatchQueue.main) { error in
                 modal.dismissIfNotCanceled {
                     OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
                 }

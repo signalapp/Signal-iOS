@@ -148,13 +148,13 @@ public class KeyBackupService: KeyBackupServiceProtocol {
             auth: auth,
             enclave: enclave,
             ignoreCachedToken: true
-        ).map(on: .global()) { restoredKeys -> String in
+        ).map(on: DispatchQueue.global()) { restoredKeys -> String in
             guard let registrationLockToken = KBS.DerivedKey.registrationLock.derivedData(from: restoredKeys.masterKey)?.hexadecimalString else {
                 owsFailDebug("Failed to derive registration lock token")
                 throw KBS.KBSError.assertion
             }
             return registrationLockToken
-        }.recover(on: .global()) { error -> Promise<String> in
+        }.recover(on: DispatchQueue.global()) { error -> Promise<String> in
             owsAssertDebug(error is KBS.KBSError, "Unexpectedly surfacing a non KBS error \(error)")
             throw error
         }
@@ -216,7 +216,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 enclave: self.currentEnclave,
                 auth: auth
             ).map { ($0, restoredKeys.masterKey) }
-        }.done(on: .global()) { response, masterKey in
+        }.done(on: DispatchQueue.global()) { response, masterKey in
             guard let status = response.status else {
                 owsFailDebug("KBS backup is missing status")
                 throw KBS.KBSError.assertion
@@ -274,7 +274,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 owsFailDebug("Failed to delete keys from previous enclave \(error)")
                 throw error
             }
-        }.recover(on: .global()) { error in
+        }.recover(on: DispatchQueue.global()) { error in
             guard let kbsError = error as? KBS.KBSError else {
                 owsFailDebug("Unexpectedly surfacing a non KBS error \(error)")
                 throw error
@@ -300,7 +300,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
             auth: auth,
             enclave: enclave,
             ignoreCachedToken: ignoreCachedToken
-        ).map(on: .global()) { backupId in
+        ).map(on: DispatchQueue.global()) { backupId in
             return try self.deriveEncryptionKeyAndAccessKey(pin: pin, backupId: backupId)
         }.then { encryptionKey, accessKey in
             self.restoreKeyRequest(
@@ -309,7 +309,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 auth: auth,
                 ignoreCachedToken: ignoreCachedToken
             ).map { ($0, encryptionKey, accessKey) }
-        }.map(on: .global()) { response, encryptionKey, accessKey -> RestoredKeys in
+        }.map(on: DispatchQueue.global()) { response, encryptionKey, accessKey -> RestoredKeys in
             guard let status = response.status else {
                 owsFailDebug("KBS restore is missing status")
                 throw KBS.KBSError.assertion
@@ -367,7 +367,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         return fetchBackupId(
             auth: nil,
             enclave: currentEnclave
-        ).map(on: .global()) { backupId -> (Data, Data, Data) in
+        ).map(on: DispatchQueue.global()) { backupId -> (Data, Data, Data) in
             let masterKey: Data = {
                 if rotateMasterKey { return self.generateMasterKey() }
                 return self.getOrLoadStateWithSneakyTransaction().masterKey ?? self.generateMasterKey()
@@ -382,7 +382,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 encryptedMasterKey: encryptedMasterKey,
                 enclave: self.currentEnclave
             ).map { ($0, masterKey) }
-        }.done(on: .global()) { response, masterKey in
+        }.done(on: DispatchQueue.global()) { response, masterKey in
             guard let status = response.status else {
                 owsFailDebug("KBS backup is missing status")
                 throw KBS.KBSError.assertion
@@ -423,7 +423,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                     )
                 }
             }
-        }.recover(on: .global()) { error in
+        }.recover(on: DispatchQueue.global()) { error in
             Logger.error("recording backupKeyRequest errored: \(error)")
 
             self.db.write { transaction in
@@ -933,7 +933,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
         ).then { remoteAttestation -> Promise<RequestType.ResponseOptionType> in
             firstly {
                 self.fetchToken(for: remoteAttestation, ignoreCachedToken: ignoreCachedToken)
-            }.then(on: .global()) { tokenResponse -> Promise<HTTPResponse> in
+            }.then(on: DispatchQueue.global()) { tokenResponse -> Promise<HTTPResponse> in
                 let requestOption = try requestOptionBuilder(tokenResponse)
                 let requestBuilder = KeyBackupProtoRequest.builder()
                 requestOption.set(on: requestBuilder)
@@ -967,7 +967,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 }
                 return firstly {
                     urlSession.promiseForTSRequest(request)
-                }.recover(on: .global()) { error -> Promise<HTTPResponse> in
+                }.recover(on: DispatchQueue.global()) { error -> Promise<HTTPResponse> in
                     // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
                     if let httpError = error as? OWSHTTPError {
                         throw httpError
@@ -976,7 +976,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                         throw OWSHTTPError.invalidRequest(requestUrl: requestUrl)
                     }
                 }
-            }.map(on: .global()) { (response: HTTPResponse) in
+            }.map(on: DispatchQueue.global()) { (response: HTTPResponse) in
                 guard let json = response.responseBodyJson else {
                     owsFailDebug("Missing or invalid JSON.")
                     throw KBS.KBSError.assertion
@@ -1278,7 +1278,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
             }
             return firstly {
                 urlSession.promiseForTSRequest(request)
-            }.recover(on: .global()) { error -> Promise<HTTPResponse> in
+            }.recover(on: DispatchQueue.global()) { error -> Promise<HTTPResponse> in
                 // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
                 if let httpError = error as? OWSHTTPError {
                     throw httpError
@@ -1287,7 +1287,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                     throw OWSHTTPError.invalidRequest(requestUrl: requestUrl)
                 }
             }
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON.")
             }
@@ -1310,7 +1310,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                 auth: auth,
                 enclave: enclave
             )
-            .recover(on: .sharedBackground) { [credentialStorage, remoteAttestation, db] error in
+            .recover(on: DispatchQueue.sharedBackground) { [credentialStorage, remoteAttestation, db] error in
                 Logger.warn("KBS attestation failed, rotating auth credential.")
                 // If we fail for any reason, be aggressive and clear our auth
                 // credential and retry so we fetch a new one. It's cheap to do so.
@@ -1323,7 +1323,7 @@ public class KeyBackupService: KeyBackupServiceProtocol {
                         enclave: enclave
                     )
             }
-            .map(on: .sharedBackground) { [credentialStorage, db] attestation in
+            .map(on: DispatchQueue.sharedBackground) { [credentialStorage, db] attestation in
                 let credential = attestation.auth
                 db.write { credentialStorage.storeAuthCredentialForCurrentUsername(KBSAuthCredential(credential: credential), $0) }
                 return attestation

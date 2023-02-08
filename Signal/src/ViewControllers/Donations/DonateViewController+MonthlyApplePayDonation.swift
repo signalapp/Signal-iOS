@@ -28,7 +28,7 @@ extension DonateViewController {
         Logger.info("[Donations] Starting monthly Apple Pay donation")
 
         // See also: code for other payment methods, such as credit/debit card.
-        firstly(on: .sharedUserInitiated) { () -> Promise<Void> in
+        firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Void> in
             if let existingSubscriberId = monthly.subscriberID, monthly.currentSubscription != nil {
                 Logger.info("[Donations] Cancelling existing subscription")
 
@@ -38,18 +38,18 @@ extension DonateViewController {
 
                 return Promise.value(())
             }
-        }.then(on: .sharedUserInitiated) { () -> Promise<Data> in
+        }.then(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Data> in
             Logger.info("[Donations] Preparing new monthly subscription with Apple Pay")
 
             return SubscriptionManager.prepareNewSubscription(
                 currencyCode: monthly.selectedCurrencyCode
             )
-        }.then(on: .sharedUserInitiated) { subscriberId -> Promise<(Data, String)> in
+        }.then(on: DispatchQueue.sharedUserInitiated) { subscriberId -> Promise<(Data, String)> in
             firstly { () -> Promise<String> in
                 Logger.info("[Donations] Creating Signal payment method for new monthly subscription with Apple Pay")
 
                 return Stripe.createSignalPaymentMethodForSubscription(subscriberId: subscriberId)
-            }.then(on: .sharedUserInitiated) { clientSecret -> Promise<String> in
+            }.then(on: DispatchQueue.sharedUserInitiated) { clientSecret -> Promise<String> in
                 Logger.info("[Donations] Authorizing payment for new monthly subscription with Apple Pay")
 
                 return Stripe.setupNewSubscription(
@@ -59,10 +59,10 @@ extension DonateViewController {
                         owsFail("[Donations] 3D Secure should not be shown for Apple Pay")
                     }
                 )
-            }.map(on: .sharedUserInitiated) { paymentId in
+            }.map(on: DispatchQueue.sharedUserInitiated) { paymentId in
                 (subscriberId, paymentId)
             }
-        }.then(on: .sharedUserInitiated) { (subscriberId, paymentId) -> Promise<Data> in
+        }.then(on: DispatchQueue.sharedUserInitiated) { (subscriberId, paymentId) -> Promise<Data> in
             Logger.info("[Donations] Finalizing new subscription for Apple Pay donation")
 
             return SubscriptionManager.finalizeNewSubscription(
@@ -71,8 +71,8 @@ extension DonateViewController {
                 usingPaymentMethod: .applePay,
                 subscription: selectedSubscriptionLevel,
                 currencyCode: monthly.selectedCurrencyCode
-            ).map(on: .sharedUserInitiated) { _ in subscriberId }
-        }.done(on: .main) { subscriberID in
+            ).map(on: DispatchQueue.sharedUserInitiated) { _ in subscriberId }
+        }.done(on: DispatchQueue.main) { subscriberID in
             let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
             completion(authResult)
 
@@ -88,19 +88,19 @@ extension DonateViewController {
             DonationViewsUtil.wrapPromiseInProgressView(
                 from: self,
                 promise: DonationViewsUtil.waitForSubscriptionJob()
-            ).done(on: .main) {
+            ).done(on: DispatchQueue.main) {
                 Logger.info("[Donations] Monthly card donation finished")
 
                 self.didCompleteDonation(
                     badge: selectedSubscriptionLevel.badge,
                     thanksSheetType: .subscription
                 )
-            }.catch(on: .main) { [weak self] error in
+            }.catch(on: DispatchQueue.main) { [weak self] error in
                 Logger.info("[Donations] Monthly card donation failed")
 
                 self?.didFailDonation(error: error, mode: .monthly, paymentMethod: .applePay)
             }
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             let authResult = PKPaymentAuthorizationResult(status: .failure, errors: [error])
             completion(authResult)
             owsFailDebug("[Donations] Error setting up subscription, \(error)")

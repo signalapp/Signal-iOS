@@ -216,7 +216,7 @@ public extension TSAccountManager {
             return Promise.value(())
         }
         Logger.info("Updating account attributes.")
-        let promise: Promise<Void> = firstly(on: .global()) { () -> Promise<Void> in
+        let promise: Promise<Void> = firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
             let client = SignalServiceRestClient()
             return (self.isPrimaryDevice
                         ? client.updatePrimaryDeviceAccountAttributes()
@@ -278,9 +278,9 @@ extension TSAccountManager {
                                                                voipIdentifier: voipToken)
         firstly {
             networkManager.makePromise(request: request)
-        }.done(on: .global()) { _ in
+        }.done(on: DispatchQueue.global()) { _ in
             success()
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             if remainingRetries > 0 {
                 self.registerForPushNotifications(pushToken: pushToken,
                                                   voipToken: voipToken,
@@ -300,7 +300,7 @@ extension TSAccountManager {
                                  failure: @escaping (Error) -> Void) {
         firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             let statusCode = response.responseStatusCode
 
             switch statusCode {
@@ -314,7 +314,7 @@ extension TSAccountManager {
                 Logger.warn("Unexpected status while verifying code: \(statusCode)")
                 failure(OWSGenericError("Unexpected status while verifying code: \(statusCode)"))
             }
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             failure(Self.processRegistrationError(error))
         }
     }
@@ -325,7 +325,7 @@ extension TSAccountManager {
                                       failure: @escaping (Error) -> Void) {
         firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             let statusCode = response.responseStatusCode
 
             switch statusCode {
@@ -339,7 +339,7 @@ extension TSAccountManager {
                 Logger.warn("Unexpected status while verifying code: \(statusCode)")
                 failure(OWSGenericError("Unexpected status while verifying code: \(statusCode)"))
             }
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             failure(Self.processRegistrationError(error))
         }
     }
@@ -409,7 +409,7 @@ public extension TSAccountManager {
         let request = OWSRequestFactory.unregisterAccountRequest()
         firstly {
             Self.networkManager.makePromise(request: request)
-        }.done(on: .global()) { _ in
+        }.done(on: DispatchQueue.global()) { _ in
             Logger.verbose("Successfully unregistered.")
             success()
 
@@ -420,7 +420,7 @@ public extension TSAccountManager {
             // the data store is reset.
 
             Self.tsAccountManager.postRegistrationStateDidChangeNotification()
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             owsFailDebugUnlessNetworkFailure(error)
             failure(error)
         }

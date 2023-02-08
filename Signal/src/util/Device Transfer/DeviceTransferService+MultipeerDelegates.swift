@@ -159,13 +159,13 @@ extension DeviceTransferService: MCSessionDelegate {
                 owsFail("Restore failed. Will try again on next launch. Error: \(error)")
             }
 
-            firstly(on: .main) { () -> Guarantee<Void> in
+            firstly(on: DispatchQueue.main) { () -> Guarantee<Void> in
                 // A successful restoration means we've updated our database path.
                 // Extensions will learn of this through NSUserDefaults KVO and exit ASAP
                 self.databaseStorage.reloadAsMainDatabase()
-            }.then(on: .main) { () -> Guarantee<Void> in
+            }.then(on: DispatchQueue.main) { () -> Guarantee<Void> in
                 self.finalizeRestorationIfNecessary()
-            }.done(on: .main) {
+            }.done(on: DispatchQueue.main) {
                 // After transfer our push token has changed, update it.
                 SyncPushTokensJob.run(mode: .forceUpload)
                 SignalApp.shared().showConversationSplitView()

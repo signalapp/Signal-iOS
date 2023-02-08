@@ -117,10 +117,10 @@ public extension ChatListViewController {
         if BoostBadgeIds.contains(expiredBadgeID) {
             firstly {
                 SubscriptionManager.getBoostBadge()
-            }.done(on: .global()) { boostBadge in
+            }.done(on: DispatchQueue.global()) { boostBadge in
                 firstly {
                     self.profileManager.badgeStore.populateAssetsOnBadge(boostBadge)
-                }.done(on: .main) {
+                }.done(on: DispatchQueue.main) {
                     // Make sure we're still the active VC
                     guard UIApplication.shared.frontmostViewController == self.conversationSplitViewController,
                           self.conversationSplitViewController?.selectedThread == nil else { return }
@@ -143,9 +143,9 @@ public extension ChatListViewController {
             // Fetch current subscriptions, required to populate badge assets
             firstly { () -> Promise<SubscriptionManager.DonationConfiguration> in
                 SubscriptionManager.fetchDonationConfiguration()
-            }.map(on: .global()) { donationConfiguration -> [SubscriptionLevel] in
+            }.map(on: DispatchQueue.global()) { donationConfiguration -> [SubscriptionLevel] in
                 donationConfiguration.subscription.levels
-            }.done(on: .global()) { (subscriptions: [SubscriptionLevel]) in
+            }.done(on: DispatchQueue.global()) { (subscriptions: [SubscriptionLevel]) in
                 let subscriptionLevel = subscriptions.first { $0.badge.id == expiredBadgeID }
                 guard let subscriptionLevel = subscriptionLevel else {
                     owsFailDebug("Unable to find matching subscription level for expired badge")
@@ -154,7 +154,7 @@ public extension ChatListViewController {
 
                 firstly {
                     self.profileManager.badgeStore.populateAssetsOnBadge(subscriptionLevel.badge)
-                }.done(on: .main) {
+                }.done(on: DispatchQueue.main) {
                     // Make sure we're still the active VC
                     guard UIApplication.shared.frontmostViewController == self.conversationSplitViewController,
                           self.conversationSplitViewController?.selectedThread == nil else { return }

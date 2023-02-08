@@ -251,7 +251,7 @@ extension SendMessageFlow {
 
         firstly { () -> Promise<[TSThread]> in
             self.threads(for: conversations)
-        }.map(on: .global()) { (threads: [TSThread]) -> TSThread in
+        }.map(on: DispatchQueue.global()) { (threads: [TSThread]) -> TSThread in
             guard threads.count == 1,
                 let thread = threads.first else {
                     throw OWSAssertionError("Unexpected thread state.")

@@ -13,7 +13,7 @@ public extension Paypal {
         amount: FiatMoney,
         level: OneTimeBadgeLevel
     ) -> Promise<URL> {
-        firstly(on: .sharedUserInitiated) {
+        firstly(on: DispatchQueue.sharedUserInitiated) {
             let createBoostRequest = OWSRequestFactory.boostPaypalCreatePayment(
                 integerMoneyValue: DonationUtilities.integralAmount(for: amount),
                 inCurrencyCode: amount.currencyCode,
@@ -23,7 +23,7 @@ public extension Paypal {
             )
 
             return networkManager.makePromise(request: createBoostRequest)
-        }.map(on: .sharedUserInitiated) { response throws -> URL in
+        }.map(on: DispatchQueue.sharedUserInitiated) { response throws -> URL in
             guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
                 throw OWSAssertionError("[Donations] Failed to decode JSON response")
             }
@@ -45,7 +45,7 @@ public extension Paypal {
         level: OneTimeBadgeLevel,
         approvalParams: OneTimePaymentWebAuthApprovalParams
     ) -> Promise<String> {
-        firstly(on: .sharedUserInitiated) {
+        firstly(on: DispatchQueue.sharedUserInitiated) {
             let confirmOneTimePaymentRequest = OWSRequestFactory.oneTimePaypalConfirmPayment(
                 integerMoneyValue: DonationUtilities.integralAmount(for: amount),
                 inCurrencyCode: amount.currencyCode,
@@ -56,7 +56,7 @@ public extension Paypal {
             )
 
             return networkManager.makePromise(request: confirmOneTimePaymentRequest)
-        }.map(on: .sharedUserInitiated) { response throws -> String in
+        }.map(on: DispatchQueue.sharedUserInitiated) { response throws -> String in
             guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
                 throw OWSAssertionError("[Donations] Failed to decode JSON response")
             }
@@ -94,7 +94,7 @@ public extension Paypal {
             )
 
             return networkManager.makePromise(request: request)
-        }.map(on: .sharedUserInitiated) { response in
+        }.map(on: DispatchQueue.sharedUserInitiated) { response in
             guard let parser = ParamParser(responseObject: response.responseBodyJson) else {
                 throw OWSAssertionError("[Donations] Missing or invalid response.")
             }

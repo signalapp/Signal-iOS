@@ -98,7 +98,7 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
             return
         }
 
-        _ = messageProcessor.fetchingAndProcessingCompletePromise().done(on: .global()) {
+        _ = messageProcessor.fetchingAndProcessingCompletePromise().done(on: DispatchQueue.global()) {
             guard self.tsAccountManager.isRegisteredAndReady else {
                 return owsFailDebug("Unexpectedly tried to send sync message before registration.")
             }

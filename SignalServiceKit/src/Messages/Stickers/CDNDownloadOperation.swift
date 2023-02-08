@@ -48,7 +48,7 @@ open class CDNDownloadOperation: OWSOperation {
         let (promise, future) = Promise<URL>.pending()
 
         let hasCheckedContentLength = AtomicBool(false)
-        firstly(on: .global()) { () -> Promise<OWSUrlDownloadResponse> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<OWSUrlDownloadResponse> in
             let headers = ["Content-Type": OWSMimeTypeApplicationOctetStream]
             let urlSession = self.cdn0urlSession
             return urlSession.downloadTaskPromise(urlPath,
@@ -64,7 +64,7 @@ open class CDNDownloadOperation: OWSOperation {
                                             maxDownloadSize: maxDownloadSize,
                                             hasCheckedContentLength: hasCheckedContentLength)
             }
-        }.map(on: .global()) { [weak self] (response: OWSUrlDownloadResponse) -> Void in
+        }.map(on: DispatchQueue.global()) { [weak self] (response: OWSUrlDownloadResponse) -> Void in
             guard self != nil else {
                 throw OWSAssertionError("Operation has been deallocated.")
             }
@@ -89,7 +89,7 @@ open class CDNDownloadOperation: OWSOperation {
                 // Fail immediately; do not retry.
                 throw SSKUnretryableError.downloadCouldNotMoveFile
             }
-        }.catch(on: .global()) { (error: Error) in
+        }.catch(on: DispatchQueue.global()) { (error: Error) in
             Logger.warn("Download failed: \(error)")
             future.reject(error)
         }

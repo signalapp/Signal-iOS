@@ -193,7 +193,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
             }
         }
 
-        let getReceiptCredentialPresentationPromise: Promise<ReceiptCredentialPresentation> = firstly(on: .global()) { () -> Promise<ReceiptCredentialPresentation> in
+        let getReceiptCredentialPresentationPromise: Promise<ReceiptCredentialPresentation> = firstly(on: DispatchQueue.global()) { () -> Promise<ReceiptCredentialPresentation> in
             // We already have a receiptCredentialPresentation, lets use it
             if let receiptCredentialPresentation = self.receiptCredentialPresentation {
                 Logger.info("[Donations] Using persisted receipt credential presentation")
@@ -203,7 +203,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
             Logger.info("[Donations] Creating new receipt credential presentation")
 
             // Create a new receipt credential presentation
-            return firstly(on: .global()) { () -> Promise<ReceiptCredentialPresentation> in
+            return firstly(on: DispatchQueue.global()) { () -> Promise<ReceiptCredentialPresentation> in
                 if self.isBoost {
                     Logger.info("[Donations] Durable job requesting receipt for boost")
                     return try SubscriptionManager.requestBoostReceiptCredentialPresentation(
@@ -223,7 +223,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
                            priorSubscriptionLevel: self.priorSubscriptionLevel
                     )
                 }
-            }.then(on: .global()) { newReceiptCredentialPresentation -> Promise<ReceiptCredentialPresentation> in
+            }.then(on: DispatchQueue.global()) { newReceiptCredentialPresentation -> Promise<ReceiptCredentialPresentation> in
                 Logger.info("[Donations] Storing receipt credential presentation in case the job fails")
                 return self.databaseStorage.writePromise { transaction in
                     self.jobRecord.update(
@@ -234,14 +234,14 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
             }
         }
 
-        getMoneyPromise.then(on: .global()) {
-            getReceiptCredentialPresentationPromise.then(on: .global()) {
+        getMoneyPromise.then(on: DispatchQueue.global()) {
+            getReceiptCredentialPresentationPromise.then(on: DispatchQueue.global()) {
                 SubscriptionManager.redeemReceiptCredentialPresentation(receiptCredentialPresentation: $0)
             }
-        }.done(on: .global()) {
+        }.done(on: DispatchQueue.global()) {
             Logger.info("[Donations] Successfully redeemed receipt credential presentation")
             self.didSucceed()
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             self.reportError(error)
         }
     }

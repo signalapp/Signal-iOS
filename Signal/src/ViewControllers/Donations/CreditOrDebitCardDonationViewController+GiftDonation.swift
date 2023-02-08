@@ -19,7 +19,7 @@ extension CreditOrDebitCardDonationViewController {
 
         DonationViewsUtil.wrapPromiseInProgressView(
             from: self,
-            promise: firstly(on: .sharedUserInitiated) { () -> Promise<Void> in
+            promise: firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Void> in
                 try self.databaseStorage.read { transaction in
                     try DonationViewsUtil.Gifts.throwIfAlreadySendingGift(
                         to: thread,
@@ -27,7 +27,7 @@ extension CreditOrDebitCardDonationViewController {
                     )
                 }
                 return Promise.value(())
-            }.then(on: .sharedUserInitiated) { [weak self] () -> Promise<PreparedGiftPayment> in
+            }.then(on: DispatchQueue.sharedUserInitiated) { [weak self] () -> Promise<PreparedGiftPayment> in
                 guard let self else {
                     throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
 
@@ -35,7 +35,7 @@ extension CreditOrDebitCardDonationViewController {
                 return DonationViewsUtil.Gifts.prepareToPay(
                     amount: self.donationAmount, creditOrDebitCard: creditOrDebitCard
                 )
-            }.then(on: .main) { [weak self] preparedPayment -> Promise<PreparedGiftPayment> in
+            }.then(on: DispatchQueue.main) { [weak self] preparedPayment -> Promise<PreparedGiftPayment> in
                 if self == nil {
                     throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
 
@@ -50,7 +50,7 @@ extension CreditOrDebitCardDonationViewController {
                             return preparedPayment
                         }
                     }
-            }.then(on: .sharedUserInitiated) { [weak self] preparedPayment -> Promise<Void> in
+            }.then(on: DispatchQueue.sharedUserInitiated) { [weak self] preparedPayment -> Promise<Void> in
                 guard let self else {
                     throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
                 }
@@ -64,10 +64,10 @@ extension CreditOrDebitCardDonationViewController {
                     blockingManager: self.blockingManager
                 )
             }
-        ).done(on: .main) { [weak self] in
+        ).done(on: DispatchQueue.main) { [weak self] in
             Logger.info("[Gifting] Gifting card donation finished")
             self?.onFinished()
-        }.catch(on: .main) { [weak self] error in
+        }.catch(on: DispatchQueue.main) { [weak self] error in
             Logger.warn("[Gifting] Gifting card donation failed")
             self?.didFailDonation(error: error)
         }

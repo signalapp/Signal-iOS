@@ -293,7 +293,7 @@ public class SubscriptionManager: NSObject {
         let request = OWSRequestFactory.subscriptionGetCurrentSubscriptionLevelRequest(subscriberIDString)
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             let statusCode = response.responseStatusCode
 
             if statusCode != 200 {
@@ -329,7 +329,7 @@ public class SubscriptionManager: NSObject {
             Logger.info("[Donations] Setting up new subscription")
 
             return setupNewSubscriberID()
-        }.map(on: .sharedUserInitiated) { subscriberID -> Data in
+        }.map(on: DispatchQueue.sharedUserInitiated) { subscriberID -> Data in
             Logger.info("[Donations] Caching params after setting up new subscription")
 
             databaseStorage.write { transaction in
@@ -363,7 +363,7 @@ public class SubscriptionManager: NSObject {
                 using: paymentMethod.paymentProcessor,
                 paymentID: paymentId
             )
-        }.then(on: .sharedUserInitiated) { _ -> Promise<Subscription> in
+        }.then(on: DispatchQueue.sharedUserInitiated) { _ -> Promise<Subscription> in
             Logger.info("[Donations] Selecting subscription level on service")
 
             databaseStorage.write { transaction in
@@ -401,7 +401,7 @@ public class SubscriptionManager: NSObject {
         let request = OWSRequestFactory.deleteSubscriberID(subscriberID)
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             let statusCode = response.responseStatusCode
             if statusCode != 200 {
                 throw OWSAssertionError("Got bad response code \(statusCode).")
@@ -429,7 +429,7 @@ public class SubscriptionManager: NSObject {
         let newSubscriberID = Cryptography.generateRandomBytes(UInt(32))
         return firstly {
             self.postSubscriberID(subscriberID: newSubscriberID)
-        }.map(on: .global()) { _ in
+        }.map(on: DispatchQueue.global()) { _ in
             return newSubscriberID
         }
     }
@@ -438,7 +438,7 @@ public class SubscriptionManager: NSObject {
         let request = OWSRequestFactory.setSubscriberID(subscriberID)
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             let statusCode = response.responseStatusCode
 
             if statusCode != 200 {
@@ -460,7 +460,7 @@ public class SubscriptionManager: NSObject {
 
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             let statusCode = response.responseStatusCode
             if statusCode != 200 {
                 throw OWSAssertionError("Got bad response code \(statusCode).")
@@ -489,14 +489,14 @@ public class SubscriptionManager: NSObject {
         )
         return firstly {
             networkManager.makePromise(request: request)
-        }.then(on: .global()) { response -> Promise<Subscription?> in
+        }.then(on: DispatchQueue.global()) { response -> Promise<Subscription?> in
             let statusCode = response.responseStatusCode
             if statusCode != 200 {
                 throw OWSAssertionError("Got bad response code \(statusCode).")
             }
 
             return self.getCurrentSubscriptionStatus(for: subscriberID)
-        }.map(on: .global()) { subscription in
+        }.map(on: DispatchQueue.global()) { subscription in
             guard let subscription = subscription else {
                 throw OWSAssertionError("Failed to fetch valid subscription object after setSubscription")
             }
@@ -571,7 +571,7 @@ public class SubscriptionManager: NSObject {
         let request = OWSRequestFactory.subscriptionReceiptCredentialsRequest(subscriberID.asBase64Url, request: encodedReceiptCredentialRequest)
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             let statusCode = response.responseStatusCode
 
             if statusCode == 200 {
@@ -672,15 +672,15 @@ public class SubscriptionManager: NSObject {
         let request = OWSRequestFactory.subscriptionRedeemReceiptCredential(
             receiptCredentialPresentationString
         )
-        return firstly(on: .global()) {
+        return firstly(on: DispatchQueue.global()) {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             let statusCode = response.responseStatusCode
             if statusCode != 200 {
                 Logger.warn("[Donations] Receipt credential presentation request failed with status code \(statusCode)")
                 throw OWSRetryableSubscriptionError()
             }
-        }.then(on: .global()) {
+        }.then(on: DispatchQueue.global()) {
             self.profileManagerImpl.fetchLocalUsersProfilePromise().asVoid()
         }
     }
@@ -749,11 +749,11 @@ public class SubscriptionManager: NSObject {
             return
         }
 
-        firstly(on: .sharedBackground) {
+        firstly(on: DispatchQueue.sharedBackground) {
             self.postSubscriberID(subscriberID: subscriberID)
-        }.then(on: .sharedBackground) {
+        }.then(on: DispatchQueue.sharedBackground) {
             self.getCurrentSubscriptionStatus(for: subscriberID)
-        }.done(on: .sharedBackground) { subscription in
+        }.done(on: DispatchQueue.sharedBackground) { subscription in
             guard let subscription = subscription else {
                 Logger.info("[Donations] No current subscription for this subscriberID")
                 self.updateSubscriptionHeartbeatDate()
@@ -797,7 +797,7 @@ public class SubscriptionManager: NSObject {
             // Save heartbeat
             self.updateSubscriptionHeartbeatDate()
 
-        }.catch(on: .sharedBackground) { error in
+        }.catch(on: DispatchQueue.sharedBackground) { error in
             owsFailDebug("Failed subscription heartbeat with error \(error)")
         }
     }
@@ -825,10 +825,10 @@ public class SubscriptionManager: NSObject {
             return
         }
 
-        firstly(on: .sharedBackground) {
+        firstly(on: DispatchQueue.sharedBackground) {
             // Fetch current subscription
             self.getCurrentSubscriptionStatus(for: subscriberID)
-        }.done(on: .sharedBackground) { subscription in
+        }.done(on: DispatchQueue.sharedBackground) { subscription in
             guard let subscription = subscription else {
                 Logger.info("[Donations] No current subscription for this subscriberID")
                 return
@@ -844,7 +844,7 @@ public class SubscriptionManager: NSObject {
                 }
             }
 
-        }.catch(on: .sharedBackground) { error in
+        }.catch(on: DispatchQueue.sharedBackground) { error in
             owsFailDebug("Failed last subscription expiration update with error \(error)")
         }
     }
@@ -1116,7 +1116,7 @@ extension SubscriptionManager {
 
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             let statusCode = response.responseStatusCode
 
             if statusCode == 200 {

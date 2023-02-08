@@ -70,7 +70,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         let request = OWSRequestFactory.availablePreKeysCountRequest(for: identity)
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             Logger.debug("got response")
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON.")
@@ -109,7 +109,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         let request = OWSRequestFactory.udSenderCertificateRequest(uuidOnly: uuidOnly)
         return firstly {
             self.networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSUDError.invalidData(description: "Missing or invalid JSON")
             }
@@ -135,7 +135,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON.")
             }
@@ -147,7 +147,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         let request = OWSRequestFactory.storageAuthRequest()
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON.")
             }
@@ -174,7 +174,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON.")
             }
@@ -206,7 +206,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON.")
             }

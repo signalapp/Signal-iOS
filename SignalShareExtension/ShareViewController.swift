@@ -517,7 +517,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // finished building them.
         if selectedThread == nil { showPrimaryViewController(conversationPicker) }
 
-        firstly(on: .sharedUserInitiated) { () -> Promise<[UnloadedItem]> in
+        firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<[UnloadedItem]> in
             guard let inputItems = self.extensionContext?.inputItems as? [NSExtensionItem] else {
                 throw OWSAssertionError("no input item")
             }
@@ -533,11 +533,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 }
             }
             return Promise.value(result)
-        }.then(on: .sharedUserInitiated) { [weak self] (unloadedItems: [UnloadedItem]) -> Promise<[LoadedItem]> in
+        }.then(on: DispatchQueue.sharedUserInitiated) { [weak self] (unloadedItems: [UnloadedItem]) -> Promise<[LoadedItem]> in
             guard let self = self else { throw PromiseError.cancelled }
 
             return self.loadItems(unloadedItems: unloadedItems)
-        }.then(on: .sharedUserInitiated) { [weak self] (loadedItems: [LoadedItem]) -> Promise<[SignalAttachment]> in
+        }.then(on: DispatchQueue.sharedUserInitiated) { [weak self] (loadedItems: [LoadedItem]) -> Promise<[SignalAttachment]> in
             guard let self = self else { throw PromiseError.cancelled }
 
             return self.buildAttachments(loadedItems: loadedItems)
@@ -805,7 +805,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return itemProvider.loadUrl(forTypeIdentifier: desiredTypeIdentifier, options: nil).map { fileUrl in
                 LoadedItem(itemProvider: unloadedItem.itemProvider,
                            payload: .fileUrl(fileUrl))
-            }.recover(on: .global()) { error -> Promise<LoadedItem> in
+            }.recover(on: DispatchQueue.global()) { error -> Promise<LoadedItem> in
                 let nsError = error as NSError
                 assert(nsError.domain == NSItemProvider.errorDomain)
                 assert(nsError.code == NSItemProvider.ErrorCode.unexpectedValueClassError.rawValue)
@@ -858,7 +858,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private func buildAttachments(loadedItems: [LoadedItem]) -> Promise<[SignalAttachment]> {
         var attachmentPromises = [Promise<SignalAttachment>]()
         for loadedItem in loadedItems {
-            attachmentPromises.append(firstly(on: .sharedUserInitiated) { () -> Promise<SignalAttachment> in
+            attachmentPromises.append(firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<SignalAttachment> in
                 self.buildAttachment(loadedItem: loadedItem)
             })
         }

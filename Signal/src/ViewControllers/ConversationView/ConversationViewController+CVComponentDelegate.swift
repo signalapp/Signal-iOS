@@ -548,15 +548,15 @@ extension ConversationViewController: CVComponentDelegate {
             owsFailDebug("Invalid thread.")
             return
         }
-        firstly(on: .global()) { () -> Promise<Void> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
             GroupManager.sendGroupUpdateMessage(thread: groupThread)
-        }.done(on: .global()) {
+        }.done(on: DispatchQueue.global()) {
             Logger.info("Group updated, removing group creation error.")
 
             Self.databaseStorage.write { transaction in
                 message.anyRemove(transaction: transaction)
             }
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Error: \(error)")
         }
     }

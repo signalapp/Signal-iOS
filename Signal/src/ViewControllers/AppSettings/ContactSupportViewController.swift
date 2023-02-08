@@ -259,16 +259,16 @@ final class ContactSupportViewController: OWSTableViewController2 {
         showSpinnerOnNextButton = true
 
         firstly { () -> Promise<Void> in
-            operation.perform(on: .sharedUserInitiated)
+            operation.perform(on: DispatchQueue.sharedUserInitiated)
 
-        }.done(on: .main) { _ in
+        }.done(on: DispatchQueue.main) { _ in
             self.navigationController?.presentingViewController?.dismiss(animated: true, completion: nil)
 
-        }.ensure(on: .main) {
+        }.ensure(on: DispatchQueue.main) {
             self.currentEmailComposeOperation = nil
             self.showSpinnerOnNextButton = false
 
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             let alertTitle = error.userErrorDescription
             let alertMessage = NSLocalizedString("SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION",
                                                  comment: "Message for alert dialog presented when a support email failed to send")

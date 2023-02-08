@@ -111,7 +111,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
             firstAttempt = false
         }
 
-        firstly(on: .global()) {
+        firstly(on: DispatchQueue.global()) {
             self.databaseStorage.write { transaction -> Promise<Void> in
                 let endSessionMessage = EndSessionMessage(thread: self.contactThread, transaction: transaction)
 
@@ -121,7 +121,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
                     transaction: transaction
                 )
             }
-        }.done(on: .global()) {
+        }.done(on: DispatchQueue.global()) {
             Logger.info("successfully sent EndSessionMessage.")
             self.databaseStorage.write { transaction in
                 // Archive the just-created session since the recipient should delete their corresponding

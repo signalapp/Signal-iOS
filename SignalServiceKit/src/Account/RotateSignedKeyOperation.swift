@@ -44,16 +44,16 @@ public class RotateSignedPreKeyOperation: OWSOperation {
 
         let signedPreKeyRecord: SignedPreKeyRecord = signalProtocolStore.signedPreKeyStore.generateRandomSignedRecord()
 
-        firstly(on: .global()) { () -> Promise<Void> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
             self.messageProcessor.fetchingAndProcessingCompletePromise()
-        }.then(on: .global()) { () -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
             self.databaseStorage.write { transaction in
                 signalProtocolStore.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id,
                                                                         signedPreKeyRecord: signedPreKeyRecord,
                                                                         transaction: transaction)
             }
             return self.accountServiceClient.setSignedPreKey(signedPreKeyRecord, for: self.identity)
-        }.done(on: .global()) { () in
+        }.done(on: DispatchQueue.global()) { () in
             Logger.info("Successfully uploaded \(self.identity) signed PreKey")
             signedPreKeyRecord.markAsAcceptedByService()
             self.databaseStorage.write { transaction in
@@ -68,7 +68,7 @@ public class RotateSignedPreKeyOperation: OWSOperation {
 
             Logger.info("done")
             self.reportSuccess()
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             self.reportError(withUndefinedRetry: error)
         }
     }

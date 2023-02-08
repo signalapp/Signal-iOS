@@ -44,7 +44,7 @@ public struct ContactDiscoveryService: Dependencies {
         owsAssertDebug(enclaveName.strippedOrNil != nil)
         owsAssertDebug(host.strippedOrNil != nil)
 
-        return firstly(on: .sharedUtility) { () -> Promise<HTTPResponse> in
+        return firstly(on: DispatchQueue.sharedUtility) { () -> Promise<HTTPResponse> in
             let urlSession = Self.signalService.urlSessionForCds(host: host,
                                                                  censorshipCircumventionPrefix: censorshipCircumventionPrefix)
             let request = self.buildIntersectionRequest(
@@ -60,7 +60,7 @@ public struct ContactDiscoveryService: Dependencies {
             }
             return firstly {
                 urlSession.promiseForTSRequest(request)
-            }.recover(on: .global()) { error -> Promise<HTTPResponse> in
+            }.recover(on: DispatchQueue.global()) { error -> Promise<HTTPResponse> in
                 // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
                 if let httpError = error as? OWSHTTPError {
                     throw httpError
@@ -69,7 +69,7 @@ public struct ContactDiscoveryService: Dependencies {
                     throw OWSHTTPError.invalidRequest(requestUrl: requestUrl)
                 }
             }
-        }.map(on: .sharedUtility) { (response: HTTPResponse) throws -> IntersectionResponse in
+        }.map(on: DispatchQueue.sharedUtility) { (response: HTTPResponse) throws -> IntersectionResponse in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Invalid JSON")
             }

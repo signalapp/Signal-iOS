@@ -927,10 +927,10 @@ extension OWSContactsManager {
                 phoneNumbers: phoneNumbers,
                 mode: .contactIntersection
             )
-        }.done(on: .global()) { signalRecipients in
+        }.done(on: DispatchQueue.global()) { signalRecipients in
             Logger.info("Successfully intersected contacts.")
             success(signalRecipients)
-        }.`catch`(on: .global()) { error in
+        }.`catch`(on: DispatchQueue.global()) { error in
             var retryAfter: TimeInterval = retryDelaySeconds
 
             if let cdsError = error as? ContactDiscoveryError {

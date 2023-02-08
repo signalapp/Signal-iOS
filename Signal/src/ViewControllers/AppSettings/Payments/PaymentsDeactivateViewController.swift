@@ -175,7 +175,7 @@ public class PaymentsDeactivateViewController: OWSViewController {
         ModalActivityIndicatorViewController.present(fromViewController: self,
                                                      canCancel: false) { [weak self] modalActivityIndicator in
 
-            firstly(on: .global()) {
+            firstly(on: DispatchQueue.global()) {
                 Self.paymentsSwift.maximumPaymentAmount()
             }.done { (transferAmount: TSPaymentAmount) in
                 AssertIsOnMainThread()

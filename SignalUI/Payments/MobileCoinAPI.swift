@@ -104,15 +104,15 @@ public class MobileCoinAPI: Dependencies {
         guard !CurrentAppContext().isNSE else {
             return Promise(error: OWSAssertionError("Payments disabled in NSE."))
         }
-        return firstly(on: .global()) { () -> Promise<SignalServiceKit.HTTPResponse> in
+        return firstly(on: DispatchQueue.global()) { () -> Promise<SignalServiceKit.HTTPResponse> in
             let request = OWSRequestFactory.paymentsAuthenticationCredentialRequest()
             return Self.networkManager.makePromise(request: request)
-        }.map(on: .global()) { response -> OWSAuthorization in
+        }.map(on: DispatchQueue.global()) { response -> OWSAuthorization in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON")
             }
             return try Self.parseAuthorizationResponse(responseObject: json)
-        }.map(on: .global()) { (signalAuthorization: OWSAuthorization) -> MobileCoinAPI in
+        }.map(on: DispatchQueue.global()) { (signalAuthorization: OWSAuthorization) -> MobileCoinAPI in
             let localAccount = try Self.buildAccount(forPaymentsEntropy: paymentsEntropy)
             let client = try localAccount.buildClient(signalAuthorization: signalAuthorization)
             return try MobileCoinAPI(paymentsEntropy: paymentsEntropy,
@@ -134,7 +134,7 @@ public class MobileCoinAPI: Dependencies {
 
         let client = self.client
 
-        return firstly(on: .global()) { () throws -> Promise<MobileCoin.Balance> in
+        return firstly(on: DispatchQueue.global()) { () throws -> Promise<MobileCoin.Balance> in
             let (promise, future) = Promise<MobileCoin.Balance>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
@@ -150,14 +150,14 @@ public class MobileCoinAPI: Dependencies {
                 }
             }
             return promise
-        }.map(on: .global()) { (balance: MobileCoin.Balance) -> TSPaymentAmount in
+        }.map(on: DispatchQueue.global()) { (balance: MobileCoin.Balance) -> TSPaymentAmount in
             Logger.verbose("Success: \(balance)")
             // We do not need to support amountPicoMobHigh.
             guard let amountPicoMob = balance.amount() else {
                 throw OWSAssertionError("Invalid balance.")
             }
             return TSPaymentAmount(currency: .mobileCoin, picoMob: amountPicoMob)
-        }.recover(on: .global()) { (error: Error) -> Promise<TSPaymentAmount> in
+        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<TSPaymentAmount> in
             owsFailDebugUnlessMCNetworkFailure(error)
             throw error
         }.timeout(seconds: Self.timeoutDuration, description: "getLocalBalance") { () -> Error in
@@ -175,7 +175,7 @@ public class MobileCoinAPI: Dependencies {
         let client = self.client
 
         // We don't need to support amountPicoMobHigh.
-        return firstly(on: .global()) { () -> Promise<TSPaymentAmount> in
+        return firstly(on: DispatchQueue.global()) { () -> Promise<TSPaymentAmount> in
             let (promise, future) = Promise<TSPaymentAmount>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
@@ -199,7 +199,7 @@ public class MobileCoinAPI: Dependencies {
                 }
             }
             return promise
-        }.recover(on: .global()) { (error: Error) -> Promise<TSPaymentAmount> in
+        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<TSPaymentAmount> in
             if case PaymentsError.insufficientFunds = error {
                 Logger.warn("Error: \(error)")
             } else {
@@ -216,7 +216,7 @@ public class MobileCoinAPI: Dependencies {
 
         let client = self.client
 
-        return firstly(on: .global()) { () -> Promise<TSPaymentAmount> in
+        return firstly(on: DispatchQueue.global()) { () -> Promise<TSPaymentAmount> in
             let (promise, future) = Promise<TSPaymentAmount>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
@@ -239,7 +239,7 @@ public class MobileCoinAPI: Dependencies {
                 }
             }
             return promise
-        }.recover(on: .global()) { (error: Error) -> Promise<TSPaymentAmount> in
+        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<TSPaymentAmount> in
             if case PaymentsError.insufficientFunds = error {
                 Logger.warn("Error: \(error)")
             } else {
@@ -266,19 +266,19 @@ public class MobileCoinAPI: Dependencies {
 
         let client = self.client
 
-        return firstly(on: .global()) { () throws -> Promise<Void> in
+        return firstly(on: DispatchQueue.global()) { () throws -> Promise<Void> in
             guard shouldUpdateBalance else {
                 return Promise.value(())
             }
-            return firstly(on: .global()) { () throws -> Promise<TSPaymentAmount> in
+            return firstly(on: DispatchQueue.global()) { () throws -> Promise<TSPaymentAmount> in
                 // prepareTransaction() will fail if local balance is not yet known.
                 self.getLocalBalance()
-            }.done(on: .global()) { (balance: TSPaymentAmount) in
+            }.done(on: DispatchQueue.global()) { (balance: TSPaymentAmount) in
                 Logger.verbose("balance: \(balance.picoMob)")
             }
-        }.then(on: .global()) { () -> Promise<TSPaymentAmount> in
+        }.then(on: DispatchQueue.global()) { () -> Promise<TSPaymentAmount> in
             try self.getEstimatedFee(forPaymentAmount: paymentAmount)
-        }.then(on: .global()) { (estimatedFeeAmount: TSPaymentAmount) -> Promise<PreparedTransaction> in
+        }.then(on: DispatchQueue.global()) { (estimatedFeeAmount: TSPaymentAmount) -> Promise<PreparedTransaction> in
             Logger.verbose("estimatedFeeAmount: \(estimatedFeeAmount.picoMob)")
             guard paymentAmount.isValidAmount(canBeEmpty: false) else {
                 throw OWSAssertionError("Invalid amount.")
@@ -314,7 +314,7 @@ public class MobileCoinAPI: Dependencies {
                 }
             }
             return promise
-        }.recover(on: .global()) { (error: Error) -> Promise<PreparedTransaction> in
+        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<PreparedTransaction> in
             owsFailDebugUnlessMCNetworkFailure(error)
             throw error
         }.timeout(seconds: Self.timeoutDuration, description: "prepareTransaction") { () -> Error in
@@ -330,7 +330,7 @@ public class MobileCoinAPI: Dependencies {
 
         let client = self.client
 
-        return firstly(on: .global()) { () -> Promise<Bool> in
+        return firstly(on: DispatchQueue.global()) { () -> Promise<Bool> in
             let (promise, future) = Promise<Bool>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
@@ -348,7 +348,7 @@ public class MobileCoinAPI: Dependencies {
                 }
             }
             return promise
-        }.recover(on: .global()) { (error: Error) -> Promise<Bool> in
+        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<Bool> in
             owsFailDebugUnlessMCNetworkFailure(error)
             throw error
         }.timeout(seconds: Self.timeoutDuration, description: "requiresDefragmentation") { () -> Error in
@@ -361,7 +361,7 @@ public class MobileCoinAPI: Dependencies {
 
         let client = self.client
 
-        return firstly(on: .global()) { () throws -> Promise<[MobileCoin.Transaction]> in
+        return firstly(on: DispatchQueue.global()) { () throws -> Promise<[MobileCoin.Transaction]> in
             let (promise, future) = Promise<[MobileCoin.Transaction]>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
@@ -391,7 +391,7 @@ public class MobileCoinAPI: Dependencies {
             return Promise(error: OWSGenericError("Failed."))
         }
 
-        return firstly(on: .global()) { () throws -> Promise<Void> in
+        return firstly(on: DispatchQueue.global()) { () throws -> Promise<Void> in
             let (promise, future) = Promise<Void>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
@@ -408,9 +408,9 @@ public class MobileCoinAPI: Dependencies {
                 }
             }
             return promise
-        }.map(on: .global()) { () -> Void in
+        }.map(on: DispatchQueue.global()) { () -> Void in
             Logger.verbose("Success.")
-        }.recover(on: .global()) { (error: Error) -> Promise<Void> in
+        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<Void> in
             owsFailDebugUnlessMCNetworkFailure(error)
             throw error
         }.timeout(seconds: Self.timeoutDuration, description: "submitTransaction") { () -> Error in
@@ -426,12 +426,12 @@ public class MobileCoinAPI: Dependencies {
         }
 
         let client = self.client
-        return firstly(on: .global()) { () throws -> Promise<TSPaymentAmount> in
+        return firstly(on: DispatchQueue.global()) { () throws -> Promise<TSPaymentAmount> in
             // .status(of: transaction) requires an updated balance.
             //
             // TODO: We could improve perf when verifying multiple transactions by getting balance just once.
             self.getLocalBalance()
-        }.then(on: .global()) { (_: TSPaymentAmount) -> Promise<MCOutgoingTransactionStatus> in
+        }.then(on: DispatchQueue.global()) { (_: TSPaymentAmount) -> Promise<MCOutgoingTransactionStatus> in
             let (promise, future) = Promise<MCOutgoingTransactionStatus>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
@@ -447,10 +447,10 @@ public class MobileCoinAPI: Dependencies {
                 }
             }
             return promise
-        }.map(on: .global()) { (value: MCOutgoingTransactionStatus) -> MCOutgoingTransactionStatus in
+        }.map(on: DispatchQueue.global()) { (value: MCOutgoingTransactionStatus) -> MCOutgoingTransactionStatus in
             Logger.verbose("Success: \(value)")
             return value
-        }.recover(on: .global()) { (error: Error) -> Promise<MCOutgoingTransactionStatus> in
+        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<MCOutgoingTransactionStatus> in
             owsFailDebugUnlessMCNetworkFailure(error)
             throw error
         }.timeout(seconds: Self.timeoutDuration, description: "getOutgoingTransactionStatus") { () -> Error in
@@ -486,12 +486,12 @@ public class MobileCoinAPI: Dependencies {
         let client = self.client
         let localAccount = self.localAccount
 
-        return firstly(on: .global()) { () throws -> Promise<TSPaymentAmount> in
+        return firstly(on: DispatchQueue.global()) { () throws -> Promise<TSPaymentAmount> in
             // .status(of: receipt) requires an updated balance.
             //
             // TODO: We could improve perf when verifying multiple receipts by getting balance just once.
             self.getLocalBalance()
-        }.map(on: .global()) { (_: TSPaymentAmount) -> MCIncomingReceiptStatus in
+        }.map(on: DispatchQueue.global()) { (_: TSPaymentAmount) -> MCIncomingReceiptStatus in
             let paymentAmount: TSPaymentAmount
             do {
                 paymentAmount = try Self.paymentAmount(forReceipt: receipt,
@@ -514,10 +514,10 @@ public class MobileCoinAPI: Dependencies {
                 let error = Self.convertMCError(error: error)
                 throw error
             }
-        }.map(on: .global()) { (value: MCIncomingReceiptStatus) -> MCIncomingReceiptStatus in
+        }.map(on: DispatchQueue.global()) { (value: MCIncomingReceiptStatus) -> MCIncomingReceiptStatus in
             Logger.verbose("Success: \(value)")
             return value
-        }.recover(on: .global()) { (error: Error) -> Promise<MCIncomingReceiptStatus> in
+        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<MCIncomingReceiptStatus> in
             owsFailDebugUnlessMCNetworkFailure(error)
             throw error
         }.timeout(seconds: Self.timeoutDuration, description: "getIncomingReceiptStatus") { () -> Error in
@@ -530,7 +530,7 @@ public class MobileCoinAPI: Dependencies {
 
         let client = self.client
 
-        return firstly(on: .global()) { () throws -> Promise<MobileCoin.AccountActivity> in
+        return firstly(on: DispatchQueue.global()) { () throws -> Promise<MobileCoin.AccountActivity> in
             let (promise, future) = Promise<MobileCoin.AccountActivity>.pending()
             if DebugFlags.paymentsNoRequestsComplete.get() {
                 // Never resolve.
@@ -546,10 +546,10 @@ public class MobileCoinAPI: Dependencies {
                 }
             }
             return promise
-        }.map(on: .global()) { (accountActivity: MobileCoin.AccountActivity) -> MobileCoin.AccountActivity in
+        }.map(on: DispatchQueue.global()) { (accountActivity: MobileCoin.AccountActivity) -> MobileCoin.AccountActivity in
             Logger.verbose("Success: \(accountActivity.blockCount)")
             return accountActivity
-        }.recover(on: .global()) { (error: Error) -> Promise<MobileCoin.AccountActivity> in
+        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<MobileCoin.AccountActivity> in
             owsFailDebugUnlessMCNetworkFailure(error)
             throw error
         }.timeout(seconds: Self.timeoutDuration, description: "getAccountActivity") { () -> Error in

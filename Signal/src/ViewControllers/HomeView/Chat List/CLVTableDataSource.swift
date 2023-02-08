@@ -915,7 +915,7 @@ extension CLVTableDataSource {
                                                             lastReloadDate: lastReloadDate)
             let contentToken = ChatListCell.buildCellContentToken(forConfiguration: configuration)
             return (threadViewModel, contentToken)
-        }.done(on: .main) { (threadViewModel: ThreadViewModel, contentToken: CLVCellContentToken) in
+        }.done(on: DispatchQueue.main) { (threadViewModel: ThreadViewModel, contentToken: CLVCellContentToken) in
             // Commit the preloaded values to their respective caches.
             guard cellContentCacheResetCount == cellContentCache.resetCount else {
                 Logger.info("cellContentCache was reset.")
@@ -935,7 +935,7 @@ extension CLVTableDataSource {
             } else {
                 Logger.info("contentToken already loaded.")
             }
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             if case CLVPreloadError.alreadyLoaded = error {
                 return
             }

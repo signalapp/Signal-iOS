@@ -43,7 +43,7 @@ public class RemoteMegaphoneFetcher: NSObject, Dependencies {
 
         Logger.info("Beginning remote megaphone fetch.")
 
-        return fetchRemoteMegaphones().map(on: .global()) { megaphones -> Void in
+        return fetchRemoteMegaphones().map(on: DispatchQueue.global()) { megaphones -> Void in
             Logger.info("Syncing \(megaphones.count) fetched remote megaphones with local state.")
 
             self.databaseStorage.write { transaction in
@@ -152,9 +152,9 @@ private extension RemoteMegaphoneFetcher {
 
 private extension RemoteMegaphoneFetcher {
     func fetchRemoteMegaphones() -> Promise<[RemoteMegaphoneModel]> {
-        fetchManifests().then(on: .global()) { manifests -> Promise<[RemoteMegaphoneModel]> in
+        fetchManifests().then(on: DispatchQueue.global()) { manifests -> Promise<[RemoteMegaphoneModel]> in
             Promise.when(fulfilled: manifests.map { manifest in
-                self.fetchTranslation(forMegaphoneManifest: manifest).map(on: .global()) { translation in
+                self.fetchTranslation(forMegaphoneManifest: manifest).map(on: DispatchQueue.global()) { translation in
                     if manifest.id != translation.id {
                         // We shouldn't fail here, but this scenario is
                         // unexpected so let's keep an eye out for it.
@@ -181,13 +181,13 @@ private extension RemoteMegaphoneFetcher {
                 .manifestUrlPath,
                 method: .get
             )
-        }.map(on: .global()) { response throws -> [RemoteMegaphoneModel.Manifest] in
+        }.map(on: DispatchQueue.global()) { response throws -> [RemoteMegaphoneModel.Manifest] in
             guard let responseJson = response.responseBodyJson else {
                 throw OWSAssertionError("Missing body JSON for manifest!")
             }
 
             return try RemoteMegaphoneModel.Manifest.parseFrom(responseJson: responseJson)
-        }.recover(on: .global()) { error in
+        }.recover(on: DispatchQueue.global()) { error in
             guard
                 error.isNetworkFailureOrTimeout,
                 remainingRetries > 0
@@ -220,7 +220,7 @@ private extension RemoteMegaphoneFetcher {
         // ...and for each subsequent locale string, if the previous fetch
         // returned a 404 try the next one.
         for localeString in localeStrings.dropFirst() {
-            fetchPromise = fetchPromise.recover(on: .global(), { error in
+            fetchPromise = fetchPromise.recover(on: DispatchQueue.global(), { error in
                 guard
                     let httpStatus = error.httpStatusCode,
                     httpStatus == 404
@@ -236,8 +236,8 @@ private extension RemoteMegaphoneFetcher {
             })
         }
 
-        return fetchPromise.then(on: .global()) { translation -> Promise<RemoteMegaphoneModel.Translation> in
-            self.downloadImageIfNecessary(forTranslation: translation).map(on: .global()) { url in
+        return fetchPromise.then(on: DispatchQueue.global()) { translation -> Promise<RemoteMegaphoneModel.Translation> in
+            self.downloadImageIfNecessary(forTranslation: translation).map(on: DispatchQueue.global()) { url in
                 guard let url = url else {
                     return translation
                 }
@@ -266,13 +266,13 @@ private extension RemoteMegaphoneFetcher {
             }
 
             return getUrlSession().dataTaskPromise(translationUrlPath, method: .get)
-        }.map(on: .global()) { response throws in
+        }.map(on: DispatchQueue.global()) { response throws in
             guard let responseJson = response.responseBodyJson else {
                 throw OWSAssertionError("Missing body JSON for translation!")
             }
 
             return try RemoteMegaphoneModel.Translation.parseFrom(responseJson: responseJson)
-        }.recover(on: .global()) { error in
+        }.recover(on: DispatchQueue.global()) { error in
             guard
                 error.isNetworkFailureOrTimeout,
                 remainingRetries > 0
@@ -311,7 +311,7 @@ private extension RemoteMegaphoneFetcher {
                 imageRemoteUrlPath,
                 method: .get
             )
-        }.map(on: .global()) { (response: OWSUrlDownloadResponse) -> URL in
+        }.map(on: DispatchQueue.global()) { (response: OWSUrlDownloadResponse) -> URL in
             do {
                 try FileManager.default.moveItem(
                     at: response.downloadUrl,
@@ -322,7 +322,7 @@ private extension RemoteMegaphoneFetcher {
             }
 
             return imageFileUrl
-        }.recover(on: .global()) { error -> Promise<URL?> in
+        }.recover(on: DispatchQueue.global()) { error -> Promise<URL?> in
             if
                 error.isNetworkFailureOrTimeout,
                 remainingRetries > 0

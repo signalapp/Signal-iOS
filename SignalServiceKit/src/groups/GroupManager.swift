@@ -210,7 +210,7 @@ public class GroupManager: NSObject {
 
         return firstly { () -> Promise<Void> in
             return self.ensureLocalProfileHasCommitmentIfNecessary()
-        }.map(on: .global()) { () throws -> GroupMembership in
+        }.map(on: DispatchQueue.global()) { () throws -> GroupMembership in
             // Build member list.
             //
             // The group creator is an administrator;
@@ -220,7 +220,7 @@ public class GroupManager: NSObject {
             builder.remove(localAddress)
             builder.addFullMember(localAddress, role: .administrator)
             return builder.build()
-        }.then(on: .global()) { (groupMembership: GroupMembership) -> Promise<GroupMembership> in
+        }.then(on: DispatchQueue.global()) { (groupMembership: GroupMembership) -> Promise<GroupMembership> in
             // If we might create a v2 group,
             // try to obtain profile key credentials for all group members
             // including ourself, unless we already have them on hand.
@@ -230,10 +230,10 @@ public class GroupManager: NSObject {
                     ignoreMissingProfiles: false,
                     forceRefresh: false
                 )
-            }.map(on: .global()) { _ -> GroupMembership in
+            }.map(on: DispatchQueue.global()) { _ -> GroupMembership in
                 return groupMembership
             }
-        }.map(on: .global()) { (proposedGroupMembership: GroupMembership) throws -> TSGroupModel in
+        }.map(on: DispatchQueue.global()) { (proposedGroupMembership: GroupMembership) throws -> TSGroupModel in
             let groupAccess = GroupAccess.defaultForV2
             let groupModel = try self.databaseStorage.read { (transaction) throws -> TSGroupModel in
                 // Before we create a v2 group, we need to separate out the
@@ -286,7 +286,7 @@ public class GroupManager: NSObject {
                 builder.avatarUrlPath = avatarUrlPath
                 return try builder.build()
             }
-        }.then(on: .global()) { (proposedGroupModel: TSGroupModel) -> Promise<TSGroupModel> in
+        }.then(on: DispatchQueue.global()) { (proposedGroupModel: TSGroupModel) -> Promise<TSGroupModel> in
             guard let proposedGroupModelV2 = proposedGroupModel as? TSGroupModelV2 else {
                 // v1 groups don't need to be created on the service.
                 return Promise.value(proposedGroupModel)
@@ -294,9 +294,9 @@ public class GroupManager: NSObject {
             return firstly {
                 self.groupsV2Swift.createNewGroupOnService(groupModel: proposedGroupModelV2,
                                                            disappearingMessageToken: disappearingMessageToken)
-            }.then(on: .global()) { _ in
+            }.then(on: DispatchQueue.global()) { _ in
                 self.groupsV2Swift.fetchCurrentGroupV2Snapshot(groupModel: proposedGroupModelV2)
-            }.map(on: .global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> TSGroupModel in
+            }.map(on: DispatchQueue.global()) { (groupV2Snapshot: GroupV2Snapshot) throws -> TSGroupModel in
                 let createdGroupModel = try self.databaseStorage.write { (transaction) throws -> TSGroupModel in
                     var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: groupV2Snapshot,
                                                                              transaction: transaction)
@@ -314,7 +314,7 @@ public class GroupManager: NSObject {
                 }
                 return createdGroupModel
             }
-        }.then(on: .global()) { (groupModelParam: TSGroupModel) -> Promise<TSGroupThread> in
+        }.then(on: DispatchQueue.global()) { (groupModelParam: TSGroupModel) -> Promise<TSGroupThread> in
             var groupModel = groupModelParam
             // We're creating this thread, we added ourselves
             if groupModel.groupsVersion == .V1 {
@@ -335,7 +335,7 @@ public class GroupManager: NSObject {
             if shouldSendMessage {
                 return firstly {
                     sendDurableNewGroupMessage(forThread: thread)
-                }.map(on: .global()) { _ in
+                }.map(on: DispatchQueue.global()) { _ in
                     return thread
                 }
             } else {
@@ -644,14 +644,14 @@ public class GroupManager: NSObject {
                                                                                                           transaction: transaction)
 
             return upsertGroupResult
-        }.then(on: .global()) { (upsertGroupResult: UpsertGroupResult) throws -> Promise<TSGroupThread> in
+        }.then(on: DispatchQueue.global()) { (upsertGroupResult: UpsertGroupResult) throws -> Promise<TSGroupThread> in
             let groupThread = upsertGroupResult.groupThread
             guard upsertGroupResult.action != .unchanged else {
                 // Don't bother sending a message if the update was redundant.
                 return Promise.value(groupThread)
             }
             return self.sendGroupUpdateMessage(thread: groupThread)
-                .map(on: .global()) { _ in
+                .map(on: DispatchQueue.global()) { _ in
                     return groupThread
                 }
         }
@@ -826,7 +826,7 @@ public class GroupManager: NSObject {
                                                userProfileWriter: .localUser,
                                                transaction: transaction)
             }
-        }.then(on: .global()) { _ -> Promise<TSGroupThread> in
+        }.then(on: DispatchQueue.global()) { _ -> Promise<TSGroupThread> in
             guard let localUuid = tsAccountManager.localUuid else {
                 throw OWSAssertionError("Missing localUuid.")
             }
@@ -1055,15 +1055,15 @@ public class GroupManager: NSObject {
                                               avatarData: Data?) -> Promise<TSGroupThread> {
         let description = "Join Group Invite Link"
 
-        return firstly(on: .global()) {
+        return firstly(on: DispatchQueue.global()) {
             self.ensureLocalProfileHasCommitmentIfNecessary()
-        }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
+        }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
             self.groupsV2Swift.joinGroupViaInviteLink(groupId: groupId,
                                                       groupSecretParamsData: groupSecretParamsData,
                                                       inviteLinkPassword: inviteLinkPassword,
                                                       groupInviteLinkPreview: groupInviteLinkPreview,
                                                       avatarData: avatarData)
-        }.map(on: .global()) { (groupThread: TSGroupThread) -> TSGroupThread in
+        }.map(on: DispatchQueue.global()) { (groupThread: TSGroupThread) -> TSGroupThread in
             self.databaseStorage.write { transaction in
                 self.profileManager.addGroupId(toProfileWhitelist: groupId,
                                                userProfileWriter: .localUser,
@@ -1098,7 +1098,7 @@ public class GroupManager: NSObject {
 
         let description = "Cancel Member Request"
 
-        return firstly(on: .global()) {
+        return firstly(on: DispatchQueue.global()) {
             self.groupsV2Swift.cancelMemberRequests(groupModel: groupModel)
         }.timeout(seconds: Self.groupUpdateTimeoutDuration, description: description) {
             GroupsV2Error.timeout
@@ -1204,9 +1204,9 @@ public class GroupManager: NSObject {
                                                   singleRecipient: SignalServiceAddress) {
         firstly {
             self.sendGroupUpdateMessage(thread: thread, singleRecipient: singleRecipient)
-        }.done(on: .global()) {
+        }.done(on: DispatchQueue.global()) {
             Logger.verbose("")
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Error: \(error)")
         }
     }
@@ -1396,7 +1396,7 @@ public class GroupManager: NSObject {
                                             groupUpdateSourceAddress: SignalServiceAddress?,
                                             shouldSendMessage: Bool) -> Promise<TSGroupThread> {
 
-        return firstly(on: .global()) { () -> TSGroupThread in
+        return firstly(on: DispatchQueue.global()) { () -> TSGroupThread in
             try databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> TSGroupThread in
                 try migrateGroupInDatabaseAndCreateInfoMessage(groupIdV1: groupIdV1,
                                                                groupModelV2: groupModelV2,
@@ -1404,14 +1404,14 @@ public class GroupManager: NSObject {
                                                                groupUpdateSourceAddress: groupUpdateSourceAddress,
                                                                transaction: transaction)
             }
-        }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
+        }.then(on: DispatchQueue.global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
             guard shouldSendMessage else {
                 return Promise.value(groupThread)
             }
 
             return firstly {
                 sendGroupUpdateMessage(thread: groupThread)
-            }.map(on: .global()) { _ in
+            }.map(on: DispatchQueue.global()) { _ in
                 return groupThread
             }
         }
@@ -1859,7 +1859,7 @@ public class GroupManager: NSObject {
         return databaseStorage.read(.promise) { transaction -> Bool in
             return self.groupsV2Swift.hasProfileKeyCredential(for: localAddress,
                                                               transaction: transaction)
-        }.then(on: .global()) { hasLocalCredential -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { hasLocalCredential -> Promise<Void> in
             guard !hasLocalCredential else {
                 return .value(())
             }
@@ -1868,7 +1868,7 @@ public class GroupManager: NSObject {
             // check if it is simply expired, by asking for a new one (which we
             // would get as part of fetching our local profile).
             return self.profileManager.fetchLocalUsersProfilePromise().asVoid()
-        }.then(on: .global()) { () -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
             let hasProfileKeyCredentialAfterRefresh = databaseStorage.read { transaction in
                 self.groupsV2Swift.hasProfileKeyCredential(for: localAddress, transaction: transaction)
             }
@@ -1982,7 +1982,7 @@ extension GroupManager {
                 ignoreMissingProfiles: false,
                 forceRefresh: false
             )
-        }.then(on: .global()) { () -> Promise<TSGroupThread> in
+        }.then(on: DispatchQueue.global()) { () -> Promise<TSGroupThread> in
             updateGroupV2(
                 groupModel: existingGroupModel,
                 description: "Add/Invite new non-admin members"
@@ -2027,7 +2027,7 @@ extension GroupManager {
             return .cannotUpdateV1GroupPromise
         }
 
-        return firstly(on: .global()) { () -> Promise<String?> in
+        return firstly(on: DispatchQueue.global()) { () -> Promise<String?> in
             guard let avatarData = avatarData else {
                 return .value(nil)
             }
@@ -2044,7 +2044,7 @@ extension GroupManager {
                 avatarData: avatarData,
                 groupSecretParamsData: existingGroupModel.secretParamsData
             ).map { Optional.some($0) }
-        }.then(on: .global()) { (avatarUrlPath: String?) -> Promise<TSGroupThread> in
+        }.then(on: DispatchQueue.global()) { (avatarUrlPath: String?) -> Promise<TSGroupThread> in
             var message = "Update attributes:"
             message += title != nil ? " title" : ""
             message += description != nil ? " description" : ""

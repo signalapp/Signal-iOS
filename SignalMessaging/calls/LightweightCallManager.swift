@@ -30,7 +30,7 @@ open class LightweightCallManager: NSObject, Dependencies {
     ) {
         guard RemoteConfig.groupCalling, thread.isLocalUserFullMember else { return }
 
-        firstly(on: .global()) { () -> Promise<PeekInfo> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<PeekInfo> in
             if let expectedEraId = expectedEraId {
                 // If we're expecting a call with `expectedEraId`, prepopulate an entry in the database.
                 // If it's the current call, we'll update with the PeekInfo once fetched
@@ -43,7 +43,7 @@ open class LightweightCallManager: NSObject, Dependencies {
             }
             return self.fetchPeekInfo(for: thread)
 
-        }.then(on: .sharedUtility) { (info: PeekInfo) -> Guarantee<Void> in
+        }.then(on: DispatchQueue.sharedUtility) { (info: PeekInfo) -> Guarantee<Void> in
             // We only want to update the call message with the participants of the peekInfo if the peek's
             // era matches the era for the expected message. This wouldn't be the case if say, a device starts
             // fetching a whole batch of messages offline and it includes the group call signaling messages from
@@ -55,9 +55,9 @@ open class LightweightCallManager: NSObject, Dependencies {
                 Logger.info("Ignoring group call PeekInfo for thread: \(thread.uniqueId) stale eraId: \(info.eraId ?? "(null)")")
                 return Guarantee.value(())
             }
-        }.done(on: .sharedUtility) {
+        }.done(on: DispatchQueue.sharedUtility) {
             completion?()
-        }.catch(on: .sharedUtility) { error in
+        }.catch(on: DispatchQueue.sharedUtility) { error in
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Failed to fetch PeekInfo for \(thread.uniqueId): \(error)")
             } else if !TSConstants.isUsingProductionService {
@@ -114,7 +114,7 @@ open class LightweightCallManager: NSObject, Dependencies {
                 newMessage.anyInsert(transaction: writeTx)
                 self.postUserNotificationIfNecessary(groupCallMessage: newMessage, transaction: writeTx)
             }
-        }.recover(on: .sharedUtility) { error in
+        }.recover(on: DispatchQueue.sharedUtility) { error in
             owsFailDebug("Failed to update call message with error: \(error)")
         }
     }
@@ -136,13 +136,13 @@ open class LightweightCallManager: NSObject, Dependencies {
 
         return firstly { () -> Promise<Data> in
             self.fetchGroupMembershipProof(for: thread)
-        }.then(on: .main) { (membershipProof: Data) -> Guarantee<PeekResponse> in
+        }.then(on: DispatchQueue.main) { (membershipProof: Data) -> Guarantee<PeekResponse> in
             let membership = try self.databaseStorage.read {
                 try self.groupMemberInfo(for: thread, transaction: $0)
             }
             let peekRequest = PeekRequest(sfuURL: self.sfuUrl, membershipProof: membershipProof, groupMembers: membership)
             return self.sfuClient.peek(request: peekRequest)
-        }.map(on: .sharedUtility) { peekResponse in
+        }.map(on: DispatchQueue.sharedUtility) { peekResponse in
             if let errorCode = peekResponse.errorStatusCode {
                 throw OWSGenericError("Failed to peek with status code: \(errorCode)")
             } else {
@@ -184,7 +184,7 @@ extension LightweightCallManager {
 
         return firstly {
             try groupsV2Impl.fetchGroupExternalCredentials(groupModel: groupModel)
-        }.map(on: .sharedUtility) { (credential) -> Data in
+        }.map(on: DispatchQueue.sharedUtility) { (credential) -> Data in
             guard let tokenData = credential.token?.data(using: .utf8) else {
                 throw OWSAssertionError("Invalid credential")
             }
@@ -252,10 +252,10 @@ extension LightweightCallManager: HTTPDelegate {
                 headers: request.headers,
                 body: request.body)
 
-        }.done(on: .main) { response in
+        }.done(on: DispatchQueue.main) { response in
             self.httpClient.receivedResponse(requestId: requestId, response: response.asRingRTCResponse)
 
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Call manager http request failed \(error)")
             } else {

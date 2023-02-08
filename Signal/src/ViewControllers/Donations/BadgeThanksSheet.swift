@@ -217,7 +217,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             return SubscriptionManager.redeemReceiptCredentialPresentation(
                 receiptCredentialPresentation: try giftBadge.getReceiptCredentialPresentation()
             )
-        }.done(on: .global()) {
+        }.done(on: DispatchQueue.global()) {
             Self.updateGiftBadge(incomingMessage: incomingMessage, state: .redeemed)
         }
     }
@@ -452,7 +452,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
                 guard let self = self else { return }
                 self.performConfirmationAction {
                     Self.redeemGiftBadge(incomingMessage: incomingMessage)
-                        .then(on: .global()) { self.saveVisibilityChanges() }
+                        .then(on: DispatchQueue.global()) { self.saveVisibilityChanges() }
                 } errorHandler: { error in
                     OWSActionSheets.showActionSheet(
                         title: NSLocalizedString(

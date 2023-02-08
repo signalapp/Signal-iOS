@@ -11,9 +11,9 @@ import SignalMessaging
 
 private enum DebugLogUploader {
     static func uploadFile(fileUrl: URL, mimeType: String) -> Promise<URL> {
-        firstly(on: .global()) {
+        firstly(on: DispatchQueue.global()) {
             getUploadParameters(fileUrl: fileUrl)
-        }.then(on: .global()) { (uploadParameters: UploadParameters) -> Promise<URL> in
+        }.then(on: DispatchQueue.global()) { (uploadParameters: UploadParameters) -> Promise<URL> in
             uploadFile(fileUrl: fileUrl, mimeType: mimeType, uploadParameters: uploadParameters)
         }
     }
@@ -27,9 +27,9 @@ private enum DebugLogUploader {
 
     private static func getUploadParameters(fileUrl: URL) -> Promise<UploadParameters> {
         let url = URL(string: "https://debuglogs.org/")!
-        return firstly(on: .global()) { () -> Promise<(HTTPResponse)> in
+        return firstly(on: DispatchQueue.global()) { () -> Promise<(HTTPResponse)> in
             buildOWSURLSession().dataTaskPromise(url.absoluteString, method: .get, ignoreAppExpiry: true)
-        }.map(on: .global()) { (response: HTTPResponse) -> (UploadParameters) in
+        }.map(on: DispatchQueue.global()) { (response: HTTPResponse) -> (UploadParameters) in
             guard let responseObject = response.responseBodyJson else {
                 throw OWSAssertionError("Invalid response.")
             }
@@ -76,7 +76,7 @@ private enum DebugLogUploader {
         mimeType: String,
         uploadParameters: UploadParameters
     ) -> Promise<URL> {
-        firstly(on: .global()) { () -> Promise<(HTTPResponse)> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<(HTTPResponse)> in
             let urlSession = buildOWSURLSession()
 
             guard let url = URL(string: uploadParameters.uploadUrl) else {
@@ -95,7 +95,7 @@ private enum DebugLogUploader {
                                                          textParts: textParts,
                                                          ignoreAppExpiry: true,
                                                          progress: nil)
-        }.map(on: .global()) { (response: HTTPResponse) -> URL in
+        }.map(on: DispatchQueue.global()) { (response: HTTPResponse) -> URL in
             let statusCode = response.responseStatusCode
             // We'll accept any 2xx status code.
             let statusCodeClass = statusCode - (statusCode % 100)
@@ -218,10 +218,10 @@ extension Pastelog {
         DebugLogUploader.uploadFile(
             fileUrl: URL(fileURLWithPath: zipFilePath),
             mimeType: OWSMimeTypeApplicationZip
-        ).done(on: .global()) { url in
+        ).done(on: DispatchQueue.global()) { url in
             OWSFileSystem.deleteFile(zipFilePath)
             wrappedSuccess(url)
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             let errorMessage = NSLocalizedString(
                 "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG",
                 comment: "Error indicating that a debug log could not be uploaded."

@@ -275,7 +275,7 @@ public class SendPaymentViewController: OWSViewController {
         } else {
             // Check whether recipient can receive payments.
             ModalActivityIndicatorViewController.presentAsInvisible(fromViewController: fromViewController) { modalActivityIndicator in
-                firstly(on: .global()) {
+                firstly(on: DispatchQueue.global()) {
                     ProfileFetcherJob.fetchProfilePromise(address: recipientAddress, ignoreThrottling: true)
                 }.done { (_) in
                     AssertIsOnMainThread()

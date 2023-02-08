@@ -189,11 +189,11 @@ public class ReusableMediaView: NSObject {
                 throw ReusableMediaError.redundantLoad
             }
             return mediaViewAdapter.loadMedia()
-        }.done(on: .main) { (media: AnyObject) in
+        }.done(on: DispatchQueue.main) { (media: AnyObject) in
             mediaCache.setMedia(media, forKey: cacheKey, isAnimated: mediaViewAdapter.shouldBeRenderedByYY)
 
             loadCompletion(media)
-        }.catch(on: .main) { (error: Error) in
+        }.catch(on: DispatchQueue.main) { (error: Error) in
             switch error {
             case ReusableMediaError.redundantLoad,
                  ReusableMediaError.invalidMedia:

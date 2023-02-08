@@ -90,9 +90,9 @@ extension DonationViewsUtil {
             amount: FiatMoney,
             withStripePaymentMethod paymentMethod: Stripe.PaymentMethod
         ) -> Promise<PreparedGiftPayment> {
-            firstly(on: .sharedUserInitiated) {
+            firstly(on: DispatchQueue.sharedUserInitiated) {
                 Stripe.createBoostPaymentIntent(for: amount, level: .giftBadge(.signalGift))
-            }.then(on: .sharedUserInitiated) { paymentIntent -> Promise<PreparedGiftPayment> in
+            }.then(on: DispatchQueue.sharedUserInitiated) { paymentIntent -> Promise<PreparedGiftPayment> in
                 Stripe.createPaymentMethod(with: paymentMethod).map { paymentMethodId in
                     .forStripe(paymentIntent: paymentIntent, paymentMethodId: paymentMethodId)
                 }
@@ -229,11 +229,11 @@ extension DonationViewsUtil {
                 future.reject(error)
             }
 
-            return promise.then(on: .sharedUserInitiated) {
+            return promise.then(on: DispatchQueue.sharedUserInitiated) {
                 owsAssertDebug(hasCharged, "[Gifting] Expected \"charge succeeded\" event")
                 NotificationCenter.default.removeObserver(observer)
                 return Promise.value(())
-            }.recover(on: .sharedUserInitiated) { error in
+            }.recover(on: DispatchQueue.sharedUserInitiated) { error in
                 NotificationCenter.default.removeObserver(observer)
                 throw error
             }

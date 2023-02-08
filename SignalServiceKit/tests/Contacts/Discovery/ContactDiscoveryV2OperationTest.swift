@@ -102,7 +102,7 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
         // Run the discovery operation.
         var operationResults: [ContactDiscoveryV2Operation.DiscoveryResult]?
         let operationExpectation = expectation(description: "Waiting for operation.")
-        operation.perform(on: .main).done { results in
+        operation.perform(on: DispatchQueue.main).done { results in
             operationResults = results
             operationExpectation.fulfill()
         }.cauterize()
@@ -145,7 +145,7 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
         // Run the discovery operation.
         var operationError: Error?
         let operationExpectation = expectation(description: "Waiting for operation.")
-        operation.perform(on: .main).catch { error in
+        operation.perform(on: DispatchQueue.main).catch { error in
             operationError = error
             operationExpectation.fulfill()
         }.cauterize()
@@ -183,7 +183,7 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
 
         // Run the discovery operation.
         let operationExpectation = expectation(description: "Waiting for operation.")
-        operation.perform(on: .main).catch { error in
+        operation.perform(on: DispatchQueue.main).catch { error in
             operationExpectation.fulfill()
         }.cauterize()
         waitForExpectations(timeout: 10)

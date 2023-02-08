@@ -45,11 +45,11 @@ public class PaymentsReconciliation: Dependencies {
 
     public class PaymentsReconciliationOperation: OWSOperation {
         override public func run() {
-            firstly(on: .global()) {
+            firstly(on: DispatchQueue.global()) {
                 PaymentsReconciliation.reconciliationPromise()
-            }.done(on: .global()) { _ in
+            }.done(on: DispatchQueue.global()) { _ in
                 self.reportSuccess()
-            }.catch(on: .global()) { error in
+            }.catch(on: DispatchQueue.global()) { error in
                 owsFailDebugUnlessMCNetworkFailure(error)
                 let error = SSKUnretryableError.paymentsReconciliationFailure
                 self.reportError(error)
@@ -83,9 +83,9 @@ public class PaymentsReconciliation: Dependencies {
         }
         return firstly { () -> Promise<MobileCoinAPI> in
             Self.paymentsImpl.getMobileCoinAPI()
-        }.then(on: .global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<MobileCoin.AccountActivity> in
+        }.then(on: DispatchQueue.global()) { (mobileCoinAPI: MobileCoinAPI) -> Promise<MobileCoin.AccountActivity> in
             mobileCoinAPI.getAccountActivity()
-        }.map(on: .global()) { (accountActivity: MobileCoin.AccountActivity) -> Void in
+        }.map(on: DispatchQueue.global()) { (accountActivity: MobileCoin.AccountActivity) -> Void in
             Self.reconcileIfNecessary(transactionHistory: accountActivity)
         }
     }

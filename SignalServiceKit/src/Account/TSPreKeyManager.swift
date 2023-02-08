@@ -11,7 +11,7 @@ public class MessageProcessingOperation: OWSOperation {
     public override func run() {
         Logger.debug("")
 
-        firstly(on: .global()) {
+        firstly(on: DispatchQueue.global()) {
             self.messageProcessor.fetchingAndProcessingCompletePromise()
         }.done { _ in
             Logger.verbose("Complete.")

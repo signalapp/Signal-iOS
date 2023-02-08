@@ -904,7 +904,7 @@ class ImageEditorCanvasView: UIView {
         srcImage.cgImageWithGaussianBlurPromise(
             radius: 25,
             resizeToMaxPixelDimension: 300
-        ).done(on: .main) { [weak self] blurredImage in
+        ).done(on: DispatchQueue.main) { [weak self] blurredImage in
             guard let self = self else { return }
             self.model.blurredSourceImage = blurredImage
 

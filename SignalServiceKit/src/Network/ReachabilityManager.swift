@@ -165,9 +165,9 @@ public class SSKReachabilityManagerImpl: NSObject, SSKReachabilityManager {
 
         firstly {
             backgroundSession.downloadTaskPromise(TSConstants.mainServiceIdentifiedURL, method: .get)
-        }.done(on: .global()) { _ in
+        }.done(on: DispatchQueue.global()) { _ in
             Logger.info("Finished wakeup request.")
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             Logger.info("Failed wakeup request \(error)")
         }
     }

@@ -49,7 +49,7 @@ class SGXContactDiscoveryOperation: ContactDiscoveryOperation {
         firstly { () -> Promise<RemoteAttestation.CDSAttestation> in
             RemoteAttestation.performForCDS()
 
-        }.then(on: .global()) { (attestation: RemoteAttestation.CDSAttestation) -> Promise<(RemoteAttestation.CDSAttestation, ContactDiscoveryService.IntersectionResponse)> in
+        }.then(on: DispatchQueue.global()) { (attestation: RemoteAttestation.CDSAttestation) -> Promise<(RemoteAttestation.CDSAttestation, ContactDiscoveryService.IntersectionResponse)> in
             let service = ContactDiscoveryService()
             let query = try self.buildIntersectionQuery(e164sToLookup: e164sToLookup,
                                                         remoteAttestations: attestation.remoteAttestations)
@@ -63,7 +63,7 @@ class SGXContactDiscoveryOperation: ContactDiscoveryOperation {
                 censorshipCircumventionPrefix: attestation.enclaveConfig.censorshipCircumventionPrefix
             ).map {(attestation, $0)}
 
-        }.map(on: .global()) { attestation, response -> Set<CDSRegisteredContact> in
+        }.map(on: DispatchQueue.global()) { attestation, response -> Set<CDSRegisteredContact> in
             let allEnclaveAttestations = attestation.remoteAttestations
             let respondingEnclaveAttestation = allEnclaveAttestations.first(where: { $1.requestId == response.requestId })
 

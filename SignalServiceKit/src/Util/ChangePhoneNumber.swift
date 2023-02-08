@@ -112,11 +112,11 @@ public class ChangePhoneNumber: NSObject {
         case .verify(let changeIds):
             firstly {
                 Self.updateLocalPhoneNumberPromise()
-            }.done(on: .global()) { _ in
+            }.done(on: DispatchQueue.global()) { _ in
                 Self.databaseStorage.write { transaction in
                     Self.verifyDidComplete(changeIds: changeIds, transaction: transaction)
                 }
-            }.catch(on: .global()) { error in
+            }.catch(on: DispatchQueue.global()) { error in
                 owsFailDebugUnlessNetworkFailure(error)
 
                 if !error.isNetworkFailureOrTimeout {
@@ -132,7 +132,7 @@ public class ChangePhoneNumber: NSObject {
     public static func updateLocalPhoneNumber() {
         firstly {
             Self.updateLocalPhoneNumberPromise()
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             owsFailDebugUnlessNetworkFailure(error)
         }
     }
@@ -144,7 +144,7 @@ public class ChangePhoneNumber: NSObject {
     public static func updateLocalPhoneNumberPromise() -> Promise<LocalPhoneNumber> {
         firstly { () -> Promise<WhoAmIResponse> in
             Self.accountServiceClient.getAccountWhoAmI()
-        }.map(on: .global()) { whoAmIResponse in
+        }.map(on: DispatchQueue.global()) { whoAmIResponse in
             try Self.updateLocalPhoneNumber(from: whoAmIResponse)
         }
     }

@@ -118,7 +118,7 @@ public final class RequestMaker: Dependencies {
         if shouldUseWebsocket {
             return firstly {
                 socketManager.makeRequestPromise(request: request)
-            }.map(on: .global()) { response in
+            }.map(on: DispatchQueue.global()) { response in
                 if self.udManager.isUDVerboseLoggingEnabled() {
                     if isUDRequest {
                         Logger.debug("UD websocket request '\(self.label)' succeeded.")
@@ -132,7 +132,7 @@ public final class RequestMaker: Dependencies {
                 return RequestMakerResult(response: response,
                                           wasSentByUD: isUDRequest,
                                           wasSentByWebsocket: true)
-            }.recover(on: .global()) { (error: Error) -> Promise<RequestMakerResult> in
+            }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<RequestMakerResult> in
                 let statusCode = error.httpStatusCode ?? 0
 
                 if statusCode == 413 || statusCode == 429 {
@@ -174,7 +174,7 @@ public final class RequestMaker: Dependencies {
         } else {
             return firstly {
                 networkManager.makePromise(request: request)
-            }.map(on: .global()) { (response: HTTPResponse) -> RequestMakerResult in
+            }.map(on: DispatchQueue.global()) { (response: HTTPResponse) -> RequestMakerResult in
                 if self.udManager.isUDVerboseLoggingEnabled() {
                     if isUDRequest {
                         Logger.debug("UD REST request '\(self.label)' succeeded.")
@@ -189,7 +189,7 @@ public final class RequestMaker: Dependencies {
                 return RequestMakerResult(response: response,
                                           wasSentByUD: isUDRequest,
                                           wasSentByWebsocket: false)
-            }.recover(on: .global()) { (error: Error) -> Promise<RequestMakerResult> in
+            }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<RequestMakerResult> in
                 if error.httpStatusCode == 413 || error.httpStatusCode == 429 {
                     // We've hit rate limit; don't retry.
                     throw error

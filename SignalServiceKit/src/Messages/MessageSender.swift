@@ -28,7 +28,7 @@ extension MessageSender {
 
     class func ensureSessions(forMessageSends messageSends: [OWSMessageSend],
                               ignoreErrors: Bool) -> Promise<Void> {
-        let promise = firstly(on: .global()) { () -> Promise<Void> in
+        let promise = firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
             var promises = [Promise<Void>]()
             for messageSend in messageSends {
                 promises += self.ensureSessions(forMessageSend: messageSend,
@@ -40,7 +40,7 @@ extension MessageSender {
             return Promise.when(fulfilled: promises)
         }
         if !ignoreErrors {
-            promise.catch(on: .global()) { _ in
+            promise.catch(on: DispatchQueue.global()) { _ in
                 owsFailDebug("The promises should never fail.")
             }
         }
@@ -95,7 +95,7 @@ extension MessageSender {
 
             Logger.verbose("Fetching prekey for: \(messageSend.address), \(deviceId)")
 
-            let promise: Promise<Void> = firstly(on: .global()) { () -> Promise<SignalServiceKit.PreKeyBundle> in
+            let promise: Promise<Void> = firstly(on: DispatchQueue.global()) { () -> Promise<SignalServiceKit.PreKeyBundle> in
                 let (promise, future) = Promise<SignalServiceKit.PreKeyBundle>.pending()
                 self.makePrekeyRequest(
                     messageSend: messageSend,
@@ -112,7 +112,7 @@ extension MessageSender {
                     }
                 )
                 return promise
-            }.done(on: .global()) { (preKeyBundle: SignalServiceKit.PreKeyBundle) -> Void in
+            }.done(on: DispatchQueue.global()) { (preKeyBundle: SignalServiceKit.PreKeyBundle) -> Void in
                 try self.databaseStorage.write { transaction in
                     // Since we successfully fetched the prekey bundle,
                     // we know this device is registered. We can safely
@@ -132,7 +132,7 @@ extension MessageSender {
                         transaction: transaction
                     )
                 }
-            }.recover(on: .global()) { (error: Error) in
+            }.recover(on: DispatchQueue.global()) { (error: Error) in
                 switch error {
                 case MessageSenderError.missingDevice:
                     self.databaseStorage.write { transaction in
@@ -241,15 +241,15 @@ public extension MessageSender {
             options: [.allowIdentifiedFallback, .skipWebSocket]
         )
 
-        firstly(on: .global()) { () -> Promise<RequestMakerResult> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<RequestMakerResult> in
             return requestMaker.makeRequest()
-        }.done(on: .global()) { (result: RequestMakerResult) in
+        }.done(on: DispatchQueue.global()) { (result: RequestMakerResult) in
             guard let responseObject = result.responseJson as? [String: Any] else {
                 throw OWSAssertionError("Prekey fetch missing response object.")
             }
             let bundle = SignalServiceKit.PreKeyBundle(from: responseObject, forDeviceNumber: deviceId)
             success(bundle)
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             if let httpStatusCode = error.httpStatusCode {
                 if httpStatusCode == 404 {
                     self.hadMissingDeviceError(recipientAddress: recipientAddress, deviceId: deviceId)
@@ -545,15 +545,15 @@ extension MessageSender {
                                       failure: @escaping (Error?) -> Void) {
         firstly {
             prepareSend(of: message)
-        }.done(on: .global()) { messageSendRecipients in
+        }.done(on: DispatchQueue.global()) { messageSendRecipients in
             success(messageSendRecipients)
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             failure(error)
         }
     }
 
     private static func prepareSend(of message: TSOutgoingMessage) -> Promise<MessageSendInfo> {
-        firstly(on: .global()) { () -> Promise<SenderCertificates> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<SenderCertificates> in
             let (promise, future) = Promise<SenderCertificates>.pending()
             self.udManager.ensureSenderCertificates(
                 certificateExpirationPolicy: .permissive,
@@ -565,7 +565,7 @@ extension MessageSender {
                 }
             )
             return promise
-        }.then(on: .global()) { senderCertificates in
+        }.then(on: DispatchQueue.global()) { senderCertificates in
             self.prepareRecipients(of: message, senderCertificates: senderCertificates)
         }
     }
@@ -573,7 +573,7 @@ extension MessageSender {
     private static func prepareRecipients(of message: TSOutgoingMessage,
                                           senderCertificates: SenderCertificates) -> Promise<MessageSendInfo> {
 
-        firstly(on: .global()) { () -> MessageSendInfo in
+        firstly(on: DispatchQueue.global()) { () -> MessageSendInfo in
             guard let localAddress = tsAccountManager.localAddress else {
                 throw OWSAssertionError("Missing localAddress.")
             }
@@ -596,12 +596,12 @@ extension MessageSender {
             return MessageSendInfo(thread: thread,
                                    recipients: proposedRecipients,
                                    senderCertificates: senderCertificates)
-        }.then(on: .global()) { (sendInfo: MessageSendInfo) -> Promise<MessageSendInfo> in
+        }.then(on: DispatchQueue.global()) { (sendInfo: MessageSendInfo) -> Promise<MessageSendInfo> in
             // We might need to use CDS to fill in missing UUIDs and/or identify
             // which recipients are unregistered.
-            return firstly(on: .global()) { () -> Promise<[SignalServiceAddress]> in
+            return firstly(on: DispatchQueue.global()) { () -> Promise<[SignalServiceAddress]> in
                 Self.ensureRecipientAddresses(sendInfo.recipients, message: message)
-            }.map(on: .global()) { (registeredRecipients: [SignalServiceAddress]) in
+            }.map(on: DispatchQueue.global()) { (registeredRecipients: [SignalServiceAddress]) in
                 // For group story replies, we must check if the recipients are stories capable
                 guard message.isGroupStoryReply else { return registeredRecipients }
 
@@ -610,13 +610,13 @@ extension MessageSender {
                 }
 
                 return registeredRecipients.filter { profiles[$0]?.isStoriesCapable == true }
-            }.map(on: .global()) { (validRecipients: [SignalServiceAddress]) in
+            }.map(on: DispatchQueue.global()) { (validRecipients: [SignalServiceAddress]) in
                 // Replace recipients with validRecipients.
                 MessageSendInfo(thread: sendInfo.thread,
                                 recipients: validRecipients,
                                 senderCertificates: sendInfo.senderCertificates)
             }
-        }.map(on: .global()) { (sendInfo: MessageSendInfo) -> MessageSendInfo in
+        }.map(on: DispatchQueue.global()) { (sendInfo: MessageSendInfo) -> MessageSendInfo in
             // Mark skipped recipients as such.  We skip because:
             //
             // * Recipient is no longer in the group.
@@ -744,7 +744,7 @@ extension MessageSender {
 
         return firstly { () -> Promise<Set<SignalRecipient>> in
             contactDiscoveryManager.lookUp(phoneNumbers: Set(phoneNumbersToFetch), mode: .outgoingMessage)
-        }.map(on: .sharedUtility) { (signalRecipients: Set<SignalRecipient>) -> [SignalServiceAddress] in
+        }.map(on: DispatchQueue.sharedUtility) { (signalRecipients: Set<SignalRecipient>) -> [SignalServiceAddress] in
             for signalRecipient in signalRecipients {
                 owsAssertDebug(signalRecipient.address.phoneNumber != nil)
                 owsAssertDebug(signalRecipient.address.uuid != nil)

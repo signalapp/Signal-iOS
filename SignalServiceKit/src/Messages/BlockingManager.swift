@@ -402,7 +402,7 @@ extension BlockingManager {
                     .promise,
                     message: message.asPreparer,
                     transaction: transaction
-                ).done(on: .global()) {
+                ).done(on: DispatchQueue.global()) {
                     Logger.info("Successfully sent blocked phone numbers sync message")
 
                     // Record the last block list which we successfully synced..

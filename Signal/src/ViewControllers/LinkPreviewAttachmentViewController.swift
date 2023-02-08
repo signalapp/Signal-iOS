@@ -213,11 +213,11 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
 
             linkPreviewPanel.setState(.loading, animated: true)
 
-            linkPreviewManager.fetchLinkPreview(for: previewUrl).done(on: .main) { [weak self] draft in
+            linkPreviewManager.fetchLinkPreview(for: previewUrl).done(on: DispatchQueue.main) { [weak self] draft in
                 guard let self = self else { return }
                 guard self.currentPreviewUrl == previewUrl else { return }
                 self.displayLinkPreview(draft)
-            }.catch(on: .main) { [weak self] error in
+            }.catch(on: DispatchQueue.main) { [weak self] error in
                 guard let self = self else { return }
                 guard self.currentPreviewUrl == previewUrl else { return }
 

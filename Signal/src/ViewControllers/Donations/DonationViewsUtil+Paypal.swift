@@ -24,9 +24,9 @@ extension DonationViewsUtil {
             ) { modal in
                 firstly {
                     SignalMessaging.Paypal.createBoost(amount: amount, level: level)
-                }.map(on: .main) { approvalUrl in
+                }.map(on: DispatchQueue.main) { approvalUrl in
                     modal.dismiss { future.resolve(approvalUrl) }
-                }.catch(on: .main) { error in
+                }.catch(on: DispatchQueue.main) { error in
                     modal.dismiss { future.reject(error) }
                 }
             }

@@ -237,7 +237,7 @@ class NotificationService: UNNotificationServiceExtension {
 
         firstly {
             messageFetcherJob.run().promise
-        }.then(on: .global()) { [weak self] () -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { [weak self] () -> Promise<Void> in
             logger.info("Waiting for processing to complete.")
             guard let self = self else { return Promise.value(()) }
 
@@ -247,7 +247,7 @@ class NotificationService: UNNotificationServiceExtension {
                 let promise = self.messageProcessor.processingCompletePromise()
                 runningAndCompletedPromises.append(("MessageProcessorCompletion", promise))
                 return promise
-            }.then(on: .global()) { () -> Promise<Void> in
+            }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
                 logger.info("Initial message processing complete.")
                 // Wait until all async side effects of message processing are complete.
                 let completionPromises: [(String, Promise<Void>)] = [
@@ -261,24 +261,24 @@ class NotificationService: UNNotificationServiceExtension {
                     ("Pending sync request", OWSMessageManager.pendingTasksPromise())
                 ]
                 let joinedPromise = Promise.when(resolved: completionPromises.map { (name, promise) in
-                    promise.done(on: .global()) {
+                    promise.done(on: DispatchQueue.global()) {
                         logger.info("\(name) complete")
                     }
                 })
                 completionPromises.forEach { runningAndCompletedPromises.append($0) }
                 return joinedPromise.asVoid()
-            }.then(on: .global()) { () -> Promise<Void> in
+            }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
                 // Finally, wait for any notifications to finish posting
                 let promise = NotificationPresenter.pendingNotificationsPromise()
                 runningAndCompletedPromises.append(("Pending notification post", promise))
                 return promise
             }
-        }.ensure(on: .global()) { [weak self] in
+        }.ensure(on: DispatchQueue.global()) { [weak self] in
             logger.info("Message fetch completed.")
             SignalProxy.stopRelayServer()
             environment.processingMessageCounter.decrementOrZero()
             self?.completeSilently(logger: logger)
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             logger.error("Error: \(error)")
         }
     }

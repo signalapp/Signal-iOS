@@ -591,7 +591,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
     private let preparedPaymentPromise = AtomicOptional<Promise<PreparedPayment>>(nil)
 
     private func tryToPreparePayment(paymentInfo: PaymentInfo) {
-        let promise: Promise<PreparedPayment> = firstly(on: .global()) { () -> Promise<PreparedPayment> in
+        let promise: Promise<PreparedPayment> = firstly(on: DispatchQueue.global()) { () -> Promise<PreparedPayment> in
             // NOTE: We should not pre-prepare a payment if defragmentation
             // is required.
             Self.paymentsSwift.prepareOutgoingPayment(recipient: paymentInfo.recipient,
@@ -606,9 +606,9 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
         firstly {
             promise
-        }.done(on: .global()) { (_: PreparedPayment) in
+        }.done(on: DispatchQueue.global()) { (_: PreparedPayment) in
             Logger.info("Pre-prepared payment ready.")
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             if case PaymentsError.defragmentationRequired = error {
                 Logger.warn("Error: \(error)")
             } else {
@@ -624,7 +624,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         ModalActivityIndicatorViewController.presentAsInvisible(fromViewController: self) { [weak self] modalActivityIndicator in
             guard let self = self else { return }
 
-            OWSPaymentsLock.shared.tryToUnlockPromise().then(on: .main) { (authOutcome: OWSPaymentsLock.LocalAuthOutcome) -> Promise<PreparedPayment> in
+            OWSPaymentsLock.shared.tryToUnlockPromise().then(on: DispatchQueue.main) { (authOutcome: OWSPaymentsLock.LocalAuthOutcome) -> Promise<PreparedPayment> in
                 switch authOutcome {
                 case .failure(let error):
                     throw PaymentsUIError.paymentsLockFailed(reason: "local authentication failed with error: \(error)")
@@ -641,9 +641,9 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 guard let promise = self.preparedPaymentPromise.get() else {
                     throw OWSAssertionError("Missing preparedPaymentPromise.")
                 }
-                return firstly(on: .global()) { () -> Promise<PreparedPayment> in
+                return firstly(on: DispatchQueue.global()) { () -> Promise<PreparedPayment> in
                     return promise
-                }.recover(on: .global()) { (error: Error) -> Promise<PreparedPayment> in
+                }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<PreparedPayment> in
                     if case PaymentsError.defragmentationRequired = error {
                         // NOTE: We will always follow this code path if defragmentation
                         // is required.
@@ -659,16 +659,16 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                         throw error
                     }
                 }
-            }.then(on: .global()) { (preparedPayment: PreparedPayment) in
+            }.then(on: DispatchQueue.global()) { (preparedPayment: PreparedPayment) in
                 Self.paymentsSwift.initiateOutgoingPayment(preparedPayment: preparedPayment)
             }.then { (paymentModel: TSPaymentModel) -> Promise<Void> in
                 // Try to wait (with a timeout) for submission and verification to complete.
                 let blockInterval: TimeInterval = kSecondInterval * 60
-                return firstly(on: .global()) { () -> Promise<Void> in
+                return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
                     Self.paymentsSwift.blockOnOutgoingVerification(paymentModel: paymentModel).asVoid()
                 }.timeout(seconds: blockInterval, description: "Payments Verify Submission") {
                     PaymentsError.outgoingVerificationTakingTooLong
-                }.recover(on: .global()) { (error: Error) -> Guarantee<()> in
+                }.recover(on: DispatchQueue.global()) { (error: Error) -> Guarantee<()> in
                     Logger.warn("Could not verify outgoing payment: \(error).")
                     if let paymentsError = error as? PaymentsError,
                        paymentsError.isNetworkFailureOrTimeout {

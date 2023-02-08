@@ -565,13 +565,13 @@ class DebugUIGroupsV2: DebugUIPage {
                                                  name: "Real group, both users are in the group",
                                                  disappearingMessageToken: .disabledToken,
                                                  shouldSendMessage: false)
-            }.map(on: .global()) { (groupThread: TSGroupThread) in
+            }.map(on: DispatchQueue.global()) { (groupThread: TSGroupThread) in
                 guard let validGroupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid groupModel.")
                 }
                 return validGroupModelV2
             }
-        }.then(on: .global()) { (validGroupModelV2: TSGroupModelV2) -> Promise<(TSGroupModelV2, TSGroupModelV2)> in
+        }.then(on: DispatchQueue.global()) { (validGroupModelV2: TSGroupModelV2) -> Promise<(TSGroupModelV2, TSGroupModelV2)> in
             // Make a real v2 group on the service.
             // Local user is a member but "other user" is not.
             return firstly {
@@ -579,13 +579,13 @@ class DebugUIGroupsV2: DebugUIPage {
                                                  name: "Real group, recipient is not in the group",
                                                  disappearingMessageToken: .disabledToken,
                                                  shouldSendMessage: false)
-            }.map(on: .global()) { (groupThread: TSGroupThread) in
+            }.map(on: DispatchQueue.global()) { (groupThread: TSGroupThread) in
                 guard let missingOtherUserGroupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid groupModel.")
                 }
                 return (validGroupModelV2, missingOtherUserGroupModelV2)
             }
-        }.then(on: .global()) { (validGroupModelV2: TSGroupModelV2, missingOtherUserGroupModelV2: TSGroupModelV2)
+        }.then(on: DispatchQueue.global()) { (validGroupModelV2: TSGroupModelV2, missingOtherUserGroupModelV2: TSGroupModelV2)
             -> Promise<(TSGroupModelV2, TSGroupModelV2, TSGroupModelV2)> in
             // Make a real v2 group on the service.
             // "Other user" is a member but local user is not.
@@ -594,7 +594,7 @@ class DebugUIGroupsV2: DebugUIPage {
                                                  name: "Real group, sender is not in the group",
                                                  disappearingMessageToken: .disabledToken,
                                                  shouldSendMessage: false)
-            }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
+            }.then(on: DispatchQueue.global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
                 guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid groupModel.")
                 }
@@ -606,27 +606,27 @@ class DebugUIGroupsV2: DebugUIPage {
                 return GroupManager.changeMemberRoleV2(groupModel: groupModel,
                                                        uuid: otherUserUuid,
                                                        role: .administrator)
-            }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
+            }.then(on: DispatchQueue.global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
                 self.databaseStorage.write { transaction in
                     GroupManager.localLeaveGroupOrDeclineInvite(
                         groupThread: groupThread,
                         transaction: transaction
                     )
                 }
-            }.map(on: .global()) { (groupThread: TSGroupThread) in
+            }.map(on: DispatchQueue.global()) { (groupThread: TSGroupThread) in
                 guard let missingLocalUserGroupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid groupModel.")
                 }
                 return (validGroupModelV2, missingOtherUserGroupModelV2, missingLocalUserGroupModelV2)
             }
-        }.map(on: .global()) { (validGroupModelV2: TSGroupModelV2, missingOtherUserGroupModelV2: TSGroupModelV2, missingLocalUserGroupModelV2: TSGroupModelV2) in
+        }.map(on: DispatchQueue.global()) { (validGroupModelV2: TSGroupModelV2, missingOtherUserGroupModelV2: TSGroupModelV2, missingLocalUserGroupModelV2: TSGroupModelV2) in
             self.sendInvalidGroupMessages(contactThread: contactThread,
                                           validGroupModelV2: validGroupModelV2,
                                           missingOtherUserGroupModelV2: missingOtherUserGroupModelV2,
                                           missingLocalUserGroupModelV2: missingLocalUserGroupModelV2)
-        }.done(on: .global()) { _ in
+        }.done(on: DispatchQueue.global()) { _ in
             Logger.info("Complete.")
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Error: \(error)")
         }
     }

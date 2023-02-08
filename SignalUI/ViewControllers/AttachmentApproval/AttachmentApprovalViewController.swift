@@ -655,7 +655,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         var promises = [Promise<SignalAttachment>]()
         for attachmentApprovalItem in attachmentApprovalItems {
             let outputQualityLevel = self.outputQualityLevel
-            promises.append(outputAttachmentPromise(for: attachmentApprovalItem).map(on: .global()) { attachment in
+            promises.append(outputAttachmentPromise(for: attachmentApprovalItem).map(on: DispatchQueue.global()) { attachment in
                 attachment.preparedForOutput(qualityLevel: outputQualityLevel)
             })
         }
@@ -696,7 +696,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                 throw OWSAssertionError("Could not render for output.")
             }
             return dstImage
-        }.map(on: .global()) { (dstImage: UIImage) -> SignalAttachment in
+        }.map(on: DispatchQueue.global()) { (dstImage: UIImage) -> SignalAttachment in
             var dataUTI = kUTTypeImage as String
             guard let dstData: Data = {
                 let isLossy: Bool = attachmentApprovalItem.attachment.mimeType.caseInsensitiveCompare(OWSMimeTypeImageJpeg) == .orderedSame
@@ -743,7 +743,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     func renderedAttachmentPromise(videoEditorModel: VideoEditorModel,
                                    attachmentApprovalItem: AttachmentApprovalItem) -> Promise<SignalAttachment> {
         assert(videoEditorModel.needsRender)
-        return videoEditorModel.ensureCurrentRender().result.map(on: .sharedUserInitiated) { result in
+        return videoEditorModel.ensureCurrentRender().result.map(on: DispatchQueue.sharedUserInitiated) { result in
             let filePath = try result.consumeResultPath()
             guard let fileExtension = filePath.fileExtension else {
                 throw OWSAssertionError("Missing fileExtension.")
@@ -877,7 +877,7 @@ extension AttachmentApprovalViewController {
         // make below are reflected afterwards.
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modalVC in
             self.outputAttachmentsPromise()
-                .done(on: .main) { attachments in
+                .done(on: DispatchQueue.main) { attachments in
                     AssertIsOnMainThread()
                     modalVC.dismiss {
                         AssertIsOnMainThread()

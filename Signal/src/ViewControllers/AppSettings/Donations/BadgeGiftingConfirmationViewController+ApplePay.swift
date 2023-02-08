@@ -38,7 +38,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
             completion(result)
         }
 
-        firstly(on: .global()) { () -> Promise<Void> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
             try self.databaseStorage.read { transaction in
                 try DonationViewsUtil.Gifts.throwIfAlreadySendingGift(
                     to: self.thread,
@@ -46,9 +46,9 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                 )
             }
             return Promise.value(())
-        }.then(on: .global()) {
+        }.then(on: DispatchQueue.global()) {
             DonationViewsUtil.Gifts.prepareToPay(amount: self.price, applePayPayment: payment)
-        }.then(on: .main) { [weak self] preparedPayment -> Promise<PreparedGiftPayment> in
+        }.then(on: DispatchQueue.main) { [weak self] preparedPayment -> Promise<PreparedGiftPayment> in
             guard let self else {
                 throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
             }
@@ -114,9 +114,9 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                     controller.dismiss()
                     presentModalActivityIndicatorIfNotAlreadyPresented()
                 }
-            ).done(on: .main) {
+            ).done(on: DispatchQueue.main) {
                 finish()
-            }.recover(on: .main) { error in
+            }.recover(on: DispatchQueue.main) { error in
                 finish()
                 throw error
             }

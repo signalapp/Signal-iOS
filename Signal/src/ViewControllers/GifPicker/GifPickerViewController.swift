@@ -481,7 +481,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         firstly {
             cell.requestRenditionForSending()
-        }.map(on: .global()) { [weak self] (asset: ProxiedContentAsset) -> SignalAttachment in
+        }.map(on: DispatchQueue.global()) { [weak self] (asset: ProxiedContentAsset) -> SignalAttachment in
             // This check is just an optimization. The important check is below.
             guard self != nil else { throw GetFileError.noLongerRelevant }
 
@@ -604,7 +604,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         firstly {
             GiphyAPI.trending()
-        }.done(on: .main) { [weak self] imageInfos in
+        }.done(on: DispatchQueue.main) { [weak self] imageInfos in
             guard let self = self else { return }
 
             guard self.lastQuery == nil else {
@@ -619,7 +619,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             } else {
                 owsFailDebug("trending results was unexpectedly empty")
             }
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             // Don't both showing error UI feedback for default "trending" results.
             Logger.error("error: \(error)")
         }
@@ -633,7 +633,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         firstly {
             GiphyAPI.search(query: query)
-        }.done(on: .main) { [weak self] imageInfos in
+        }.done(on: DispatchQueue.main) { [weak self] imageInfos in
             guard let strongSelf = self else { return }
             Logger.info("search complete")
             strongSelf.imageInfos = imageInfos
@@ -642,7 +642,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             } else {
                 strongSelf.viewMode = .noResults
             }
-        }.catch(on: .main) { [weak self] error in
+        }.catch(on: DispatchQueue.main) { [weak self] error in
             owsFailDebugUnlessNetworkFailure(error)
 
             guard let strongSelf = self else { return }

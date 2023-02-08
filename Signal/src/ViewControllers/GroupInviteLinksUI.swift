@@ -212,7 +212,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
     }
 
     private func loadLinkPreview() {
-        firstly(on: .global()) {
+        firstly(on: DispatchQueue.global()) {
             self.groupsV2Impl.fetchGroupInviteLinkPreview(inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
                                                           groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
                                                           allowCached: false)
@@ -246,7 +246,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
     }
 
     private func loadGroupAvatar(avatarUrlPath: String) {
-        firstly(on: .global()) {
+        firstly(on: DispatchQueue.global()) {
             self.groupsV2Impl.fetchGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
                                                          groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData)
         }.done { [weak self] (groupAvatar: Data) in
@@ -345,7 +345,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
         let existingAvatarData = self.avatarData
 
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modalActivityIndicator in
-            firstly(on: .global()) { () -> Promise<GroupInviteLinkPreview> in
+            firstly(on: DispatchQueue.global()) { () -> Promise<GroupInviteLinkPreview> in
                 if let existingGroupInviteLinkPreview = existingGroupInviteLinkPreview {
                     // View has already downloaded the preview.
                     return Promise.value(existingGroupInviteLinkPreview)
@@ -355,7 +355,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                 return self.groupsV2Impl.fetchGroupInviteLinkPreview(inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,
                                                                      groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
                                                                      allowCached: false)
-            }.then(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview) -> Promise<(GroupInviteLinkPreview, Data?)> in
+            }.then(on: DispatchQueue.global()) { (groupInviteLinkPreview: GroupInviteLinkPreview) -> Promise<(GroupInviteLinkPreview, Data?)> in
                 guard let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath else {
                     // Group has no avatar.
                     return Promise.value((groupInviteLinkPreview, nil))
@@ -364,12 +364,12 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                     // View has already downloaded the avatar.
                     return Promise.value((groupInviteLinkPreview, existingAvatarData))
                 }
-                return firstly(on: .global()) {
+                return firstly(on: DispatchQueue.global()) {
                     self.groupsV2Impl.fetchGroupInviteLinkAvatar(avatarUrlPath: avatarUrlPath,
                                                                  groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData)
-                }.map(on: .global()) { (groupAvatar: Data) in
+                }.map(on: DispatchQueue.global()) { (groupAvatar: Data) in
                     (groupInviteLinkPreview, groupAvatar)
-                }.recover(on: .global()) { error -> Promise<(GroupInviteLinkPreview, Data?)> in
+                }.recover(on: DispatchQueue.global()) { error -> Promise<(GroupInviteLinkPreview, Data?)> in
                     Logger.warn("Error: \(error)")
                     // We made a best effort to fill in the avatar.
                     // Don't block joining the group on downloading
@@ -377,7 +377,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                     // placeholder model if at all.
                     return Promise.value((groupInviteLinkPreview, nil))
                 }
-            }.then(on: .global()) { (groupInviteLinkPreview: GroupInviteLinkPreview, avatarData: Data?) in
+            }.then(on: DispatchQueue.global()) { (groupInviteLinkPreview: GroupInviteLinkPreview, avatarData: Data?) in
                 GroupManager.joinGroupViaInviteLink(groupId: self.groupV2ContextInfo.groupId,
                                                     groupSecretParamsData: self.groupV2ContextInfo.groupSecretParamsData,
                                                     inviteLinkPassword: self.groupInviteLinkInfo.inviteLinkPassword,

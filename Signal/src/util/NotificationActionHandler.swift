@@ -125,7 +125,7 @@ public class NotificationActionHandler: NSObject {
     private class func markAsRead(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         return firstly {
             self.notificationMessage(forUserInfo: userInfo)
-        }.then(on: .global()) { (notificationMessage: NotificationMessage) in
+        }.then(on: DispatchQueue.global()) { (notificationMessage: NotificationMessage) in
             self.markMessageAsRead(notificationMessage: notificationMessage)
         }
     }
@@ -133,14 +133,14 @@ public class NotificationActionHandler: NSObject {
     private class func reply(userInfo: [AnyHashable: Any], replyText: String) throws -> Promise<Void> {
         return firstly { () -> Promise<NotificationMessage> in
             self.notificationMessage(forUserInfo: userInfo)
-        }.then(on: .global()) { (notificationMessage: NotificationMessage) -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { (notificationMessage: NotificationMessage) -> Promise<Void> in
             let thread = notificationMessage.thread
             let interaction = notificationMessage.interaction
             guard let incomingMessage = interaction as? TSIncomingMessage else {
                 throw OWSAssertionError("Unexpected interaction type.")
             }
 
-            return firstly(on: .global()) { () -> Promise<Void> in
+            return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
                 self.databaseStorage.write { transaction in
                     let builder = TSOutgoingMessageBuilder(thread: thread)
                     builder.messageBody = replyText
@@ -162,11 +162,11 @@ public class NotificationActionHandler: NSObject {
 
                     return ThreadUtil.enqueueMessagePromise(message: message, transaction: transaction)
                 }
-            }.recover(on: .global()) { error -> Promise<Void> in
+            }.recover(on: DispatchQueue.global()) { error -> Promise<Void> in
                 Logger.warn("Failed to send reply message from notification with error: \(error)")
                 self.notificationPresenter.notifyForFailedSend(inThread: thread)
                 throw error
-            }.then(on: .global()) { () -> Promise<Void> in
+            }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
                 self.markMessageAsRead(notificationMessage: notificationMessage)
             }
         }
@@ -175,7 +175,7 @@ public class NotificationActionHandler: NSObject {
     private class func showThread(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         return firstly { () -> Promise<NotificationMessage> in
             self.notificationMessage(forUserInfo: userInfo)
-        }.done(on: .main) { notificationMessage in
+        }.done(on: DispatchQueue.main) { notificationMessage in
             if notificationMessage.isGroupStoryReply {
                 self.showGroupStoryReplyThread(notificationMessage: notificationMessage)
             } else {
@@ -232,14 +232,14 @@ public class NotificationActionHandler: NSObject {
     private class func reactWithThumbsUp(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         return firstly { () -> Promise<NotificationMessage> in
             self.notificationMessage(forUserInfo: userInfo)
-        }.then(on: .global()) { (notificationMessage: NotificationMessage) -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { (notificationMessage: NotificationMessage) -> Promise<Void> in
             let thread = notificationMessage.thread
             let interaction = notificationMessage.interaction
             guard let incomingMessage = interaction as? TSIncomingMessage else {
                 throw OWSAssertionError("Unexpected interaction type.")
             }
 
-            return firstly(on: .global()) { () -> Promise<Void> in
+            return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
                 self.databaseStorage.write { transaction in
                     ReactionManager.localUserReacted(
                         to: incomingMessage,
@@ -249,11 +249,11 @@ public class NotificationActionHandler: NSObject {
                         transaction: transaction
                     )
                 }
-            }.recover(on: .global()) { error -> Promise<Void> in
+            }.recover(on: DispatchQueue.global()) { error -> Promise<Void> in
                 Logger.warn("Failed to send reply message from notification with error: \(error)")
                 self.notificationPresenter.notifyForFailedSend(inThread: thread)
                 throw error
-            }.then(on: .global()) { () -> Promise<Void> in
+            }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
                 self.markMessageAsRead(notificationMessage: notificationMessage)
             }
         }
@@ -262,7 +262,7 @@ public class NotificationActionHandler: NSObject {
     private class func showCallLobby(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         return firstly { () -> Promise<NotificationMessage> in
             self.notificationMessage(forUserInfo: userInfo)
-        }.done(on: .main) { notificationMessage in
+        }.done(on: DispatchQueue.main) { notificationMessage in
             let thread = notificationMessage.thread
             let currentCall = Self.callService.currentCall
 
@@ -309,7 +309,7 @@ public class NotificationActionHandler: NSObject {
     }
 
     private class func notificationMessage(forUserInfo userInfo: [AnyHashable: Any]) -> Promise<NotificationMessage> {
-        firstly(on: .global()) { () throws -> NotificationMessage in
+        firstly(on: DispatchQueue.global()) { () throws -> NotificationMessage in
             guard let threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
                 throw OWSAssertionError("threadId was unexpectedly nil")
             }

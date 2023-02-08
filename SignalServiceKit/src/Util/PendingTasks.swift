@@ -27,9 +27,9 @@ public class PendingTasks: NSObject {
             Logger.info("Waiting \(label).")
         }
         let promises = pendingTasks.allValues.map { $0.promise }
-        return firstly(on: .global()) {
+        return firstly(on: DispatchQueue.global()) {
             Promise.when(resolved: promises).asVoid()
-        }.map(on: .global()) {
+        }.map(on: DispatchQueue.global()) {
             if DebugFlags.internalLogging {
                 Logger.info("Complete \(label) (memoryUsage: \(LocalDevice.memoryUsageString)).")
             }

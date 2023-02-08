@@ -16,7 +16,7 @@ extension DonateViewController {
     ) {
         Logger.info("[Donations] Starting one-time PayPal donation")
 
-        firstly(on: .main) { [weak self] () -> Promise<URL> in
+        firstly(on: DispatchQueue.main) { [weak self] () -> Promise<URL> in
             guard let self else { throw OWSAssertionError("[Donations] Missing self!") }
 
             Logger.info("[Donations] Creating one-time PayPal payment")
@@ -25,7 +25,7 @@ extension DonateViewController {
                 level: .boostBadge,
                 fromViewController: self
             )
-        }.then(on: .main) { [weak self] approvalUrl -> Promise<Paypal.OneTimePaymentWebAuthApprovalParams> in
+        }.then(on: DispatchQueue.main) { [weak self] approvalUrl -> Promise<Paypal.OneTimePaymentWebAuthApprovalParams> in
             guard let self else { throw OWSAssertionError("[Donations] Missing self!") }
 
             Logger.info("[Donations] Presenting PayPal web UI for user approval of one-time donation")
@@ -39,7 +39,7 @@ extension DonateViewController {
                     approvalUrl: approvalUrl
                 )
             }
-        }.then(on: .main) { [weak self] approvalParams -> Promise<Void> in
+        }.then(on: DispatchQueue.main) { [weak self] approvalParams -> Promise<Void> in
             guard let self else { return .value(()) }
 
             Logger.info("[Donations] Creating and redeeming one-time boost receipt for PayPal donation")
@@ -50,12 +50,12 @@ extension DonateViewController {
                     approvalParams: approvalParams
                 )
             )
-        }.done(on: .main) { [weak self] in
+        }.done(on: DispatchQueue.main) { [weak self] in
             guard let self else { return }
 
             Logger.info("[Donations] One-time PayPal donation finished")
             self.didCompleteDonation(badge: badge, thanksSheetType: .boost)
-        }.catch(on: .main) { [weak self] error in
+        }.catch(on: DispatchQueue.main) { [weak self] error in
             guard let self else { return }
 
             if let webAuthError = error as? Paypal.AuthError {
@@ -81,7 +81,7 @@ extension DonateViewController {
                 level: .boostBadge,
                 approvalParams: approvalParams
             )
-        }.then(on: .main) { (paymentIntentId: String) -> Promise<Void> in
+        }.then(on: DispatchQueue.main) { (paymentIntentId: String) -> Promise<Void> in
             SubscriptionManager.createAndRedeemBoostReceipt(
                 for: paymentIntentId,
                 withPaymentProcessor: .braintree,

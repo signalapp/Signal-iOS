@@ -266,7 +266,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             return Promise.value(nil)
         }
 
-        return firstly(on: .global()) {
+        return firstly(on: DispatchQueue.global()) {
             Self.databaseStorage.read { transaction in
                 self.fullTextSearcher.searchForConversationPickerScreen(searchText: searchText, transaction: transaction)
             }
@@ -409,7 +409,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             return Promise.value(buildConversationCollection())
         }
 
-        return firstly(on: .global()) {
+        return firstly(on: DispatchQueue.global()) {
             Self.databaseStorage.read { transaction in
                 let groupItems = searchResults.groupThreads.compactMap { groupThread -> GroupConversationItem? in
                     guard self.threadFilter(groupThread) else { return nil }
@@ -1055,7 +1055,7 @@ extension ConversationPickerViewController: UISearchBarDelegate {
             guard searchBar.text == searchText else { throw PromiseError.cancelled }
 
             return self.buildConversationCollection(searchResults: searchResults)
-        }.done(on: .main) { [weak self] conversationCollection in
+        }.done(on: DispatchQueue.main) { [weak self] conversationCollection in
             guard let self = self else { return }
 
             self.conversationCollection = conversationCollection

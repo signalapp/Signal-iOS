@@ -97,12 +97,12 @@ public class BadgeAssets: NSObject {
 
         guard shouldFetch else { return Promise.value(()) }
         OWSFileSystem.ensureDirectoryExists(localAssetDirectory.path)
-        return firstly(on: .sharedUtility) { () -> Promise<Void> in
+        return firstly(on: DispatchQueue.sharedUtility) { () -> Promise<Void> in
             self.fetchSpritesheetIfNecessary()
-        }.done(on: .sharedUtility) { _ in
+        }.done(on: DispatchQueue.sharedUtility) { _ in
             try self.extractSpritesFromSpritesheetIfNecessary()
             self.lock.withLock { self.state = .fetched }
-        }.catch(on: .sharedUtility) { error in
+        }.catch(on: DispatchQueue.sharedUtility) { error in
             owsFailDebug("Failed to fetch badge assets with error: \(error)")
             self.lock.withLock { self.state = .failed }
         }

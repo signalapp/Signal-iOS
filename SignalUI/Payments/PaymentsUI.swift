@@ -55,9 +55,9 @@ public extension PaymentsUI {
 
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
                                                      canCancel: false) { modalActivityIndicator in
-            firstly(on: .global()) {
+            firstly(on: DispatchQueue.global()) {
                 declinePaymentRequestPromise(paymentRequestModel: paymentRequestModel)
-            }.done(on: .main) { _ in
+            }.done(on: DispatchQueue.main) { _ in
                 modalActivityIndicator.dismiss()
             }.catch { error in
                 owsFailDebug("Error: \(error)")
@@ -73,7 +73,7 @@ public extension PaymentsUI {
     // PAYMENTS TODO: Move to PaymentsImpl?
     @nonobjc
     private static func declinePaymentRequestPromise(paymentRequestModel: TSPaymentRequestModel) -> Promise<Void> {
-        firstly(on: .global()) { () -> Void in
+        firstly(on: DispatchQueue.global()) { () -> Void in
             try Self.databaseStorage.write { transaction in
                 // Pull latest model from db; ensure it still exists in db.
                 guard let paymentRequestModel = TSPaymentRequestModel.anyFetch(uniqueId: paymentRequestModel.uniqueId,
@@ -104,9 +104,9 @@ public extension PaymentsUI {
 
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
                                                      canCancel: false) { modalActivityIndicator in
-            firstly(on: .global()) {
+            firstly(on: DispatchQueue.global()) {
                 cancelPaymentRequestPromise(paymentRequestModel: paymentRequestModel)
-            }.done(on: .main) { _ in
+            }.done(on: DispatchQueue.main) { _ in
                 modalActivityIndicator.dismiss()
             }.catch { error in
                 owsFailDebug("Error: \(error)")
@@ -122,7 +122,7 @@ public extension PaymentsUI {
     // PAYMENTS TODO: Move to PaymentsImpl?
     @nonobjc
     private static func cancelPaymentRequestPromise(paymentRequestModel: TSPaymentRequestModel) -> Promise<Void> {
-        firstly(on: .global()) { () -> Void in
+        firstly(on: DispatchQueue.global()) { () -> Void in
             try Self.databaseStorage.write { transaction in
                 // Pull latest model from db; ensure it still exists in db.
                 guard let paymentRequestModel = TSPaymentRequestModel.anyFetch(uniqueId: paymentRequestModel.uniqueId,

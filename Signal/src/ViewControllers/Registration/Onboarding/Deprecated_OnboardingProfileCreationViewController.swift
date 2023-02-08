@@ -322,7 +322,7 @@ public class Deprecated_OnboardingProfileCreationViewController: Deprecated_Onbo
         spinner.startAnimating()
         saveButton.setEnabled(false)
 
-        firstly(on: .sharedUserInitiated) {
+        firstly(on: DispatchQueue.sharedUserInitiated) {
             OWSProfileManager.updateLocalProfilePromise(
                 profileGivenName: normalizedGivenName,
                 profileFamilyName: normalizedFamilyName,

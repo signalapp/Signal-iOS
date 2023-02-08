@@ -28,7 +28,7 @@ public class NetworkManager: NSObject {
         let useWebSocket = canTryWebSocket && OWSWebSocket.canAppUseSocketsToMakeRequests
         return firstly { () -> Promise<HTTPResponse> in
             useWebSocket ? websocketRequestPromise(request: request) : restRequestPromise(request: request)
-        }.recover(on: .global()) { error -> Promise<HTTPResponse> in
+        }.recover(on: DispatchQueue.global()) { error -> Promise<HTTPResponse> in
             guard useWebSocket, error.isRetryable else {
                 throw error
             }

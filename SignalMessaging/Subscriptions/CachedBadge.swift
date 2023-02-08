@@ -36,7 +36,7 @@ public final class CachedBadge: Equatable, Dependencies {
     @discardableResult
     public func fetchIfNeeded() -> Promise<Value> {
         // Run on a stable queue to avoid race conditions.
-        return firstly(on: .main) { () -> Promise<Value> in
+        return firstly(on: DispatchQueue.main) { () -> Promise<Value> in
             // If we already have a cached value, do nothing.
             if let cachedValue = self.cachedValue {
                 return Promise.value(cachedValue)

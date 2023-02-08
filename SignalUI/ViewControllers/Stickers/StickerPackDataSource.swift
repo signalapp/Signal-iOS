@@ -406,7 +406,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
         downloadKeySet.insert(key)
 
         StickerManager.tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
-            .done(on: .main) { [weak self] (stickerPack) in
+            .done(on: DispatchQueue.main) { [weak self] (stickerPack) in
                 guard let self = self else {
                     return
                 }
@@ -457,9 +457,9 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
         downloadKeySet.insert(key)
 
         // This sticker is not downloaded; try to download now.
-        firstly(on: .global()) {
+        firstly(on: DispatchQueue.global()) {
             StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
-        }.done(on: .main) { [weak self] (temporaryFileUrl) in
+        }.done(on: DispatchQueue.main) { [weak self] (temporaryFileUrl) in
             guard let self = self else {
                 return
             }

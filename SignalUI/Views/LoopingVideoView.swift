@@ -125,14 +125,14 @@ public class LoopingVideoView: UIView {
             invalidateIntrinsicContentSize()
 
             if let asset = video?.asset {
-                firstly(on: .global(qos: .userInitiated)) { [weak self] () -> Void in
+                firstly(on: DispatchQueue.global(qos: .userInitiated)) { [weak self] () -> Void in
                     guard let self = self else {
                         return
                     }
                     let playerItem = AVPlayerItem(asset: asset, automaticallyLoadedAssetKeys: ["tracks"])
                     self.player.replaceCurrentItem(with: playerItem)
                     self.player.play()
-                }.done(on: .main) { [weak self] in
+                }.done(on: DispatchQueue.main) { [weak self] in
                     guard let self = self else {
                         return
                     }

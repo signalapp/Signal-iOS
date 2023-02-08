@@ -38,7 +38,7 @@ public struct Stripe: Dependencies {
         for amount: FiatMoney,
         level: OneTimeBadgeLevel
     ) -> Promise<PaymentIntent> {
-        firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
+        firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<HTTPResponse> in
             // The description is never translated as it's populated into an
             // english only receipt by Stripe.
             let request = OWSRequestFactory.boostStripeCreatePaymentIntent(
@@ -48,7 +48,7 @@ public struct Stripe: Dependencies {
             )
 
             return networkManager.makePromise(request: request)
-        }.map(on: .sharedUserInitiated) { response in
+        }.map(on: DispatchQueue.sharedUserInitiated) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON")
             }
@@ -64,13 +64,13 @@ public struct Stripe: Dependencies {
     public static func createPaymentMethod(
         with paymentMethod: PaymentMethod
     ) -> Promise<String> {
-        firstly(on: .sharedUserInitiated) { () -> Promise<String> in
+        firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<String> in
             API.createToken(with: paymentMethod)
-        }.then(on: .sharedUserInitiated) { tokenId -> Promise<HTTPResponse> in
+        }.then(on: DispatchQueue.sharedUserInitiated) { tokenId -> Promise<HTTPResponse> in
 
             let parameters: [String: Any] = ["card": ["token": tokenId], "type": "card"]
             return try API.postForm(endpoint: "payment_methods", parameters: parameters)
-        }.map(on: .sharedUserInitiated) { response in
+        }.map(on: DispatchQueue.sharedUserInitiated) { response in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing responseBodyJson")
             }
@@ -78,7 +78,7 @@ public struct Stripe: Dependencies {
                 throw OWSAssertionError("Failed to decode JSON response")
             }
             return try parser.required(key: "id")
-        }.recover(on: .sharedUserInitiated) { error -> Promise<String> in
+        }.recover(on: DispatchQueue.sharedUserInitiated) { error -> Promise<String> in
             throw convertToStripeErrorIfPossible(error)
         }
     }
@@ -93,9 +93,9 @@ public struct Stripe: Dependencies {
         clientSecret: String,
         paymentIntentId: String
     ) -> Promise<ConfirmedIntent> {
-        firstly(on: .sharedUserInitiated) { () -> Promise<String> in
+        firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<String> in
             createPaymentMethod(with: paymentMethod)
-        }.then(on: .sharedUserInitiated) { paymentMethodId -> Promise<ConfirmedIntent> in
+        }.then(on: DispatchQueue.sharedUserInitiated) { paymentMethodId -> Promise<ConfirmedIntent> in
             confirmPaymentIntent(
                 paymentIntentClientSecret: clientSecret,
                 paymentIntentId: paymentIntentId,
@@ -110,7 +110,7 @@ public struct Stripe: Dependencies {
         paymentMethodId: String,
         idempotencyKey: String? = nil
     ) -> Promise<ConfirmedIntent> {
-        firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
+        firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<HTTPResponse> in
             try API.postForm(endpoint: "payment_intents/\(paymentIntentId)/confirm",
                              parameters: [
                                 "payment_method": paymentMethodId,
@@ -118,12 +118,12 @@ public struct Stripe: Dependencies {
                                 "return_url": RETURN_URL_FOR_3DS
                              ],
                              idempotencyKey: idempotencyKey)
-        }.map(on: .sharedUserInitiated) { response -> ConfirmedIntent in
+        }.map(on: DispatchQueue.sharedUserInitiated) { response -> ConfirmedIntent in
             .init(
                 intentId: paymentIntentId,
                 redirectToUrl: parseNextActionRedirectUrl(from: response.responseBodyJson)
             )
-        }.recover(on: .sharedUserInitiated) { error -> Promise<ConfirmedIntent> in
+        }.recover(on: DispatchQueue.sharedUserInitiated) { error -> Promise<ConfirmedIntent> in
             throw convertToStripeErrorIfPossible(error)
         }
     }
@@ -132,19 +132,19 @@ public struct Stripe: Dependencies {
         for paymentIntentID: String,
         clientSecret: String
     ) -> Promise<ConfirmedIntent> {
-        firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
+        firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<HTTPResponse> in
             let setupIntentId = try API.id(for: clientSecret)
             return try API.postForm(endpoint: "setup_intents/\(setupIntentId)/confirm", parameters: [
                 "payment_method": paymentIntentID,
                 "client_secret": clientSecret,
                 "return_url": RETURN_URL_FOR_3DS
             ])
-        }.map(on: .sharedUserInitiated) { response -> ConfirmedIntent in
+        }.map(on: DispatchQueue.sharedUserInitiated) { response -> ConfirmedIntent in
             .init(
                 intentId: paymentIntentID,
                 redirectToUrl: parseNextActionRedirectUrl(from: response.responseBodyJson)
             )
-        }.recover(on: .sharedUserInitiated) { error -> Promise<ConfirmedIntent> in
+        }.recover(on: DispatchQueue.sharedUserInitiated) { error -> Promise<ConfirmedIntent> in
             throw convertToStripeErrorIfPossible(error)
         }
     }
@@ -257,9 +257,9 @@ fileprivate extension Stripe {
         }
 
         static func createToken(with paymentMethod: PaymentMethod) -> Promise<String> {
-            firstly(on: .sharedUserInitiated) { () -> Promise<HTTPResponse> in
+            firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<HTTPResponse> in
                 return try postForm(endpoint: "tokens", parameters: parameters(for: paymentMethod))
-            }.map(on: .sharedUserInitiated) { response in
+            }.map(on: DispatchQueue.sharedUserInitiated) { response in
                 guard let json = response.responseBodyJson else {
                     throw OWSAssertionError("Missing responseBodyJson")
                 }

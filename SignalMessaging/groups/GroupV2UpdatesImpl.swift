@@ -53,9 +53,9 @@ public class GroupV2UpdatesImpl: NSObject {
             return
         }
 
-        firstly(on: .global()) { () -> Promise<Void> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
             self.messageProcessor.fetchingAndProcessingCompletePromise()
-        }.then(on: .global()) { _ -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { _ -> Promise<Void> in
             guard let groupInfoToRefresh = Self.findGroupToAutoRefresh() else {
                 // We didn't find a group to refresh; abort.
                 return Promise.value(())
@@ -72,9 +72,9 @@ public class GroupV2UpdatesImpl: NSObject {
                 groupId: groupId,
                 groupSecretParamsData: groupSecretParamsData
             ).asVoid()
-        }.done(on: .global()) { _ in
+        }.done(on: DispatchQueue.global()) { _ in
             Logger.verbose("Complete.")
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             if case GroupsV2Error.localUserNotInGroup = error {
                 Logger.warn("Error: \(error)")
             } else {
@@ -252,7 +252,7 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
         groupUpdateMode: GroupUpdateMode
     ) {
 
-        firstly(on: .global()) { () -> Promise<Void> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
             guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                 return Promise.value(())
             }
@@ -261,7 +261,7 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
             return self.tryToRefreshV2GroupThread(groupId: groupId,
                                                   groupSecretParamsData: groupSecretParamsData,
                                                   groupUpdateMode: groupUpdateMode).asVoid()
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             Logger.warn("Group refresh failed: \(error).")
         }
     }
@@ -307,11 +307,11 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
                                                groupSecretParamsData: groupSecretParamsData,
                                                groupUpdateMode: groupUpdateMode,
                                                groupModelOptions: groupModelOptions)
-        operation.promise.done(on: .global()) { _ in
+        operation.promise.done(on: DispatchQueue.global()) { _ in
             Logger.verbose("Group refresh succeeded.")
 
             self.groupRefreshDidSucceed(forGroupId: groupId, groupUpdateMode: groupUpdateMode)
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             Logger.verbose("Group refresh failed: \(error).")
         }
         let operationQueue = self.operationQueue(forGroupUpdateMode: groupUpdateMode)
@@ -379,16 +379,16 @@ extension GroupV2UpdatesImpl: GroupV2UpdatesSwift {
                 } else {
                     return Promise.value(())
                 }
-            }.then(on: .global()) { _ in
+            }.then(on: DispatchQueue.global()) { _ in
                 self.groupV2UpdatesImpl.refreshGroupFromService(groupSecretParamsData: self.groupSecretParamsData,
                                                                 groupUpdateMode: self.groupUpdateMode,
                                                                 groupModelOptions: self.groupModelOptions)
-            }.done(on: .global()) { (groupThread: TSGroupThread) in
+            }.done(on: DispatchQueue.global()) { (groupThread: TSGroupThread) in
                 Logger.verbose("Group refresh succeeded.")
 
                 self.reportSuccess()
                 self.future.resolve(groupThread)
-            }.catch(on: .global()) { (error) in
+            }.catch(on: DispatchQueue.global()) { (error) in
                 if error.isNetworkConnectivityFailure {
                     Logger.warn("Group update failed: \(error)")
                 } else {
@@ -462,7 +462,7 @@ private extension GroupV2UpdatesImpl {
             return GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
             // Try to use individual changes.
-            return firstly(on: .global()) {
+            return firstly(on: DispatchQueue.global()) {
                 self.fetchAndApplyChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
                                                            groupUpdateMode: groupUpdateMode,
                                                            groupModelOptions: groupModelOptions)
@@ -521,7 +521,7 @@ private extension GroupV2UpdatesImpl {
         return firstly { () -> Promise<GroupsV2Impl.GroupChangePage> in
             self.fetchChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
                                                groupUpdateMode: groupUpdateMode)
-        }.then(on: .global()) { (groupChanges: GroupsV2Impl.GroupChangePage) throws -> Promise<TSGroupThread> in
+        }.then(on: DispatchQueue.global()) { (groupChanges: GroupsV2Impl.GroupChangePage) throws -> Promise<TSGroupThread> in
             let groupId = try self.groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
             let applyPromise = self.tryToApplyGroupChangesFromService(
                 groupId: groupId,
@@ -576,11 +576,11 @@ private extension GroupV2UpdatesImpl {
             }
         }()
 
-        return firstly(on: .global()) { () -> [GroupV2Change]? in
+        return firstly(on: DispatchQueue.global()) { () -> [GroupV2Change]? in
             // Try to use group changes from the cache.
             return self.cachedGroupChanges(groupSecretParamsData: groupSecretParamsData,
                                            upToRevision: upToRevision)
-        }.then(on: .global()) { (groupChanges: [GroupV2Change]?) -> Promise<GroupsV2Impl.GroupChangePage> in
+        }.then(on: DispatchQueue.global()) { (groupChanges: [GroupV2Change]?) -> Promise<GroupsV2Impl.GroupChangePage> in
             if let groupChanges = groupChanges {
                 return Promise.value(GroupsV2Impl.GroupChangePage(changes: groupChanges, earlyEnd: nil))
             }
@@ -589,7 +589,7 @@ private extension GroupV2UpdatesImpl {
                     groupSecretParamsData: groupSecretParamsData,
                     includeCurrentRevision: includeCurrentRevision
                 )
-            }.map(on: .global()) { (groupChanges: GroupsV2Impl.GroupChangePage) -> GroupsV2Impl.GroupChangePage in
+            }.map(on: DispatchQueue.global()) { (groupChanges: GroupsV2Impl.GroupChangePage) -> GroupsV2Impl.GroupChangePage in
                 self.addGroupChangesToCache(groupChanges: groupChanges.changes,
                                             groupSecretParamsData: groupSecretParamsData)
 
@@ -611,7 +611,7 @@ private extension GroupV2UpdatesImpl {
             } else {
                 return Promise.value(())
             }
-        }.then(on: .global()) {
+        }.then(on: DispatchQueue.global()) {
             return self.tryToApplyGroupChangesFromServiceNow(
                 groupId: groupId,
                 groupSecretParamsData: groupSecretParamsData,
@@ -938,7 +938,7 @@ private extension GroupV2UpdatesImpl {
 
         return firstly {
             self.groupsV2Impl.fetchCurrentGroupV2Snapshot(groupSecretParamsData: groupSecretParamsData)
-        }.then(on: .global()) { groupV2Snapshot in
+        }.then(on: DispatchQueue.global()) { groupV2Snapshot in
             return self.tryToApplyCurrentGroupV2SnapshotFromService(
                 groupV2Snapshot: groupV2Snapshot,
                 groupUpdateMode: groupUpdateMode,
@@ -962,7 +962,7 @@ private extension GroupV2UpdatesImpl {
             } else {
                 return Promise.value(())
             }
-        }.then(on: .global()) { _ in
+        }.then(on: DispatchQueue.global()) { _ in
             self.tryToApplyCurrentGroupV2SnapshotFromServiceNow(
                 groupV2Snapshot: groupV2Snapshot,
                 groupModelOptions: groupModelOptions

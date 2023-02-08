@@ -56,13 +56,13 @@ extension GroupManager {
         public override func run() {
             firstly {
                 GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
-            }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
+            }.then(on: DispatchQueue.global()) { () throws -> Promise<TSGroupThread> in
                 self.groupsV2Swift.updateGroupV2(
                     groupId: self.groupId,
                     groupSecretParamsData: self.groupSecretParamsData,
                     changesBlock: self.changesBlock
                 )
-            }.done(on: .global()) { groupThread in
+            }.done(on: DispatchQueue.global()) { groupThread in
                 self.reportSuccess()
                 self.future.resolve(groupThread)
             }.timeout(
@@ -70,7 +70,7 @@ extension GroupManager {
                 description: description
             ) {
                 GroupsV2Error.timeout
-            }.catch(on: .global()) { error in
+            }.catch(on: DispatchQueue.global()) { error in
                 switch error {
                 case GroupsV2Error.redundantChange:
                     // From an operation perspective, this is a success!

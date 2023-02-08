@@ -141,12 +141,12 @@ public extension ConversationViewController {
             let collisionFinder = GroupMembershipNameCollisionFinder(thread: groupThread)
             viewState.groupNameCollisionFinder = collisionFinder
 
-            firstly(on: .sharedUserInitiated) {
+            firstly(on: DispatchQueue.sharedUserInitiated) {
                 self.databaseStorage.read { readTx in
                     // Prewarm our collision finder off the main thread
                     _ = collisionFinder.findCollisions(transaction: readTx)
                 }
-            }.done(on: .main) {
+            }.done(on: DispatchQueue.main) {
                 self.ensureBannerState()
             }.catch { error in
                 owsFailDebug("\(error)")

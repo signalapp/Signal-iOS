@@ -230,7 +230,7 @@ extension SharingThreadPickerViewController {
             let outgoingMessageSendPromise: Promise<Void>
             if !outgoingMessageConversations.isEmpty {
                 outgoingMessageSendPromise = sendToOutgoingMessageThreads { thread in
-                    return firstly(on: .global()) { () -> Promise<Void> in
+                    return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
                         return self.databaseStorage.write { transaction in
                             let preparer = OutgoingMessagePreparer(
                                 messageBody: body,
@@ -263,7 +263,7 @@ extension SharingThreadPickerViewController {
             }
 
             return sendToOutgoingMessageThreads { thread in
-                return firstly(on: .global()) { () -> Promise<Void> in
+                return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
                     return self.databaseStorage.write { transaction in
                         let builder = TSOutgoingMessageBuilder(thread: thread)
                         builder.contactShare = contactShare.dbRecord
@@ -420,7 +420,7 @@ extension SharingThreadPickerViewController {
     }
 
     func threads(for conversationItems: [ConversationItem]) -> Promise<[TSThread]> {
-        return firstly(on: .sharedUserInteractive) {
+        return firstly(on: DispatchQueue.sharedUserInteractive) {
             guard conversationItems.count > 0 else {
                 throw OWSAssertionError("No recipients.")
             }

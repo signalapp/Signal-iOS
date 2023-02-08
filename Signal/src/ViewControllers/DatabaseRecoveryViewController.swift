@@ -230,7 +230,7 @@ class DatabaseRecoveryViewController: OWSViewController {
             self?.didFractionCompletedChange(fractionCompleted: progress.fractionCompleted)
         }
 
-        firstly(on: .sharedUserInitiated) {
+        firstly(on: DispatchQueue.sharedUserInitiated) {
             if needsDumpAndRestore {
                 let dumpAndRestore = DatabaseRecovery.DumpAndRestore(databaseFileUrl: self.databaseFileUrl)
                 progress.addChild(dumpAndRestore.progress, withPendingUnitCount: 1)
@@ -244,9 +244,9 @@ class DatabaseRecoveryViewController: OWSViewController {
                 progress.completedUnitCount += 1
             }
             return Promise.value(())
-        }.then(on: .sharedUserInitiated) {
+        }.then(on: DispatchQueue.sharedUserInitiated) {
             self.setupSskEnvironment()
-        }.then(on: .sharedUserInitiated) {
+        }.then(on: DispatchQueue.sharedUserInitiated) {
             let manualRecreation = DatabaseRecovery.ManualRecreation(databaseStorage: SDSDatabaseStorage.shared)
             progress.addChild(manualRecreation.progress, withPendingUnitCount: 1)
             manualRecreation.run()
@@ -254,12 +254,12 @@ class DatabaseRecoveryViewController: OWSViewController {
             DatabaseCorruptionState.flagDatabaseAsRecoveredFromCorruption(userDefaults: self.userDefaults)
 
             return Promise.value(())
-        }.done(on: .main) { [weak self] in
+        }.done(on: DispatchQueue.main) { [weak self] in
             guard let self = self else { return }
             self.state = .recoverySucceeded
         }.ensure {
             progressObserver.invalidate()
-        }.catch(on: .main) { [weak self] error in
+        }.catch(on: DispatchQueue.main) { [weak self] error in
             self?.didRecoveryFail(with: error)
         }
     }

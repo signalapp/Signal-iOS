@@ -261,7 +261,7 @@ public class Deprecated_OnboardingController: NSObject {
 
         let newViewController = Deprecated_OnboardingPermissionsViewController(onboardingController: self)
 
-        firstly(on: .sharedUserInitiated) {
+        firstly(on: DispatchQueue.sharedUserInitiated) {
             newViewController.needsToAskForAnyPermissions()
         }.timeout(
             // If we don't get an answer quickly, assume we need to ask. We don't
@@ -269,13 +269,13 @@ public class Deprecated_OnboardingController: NSObject {
             // waiting during registration.
             seconds: 1,
             substituteValue: true
-        ).recover(on: .main) { error in
+        ).recover(on: DispatchQueue.main) { error in
             // This could only happen if something rejects, which we don't expect.
             // However, because it's registration, we assume we need to ask instead of
             // crashing—that's better than preventing registration.
             owsFailDebug("\(error)")
             return .value(true)
-        }.done(on: .main) { (needsToAskForAnyPermissions: Bool) in
+        }.done(on: DispatchQueue.main) { (needsToAskForAnyPermissions: Bool) in
             // Always re-enable interaction in case the user restart registration.
             oldViewController.view.isUserInteractionEnabled = true
 

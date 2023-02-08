@@ -19,10 +19,10 @@ open class OWSDeviceProvisioningService: NSObject {
         )
         firstly {
             Self.networkManager.makePromise(request: request)
-        }.done(on: .main) { _ in
+        }.done(on: DispatchQueue.main) { _ in
             Logger.verbose("Provisioning request succeeded")
             success()
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             owsFailDebugUnlessNetworkFailure(error)
             failure(error)
         }

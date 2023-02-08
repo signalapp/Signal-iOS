@@ -26,7 +26,7 @@ class SignalMe: NSObject {
         guard let phoneNumber = pattern.parseFirstMatch(inText: url.absoluteString.lowercased()) else { return }
 
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController, canCancel: true) { modal in
-            firstly(on: .sharedUserInitiated) { () -> Promise<Set<SignalRecipient>> in
+            firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Set<SignalRecipient>> in
                 let existingRecipient = databaseStorage.read { transaction in
                     AnySignalRecipientFinder().signalRecipientForPhoneNumber(phoneNumber, transaction: transaction)
                 }
@@ -34,14 +34,14 @@ class SignalMe: NSObject {
                     return Promise.value([existingRecipient])
                 }
                 return contactDiscoveryManager.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest)
-            }.done(on: .main) { signalRecipients in
+            }.done(on: DispatchQueue.main) { signalRecipients in
                 modal.dismissIfNotCanceled {
                     guard let recipient = signalRecipients.first else {
                         return OWSActionSheets.showErrorAlert(message: MessageSenderNoSuchSignalRecipientError().userErrorDescription)
                     }
                     block(recipient.address)
                 }
-            }.catch(on: .main) { error in
+            }.catch(on: DispatchQueue.main) { error in
                 modal.dismissIfNotCanceled {
                     OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
                 }

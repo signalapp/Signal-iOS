@@ -56,9 +56,9 @@ public class RESTSessionManager: NSObject {
 
         firstly {
             urlSession.promiseForTSRequest(request)
-        }.done(on: .global()) { (response: HTTPResponse) in
+        }.done(on: DispatchQueue.global()) { (response: HTTPResponse) in
             success(response)
-        }.catch(on: .global()) { /* [tsAccountManager] */ error in
+        }.catch(on: DispatchQueue.global()) { /* [tsAccountManager] */ error in
             // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
             if let httpError = error as? OWSHTTPError {
                 HTTPUtils.applyHTTPError(httpError)

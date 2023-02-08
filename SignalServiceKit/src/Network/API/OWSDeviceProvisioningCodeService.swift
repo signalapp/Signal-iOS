@@ -14,9 +14,9 @@ open class OWSDeviceProvisioningCodeService: NSObject {
     public func requestProvisioningCode(success: @escaping (String) -> Void,
                                         failure: @escaping (Error) -> Void) {
         let request = OWSRequestFactory.deviceProvisioningCodeRequest()
-        firstly(on: .global()) {
+        firstly(on: DispatchQueue.global()) {
             Self.networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             Logger.verbose("ProvisioningCode request succeeded")
             guard let json = response.responseBodyJson as? [String: String] else {
                 throw OWSAssertionError("Missing or invalid JSON.")
@@ -25,9 +25,9 @@ open class OWSDeviceProvisioningCodeService: NSObject {
                 throw OWSAssertionError("Missing or invalid provisioningCode.")
             }
             return provisioningCode
-        }.done(on: .main) { provisioningCode in
+        }.done(on: DispatchQueue.main) { provisioningCode in
             success(provisioningCode)
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             owsFailDebugUnlessNetworkFailure(error)
             failure(error)
         }

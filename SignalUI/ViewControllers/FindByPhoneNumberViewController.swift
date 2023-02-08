@@ -218,7 +218,7 @@ public class FindByPhoneNumberViewController: OWSViewController, OWSNavigationCh
             ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: true) { modal in
                 firstly { () -> Promise<Set<SignalRecipient>> in
                     Self.contactDiscoveryManager.lookUp(phoneNumbers: [phoneNumber], mode: .oneOffUserRequest)
-                }.done(on: .main) { [weak self] recipients in
+                }.done(on: DispatchQueue.main) { [weak self] recipients in
                     modal.dismissIfNotCanceled {
                         guard let self = self else { return }
                         guard let recipient = recipients.first else {
@@ -226,7 +226,7 @@ public class FindByPhoneNumberViewController: OWSViewController, OWSNavigationCh
                         }
                         self.delegate?.findByPhoneNumber(self, didSelectAddress: recipient.address)
                     }
-                }.catch(on: .main) { error in
+                }.catch(on: DispatchQueue.main) { error in
                     modal.dismissIfNotCanceled {
                         OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
                     }

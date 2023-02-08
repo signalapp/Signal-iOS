@@ -203,10 +203,10 @@ public class AccountManager: NSObject {
             self.changePhoneNumberRequest(newPhoneNumber: newPhoneNumber,
                                           verificationCode: verificationCode,
                                           registrationLock: registrationLock)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             // Try to take the change from the service.
             try ChangePhoneNumber.updateLocalPhoneNumber(from: response)
-        }.done(on: .global()) { localPhoneNumber in
+        }.done(on: DispatchQueue.global()) { localPhoneNumber in
             owsAssertDebug(localPhoneNumber.localPhoneNumber == newPhoneNumber)
 
             // Mark change as complete.
@@ -228,7 +228,7 @@ public class AccountManager: NSObject {
             tsAccountManager.verifyChangePhoneNumber(request: request,
                                                      success: future.resolve,
                                                      failure: future.reject)
-        }.map(on: .global()) { json in
+        }.map(on: DispatchQueue.global()) { json in
             return try WhoAmIResponse.parse(json)
         }
     }
@@ -361,7 +361,7 @@ public class AccountManager: NSObject {
                     throw error
                 }
             }
-        }.then(on: .global()) {
+        }.then(on: DispatchQueue.global()) {
             self.serviceClient.updateSecondaryDeviceCapabilities()
         }.done {
             self.completeRegistration()
@@ -390,7 +390,7 @@ public class AccountManager: NSObject {
 
             let initialSyncMessagePromise = firstly {
                 OWSSyncManager.shared.sendInitialSyncRequestsAwaitingCreatedThreadOrdering(timeoutSeconds: 60)
-            }.done(on: .global() ) { orderedThreadIds in
+            }.done(on: DispatchQueue.global() ) { orderedThreadIds in
                 Logger.debug("orderedThreadIds: \(orderedThreadIds)")
                 // Maintain the remote sort ordering of threads by inserting `syncedThread` messages
                 // in that thread order.
@@ -436,7 +436,7 @@ public class AccountManager: NSObject {
             tsAccountManager.verifyRegistration(request: request,
                                                 success: future.resolve,
                                                 failure: future.reject)
-        }.map(on: .global()) { responseObject throws -> RegistrationResponse in
+        }.map(on: DispatchQueue.global()) { responseObject throws -> RegistrationResponse in
             self.databaseStorage.write { transaction in
                 self.tsAccountManager.setStoredServerAuthToken(serverAuthToken,
                                                                deviceId: OWSDevicePrimaryDeviceId,
@@ -494,7 +494,7 @@ public class AccountManager: NSObject {
         let request = OWSRequestFactory.turnServerInfoRequest()
         return firstly {
             Self.networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             guard let json = response.responseBodyJson,
                   let responseDictionary = json as? [String: AnyObject],
                   let turnServerInfo = TurnServerInfo(attributes: responseDictionary) else {
@@ -519,7 +519,7 @@ public class AccountManager: NSObject {
             return Promise.value(existingUuid)
         }
 
-        return accountServiceClient.getAccountWhoAmI().map(on: .global()) { whoAmIResponse in
+        return accountServiceClient.getAccountWhoAmI().map(on: DispatchQueue.global()) { whoAmIResponse in
             let uuid = whoAmIResponse.aci
 
             // It's possible this method could be called multiple times, so we check

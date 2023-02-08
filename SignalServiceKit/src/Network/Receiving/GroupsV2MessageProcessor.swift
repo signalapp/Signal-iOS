@@ -172,14 +172,14 @@ class IncomingGroupsV2MessageQueue: NSObject, MessageProcessingPipelineStage {
         }
 
         for processor in messageProcessors {
-            firstly(on: .global()) { () -> Promise<Void> in
+            firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
                 processor.promise
-            }.ensure(on: .global()) {
+            }.ensure(on: DispatchQueue.global()) {
                 self.unfairLock.withLock {
                     _ = self.groupIdsBeingProcessed.remove(processor.groupId)
                 }
                 self.drainQueues()
-            }.catch(on: .global()) { error in
+            }.catch(on: DispatchQueue.global()) { error in
                 owsFailDebug("Error: \(error)")
             }
         }
@@ -616,7 +616,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                 owsFailDebug("Invalid embeddedUpdateOutcome: .failureShouldFailoverToService.")
                 throw GroupsV2Error.shouldDiscard
             }
-        }.recover(on: .global()) { error in
+        }.recover(on: DispatchQueue.global()) { error in
             self.databaseStorage.write { transaction in
                 if self.isRetryableError(error) {
                     Logger.warn("Error: \(error)")
@@ -643,23 +643,23 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
     private func updateGroupPromise(jobInfo: IncomingGroupsV2MessageJobInfo) -> Promise<UpdateOutcome> {
         // First, we try to update the group locally using changes embedded in
         // the group context (if any).
-        firstly(on: .global()) { () -> Promise<Void> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
             guard let groupContextInfo = jobInfo.groupContextInfo else {
                 owsFailDebug("Missing groupContextInfo.")
                 return Promise.value(())
             }
-            return firstly(on: .global()) { () -> Promise<Void> in
+            return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
                 self.groupsV2Swift.updateAlreadyMigratedGroupIfNecessary(v2GroupId: groupContextInfo.groupId)
-            }.recover(on: .global()) {error -> Promise<Void> in
+            }.recover(on: DispatchQueue.global()) {error -> Promise<Void> in
                 owsFailDebug("Error: \(error)")
                 throw GroupsV2Error.shouldRetry
             }
-        }.then(on: .global()) { () -> Promise<UpdateOutcome> in
+        }.then(on: DispatchQueue.global()) { () -> Promise<UpdateOutcome> in
             self.tryToUpdateUsingEmbeddedGroupUpdate(jobInfo: jobInfo)
-        }.recover(on: .global()) { _ in
+        }.recover(on: DispatchQueue.global()) { _ in
             owsFailDebug("tryToUpdateUsingEmbeddedGroupUpdate should never fail.")
             return Guarantee.value(UpdateOutcome.failureShouldFailoverToService)
-        }.then(on: .global()) { (embeddedUpdateOutcome: UpdateOutcome) -> Promise<UpdateOutcome> in
+        }.then(on: DispatchQueue.global()) { (embeddedUpdateOutcome: UpdateOutcome) -> Promise<UpdateOutcome> in
             if embeddedUpdateOutcome == .failureShouldFailoverToService {
                 return self.tryToUpdateUsingService(jobInfo: jobInfo)
             } else {
@@ -736,7 +736,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                 // another client, not the service.
                 return try self.groupsV2Swift.parseAndVerifyChangeActionsProto(changeActionsProtoData,
                                                                                ignoreSignature: false)
-            }.then(on: .global()) { (changeActionsProto: GroupsProtoGroupChangeActions) throws -> Promise<TSGroupThread> in
+            }.then(on: DispatchQueue.global()) { (changeActionsProto: GroupsProtoGroupChangeActions) throws -> Promise<TSGroupThread> in
                 guard changeActionsProto.revision == contextRevision else {
                     throw OWSAssertionError("Embedded change proto revision doesn't match context revision.")
                 }
@@ -744,7 +744,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                                                                            changeActionsProto: changeActionsProto,
                                                                            ignoreSignature: false,
                                                                            groupSecretParamsData: oldGroupModel.secretParamsData)
-            }.map(on: .global()) { (updatedGroupThread: TSGroupThread) throws -> Void in
+            }.map(on: DispatchQueue.global()) { (updatedGroupThread: TSGroupThread) throws -> Void in
                 guard let updatedGroupModel = updatedGroupThread.groupModel as? TSGroupModelV2 else {
                     owsFailDebug("Invalid group model.")
                     return future.resolve(.failureShouldFailoverToService)
@@ -761,7 +761,7 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
                 }
                 Logger.info("Successfully applied embedded change proto from group context.")
                 return future.resolve(.successShouldProcess)
-            }.catch(on: .global()) { error in
+            }.catch(on: DispatchQueue.global()) { error in
                 if self.isRetryableError(error) {
                     Logger.warn("Error: \(error)")
                     return future.resolve(.failureShouldRetry)
@@ -793,9 +793,9 @@ internal class GroupsMessageProcessor: MessageProcessingPipelineStage, Dependenc
             self.groupV2Updates.tryToRefreshV2GroupThread(groupId: groupContextInfo.groupId,
                                                           groupSecretParamsData: groupContextInfo.groupSecretParamsData,
                                                           groupUpdateMode: groupUpdateMode)
-        }.map(on: .global()) { (_) in
+        }.map(on: DispatchQueue.global()) { (_) in
             return UpdateOutcome.successShouldProcess
-        }.recover(on: .global()) { error -> Guarantee<UpdateOutcome> in
+        }.recover(on: DispatchQueue.global()) { error -> Guarantee<UpdateOutcome> in
             if self.isRetryableError(error) {
                 Logger.warn("error: \(type(of: error)) \(error)")
                 return Guarantee.value(UpdateOutcome.failureShouldRetry)

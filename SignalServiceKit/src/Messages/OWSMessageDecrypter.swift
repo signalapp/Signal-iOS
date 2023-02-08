@@ -233,10 +233,10 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     message: nullMessage.asPreparer,
                     isHighPriority: true,
                     transaction: transaction
-                ).done(on: .global()) {
+                ).done(on: DispatchQueue.global()) {
                     Logger.info("Successfully sent null message after session reset " +
                                     "for undecryptable message from \(senderId)")
-                }.catch(on: .global()) { error in
+                }.catch(on: DispatchQueue.global()) { error in
                     if error is UntrustedIdentityError {
                         Logger.info("Failed to send null message after session reset for " +
                                         "for undecryptable message from \(senderId) (\(error))")
@@ -282,9 +282,9 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                     message: profileKeyMessage.asPreparer,
                     isHighPriority: true,
                     transaction: transaction
-                ).done(on: .global()) {
+                ).done(on: DispatchQueue.global()) {
                     Logger.info("Successfully sent reactive profile key message after non-UD message from \(sourceAddress)")
-                }.catch(on: .global()) { error in
+                }.catch(on: DispatchQueue.global()) { error in
                     if error is UntrustedIdentityError {
                         Logger.info("Failed to send reactive profile key message after non-UD message from \(sourceAddress) (\(error))")
                     } else {

@@ -140,7 +140,7 @@ extension OWSIdentityManager {
             return
         }
 
-        firstly(on: .global()) { () -> Promise<Bool> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<Bool> in
             // If we haven't generated an identity key yet, we should do so now.
             guard let currentPniIdentityKey = self.identityKeyPair(for: .pni) else {
                 Logger.info("Creating PNI identity keys for the first time")
@@ -173,7 +173,7 @@ extension OWSIdentityManager {
                     throw error
                 }
             }
-        }.done(on: .global()) { (needsUpdate: Bool) in
+        }.done(on: DispatchQueue.global()) { (needsUpdate: Bool) in
             guard needsUpdate else {
                 return
             }
@@ -182,7 +182,7 @@ extension OWSIdentityManager {
             }, failure: { error in
                 owsFailDebug("failed to create PNI identity and pre-keys: \(error)")
             })
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             Logger.warn("failed to check PNI identity key: \(error)")
         }
     }
@@ -232,7 +232,7 @@ extension OWSIdentityManager {
         let batchAddresses = addresses.prefix(OWSRequestFactory.batchIdentityCheckElementsLimit)
         let remainingAddresses = Array(addresses.subtracting(batchAddresses))
 
-        return firstly(on: .global()) { () -> Promise<HTTPResponse> in
+        return firstly(on: DispatchQueue.global()) { () -> Promise<HTTPResponse> in
             Logger.info("Performing batch identity key lookup for \(batchAddresses.count) addresses. \(remainingAddresses.count) remaining.")
 
             let elements = self.databaseStorage.read { transaction in
@@ -253,7 +253,7 @@ extension OWSIdentityManager {
             let request = OWSRequestFactory.batchIdentityCheckRequest(elements: elements)
 
             return self.networkManager.makePromise(request: request)
-        }.done(on: .global()) { response in
+        }.done(on: DispatchQueue.global()) { response in
             guard response.responseStatusCode == 200 else {
                 throw OWSAssertionError("Unexpected response from batch identity request \(response.responseStatusCode)")
             }

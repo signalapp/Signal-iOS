@@ -142,7 +142,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
                                      unsavedRotatedProfileKey: OWSAES256Key?) -> Promise<VersionedProfileUpdate> {
 
         let profileKeyToUse = unsavedRotatedProfileKey ?? self.profileManager.localProfileKey()
-        return firstly(on: .global()) {
+        return firstly(on: DispatchQueue.global()) {
             guard let localUuid = self.tsAccountManager.localUuid else {
                 throw OWSAssertionError("Missing localUuid.")
             }
@@ -151,7 +151,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
                 Logger.info("Updating local profile with unsaved rotated profile key")
             }
             return localUuid
-        }.then(on: .global()) { (localUuid: UUID) -> Promise<HTTPResponse> in
+        }.then(on: DispatchQueue.global()) { (localUuid: UUID) -> Promise<HTTPResponse> in
             let localProfileKey = try self.parseProfileKey(profileKey: profileKeyToUse)
             let commitment = try localProfileKey.getCommitment(uuid: localUuid)
             let commitmentData = commitment.serialize().asData
@@ -247,7 +247,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
                                                                        version: profileKeyVersionString,
                                                                        commitment: commitmentData)
             return self.networkManager.makePromise(request: request)
-        }.then(on: .global()) { response -> Promise<VersionedProfileUpdate> in
+        }.then(on: DispatchQueue.global()) { response -> Promise<VersionedProfileUpdate> in
             if let profileAvatarData = profileAvatarData {
                 guard let encryptedProfileAvatarData = OWSUserProfile.encrypt(profileData: profileAvatarData,
                                                                               profileKey: profileKeyToUse) else {

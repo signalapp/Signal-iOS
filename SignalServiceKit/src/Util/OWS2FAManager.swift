@@ -157,12 +157,12 @@ extension OWS2FAManager {
         let request = OWSRequestFactory.enable2FARequest(withPin: pin.ensureArabicNumerals)
         firstly {
             Self.networkManager.makePromise(request: request)
-        }.done(on: .main) { _ in
+        }.done(on: DispatchQueue.main) { _ in
             Self.databaseStorage.write { transaction in
                 self.markEnabled(pin: pin, transaction: transaction)
             }
             success?()
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             owsFailDebugUnlessNetworkFailure(error)
             failure?(error)
         }
@@ -174,12 +174,12 @@ extension OWS2FAManager {
         let request = OWSRequestFactory.disable2FARequest()
         firstly {
             Self.networkManager.makePromise(request: request)
-        }.done(on: .main) { _ in
+        }.done(on: DispatchQueue.main) { _ in
             Self.databaseStorage.write { transaction in
                 self.markDisabled(transaction: transaction)
             }
             success?()
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             owsFailDebugUnlessNetworkFailure(error)
             failure?(error)
         }

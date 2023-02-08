@@ -634,9 +634,9 @@ extension ConversationViewController: LocationPickerDelegate {
 
         Logger.verbose("Sending location share.")
 
-        firstly(on: .global()) { () -> Promise<SignalAttachment> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<SignalAttachment> in
             location.prepareAttachment()
-        }.done(on: .main) { [weak self] attachment in
+        }.done(on: DispatchQueue.main) { [weak self] attachment in
             // TODO: Can we move this off the main thread?
             AssertIsOnMainThread()
 
@@ -663,7 +663,7 @@ extension ConversationViewController: LocationPickerDelegate {
             }
 
             NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Error: \(error).")
         }
     }
@@ -780,7 +780,7 @@ extension ConversationViewController: UIDocumentPickerDelegate {
                                                                          dataUTI: kUTTypeMPEG4 as String)
             firstly { () -> Promise<SignalAttachment> in
                 promise
-            }.done(on: .main) { (attachment: SignalAttachment) in
+            }.done(on: DispatchQueue.main) { (attachment: SignalAttachment) in
                 if modalActivityIndicator.wasCancelled {
                     session?.cancelExport()
                     return
@@ -793,7 +793,7 @@ extension ConversationViewController: UIDocumentPickerDelegate {
                         self.showApprovalDialog(forAttachment: attachment)
                     }
                 }
-            }.catch(on: .main) { error in
+            }.catch(on: DispatchQueue.main) { error in
                 owsFailDebug("Error: \(error).")
 
                 modalActivityIndicator.dismiss {

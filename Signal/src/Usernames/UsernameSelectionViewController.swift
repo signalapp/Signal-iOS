@@ -543,7 +543,7 @@ private extension UsernameSelectionViewController {
 
             firstly { () -> Promise<API.ConfirmationResult> in
                 self.apiManager.attemptToConfirm(reservation: reservation)
-            }.done(on: .main) { result -> Void in
+            }.done(on: DispatchQueue.main) { result -> Void in
                 switch result {
                 case let .success(confirmedUsername):
                     UsernameLogger.shared.info("Confirmed username!")
@@ -567,7 +567,7 @@ private extension UsernameSelectionViewController {
                         andPresentErrorMessage: CommonStrings.somethingWentWrongTryAgainLaterError
                     )
                 }
-            }.catch(on: .main) { error in
+            }.catch(on: DispatchQueue.main) { error in
                 UsernameLogger.shared.error("Error while confirming username: \(error)")
 
                 self.dismiss(
@@ -603,14 +603,14 @@ private extension UsernameSelectionViewController {
 
                 firstly {
                     self.apiManager.attemptToDeleteCurrentUsername()
-                }.map(on: .main) {
+                }.map(on: DispatchQueue.main) {
                     UsernameLogger.shared.info("Username deleted!")
 
                     self.persistNewUsernameValueAndDismiss(
                         usernameValue: nil,
                         presentedModalActivityIndicator: modal
                     )
-                }.catch(on: .main) { error in
+                }.catch(on: DispatchQueue.main) { error in
                     UsernameLogger.shared.error("Error while deleting username: \(error)")
 
                     self.dismiss(
@@ -724,8 +724,8 @@ private extension UsernameSelectionViewController {
             // Delay to detect multiple rapid consecutive edits.
             return Guarantee
                 .after(wallInterval: Constants.reservationDebounceTimeInternal)
-                .map(on: .main) { attemptId }
-        }.then(on: .main) { thisAttemptId throws -> Promise<API.ReservationResult> in
+                .map(on: DispatchQueue.main) { attemptId }
+        }.then(on: DispatchQueue.main) { thisAttemptId throws -> Promise<API.ReservationResult> in
             // If this attempt is no longer current after debounce, we should
             // bail out without firing a reservation.
             guard
@@ -742,7 +742,7 @@ private extension UsernameSelectionViewController {
                 desiredNickname: desiredNickname,
                 attemptId: thisAttemptId
             )
-        }.done(on: .main) { [weak self] reservationResult -> Void in
+        }.done(on: DispatchQueue.main) { [weak self] reservationResult -> Void in
             guard let self else { return }
 
             // If the reservation we just attempted is not current, we should
@@ -770,7 +770,7 @@ private extension UsernameSelectionViewController {
                 // Hides the rate-limited error, but not incorrect.
                 self.currentUsernameState = .reservationFailed
             }
-        }.catch(on: .main) { [weak self] error in
+        }.catch(on: DispatchQueue.main) { [weak self] error in
             guard let self else { return }
 
             if let error = error as? ReservationNotAttemptedError {

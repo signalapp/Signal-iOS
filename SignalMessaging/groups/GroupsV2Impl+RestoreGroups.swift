@@ -252,7 +252,7 @@ public extension GroupsV2Impl {
         public override func run() {
             firstly {
                 GroupsV2Impl.tryToRestoreNextGroup()
-            }.done(on: .global()) { outcome in
+            }.done(on: DispatchQueue.global()) { outcome in
                 Logger.verbose("Group restore complete.")
 
                 switch outcome {
@@ -268,7 +268,7 @@ public extension GroupsV2Impl {
                     break
                 }
                 self.reportSuccess()
-            }.catch(on: .global()) { (error) in
+            }.catch(on: DispatchQueue.global()) { (error) in
                 // tryToRestoreNextGroup() should never fail.
                 owsFailDebug("Group restore failed: \(error)")
                 self.reportError(SSKUnretryableError.restoreGroupFailed)

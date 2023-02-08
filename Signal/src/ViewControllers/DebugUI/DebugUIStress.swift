@@ -83,7 +83,7 @@ public extension DebugUIStress {
             Logger.info("Complete.")
 
             SignalApp.shared().presentConversation(for: newGroupThread, animated: true)
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Error: \(error)")
         }
     }
@@ -117,7 +117,7 @@ public extension DebugUIStress {
             Logger.info("Complete.")
 
             SignalApp.shared().presentConversation(for: groupThread, animated: true)
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Error: \(error)")
         }
     }
@@ -144,14 +144,14 @@ public extension DebugUIStress {
         firstly { () -> Promise<Void> in
             return GroupManager.messageProcessingPromise(for: oldGroupModel,
                                                          description: self.logTag())
-        }.then(on: .global()) { _ in
+        }.then(on: DispatchQueue.global()) { _ in
             GroupManager.addOrInvite(
                 aciOrPniUuids: uuidsToAdd,
                 toExistingGroup: oldGroupModel
             )
-        }.done(on: .global()) { (_) in
+        }.done(on: DispatchQueue.global()) { (_) in
             Logger.info("Complete.")
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Error: \(error)")
         }
     }
@@ -164,9 +164,9 @@ public extension DebugUIStress {
         let uuids = groupModelV2.groupMembership.fullMembers.compactMap { $0.uuid }
         firstly { () -> Promise<TSGroupThread> in
             GroupManager.changeMemberRolesV2(groupModel: groupModelV2, uuids: uuids, role: .administrator)
-        }.done(on: .global()) { (_) in
+        }.done(on: DispatchQueue.global()) { (_) in
             Logger.info("Complete.")
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             owsFailDebug("Error: \(error)")
         }
     }

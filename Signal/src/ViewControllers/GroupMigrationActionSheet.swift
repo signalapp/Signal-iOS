@@ -573,7 +573,7 @@ private extension GroupMigrationActionSheet {
         return firstly { () -> Promise<Void> in
             GroupManager.messageProcessingPromise(for: oldGroupModel,
                                                   description: self.logTag)
-        }.map(on: .global()) { _ -> Promise<TSGroupThread> in
+        }.map(on: DispatchQueue.global()) { _ -> Promise<TSGroupThread> in
             let uuidsToAdd = members
                 .compactMap { address -> UUID? in
                     if let uuid = address.uuid,

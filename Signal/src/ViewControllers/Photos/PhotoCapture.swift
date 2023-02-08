@@ -822,7 +822,7 @@ class PhotoCapture: NSObject {
 
         firstly(on: captureOutput.movieRecordingQueue) {
             self.captureOutput.completeMovie(delegate: self)
-        }.done(on: .main) {
+        }.done(on: DispatchQueue.main) {
             AssertIsOnMainThread()
 
             guard self.videoRecordingState == .stopping else {
@@ -865,7 +865,7 @@ class PhotoCapture: NSObject {
 
         firstly(on: captureOutput.movieRecordingQueue) {
             self.captureOutput.cancelVideo(delegate: self)
-        }.done(on: .main) {
+        }.done(on: DispatchQueue.main) {
             AssertIsOnMainThread()
 
             self.sessionQueue.async {

@@ -230,7 +230,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
             taskState.promise
-        }.then(on: .global()) { (_, responseData: Data?) -> Promise<HTTPResponse> in
+        }.then(on: DispatchQueue.global()) { (_, responseData: Data?) -> Promise<HTTPResponse> in
             guard let requestConfig = requestConfig else {
                 throw OWSAssertionError("Missing requestConfig.")
             }
@@ -248,11 +248,11 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
                   body: Data? = nil,
                   success: @escaping (HTTPResponse) -> Void,
                   failure: @escaping (Error) -> Void) {
-        firstly(on: .global()) { () -> Promise<HTTPResponse> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<HTTPResponse> in
             self.dataTaskPromise(urlString, method: method, headers: headers, body: body)
-        }.done(on: .global()) { response in
+        }.done(on: DispatchQueue.global()) { response in
             success(response)
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             failure(error)
         }
     }
@@ -350,7 +350,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
                                                          monitorId: UInt64? = nil) -> Promise<HTTPResponse> {
         firstly {
             baseCompletionPromise(requestConfig: requestConfig, responseData: responseData, monitorId: monitorId)
-        }.map(on: .global()) { (httpUrlResponse: HTTPURLResponse) -> HTTPResponse in
+        }.map(on: DispatchQueue.global()) { (httpUrlResponse: HTTPURLResponse) -> HTTPResponse in
             HTTPResponseImpl.build(requestUrl: requestConfig.requestUrl,
                                    httpUrlResponse: httpUrlResponse,
                                    bodyData: responseData)
@@ -362,7 +362,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
                                                      monitorId: UInt64? = nil) -> Promise<OWSUrlDownloadResponse> {
         firstly {
             baseCompletionPromise(requestConfig: requestConfig, responseData: nil, monitorId: monitorId)
-        }.map(on: .global()) { (httpUrlResponse: HTTPURLResponse) -> OWSUrlDownloadResponse in
+        }.map(on: DispatchQueue.global()) { (httpUrlResponse: HTTPURLResponse) -> OWSUrlDownloadResponse in
             return OWSUrlDownloadResponse(task: requestConfig.task,
                                           httpUrlResponse: httpUrlResponse,
                                           downloadUrl: downloadUrl)
@@ -372,7 +372,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
     private class func baseCompletionPromise(requestConfig: RequestConfig,
                                              responseData: Data?,
                                              monitorId: UInt64? = nil) -> Promise<HTTPURLResponse> {
-        firstly(on: .global()) { () -> HTTPURLResponse in
+        firstly(on: DispatchQueue.global()) { () -> HTTPURLResponse in
             let task = requestConfig.task
 
             if requestConfig.shouldHandleRemoteDeprecation {
@@ -578,15 +578,15 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
         Logger.verbose("Making request: \(rawRequest.description)")
 
-        return firstly(on: .global()) { () throws -> Promise<HTTPResponse> in
+        return firstly(on: DispatchQueue.global()) { () throws -> Promise<HTTPResponse> in
             urlSession.uploadTaskPromise(request: request, data: requestBody)
-        }.map(on: .global()) { (response: HTTPResponse) -> HTTPResponse in
+        }.map(on: DispatchQueue.global()) { (response: HTTPResponse) -> HTTPResponse in
             Logger.info("Success: \(rawRequest.description)")
             return response
-        }.ensure(on: .global()) {
+        }.ensure(on: DispatchQueue.global()) {
             owsAssertDebug(backgroundTask != nil)
             backgroundTask = nil
-        }.recover(on: .global()) { error -> Promise<HTTPResponse> in
+        }.recover(on: DispatchQueue.global()) { error -> Promise<HTTPResponse> in
             Logger.warn("Failure: \(rawRequest.description), error: \(error)")
             throw error
         }
@@ -624,7 +624,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
         return firstly { () -> Promise<(URLSessionTask, Data?)> in
             taskState.promise
-        }.then(on: .global()) { (_, responseData: Data?) -> Promise<HTTPResponse> in
+        }.then(on: DispatchQueue.global()) { (_, responseData: Data?) -> Promise<HTTPResponse> in
             guard let requestConfig = requestConfig else {
                 throw OWSAssertionError("Missing requestConfig.")
             }
@@ -655,7 +655,7 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
 
         return firstly { () -> Promise<(URLSessionTask, URL)> in
             taskState.promise
-        }.then(on: .global()) { (_: URLSessionTask, downloadUrl: URL) -> Promise<OWSUrlDownloadResponse> in
+        }.then(on: DispatchQueue.global()) { (_: URLSessionTask, downloadUrl: URL) -> Promise<OWSUrlDownloadResponse> in
             guard let requestConfig = requestConfig else {
                 throw OWSAssertionError("Missing requestConfig.")
             }

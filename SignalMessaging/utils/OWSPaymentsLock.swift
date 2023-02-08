@@ -166,7 +166,7 @@ public class OWSPaymentsLock: Dependencies {
     }
 
     public func tryToUnlockPromise() -> Promise<OWSPaymentsLock.LocalAuthOutcome> {
-        Promise<OWSPaymentsLock.LocalAuthOutcome>(on: .main) { future in
+        Promise<OWSPaymentsLock.LocalAuthOutcome>(on: DispatchQueue.main) { future in
             OWSPaymentsLock.shared.tryToUnlock { outcome in
                 future.resolve(outcome)
             }

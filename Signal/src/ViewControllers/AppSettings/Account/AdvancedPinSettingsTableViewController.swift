@@ -69,7 +69,7 @@ class AdvancedPinSettingsTableViewController: OWSTableViewController2 {
     }
 
     private func disablePin() {
-        firstly(on: .main) {
+        firstly(on: DispatchQueue.main) {
             PinSetupViewController.disablePinWithConfirmation(fromViewController: self)
         }.done { [weak self] _ in
             self?.updateTableContents()

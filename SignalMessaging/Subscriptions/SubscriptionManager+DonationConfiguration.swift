@@ -64,7 +64,7 @@ extension SubscriptionManager {
 
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .sharedUserInitiated) { response -> DonationConfiguration in
+        }.map(on: DispatchQueue.sharedUserInitiated) { response -> DonationConfiguration in
             try DonationConfiguration.from(configurationServiceResponse: response.responseBodyJson)
         }
     }

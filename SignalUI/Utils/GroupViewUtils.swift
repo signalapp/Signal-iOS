@@ -61,9 +61,9 @@ public class GroupViewUtils {
         // GroupsV2 TODO: Should we allow cancel here?
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
                                                      canCancel: false) { modalActivityIndicator in
-            messageProcessingPromise.then(on: .global()) {
+            messageProcessingPromise.then(on: DispatchQueue.global()) {
                 updateBlock()
-            }.done(on: .main) { (value: T) in
+            }.done(on: DispatchQueue.main) { (value: T) in
                 modalActivityIndicator.dismiss {
                     completion?(value)
                 }

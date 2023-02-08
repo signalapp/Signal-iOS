@@ -26,7 +26,7 @@ public final class LocalUserLeaveGroupOperation: OWSOperation, DurableOperation 
     }
 
     public override func run() {
-        firstly(on: .global()) { () throws -> Promise<Void> in
+        firstly(on: DispatchQueue.global()) { () throws -> Promise<Void> in
             guard self.jobRecord.waitForMessageProcessing else {
                 return Promise.value(())
             }

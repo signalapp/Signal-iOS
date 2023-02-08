@@ -262,12 +262,12 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         var newUserUuids: Set<UUID> = Set(membersToAdd.keys).union(invitedMembersToPromote)
         newUserUuids.insert(localUuid)
 
-        return firstly(on: .global()) { () -> Promise<GroupsV2Swift.ProfileKeyCredentialMap> in
+        return firstly(on: DispatchQueue.global()) { () -> Promise<GroupsV2Swift.ProfileKeyCredentialMap> in
             self.groupsV2Swift.loadProfileKeyCredentials(
                 for: Array(newUserUuids),
                 forceRefresh: forceRefreshProfileKeyCredentials
             )
-        }.map(on: .global()) { (profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions in
+        }.map(on: DispatchQueue.global()) { (profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions in
             try self.buildGroupChangeProto(
                 currentGroupModel: currentGroupModel,
                 currentDisappearingMessageToken: currentDisappearingMessageToken,

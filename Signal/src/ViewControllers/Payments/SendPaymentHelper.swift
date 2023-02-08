@@ -155,11 +155,11 @@ class SendPaymentHelper: Dependencies {
     private func updateMaximumPaymentAmount() {
         firstly {
             Self.paymentsSwift.maximumPaymentAmount()
-        }.done(on: .main) { [weak self] maximumPaymentAmount in
+        }.done(on: DispatchQueue.main) { [weak self] maximumPaymentAmount in
             guard let self = self else { return }
             self.maximumPaymentAmount = maximumPaymentAmount
             self.delegate?.balanceDidChange()
-        }.catch(on: .global()) { [weak self] error in
+        }.catch(on: DispatchQueue.global()) { [weak self] error in
             if case PaymentsError.insufficientFunds = error {
                 guard let self = self else { return }
                 self.maximumPaymentAmount = TSPaymentAmount(currency: .mobileCoin, picoMob: 0)

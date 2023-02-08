@@ -908,9 +908,9 @@ extension CallService: CallObserver {
 
         firstly {
             fetchGroupMembershipProof(for: groupThread)
-        }.done(on: .main) { proof in
+        }.done(on: DispatchQueue.main) { proof in
             call.groupCall.updateMembershipProof(proof: proof)
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Failed to fetch group call credentials \(error)")
             } else {
@@ -1016,7 +1016,7 @@ extension CallService: CallManagerDelegate {
                 withContactAddress: SignalServiceAddress(uuid: recipientUuid),
                 transaction: transaction
             )
-        }.then(on: .global()) { thread throws -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { thread throws -> Promise<Void> in
             let opaqueBuilder = SSKProtoCallMessageOpaque.builder()
             opaqueBuilder.setData(message)
             opaqueBuilder.setUrgency(urgency.protobufValue)
@@ -1035,9 +1035,9 @@ extension CallService: CallManagerDelegate {
                     transaction: transaction
                 )
             }
-        }.done(on: .main) { _ in
+        }.done(on: DispatchQueue.main) { _ in
             // TODO: Tell RingRTC we succeeded in sending the message. API TBD
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Failed to send opaque message \(error)")
             } else if error is UntrustedIdentityError {
@@ -1068,7 +1068,7 @@ extension CallService: CallManagerDelegate {
                 throw OWSAssertionError("tried to send call message to unknown group")
             }
             return thread
-        }.then(on: .global()) { thread throws -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { thread throws -> Promise<Void> in
             let opaqueBuilder = SSKProtoCallMessageOpaque.builder()
             opaqueBuilder.setData(message)
             opaqueBuilder.setUrgency(urgency.protobufValue)
@@ -1087,9 +1087,9 @@ extension CallService: CallManagerDelegate {
                     transaction: transaction
                 )
             }
-        }.done(on: .main) { _ in
+        }.done(on: DispatchQueue.main) { _ in
             // TODO: Tell RingRTC we succeeded in sending the message. API TBD
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Failed to send opaque message \(error)")
             } else {

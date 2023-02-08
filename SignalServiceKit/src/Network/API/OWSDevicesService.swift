@@ -22,7 +22,7 @@ open class OWSDevicesService: NSObject {
     public static func refreshDevices() {
         firstly {
             Self.getDevices()
-        }.done(on: .global()) { (devices: [OWSDevice]) in
+        }.done(on: DispatchQueue.global()) { (devices: [OWSDevice]) in
             // If we have more than one device we may have a linked device.
             if !devices.isEmpty {
                 // Setting this flag here shouldn't be necessary, but we do so
@@ -39,7 +39,7 @@ open class OWSDevicesService: NSObject {
             if didAddOrRemove {
                 NotificationCenter.default.postNotificationNameAsync(Self.deviceListUpdateModifiedDeviceList, object: nil)
             }
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             owsFailDebugUnlessNetworkFailure(error)
 
             NotificationCenter.default.postNotificationNameAsync(Self.deviceListUpdateFailed, object: error)
@@ -48,9 +48,9 @@ open class OWSDevicesService: NSObject {
 
     private static func getDevices() -> Promise<[OWSDevice]> {
         let request = OWSRequestFactory.getDevicesRequest()
-        return firstly(on: .global()) {
+        return firstly(on: DispatchQueue.global()) {
             Self.networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             Logger.verbose("Get devices request succeeded")
 
             guard let devices = Self.parseDeviceList(response: response) else {
@@ -87,10 +87,10 @@ open class OWSDevicesService: NSObject {
         let request = OWSRequestFactory.deleteDeviceRequest(with: device)
         firstly {
             Self.networkManager.makePromise(request: request)
-        }.map(on: .main) { _ in
+        }.map(on: DispatchQueue.main) { _ in
             Logger.verbose("Delete device request succeeded")
             success()
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             owsFailDebugUnlessNetworkFailure(error)
             failure(error)
         }

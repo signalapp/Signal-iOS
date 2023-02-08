@@ -158,7 +158,7 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
                     var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "Push fetch.")
                     firstly { () -> Promise<Void> in
                         self.messageFetcherJob.run().promise
-                    }.done(on: .main) {
+                    }.done(on: DispatchQueue.main) {
                         owsAssertDebug(backgroundTask != nil)
                         backgroundTask = nil
                     }.catch { error in
@@ -253,9 +253,9 @@ public class PushRegistrationManager: NSObject, PKPushRegistryDelegate {
             let notificationPromise = notificationPresenter.postGenericIncomingMessageNotification()
             let pushTokensPromise = SyncPushTokensJob(mode: .forceUpload).run()
             return Promise.when(resolved: [ notificationPromise, pushTokensPromise ]).asVoid()
-        }.ensure(on: .global()) {
+        }.ensure(on: DispatchQueue.global()) {
             completionSignal.signal()
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             owsFailDebugUnlessNetworkFailure(error)
         }
         let waitInterval = DispatchTimeInterval.seconds(20)

@@ -41,7 +41,7 @@ extension DonationViewsUtil {
 
         let (promise, future) = Promise<T>.pending()
 
-        wrappedPromise.done(on: .main) { result in
+        wrappedPromise.done(on: DispatchQueue.main) { result in
             progressView.stopAnimating(success: true) {
                 backdropView.alpha = 0
             } completion: {
@@ -50,7 +50,7 @@ extension DonationViewsUtil {
 
                 future.resolve(result)
             }
-        }.catch(on: .main) { error in
+        }.catch(on: DispatchQueue.main) { error in
             progressView.stopAnimating(success: false) {
                 backdropView.alpha = 0
             } completion: {

@@ -30,7 +30,7 @@ class SyncPushTokensJob: NSObject {
     func run() -> Promise<Void> {
         Logger.info("Starting.")
 
-        return firstly(on: .global()) { () -> Promise<Void> in
+        return firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
             switch self.mode {
             case .normal, .forceUpload:
                 // Don't rotate.
@@ -53,13 +53,13 @@ class SyncPushTokensJob: NSObject {
     }
 
     private func run(shouldRotateAPNSToken: Bool) -> Promise<Void> {
-        return firstly(on: .main) {
+        return firstly(on: DispatchQueue.main) {
             return self.pushRegistrationManager.requestPushTokens(
                 forceRotation: shouldRotateAPNSToken
-            ).map(on: .main) {
+            ).map(on: DispatchQueue.main) {
                 return (shouldRotateAPNSToken, $0)
             }
-        }.then(on: .global()) { (didRotate: Bool, regResult: (String, String?)) -> Promise<(pushToken: String, voipToken: String?)> in
+        }.then(on: DispatchQueue.global()) { (didRotate: Bool, regResult: (String, String?)) -> Promise<(pushToken: String, voipToken: String?)> in
             let (pushToken, voipToken) = regResult
             return Self.databaseStorage.write(.promise) { transaction in
                 if shouldRotateAPNSToken {
@@ -67,7 +67,7 @@ class SyncPushTokensJob: NSObject {
                 }
                 return (pushToken, voipToken)
             }
-        }.then(on: .global()) { (pushToken: String, voipToken: String?) -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { (pushToken: String, voipToken: String?) -> Promise<Void> in
             Logger.info("Fetched pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
 
             var shouldUploadTokens = false
@@ -94,12 +94,12 @@ class SyncPushTokensJob: NSObject {
             Logger.warn("uploading tokens to account servers. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
             return firstly {
                 self.accountManager.updatePushTokens(pushToken: pushToken, voipToken: voipToken)
-            }.done(on: .global()) { _ in
+            }.done(on: DispatchQueue.global()) { _ in
                 self.recordPushTokensLocally(pushToken: pushToken, voipToken: voipToken)
 
                 Self.hasUploadedTokensOnce.set(true)
             }
-        }.done(on: .global()) {
+        }.done(on: DispatchQueue.global()) {
             Logger.info("completed successfully.")
         }
     }
@@ -114,9 +114,9 @@ class SyncPushTokensJob: NSObject {
     class func run(mode: Mode) {
         firstly {
             SyncPushTokensJob(mode: mode).run()
-        }.done(on: .global()) {
+        }.done(on: DispatchQueue.global()) {
             Logger.info("completed successfully.")
-        }.catch(on: .global()) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             Logger.error("Error: \(error).")
         }
     }

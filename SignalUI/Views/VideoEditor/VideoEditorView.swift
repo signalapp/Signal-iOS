@@ -223,7 +223,7 @@ class VideoEditorView: UIView {
             ModalActivityIndicatorViewController.present(fromViewController: viewController, canCancel: false) { modalVC in
                 firstly {
                     self.saveVideoPromise()
-                }.done(on: .main) {
+                }.done(on: DispatchQueue.main) {
                     modalVC.dismiss()
                 }.catch { _ in
                     modalVC.dismiss {
@@ -247,18 +247,18 @@ class VideoEditorView: UIView {
             return dstPath
         }
 
-        return firstly(on: .sharedUtility) { () -> Promise<String> in
+        return firstly(on: DispatchQueue.sharedUtility) { () -> Promise<String> in
             guard self.model.needsRender else {
                 // Nothing to render, just use the original file
                 let copy = try createCopyOfFile(self.model.srcVideoPath)
                 return Promise.value(copy)
             }
 
-            return self.model.ensureCurrentRender().result.map(on: .sharedUtility) { result in
+            return self.model.ensureCurrentRender().result.map(on: DispatchQueue.sharedUtility) { result in
                 try createCopyOfFile(result.getResultPath())
             }
 
-        }.then(on: .sharedUtility) { (videoFilePath: String) -> Promise<Void> in
+        }.then(on: DispatchQueue.sharedUtility) { (videoFilePath: String) -> Promise<Void> in
             Promise { future in
                 let videoUrl = URL(fileURLWithPath: videoFilePath)
 

@@ -219,7 +219,7 @@ public struct StorageService: Dependencies {
             endpoint += "/version/\(greaterThanVersion)"
         }
 
-        return storageRequest(withMethod: .get, endpoint: endpoint).map(on: .global()) { response in
+        return storageRequest(withMethod: .get, endpoint: endpoint).map(on: DispatchQueue.global()) { response in
             switch response.status {
             case .success:
                 let encryptedManifestContainer = try StorageServiceProtoStorageManifest(serializedData: response.data)
@@ -290,9 +290,9 @@ public struct StorageService: Dependencies {
             builder.setDeleteAll(deleteAllExistingRecords)
 
             return try builder.buildSerializedData()
-        }.then(on: .global()) { data in
+        }.then(on: DispatchQueue.global()) { data in
             storageRequest(withMethod: .put, endpoint: "v1/storage", body: data)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             switch response.status {
             case .success:
                 // We expect a successful response to have no data
@@ -342,9 +342,9 @@ public struct StorageService: Dependencies {
             var builder = StorageServiceProtoReadOperation.builder()
             builder.setReadKey(keys.map { $0.data })
             return try builder.buildSerializedData()
-        }.then(on: .global()) { data in
+        }.then(on: DispatchQueue.global()) { data in
             storageRequest(withMethod: .put, endpoint: "v1/storage/read", body: data)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             guard case .success = response.status else {
                 owsFailDebug("unexpected response \(response.status)")
                 throw StorageError.retryableAssertion
@@ -412,7 +412,7 @@ public struct StorageService: Dependencies {
                                               method: method,
                                               headers: httpHeaders.headers,
                                               body: body)
-        }.map(on: .global()) { (response: HTTPResponse) -> StorageResponse in
+        }.map(on: DispatchQueue.global()) { (response: HTTPResponse) -> StorageResponse in
             let status: StorageResponse.Status
 
             let statusCode = response.responseStatusCode
@@ -442,7 +442,7 @@ public struct StorageService: Dependencies {
             Logger.info("Storage request succeeded: \(method) \(endpoint)")
 
             return StorageResponse(status: status, data: responseData)
-        }.recover(on: .global()) { (error: Error) -> Promise<StorageResponse> in
+        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<StorageResponse> in
             if let httpStatusCode = error.httpStatusCode,
                httpStatusCode == 401 {
                 // Not registered.

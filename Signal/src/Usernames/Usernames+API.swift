@@ -21,9 +21,9 @@ extension Usernames {
         ) -> Promise<T> {
             firstly {
                 networkManager.makePromise(request: request)
-            }.map(on: .sharedUserInitiated) { response throws in
+            }.map(on: DispatchQueue.sharedUserInitiated) { response throws in
                 try onSuccess(response)
-            }.recover(on: .sharedUserInitiated) { error throws -> Promise<T> in
+            }.recover(on: DispatchQueue.sharedUserInitiated) { error throws -> Promise<T> in
                 .value(try onFailure(error))
             }
         }

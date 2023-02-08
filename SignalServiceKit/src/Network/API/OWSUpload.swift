@@ -668,7 +668,7 @@ public extension OWSUpload {
 
                 progressBlock?(progress)
             })
-        }.map(on: .global()) { (_: HTTPResponse) -> String in
+        }.map(on: DispatchQueue.global()) { (_: HTTPResponse) -> String in
             Logger.verbose("Success.")
             let uploadedUrlPath = uploadForm.key
             return uploadedUrlPath

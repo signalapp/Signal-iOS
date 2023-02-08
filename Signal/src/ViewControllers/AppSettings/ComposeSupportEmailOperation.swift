@@ -106,7 +106,7 @@ final class ComposeSupportEmailOperation: NSObject {
 
     class func sendEmail(model: SupportEmailModel) -> Promise<Void> {
         let operation = ComposeSupportEmailOperation(model: model)
-        return operation.perform(on: .sharedUserInitiated)
+        return operation.perform(on: DispatchQueue.sharedUserInitiated)
     }
 
     init(model: SupportEmailModel) {
@@ -159,7 +159,7 @@ final class ComposeSupportEmailOperation: NSObject {
                 return Promise(error: EmailError.invalidURL)
             }
 
-        }.then(on: .main) { (emailURL: URL) -> Promise<Void> in
+        }.then(on: DispatchQueue.main) { (emailURL: URL) -> Promise<Void> in
             (self.isCancelled == false) ? self.open(mailURL: emailURL) : Promise()
         }
     }

@@ -136,7 +136,7 @@ public class MessagePipelineSupervisor: NSObject {
                         contactDiscoveryManager: self.contactDiscoveryManager,
                         databaseStorage: self.databaseStorage
                     ).perform()
-                }.ensure(on: .global()) {
+                }.ensure(on: DispatchQueue.global()) {
                     uuidBackfillSuspension.invalidate()
                 }.cauterize()
             }

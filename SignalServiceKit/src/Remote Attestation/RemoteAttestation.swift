@@ -173,7 +173,7 @@ fileprivate extension RemoteAttestation.Auth {
 
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { response in
+        }.map(on: DispatchQueue.global()) { response in
             if DebugFlags.internalLogging {
                 let statusCode = response.responseStatusCode
                 Logger.info("statusCode: \(statusCode)")
@@ -191,7 +191,7 @@ fileprivate extension RemoteAttestation.Auth {
             }
 
             return try RemoteAttestation.Auth(authParams: json)
-        }.recover(on: .global()) { error -> Promise<RemoteAttestation.Auth> in
+        }.recover(on: DispatchQueue.global()) { error -> Promise<RemoteAttestation.Auth> in
             let statusCode = error.httpStatusCode ?? 0
             Logger.verbose("Remote attestation auth failure: \(statusCode)")
             throw error
@@ -293,13 +293,13 @@ fileprivate extension RemoteAttestation {
         auth: Auth? = nil,
         config: EnclaveConfig
     ) -> Promise<AttestationResponse> {
-        firstly(on: .global()) { () -> Promise<Auth> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<Auth> in
             if let auth = auth {
                 return Promise.value(auth)
             } else {
                 return Auth.fetch(forService: service)
             }
-        }.then(on: .global()) { (auth: Auth) -> Promise<AttestationResponse> in
+        }.then(on: DispatchQueue.global()) { (auth: Auth) -> Promise<AttestationResponse> in
             let clientEphemeralKeyPair = Curve25519.generateKeyPair()
             return firstly { () -> Promise<HTTPResponse> in
                 let request = remoteAttestationRequest(enclaveName: config.enclaveName,
@@ -316,7 +316,7 @@ fileprivate extension RemoteAttestation {
                 }
                 return firstly {
                     urlSession.promiseForTSRequest(request)
-                }.recover(on: .global()) { error -> Promise<HTTPResponse> in
+                }.recover(on: DispatchQueue.global()) { error -> Promise<HTTPResponse> in
                     // OWSUrlSession should only throw OWSHTTPError or OWSAssertionError.
                     if let httpError = error as? OWSHTTPError {
                         throw httpError
@@ -325,7 +325,7 @@ fileprivate extension RemoteAttestation {
                         throw OWSHTTPError.invalidRequest(requestUrl: requestUrl)
                     }
                 }
-            }.map(on: .global()) { (response: HTTPResponse) in
+            }.map(on: DispatchQueue.global()) { (response: HTTPResponse) in
                 guard let json = response.responseBodyJson else {
                     throw attestationError(reason: "Missing or invalid JSON.")
                 }

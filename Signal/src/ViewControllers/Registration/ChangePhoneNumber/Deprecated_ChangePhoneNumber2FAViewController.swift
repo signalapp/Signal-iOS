@@ -330,7 +330,7 @@ public class Deprecated_ChangePhoneNumber2FAViewController: Deprecated_Registrat
     private func getRegistrationLockTokenAndVerify(pin: String) -> Promise<VerificationOutcome> {
         firstly {
             getRegistrationLockToken(pin: pin)
-        }.then(on: .main) { _ -> Promise<VerificationOutcome> in
+        }.then(on: DispatchQueue.main) { _ -> Promise<VerificationOutcome> in
             let (promise, future) = Promise<VerificationOutcome>.pending()
             self.changePhoneNumberController.submitVerification(fromViewController: self) { outcome in
                 future.resolve(outcome)
@@ -366,7 +366,7 @@ public class Deprecated_ChangePhoneNumber2FAViewController: Deprecated_Registrat
 
         return firstly {
             self.context.keyBackupService.acquireRegistrationLockForNewNumber(with: pin, and: kbsAuth)
-        }.map(on: .global()) { registrationLockToken -> String in
+        }.map(on: DispatchQueue.global()) { registrationLockToken -> String in
             self.changePhoneNumberController.registrationLockToken = registrationLockToken
             return registrationLockToken
         }

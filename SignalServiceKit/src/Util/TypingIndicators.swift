@@ -330,7 +330,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             // or show typing indicators for other users.
             guard delegate.areTypingIndicatorsEnabled() else { return }
 
-            firstly(on: .global()) {
+            firstly(on: DispatchQueue.global()) {
                 SDSDatabaseStorage.shared.write { transaction in
                     let message = TypingIndicatorMessage(thread: thread, action: action, transaction: transaction)
 

@@ -14,12 +14,12 @@ public class AttachmentMultisend: Dependencies {
         approvalMessageBody: MessageBody?,
         approvedAttachments: [SignalAttachment]
     ) -> Promise<[TSThread]> {
-        return firstly(on: .sharedUserInitiated) { () -> Promise<PreparedMediaMultisend> in
+        return firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<PreparedMediaMultisend> in
             return self.prepareForSending(
                 conversations: conversations,
                 approvalMessageBody: approvalMessageBody,
                 approvedAttachments: approvedAttachments,
-                on: .sharedUserInitiated
+                on: DispatchQueue.sharedUserInitiated
             )
         }.map(on: ThreadUtil.enqueueSendQueue) { (preparedSend: PreparedMediaMultisend) -> [TSThread] in
             self.databaseStorage.write { transaction in
@@ -44,15 +44,15 @@ public class AttachmentMultisend: Dependencies {
         approvedAttachments: [SignalAttachment],
         messagesReadyToSend: (([TSOutgoingMessage]) -> Void)? = nil
     ) -> Promise<[TSThread]> {
-        return firstly(on: .sharedUserInitiated) { () -> Promise<PreparedMediaMultisend> in
+        return firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<PreparedMediaMultisend> in
             return self.prepareForSending(
                 conversations: conversations,
                 approvalMessageBody: approvalMessageBody,
                 approvedAttachments: approvedAttachments,
-                on: .sharedUserInitiated
+                on: DispatchQueue.sharedUserInitiated
             )
         }
-        .then(on: .sharedUserInitiated) { (preparedSend: PreparedMediaMultisend) -> Promise<[TSThread]> in
+        .then(on: DispatchQueue.sharedUserInitiated) { (preparedSend: PreparedMediaMultisend) -> Promise<[TSThread]> in
 
             messagesReadyToSend?(preparedSend.messages)
 

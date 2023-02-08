@@ -584,15 +584,15 @@ public class CVLoadCoordinator: NSObject {
             } else {
                 return updatePromise
             }
-        }.then(on: .main) { [weak self] (update: CVUpdate) -> Promise<CVUpdate> in
+        }.then(on: DispatchQueue.main) { [weak self] (update: CVUpdate) -> Promise<CVUpdate> in
             loadRequest.logLoadEvent("Load landing ready")
             guard let self = self else {
                 throw OWSGenericError("Missing self.")
             }
             return self.loadLandWhenSafePromise(update: update)
-        }.done(on: .main) { [weak self] (update: CVUpdate) -> Void in
+        }.done(on: DispatchQueue.main) { [weak self] (update: CVUpdate) -> Void in
             self?.loadDidSucceed(update: update)
-        }.catch(on: .main) { [weak self] (error) in
+        }.catch(on: DispatchQueue.main) { [weak self] (error) in
             self?.loadDidFail(loadRequest: loadRequest, error: error)
         }
     }

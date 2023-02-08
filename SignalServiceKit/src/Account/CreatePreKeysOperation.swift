@@ -44,12 +44,12 @@ public class CreatePreKeysOperation: OWSOperation {
             signalProtocolStore.preKeyStore.storePreKeyRecords(preKeyRecords, transaction: transaction)
         }
 
-        firstly(on: .global()) { () -> Promise<Void> in
+        firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
             guard self.tsAccountManager.isRegisteredAndReady else {
                 return Promise.value(())
             }
             return self.messageProcessor.fetchingAndProcessingCompletePromise()
-        }.then(on: .global()) { () -> Promise<Void> in
+        }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
             self.accountServiceClient.setPreKeys(for: self.identity,
                                                  identityKey: identityKey,
                                                  signedPreKeyRecord: signedPreKeyRecord,

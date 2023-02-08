@@ -475,7 +475,7 @@ public class ProfileFetcherJob: NSObject {
                 throw OWSAssertionError("Unexpected result.")
             }
             return avatarData
-        }.map(on: .global()) { (avatarData: Data) -> URL? in
+        }.map(on: DispatchQueue.global()) { (avatarData: Data) -> URL? in
             if avatarData.isEmpty {
                 return nil
             } else {

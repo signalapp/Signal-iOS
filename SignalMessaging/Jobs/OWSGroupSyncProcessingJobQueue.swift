@@ -88,7 +88,7 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
     public override func run() {
         firstly { () -> Promise<TSAttachmentStream> in
             try self.getAttachmentStream()
-        }.done(on: .global()) { attachmentStream in
+        }.done(on: DispatchQueue.global()) { attachmentStream in
             self.newThreads = []
             try Bench(title: "processing incoming group sync file") {
                 try self.process(attachmentStream: attachmentStream)

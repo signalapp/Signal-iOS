@@ -303,7 +303,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
         let avatarData = self.avatarData
         ModalActivityIndicatorViewController.present(fromViewController: self,
                                                      canCancel: false) { modalActivityIndicator in
-            firstly(on: .global()) { () -> Promise<Void> in
+            firstly(on: DispatchQueue.global()) { () -> Promise<Void> in
                 OWSProfileManager.updateLocalProfilePromise(profileGivenName: normalizedGivenName,
                                                             profileFamilyName: normalizedFamilyName,
                                                             profileBio: normalizedBio,
@@ -311,7 +311,7 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                                                             profileAvatarData: avatarData,
                                                             visibleBadgeIds: visibleBadgeIds,
                                                             userProfileWriter: .localUser)
-            }.then(on: .global()) { () -> Promise<Void> in
+            }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
                 Self.databaseStorage.writePromise { transaction in
                     Self.subscriptionManager.setDisplayBadgesOnProfile(
                         displayBadgesOnProfile,
@@ -319,12 +319,12 @@ class ProfileSettingsViewController: OWSTableViewController2 {
                         transaction: transaction
                     )
                 }.asVoid()
-            }.done(on: .main) { _ in
+            }.done(on: DispatchQueue.main) { _ in
                 modalActivityIndicator.dismiss { [weak self] in
                     AssertIsOnMainThread()
                     self?.profileCompleted()
                 }
-            }.catch(on: .main) { error in
+            }.catch(on: DispatchQueue.main) { error in
                 owsFailDebug("Error: \(error)")
                 modalActivityIndicator.dismiss { [weak self] in
                     AssertIsOnMainThread()

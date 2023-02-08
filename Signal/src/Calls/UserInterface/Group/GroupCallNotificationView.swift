@@ -102,21 +102,21 @@ class GroupCallNotificationView: UIView {
 
         layoutIfNeeded()
 
-        firstly(on: .main) {
+        firstly(on: DispatchQueue.main) {
             UIView.animate(.promise, duration: 0.35) {
                 offScreenConstraint.isActive = false
                 onScreenConstraint.isActive = true
 
                 self.layoutIfNeeded()
             }
-        }.then(on: .main) { _ in
+        }.then(on: DispatchQueue.main) { _ in
             UIView.animate(.promise, duration: 0.35, delay: 2, options: .curveEaseInOut) {
                 onScreenConstraint.isActive = false
                 offScreenConstraint.isActive = true
 
                 self.layoutIfNeeded()
             }
-        }.done(on: .main) { _ in
+        }.done(on: DispatchQueue.main) { _ in
             bannerView.removeFromSuperview()
             self.isPresentingNotification = false
             self.presentNextNotificationIfNecessary()
