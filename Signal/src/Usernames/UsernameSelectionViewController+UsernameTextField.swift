@@ -201,18 +201,18 @@ extension UsernameSelectionViewController {
         /// Configure the text field for an in-progress reservation.
         func configureForReservationInProgress() {
             if let lastKnownGoodDiscriminator {
-                discriminatorView.mode = .spinningWithDiscriminator(value: lastKnownGoodDiscriminator)
+                setDiscriminatorViewMode(to: .spinningWithDiscriminator(value: lastKnownGoodDiscriminator))
             } else {
-                discriminatorView.mode = .spinning
+                setDiscriminatorViewMode(to: .spinning)
             }
         }
 
         /// Configure the text field for an error state.
         func configureForError() {
             if let lastKnownGoodDiscriminator {
-                discriminatorView.mode = .discriminator(value: lastKnownGoodDiscriminator)
+                setDiscriminatorViewMode(to: .discriminator(value: lastKnownGoodDiscriminator))
             } else {
-                discriminatorView.mode = .empty
+                setDiscriminatorViewMode(to: .empty)
             }
         }
 
@@ -221,11 +221,20 @@ extension UsernameSelectionViewController {
         func configure(forConfirmedUsername confirmedUsername: ParsedUsername?) {
             if let confirmedUsername {
                 lastKnownGoodDiscriminator = confirmedUsername.discriminator
-                discriminatorView.mode = .discriminator(value: confirmedUsername.discriminator)
+                setDiscriminatorViewMode(to: .discriminator(value: confirmedUsername.discriminator))
             } else {
                 lastKnownGoodDiscriminator = nil
-                discriminatorView.mode = .empty
+                setDiscriminatorViewMode(to: .empty)
             }
+        }
+
+        private func setDiscriminatorViewMode(to mode: DiscriminatorView.Mode) {
+            discriminatorView.mode = mode
+
+            // Because the discriminator view's visible subviews may change
+            // after setting the mode, we should re-layout ourselves to make
+            // sure we size the overall view appropriately.
+            setNeedsLayout()
         }
 
         // MARK: - Getters
