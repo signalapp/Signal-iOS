@@ -1112,18 +1112,6 @@ extension StorageServiceProtoAccountRecordPhoneNumberSharingMode {
 
 // MARK: -
 
-extension Data {
-    func prependKeyType() -> Data {
-        return (self as NSData).prependKeyType() as Data
-    }
-
-    func removeKeyType() throws -> Data {
-        return try (self as NSData).removeKeyType() as Data
-    }
-}
-
-// MARK: -
-
 extension PinnedThreadManager {
     public class func processPinnedConversationsProto(
         _ pinnedConversations: [StorageServiceProtoAccountRecordPinnedConversation],

@@ -161,3 +161,24 @@ extension DeviceMessage {
         ]
     }
 }
+
+// MARK: - Keys
+
+extension OWSRequestFactory {
+    @objc
+    static func preKeyRequestParameters(_ preKeyRecord: PreKeyRecord) -> [String: Any] {
+        [
+            "keyId": preKeyRecord.id,
+            "publicKey": preKeyRecord.keyPair.publicKey.prependKeyType().base64EncodedString()
+        ]
+    }
+
+    @objc
+    static func signedPreKeyRequestParameters(_ signedPreKeyRecord: SignedPreKeyRecord) -> [String: Any] {
+        [
+            "keyId": signedPreKeyRecord.id,
+            "publicKey": signedPreKeyRecord.keyPair.publicKey.prependKeyType().base64EncodedString(),
+            "signature": signedPreKeyRecord.signature.base64EncodedString()
+        ]
+    }
+}

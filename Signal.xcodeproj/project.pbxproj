@@ -764,6 +764,7 @@
 		5049FA2F28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA2D28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift */; };
 		5049FA3028BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA2E28BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift */; };
 		5049FA3228BEAAD800D6E099 /* cdsi.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5049FA3128BEAAD800D6E099 /* cdsi.pb.swift */; };
+		505C2ED029937B5B00C23FB2 /* Data+KeyVersionByte.swift in Sources */ = {isa = PBXBuildFile; fileRef = 505C2ECF29937B5B00C23FB2 /* Data+KeyVersionByte.swift */; };
 		506A924F28FA232100A2EFC2 /* ContactDiscoveryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A924E28FA232100A2EFC2 /* ContactDiscoveryManager.swift */; };
 		506A92512900888900A2EFC2 /* RecipientPickerContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */; };
 		506A9252290326A600A2EFC2 /* TextHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextHelper.swift */; };
@@ -3158,6 +3159,7 @@
 		5049FA2D28BEAABE00D6E099 /* ContactDiscoveryV2Operation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryV2Operation.swift; sourceTree = "<group>"; };
 		5049FA2E28BEAABE00D6E099 /* ContactDiscoveryV2Connection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryV2Connection.swift; sourceTree = "<group>"; };
 		5049FA3128BEAAD800D6E099 /* cdsi.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = cdsi.pb.swift; sourceTree = "<group>"; };
+		505C2ECF29937B5B00C23FB2 /* Data+KeyVersionByte.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+KeyVersionByte.swift"; sourceTree = "<group>"; };
 		506A924E28FA232100A2EFC2 /* ContactDiscoveryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryManager.swift; sourceTree = "<group>"; };
 		506A92502900888900A2EFC2 /* RecipientPickerContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerContainerViewController.swift; sourceTree = "<group>"; };
 		508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCellBackgroundColor.swift; sourceTree = "<group>"; };
@@ -8413,6 +8415,7 @@
 				F9C5CA5B289453B100548EEE /* AxolotlExceptions.h */,
 				F9C5CA5C289453B100548EEE /* CallKitIdStore.h */,
 				F9C5CA54289453B100548EEE /* CallKitIdStore.m */,
+				505C2ECF29937B5B00C23FB2 /* Data+KeyVersionByte.swift */,
 				F9C5CA53289453B100548EEE /* NSData+keyVersionByte.h */,
 				F9C5CA5D289453B100548EEE /* NSData+keyVersionByte.m */,
 				F9C5CA59289453B100548EEE /* SenderKeyStore.swift */,
@@ -11244,6 +11247,7 @@
 				F9C5CDF4289453B400548EEE /* Currency.swift in Sources */,
 				F9C5CDE0289453B400548EEE /* DarwinNotificationCenter.m in Sources */,
 				F9C5CE35289453B400548EEE /* DarwinNotificationName.swift in Sources */,
+				505C2ED029937B5B00C23FB2 /* Data+KeyVersionByte.swift in Sources */,
 				F93999F828C8204800E34899 /* Data+MessagePadding.swift in Sources */,
 				F9C5CDFF289453B400548EEE /* Data+SSK.swift in Sources */,
 				F9C5CD1D289453B300548EEE /* DatabaseChangeObserver.swift in Sources */,

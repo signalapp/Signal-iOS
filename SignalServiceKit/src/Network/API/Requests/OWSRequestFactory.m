@@ -557,7 +557,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     }
     return [TSRequest requestWithUrl:[NSURL URLWithString:path]
                               method:@"PUT"
-                          parameters:[self dictionaryFromSignedPreKey:signedPreKey]];
+                          parameters:[self signedPreKeyRequestParameters:signedPreKey]];
 }
 
 + (TSRequest *)registerPrekeysRequestForIdentity:(OWSIdentity)identity
@@ -578,32 +578,15 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     NSString *publicIdentityKey = [[identityKeyPublic prependKeyType] base64EncodedStringWithOptions:0];
     NSMutableArray *serializedPrekeyList = [NSMutableArray array];
     for (PreKeyRecord *preKey in prekeys) {
-        [serializedPrekeyList addObject:[self dictionaryFromPreKey:preKey]];
+        [serializedPrekeyList addObject:[self preKeyRequestParameters:preKey]];
     }
     return [TSRequest requestWithUrl:[NSURL URLWithString:path]
                               method:@"PUT"
                           parameters:@{
                               @"preKeys" : serializedPrekeyList,
-                              @"signedPreKey" : [self dictionaryFromSignedPreKey:signedPreKey],
+                              @"signedPreKey" : [self signedPreKeyRequestParameters:signedPreKey],
                               @"identityKey" : publicIdentityKey
                           }];
-}
-
-+ (NSDictionary *)dictionaryFromPreKey:(PreKeyRecord *)preKey
-{
-    return @{
-        @"keyId" : @(preKey.Id),
-        @"publicKey" : [[preKey.keyPair.publicKey prependKeyType] base64EncodedStringWithOptions:0],
-    };
-}
-
-+ (NSDictionary *)dictionaryFromSignedPreKey:(SignedPreKeyRecord *)preKey
-{
-    return @{
-        @"keyId" : @(preKey.Id),
-        @"publicKey" : [[preKey.keyPair.publicKey prependKeyType] base64EncodedStringWithOptions:0],
-        @"signature" : [preKey.signature base64EncodedStringWithOptions:0]
-    };
 }
 
 #pragma mark - Storage Service
