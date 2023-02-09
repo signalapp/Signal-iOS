@@ -50,7 +50,7 @@ extension Usernames.HashedUsername {
             from: nickname,
             withValidLengthWithin: minNicknameLength...maxNicknameLength
         ).map { candidate -> Usernames.HashedUsername in
-            return .init(libsignalUsername: candidate)
+            return .init(libSignalUsername: candidate)
         }
     }
 }
@@ -59,6 +59,6 @@ extension Usernames.HashedUsername {
 
 extension Usernames.HashedUsername: Equatable {
     public static func == (lhs: Usernames.HashedUsername, rhs: Usernames.HashedUsername) -> Bool {
-        lhs.libsignalUsername.value == rhs.libsignalUsername.value
+        lhs.libSignalUsername.value == rhs.libSignalUsername.value
     }
 }
