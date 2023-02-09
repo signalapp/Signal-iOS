@@ -225,9 +225,12 @@ class UsernameSelectionViewController: OWSTableViewController2 {
             case .reservationFailed:
                 return CommonStrings.somethingWentWrongTryAgainLaterError
             case .tooShort:
-                return OWSLocalizedString(
-                    "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE",
-                    comment: "An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}."
+                return String(
+                    format: OWSLocalizedString(
+                        "USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE",
+                        comment: "An error message shown when the user has typed a username that is below the minimum character limit. Embeds {{ %1$@ the minimum character count }}."
+                    ),
+                    OWSFormat.formatUInt32(Constants.minNicknameCodepointLength)
                 )
             case .tooLong:
                 owsFail("This should be impossible from the UI, as we limit the text field length.")
