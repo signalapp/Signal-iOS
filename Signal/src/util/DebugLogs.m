@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import "Pastelog.h"
+#import "DebugLogs.h"
 #import "Signal-Swift.h"
 #import <SignalCoreKit/Threading.h>
 #import <SignalMessaging/DebugLogger.h>
@@ -19,16 +19,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSErrorDomain PastelogErrorDomain = @"PastelogErrorDomain";
-
-typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
-    PastelogErrorInvalidNetworkResponse = 10001,
-    PastelogErrorEmailFailed = 10002
-};
-
-#pragma mark -
-
-@implementation Pastelog
+@implementation DebugLogs
 
 + (void)submitLogs
 {
@@ -39,7 +30,7 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
 {
     SubmitDebugLogsCompletion completion = ^{
         if (completionParam) {
-            // Wait a moment. If PasteLog opens a URL, it needs a moment to complete.
+            // Wait a moment. If the user opens a URL, it needs a moment to complete.
             dispatch_after(
                 dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), completionParam);
         }
@@ -136,8 +127,8 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
                               [modalActivityIndicator dismissWithCompletion:^{
                                   OWSAssertIsOnMainThread();
 
-                                  [Pastelog showFailureAlertWithMessage:localizedErrorMessage
-                                              logArchiveOrDirectoryPath:logArchiveOrDirectoryPath];
+                                  [DebugLogs showFailureAlertWithMessage:localizedErrorMessage
+                                               logArchiveOrDirectoryPath:logArchiveOrDirectoryPath];
                               }];
                           }];
                   }];

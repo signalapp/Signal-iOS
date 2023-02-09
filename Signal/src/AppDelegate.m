@@ -7,7 +7,6 @@
 #import "ChatListViewController.h"
 #import "MainAppContext.h"
 #import "OWSScreenLockUI.h"
-#import "Pastelog.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import <Intents/Intents.h>

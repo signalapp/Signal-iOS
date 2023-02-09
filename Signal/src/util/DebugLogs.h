@@ -9,7 +9,7 @@ typedef void (^SubmitDebugLogsCompletion)(void);
 typedef void (^UploadDebugLogsSuccess)(NSURL *url);
 typedef void (^UploadDebugLogsFailure)(NSString *localizedErrorMessage, NSString *_Nullable logArchiveOrDirectoryPath);
 
-@interface Pastelog : NSObject
+@interface DebugLogs : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;

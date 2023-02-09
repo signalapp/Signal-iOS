@@ -73,7 +73,7 @@ final class HelpViewController: OWSTableViewController2 {
                 actionBlock: {
                     Logger.info("Submitting debug logs")
                     Logger.flush()
-                    Pastelog.submitLogs()
+                    DebugLogs.submitLogs()
                 }
             ))
         }

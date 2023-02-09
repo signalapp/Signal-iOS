@@ -114,7 +114,7 @@ private enum DebugLogUploader {
     }
 }
 
-extension Pastelog {
+extension DebugLogs {
     private struct NoLogsError: Error {
         var errorString: String {
             NSLocalizedString(

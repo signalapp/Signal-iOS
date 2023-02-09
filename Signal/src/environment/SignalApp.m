@@ -287,7 +287,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
 
 - (void)submitOnboardingLogs
 {
-    [Pastelog submitLogsWithSupportTag:@"Onboarding" completion:nil];
+    [DebugLogs submitLogsWithSupportTag:@"Onboarding" completion:nil];
 }
 
 - (void)showNewConversationView

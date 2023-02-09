@@ -96,7 +96,7 @@ public class ContactSupportAlert: NSObject {
 }
 
 enum ContactSupportError: Error {
-    case pasteLogError(localizedDescription: String)
+    case debugLogsError(localizedDescription: String)
 }
 extension ContactSupportError: LocalizedError, UserErrorDescriptionProvider {
     var errorDescription: String? {
@@ -105,24 +105,26 @@ extension ContactSupportError: LocalizedError, UserErrorDescriptionProvider {
 
     public var localizedDescription: String {
         switch self {
-        case .pasteLogError(let localizedDescription):
+        case .debugLogsError(let localizedDescription):
             return localizedDescription
         }
     }
 }
 
-extension Pastelog {
+extension DebugLogs {
     class func uploadLog() -> Promise<URL> {
         return Promise { future in
-            Pastelog.uploadLogs(success: future.resolve,
-                                failure: { localizedErrorDescription, logArchiveOrDirectoryPath in
-                // FIXME: Should we do something with the local log file?
-                if let logArchiveOrDirectoryPath = logArchiveOrDirectoryPath {
-                    _ = OWSFileSystem.deleteFile(logArchiveOrDirectoryPath)
+            DebugLogs.uploadLogs(
+                success: future.resolve,
+                failure: { localizedErrorDescription, logArchiveOrDirectoryPath in
+                    // FIXME: Should we do something with the local log file?
+                    if let logArchiveOrDirectoryPath = logArchiveOrDirectoryPath {
+                        _ = OWSFileSystem.deleteFile(logArchiveOrDirectoryPath)
+                    }
+                    let error = ContactSupportError.debugLogsError(localizedDescription: localizedErrorDescription)
+                    future.reject(error)
                 }
-                let error = ContactSupportError.pasteLogError(localizedDescription: localizedErrorDescription)
-                future.reject(error)
-            })
+            )
         }
     }
 }

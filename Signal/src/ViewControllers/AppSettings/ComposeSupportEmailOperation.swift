@@ -133,7 +133,7 @@ final class ComposeSupportEmailOperation: NSObject {
             case let .link(url):
                 return .value(url.absoluteString)
             case .attemptUpload, .requireUpload:
-                return Pastelog.uploadLog().map { $0.absoluteString }
+                return DebugLogs.uploadLog().map { $0.absoluteString }
             }
 
         }.timeout(seconds: 60, timeoutErrorBlock: { () -> Error in

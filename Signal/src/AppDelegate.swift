@@ -474,7 +474,7 @@ extension AppDelegate {
             switch action {
             case let .submitDebugLogs(actionAfterSubmitting):
                 addSubmitDebugLogsAction {
-                    Pastelog.submitLogs(withSupportTag: supportTag) {
+                    DebugLogs.submitLogs(withSupportTag: supportTag) {
                         switch actionAfterSubmitting {
                         case .crash:
                             owsFail("Exiting after submitting debug logs")
@@ -486,7 +486,7 @@ extension AppDelegate {
             case .submitDebugLogsWithDatabaseIntegrityCheckAndCrash:
                 addSubmitDebugLogsAction {
                     SignalApp.showDatabaseIntegrityCheckUI(from: viewController) {
-                        Pastelog.submitLogs(withSupportTag: supportTag) {
+                        DebugLogs.submitLogs(withSupportTag: supportTag) {
                             owsFail("Exiting after submitting debug logs")
                         }
                     }

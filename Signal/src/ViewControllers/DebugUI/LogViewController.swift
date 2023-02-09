@@ -40,7 +40,7 @@ public class LogPickerViewController: OWSTableViewController2 {
     private func buildActionsSection() -> OWSTableSection {
         let exportItem = OWSTableItem(title: "Export Logs") {
             Logger.flush()
-            Pastelog.exportLogs()
+            DebugLogs.exportLogs()
         }
         return OWSTableSection(title: "Actions", items: [exportItem])
     }
